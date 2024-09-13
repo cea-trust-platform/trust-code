@@ -237,12 +237,12 @@ Entree& Scatter::interpreter(Entree& is)
   Cerr << "End Distribue_domaines" << finl;
 
   Cerr << "\nQuality of partitioning --------------------------------------------" << finl;
-  int total_nb_elem = Process::mp_sum(dom.nb_elem());
+  trustIdType total_nb_elem = Process::mp_sum(dom.nb_elem());
   Cerr << "\nTotal nb of elements = " << total_nb_elem << finl;
   Cerr << "Number of Domaines : " << Process::nproc() << finl;
   double min_element_domaine = mp_min(dom.nb_elem());
   double max_element_domaine = mp_max(dom.nb_elem());
-  double mean_element_domaine = total_nb_elem / Process::nproc();
+  double mean_element_domaine = (double)(total_nb_elem / Process::nproc());
   Cerr << "Min number of elements on a Domaine = " << min_element_domaine << finl;
   Cerr << "Max number of elements on a Domaine = " << max_element_domaine << finl;
   Cerr << "Mean number of elements per Domaine = " << (int)(mean_element_domaine) << finl;
@@ -633,7 +633,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   dom.check_domaine();
 
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
-  int nbsom = mp_sum(dom.les_sommets().dimension(0));
+  trustIdType nbsom = mp_sum(dom.les_sommets().dimension(0));
   Cerr << " Number of nodes: " << nbsom << finl;
 
   init_sequential_domain(dom);
@@ -1458,8 +1458,8 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
 // Fonction tri (selon la premiere colonne du tableau)
 static True_int fct_tri_table_inverse(const void *ptr1, const void *ptr2)
 {
-  const int i1 = *(int*)ptr1;
-  const int i2 = *(int*)ptr2;
+  const trustIdType i1 = *(trustIdType*)ptr1;
+  const trustIdType i2 = *(trustIdType*)ptr2;
 #ifdef INT_is_64_
   if (i1 == i2)
     return 0;
@@ -1484,27 +1484,26 @@ public:
   Traduction_Indice_Global_Local() {};
   void initialiser(const MD_Vector& md_items);
   void reset();
-  void traduire_indice_local_vers_global(const ArrOfInt& indices_locaux, ArrOfInt& indices_globaux, int n) const;
-  int traduire_indice_global_vers_local(const ArrOfInt& indices_globaux, ArrOfInt& indices_locaux) const;
-  int traduire_espace_virtuel(IntVect& tableau) const;
+  void traduire_indice_local_vers_global(const ArrOfInt& indices_locaux, ArrOfTID& indices_globaux, int n) const;
+  int traduire_indice_global_vers_local(const ArrOfTID& indices_globaux, ArrOfInt& indices_locaux) const;
+  int traduire_espace_virtuel(IntTab& tableau) const;
 
-  static int chercher_table_inverse(const IntTab& table_inverse,
-                                    const int sommet_global);
+  int chercher_table_inverse(const trustIdType sommet_global) const;
 
 private:
   // Metadata des indices qu'on va renumeroter :
   MD_Vector md_items_;
-  int premier_indice_global_ = -100;
+  trustIdType premier_indice_global_ = -100;
   // Tableau distribue (avec espaces virtuels et items communs)
   // contenant pour toutes les entites a indexer  (reelles et virtuelles)
   // un indice global.
   // (si type_table_==SOMMETS, table_[i] est l'indice global du sommet i)
-  IntVect table_;
+  TIDVect table_;
   // Table permettant d'inverser la numerotation, classee par ordre
   // croissant de l'indice global :
   // * colonne 0 : l'indice global de l'entite
   // * colonne 1 : l'indice local de l'entite
-  IntTab table_inverse_;
+  TIDTab table_inverse_;
 };
 
 /*! @brief Initialise le dictionnaire Precontition:
@@ -1525,11 +1524,10 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
   MD_Vector_tools::creer_tableau_distribue(md_items, table_);
 
   const int nb_entites = md_items->get_nb_items_tot();
-  const int decal = mppartial_sum(nb_entites);
+  const trustIdType decal = mppartial_sum(nb_entites);
   premier_indice_global_ = decal;
 
-  int i;
-  for (i = 0; i < nb_entites; i++)
+  for (int i = 0; i < nb_entites; i++)
     table_[i] = i + decal;
   table_.echange_espace_virtuel();
 
@@ -1539,7 +1537,7 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
   const int nb_entites_tot = table_.size_totale();
   table_inverse_.resize(0, 2);
 
-  for (i = 0; i < nb_entites_tot; i++)
+  for (int i = 0; i < nb_entites_tot; i++)
     {
       if (table_[i] != i + decal)
         table_inverse_.append_line(table_[i], i);
@@ -1548,7 +1546,7 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
   if (table_inverse_.size_array()>0)
     qsort(table_inverse_.addr(),
           table_inverse_.dimension(0),
-          2 * sizeof(int),
+          2 * sizeof(trustIdType),    // careful! not int.
           fct_tri_table_inverse);
 }
 
@@ -1566,27 +1564,26 @@ void Traduction_Indice_Global_Local::reset()
  *   La table_inverse ne doit pas avoir d'espace virtuel.
  *
  */
-int Traduction_Indice_Global_Local::chercher_table_inverse(const IntTab& table_inverse,
-                                                           const int sommet_global)
+int Traduction_Indice_Global_Local::chercher_table_inverse(const trustIdType sommet_global) const
 {
   // Algorithme : recherche par dichotomie:
   int imin = 0;
-  int imax = table_inverse.dimension(0) - 1;
+  int imax = table_inverse_.dimension(0) - 1;
   // Si un seul element dans la table, on ne passe pas dans while
   //        (donc initialisation a table_inverse(0, 0))
   // Sinon, si aucun element, il ne faut pas que valeur == sommet_global,
   //        sinon, valeur quelconque, elle sera ecrasee dans le while.
-  int valeur;
+  trustIdType valeur;
   if (imax == 0)
-    valeur = table_inverse(0, 0);
+    valeur = table_inverse_(0, 0);
   else
     valeur = sommet_global - 1;
 
   while (imax > imin)
     {
       const int milieu = (imin + imax) >> 1; // (min+max)/2
-      valeur = table_inverse(milieu, 0);
-      const int compare = valeur - sommet_global;
+      valeur = table_inverse_(milieu, 0);
+      const trustIdType compare = valeur - sommet_global;
       if (compare < 0)
         imin = milieu + 1;
       else if (compare > 0)
@@ -1595,9 +1592,9 @@ int Traduction_Indice_Global_Local::chercher_table_inverse(const IntTab& table_i
         imin = imax = milieu;
     }
   int resu = -1;
-  valeur = table_inverse(imin, 0);
+  valeur = table_inverse_(imin, 0);
   if (valeur == sommet_global)
-    resu = table_inverse(imin, 1);
+    resu = static_cast<int>(table_inverse_(imin, 1)); // 2nd col always an int
   return resu;
 }
 
@@ -1609,15 +1606,13 @@ int Traduction_Indice_Global_Local::chercher_table_inverse(const IntTab& table_i
  *    si indices_locaux[i] < 0 alors indices_globaux[i] = -1
  *
  */
-void Traduction_Indice_Global_Local::traduire_indice_local_vers_global(
-  const ArrOfInt& indices_locaux,
-  ArrOfInt& indices_globaux,
-  int nb_items_a_traiter) const
+void Traduction_Indice_Global_Local::traduire_indice_local_vers_global(const ArrOfInt& indices_locaux,
+                                                                       ArrOfTID& indices_globaux, int nb_items_a_traiter) const
 {
   for (int i = 0; i < nb_items_a_traiter; i++)
     {
       const int i_loc = indices_locaux[i];
-      const int i_glob = (i_loc < 0) ? -1 : table_[i_loc];
+      const trustIdType i_glob = (i_loc < 0) ? -1 : table_[i_loc];
       indices_globaux[i] = i_glob;
     }
 }
@@ -1627,9 +1622,8 @@ void Traduction_Indice_Global_Local::traduire_indice_local_vers_global(
  * @param (indices_globaux) le tableau des indices globaux a traduire
  * @param (indices_locaux) en sortie, les indices locaux ou -1 si l'indice global n'a pas ete trouve. Valeur de retour: nombre d'indices non trouves (indices globaux qui ne correspondent a aucun indice local).
  */
-int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(
-  const ArrOfInt& indices_globaux,
-  ArrOfInt& indices_locaux) const
+int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(const ArrOfTID& indices_globaux,
+                                                                      ArrOfInt& indices_locaux) const
 {
   assert(indices_globaux.size_array() == indices_locaux.size_array());
   int i;
@@ -1638,7 +1632,7 @@ int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(
   const int size_table = table_.size_array();
   for (i = 0; i < nb_indices; i++)
     {
-      const int i_glob = indices_globaux[i];
+      const trustIdType i_glob = indices_globaux[i];
       int i_loc;
       if (i_glob < 0)
         {
@@ -1649,11 +1643,11 @@ int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(
       else
         {
           // On teste si l'item n'est pas renumerote
-          i_loc = i_glob - premier_indice_global_;
+          i_loc = static_cast<int>(i_glob - premier_indice_global_); // the diff is local, hence small
           if (i_loc < 0 || i_loc >= size_table || table_[i_loc] != i_glob)
             {
               // non, il faut inverser la table:
-              i_loc = chercher_table_inverse(table_inverse_, i_glob);
+              i_loc = chercher_table_inverse(i_glob);
             }
           if (i_loc < 0)
             nb_erreurs++;
@@ -1675,12 +1669,19 @@ int Traduction_Indice_Global_Local::traduire_indice_global_vers_local(
  *   (par exemple, le sommet reference n'existe pas sur le processeur voisin)
  *
  */
-int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntVect& tableau) const
+int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntTab& tab) const
 {
-  // On cree une copie du tableau, dans laquelle on met les indices globaux:
-  IntVect indices_globaux;
-  // Ne copier que la structure
-  indices_globaux.copy(tableau, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  // Create a copy of the tab in which we will store global indices
+  // Can not use 'copy' since value types are different (int vs TID), so this a bit clumsy:
+  // (TODO provide 'from_int_to_tid' in TRUSTTab.h)
+  TIDTab ind_glob_tab;
+  ArrOfInt sz(tab.nb_dim());
+  for (int i=0; i < tab.nb_dim(); i++) sz[i] = tab.dimension_tot(i);
+  ind_glob_tab.resize(sz, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  ind_glob_tab.set_md_vector(tab.get_md_vector());
+
+  IntVect& tableau = tab; // tab seen as a Vect.
+  TIDVect& indices_globaux = ind_glob_tab;
 
   const int nb_items_reels    = tableau.size_reelle();
   const int nb_items_tot      = tableau.size_totale();
@@ -1692,7 +1693,7 @@ int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntVect& tableau) co
   indices_globaux.echange_espace_virtuel();
 
   // On retraduit uniquement les items virtuels du "tableau" en indices locaux:
-  ArrOfInt src;
+  ArrOfTID src;
   ArrOfInt dest;
   src.ref_array(indices_globaux, nb_items_reels /*debut*/, nb_items_virtuels /*taille*/);
   dest.ref_array(tableau, nb_items_reels /*debut*/, nb_items_virtuels /*taille*/);
@@ -1746,8 +1747,7 @@ void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
     MD_Vector_tools::creer_tableau_distribue(md_indice, tableau, RESIZE_OPTIONS::COPY_NOINIT);
 
   // Remplissage des valeurs vituelles du "tableau"
-  const int nb_erreurs =
-    dictionnaire_indices.traduire_espace_virtuel(tableau);
+  const int nb_erreurs = dictionnaire_indices.traduire_espace_virtuel(tableau);
 
   if (nb_erreurs > 0 && error_is_fatal)
     {
@@ -1801,7 +1801,7 @@ void Scatter::reordonner_faces_de_joint(Domaine& dom)
 
   schema_comm.begin_comm();
   // Envoi des faces de joint, traduites en indices de sommets globaux
-  IntTab faces_num_global;
+  TIDTab faces_num_global;
 
   for (i_joint = 0; i_joint < nb_joints; i_joint++)
     {

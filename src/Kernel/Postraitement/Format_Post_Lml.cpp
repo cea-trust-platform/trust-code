@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -279,7 +279,16 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
   if(je_suis_maitre())
     s << "GRILLE" << finl;
 
-  int nb_som_tot = Process::mp_sum(domaine.nb_som());
+  trustIdType nb_som_tot0 = Process::mp_sum(domaine.nb_som());
+  trustIdType nb_elem_tot0 = static_cast<int>(Process::mp_sum(domaine.nb_elem()));
+  if (nb_som_tot0 >= std::numeric_limits<int>::max() || nb_elem_tot0 >= std::numeric_limits<int>::max())
+    {
+      Cerr << "Too many items in the domain to be written in LML (exceeds the 32b limit) - the support for this is not implemented." << endl;
+      Cerr << "Please contact TRUST support!" << endl;
+      Process::exit(-1);
+    }
+  int nb_som_tot = static_cast<int>(nb_som_tot0);
+  int nb_elem_tot = static_cast<int>(nb_elem_tot0);
   int dim = domaine.les_sommets().dimension(1);
 
   // Ecriture des coordonnees des noeuds
@@ -383,7 +392,6 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
 
   int j;
   int nsom = domaine.nb_som();
-  int nb_elem_tot = Process::mp_sum(domaine.nb_elem());
   Nom nom_top("Topologie_");
   nom_top+= domaine.le_nom();
   nom_top+="_";
@@ -395,7 +403,7 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
   int nb_elem = domaine.nb_elem() ;
   int nb_som_elem = domaine.nb_som_elem();
   const IntTab& sommet_elem = domaine.les_elems();
-  int nb_som_PE = mppartial_sum(nsom);
+  int nb_som_PE = static_cast<int>(mppartial_sum(nsom));
   if(je_suis_maitre())
     {
       s << "TOPOLOGIE" << finl;
@@ -489,8 +497,8 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
       if(localisation=="SOM")
         {
           int nb_som = domaine.nb_som();
-          int nb_som_tot = Process::mp_sum(nb_som);
-          int nb_som_PE = mppartial_sum(nb_som);
+          int nb_som_tot = static_cast<int>(Process::mp_sum(nb_som));
+          int nb_som_PE = static_cast<int>(mppartial_sum(nb_som));
           if (dim==2)
             {
               nb_som_tot*=2;
@@ -520,8 +528,8 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
       else if(localisation=="ELEM")
         {
           int nb_elem=domaine.nb_elem();
-          int nb_elem_tot = Process::mp_sum(nb_elem);
-          int nb_elem_PE = mppartial_sum(nb_elem);
+          int nb_elem_tot = static_cast<int>(Process::mp_sum(nb_elem));
+          int nb_elem_PE = static_cast<int>(mppartial_sum(nb_elem));
           for (int comp=0; comp<nb_compo_; comp++)
             {
               if (je_suis_maitre())
@@ -550,8 +558,8 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
       if(localisation=="SOM")
         {
           int nb_som=domaine.nb_som();
-          int nb_som_tot = Process::mp_sum(nb_som);
-          int nb_som_PE = mppartial_sum(nb_som);
+          int nb_som_tot = static_cast<int>(Process::mp_sum(nb_som));
+          int nb_som_PE = static_cast<int>(mppartial_sum(nb_som));
           if (dim==2)
             {
               nb_som_tot*=2;
@@ -574,8 +582,8 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
       else if(localisation=="ELEM")
         {
           int nb_elem=domaine.nb_elem();
-          int nb_elem_tot = Process::mp_sum(nb_elem);
-          int nb_elem_PE = mppartial_sum(nb_elem);
+          int nb_elem_tot = static_cast<int>(Process::mp_sum(nb_elem));
+          int nb_elem_PE = static_cast<int>(mppartial_sum(nb_elem));
           if(je_suis_maitre())
             {
               os << "CHAMPMAILLE ";

@@ -58,7 +58,7 @@ public:
   // They should never be called from the 64b part of TRUST.
   int get_nb_items_reels() const override;
   int get_nb_items_tot() const override;
-  int nb_items_seq_tot() const override;
+  trustIdType nb_items_seq_tot() const override { return nb_items_; }
   int nb_items_seq_local() const override;
 
   // All these should never be called in sequential:

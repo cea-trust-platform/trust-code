@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats()
               EcrFicPartage fic("geom_face_perio");
               fic.setf(ios::scientific);
               fic.precision(format_precision_geom);
-              int nb_faces_bord = mp_sum(le_bord.nb_faces());
+              trustIdType nb_faces_bord = mp_sum(le_bord.nb_faces());
               if (Process::je_suis_maitre()) fic<<nb_faces_bord<<finl;
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
@@ -125,7 +125,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::calcul_chmoy_faceperio(doubl
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
-              int nb_faces_bord = mp_sum(le_bord.nb_faces());
+              trustIdType nb_faces_bord = mp_sum(le_bord.nb_faces());
               if (Process::je_suis_maitre()) fic<<nb_faces_bord<<finl;
               for (int num_face=num1; num_face<num2; num_face++)
                 fic<<num_face<<" "<<chmoy_faceperio(num_face,0)<<" "<<chmoy_faceperio(num_face,1)<<" "<<chmoy_faceperio(num_face,2)<<finl;

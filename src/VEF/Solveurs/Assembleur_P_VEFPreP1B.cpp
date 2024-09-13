@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -323,7 +323,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
           updateP0Pa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
                      inverse_quantitee_entrelacee);
       }
-      int ordre_matrice = mp_sum(la_matrice_bloc_sym_de_travail.nb_lignes());
+      trustIdType ordre_matrice = mp_sum(la_matrice_bloc_sym_de_travail.nb_lignes());
       Cerr << "Order of the matrix = " << ordre_matrice << finl;
 
       // Methode verifier

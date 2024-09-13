@@ -253,14 +253,14 @@ int EcritureLectureSpecial::ecriture_special(const Domaine_VF& zvf, Sortie& fich
       Cerr << "EcritureLectureSpecial::ecriture_special: error, cannot save an array with no metadata" << finl;
       Process::exit();
     }
-  const int nb_items_seq = md->nb_items_seq_tot();
+  const trustIdType nb_items_seq = md->nb_items_seq_tot();
   if (nb_items_seq == 0)
     return 0;
 
   const int nb_dim = val.nb_dim();
   const int nb_comp = (nb_dim == 2) ? val.dimension(1) : 1;
   const int dim = Objet_U::dimension;
-  const int n = nb_items_seq * (nb_comp + dim);
+  const trustIdType n = nb_items_seq * (nb_comp + dim);
 
 
   if (Process::je_suis_maitre())
@@ -311,7 +311,7 @@ void EcritureLectureSpecial::lecture_special(Champ_base& ch, Entree& fich)
  *  Valeur de retour: nombre total d'items sequentiels lus (sur tous les procs)
  *
  */
-static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, const double epsilon)
+static trustIdType lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, const double epsilon)
 {
   const int dim = coords.dimension(1);
   const int nb_dim = val.nb_dim();
@@ -328,7 +328,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
   const ArrOfInt& floor_elements = octree.floor_elements();
 
   // Le fichier contient ce nombre de lignes pour cette partie du tableau (nombre total d'items sequentiels)
-  const int ntot = Process::mp_sum(n_to_read);
+  const trustIdType ntot = Process::mp_sum(n_to_read);
 
   // On lit dans le fichier par blocs de buflines_max parce qu'il y a
   //  un broadcast reseau a chaque comm:
@@ -347,10 +347,10 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
   int count_items_read = 0;
 
   // Boucle sur les items sequentiels du fichier:
-  int pourcent=0;
-  for (int i = 0; i < ntot; i++)
+  trustIdType pourcent=0;
+  for (trustIdType i = 0; i < ntot; i++)
     {
-      int tmp=(i*10)/(ntot-1);
+      trustIdType tmp=(i*10)/(ntot-1);
       if (tmp>pourcent || i==0)
         {
           pourcent=tmp;
@@ -359,9 +359,10 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
       if (bufptr == buflines_max)
         {
           bufptr = 0;
-          int n = std::min(buflines_max, ntot - i) * (dim + nb_comp);
-          assert(n <= buffer.size_array());
-          fich.get(buffer.addr(), n);
+          trustIdType n = std::min(static_cast<trustIdType>(buflines_max), ntot - i);
+          n *= (dim + nb_comp);
+          assert(n <= static_cast<trustIdType>(buffer.size_array()));
+          fich.get(buffer.addr(), static_cast<int>(n)); // n is small enough
         }
       const double x = buffer(bufptr, 0);
       const double y = buffer(bufptr, 1);
@@ -438,11 +439,11 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
   Cerr << finl;
   // Erreurs ?
   int err = (count_items_read != n_to_read) || (error_too_many_matches > 0) || (error_duplicate_read > 0);
-  err = Process::mp_sum(err);
+  err = static_cast<int>(Process::mp_sum(err));  // sum of 0 and 1, always 'int'
   if (err)
     {
-      error_too_many_matches = Process::mp_sum(error_too_many_matches);
-      error_duplicate_read = Process::mp_sum(error_duplicate_read);
+      error_too_many_matches = static_cast<int>(Process::mp_sum(error_too_many_matches));
+      error_duplicate_read = static_cast<int>(Process::mp_sum(error_duplicate_read));
       max_epsilon_needed = Process::mp_min(max_epsilon_needed);
       if (Process::je_suis_maitre())
         {
@@ -475,11 +476,11 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
 }
 
 // Valeur de retour: nombre total d'items sequentiels lus (sur tous les procs)
-static int lecture_special_part2(const Domaine_VF& zvf, Entree& fich, DoubleTab& val)
+static trustIdType lecture_special_part2(const Domaine_VF& zvf, Entree& fich, DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
 
-  int ntot = 0;
+  trustIdType ntot = 0;
   if (sub_type(MD_Vector_composite, md.valeur()))
     {
       // Champs p1bulles et autres: appel recursif pour les differents sous-tableaux:
@@ -515,14 +516,14 @@ void EcritureLectureSpecial::lecture_special(const Domaine_VF& zvf, Entree& fich
       Cerr << "EcritureLectureSpecial::ecriture_special: error, cannot save an array with no metadata" << finl;
       Process::exit();
     }
-  const int nb_items_seq = md_vect->nb_items_seq_tot();
+  const trustIdType nb_items_seq = md_vect->nb_items_seq_tot();
   if (nb_items_seq == 0)
     return;
 
   int bidon;
   fich >> bidon >> bidon >> bidon >> bidon >> bidon;
 
-  int ntot = lecture_special_part2(zvf, fich, val);
+  trustIdType ntot = lecture_special_part2(zvf, fich, val);
   if (ntot != nb_items_seq)
     {
       Cerr << "Internal error in EcritureLectureSpecial::lecture_special" << finl;

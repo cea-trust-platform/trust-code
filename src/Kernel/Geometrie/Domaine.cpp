@@ -208,8 +208,7 @@ Entree& Domaine_32_64<_SZ_>::readOn(Entree& s)
   Cerr << "Reading domain " << le_nom() << finl;
   s >> sommets_;
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
-  // TODO MP_SUM
-  int_t nbsom = mp_sum((int)sommets_.dimension(0));
+  trustIdType nbsom = mp_sum(sommets_.dimension(0));
   Cerr << " Number of nodes: " << nbsom << finl;
 
   // Reading element description (what was fomerly the "domaine" part) - this used to be a list so check for '{ }'
@@ -222,8 +221,7 @@ Entree& Domaine_32_64<_SZ_>::readOn(Entree& s)
   if (Process::is_sequential() && (NettoieNoeuds_32_64<_SZ_>::NettoiePasNoeuds==0) )
     {
       NettoieNoeuds_32_64<_SZ_>::nettoie(*this);
-      // TODO IG MP_SUM
-      nbsom = mp_sum((int)sommets_.dimension(0));
+      nbsom = mp_sum(sommets_.dimension(0));
       Cerr << " Number of nodes after node-cleanup: " << nbsom << finl;
     }
 
@@ -1169,8 +1167,7 @@ void Domaine_32_64<_SZ_>::imprimer() const
   const double volmax = mp_max(vmax_local);
   double volume_total = mp_somme_vect(volumes);
   const int_t nbe = nb_elem();
-  // TODO MP_SUM
-  double volmoy = volume_total / Process::mp_sum((int)nbe);
+  double volmoy = volume_total / (double)Process::mp_sum(nbe);
   Cerr << "sum(volume cells)= "  << volume_total << finl;
   Cerr << "mean(volume cells)= " << volmoy << finl;
   Cerr << "min(volume cells)= "  << volmin << finl;

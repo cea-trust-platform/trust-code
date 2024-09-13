@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,11 +22,15 @@
 #include <stat_counters.h>
 #include <Schema_Comm.h>
 #include <TRUSTTrav.h>
+
 #include <vector>
+#include <typeindex>
 
 static Schema_Comm_Vecteurs comm;
+
+// Optimizing initialisation of echange_espace_virtuel - see method echange_espace_virtuel_() below:
 static MD_Vector last_md;
-static int last_isdouble = -1;
+static std::type_index last_type_idx(typeid(void *));  // love this one ;-)
 static int last_linesize = 0;
 static Echange_EV_Options last_opt;
 
@@ -202,14 +206,17 @@ template <typename _TYPE_>
 void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt = echange_ev_opt_default)
 {
   const MD_Vector_base& mdv = md.valeur();
-  const int is_double = (std::is_same<_TYPE_,double>::value) ? 1 : 0;
+  const std::type_index type_idx(typeid(_TYPE_));
 
-  if (md == last_md && v.line_size() == last_linesize && last_isdouble == is_double &&  last_opt == opt) { /* Do nothing si double et pas 1er passage */ }
+  if (md == last_md && v.line_size() == last_linesize && last_type_idx == type_idx &&  last_opt == opt)
+    {
+      /* Do nothing if not the first pass, and nothing (including data type) has changed */
+    }
   else
     {
       last_md = md;
       last_linesize = v.line_size();
-      last_isdouble = is_double;
+      last_type_idx = type_idx;
       last_opt = opt;
       comm.begin_init();
       mdv.initialize_comm(opt, comm, v);

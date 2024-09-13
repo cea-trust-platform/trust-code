@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -653,7 +653,7 @@ void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
             }
         }
       h_moy = Process::mp_sum(h_moy);
-      int nb_faces = Process::mp_sum(le_bord.nb_faces());
+      int nb_faces = static_cast<int>(Process::mp_sum(le_bord.nb_faces()));  // a single 'bord' should not have so many faces
       h_moy /= nb_faces;
       if (je_suis_maitre())
         {

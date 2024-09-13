@@ -20,6 +20,7 @@
 #include <TRUST_Ref.h>
 
 class Comm_Group;
+class Stat_Counter_Id;
 
 //GF comm_incl inclu mpi.h mais il est plus facile de faire un atelier
 // ou l on change le mpi si on passe par ce fichier intermediaire
@@ -48,6 +49,10 @@ public:
   void mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const override;
   void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const override;
   void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const override;
+#if INT_is_64_ == 2
+  void mp_collective_op(const trustIdType *x, trustIdType *resu, int n, Collective_Op op) const override;
+  void mp_collective_op(const trustIdType *x, trustIdType *resu, const Collective_Op *op, int n) const override;
+#endif
 
   void barrier(int tag) const override;
   void send_recv_start(const ArrOfInt& send_list,
@@ -83,11 +88,20 @@ public:
 protected:
   void init_group(const ArrOfInt& pe_list) override;
   void internal_collective(const int *x, int *resu, int nx, const Collective_Op *op, int nop, int level) const;
+#if INT_is_64_ == 2
+  void internal_collective(const trustIdType *x, trustIdType *resu, int nx, const Collective_Op *op, int nop, int level) const;
+#endif
   void internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const;
   void internal_collective(const float *x, float *resu, int nx, const Collective_Op *op, int nop, int level) const;
-  int  mppartial_sum(int x) const;
+  trustIdType mppartial_sum(trustIdType x) const;
 
 private:
+  template <typename _TYPE_, MPI_Datatype _MPITYPE_>
+  void mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, int n, Comm_Group::Collective_Op op,
+                                 const Stat_Counter_Id& cnt_sum_id,
+                                 const Stat_Counter_Id& cnt_min_id,
+                                 const Stat_Counter_Id& cnt_max_id) const;
+
   // Voir set_must_mpi_initialize() et init_group_trio()
   static int must_mpi_initialize_;
   // Le groupe trio_u global est associe a ce communicateur

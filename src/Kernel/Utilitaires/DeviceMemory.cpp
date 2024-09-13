@@ -21,7 +21,7 @@
 map_t DeviceMemory::memory_map_;
 size_t DeviceMemory::initial_free_ = 0;
 // Typical size of internal_items (elem,face,som) used as threshold to detect excessive H2D/D2H copies or host array allocation
-int DeviceMemory::internal_items_size_ = 1e9;
+trustIdType DeviceMemory::internal_items_size_ = 1e9;
 int DeviceMemory::nb_pas_dt_ = -1;
 
 // Memory:
@@ -59,7 +59,7 @@ void DeviceMemory::printMemoryMap()
   std::cout << "===================================" << std::endl;
 }
 
-bool DeviceMemory::warning(int items)
+bool DeviceMemory::warning(trustIdType nb_items)
 {
-  return clock_on && nb_pas_dt_>1 && items>=internal_items_size_;
+  return clock_on && nb_pas_dt_>1 && nb_items>=internal_items_size_;
 }

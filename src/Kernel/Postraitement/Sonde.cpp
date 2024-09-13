@@ -1042,7 +1042,7 @@ void Sonde::initialiser()
         }
     }
 #ifndef NDEBUG
-  int test=mp_sum(nbre_points);
+  int test = static_cast<int>(mp_sum(nbre_points));
   //cerr << "Remove " << Process::me() << " " << nbre_points << " " << nbre_points_tot << " = " << test << endl;
   if (je_suis_maitre()) assert(test==nbre_points_tot);
 #endif

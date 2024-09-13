@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,16 +28,16 @@
 // Attention: le template ne marche que pour les types simples (pas Objet_U !)
 // On ne passe pas par un buffer Entree / Sortie mais on envoie directement le tableau sous sa forme binaire.
 // Un seul message envoye, sauf en mode check() ou on envoie aussi la taille pour verifier.
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int canal)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   const int moi = grp.rank();
   if (moi == cible)
-    return 0;
+    return false;
 
   if (source != moi && source != -1)
-    return 0;
+    return false;
 
   const char *data = (const char*) objet;
   const int sz = (int)sizeof(_TYPE_) * n;
@@ -63,26 +63,26 @@ inline envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int cana
       if (sz > 0)
         grp.send(cible, data, sz, canal);
     }
-  return 1;
+  return true;
 }
 
 #ifndef INT_is_64_
-inline int envoyer_array(const long *t, int n, int source, int cible, int canal)
+inline bool envoyer_array(const long *t, int n, int source, int cible, int canal)
 {
   return envoyer_array<long>(t,n,source,cible,canal);
 }
 #endif
 
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline recevoir_array(const _TYPE_ *objet, int n, int source, int cible, int canal)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   const int moi = grp.rank();
   if (moi == source)
-    return 0;
+    return false;
 
   if (cible != moi && cible != -1)
-    return 0;
+    return false;
 
   const int sz = (int)sizeof(_TYPE_) * n;
   if (grp.check_enabled())
@@ -98,17 +98,17 @@ inline recevoir_array(const _TYPE_ *objet, int n, int source, int cible, int can
   char *data = (char*) objet;
   if (sz > 0)
     grp.recv(source, data, sz, canal);
-  return 1;
+  return true;
 }
 
 #ifndef INT_is_64_
-inline int recevoir_array(const long *t, int n, int source, int cible, int canal)
+inline bool recevoir_array(const long *t, int n, int source, int cible, int canal)
 {
   return recevoir_array<long>(t, n, source, cible, canal);
 }
 #endif
 
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline envoyer_broadcast_array(_TYPE_ *objet, int n, int source)
 {
   const Comm_Group& grp = PE_Groups::current_group();
@@ -123,11 +123,11 @@ inline envoyer_broadcast_array(_TYPE_ *objet, int n, int source)
         }
     }
   grp.broadcast(objet, (int)sizeof(_TYPE_) * n, source);
-  return 1;
+  return true;
 }
 
 #ifndef INT_is_64_
-inline int envoyer_broadcast_array(long *t, int n, int source)
+inline bool envoyer_broadcast_array(long *t, int n, int source)
 {
   return envoyer_broadcast_array<long>(t, n, source);
 }

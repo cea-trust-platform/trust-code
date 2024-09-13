@@ -1381,7 +1381,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
 
       double tot_time_in_domaine_i = si.counter_time[i].second();
       int comm_pourcent = tot_time_in_domaine_i != 0.0 ?  (int)std::lrint(tot_communication_in_domaine_i / tot_time_in_domaine_i * 100) : 0;
-      int avg_comm_pourcent = Process::mp_sum(comm_pourcent) / Process::nproc();
+      int avg_comm_pourcent = static_cast<int>(Process::mp_sum(comm_pourcent)) / Process::nproc();
 
       if (tot_avg_communication_in_domaine_i)
         {
@@ -1399,7 +1399,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
                   avg_communication_of_type_j /= Process::nproc();
 
                   int communication_type_pourcentage = tot_communication_in_domaine_i != 0.0 ? (int)std::lrint(communication_of_type_j.time / tot_communication_in_domaine_i * 100) : 0;
-                  int avg_communication_type_pourcentage = Process::mp_sum(communication_type_pourcentage);
+                  int avg_communication_type_pourcentage = static_cast<int>(Process::mp_sum(communication_type_pourcentage));
                   avg_communication_type_pourcentage /= Process::nproc();
 
                   if(avg_communication_of_type_j)
@@ -1461,7 +1461,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
           avg_communication_in_domaine_j /= Process::nproc();
 
           int pourcentage = total_time_of_communication_i != 0.0 ? (int)std::lrint(communication_in_domaine_j / total_time_of_communication_i * 100) : 0;
-          int avg_pourcentage = Process::mp_sum(pourcentage);
+          int avg_pourcentage = static_cast<int>(Process::mp_sum(pourcentage));
           avg_pourcentage /= Process::nproc();
           if(avg_pourcentage)
             comm << "\tdont " << si.description[j] << " : " << avg_communication_in_domaine_j << "s (" << avg_pourcentage << "%) \n";
@@ -1500,7 +1500,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
       avg_all_reduce_in_domaine_i /= Process::nproc();
 
       int pourcentage = all_reduce_family[0] != 0.0 ? (int)std::lrint(all_reduce_family[i] / all_reduce_family[0] * 100) : 0;
-      int avg_pourcentage = Process::mp_sum(pourcentage);
+      int avg_pourcentage = static_cast<int>(Process::mp_sum(pourcentage));
       avg_pourcentage /= Process::nproc();
 
       if(avg_pourcentage)
@@ -1529,7 +1529,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
       avg_send_recv_in_domaine_i /= Process::nproc();
 
       int pourcentage = send_recv_family[0] != 0.0 ? (int)std::lrint(send_recv_family[i] / send_recv_family[0] * 100) : 0;
-      int avg_pourcentage = Process::mp_sum(pourcentage);
+      int avg_pourcentage = static_cast<int>(Process::mp_sum(pourcentage)); // remains small
       avg_pourcentage /= Process::nproc();
 
       if(avg_pourcentage)

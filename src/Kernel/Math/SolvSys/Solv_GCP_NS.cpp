@@ -125,8 +125,9 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice, const DoubleVect&
   const Matrice_Base& A11 = matbloc.get_bloc(1, 1);
   int n0 = A00.nb_lignes();
   int n1 = A11.nb_lignes();
-  int nmax_min = 100;
-  int nmax = std::max(Process::mp_sum(n), nmax_min);
+  const trustIdType nmax_min = 100, nmaxmax=10000000;
+  trustIdType nmax0 = std::max(Process::mp_sum(n), nmax_min);
+  int nmax = static_cast<int>(std::min(nmax0, nmaxmax));
   int niter = 0;
   double dold, dnew, alfa;
 

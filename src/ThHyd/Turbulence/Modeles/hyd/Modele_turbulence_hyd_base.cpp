@@ -518,7 +518,7 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   if (imprimer_compt)
     {
       // PL: optimization to avoid 2 mp_sum instead 1:
-      ArrOfInt tmp(2);
+      ArrOfTID tmp(2);
       tmp[0] = compt;
       tmp[1] = size;
       mp_sum_for_each_item(tmp);

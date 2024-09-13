@@ -201,15 +201,14 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<_SIZE_>& dom,
   const IntTab_t& elem_som = dom.les_elems();
   const int_t nb_elem = dom.nb_elem();
 
-  if (nb_elem > std::numeric_limits<_SIZE_>::max())
+  SmallArrOfTID_t offsets(Process::nproc());
+  trustIdType totsum = mppartial_sum(nb_elem);
+  if (totsum > std::numeric_limits<_SIZE_>::max())
     {
-      Cerr << "Are you trying to partition a Domain_64 with a non-64b 'Partitionneur' ? Number of elements is too big!" << finl;
+      Cerr << "Are you trying to partition a Domain_64 with a non-64b 'Partitionneur'? Total number of elements is too big!" << finl;
       Process::exit(-1);
     }
-
-  SmallArrOfTID_t offsets(Process::nproc());
-  // TODO MP_SUM // IG
-  offsets = mppartial_sum((int)nb_elem);
+  offsets = static_cast<_SIZE_>(totsum);
   envoyer_all_to_all(offsets, offsets);
   int_t my_offset = offsets[Process::me()];
 

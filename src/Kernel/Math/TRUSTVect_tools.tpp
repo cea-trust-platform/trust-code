@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -182,11 +182,50 @@ inline _TYPE_ mp_min_vect(const TRUSTVect<_TYPE_,_SIZE_>& x, Mp_vect_options opt
   return s;
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline _TYPE_ mp_somme_vect(const TRUSTVect<_TYPE_,_SIZE_>& vx)
+template<typename _SIZE_>
+inline trustIdType mp_somme_vect(const TRUSTVect<trustIdType,_SIZE_>& vx)
 {
-  _TYPE_ x = local_somme_vect(vx);
-  _TYPE_ y = Process::mp_sum(x);
+  trustIdType x = local_somme_vect(vx);
+  trustIdType y = Process::mp_sum(x);
+  return y;
+}
+
+template<typename _SIZE_>
+inline double mp_somme_vect_as_double(const TRUSTVect<trustIdType,_SIZE_>& vx)
+{
+  return static_cast<double>(mp_somme_vect(vx));
+}
+
+#if INT_is_64_ == 2
+template<typename _SIZE_>
+inline trustIdType mp_somme_vect(const TRUSTVect<int,_SIZE_>& vx)
+{
+  int x = local_somme_vect(vx);
+  trustIdType y = Process::mp_sum(x);
+  return y;
+}
+
+template<typename _SIZE_>
+inline double mp_somme_vect_as_double(const TRUSTVect<int,_SIZE_>& vx)
+{
+  return static_cast<double>(mp_somme_vect(vx));
+}
+
+#endif
+
+template<typename _SIZE_>
+inline float mp_somme_vect(const TRUSTVect<float,_SIZE_>& vx)
+{
+  double x = local_somme_vect(vx);
+  double y = Process::mp_sum(x);
+  return y;
+}
+
+template<typename _SIZE_>
+inline double mp_somme_vect(const TRUSTVect<double,_SIZE_>& vx)
+{
+  double x = local_somme_vect(vx);
+  double y = Process::mp_sum(x);
   return y;
 }
 
@@ -298,7 +337,8 @@ template<typename _TYPE_, typename _SIZE_>
 inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_,_SIZE_>& x)
 {
 #ifndef LATATOOLS
-  _TYPE_ s = mp_somme_vect(x), n;
+  _TYPE_ s = mp_somme_vect(x);
+  trustIdType n;
   const MD_Vector& md = x.get_md_vector();
   if (md.non_nul()) n = md->nb_items_seq_tot() * x.line_size();
   else
@@ -306,7 +346,7 @@ inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_,_SIZE_>& x)
       assert(Process::is_sequential()); // Coding error: mp_moyenne_vect is used on a not distributed TRUSTVect<double> !
       n = x.size_totale();
     }
-  return s / n;
+  return s / (_TYPE_)n;
 #else
   return (_TYPE_) 0;
 #endif

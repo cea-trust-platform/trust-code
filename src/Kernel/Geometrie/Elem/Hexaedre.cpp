@@ -92,7 +92,7 @@ int Hexaedre_32_64<_SIZE_>::reordonner_elem()
   double xmin[3];
   const int_t nb_elem = domaine.nb_elem();
   const int delta[3] = {1, 2, 4};
-  int changed_count = 0;
+  trustIdType changed_count = 0;
 
   for (int_t num_poly = 0; num_poly < nb_elem; num_poly++)
     {

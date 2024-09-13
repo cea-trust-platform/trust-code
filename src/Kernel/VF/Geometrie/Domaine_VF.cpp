@@ -716,9 +716,9 @@ void Domaine_VF::infobord()
 
 void Domaine_VF::info_elem_som()
 {
-  const int nbelem = domaine().les_elems().get_md_vector()->nb_items_seq_tot();
-  const int nbsom = domaine().les_sommets().get_md_vector()->nb_items_seq_tot();
-  const int nbfaces = face_voisins().get_md_vector()->nb_items_seq_tot();
+  const trustIdType nbelem = domaine().les_elems().get_md_vector()->nb_items_seq_tot();
+  const trustIdType nbsom = domaine().les_sommets().get_md_vector()->nb_items_seq_tot();
+  const trustIdType nbfaces = face_voisins().get_md_vector()->nb_items_seq_tot();
   Cerr<<"Calculation of elements and nodes on " << domaine().le_nom() << " :" << finl;
   Cerr<<"Total number of elements = "<<nbelem<<finl;
   Cerr<<"Total number of nodes = "<<nbsom<<finl;
@@ -726,21 +726,21 @@ void Domaine_VF::info_elem_som()
   Raccords& raccords=domaine().faces_raccord();
   for (int i=0; i<raccords.nb_raccords(); i++)
     {
-      int nb_boundary_faces = mp_sum(ref_cast(Frontiere,raccords(i).valeur()).nb_faces());
+      trustIdType nb_boundary_faces = mp_sum(ref_cast(Frontiere,raccords(i).valeur()).nb_faces());
       Cerr<< nb_boundary_faces << " of them on boundary "<<raccords(i).le_nom()<<finl;
 
     }
   Bords& bords=domaine().faces_bord();
   for (int i=0; i<bords.nb_bords(); i++)
     {
-      int nb_boundary_faces = mp_sum(ref_cast(Frontiere,bords(i)).nb_faces());
+      trustIdType nb_boundary_faces = mp_sum(ref_cast(Frontiere,bords(i)).nb_faces());
       Cerr<< nb_boundary_faces << " of them on boundary "<<bords(i).le_nom()<<finl;
     }
   Cerr<<"=============================================="<<finl;
-  int internal_item = std::min(nbelem, nbfaces);
+  trustIdType internal_item = std::min(nbelem, nbfaces);
   internal_item = std::min(internal_item, nbsom);
   // premiere_face_int()*dimension+1 pour ne pas alerter sur flux vectoriels aux faces frontieres:
-  DeviceMemory::internal_items_size_ = std::max(premiere_face_int()*dimension+1,internal_item);
+  DeviceMemory::internal_items_size_ = std::max((trustIdType)(premiere_face_int()*dimension+1),internal_item);
 }
 
 void Domaine_VF::creer_tableau_faces(Array_base& t, RESIZE_OPTIONS opt) const

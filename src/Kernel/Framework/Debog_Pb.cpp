@@ -391,7 +391,10 @@ void Debog_Pb::verifier_matrice(const char *const msg, const Matrice_Base& matri
   Nom id;
 
   // Boucle sur les items sequentiels du vecteur x de A*x=b
-  const int nb_colonnes = md_colonnes->nb_items_seq_tot();
+  const trustIdType nbc0 = md_colonnes->nb_items_seq_tot();
+  if (nbc0 > std::numeric_limits<int>::max())
+    Process::exit("Debog_Pb::verifier_matrice() - total number of items too big!");
+  const int nb_colonnes = static_cast<int>(nbc0);
 
   for (int i = 0; i < nb_colonnes; i++)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -267,7 +267,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
     sum_aire += aireFaces[i];
 
   sum_aire = mp_sum(sum_aire);
-  double dmin = sqrt( sum_aire / mp_sum(nb_face) ) ; // on prend la racine de l'aire moyenne des faces d'entree pour avoir une taille de maille caracteristique
+  double dmin = sqrt( sum_aire / mp_sum_as_double(nb_face) ) ; // on prend la racine de l'aire moyenne des faces d'entree pour avoir une taille de maille caracteristique
 
   //double Uref = 0.; // vitesse de reference = norme du vecteur moyenne
   //for (int i=0; i<moyenne.size_reelle(); i++) Uref += moyenne(i)*moyenne(i);

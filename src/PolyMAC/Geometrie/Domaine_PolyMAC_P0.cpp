@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -316,8 +316,8 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
       }
   /* comptage */
   if (!first_fgrad_) return;
-  int count[3] = { mp_somme_vect(ctr[0]), mp_somme_vect(ctr[1]), mp_somme_vect(ctr[2]) }, tot = count[0] + count[1] + count[2];
-  if (tot)
+  double count[3] = { mp_somme_vect_as_double(ctr[0]), mp_somme_vect_as_double(ctr[1]), mp_somme_vect_as_double(ctr[2]) }, tot = count[0] + count[1] + count[2];
+  if (tot > 1.0e-4)
     Cerr << domaine().le_nom() << "::fgrad(): " << 100. * count[0] / tot << "% MPFA-O "
          << 100. * count[1] / tot << "% MPFA-O(h) " << 100. * count[2] / tot << "% MPFA-SYM" << finl;
   first_fgrad_ = 0;

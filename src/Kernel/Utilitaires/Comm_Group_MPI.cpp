@@ -40,12 +40,15 @@ int Comm_Group_MPI::current_msg_size_;
 MPI_Comm Comm_Group_MPI::trio_u_world_ = MPI_COMM_WORLD;
 // By default, we initialize mpi at statup (see set_must_mpi_initialize())
 int Comm_Group_MPI::must_mpi_initialize_ = 1;
+
+namespace
+{
 /*! @brief Partie non inline du traitement d'erreur mpi.
  *
  * Affichage d'un code d'erreur mpi avec MPI_Error_string.
  *
  */
-static void mpi_print_error(int error_code)
+void mpi_print_error(int error_code)
 {
   Cerr << "mpi_error in Comm_Group_MPI : error_code = " << error_code << finl;
   Process::Journal() << "mpi_error in Comm_Group_MPI : error_code = " << error_code << finl;
@@ -70,13 +73,15 @@ static void mpi_print_error(int error_code)
  *  supplementaire.
  *
  */
-static inline void mpi_error(int error_code)
+inline void mpi_error(int error_code)
 {
   if (error_code != MPI_SUCCESS)
     mpi_print_error(error_code);
 }
 
+} // end anonymous NS
 #endif
+
 
 Sortie& Comm_Group_MPI::printOn(Sortie& os) const
 {
@@ -96,13 +101,12 @@ Entree& Comm_Group_MPI::readOn(Entree& is)
  *
  */
 Comm_Group_MPI::Comm_Group_MPI()
-{
 #ifdef MPI_
-  // -1 indique que le groupe n'a pas ete initialise
-  must_finalize_ = -1;
-  mpi_comm_=MPI_COMM_NULL;
-  mpi_group_=MPI_GROUP_NULL;
+  : mpi_group_(MPI_GROUP_NULL),
+    mpi_comm_(MPI_COMM_NULL),
+    must_finalize_(-1) // -1 indique que le groupe n'a pas ete initialise
 #endif
+{
 }
 
 Comm_Group_MPI::~Comm_Group_MPI()
@@ -156,37 +160,65 @@ void Comm_Group_MPI::abort() const
 #endif
 }
 
-void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const
+template <typename _TYPE_, MPI_Datatype _MPITYPE_>
+void Comm_Group_MPI::mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, int n, Comm_Group::Collective_Op op,
+                                               const Stat_Counter_Id& cnt_sum_id,
+                                               const Stat_Counter_Id& cnt_min_id,
+                                               const Stat_Counter_Id& cnt_max_id) const
 {
-#ifdef MPI_
-  if (n <= 0)
-    return;
+  if (n <= 0) return;
   switch(op)
     {
-      // Note B.M.: cast en non const a cause de l'interface de MPI,
-      // plusieurs posts sur newsgroups incitent a penser que c'est ok
-      // (x ne sera jamais modifie par la librairie, sauf bug !)
-    case COLL_SUM:
-      statistiques().begin_count(mpi_sumdouble_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_DOUBLE, MPI_SUM, mpi_comm_));
-      statistiques().end_count(mpi_sumdouble_counter_);
+    case Comm_Group::COLL_SUM:
+      statistiques().begin_count(cnt_sum_id);
+      mpi_error(MPI_Allreduce(x, resu, n, _MPITYPE_, MPI_SUM, mpi_comm_));
+      statistiques().end_count(cnt_sum_id);
       break;
-    case COLL_MIN:
-      statistiques().begin_count(mpi_mindouble_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_DOUBLE, MPI_MIN, mpi_comm_));
-      statistiques().end_count(mpi_mindouble_counter_);
+    case Comm_Group::COLL_MIN:
+      statistiques().begin_count(cnt_min_id);
+      mpi_error(MPI_Allreduce(x, resu, n, _MPITYPE_, MPI_MIN, mpi_comm_));
+      statistiques().end_count(cnt_min_id);
       break;
-    case COLL_MAX:
-      statistiques().begin_count(mpi_maxdouble_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_DOUBLE, MPI_MAX, mpi_comm_));
-      statistiques().end_count(mpi_maxdouble_counter_);
+    case Comm_Group::COLL_MAX:
+      statistiques().begin_count(cnt_max_id);
+      mpi_error(MPI_Allreduce(x, resu, n, _MPITYPE_, MPI_MAX, mpi_comm_));
+      statistiques().end_count(cnt_max_id);
       break;
-    case COLL_PARTIAL_SUM:
+    case Comm_Group::COLL_PARTIAL_SUM:
       internal_collective(x, resu, n, &op, -1 /* only one operation */, 0 /* recursion level */);
       break;
     }
+}
+
+void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const
+{
+#ifdef MPI_
+  mp_collective_op_template<double, MPI_DOUBLE>(x, resu, n, op, mpi_sumdouble_counter_, mpi_mindouble_counter_, mpi_maxdouble_counter_);
 #endif
 }
+
+void Comm_Group_MPI::mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const
+{
+#ifdef MPI_
+  mp_collective_op_template<float, MPI_FLOAT>(x, resu, n, op, mpi_sumfloat_counter_, mpi_minfloat_counter_, mpi_maxfloat_counter_);
+#endif
+}
+
+void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const
+{
+#ifdef MPI_
+  mp_collective_op_template<int, MPI_INT>(x, resu, n, op, mpi_sumint_counter_, mpi_minint_counter_, mpi_maxint_counter_);
+#endif
+}
+
+#if INT_is_64_ == 2
+void Comm_Group_MPI::mp_collective_op(const trustIdType *x, trustIdType *resu, int n, Collective_Op op) const
+{
+#ifdef MPI_
+  mp_collective_op_template<trustIdType, MPI_LONG>(x, resu, n, op, mpi_sumint_counter_, mpi_minint_counter_, mpi_maxint_counter_);
+#endif
+}
+#endif
 
 void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const
 {
@@ -194,38 +226,6 @@ void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, const Colle
   if (n <= 0)
     return;
   internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
-#endif
-}
-
-void Comm_Group_MPI::mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const
-{
-#ifdef MPI_
-  if (n <= 0)
-    return;
-  switch(op)
-    {
-      // Note B.M.: cast en non const a cause de l'interface de MPI,
-      // plusieurs posts sur newsgroups incitent a penser que c'est ok
-      // (x ne sera jamais modifie par la librairie, sauf bug !)
-    case COLL_SUM:
-      statistiques().begin_count(mpi_sumfloat_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_FLOAT, MPI_SUM, mpi_comm_));
-      statistiques().end_count(mpi_sumfloat_counter_);
-      break;
-    case COLL_MIN:
-      statistiques().begin_count(mpi_minfloat_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_FLOAT, MPI_MIN, mpi_comm_));
-      statistiques().end_count(mpi_minfloat_counter_);
-      break;
-    case COLL_MAX:
-      statistiques().begin_count(mpi_maxfloat_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_FLOAT, MPI_MAX, mpi_comm_));
-      statistiques().end_count(mpi_maxfloat_counter_);
-      break;
-    case COLL_PARTIAL_SUM:
-      internal_collective(x, resu, n, &op, -1 /* only one operation */, 0 /* recursion level */);
-      break;
-    }
 #endif
 }
 
@@ -238,38 +238,6 @@ void Comm_Group_MPI::mp_collective_op(const float *x, float *resu, const Collect
 #endif
 }
 
-void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const
-{
-#ifdef MPI_
-  if (n <= 0)
-    return;
-  switch(op)
-    {
-      // Note B.M.: cast en non const a cause de l'interface de MPI,
-      // plusieurs posts sur newsgroups incitent a penser que c'est ok
-      // (x ne sera jamais modifie par la librairie, sauf bug !)
-    case COLL_SUM:
-      statistiques().begin_count(mpi_sumint_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_ENTIER, MPI_SUM, mpi_comm_));
-      statistiques().end_count(mpi_sumint_counter_);
-      break;
-    case COLL_MIN:
-      statistiques().begin_count(mpi_minint_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_ENTIER, MPI_MIN, mpi_comm_));
-      statistiques().end_count(mpi_minint_counter_);
-      break;
-    case COLL_MAX:
-      statistiques().begin_count(mpi_maxint_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_ENTIER, MPI_MAX, mpi_comm_));
-      statistiques().end_count(mpi_maxint_counter_);
-      break;
-    case COLL_PARTIAL_SUM:
-      internal_collective(x, resu, n, &op, -1 /* only one operation */, 0 /* recursion level */);
-      break;
-    }
-#endif
-}
-
 void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const
 {
 #ifdef MPI_
@@ -278,6 +246,18 @@ void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, const Collective_
   internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
 #endif
 }
+
+#if INT_is_64_ == 2
+void Comm_Group_MPI::mp_collective_op(const trustIdType *x, trustIdType *resu, const Collective_Op *op, int n) const
+{
+#ifdef MPI_
+  if (n <= 0)
+    return;
+  internal_collective(x, resu, n, op, n /* n different operations */, 0 /* recursion level */);
+#endif
+}
+#endif
+
 
 /*! @brief Point de synchronisation de tous les processeurs du groupe (permet de verifier que tout le monde est la.
  *
@@ -763,12 +743,31 @@ void Comm_Group_MPI::internal_collective(const int *x, int *resu, int nx, const 
   for (int i = 0; i < nx; i++)
     {
       int j = (nop < 0) ? 0 : i;
+      trustIdType xx = x[i], resu2;
+      if (op[j] != COLL_PARTIAL_SUM)
+        mp_collective_op(&xx, &resu2, 1, op[j]);
+      else
+        resu2 = mppartial_sum(x[i]);
+      assert(resu2 < std::numeric_limits<int>::max());
+      resu[i] = static_cast<int>(resu2);
+    }
+}
+
+#if INT_is_64_ == 2
+void Comm_Group_MPI::internal_collective(const trustIdType *x, trustIdType *resu, int nx, const Collective_Op *op, int nop, int level) const
+{
+  // Pour l'instant algo bourrin, a optimiser...
+  for (int i = 0; i < nx; i++)
+    {
+      int j = (nop < 0) ? 0 : i;
       if (op[j] != COLL_PARTIAL_SUM)
         mp_collective_op(x+i, resu+i, 1, op[j]);
       else
         resu[i] = mppartial_sum(x[i]);
     }
 }
+#endif
+
 
 void Comm_Group_MPI::internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const
 {
@@ -809,11 +808,10 @@ void Comm_Group_MPI::internal_collective(const float *x, float *resu, int nx, co
  *  fournis dans le constructeur.
  *
  */
-int Comm_Group_MPI::mppartial_sum(int x) const
+trustIdType Comm_Group_MPI::mppartial_sum(trustIdType x) const
 {
   statistiques().begin_count(mpi_partialsum_counter_);
-  // ATTENTION : il faut "int" et pas "entier" !!!
-  int somme = 0;
+  trustIdType somme = 0;
   MPI_Status status;
   int tag = get_new_tag();
   int rang = rank();
@@ -822,14 +820,13 @@ int Comm_Group_MPI::mppartial_sum(int x) const
   if (rang > 0)
     {
       // Recoit la somme partielle du precedent
-      mpi_error(MPI_Recv(& somme, 1, MPI_ENTIER, rang-1, tag, mpi_comm_, &status));
+      mpi_error(MPI_Recv(& somme, 1, MPI_LONG, rang-1, tag, mpi_comm_, &status));
     }
   if (rang+1 < np)
     {
       // Envoie la somme partielle au suivant
-      // ATTENTION : il faut "int" et pas "entier" !!!
-      int s = somme + x;
-      mpi_error(MPI_Send(& s, 1, MPI_ENTIER, rang+1, tag, mpi_comm_));
+      trustIdType s = somme + x;
+      mpi_error(MPI_Send(& s, 1, MPI_LONG, rang+1, tag, mpi_comm_));
     }
   statistiques().end_count(mpi_partialsum_counter_);
   return somme;

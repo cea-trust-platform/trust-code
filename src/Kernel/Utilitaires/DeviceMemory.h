@@ -36,9 +36,9 @@ public:
   static size_t deviceMemGetInfo(bool);
   static map_t& getMemoryMap() { return memory_map_; };
   static void printMemoryMap();
-  static int internal_items_size_;
+  static trustIdType internal_items_size_;
   static int nb_pas_dt_; // can't reference Schema_temps_base cause Kernel/Utilitaires...
-  static bool warning(int items);
+  static bool warning(trustIdType nb_items);
 
 private:
   static map_t memory_map_; // Define a map to track memory allocations on device

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,9 +20,10 @@
 
 class Schema_Comm_Vecteurs_Static_Data;
 
-/*! @brief Classe outil utilisee notamment par les methodes MD_Vector::echange_espace_virtuel() Permet d'echanger avec d'autres processeurs des blocs d'ints ou de double
+/*! @brief Classe outil utilisee notamment par les methodes MD_Vector::echange_espace_virtuel()
  *
- *   accessibles par des tableaux dans lesquels on lit et on ecrit directement
+ * Permet d'echanger avec d'autres processeurs des blocs d'ints ou de double
+ * accessibles par des tableaux dans lesquels on lit et on ecrit directement
  *   (contrairement a Schema_Comm qui utilise readOn et printOn, plus lent).
  *   Pour des raisons de performances, la communication est separee en deux parties
  *   - definition des tailles de buffers (permet d'allouer a l'avance les bufffers
@@ -91,7 +92,7 @@ protected:
   Status status_;
 
   // Le buffer global est-il en cours d'utilisation ?
-  static int buffer_locked_;
+  static bool buffer_locked_;
   // Zones temporaires de lecture/ecriture, renvoyees par get_next... et qui pointent dans buffer_
   static ArrOfDouble tmp_area_double_;
   static ArrOfFloat tmp_area_float_;

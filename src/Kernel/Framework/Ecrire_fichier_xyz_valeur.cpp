@@ -124,7 +124,7 @@ void Ecrire_fichier_xyz_valeur::writeValuesOnBoundary_(const Nom& fname, const s
 
   // Writing file
   const int nb_val = val.dimension(0);
-  int nb_val_tot = Process::mp_sum(nb_val);
+  trustIdType nb_val_tot = Process::mp_sum(nb_val);
   if (Process::je_suis_maitre())
     {
       if(binary_file_)

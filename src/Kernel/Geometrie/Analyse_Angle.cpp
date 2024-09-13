@@ -140,7 +140,7 @@ void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
       double obtuse_cells_proportion=0;
       for (int h=0; h<nb_histo; h++)
         {
-          histo[h]=Process::mp_sum(histo[h]);
+          histo[h]=static_cast<int>(Process::mp_sum(histo[h]));  // should remain within 'int' range
           // Pas d'angles en dessous de 60 forcement
           if (180/nb_histo*h>=60)
             {

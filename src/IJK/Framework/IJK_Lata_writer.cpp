@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ void dumplata_ft_field(const char *filename, const char *meshname,
   Nom prefix = Nom(filename) + Nom(".") + Nom(step) + Nom(".") + Nom(meshname) + Nom(".");
   Nom fdfield = prefix + field_name;
   const int nval = field.size_array();
-  const int nvaltot = Process::mp_sum(nval);
+  const trustIdType nvaltot = Process::mp_sum(nval);
   EcrFicPartageBin file;
   file.ouvrir(fdfield);
   file.put(field.addr(), field.size_array(), 1);
@@ -120,7 +120,7 @@ void dumplata_ft_field(const char *filename, const char *meshname,
   Nom prefix = Nom(filename) + Nom(".") + Nom(step) + Nom(".") + Nom(meshname) + Nom(".");
   Nom fdfield = prefix + field_name;
   const int nval = field.size_array();
-  const int nvaltot = Process::mp_sum(nval);
+  const trustIdType nvaltot = Process::mp_sum(nval);
   EcrFicPartageBin file;
   file.ouvrir(fdfield);
   const int n = field.size_array();

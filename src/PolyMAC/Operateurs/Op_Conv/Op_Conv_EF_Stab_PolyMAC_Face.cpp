@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,8 +94,8 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
                 if (ok)
                   equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++;
               }
-      if (mp_somme_vect(ntot))
-        Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
+      if (mp_somme_vect(ntot) != 0)
+        Cerr << mp_somme_vect_as_double(nequiv) * 100. / mp_somme_vect_as_double(ntot) << "% de convection directe!" << finl;
     }
 }
 

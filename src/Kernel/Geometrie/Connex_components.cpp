@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -184,8 +184,8 @@ int compute_global_connex_components(IntVect& num_compo, int nb_local_components
 
   // Transformation des indices locaux de composantes connexes en un indice global
   // (on ajoute un decalage aux indices globaux avec mppartial_sum())
-  const int decalage = mppartial_sum(nb_local_components);
-  const int nb_total_components = Process::mp_sum(nb_local_components);
+  const int decalage = static_cast<int>(mppartial_sum(nb_local_components)); // compo number are never huge
+  const int nb_total_components = static_cast<int>(Process::mp_sum(nb_local_components));
   for (int i = 0; i < nbelem_tot; i++)
     if (num_compo[i] >= 0)
       num_compo[i] += decalage;

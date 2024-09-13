@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -452,8 +452,8 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                   Process::exit();
                 }
             }
-          int subdomaine_cells = mp_sum(cell);
-          Cerr << "We handle of the subdomaine " << i << " who have " << subdomaine_cells << " cells." << finl;
+          trustIdType subdomaine_cells = mp_sum(cell);
+          Cerr << "We handle the subdomain #" << i << " which has " << subdomaine_cells << " cells." << finl;
           Faces bidon;
           Nom nom_post;
           nom_post = "Sous_Domaine_";

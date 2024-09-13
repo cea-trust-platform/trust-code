@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -226,8 +226,12 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner_blocs_ext(int aux_only, matrices_
   for (auto &&st : stencil)
     n_sten += st.dimension(0); //n_sten : nombre total de points du stencil de l'operateur
   if (!aux_only)
-    Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * domaine[0].get().mdv_elems_faces->nb_items_seq_tot()) << " "
-         << mp_somme_vect(tpfa) * 100. / (N[0] * domaine[0].get().md_vector_faces()->nb_items_seq_tot()) << "% TPFA " << finl;
+    {
+      const double elem_face_t = static_cast<double>(domaine[0].get().mdv_elems_faces->nb_items_seq_tot()),
+                   face_t = static_cast<double>(domaine[0].get().md_vector_faces()->nb_items_seq_tot());
+      Cerr << "width " << mp_sum_as_double(n_sten) / (N[0] * elem_face_t) << " "
+           << mp_somme_vect_as_double(tpfa) * 100. / (N[0] * face_t) << "% TPFA " << finl;
+    }
 }
 
 void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const

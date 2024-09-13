@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,14 +60,14 @@
  *
  */
 template <typename T>
-int envoyer_buffered_(const T& objet, int source, int cible, int canal)
+bool envoyer_buffered_(const T& objet, int source, int cible, int canal)
 {
   const int moi = Process::me();
   if (moi == cible)
-    return 0;
+    return false;
 
   if (source != moi && source != -1)
-    return 0;
+    return false;
 
   OutputCommBuffer buffer;
   buffer << objet;
@@ -91,21 +91,21 @@ int envoyer_buffered_(const T& objet, int source, int cible, int canal)
       grp.send(cible, &sz, sizeof(int), canal);
       grp.send(cible, data, sz, canal);
     }
-  return 1;
+  return true;
 }
 
 /*! @brief Reception d'un message en provenance du processeur source
  *
  */
 template <typename T>
-int recevoir_buffered_(T& objet, int source, int cible, int canal)
+bool recevoir_buffered_(T& objet, int source, int cible, int canal)
 {
   const int moi = Process::me();
   if (moi == source)
-    return 0;
+    return false;
 
   if (cible != moi && cible != -1)
-    return 0;
+    return false;
 
   int sz;
   const Comm_Group& grp = PE_Groups::current_group();
@@ -116,7 +116,7 @@ int recevoir_buffered_(T& objet, int source, int cible, int canal)
   buffer.create_stream();
   buffer >> objet;
   buffer.clear();
-  return 1;
+  return true;
 }
 
 /*! @brief Broadcast de l'objet par le processeur source a tous les autres processeurs.
@@ -125,7 +125,7 @@ int recevoir_buffered_(T& objet, int source, int cible, int canal)
  *
  */
 template <typename T>
-int envoyer_broadcast_buffered_(T& objet, int source)
+bool envoyer_broadcast_buffered_(T& objet, int source)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   if (grp.rank() == source)
@@ -148,37 +148,37 @@ int envoyer_broadcast_buffered_(T& objet, int source)
       buffer >> objet;
       buffer.clear();
     }
-  return 1;
+  return true;
 }
 
-int envoyer(const Objet_U& t, int source, int cible, int canal)
+bool envoyer(const Objet_U& t, int source, int cible, int canal)
 {
   return envoyer_buffered_(t, source, cible, canal);
 }
 
-int envoyer(const Objet_U& t, int cible, int canal)
+bool envoyer(const Objet_U& t, int cible, int canal)
 {
   return envoyer_buffered_(t, Process::me(), cible, canal);
 }
 
-int recevoir(Objet_U& t, int source, int cible, int canal)
+bool recevoir(Objet_U& t, int source, int cible, int canal)
 {
   return recevoir_buffered_(t, source, cible, canal);
 }
 
-int recevoir(Objet_U& t, int source, int canal)
+bool recevoir(Objet_U& t, int source, int canal)
 {
   return recevoir_buffered_(t, source, Process::me(), canal);
 }
 
-int envoyer_broadcast(Objet_U& t, int source)
+bool envoyer_broadcast(Objet_U& t, int source)
 {
   return envoyer_broadcast_buffered_(t, source);
 }
 
 // Template qui marche pour tout objet T qui ressemble a un vecteur (possede un operator[]) de taille nproc()
 template <typename T>
-int envoyer_all_to_all_(const T& src, T& dest)
+bool envoyer_all_to_all_(const T& src, T& dest)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   assert(src.size() == Process::nproc());
@@ -202,21 +202,21 @@ int envoyer_all_to_all_(const T& src, T& dest)
       sch.recv_buffer(recv_from) >> dest[recv_from];
       sch.end_comm();
     }
-  return 1;
+  return true;
 }
 
-int envoyer_all_to_all(const TRUST_Vector<TRUSTTab<double>>& src, TRUST_Vector<TRUSTTab<double>>& dest)
+bool envoyer_all_to_all(const TRUST_Vector<TRUSTTab<double>>& src, TRUST_Vector<TRUSTTab<double>>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }
 
-int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TRUSTArray<int>>& dest)
+bool envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TRUSTArray<int>>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }
 
 #if INT_is_64_ == 2
-int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest)
+bool envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }
@@ -230,7 +230,7 @@ int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_V
  *   Il est autorise d'appeler la fonction avec le meme tableau src et dest.
  *
  */
-int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest)
+bool envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   assert(static_cast<int>(src.size()) == grp.nproc());
@@ -245,7 +245,7 @@ int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest
     {
       grp.all_to_all(src.data(), dest.data(), sizeof(long long));
     }
-  return 1;
+  return true;
 }
 
 /*! @brief Calcule la transposee d'une liste de processeurs: On construit le tableau dest_list tel que:
@@ -260,7 +260,7 @@ int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest
  * @param (src_list) Une liste de numeros de PEs presents dans ce groupe de comm. Ce sont les indices des pes dans le groupe courant (0 <= pe < nproc_)
  * @param (dest_list) Le tableau ou stocker le resultat. On le met a la bonne taille et on le remplit. Les numeros de PEs sont mis dans l'ordre croissant. Ce sont les indices des pes dans le groupe courant (0 <= pe < nproc_)
  */
-int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list)
+bool reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   const int np = grp.nproc();
@@ -282,7 +282,7 @@ int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list)
     if (flag_recv[i])
       dest_list[n++] = i;
   dest_list.resize_array(n);
-  return 1;
+  return true;
 }
 
 int mp_operations_commun_(int x, Comm_Group::Collective_Op op)
@@ -303,12 +303,33 @@ int mp_max(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
  */
 int mp_min(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
 
+
+#if INT_is_64_ == 2
+trustIdType mp_operations_commun_(trustIdType x, Comm_Group::Collective_Op op)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  trustIdType y;
+  grp.mp_collective_op(&x, &y, 1, op);
+  return y;
+}
+trustIdType mp_max(trustIdType x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
+trustIdType mp_min(trustIdType x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
+#endif
+
 /*! @brief Calul de la somme partielle de i sur les processeurs 0 a me()-1 (renvoie 0 sur le processeur 0).
  *
  * Voir Comm_Group::mppartial_sum()
  *
  */
-int mppartial_sum(int x) { return mp_operations_commun_(x,Comm_Group::COLL_PARTIAL_SUM); }
+trustIdType mppartial_sum(trustIdType x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  trustIdType xx = x;
+  trustIdType y;
+
+  grp.mp_collective_op(&xx, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
+  return y;
+}
 
 void mpsum_multiple(double& x1, double& x2)
 {
@@ -443,22 +464,31 @@ void envoyer_all_gatherv(const DoubleTab& src, DoubleTab& dest, const IntTab& re
  *   est force en mode synchrone. Cette methode permet de tester le drapeau, et s'il est mis de realiser des verifications supplementaires
  *
  */
-int comm_check_enabled() { return Comm_Group::check_enabled(); }
+bool comm_check_enabled() { return Comm_Group::check_enabled(); }
 
 /*! @brief renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs, sinon renvoie 0 (sur tous les procs)
  *
  */
-int is_parallel_object(const int x)
+bool is_parallel_object(const int x)
 {
   const int x1 = mp_min(x);
   const int x2 = mp_max(x);
   return x1 == x2;
 }
 
+#if INT_is_64_ == 2
+bool is_parallel_object(const trustIdType x)
+{
+  const trustIdType x1 = mp_min(x);
+  const trustIdType x2 = mp_max(x);
+  return x1 == x2;
+}
+#endif
+
 /*! @brief renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs, sinon renvoie 0 (sur tous les procs)
  *
  */
-int is_parallel_object(const double x)
+bool is_parallel_object(const double x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   double tab_x[2];
@@ -489,7 +519,7 @@ template <class T> int compare(const Objet_U& a, const Objet_U& b, int& erreur)
 /*! @brief renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs, sinon renvoie 0 (sur tous les procs)
  *
  */
-int is_parallel_object(const Objet_U& obj)
+bool is_parallel_object(const Objet_U& obj)
 {
   int erreur = 0;
   if (Process::je_suis_maitre())

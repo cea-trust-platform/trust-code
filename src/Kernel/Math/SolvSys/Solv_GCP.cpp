@@ -399,10 +399,12 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
 {
   const int n_items_reels = solution.size_reelle_ok() ? solution.size_reelle() : solution.size_totale();
   {
-    const int nb_items_seq = solution.get_md_vector()->nb_items_seq_tot();
+    const trustIdType nb_items_seq = solution.get_md_vector()->nb_items_seq_tot();
     const int ls = secmem.line_size();
-    const int nb_inco_tot = nb_items_seq * ls;
-    nmax = std::max(nb_inco_tot, nmax);
+    const trustIdType nb_inco_tot = nb_items_seq * ls;
+    trustIdType nmax0 = std::max(nb_inco_tot, (trustIdType)nmax);
+    trustIdType nmaxmax = 10000000;
+    nmax = static_cast<int>(std::min(nmax0, nmaxmax));
   }
 
   const int avec_precond = le_precond_.non_nul();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,12 +160,13 @@ int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Domaine& domaine)
 
   // Sert a calculer le nombre de sommet commun en parallele
   ArrOfBit unused;
-  int nb_som = domaine.les_sommets().get_md_vector()->get_sequential_items_flags(unused);
+  trustIdType nb_som = domaine.les_sommets().get_md_vector()->get_sequential_items_flags(unused);
   // Somme sur tous les processeurs
   nb_som = mp_sum(nb_som);
 
-  double nb=pow(nb_som*1.,1./3.);
-  nb_som_dir = (int)(nb);
+  // [ABN] OMG, the below is so ugly ... how could this ever work?!
+  double nb=pow(static_cast<double>(nb_som),1./3.);
+  nb_som_dir = static_cast<int>(nb);
   if (nb_som_dir*nb_som_dir*nb_som_dir != nb_som)
     {
       nb_som_dir=nb_som_dir+1;
@@ -179,13 +180,14 @@ int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Domaine& domaine)
 int& Traitement_particulier_NS_THI::calcul_nb_elem_dir(const Domaine& domaine)
 {
   const char* methode_actuelle="Traitement_particulier_NS_THI::calcul_nb_elem_dir";
-  int nb_elem = domaine.nb_elem();
+  trustIdType nb_elem = domaine.nb_elem();
 
   // Somme sur tous les processeurs
   nb_elem=mp_sum(nb_elem);
 
-  double nb=pow(nb_elem*1.,1./3.);
-  nb_elem_dir = (int)(nb);
+  // [ABN] (same as above) -> OMG, the below is so ugly ... how could this ever work?!
+  double nb=pow(static_cast<double>(nb_elem),1./3.);
+  nb_elem_dir = static_cast<int>(nb);
   if (nb_elem_dir*nb_elem_dir*nb_elem_dir != nb_elem)
     {
       nb_elem_dir=nb_elem_dir+1;

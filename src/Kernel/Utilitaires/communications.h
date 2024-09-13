@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,28 +22,32 @@
 #include <vector>
 
 // Pour Objet_U ... on buffer !!
-int envoyer(const Objet_U& t, int source, int cible, int canal);
-int envoyer(const Objet_U& t, int cible, int canal);
-int recevoir(Objet_U& t, int source, int cible, int canal);
-int recevoir(Objet_U& t, int source, int canal);
-int envoyer_broadcast(Objet_U& t, int source);
+bool envoyer(const Objet_U& t, int source, int cible, int canal);
+bool envoyer(const Objet_U& t, int cible, int canal);
+bool recevoir(Objet_U& t, int source, int cible, int canal);
+bool recevoir(Objet_U& t, int source, int canal);
+bool envoyer_broadcast(Objet_U& t, int source);
 
 void mpsum_multiple(double& x1, double& x2);
-int mppartial_sum(int i);
+trustIdType mppartial_sum(trustIdType i);
+trustIdType mppartial_sum(int i) { return mppartial_sum(static_cast<trustIdType>(i)); }
 int mp_max(int i);
 int mp_min(int i);
 
 void assert_parallel(const Objet_U& obj);
-int is_parallel_object(const Objet_U& obj);
-int is_parallel_object(const double x);
-int is_parallel_object(const int x);
-
-int envoyer_all_to_all(const TRUST_Vector<TRUSTTab<double>>& src, TRUST_Vector<TRUSTTab<double>>& dest);
-int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TRUSTArray<int>>& dest);
+bool is_parallel_object(const Objet_U& obj);
+bool is_parallel_object(const double x);
+bool is_parallel_object(const int x);
 #if INT_is_64_ == 2
-int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest);
+bool is_parallel_object(const trustIdType x);
 #endif
-int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
+
+bool envoyer_all_to_all(const TRUST_Vector<TRUSTTab<double>>& src, TRUST_Vector<TRUSTTab<double>>& dest);
+bool envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TRUSTArray<int>>& dest);
+#if INT_is_64_ == 2
+bool envoyer_all_to_all(const TRUST_Vector<TRUSTArray<trustIdType>>& src, TRUST_Vector<TRUSTArray<trustIdType>>& dest);
+#endif
+bool envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
 void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
 void envoyer_all_gather(const DoubleTab& src, DoubleTab& dest);
 void envoyer_gather(const IntTab& src, IntTab& dest, int root);
@@ -51,8 +55,8 @@ void envoyer_gather(const DoubleTab& src, DoubleTab& dest, int root);
 void envoyer_all_gather(const IntTab& src, IntTab& dest);
 void envoyer_all_gatherv(const DoubleTab& src, DoubleTab& dest, const IntTab& recv_size);
 
-int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list);
-int comm_check_enabled();
+bool reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list);
+bool comm_check_enabled();
 
 /* ******************************************************************************************************** *
  * FUNCTION TEMPLATE IMPLEMENTATIONS with SFINAE to avoid substitution failure because now IT IS AN ERROR ! *
@@ -60,60 +64,60 @@ int comm_check_enabled();
 
 // Pour les types simples, on passe par envoyer_array_ qui n'utilise pas un buffer mais envoie directement les valeurs. Plus rapide.
 // TYPES SIMPLES (std::is_arithmetic) => PAS Objet_U => SFINAE
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline envoyer(const _TYPE_ t, int source, int cible, int canal)
 {
   return envoyer_array<_TYPE_>(&t, 1, source, cible, canal);
 }
 
 #ifndef INT_is_64_
-inline int envoyer(const long t, int source, int cible, int canal) { return envoyer_array<long>(&t, 1, source, cible, canal); }
+inline bool envoyer(const long t, int source, int cible, int canal) { return envoyer_array<long>(&t, 1, source, cible, canal); }
 #endif
 
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline envoyer(const _TYPE_ t, int cible, int canal)
 {
   return envoyer_array<_TYPE_>(&t, 1, Process::me(), cible, canal);
 }
 
 #ifndef INT_is_64_
-inline int envoyer(const long t, int cible, int canal) { return envoyer_array<long>(&t, 1, Process::me(), cible, canal); }
+inline bool envoyer(const long t, int cible, int canal) { return envoyer_array<long>(&t, 1, Process::me(), cible, canal); }
 #endif
 
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline recevoir(_TYPE_& t, int source, int cible, int canal)
 {
   return recevoir_array<_TYPE_>(&t, 1, source, cible, canal);
 }
 
 #ifndef INT_is_64_
-inline int recevoir(long& t, int source, int cible, int canal) { return recevoir_array<long>(&t, 1, source, cible, canal); }
+inline bool recevoir(long& t, int source, int cible, int canal) { return recevoir_array<long>(&t, 1, source, cible, canal); }
 #endif
 
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline recevoir(_TYPE_& t, int source, int canal)
 {
   return recevoir_array<_TYPE_>(&t, 1, source, Process::me(), canal);
 }
 
 #ifndef INT_is_64_
-inline int recevoir(long& t, int source, int canal) { return recevoir_array<long>(&t, 1, source, Process::me(), canal); }
+inline bool recevoir(long& t, int source, int canal) { return recevoir_array<long>(&t, 1, source, Process::me(), canal); }
 #endif
 
-template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,bool >
 inline envoyer_broadcast(_TYPE_& t, int source)
 {
   return envoyer_broadcast_array<_TYPE_>(&t, 1, source);
 }
 
 #ifndef INT_is_64_
-inline int envoyer_broadcast(long& t, int source) { return envoyer_broadcast_array<long>(&t, 1, source); }
+inline bool envoyer_broadcast(long& t, int source) { return envoyer_broadcast_array<long>(&t, 1, source); }
 #endif
 
 /*! @brief en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs
  *
  */
-template<typename _TYPE_> std::enable_if_t<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, double>::value),void >
+template<typename _TYPE_> std::enable_if_t<(std::is_arithmetic<_TYPE_>::value),void >
 inline assert_parallel(const _TYPE_ x)
 {
   if (!Comm_Group::check_enabled())
@@ -159,7 +163,7 @@ inline void mp_min_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Co
  *
  */
 template<typename _TYPE_>
-inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>& dest)
+inline bool envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>& dest)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   assert(src.size_array() == grp.nproc());
@@ -173,7 +177,7 @@ inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>&
     }
   else
     grp.all_to_all(src.data(), dest.data(), sizeof(_TYPE_));
-  return 1;
+  return true;
 }
 
 #endif /* communications_included */

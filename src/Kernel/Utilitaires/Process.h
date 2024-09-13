@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Process_included
 
 #include <TRUST_Version.h>  // so that it is accessible from everywhere in TRUST
+#include <arch.h>
 
 #ifdef LATATOOLS
 #include <string>
@@ -59,7 +60,9 @@ public:
   static int mp_max(int) { return 0; }
   static double mp_min(double) { return 0; }
   static int mp_min(int) { return 0; }
-  static int mp_sum(int) { return 0; }
+  static trustIdType mp_sum(int) { return 0; }
+  static trustIdType mp_sum(trustIdType) { return 0; }
+  static int check_int_overflow(trustIdType) { return 0; }
 
 #else
   static int me(); /* mon rang dans le groupe courant */
@@ -72,7 +75,16 @@ public:
   static int mp_max(int);
   static double mp_min(double);
   static int mp_min(int);
-  static int mp_sum(int);
+
+  // Careful, the sum of many 'int' on several procs, might return a 'long'!!
+  static trustIdType mp_sum(int v) { return mp_sum(static_cast<trustIdType>(v)); }
+  static trustIdType mp_sum(trustIdType);
+
+  // When computing percentages or ratios, useful:
+  static double mp_sum_as_double(int v) { return static_cast<double>(mp_sum(v)); }
+  static double mp_sum_as_double(trustIdType v) { return static_cast<double>(mp_sum(v)); }
+
+  static int check_int_overflow(trustIdType);
 
   static int je_suis_maitre();
   static void exit(const Nom& message, int exit_code = -1);

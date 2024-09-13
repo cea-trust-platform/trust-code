@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,8 +161,11 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
             tpfa(f, n) = 0;
 
   tableau_trier_retirer_doublons(stencil);
-  Cerr << "width " << Process::mp_sum(stencil.dimension(0)) * 1. / (N * (domaine.md_vector_faces()->nb_items_seq_tot() + D * domaine.domaine().md_vector_elements()->nb_items_seq_tot())) << " " << mp_somme_vect(tpfa) * 100. / (N * domaine.md_vector_faces()->nb_items_seq_tot())
-       << "% TPFA " << finl;
+  const double face_t = static_cast<double>(domaine.md_vector_faces()->nb_items_seq_tot()),
+               elem_t = static_cast<double>(domaine.domaine().md_vector_elements()->nb_items_seq_tot());
+  const double width = mp_sum_as_double(stencil.dimension(0)) / (N * (face_t + D * elem_t));
+  const double perc = mp_somme_vect_as_double(tpfa) * 100. / (N * face_t);
+  Cerr << "width " << width << " " << perc  << "% TPFA " << finl;
   Matrix_tools::allocate_morse_matrix(N * (nf_tot + ne_tot * D), N * (nf_tot + ne_tot * D), stencil, mat2);
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }

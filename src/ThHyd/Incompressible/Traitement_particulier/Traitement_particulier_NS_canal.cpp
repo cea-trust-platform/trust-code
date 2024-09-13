@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -838,14 +838,15 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                             mu += fluide.viscosite_dynamique().valeurs()[elem];
                         }
                     }
-                  tauw_diri_tmp=mp_sum(tauw_diri_tmp)/mp_sum(nbfaces_bord_diri);
+                  double nb_fac_bord_diri_tot = mp_sum_as_double(nbfaces_bord_diri);
+                  tauw_diri_tmp=mp_sum(tauw_diri_tmp)/nb_fac_bord_diri_tot;
                   if(!(mon_equation->probleme().is_dilatable()))
                     tauw_diri_tmp *= rho ;
 
                   if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
-                    rho=mp_sum(rho)/mp_sum(nbfaces_bord_diri);
+                    rho=mp_sum(rho)/nb_fac_bord_diri_tot;
                   if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
-                    mu=mp_sum(mu)/mp_sum(nbfaces_bord_diri);
+                    mu=mp_sum(mu)/nb_fac_bord_diri_tot;
 
                   tauw_diri(numero_bord_diri) = tauw_diri_tmp;
                   utau_diri(numero_bord_diri) = sqrt(tauw_diri_tmp/rho);
@@ -961,14 +962,15 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                             mu+=fluide.viscosite_dynamique().valeurs()[elem];
                         }
                     }
-                  tauw_robin_tmp=mp_sum(tauw_robin_tmp)/mp_sum(nbfaces_bord_robin);
+                  double nb_fac_bord_rob_tot = mp_sum_as_double(nbfaces_bord_robin);
+                  tauw_robin_tmp=mp_sum(tauw_robin_tmp)/nb_fac_bord_rob_tot;
                   if(!(mon_equation->probleme().is_dilatable()))
                     tauw_robin_tmp *= rho ;
 
                   if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
-                    rho=mp_sum(rho)/mp_sum(nbfaces_bord_robin);
+                    rho=mp_sum(rho)/nb_fac_bord_rob_tot;
                   if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
-                    mu=mp_sum(mu)/mp_sum(nbfaces_bord_robin);
+                    mu=mp_sum(mu)/nb_fac_bord_rob_tot;
 
                   tauw_robin(numero_bord_robin) = tauw_robin_tmp;
                   utau_robin(numero_bord_robin) = sqrt(tauw_robin_tmp/rho);

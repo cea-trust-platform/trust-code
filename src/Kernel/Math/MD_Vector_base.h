@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ public:
 
   virtual int get_nb_items_reels() const { return nb_items_reels_; }
   virtual int get_nb_items_tot() const { return nb_items_tot_; }
-  virtual int nb_items_seq_tot() const { return nb_items_seq_tot_; }
+  virtual trustIdType nb_items_seq_tot() const { return nb_items_seq_tot_; }
   virtual int nb_items_seq_local() const { return nb_items_seq_local_; }
 
   virtual const ArrOfInt& get_items_to_compute() const = 0;
@@ -87,18 +87,18 @@ protected:
   static void append_items(ArrOfInt& dest, const ArrOfInt& src, int offset=0, int multiplier=1);
 
   // Nombre total d'items (reels+virtuels), utilise pour connaitre la taille des tableaux a creer
-  int   nb_items_tot_ = -1;
+  int nb_items_tot_ = -1;
   // Nombre d'items "reels" (propriete dimension(0) du tableau ou size() pour le vecteur)
   // En principe les items reels sont tous ceux appartenant aux elements reels, ils sont regroupes au
   // debut du tableau aux indices 0 <= i < nb_items_reels_.
   // Si ce nombre vaut -1, il n'y a pas de separation entre items reels et items virtuels
   //  (cas des tableaux P1Bulle multilocalisation pour lesquels les items reels et virtuels sont melanges)
-  int   nb_items_reels_ = -1;
+  int nb_items_reels_ = -1;
 
-  // Nombre total (sur tous les procs) d'items sequentiels (c'est mp_sum(nb_items_seq_local_))
-  int   nb_items_seq_tot_ = -1;
+  // Nombre total (sur tous les procs) d'items sequentiels (c'est mp_sum(nb_items_seq_local_)) - cela peut depasser 32 bits.
+  trustIdType nb_items_seq_tot_ = -1;
   // Nombre d'items sequentiels sur ce processeur (c'est le nombre d'items dans les blocs de blocs_items_to_sum_)
-  int   nb_items_seq_local_ = -1;
+  int nb_items_seq_local_ = -1;
 
 private:
   // This class may modify ref_count_:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,8 +127,8 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
   fic >> nb_val_lues;
 
   // Verification (il se peut que le fichier contienne PLUS de faces que la frontiere, exemple en periodique)
-  int nb_faces_tot = mp_sum(nb_faces);
-  if (nb_val_lues<nb_faces_tot)
+  trustIdType nb_faces_tot = mp_sum(nb_faces);
+  if ((trustIdType)nb_val_lues<nb_faces_tot)
     {
       Cerr << "This file contains " << nb_val_lues << " faces which is not enough compare to" << finl;
       Cerr << "the faces number (" << nb_faces_tot << ") of the boundary " << frontiere.le_nom() << finl;

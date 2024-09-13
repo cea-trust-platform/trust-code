@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
   num_faces.resize(taille_bloc);
   lire_surfaces(s,le_domaine,domaine_VDF,num_faces, sgn);
   int nfac = num_faces.size();
-  int nfac_tot = mp_sum(num_faces.size());
+  int nfac_tot = static_cast<int>(mp_sum(num_faces.size()));
   if (nfac_tot==0)
     {
       Cerr << "Erreur a la lecture des donnees de la perte de charge singuliere :" << finl;

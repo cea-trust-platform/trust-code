@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -630,7 +630,7 @@ void Domaine_VEF::construire_ok_arete()
   ArrOfBit marqueurs_aretes;
   const MD_Vector& md_aretes = md_vector_aretes();
   md_aretes->get_sequential_items_flags(marqueurs_aretes);
-  const int nb_aretes_seq = md_aretes->nb_items_seq_tot();
+  const trustIdType nb_aretes_seq = md_aretes->nb_items_seq_tot();
 
   if (Process::je_suis_maitre())
     fic_ok_arete_ << nb_aretes_seq << finl;
@@ -650,7 +650,7 @@ void Domaine_VEF::construire_renum_arete_perio(const Conds_lim& conds_lim)
 {
   Cerr << "Build array renum_arete_perio..." << finl;
   const IntTab& aretes_som=domaine().aretes_som();
-  const int nb_aretes_tot=domaine().nb_aretes_tot();
+  const int nb_aretes_tot = static_cast<int>(domaine().nb_aretes_tot()); // domain is already discretised, so already split, so we're just working with a small part
   const Domaine& dom=domaine();
 
   // Initialisation de renum_arete_perio
@@ -859,9 +859,9 @@ void Domaine_VEF::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_le_d
             if (dom.faces_joint()(j).joint_item(JOINT_ITEM::SOMMET).items_communs()[k]==i) sommets_communs++;
         nb_sommets_non_periodiques+=1./sommets_communs;
       }
-  double total_nombre_aretes_superflues=mp_sum(nombre_aretes_reelles_superflues);
-  double somme_nombre_aretes_superflues_prevues_par_domaine=mp_sum(nombre_aretes_superflues_prevues_sur_le_dom);
-  double total_nb_sommets_non_periodiques=mp_sum(nb_sommets_non_periodiques);
+  double total_nombre_aretes_superflues = mp_sum(nombre_aretes_reelles_superflues);
+  double somme_nombre_aretes_superflues_prevues_par_domaine = mp_sum_as_double(nombre_aretes_superflues_prevues_sur_le_dom);
+  double total_nb_sommets_non_periodiques = mp_sum(nb_sommets_non_periodiques);
 
 
   // Cerr << "Nombre de sommets non periodiques           = " << total_nb_sommets_non_periodiques << finl;

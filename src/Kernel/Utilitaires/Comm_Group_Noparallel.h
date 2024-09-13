@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,10 @@ public:
   void mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const override { mp_collective_op_template<float>(x,resu,op,n); }
   void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const override { mp_collective_op_template<int>(x,resu,n,op); }
   void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const override { mp_collective_op_template<int>(x,resu,op,n); }
+#if INT_is_64_ == 2
+  void mp_collective_op(const trustIdType *x, trustIdType *resu, int n, Collective_Op op) const override { mp_collective_op_template<trustIdType>(x,resu,n,op); }
+  void mp_collective_op(const trustIdType *x, trustIdType *resu, const Collective_Op *op, int n) const override { mp_collective_op_template<trustIdType>(x,resu,op,n); }
+#endif
 
   void barrier(int tag) const override;
   int reverse_send_recv_list(const ArrOfInt& src_list, ArrOfInt& dest_list) const;

@@ -348,7 +348,7 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
     postraiter_decoupage(nom_fichier_med, ref_domaine.valeur(), elem_part);
 
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
-  int total_elem = Process::mp_sum(elem_part.size_reelle());
+  trustIdType total_elem = Process::mp_sum(elem_part.size_reelle());
   Cout << "\nTotal number of elements = " << total_elem << finl;
   Cout << "Number of Domaines : " << nb_parties << finl;
 
@@ -372,7 +372,7 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
             }
 
 
-          double mean_element_domaine = total_elem/nb_parties;
+          double mean_element_domaine = static_cast<double>(total_elem/nb_parties);
           if (mean_element_domaine>0)
             {
               double load_imbalance = double(local_max_vect(A) / mean_element_domaine);

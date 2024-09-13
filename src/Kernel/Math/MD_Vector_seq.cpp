@@ -53,12 +53,6 @@ int MD_Vector_seq::get_nb_items_tot() const
   return (int)nb_items_;
 }
 
-int MD_Vector_seq::nb_items_seq_tot() const
-{
-  assert(nb_items_ < std::numeric_limits<int>::max());
-  return (int)nb_items_;
-}
-
 int MD_Vector_seq::nb_items_seq_local() const
 {
   assert(nb_items_ < std::numeric_limits<int>::max());

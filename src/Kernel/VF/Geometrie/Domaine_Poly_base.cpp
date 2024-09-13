@@ -531,7 +531,7 @@ void Domaine_Poly_base::orthocentrer()
         for (i = 0, b_f_ortho(f) = 1; i < dimension; i++)
           if (std::fabs(X(i, 0)) > 1e-8) xv_(f, i) += X(i, 0);
       }
-  Cerr << 100. * mp_somme_vect(b_f_ortho) / Process::mp_sum(nb_faces()) << "% orthocentered faces " << finl;
+  Cerr << 100. * (double)(mp_somme_vect(b_f_ortho) / Process::mp_sum(nb_faces())) << "% orthocentered faces " << finl;
 
   /* 2. orthocentrage des elements */
   Cerr << domaine().le_nom() << " : ";
@@ -563,7 +563,7 @@ void Domaine_Poly_base::orthocentrer()
       for (i = 0, b_e_ortho(e) = 1; i < dimension; i++)
         if (std::fabs(X(i, 0)) > 1e-8) xp_(e, i) += X(i, 0);
     }
-  Cerr << 100. * mp_somme_vect(b_e_ortho) / Process::mp_sum(nb_elem()) << "% d'elements orthocentres" << finl;
+  Cerr << 100. * (double)(mp_somme_vect(b_e_ortho) / Process::mp_sum(nb_elem())) << "% d'elements orthocentres" << finl;
 }
 
 void Domaine_Poly_base::calculer_h_carre()
@@ -720,7 +720,7 @@ const IntTab& Domaine_Poly_base::equiv() const
             if (!ok) continue;
             equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }
-  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces!" << finl;
+  Cerr << 100.0 * (double)(mp_somme_vect(nequiv) / mp_somme_vect(ntot)) << "% equivalent faces!" << finl;
   return equiv_;
 }
 

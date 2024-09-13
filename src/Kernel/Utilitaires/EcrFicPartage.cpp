@@ -108,7 +108,7 @@ void EcrFicPartage::close()
     }
 #ifndef NDEBUG
   // Y a-t-il un processeur sur lequel il reste des donnees
-  const int maxbuflen = mp_sum(buflen);
+  const trustIdType maxbuflen = mp_sum(buflen);
   if (maxbuflen > 0)
     syncfile();
 #endif

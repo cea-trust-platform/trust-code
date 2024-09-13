@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,6 +56,11 @@ public:
   virtual void mp_collective_op(const float *x, float *resu, const Collective_Op *op, int n) const = 0;
   virtual void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const = 0;
   virtual void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const = 0;
+#if INT_is_64_ == 2
+  virtual void mp_collective_op(const trustIdType *x, trustIdType *resu, int n, Collective_Op op) const = 0;
+  virtual void mp_collective_op(const trustIdType *x, trustIdType *resu, const Collective_Op *op, int n) const = 0;
+#endif
+
   virtual void barrier(int tag) const = 0;
 
   // Calcule un nouveau tag de communication qui permet d'identifier les

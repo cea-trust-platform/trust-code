@@ -297,7 +297,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       else // Cas ou le maillage .med suit la numerotation du maillage decoupe
         {
           int nb_item = le_champ().valeurs().dimension(0);
-          int first_item = mppartial_sum(nb_item);
+          trustIdType first_item = mppartial_sum(nb_item);
           for (int i=0; i<nb_item; i++)
             filter.push_back(first_item);
         }

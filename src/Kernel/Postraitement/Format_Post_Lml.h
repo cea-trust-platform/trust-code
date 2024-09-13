@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,28 +21,26 @@
 
 /*! @brief : Classe de postraitement des champs euleriens au format lml.
  *
- */
-
-///////////////////////////////////////////////////////////////////////
-//    Pour creer un fichier valide, il faut faire:
-//    (initialisation) initialize("base_nom_fichier",...);
-//                     //base_nom_fichier indique le nom du fichier sans extension ".lml"
-//                       //met eventuellement en jeux les informations d autres postraitements
-//                       ecrire_entete(temps_courant,reprise,est_le_premier_post)
-//                     ecrire_domaine(domaine,est_le_premier_post)
-//
-//    (pour chaque dt) ecrire_temps(temps_courant)
-//                     ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo,
-//                                      int ncomp,double temps_,double temps_courant
-//                                      const Nom  & id_du_champ,
-//                                    const Nom  & id_du_domaine,
-//                                    const Nom  & localisation,
-//                                    const DoubleTab & data)
-//                    [ecrire_champ(..., data)]
-//
-//    (finir)          finir(est_le_dernier_post)
-//////////////////////////////////////////////////////////////////////
-
+ * Only works for small enough domains (domain exceeding the 32b limit can not be written in LML).
+ *
+ *    Pour creer un fichier valide, il faut faire:
+ *    (initialisation) initialize("base_nom_fichier",...);
+ *                      // base_nom_fichier indique le nom du fichier sans extension ".lml"
+ *                      // met eventuellement en jeux les informations d autres postraitements
+ *                     ecrire_entete(temps_courant,reprise,est_le_premier_post)
+ *                     ecrire_domaine(domaine,est_le_premier_post)
+ *
+ *    (pour chaque dt) ecrire_temps(temps_courant)
+ *                     ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo,
+ *                                      int ncomp,double temps_,double temps_courant
+ *                                      const Nom  & id_du_champ,
+ *                                    const Nom  & id_du_domaine,
+ *                                    const Nom  & localisation,
+ *                                    const DoubleTab & data)
+ *                    [ecrire_champ(..., data)]
+ *
+ *    (finir)          finir(est_le_dernier_post)
+*/
 class Format_Post_Lml : public Format_Post_base
 {
   Declare_instanciable_sans_constructeur(Format_Post_Lml);

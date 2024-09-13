@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <sstream>
 #include <comm_incl.h>
 
-int Schema_Comm_Vecteurs::buffer_locked_;
+bool Schema_Comm_Vecteurs::buffer_locked_;
 ArrOfDouble Schema_Comm_Vecteurs::tmp_area_double_;
 ArrOfFloat Schema_Comm_Vecteurs::tmp_area_float_;
 ArrOfInt Schema_Comm_Vecteurs::tmp_area_int_;
@@ -208,7 +208,7 @@ void Schema_Comm_Vecteurs::begin_comm(bool bufferOnDevice)
       Cerr << "Internal error in Schema_Comm_Vecteurs::begin_comm(): buffers already locked by another communication" << finl;
       Process::exit();
     }
-  buffer_locked_ = 1;
+  buffer_locked_ = true;
   sdata_.init(min_buf_size_, bufferOnDevice);
 
   // Fait pointer les buffers sur le debut des send_buffers
@@ -221,7 +221,7 @@ void Schema_Comm_Vecteurs::begin_comm(bool bufferOnDevice)
       sdata_.buf_pointers_[pe] = ptr;
       ptr += send_buf_sizes_[i];
     }
-  buffer_locked_ = 1;
+  buffer_locked_ = true;
   status_ = BEGIN_COMM;
 }
 
@@ -296,7 +296,7 @@ void Schema_Comm_Vecteurs::end_comm()
   // Verifie qu'on a bien lu toutes les donnees
   assert(check_buffers_full());
   status_ = END_INIT; // pret pour un nouveau begin_comm()
-  buffer_locked_ = 0;
+  buffer_locked_ = false;
 }
 
 /*! @brief Selon status_, verifie que tous les pointeurs de buffers pointent a la fin du buffer aloue pour chaque processeur en emission

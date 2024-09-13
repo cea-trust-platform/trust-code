@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -384,7 +384,7 @@ void Domaine_PolyMAC::init_m2_new() const
 {
   const IntTab& e_f = elem_faces();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
-  int i, j, e, n_f, ctr[3] = {0, 0, 0 }, n_tot = Process::mp_sum(nb_elem());
+  int i, j, e, n_f, ctr[3] = {0, 0, 0 };
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
   if (is_init["w2"]) return;
@@ -443,10 +443,11 @@ void Domaine_PolyMAC::init_m2_new() const
         }
 
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
-  Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum(ctr[1]) / n_tot << "% sym "
-       << 100. * Process::mp_sum(ctr[2]) / n_tot << "% sparse lambda : " << Process::mp_min(spectre[0]) << " / "
+  double n_tot = Process::mp_sum_as_double(nb_elem());
+  Cerr << 100. * Process::mp_sum_as_double(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum_as_double(ctr[1]) / n_tot << "% sym "
+       << 100. * Process::mp_sum_as_double(ctr[2]) / n_tot << "% sparse lambda : " << Process::mp_min(spectre[0]) << " / "
        << Process::mp_min(spectre[1]) << " -> " << Process::mp_max(spectre[2])
-       << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect(nnz) * 1. / mp_somme_vect(nef) << finl;
+       << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect_as_double(nnz) * 1. / mp_somme_vect_as_double(nef) << finl;
   is_init["w2"] = 1;
 }
 
@@ -455,7 +456,7 @@ void Domaine_PolyMAC::init_m2_osqp() const
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
   const DoubleTab& nf = face_normales();
-  int i, j, e, f, s, n_f, ctr[3] = {0, 0, 0 }, n_tot = Process::mp_sum(nb_elem()), infoo = 0;
+  int i, j, e, f, s, n_f, ctr[3] = {0, 0, 0 }, infoo = 0;
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
   char uplo = 'U';
 
@@ -521,10 +522,11 @@ void Domaine_PolyMAC::init_m2_osqp() const
     }
 
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
-  Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum(ctr[1]) / n_tot << "% sym "
-       << 100. * Process::mp_sum(ctr[2]) / n_tot << "% sparse lambda : " << Process::mp_min(spectre[0]) << " / "
+  double n_tot = Process::mp_sum_as_double(nb_elem());
+  Cerr << 100. * Process::mp_sum_as_double(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum_as_double(ctr[1]) / n_tot << "% sym "
+       << 100. * Process::mp_sum_as_double(ctr[2]) / n_tot << "% sparse lambda : " << Process::mp_min(spectre[0]) << " / "
        << Process::mp_min(spectre[1]) << " -> " << Process::mp_max(spectre[2])
-       << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect(nnz) * 1. / mp_somme_vect(nef) << finl;
+       << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect_as_double(nnz) * 1. / mp_somme_vect_as_double(nef) << finl;
   is_init["w2"] = 1;
 }
 

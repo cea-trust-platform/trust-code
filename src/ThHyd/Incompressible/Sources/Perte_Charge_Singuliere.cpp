@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -350,7 +350,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       compteur = nb_faces;
     }
 
-  int faces_found=mp_somme_vect(face_tab);
+  trustIdType faces_found=mp_somme_vect(face_tab);
   if (faces_found==0)
     {
       Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;

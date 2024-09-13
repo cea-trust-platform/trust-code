@@ -193,16 +193,25 @@ double Process::mp_sum(double x)
 
 /*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
  *
- * @sa mp_max()
+ * !!! Note that the sum of many int might result in a long !!!
  *
+ * @sa mp_max()
  */
-int Process::mp_sum(int x)
+trustIdType Process::mp_sum(trustIdType x)
 {
   const Comm_Group& grp = PE_Groups::current_group();
-  int y;
+  trustIdType y;
   grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_SUM);
   return y;
 }
+
+int check_int_overflow(trustIdType v)
+{
+  if (v >= std::numeric_limits<int>::max())
+    Process::exit("Value too big - above 32b and can not be converted to int!!");
+  return static_cast<int>(v);
+}
+
 
 /*! @brief Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
  *

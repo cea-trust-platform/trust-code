@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -180,7 +180,8 @@ void SETS::init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norme)
   norm = norme, residu = secmem, cv_ctx->t = nullptr, cv_ctx->v = nullptr;
   /* numerotation pour recuperer le residu : on fait comme dans Solv_Petsc */
   ArrOfBit items_to_keep;
-  int i, size = secmem.size_array(), idx = mppartial_sum(secmem.get_md_vector()->get_sequential_items_flags(items_to_keep, secmem.line_size()));
+  int i, size = secmem.size_array();
+  trustIdType idx = mppartial_sum(secmem.get_md_vector()->get_sequential_items_flags(items_to_keep, secmem.line_size()));
   for (ix.resize(size), i = 0; i < size; i++)
     if (items_to_keep[i]) ix[i] = idx, idx++;
     else ix[i] = -1;
