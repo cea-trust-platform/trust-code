@@ -365,7 +365,7 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
   // Init if necessary
   init_view_tab4();
 #ifdef _OPENMP
-  Process::exit("ToDo");
+  computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_>::view4_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
@@ -380,7 +380,7 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
   // Init if necessary
   init_view_tab4();
 #ifdef _OPENMP
-  Process::exit("ToDo");
+  computeOnTheDevice(*this, "Kokkos view4_rw()"); //
 #else
   // Copy to device (if needed) ...
   dual_view_tab4_.template sync<memory_space>();
