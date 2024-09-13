@@ -121,8 +121,8 @@ void Masse_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
                 sten.append_line(N * D * f + i, col);
           }
         Matrice_Morse mat2;
-        Matrix_tools::allocate_morse_matrix(inco.size_totale(), kv.second->nb_colonnes(), sten, mat2);
-        *kv.second += mat2;
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), kv.second->nb_colonnes() ? kv.second->nb_colonnes() : N * D * dom.nb_faces_tot(), sten, mat2);
+        kv.second->nb_colonnes() ? *kv.second += mat2 : *kv.second = mat2;
       }
 }
 
