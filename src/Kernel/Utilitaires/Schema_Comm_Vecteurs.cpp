@@ -81,7 +81,12 @@ Schema_Comm_Vecteurs_Static_Data::~Schema_Comm_Vecteurs_Static_Data()
 Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
 {
   status_ = RESET;
-  use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != nullptr;
+  use_gpu_aware_mpi_ = getenv("TRUST_USE_MPI_GPU_AWARE") != nullptr;
+  if (use_gpu_aware_mpi_ && PE_Groups::get_nb_groups())
+    {
+      Cerr << "[MPI] Enabling GPU capability to communicate between devices." << finl;
+      //Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
+    }
 }
 
 Schema_Comm_Vecteurs::~Schema_Comm_Vecteurs()
@@ -111,13 +116,8 @@ void Schema_Comm_Vecteurs::begin_init()
   if (use_gpu_aware_mpi_)
     {
 #if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)
-      Process::exit("MPI version is detected as not CUDA-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
+      Process::exit("MPI version is detected as not CUDA-Aware. You can't use TRUST_USE_MPI_GPU_AWARE=1");
 #endif
-      if (Process::je_suis_maitre())
-        {
-          Cerr << "[MPI] Enabling GPU capability to communicate between devices." << finl;
-          Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
-        }
     }
 }
 

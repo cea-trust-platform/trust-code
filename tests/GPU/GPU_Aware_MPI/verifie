@@ -13,8 +13,9 @@ int main() { return 1; }
    echo "GPU-Aware MPI detected! Enable device-device communications in TRUST:"
    jdd2=enable_$jdd
    cp $jdd.data $jdd2.data
-   TRUST_USE_GPU_AWARE_MPI=1 trust $jdd2 2 1>$jdd2.out_err 2>&1 || exit -1
+   TRUST_USE_MPI_GPU_AWARE=1 trust $jdd2 2 1>$jdd2.out_err 2>&1 || exit -1
    echo "-----------------------------------------------------------------------------------------------------------------------"
    echo "TRUST use MPI communications:                                 | TRUST use device communications:"
-   sdiff $jdd.TU $jdd2.TU | grep "GPU:"
+   sdiff $jdd.TU $jdd2.TU | grep -e "GPU:"
+   sdiff $jdd.TU $jdd2.TU | grep -e "Secondes / pas de temps"   
 fi
