@@ -1448,7 +1448,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       if (Process::nproc()<=4)
         add_amgx_option("determinism_flag","1", "15% slower but enabled for NR tests");
 #ifdef MPIX_CUDA_AWARE_SUPPORT
-      add_amgx_option("#communicator","MPI_DIRECT","Enable GPU direct with MPI Cuda-Aware. Yet to prove to be better (30% slower):");
+      if (getenv("AMGX_USE_MPI_GPU_AWARE")) add_amgx_option("communicator","MPI_DIRECT","Enable GPU direct with MPI Cuda-Aware. Yet to prove to be better (30% slower):");
 #endif
       s << amgx_options_;
       Cerr << "Writing the AmgX config file: " << config() << finl;
@@ -2039,6 +2039,14 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           Cerr << "KSP_DIVERGED_ITS" << finl;
           Cerr << "That means the solver didn't converge within the maximal iterations number." << finl;
           Cerr << "You can change the maximal number of iterations with the -ksp_max_it option." << finl;
+#ifdef MPIX_CUDA_AWARE_SUPPORT
+          // Probleme vu avec GPU direct si >= 4 GPUs et preconditinneurs C-AMG ou BOOMERAMG
+          // OK pour SA-AMG et Jacobi
+          // Il faudrait faire un reproducer a soumettre a PETSc...
+          Cerr << "It seems there is a convergence issue (bug?) with MPI GPU Aware library with PETSc CG and some preconditioners." << finl;
+          Cerr << "Try using BICGSTAB instead of GCP to bypass the issue." << finl;
+          Process::exit();
+#endif
         }
       else Cerr << (int)Reason << finl;
       throw Reason;
