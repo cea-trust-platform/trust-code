@@ -1192,9 +1192,14 @@ void Solv_Petsc::create_solver(Entree& entree)
                 PCHYPRESetType(PreconditionneurPetsc_, "parasails");
                 add_option("pc_hypre_parasails_nlevels",(Nom)level.value());     // Higher values of level [>=0] leads to more accurate, but more expensive preconditioners (default 1)
                 add_option("pc_hypre_parasails_thresh",(Nom)epsilon.value());   // Lower values of eps [0-1] leads to more accurate, but more expensive preconditioners (default 0.1)
-                add_option("pc_hypre_parasails_sym","SPD"); // Matrice symetrique definie positive
+                //add_option("pc_hypre_parasails_sym","SPD"); // Matrice symetrique definie positive. PL: comment cela a pu marcher avant ? La matrice n'est pas toujours symetrique.
                 check_not_defined(omega);
                 check_not_defined(ordering);
+#ifdef INT_is_64_
+                KSPType type_ksp;
+                KSPGetType(SolveurPetsc_, &type_ksp);
+                if ((Nom)type_ksp==KSPCG) Process::exit("SPAI preconditioner is not supported anymore. If you want to keep this precond, try using BICGSTAB solver insted of GCP.");
+#endif
                 break;
               }
             case 5:

@@ -74,7 +74,9 @@ Read pb
 
     Navier_Stokes_standard
     {
-        Solveur_Pression Petsc GCP { precond spai { level 1 epsilon 0.1 } seuil 1.e-10 impr }
+        # Solveur_Pression Petsc GCP { precond spai { level 1 epsilon 0.1 } seuil 1.e-10 impr } #
+        # SPAI en int64 dans Hypre ne fonctionne pas correctement #
+        Solveur_Pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-10 impr }
         convection { negligeable }
         diffusion  { negligeable }
 
