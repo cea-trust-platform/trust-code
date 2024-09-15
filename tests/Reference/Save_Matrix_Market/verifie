@@ -6,7 +6,8 @@
 for file in `ls *matrix*.mtx 2>/dev/null`
 do
    echo -e "Converting $file to ${file%.mtx}.petsc... \c"
-   python $PETSC_DIR/lib/petsc/bin/PetscBinaryIO.py convert $file || exit -1
+   indices=32bit && [ "$TRUST_INT64" = 1 ] && indices=64bit
+   python $PETSC_DIR/lib/petsc/bin/PetscBinaryIO.py convert --indices $indices $file || exit -1
    echo "OK!"
 done
 for file in `ls *matrix*.petsc 2>/dev/null`
