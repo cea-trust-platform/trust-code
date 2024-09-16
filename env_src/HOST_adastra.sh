@@ -62,8 +62,6 @@ define_soumission_batch()
       # Attention, le verbose est important sinon crash ! voir doc
       srun_options="-c $cpus_per_task --gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=verbose,closest"
       #[ $NB_PROCS -gt 8 ] && qos=normal # 2 nodes
-      #[ "`id | grep cpa2202`" != "" ] && project="cpa2202" # Projet GPU (5000h)
-      [ "`id | grep cin3364`" != "" ] && project="cin3364"
    else
       # Partition scalaire
       constraint=GENOA
@@ -71,7 +69,6 @@ define_soumission_batch()
       noeuds=`echo "1+($NB_PROCS-1)/$ntasks" | bc`
       srun_options=""
       #[ $NB_PROCS -gt ??? ] && qos=???
-      [ "`id | grep cin3364`" != "" ] && project="cin3364" # Projet GPU (5000h), CPU (100000h)
    fi
    node=1 # --exclusive
    ram=0 # Important pour acceder a toute la RAM du noeud
