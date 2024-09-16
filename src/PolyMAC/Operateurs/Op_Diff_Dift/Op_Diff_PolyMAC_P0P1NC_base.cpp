@@ -66,16 +66,16 @@ void Op_Diff_PolyMAC_P0P1NC_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
+  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size()), multi = multiscalar_;
 
-  if (N_nu == N)
-    nu_.resize(0, N); //isotrope
-  else if (N_nu == N * D)
-    nu_.resize(0, N, D); //diagonal
-  else if (N_nu == N * D * D)
+  if (N_nu == N * (multi ? N : 1))
+    multi ? nu_.resize(0, N, N) : nu_.resize(0, N); //isotrope
+  else if (N_nu == N * (multi ? N : 1) * D)
+    multi ? nu_.resize(0, N, N, D) : nu_.resize(0, N, D); //diagonal
+  else if (N_nu == N * D * D && !multi)
     nu_.resize(0, N, D, D); //complet
   else
-    Process::exit(Nom("Op_Diff_PolyMAC_P0P1NC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D) + ")!");
+    Process::exit(Nom("Op_Diff_PolyMAC_P0P1NC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N * (multi ? N : 1)) + ", " + Nom(N * D * (multi ? N : 1)) + ", " + Nom(N * D * D * (multi ? N : 1)) + ")!");
 
   le_dom_poly_->domaine().creer_tableau_elements(nu_);
 }
@@ -228,17 +228,17 @@ void Op_Diff_PolyMAC_P0P1NC_base::update_nu() const
     for (e = 0; e < domaine.nb_elem_tot(); e++)
       for (n = 0; n < N_nu; n++)
         nu_.addr()[N_nu * e + n] = nu_src(!c_nu * e, n); //facile
-  else if (N_nu == N * D && N_nu_src == N)
+  else if (N_nu == N_nu_src * D) //extension isotrope -> anisotrope diagonal
     for (e = 0; e < domaine.nb_elem_tot(); e++)
-      for (n = 0; n < N; n++)
-        for (d = 0; d < D; d++) //diagonal
-          nu_(e, n, d) = nu_src(!c_nu * e, n);
-  else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D))
+      for (n = 0; n < N_nu_src; n++)
+        for (d = 0; d < D; d++)
+          nu_.addr()[N_nu * e + D * n + d] = nu_src.addr()[!c_nu * N_nu_src * e + n];
+  else if (N_nu == N_nu_src * D * D)  //extension isotrope -> anisotrope complet
     for (e = 0; e < domaine.nb_elem_tot(); e++)
-      for (n = 0; n < N; n++) //complet
+      for (n = 0; n < N_nu_src; n++) //complet
         for (d = 0; d < D; d++)
           for (db = 0; db < D; db++)
-            nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
+            nu_.addr()[N_nu * e + D * (D * n + d) + db] = (d == db) * nu_src.addr()[!c_nu * N_nu_src * e + n];
   else
     abort();
 
