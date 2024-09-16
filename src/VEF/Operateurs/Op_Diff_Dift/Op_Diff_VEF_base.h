@@ -19,7 +19,7 @@
 #include <Operateur_Diff_base.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_VEF.h>
-#include <Domaine_dis.h>
+
 #include <Op_VEF_Face.h>
 #include <Milieu_base.h>
 #include <TRUST_Ref.h>
@@ -41,7 +41,7 @@ class Op_Diff_VEF_base : public Operateur_Diff_base, public Op_VEF_Face
 public:
 
   int impr(Sortie& os) const override;
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
 
   template <typename _TYPE_>
   double viscA(int face_i, int face_j, int num_elem, const _TYPE_& diffu) const;

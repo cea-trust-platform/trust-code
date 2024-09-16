@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ public:
   void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
   void associer_modele_turbulence(const Modele_turbulence_hyd_base& );
   void mettre_a_jour(double temps) override;
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
   const DoubleTab& get_tau_tan() const { return tau_tan_; }

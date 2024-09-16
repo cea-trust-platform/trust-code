@@ -29,7 +29,7 @@ class Source_Dirac_VDF_Elem : public Terme_Puissance_Thermique_VDF_base
 public:
   Source_Dirac_VDF_Elem() : Terme_Puissance_Thermique_VDF_base(Iterateur_Source_Elem<Eval_Dirac_VDF_Elem>()), nb_dirac(0) { }
   void associer_pb(const Probleme_base& ) override;
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis& ) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 
 protected:

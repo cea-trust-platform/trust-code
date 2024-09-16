@@ -91,4 +91,7 @@ template <typename _SIZE_> class Elem_geom_base_32_64;
 using Elem_geom_base = Elem_geom_base_32_64<int>;
 using Elem_geom_base_64 = Elem_geom_base_32_64<trustIdType>;
 
+
+class Domaine_dis_base;
+
 #endif /* Domaine_forward */

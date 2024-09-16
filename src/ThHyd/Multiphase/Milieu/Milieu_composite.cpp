@@ -426,7 +426,7 @@ int Milieu_composite::check_unknown_range() const
 void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Milieu_composite& mil = ref_cast(Milieu_composite, obj);
-  const Domaine_VF& zvf = ref_cast(Domaine_VF, mil.equation_.begin()->second->domaine_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, mil.equation_.begin()->second->domaine_dis());
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides_.size();
   std::vector<const DoubleTab *> split(N);
   for (n = 0; n < N; n++) split[n] = &mil.fluides_[n]->masse_volumique()->valeurs();

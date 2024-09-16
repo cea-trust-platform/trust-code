@@ -153,11 +153,11 @@ void Op_Conv_EF_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& domaine
   la_zcl_EF = zclEF;
 }
 
-void Op_Conv_EF_base::associer(const Domaine_dis& domaine_dis,
+void Op_Conv_EF_base::associer(const Domaine_dis_base& domaine_dis,
                                const Domaine_Cl_dis& domaine_cl_dis,
                                const Champ_Inc& )
 {
-  const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis);
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis.valeur());
 
   le_dom_EF = zEF;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ class Source_Echange_Th_VDF : public  Terme_Source_VDF_base
   Declare_instanciable_sans_constructeur(Source_Echange_Th_VDF);
 public:
   inline Source_Echange_Th_VDF() : Terme_Source_VDF_base(Iterateur_Source_Elem<Eval_Echange_Himp_VDF_Elem>()), h(-1.) {}
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis& ) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { /* Do nothing */ }
 

@@ -40,7 +40,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::completer()
 
 void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
   const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   if (!matrices.count(nom_inco) || !sub_type(Domaine_PolyMAC_P0, domaine)) return;
@@ -63,7 +63,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t 
 
 void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   //const DoubleVect& volumes_entrelaces = domaine_PolyMAC_P0P1NC.volumes_entrelaces();
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;

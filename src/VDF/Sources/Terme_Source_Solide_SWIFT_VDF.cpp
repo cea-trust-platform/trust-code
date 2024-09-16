@@ -128,7 +128,7 @@ Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
 
 }
 
-void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
 }
 

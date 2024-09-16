@@ -47,7 +47,7 @@ void Loi_Fermeture_Test::discretiser(const Discretisation_base& dis)
   Loi_Fermeture_base::discretiser(dis);
   const Probleme_base& pb = mon_probleme();
   const double temps = pb.schema_temps().temps_courant();
-  const Domaine_dis_base& le_dom_dis = pb.domaine_dis().valeur();
+  const Domaine_dis_base& le_dom_dis = pb.domaine_dis();
 
 
   dis.discretiser_champ("CHAMP_ELEM", le_dom_dis,"test_time", "s",1 /* nb composantes par defaut */,temps, champ_test_);

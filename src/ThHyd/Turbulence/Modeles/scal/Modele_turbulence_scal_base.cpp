@@ -92,10 +92,10 @@ void Modele_turbulence_scal_base::associer_eqn(const Equation_base& eqn)
 
 /*! @brief NE FAIT RIEN
  *
- * @param (Domaine_dis&) un domaine discretise
+ * @param (Domaine_dis_base&) un domaine discretise
  * @param (Domaine_Cl_dis&) un domaine de conditions aux limites discretisees
  */
-void Modele_turbulence_scal_base::associer(const Domaine_dis&, const Domaine_Cl_dis&)
+void Modele_turbulence_scal_base::associer(const Domaine_dis_base&, const Domaine_Cl_dis&)
 {
   ;
 }
@@ -108,9 +108,9 @@ void Modele_turbulence_scal_base::discretiser()
   Cerr << "Turbulence scalar model discretization" << finl;
   const Schema_Temps_base& sch = mon_equation_->schema_temps();
   const Discretisation_base& dis = mon_equation_->discretisation();
-  const Domaine_dis& z = mon_equation_->domaine_dis();
-  dis.discretiser_champ("champ_elem", z.valeur(), "diffusivite_turbulente", "m2/s", 1, sch.temps_courant(), diffusivite_turbulente_);
-  dis.discretiser_champ("champ_elem", z.valeur(), "conductivite_turbulente", "W/m/K", 1, sch.temps_courant(), conductivite_turbulente_);
+  const Domaine_dis_base& z = mon_equation_->domaine_dis();
+  dis.discretiser_champ("champ_elem", z, "diffusivite_turbulente", "m2/s", 1, sch.temps_courant(), diffusivite_turbulente_);
+  dis.discretiser_champ("champ_elem", z, "conductivite_turbulente", "W/m/K", 1, sch.temps_courant(), conductivite_turbulente_);
   champs_compris_.ajoute_champ(diffusivite_turbulente_);
 }
 

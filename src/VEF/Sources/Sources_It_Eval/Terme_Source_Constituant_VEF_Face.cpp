@@ -33,9 +33,9 @@ Entree& Terme_Source_Constituant_VEF_Face::readOn(Entree& s)
   return s;
 }
 
-void Terme_Source_Constituant_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Source_Constituant_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   iter_->associer_domaines(zvef, zclvef);
   Eval_Source_C_VEF_Face& eval_puis = dynamic_cast<Eval_Source_C_VEF_Face&> (iter_->evaluateur());

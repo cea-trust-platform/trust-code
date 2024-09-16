@@ -34,7 +34,7 @@ Entree& Terme_Source_Qdm_Face_PolyMAC_P0P1NC::readOn(Entree& s) { return Terme_S
 
 void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur());
   const DoubleTab& vals = la_source->valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &rho = equation().milieu().masse_volumique()->passe(), &nf = domaine.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;

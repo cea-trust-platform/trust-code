@@ -35,7 +35,7 @@ public:
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_pb(const Probleme_base&) override;
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
   void mettre_a_jour(double temps) override { }
   inline Eval_Darcy_VEF_Face& eval() { return static_cast<Eval_Darcy_VEF_Face&> (iter_->evaluateur()); }
 };

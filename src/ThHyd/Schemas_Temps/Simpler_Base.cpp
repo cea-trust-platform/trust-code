@@ -235,7 +235,7 @@ void Simpler_Base::assembler_matrice_pression_implicite(Equation_base& eqn_NS,co
       nb_comp = present.dimension(1);
     }
 
-  const Domaine_VF& le_dom = ref_cast(Domaine_VF,eqnNS.domaine_dis().valeur());
+  const Domaine_VF& le_dom = ref_cast(Domaine_VF,eqnNS.domaine_dis());
   if (deux_entrees==0)
     {
       DoubleVect vol2 = le_dom.volumes_entrelaces();

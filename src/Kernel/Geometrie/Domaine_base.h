@@ -19,7 +19,7 @@
 #include <Bords_Internes.h>
 #include <Groupes_Faces.h>
 #include <Sous_Domaine.h>
-#include <Domaine_dis.h>
+
 #include <TRUSTArrays.h>
 #include <TRUST_Deriv.h>
 #include <TRUSTList.h>
@@ -32,6 +32,7 @@
 #include <Noms.h>
 
 class Probleme_base;
+class Domaine_dis_base;
 
 /*! @brief Base class for domains description.
  * This class holds all the data shared by all domains **and** not sensitive to the 32/64 bits configuration.
@@ -53,9 +54,9 @@ public:
   //
   // Time-dependency
   //
-  virtual void initialiser (double temps, Domaine_dis&, Probleme_base&) {}
+  virtual void initialiser (double temps, Domaine_dis_base&, Probleme_base&) {}
   virtual void set_dt(double& dt_) {}
-  virtual void mettre_a_jour(double temps, Domaine_dis&, Probleme_base&) {}
+  virtual void mettre_a_jour(double temps, Domaine_dis_base&, Probleme_base&) {}
   virtual void update_after_post(double temps) {}
 
   //

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ public :
 protected :
 
   REF(Champ_base) la_vitesse;
-  inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
+  inline void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
 };
 
 /*! @brief Mise a jour en temps d'un operateur negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::mettre_a_jour(double)
@@ -73,16 +73,16 @@ inline void Op_Conv_negligeable::mettre_a_jour(double temps)
 }
 
 
-/*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::associer(const Domaine_dis&,
+/*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::associer(const Domaine_dis_base&,
  *
  *                                                      const Domaine_Cl_dis&,
  *                                                      const Champ_Inc&)
  *
- * @param (Domaine_dis& z)
+ * @param (Domaine_dis_base& z)
  * @param (Domaine_Cl_dis& zcl)
  * @param (Champ_Inc& ch)
  */
-inline void Op_Conv_negligeable::associer(const Domaine_dis& z,
+inline void Op_Conv_negligeable::associer(const Domaine_dis_base& z,
                                           const Domaine_Cl_dis& zcl,
                                           const Champ_Inc& ch)
 {

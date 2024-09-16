@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Terme_Source_Acceleration.h>
-#include <Domaine_dis.h>
+
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Discretisation_base.h>
@@ -228,7 +228,7 @@ void Terme_Source_Acceleration::lire_data(Entree& s)
         exit();
       }
     const Discretisation_base& dis   = eqn.discretisation();
-    const Domaine_dis_base&        domaine  = eqn.domaine_dis().valeur();
+    const Domaine_dis_base&        domaine  = eqn.domaine_dis();
     const double                temps = eqn.schema_temps().temps_courant();
     dis.discretiser_champ("vitesse", domaine, "acceleration_terme_source", "kg/ms^2",
                           Objet_U::dimension, /* composantes */
@@ -265,7 +265,7 @@ Champ_Fonc& Terme_Source_Acceleration::get_set_terme_source_post() const
 const DoubleTab&
 Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces) const
 {
-  const Domaine_VF&    domaine_VF = ref_cast(Domaine_VF, equation().domaine_dis().valeur());;
+  const Domaine_VF&    domaine_VF = ref_cast(Domaine_VF, equation().domaine_dis());;
 
   const DoubleTab& centre_faces = domaine_VF.xv();
 

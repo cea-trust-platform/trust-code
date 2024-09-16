@@ -143,7 +143,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
   std::vector<std::reference_wrapper<const Static_Int_Lists>> som_elem;
   for (auto &&op : op_ext)
-    domaines.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op->equation().domaine_dis().valeur())));
+    domaines.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op->equation().domaine_dis())));
   for (auto &&op : op_ext)
     fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue().valeur()).fcl()));
   for (auto &&zo : domaines)
@@ -278,7 +278,7 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
       {
         tableau_trier_retirer_doublons(stencil[i]);
         Matrice_Morse mat2;
-        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_ext[i]->equation().domaine_dis()->nb_elem_tot(), stencil[i], mat2);
+        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_ext[i]->equation().domaine_dis().nb_elem_tot(), stencil[i], mat2);
         mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;
       }
 
@@ -310,7 +310,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
-      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op_ext[i]->equation().domaine_dis().valeur())));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op_ext[i]->equation().domaine_dis())));
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
       fs.push_back(std::ref(domaine[i].get().face_surfaces())), nf.push_back(std::ref(domaine[i].get().face_normales()));
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv())), xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));

@@ -64,7 +64,7 @@ class Domaine_Cl_VDF : public Domaine_Cl_dis_base
   Declare_instanciable(Domaine_Cl_VDF);
 public :
   void associer(const Domaine_VDF&);
-  void completer(const Domaine_dis&) override;
+  void completer(const Domaine_dis_base&) override;
   void imposer_cond_lim(Champ_Inc&, double) override;
   int nb_faces_sortie_libre() const;
   int nb_faces_bord() const;

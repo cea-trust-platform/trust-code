@@ -108,7 +108,7 @@ const Champ_base& Turbulence_paroi_base::get_champ(const Motcle& nom) const
       if (tab_u_star_.size_array() > 0)
         {
           // Boucle sur les frontieres pour recuperer u_star si tab_u_star dimensionne
-          int nb_front = my_eqn.domaine_dis()->nb_front_Cl();
+          int nb_front = my_eqn.domaine_dis().nb_front_Cl();
           for (int n_bord = 0; n_bord < nb_front; n_bord++)
             {
               const Cond_lim& la_cl = my_eqn.domaine_Cl_dis()->les_conditions_limites(n_bord);

@@ -18,7 +18,7 @@
 
 #include <Domaine_Cl_dis.h>
 #include <Equation_base.h>
-#include <Domaine_dis.h>
+
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
@@ -51,7 +51,7 @@ public:
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const;
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab&) const;
   virtual void associer_champ(const Champ_Inc&, const std::string& nom_ch);
-  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& inco) =0;
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc& inco) =0;
   virtual void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
   virtual void dimensionner(Matrice_Morse&) const /* =0 */;
   virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;

@@ -482,7 +482,7 @@ void Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int nco
     {
       if(sub_type(Champ_Inc_base, *this) )
         {
-          const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).equation().domaine_dis().valeur());
+          const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).equation().domaine_dis());
           // Pour eviter un resize par nb_elem_tot par appel a xp()
           for (int i=0; i<nb_elem; i++)
             for (int k=0; k<dimension; k++)

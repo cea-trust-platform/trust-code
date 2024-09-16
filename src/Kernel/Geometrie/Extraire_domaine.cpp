@@ -67,7 +67,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Domaine_VF& domaine_vf=ref_cast(Domaine_VF,pb.domaine_dis().valeur());
+  const Domaine_VF& domaine_vf=ref_cast(Domaine_VF,pb.domaine_dis());
   dom.les_sommets()=domaine_vf.domaine().les_sommets();
   dom.typer(domaine_vf.domaine().type_elem()->que_suis_je());
 

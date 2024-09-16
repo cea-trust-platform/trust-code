@@ -51,11 +51,11 @@ Entree& Terme_Source_Decroissance_Radioactive_VEF_Face::readOn(Entree& s)
   return s ;
 }
 
-void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                                        const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines " << finl ;
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
 }
 
 DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& resu)  const

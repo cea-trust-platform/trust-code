@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ DoubleTab& Op_Conv_ALE::calculer(const DoubleTab& inco, DoubleTab& resu) const
   op_conv.calculer(inco, resu);
   return resu;
 }
-void Op_Conv_ALE::associer(const Domaine_dis& zdis,
+void Op_Conv_ALE::associer(const Domaine_dis_base& zdis,
                            const Domaine_Cl_dis& zcl_dis,
                            const Champ_Inc& inco)
 {

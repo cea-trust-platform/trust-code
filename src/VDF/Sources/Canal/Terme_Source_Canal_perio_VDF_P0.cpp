@@ -39,7 +39,7 @@ ArrOfDouble Terme_Source_Canal_perio_VDF_P0::source_convection_diffusion(double 
   // Compute heat_flux:
   double heat_flux = compute_heat_flux();
 
-  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF,equation().domaine_dis().valeur());
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF,equation().domaine_dis());
   const double volume = domaine_vf.domaine().volume_total();
   int size = domaine_vf.nb_elem();
   ArrOfDouble s(size);

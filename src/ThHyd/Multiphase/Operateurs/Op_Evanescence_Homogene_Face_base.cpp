@@ -47,7 +47,7 @@ Entree& Op_Evanescence_Homogene_Face_base::readOn(Entree& is)
 void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
   const IntTab& fcl = ch.fcl();
 
@@ -90,7 +90,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   const bool reso_en_T = pbm.resolution_en_T();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe(),

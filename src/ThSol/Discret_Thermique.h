@@ -17,7 +17,7 @@
 #define Discret_Thermique_included
 
 #include <Discretisation_base.h>
-#include <Domaine_dis.h>
+
 #include <Champ_Inc.h>
 
 class Schema_Temps_base;
@@ -30,7 +30,7 @@ class Milieu_base;
  *     derivees pour typer et discretiser les champs portes par les
  *     equations liees a la discretisation.
  *
- * @sa Discretisation_base, Classe abstraite, Methodes abstraites, void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const, void proprietes_physiques_milieu(Domaine_dis& ,Milieu_base& ,const Champ_Inc& ) const
+ * @sa Discretisation_base, Classe abstraite, Methodes abstraites, void temperature(const Schema_Temps_base&, Domaine_dis_base&, Champ_Inc&) const, void proprietes_physiques_milieu(Domaine_dis_base& ,Milieu_base& ,const Champ_Inc& ) const
  */
 class Discret_Thermique : public Discretisation_base
 {
@@ -38,11 +38,11 @@ class Discret_Thermique : public Discretisation_base
 
 public :
 
-  void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void enthalpie(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void flux_neutronique(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Inc& ch, int nb_comp=1) const;
-  void Fluctu_Temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const ;
-  void Flux_Chaleur_Turb(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const;
+  void temperature(const Schema_Temps_base&, Domaine_dis_base&, Champ_Inc&, int nb_comp = 1) const;
+  void enthalpie(const Schema_Temps_base&, Domaine_dis_base&, Champ_Inc&, int nb_comp = 1) const;
+  void flux_neutronique(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Inc& ch, int nb_comp=1) const;
+  void Fluctu_Temperature(const Schema_Temps_base&, Domaine_dis_base&, Champ_Inc&) const ;
+  void Flux_Chaleur_Turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Inc&) const;
 };
 
 #endif

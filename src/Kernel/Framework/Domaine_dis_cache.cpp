@@ -61,7 +61,7 @@ void Domaine_dis_cache::Clear()
  *      }
  *      Lire pb { ... }
  */
-Domaine_dis& Domaine_dis_cache::build_or_get(const Nom& type, const Domaine& dom)
+Domaine_dis_base& Domaine_dis_cache::build_or_get(const Nom& type, const Domaine& dom)
 {
   // Do we have the prefix "NO_FACE_" at the begining of type:
   Nom typ_short(type);
@@ -78,18 +78,17 @@ Domaine_dis& Domaine_dis_cache::build_or_get(const Nom& type, const Domaine& dom
 
   // Query the cache:
   std::string key = make_key(type.getString());
-  if (cache_.count(key)) return *cache_[key];
+  if (cache_.count(key)) return cache_[key].valeur();
   // We can return the fully discretized domain even if NO_FACE_ was asked, since the former encompasses the latter:
   std::string key_no_face = make_key(typ_short.getString());
-  if (cache_.count(key_no_face)) return *cache_[key_no_face];
+  if (cache_.count(key_no_face)) return cache_[key_no_face].valeur();
 
   // OK, not in cache, we have to really discretized:
-  cache_[key] = std::make_shared<Domaine_dis>();
-  Shared_Dom_dis ddp = cache_[key];
-  Domaine_dis& dd = *ddp;
-  dd.typer(typ_short);
-  dd->associer_domaine(dom);
-  dd->discretiser_root(type);
+  cache_[key] = OWN_PTR(Domaine_dis_base)();
+  OWN_PTR(Domaine_dis_base)& ddp = cache_[key];
+  ddp.typer(typ_short);
+  ddp->associer_domaine(dom);
+  ddp->discretiser_root(type);
 
   // If a full discretisation was requested, we can also register the NO_FACE_ version:
   if (!no_face)
@@ -97,25 +96,25 @@ Domaine_dis& Domaine_dis_cache::build_or_get(const Nom& type, const Domaine& dom
       std::string key_face = make_key("NO_FACE_" + typ_short.getString());
       cache_[key_face] = ddp;  // shared_ptr copy
     }
-  return *cache_[key];
+  return cache_[key].valeur();
 }
 
-Domaine_dis& Domaine_dis_cache::build_or_get_poly_post(const Nom& type, const Domaine& dom)
+Domaine_dis_base& Domaine_dis_cache::build_or_get_poly_post(const Nom& type, const Domaine& dom)
 {
   std::string new_type = dom.le_nom().getString() + "_" + type.getString();
   for (auto &itr : cache_)
     if (itr.first.find(new_type) != std::string::npos)
-      return *cache_[itr.first];
+      return cache_[itr.first].valeur();
 
   return build_or_get(type, dom);
 }
 
-Domaine_dis& Domaine_dis_cache::Build_or_get(const Nom& type, const Domaine& dom)
+Domaine_dis_base& Domaine_dis_cache::Build_or_get(const Nom& type, const Domaine& dom)
 {
   return Get_instance().build_or_get(type, dom);
 }
 
-Domaine_dis& Domaine_dis_cache::Build_or_get_poly_post(const Nom& type, const Domaine& dom)
+Domaine_dis_base& Domaine_dis_cache::Build_or_get_poly_post(const Nom& type, const Domaine& dom)
 {
   return Get_instance().build_or_get_poly_post(type, dom);
 }

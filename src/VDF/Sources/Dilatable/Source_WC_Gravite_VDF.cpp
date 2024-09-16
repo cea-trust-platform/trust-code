@@ -26,7 +26,7 @@ Sortie& Source_WC_Gravite_VDF::printOn(Sortie& os) const
 
 Entree& Source_WC_Gravite_VDF::readOn(Entree& is) { return is; }
 
-void Source_WC_Gravite_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
+void Source_WC_Gravite_VDF::associer_domaines(const Domaine_dis_base& domaine,const Domaine_Cl_dis& domaine_cl)
 {
   associer_domaines_impl(domaine,domaine_cl);
 }

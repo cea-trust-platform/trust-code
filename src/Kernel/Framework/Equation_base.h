@@ -27,7 +27,7 @@
 #include <TRUSTTab_parts.h>
 #include <Domaine_Cl_dis.h>
 #include <Matrice_Morse.h>
-#include <Domaine_dis.h>
+
 #include <Champs_Fonc.h>
 #include <Champ_Inc.h>
 #include <TRUST_Ref.h>
@@ -128,14 +128,14 @@ public :
   Schema_Temps_base& schema_temps();
   const Schema_Temps_base& schema_temps() const;
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
-  virtual void associer_domaine_dis(const Domaine_dis&);
+  virtual void associer_domaine_dis(const Domaine_dis_base&);
 
   const Discretisation_base& discretisation() const;
 
   virtual inline Domaine_Cl_dis& domaine_Cl_dis();
   virtual inline const Domaine_Cl_dis& domaine_Cl_dis() const;
-  Domaine_dis& domaine_dis();
-  const Domaine_dis& domaine_dis() const;
+  Domaine_dis_base& domaine_dis();
+  const Domaine_dis_base& domaine_dis() const;
   //
   inline const Nom& le_nom() const override;
   inline DoubleVect& get_residu() { return residu_; }
@@ -246,7 +246,7 @@ protected :
   Solveur_Masse solveur_masse;
   Sources les_sources;
   REF(Schema_Temps_base) le_schema_en_temps;
-  REF(Domaine_dis) le_dom_dis;
+  REF(Domaine_dis_base) le_dom_dis;
   Domaine_Cl_dis le_dom_Cl_dis;
   REF(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);

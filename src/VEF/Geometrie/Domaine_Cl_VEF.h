@@ -41,7 +41,7 @@ class Domaine_Cl_VEF: public Domaine_Cl_dis_base
   Declare_instanciable(Domaine_Cl_VEF);
 public:
   void associer(const Domaine_VEF&);
-  void completer(const Domaine_dis&) override;
+  void completer(const Domaine_dis_base&) override;
   int initialiser(double temps) override;
   void imposer_cond_lim(Champ_Inc&, double) override;
 

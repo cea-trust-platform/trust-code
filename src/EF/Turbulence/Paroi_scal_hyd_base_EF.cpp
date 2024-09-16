@@ -36,9 +36,9 @@ Sortie& Paroi_scal_hyd_base_EF::printOn(Sortie& s) const { return s << que_suis_
 
 Entree& Paroi_scal_hyd_base_EF::readOn(Entree& s) { return s; }
 
-void Paroi_scal_hyd_base_EF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_scal_hyd_base_EF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_EF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
   le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
   // On initialise tout de suite la loi de paroi
   Paroi_scal_hyd_base_EF::init_lois_paroi();

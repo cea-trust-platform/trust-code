@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ void Source_QC_QDM_Gen::mettre_a_jour(double t)
 /*! @brief Met a jour les references internes a l'objet Source_QC_QDM_Gen.
  *
  * Appelle 2 methodes virtuelles pures protegees:
- *        Source_QC_QDM_Gen::associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&)
+ *        Source_QC_QDM_Gen::associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis&)
  *        Source_QC_QDM_Gen::associer_pb(const Probleme_base&)
  *
  */
@@ -94,7 +94,7 @@ DoubleTab&  Source_QC_QDM_Gen::calculer(DoubleTab& resu) const
   ajouter(resu);
   return resu;
 }
-void  Source_QC_QDM_Gen::associer_domaines(const Domaine_dis& z ,const Domaine_Cl_dis& zcl )
+void  Source_QC_QDM_Gen::associer_domaines(const Domaine_dis_base& z ,const Domaine_Cl_dis& zcl )
 {
   source_incompressible->associer_domaines_public(z,zcl);
 }

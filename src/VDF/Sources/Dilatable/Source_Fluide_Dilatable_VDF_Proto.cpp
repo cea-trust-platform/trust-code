@@ -23,15 +23,15 @@
 #include <TRUSTTab.h>
 #include <Domaine_VDF.h>
 
-void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
+void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Domaine_dis_base& dds,const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Domaine_VDF,domaine.valeur());
+  le_dom = ref_cast(Domaine_VDF,dds);
   le_dom_Cl = ref_cast(Domaine_Cl_VDF,domaine_cl.valeur());
 }
 
-void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Domaine_dis& domaine, DoubleVect& volumes, DoubleVect& porosites)
+void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Domaine_dis_base& dds, DoubleVect& volumes, DoubleVect& porosites)
 {
-  volumes.ref(ref_cast(Domaine_VF,domaine.valeur()).volumes());
+  volumes.ref(ref_cast(Domaine_VF,dds).volumes());
   porosites.ref(le_dom_Cl->equation().milieu().porosite_elem());
 }
 

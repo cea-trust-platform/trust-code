@@ -374,7 +374,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
     return;
   const Probleme_base& pb = op.equation().probleme();
 
-  const Domaine_VEF& le_dom_vef = ref_cast(Domaine_VEF, op.equation().domaine_dis().valeur());
+  const Domaine_VEF& le_dom_vef = ref_cast(Domaine_VEF, op.equation().domaine_dis());
   int nb_compo = flux_bords_.dimension(1);
   // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
   if (op.equation().inconnue()->le_nom() == "temperature" && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite"))
@@ -421,7 +421,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
  */
 int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 {
-  const Domaine_VEF& le_dom_vef = ref_cast(Domaine_VEF, op.equation().domaine_dis().valeur());
+  const Domaine_VEF& le_dom_vef = ref_cast(Domaine_VEF, op.equation().domaine_dis());
   const DoubleTab& flux_bords_ = op.flux_bords();
   if (flux_bords_.nb_dim() != 2)
     {
@@ -601,7 +601,7 @@ void modif_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice, cons
 {
   const int nb_comp = eqn.inconnue()->valeurs().line_size();
   const Domaine_Cl_dis_base& domaine_Cl_VEF = eqn.domaine_Cl_dis().valeur();
-  const Domaine_VF& domaine_VEF = ref_cast(Domaine_VF, eqn.domaine_dis().valeur());
+  const Domaine_VF& domaine_VEF = ref_cast(Domaine_VF, eqn.domaine_dis());
   int nb_bords = domaine_VEF.nb_front_Cl();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -665,7 +665,7 @@ void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, cons
 {
   const int nb_comp = eqn.inconnue()->valeurs().line_size();
   const Domaine_Cl_dis_base& domaine_Cl_VEF = eqn.domaine_Cl_dis().valeur();
-  const Domaine_VF& domaine_VEF = ref_cast(Domaine_VF, eqn.domaine_dis().valeur());
+  const Domaine_VF& domaine_VEF = ref_cast(Domaine_VF, eqn.domaine_dis());
   int nb_bords = domaine_VEF.nb_front_Cl();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -769,7 +769,7 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Mors
   const int nb_comp = eqn.inconnue()->valeurs().line_size();
 
   const Domaine_Cl_dis_base& domaine_Cl_VEF = eqn.domaine_Cl_dis().valeur();
-  const Domaine_VF& domaine_VEF = ref_cast(Domaine_VF, eqn.domaine_dis().valeur());
+  const Domaine_VF& domaine_VEF = ref_cast(Domaine_VF, eqn.domaine_dis());
   int nb_bords = domaine_VEF.nb_front_Cl();
 
   const IntVect& tab1 = matrice.get_tab1();

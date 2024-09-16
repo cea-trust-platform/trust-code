@@ -18,13 +18,13 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Objet_U.h>
 
 class Fluide_Dilatable_base;
 class Domaine_VF;
+class Domaine_dis_base;
 
 /*! @brief classe EDO_Pression_th_base Cette classe est la base de la hierarchie des EDO sur la pression
  *
@@ -38,7 +38,7 @@ class EDO_Pression_th_base : public Objet_U
   Declare_base(EDO_Pression_th_base);
 public :
   void associer_fluide(const Fluide_Dilatable_base&);
-  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&);
+  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&);
   inline const double& getM0() const { return M0; }
   virtual void completer();
   void mettre_a_jour_CL(double);

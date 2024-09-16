@@ -18,7 +18,7 @@
 
 #include <Modele_turbulence_hyd_base.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
+
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_dis_base;
@@ -38,7 +38,7 @@ public:
   int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
   int comprend_champ(const Motcle& mot) const;
 
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
 
   void completer() override;
   void mettre_a_jour(double) override;

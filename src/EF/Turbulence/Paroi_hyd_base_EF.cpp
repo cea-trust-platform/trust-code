@@ -64,7 +64,7 @@ const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
       if (tab_u_star_.size_array() > 0)
         {
           // Boucle sur les frontieres pour recuperer u_star si tab_u_star dimensionne
-          int nb_front = my_eqn.domaine_dis()->nb_front_Cl();
+          int nb_front = my_eqn.domaine_dis().nb_front_Cl();
           for (int n_bord = 0; n_bord < nb_front; n_bord++)
             {
               const Cond_lim& la_cl = my_eqn.domaine_Cl_dis()->les_conditions_limites(n_bord);
@@ -95,9 +95,9 @@ void Paroi_hyd_base_EF::get_noms_champs_postraitables(Noms& nom, Option opt) con
   Turbulence_paroi_base::get_noms_champs_postraitables(nom, opt);
 }
 
-void Paroi_hyd_base_EF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_hyd_base_EF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_EF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
   le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
 }
 

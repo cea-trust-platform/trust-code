@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ class Sources_Multiphase_base: public Source_base
 public :
   int has_interface_blocs() const override { return 1; }
   void check_multiphase_compatibility() const override { /* Do nothing */ } // of course
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { /* Do nothing */ }
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override { /* Do nothing */ }
   void associer_pb(const Probleme_base& ) override { /* Do nothing */ }
   void mettre_a_jour(double temps) override { /* Do nothing */ }
 };

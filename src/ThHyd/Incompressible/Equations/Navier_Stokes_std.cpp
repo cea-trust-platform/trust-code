@@ -343,7 +343,7 @@ void Navier_Stokes_std::completer()
 
   if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
-      Domaine_dis_base& domaine = domaine_dis().valeur();
+      Domaine_dis_base& domaine = domaine_dis();
       domaine.init_dist_paroi_globale(domaine_Cl_dis()->les_conditions_limites());
       Cerr << "Initializing distance_paroi_globale ... " << finl;
       const DoubleTab& dist_calc = domaine.y_elem();
@@ -424,7 +424,7 @@ void Navier_Stokes_std::discretiser_assembleur_pression()
   type += discretisation().que_suis_je();
   Cerr << "Navier_Stokes_std::discretiser_assembleur_pression : type="<< type << finl;
   assembleur_pression_.typer(type);
-  assembleur_pression_->associer_domaine_dis_base(domaine_dis().valeur());
+  assembleur_pression_->associer_domaine_dis_base(domaine_dis());
 }
 
 /*! @brief Renvoie le nombre d'operateurs de l'equation: Pour Navier Stokes Standard c'est 2.
@@ -1414,7 +1414,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
 void Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hydro) const
 {
   DoubleTab& val= pression_hydro.valeurs();
-  const DoubleTab& coords = domaine_dis()->domaine().les_sommets();
+  const DoubleTab& coords = domaine_dis().domaine().les_sommets();
   if (!milieu().a_gravite())
     {
       Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;

@@ -97,7 +97,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
         multiplier_par_rho_si_dilatable(lambda_t, mil);
     }
   else
-    lambda_t *= mon_equation_->domaine_dis()->nb_elem() > 0 ? tab_rho(0, 0) * tab_Cp(0, 0) : 1.0;
+    lambda_t *= mon_equation_->domaine_dis().nb_elem() > 0 ? tab_rho(0, 0) * tab_Cp(0, 0) : 1.0;
   lambda_t.echange_espace_virtuel();
   diffusivite_turbulente_->valeurs().echange_espace_virtuel();
 }
@@ -115,7 +115,7 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
   DoubleTab& tab_alpha_t = diffusivite_turbulente_->valeurs();
   const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeur().valeurs();
   double temps = la_viscosite_turbulente_->valeur().temps();
-  const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis().valeur()).xp();
+  const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis()).xp();
 
   int n = tab_alpha_t.size();
   if (tab_nu_t.size() != n)

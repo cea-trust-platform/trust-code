@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ class Op_Div_VDF_Elem : public Op_Div_VDF_base
   Declare_instanciable_sans_constructeur(Op_Div_VDF_Elem);
 public:
   Op_Div_VDF_Elem();
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void volumique(DoubleTab& ) const override;
 
 protected:

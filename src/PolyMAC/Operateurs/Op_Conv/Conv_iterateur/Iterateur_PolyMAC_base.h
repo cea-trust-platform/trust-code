@@ -58,7 +58,7 @@ class Iterateur_PolyMAC_base: public Objet_U
   Declare_base(Iterateur_PolyMAC_base);
 public:
   void associer(const Domaine_PolyMAC&, const Domaine_Cl_PolyMAC&, const Operateur_base&);
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Operateur_base&);
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Operateur_base&);
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
   inline Type_Cl_PolyMAC type_cl(const Cond_lim&) const;
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const =0;

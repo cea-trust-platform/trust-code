@@ -48,7 +48,7 @@ void Sortie_libre_Gradient_Pression_libre_VEF::completer()
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
 
-  //  const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF,eqn.domaine_dis().valeur());
+  //  const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF,eqn.domaine_dis());
 
   const Champ_P0_VEF& pression = ref_cast(Champ_P0_VEF, eqn_hydr.pression().valeur());
 
@@ -70,7 +70,7 @@ int Sortie_libre_Gradient_Pression_libre_VEF::initialiser(double temps)
   const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   //      const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis());
   const IntTab& face_voisins = mon_dom_VEF.face_voisins();
   //      const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_dom_cl_dis.valeur());
   //      const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
@@ -130,7 +130,7 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face) const
   const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
-  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis());
   const IntTab& face_voisins = mon_dom_VEF.face_voisins();
   //  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_dom_cl_dis.valeur());
   //  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());

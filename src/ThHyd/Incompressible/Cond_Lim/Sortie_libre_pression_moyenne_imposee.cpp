@@ -62,7 +62,7 @@ void Sortie_libre_pression_moyenne_imposee::completer()
 
   surfaces.resize(nb_faces_);
 
-  Domaine_VF& zvf = ref_cast(Domaine_VF, mon_dom_cl_dis->domaine_dis().valeur());
+  Domaine_VF& zvf = ref_cast(Domaine_VF, mon_dom_cl_dis->domaine_dis());
   for (i = 0; i < nb_faces_; i++)
     {
       surfaces(i) = zvf.face_surfaces(i + ndeb_);

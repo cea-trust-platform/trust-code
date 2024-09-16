@@ -131,7 +131,7 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier()
 
 void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_pression()
 {
-  const Domaine_VDF& zvdf=ref_cast(Domaine_VDF, mon_equation->domaine_dis().valeur());
+  const Domaine_VDF& zvdf=ref_cast(Domaine_VDF, mon_equation->domaine_dis());
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i;
   int nb_face = zvdf.nb_faces();

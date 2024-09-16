@@ -54,7 +54,7 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
 void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
@@ -90,7 +90,7 @@ void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const
 
 void Source_Flux_interfacial_base::completer()
 {
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   int N = equation().inconnue()->valeurs().line_size();
   if (!sub_type(Source_Flux_interfacial_base, equation().sources().dernier().valeur()))
     Process::exit(que_suis_je() + " : Source_Flux_interfacial_base must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
@@ -141,7 +141,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
   // Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleVect& pe = milc.porosite_elem(), &ve = domaine.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const Champ_base& ch_rho = milc.masse_volumique();

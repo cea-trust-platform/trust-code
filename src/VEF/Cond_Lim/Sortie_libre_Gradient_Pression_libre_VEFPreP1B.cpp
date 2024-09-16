@@ -48,7 +48,7 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::completer()
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
 
-  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis());
 
   const Champ_P1_isoP1Bulle& pression = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression().valeur());
 
@@ -125,7 +125,7 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::mettre_a_jour(double temps)
 
   const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
-  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis());
   const DoubleTab& face_normale = mon_dom_VEF.face_normales();
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
 

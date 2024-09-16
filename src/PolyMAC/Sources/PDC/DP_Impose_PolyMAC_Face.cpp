@@ -69,7 +69,7 @@ void DP_Impose_PolyMAC_Face::completer()
 void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
-  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis());
   int taille_bloc = domaine_poly.nb_elem();
   num_faces.resize(taille_bloc);
   lire_surfaces(s,le_domaine,domaine_poly,num_faces, sgn);
@@ -92,7 +92,7 @@ void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 
 void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine_poly.face_surfaces();
   const DoubleTab& vit = equation().inconnue()->valeurs();
   const std::string& nom_inco = equation().inconnue()->le_nom().getString();

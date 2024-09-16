@@ -110,9 +110,9 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_base::pid_process()
   p_error = error;
 }
 
-void Terme_Puissance_Thermique_Echange_Impose_Elem_base::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Puissance_Thermique_Echange_Impose_Elem_base::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom = ref_cast(Domaine_VF, domaine_dis.valeur());
+  le_dom = ref_cast(Domaine_VF, domaine_dis);
   le_dom_Cl = ref_cast(Domaine_Cl_dis_base, domaine_Cl_dis.valeur());
 }
 

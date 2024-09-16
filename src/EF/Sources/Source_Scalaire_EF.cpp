@@ -75,10 +75,10 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
   return s;
 }
 
-void Source_Scalaire_EF::associer_domaines(const Domaine_dis& domaine_dis,
+void Source_Scalaire_EF::associer_domaines(const Domaine_dis_base& domaine_dis,
                                            const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_EF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
   //  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
 }
 

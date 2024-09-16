@@ -72,7 +72,7 @@ void Champ_Generique_Gradient::completer(const Postraitement_base& post)
               Op_Grad_.typer();
               Op_Grad_.l_op_base().associer_eqn(eqn);
 
-              const Domaine_dis& zdis = eqn.domaine_dis();
+              const Domaine_dis_base& zdis = eqn.domaine_dis();
               const Domaine_Cl_dis& zcl = eqn.domaine_Cl_dis();
               const Champ_Inc& inco = eqn.inconnue();
               Op_Grad_->associer(zdis, zcl, inco);

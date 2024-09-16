@@ -34,7 +34,7 @@ class EOS_Tools_VDF: public EOS_Tools_base
   Declare_instanciable(EOS_Tools_VDF);
 public :
   const DoubleTab& rho_discvit() const override;
-  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&) override;
   void divu_discvit(const DoubleTab&, DoubleTab&) override;
   void secmembre_divU_Z(DoubleTab& ) const override;
   void mettre_a_jour(double temps) override;

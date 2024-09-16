@@ -48,7 +48,7 @@ void Source_Dispersion_bulles_base::dimensionner_blocs(matrices_t matrices, cons
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
   Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
   const IntTab& fcl = ch.fcl();
 

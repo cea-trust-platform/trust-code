@@ -25,7 +25,7 @@
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
-#include <Domaine_dis.h>
+
 #include <Milieu_base.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
@@ -104,8 +104,8 @@ public:
   Schema_Temps_base& schema_temps();
   const Domaine& domaine() const;
   Domaine& domaine();
-  const Domaine_dis& domaine_dis() const;
-  Domaine_dis& domaine_dis();
+  const Domaine_dis_base& domaine_dis() const;
+  Domaine_dis_base& domaine_dis();
   int is_dilatable() const;
 
   virtual int allocate_file_size(long int& size) const;
@@ -208,7 +208,7 @@ public:
 
 protected :
   std::vector<OWN_PTR(Milieu_base)> le_milieu_;
-  REF(Domaine_dis) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
+  REF(Domaine_dis_base) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
   Postraitements les_postraitements_;
   REF(Domaine) le_domaine_;
   REF(Schema_Temps_base) le_schema_en_temps_;

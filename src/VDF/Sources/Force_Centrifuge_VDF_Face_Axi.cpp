@@ -58,10 +58,10 @@ void Force_Centrifuge_VDF_Face_Axi::associer_pb(const Probleme_base& )
   Cerr << "Force_Centrifuge_VDF_Face_Axi::associer_pb" << finl;
 }
 
-void Force_Centrifuge_VDF_Face_Axi::associer_domaines(const Domaine_dis& domaine_dis,
+void Force_Centrifuge_VDF_Face_Axi::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                       const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, domaine_dis);
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
   le_dom_VDF = zvdf;
   le_dom_Cl_VDF = zclvdf;

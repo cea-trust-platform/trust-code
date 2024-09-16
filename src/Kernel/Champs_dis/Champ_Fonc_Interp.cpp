@@ -54,7 +54,7 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   if (nom_dom_dist == "??") dom_dist_ = pb_dist_->domaine();
   else dom_dist_ = ref_cast(Domaine, Interprete::objet(nom_dom_dist));
 
-  is_elem_trgt_ = (pb_loc_->domaine_dis()->que_suis_je() != "Domaine_VEF");
+  is_elem_trgt_ = (pb_loc_->domaine_dis().que_suis_je() != "Domaine_VEF");
 
   if (nat == "IntensiveMaximum") nature_ = IntensiveMaximum;
   else if (nat == "IntensiveConservation") nature_ = IntensiveConservation;
@@ -92,7 +92,7 @@ int Champ_Fonc_Interp::initialiser(double temps)
     }
   else
     {
-      Domaine_VF& dvf = ref_cast(Domaine_VF, pb_loc_->domaine_dis().valeur());
+      Domaine_VF& dvf = ref_cast(Domaine_VF, pb_loc_->domaine_dis());
       valeurs_.resize(dvf.nb_faces(), nb_compo_);
       dvf.creer_tableau_faces(valeurs_);
       valeurs_elem_.resize(0, nb_compo_);
@@ -157,9 +157,9 @@ void Champ_Fonc_Interp::update_fields()
   local_field_->setArray(local_array_);
 
   // Source Stuff
-  if (pb_dist_->domaine_dis()->que_suis_je() == "Domaine_VEF"
-      && pb_dist_->domaine_dis()->nb_elem() > 0
-      && distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis().valeur()).nb_faces_tot())
+  if (pb_dist_->domaine_dis().que_suis_je() == "Domaine_VEF"
+      && pb_dist_->domaine_dis().nb_elem() > 0
+      && distant_values.dimension_tot(0) == ref_cast(Domaine_VF, pb_dist_->domaine_dis()).nb_faces_tot())
     {
       Cerr << finl << "ERROR in Champ_Fonc_Interp : in problem " << pb_loc_->le_nom() << ", the distant field is located at faces!" << finl;
       Cerr << "Use a postprocessing field located at elements instead of " << le_nom() << finl;
@@ -211,7 +211,7 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
   if (!is_elem_trgt_)
     {
       valeurs_elem_.echange_espace_virtuel();
-      const Domaine_VF& dvf = ref_cast(Domaine_VF, pb_loc_->domaine_dis().valeur());
+      const Domaine_VF& dvf = ref_cast(Domaine_VF, pb_loc_->domaine_dis());
       Discretisation_tools::cells_to_faces(dvf, valeurs_elem_, valeurs());
     }
 #endif

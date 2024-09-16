@@ -44,12 +44,12 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
 
 /*! @brief Associe les domaines a l'EDO
  *
- * @param (Domaine_dis& domaine) domaine
+ * @param (Domaine_dis_base& domaine) domaine
  * @param (Domaine_Cl_dis& domaine_cl) domaine cl
  */
-void  EOS_Tools_VEF::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
+void  EOS_Tools_VEF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Domaine_VEF,domaine.valeur());
+  le_dom = ref_cast(Domaine_VEF,dds);
   le_dom_Cl = domaine_cl;
   if (!un_.get_md_vector().non_nul())
     {

@@ -17,7 +17,7 @@
 #define Conds_lim_included
 
 #include <TRUST_Vector.h>
-#include <Domaine_dis.h>
+
 #include <Cond_lim.h>
 
 /*! @brief classe Conds_lim Cette classe represente un vecteur de conditions aux limites.
@@ -37,7 +37,7 @@ public:
   inline void mettre_a_jour(double temps);
   inline void resetTime(double temps);
   inline void calculer_coeffs_echange(double temps);
-  void completer(const Domaine_dis&);
+  void completer(const Domaine_dis_base&);
   inline int compatible_avec_eqn(const Equation_base&) const;
   inline int compatible_avec_discr(const Discretisation_base&) const;
 

@@ -106,11 +106,11 @@ void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
 /*! @brief remplissage des tableaux
  *
  */
-void Domaine_Cl_VEF::completer(const Domaine_dis& un_domaine_dis)
+void Domaine_Cl_VEF::completer(const Domaine_dis_base& un_domaine_dis)
 {
-  if (sub_type(Domaine_VEF, un_domaine_dis.valeur()))
+  if (sub_type(Domaine_VEF, un_domaine_dis))
     {
-      const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, un_domaine_dis.valeur());
+      const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, un_domaine_dis);
       remplir_type_elem_Cl(le_dom_VEF);
       remplir_volumes_entrelaces_Cl(le_dom_VEF);
       remplir_normales_facettes_Cl(le_dom_VEF);
@@ -523,7 +523,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
   // dans le cas Navier stokes et si la condition est forte en pression aux sommets on impose la valeur aux sommets
   if (sub_type(Navier_Stokes_std, ch->equation()))
     {
-      const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
+      const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, equation().domaine_dis());
       if ((domaine_vef.get_cl_pression_sommet_faible() == 0) && (domaine_vef.get_alphaS()))
         {
           int nps = domaine_vef.numero_premier_sommet();
@@ -653,7 +653,7 @@ int Domaine_Cl_VEF::initialiser(double temps)
       if (modif_perio_fait_ == 0)
         {
           Cerr << "modification du Domaine_Cl_VEF pour periodicite" << finl;
-          const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis().valeur());
+          const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis());
           const DoubleVect& volumes_entrelaces = le_dom_VEF.volumes_entrelaces();
           remplir_volumes_entrelaces_Cl(le_dom_VEF);
           for (int i = 0; i < les_conditions_limites_.size(); i++)
@@ -698,10 +698,10 @@ int Domaine_Cl_VEF::initialiser(double temps)
 
 Domaine_VEF& Domaine_Cl_VEF::domaine_vef()
 {
-  return ref_cast(Domaine_VEF, domaine_dis().valeur());
+  return ref_cast(Domaine_VEF, domaine_dis());
 }
 
 const Domaine_VEF& Domaine_Cl_VEF::domaine_vef() const
 {
-  return ref_cast(Domaine_VEF, domaine_dis().valeur());
+  return ref_cast(Domaine_VEF, domaine_dis());
 }

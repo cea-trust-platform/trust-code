@@ -142,7 +142,7 @@ void Masse_Multiphase::completer()
   Equation_base::completer();
   terme_convectif->check_multiphase_compatibility();
 
-  const Domaine_dis& zdis = domaine_dis();
+  const Domaine_dis_base& zdis = domaine_dis();
   if (discretisation().is_vdf())
     {
       // initialiser l'operateur grad SI VDF
@@ -288,7 +288,7 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
 
   /* valeur aux bords */
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a un domaine_dis_base */
-  ch_rho.a_un_domaine_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), bval);
+  ch_rho.a_un_domaine_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis()).xv_bord(), bval);
   tab_multiply_any_shape(bval, ch_alpha.valeur_aux_bords(), VECT_ALL_ITEMS);
 
   /* derivees */

@@ -45,9 +45,9 @@ void Modele_turbulence_hyd_0_eq_base::discretiser()
   champs_compris_.ajoute_champ(energie_cinetique_turb_);
 }
 
-void Modele_turbulence_hyd_0_eq_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Modele_turbulence_hyd_0_eq_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VF_ = ref_cast(Domaine_VF, domaine_dis.valeur());
+  le_dom_VF_ = ref_cast(Domaine_VF, domaine_dis);
   le_dom_Cl_ = ref_cast(Domaine_Cl_dis_base, domaine_Cl_dis.valeur());
 }
 
@@ -123,7 +123,7 @@ void Modele_turbulence_hyd_0_eq_base::completer()
   if (fichier_K_eps_sortie_ != Nom())
     {
       // 1) on cree le fichier med et on postraite le domaine
-      const Domaine& dom = mon_equation_->domaine_dis()->domaine();
+      const Domaine& dom = mon_equation_->domaine_dis().domaine();
       Ecrire_MED ecr_med(fichier_K_eps_sortie_.nom_me(me()), dom);
       ecr_med.ecrire_domaine(false);
       //2 on discretise le champ K_eps_pour_la_sortie
@@ -136,7 +136,7 @@ void Modele_turbulence_hyd_0_eq_base::completer()
       unit[1] = "m2/s3";
       int nb_case_tempo = 1;
       double temps = mon_equation_->schema_temps().temps_courant();
-      dis.discretiser_champ("CHAMP_ELEM", mon_equation_->domaine_dis().valeur(), scalaire, noms, unit, 2, nb_case_tempo, temps, K_eps_sortie_);
+      dis.discretiser_champ("CHAMP_ELEM", mon_equation_->domaine_dis(), scalaire, noms, unit, 2, nb_case_tempo, temps, K_eps_sortie_);
       K_eps_sortie_->nommer("K_eps_from_nut");
       K_eps_sortie_->fixer_unites(unit);
       K_eps_sortie_->fixer_noms_compo(noms);
@@ -202,7 +202,7 @@ void Modele_turbulence_hyd_0_eq_base::imprimer(Sortie& os) const
           }
 
         // enfin ecriture du champ aux elems (il y est deja)
-        const Domaine& dom = mon_equation_->domaine_dis()->domaine();
+        const Domaine& dom = mon_equation_->domaine_dis().domaine();
         Nom fic = fichier_K_eps_sortie_.nom_me(me());
 
         const Nom& nom_post = K_eps_sortie_.le_nom();

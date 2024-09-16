@@ -75,10 +75,10 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-void Source_Generique_VEF::associer_domaines(const Domaine_dis& domaine_dis,
+void Source_Generique_VEF::associer_domaines(const Domaine_dis_base& domaine_dis,
                                              const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF,domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF,domaine_dis);
   la_zcl_VEF = ref_cast(Domaine_Cl_VEF,zcl_dis.valeur());
 }
 

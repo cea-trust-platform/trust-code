@@ -56,7 +56,7 @@ void Echange_contact_PolyMAC_P0P1NC::init_op() const
   ch.creer(nom_autre_pb_, nom_bord_, nom_champ_);
   fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis()); //frontieres
   const Equation_base& eqn = domaine_Cl_dis().equation(), &o_eqn = ch.equation(); //equations
-  i_fvf = eqn.domaine_dis()->rang_frontiere(fvf->le_nom()), i_o_fvf = o_eqn.domaine_dis()->rang_frontiere(nom_bord_);
+  i_fvf = eqn.domaine_dis().rang_frontiere(fvf->le_nom()), i_o_fvf = o_eqn.domaine_dis().rang_frontiere(nom_bord_);
 
   int i_op = -1, o_i_op = -1, i; //indice de l'operateur de diffusion dans l'autre equation
   for (i = 0; i < eqn.nombre_d_operateurs(); i++)

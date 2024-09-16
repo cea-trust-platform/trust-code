@@ -17,7 +17,7 @@
 #define Operateur_negligeable_included
 
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
+
 #include <Champ_Inc.h>
 #include <TRUSTTab.h>
 
@@ -39,7 +39,7 @@ public :
   inline void mettre_a_jour(double );
 
 protected :
-  inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&);
+  inline void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&);
 };
 
 
@@ -82,11 +82,11 @@ inline void Operateur_negligeable::mettre_a_jour(double )
 
 /*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN
  *
- * @param (Domaine_dis&)
+ * @param (Domaine_dis_base&)
  * @param (Domaine_Cl_dis&)
  * @param (Champ_Inc&)
  */
-inline void Operateur_negligeable::associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&)
+inline void Operateur_negligeable::associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&)
 {
 }
 #endif

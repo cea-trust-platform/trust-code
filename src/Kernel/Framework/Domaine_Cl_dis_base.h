@@ -16,7 +16,7 @@
 #ifndef Domaine_Cl_dis_base_included
 #define Domaine_Cl_dis_base_included
 
-#include <Domaine_dis.h>
+
 #include <Conds_lim.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
@@ -31,7 +31,7 @@
  *      reference par Domaine_Cl_dis_base.
  *      Domaine_Cl_dis_base a un membre representant les conditions aux limites.
  *
- * @sa MorEqn Conds_lim Cond_lim_base, Classe abstraite., Methodes abstraites:, void completer(const Domaine_dis& ), void imposer_cond_lim(Champ_Inc& )
+ * @sa MorEqn Conds_lim Cond_lim_base, Classe abstraite., Methodes abstraites:, void completer(const Domaine_dis_base& ), void imposer_cond_lim(Champ_Inc& )
  */
 class Domaine_Cl_dis_base : public MorEqn, public Objet_U
 {
@@ -52,8 +52,8 @@ public:
   void             resetTime(double time);
   void             completer();
   int           contient_Cl(const Nom&);
-  Domaine_dis&        domaine_dis();
-  const Domaine_dis&  domaine_dis() const;
+  Domaine_dis_base&        domaine_dis();
+  const Domaine_dis_base&  domaine_dis() const;
   Domaine&            domaine();
   const Domaine&      domaine() const;
 
@@ -85,7 +85,7 @@ protected:
   Nom nom_;
   Conds_lim  les_conditions_limites_;
   REF(Champ_Inc) mon_inconnue;
-  virtual void completer(const Domaine_dis& ) = 0;
+  virtual void completer(const Domaine_dis_base& ) = 0;
 };
 
 inline const Nom& Domaine_Cl_dis_base::le_nom() const

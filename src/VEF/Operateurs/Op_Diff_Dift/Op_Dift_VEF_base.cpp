@@ -45,9 +45,9 @@ void Op_Dift_VEF_base::mettre_a_jour(double)
     }
 }
 
-void Op_Dift_VEF_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
+void Op_Dift_VEF_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
-  le_dom_vef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   inconnue_ = ch_transporte;
 }
@@ -116,7 +116,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
-      double rhocp = mon_equation->domaine_dis()->nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
+      double rhocp = mon_equation->domaine_dis().nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
       tab_diffu_turb /= rhocp;
       tab_diffu /= rhocp;
     }

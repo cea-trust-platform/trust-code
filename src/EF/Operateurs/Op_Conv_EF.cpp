@@ -179,7 +179,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
 
 DoubleTab& Op_Conv_EF::ajouter_sous_cond(const DoubleTab& transporte, DoubleTab& resu, int btd_impl, int hourglass_impl, int centre_impl) const
 {
-  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis());
   int nb_som_elem = domaine_ef.domaine().nb_som_elem();
   int nb_compo = transporte.line_size();
 
@@ -206,7 +206,7 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
                              equation().probleme().get_champ("masse_volumique").valeurs());
   int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
 
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   int nb_comp = transporte.line_size();
   const DoubleVect& volumes_thilde= domaine_ef.volumes_thilde();
   const DoubleVect& volumes= domaine_ef.volumes();
@@ -343,7 +343,7 @@ double Op_Conv_EF::calculer_dt_stab() const
                              equation().probleme().get_champ("masse_volumique").valeurs());
   int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);
 
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   const DoubleVect& valeurs_diffusivite = ref_cast(Operateur_Diff_base,equation().operateur(0).l_op_base()).diffusivite().valeurs();
   int is_not_lambda_unif = (valeurs_diffusivite.size() == 1 ? 0 : 1);
 

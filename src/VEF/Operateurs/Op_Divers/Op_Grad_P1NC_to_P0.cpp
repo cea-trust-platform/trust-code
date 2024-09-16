@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,9 +22,9 @@ Sortie& Op_Grad_P1NC_to_P0::printOn(Sortie& s) const { return s << que_suis_je()
 
 Entree& Op_Grad_P1NC_to_P0::readOn(Entree& s) { return s; }
 
-void Op_Grad_P1NC_to_P0::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
+void Op_Grad_P1NC_to_P0::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
 {
-  le_dom_vef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 

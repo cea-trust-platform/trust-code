@@ -2032,7 +2032,7 @@ void Domaine_32_64<_SIZE_>::renum(const IntVect_t& Les_Nums)
 }
 
 template<>
-void Domaine_32_64<int>::construire_renum_som_perio(const Conds_lim& les_cl, const Domaine_dis& domaine_dis)
+void Domaine_32_64<int>::construire_renum_som_perio(const Conds_lim& les_cl, const Domaine_dis_base& domaine_dis)
 {
   Noms bords_perio;
   const int nb_bords = les_cl.size();
@@ -2048,7 +2048,7 @@ void Domaine_32_64<int>::construire_renum_som_perio(const Conds_lim& les_cl, con
 
 
 template<typename _SZ_>
-void Domaine_32_64<_SZ_>::construire_renum_som_perio(const Conds_lim& les_cl, const Domaine_dis& domaine_dis)
+void Domaine_32_64<_SZ_>::construire_renum_som_perio(const Conds_lim& les_cl, const Domaine_dis_base& domaine_dis)
 {
   assert(false);
   throw;

@@ -39,7 +39,7 @@ public:
   void associer_vitesse(const Champ_base& ) override;
   const Champ_Inc_base& vitesse() const;
   Champ_Inc_base& vitesse();
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   double calculer_dt_stab() const override ;
   void calculer_pour_post(Champ& espace_stockage,const Nom& option, int) const override;

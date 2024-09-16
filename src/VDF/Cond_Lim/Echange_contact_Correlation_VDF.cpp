@@ -132,7 +132,7 @@ void Echange_contact_Correlation_VDF::calculer_h_mon_pb(DoubleTab& tab)
   // forcement local
   const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const Milieu_base& mon_milieu = mon_eqn.milieu();
-  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   calculer_h_solide(tab,mon_eqn,ma_zvdf,ma_front_vf,mon_milieu);
 }
@@ -253,7 +253,7 @@ double Echange_contact_Correlation_VDF::calculer_coefficient_echange(int i)
  */
 void Echange_contact_Correlation_VDF::calculer_Q()
 {
-  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const int ndeb = ma_front_vf.num_premiere_face();
   const int nb_faces_bord = ma_front_vf.nb_faces();
@@ -281,7 +281,7 @@ void Echange_contact_Correlation_VDF::calculer_Q()
 
 void Echange_contact_Correlation_VDF::trier_coord()
 {
-  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const DoubleVect& surfaces = ma_zvdf.face_surfaces();
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
 

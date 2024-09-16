@@ -375,8 +375,8 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
 
 void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson()
 {
-  const Domaine_dis& zdis=mon_equation->domaine_dis();
-  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis.valeur());
+  const Domaine_dis_base& zdis=mon_equation->domaine_dis();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
 
   REF(Champ_base) rch1 ;
@@ -428,7 +428,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 
 void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pression()
 {
-  const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis().valeur());
+  const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis());
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();

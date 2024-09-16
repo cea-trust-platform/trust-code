@@ -122,7 +122,7 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_domaine
 DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
 {
   //Cerr << " Perte_Charge_Reguliere_VEF_P1NC::ajouter " << finl;
-  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis());
   const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
@@ -203,7 +203,7 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
 void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matrice_Morse& matrice) const
 {
   //Cerr << " Perte_Charge_Reguliere_VEF_P1NC::ajouter " << finl;
-  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis());
   const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();

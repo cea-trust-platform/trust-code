@@ -18,7 +18,7 @@
 
 #include <Domaine_forward.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
+
 #include <Champ_base.h> // Pour Nature_du_champ
 #include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
@@ -41,7 +41,7 @@ class Motcle;
  *      abstraite qui est a la base de la hierarchie des discretisations
  *      en espace.
  *
- * @sa Probleme_base, Classe abstraite dont toutes les discretisations en espace doivent, deriver., Methode abstraite:, void domaine_Cl_dis(Domaine_dis& , Domaine_Cl_dis& ) const
+ * @sa Probleme_base, Classe abstraite dont toutes les discretisations en espace doivent, deriver., Methode abstraite:, void domaine_Cl_dis(Domaine_dis_base& , Domaine_Cl_dis& ) const
  */
 class Discretisation_base : public Objet_U
 {
@@ -63,9 +63,9 @@ public :
   void associer_domaine(const Domaine& dom);
 
   virtual void discretiser_variables() const;
-  virtual void discretiser_Domaine_Cl_dis(const Domaine_dis&, Domaine_Cl_dis&) const;
-  virtual void discretiser(REF(Domaine_dis)&) const;
-  virtual void domaine_Cl_dis(Domaine_dis&, Domaine_Cl_dis&) const = 0;
+  virtual void discretiser_Domaine_Cl_dis(const Domaine_dis_base&, Domaine_Cl_dis&) const;
+  virtual Domaine_dis_base& discretiser() const;
+  virtual void domaine_Cl_dis(Domaine_dis_base&, Domaine_Cl_dis&) const = 0;
 
   // Creation de champs scalaires ou vectoriels (essentiellement appel a la methode generale, ne pas surcharger ces methodes, elles ne sont la que par commodite)
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
@@ -85,9 +85,9 @@ public :
   void nommer_completer_champ_physique(const Domaine_dis_base& domaine_vdf, const Nom& nom_champ, const Nom& unite, Champ_base& champ, const Probleme_base& pbi) const;
   int verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const;
 
-  void volume_maille(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const;
-  void mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const;
-  virtual void residu(const Domaine_dis&, const Champ_Inc&, Champ_Fonc&) const;
+  void volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const;
+  void mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const;
+  virtual void residu(const Domaine_dis_base&, const Champ_Inc&, Champ_Fonc&) const;
 
   static void creer_champ(Champ_Inc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
                           const Nom& directive=NOM_VIDE, const Nom& nom_discretisation=NOM_VIDE);

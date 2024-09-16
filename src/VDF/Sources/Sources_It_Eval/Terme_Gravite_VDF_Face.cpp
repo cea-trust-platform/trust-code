@@ -29,9 +29,9 @@ Entree& Terme_Gravite_VDF_Face::readOn(Entree& s)
   return s ;
 }
 
-void Terme_Gravite_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Gravite_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
   iter_->associer_domaines(zvdf, zclvdf);
   Eval_Gravite_VDF_Face& eval_grav = static_cast<Eval_Gravite_VDF_Face&> (iter_->evaluateur());

@@ -36,9 +36,9 @@ Sortie& Paroi_scal_hyd_base_VEF::printOn(Sortie& s) const { return s << que_suis
 
 Entree& Paroi_scal_hyd_base_VEF::readOn(Entree& s) { return s; }
 
-void Paroi_scal_hyd_base_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_scal_hyd_base_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
   le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
   // On initialise tout de suite la loi de paroi
   Paroi_scal_hyd_base_VEF::init_lois_paroi();

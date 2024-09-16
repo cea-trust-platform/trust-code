@@ -145,7 +145,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::dimensionner_blocs_ext(int aux_only, matrices_
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
-      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0P1NC, op_ext[i]->equation().domaine_dis().valeur())));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0P1NC, op_ext[i]->equation().domaine_dis())));
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces()));
       cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis()->les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0P1NC_Elem, *op_ext[i]).nu());
@@ -249,7 +249,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
-      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0P1NC, op_ext[i]->equation().domaine_dis().valeur())));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0P1NC, op_ext[i]->equation().domaine_dis())));
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
       fs.push_back(std::ref(domaine[i].get().face_surfaces()));
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv()));

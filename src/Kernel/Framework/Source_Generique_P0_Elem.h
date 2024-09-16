@@ -34,7 +34,7 @@ class Source_Generique_P0_Elem: public Source_Generique_base
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis&) override;
   Nom localisation_source() override;
 
 protected:

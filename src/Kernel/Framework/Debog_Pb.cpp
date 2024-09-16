@@ -84,12 +84,6 @@ Entree& Debog_Pb::readOn(Entree& is)
     }
 
   Probleme_base& pb = ref_cast(Probleme_base, obj);
-  if (!pb.domaine_dis().non_nul())
-    {
-      Cerr<<finl;
-      Cerr<<"WARNING, problem in Debog"<<finl;
-      Cerr<<"It might be because you have put the command Debog before having associated the discretization to the problem."<<finl;
-    }
   ref_pb_ = pb;
 
   if (mode_db_ == 0)
@@ -185,7 +179,7 @@ void Debog_Pb::write_geometry_data()
       Process::exit();
     }
   const Domaine& dom = ref_pb_->domaine();
-  const Domaine_dis_base& zd = ref_pb_->domaine_dis().valeur();
+  const Domaine_dis_base& zd = ref_pb_->domaine_dis();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zd);
   {
     SFichier f(fichier_domaine_);
@@ -275,7 +269,7 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
 void Debog_Pb::read_geometry_data()
 {
   const Domaine& dom = ref_pb_->domaine();
-  const Domaine_dis_base& zd = ref_pb_->domaine_dis().valeur();
+  const Domaine_dis_base& zd = ref_pb_->domaine_dis();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zd);
   {
     DoubleTab coord_som_seq; // sommets

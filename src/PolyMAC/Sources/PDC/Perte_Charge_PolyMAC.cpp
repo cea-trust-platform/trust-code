@@ -94,7 +94,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
   assert(has_interface_blocs());
 
-  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Champ_Don& dh = diam_hydr;
@@ -343,8 +343,8 @@ void Perte_Charge_PolyMAC::associer_pb(const Probleme_base& pb)
   le_fluide = ref_cast(Fluide_base, equation().milieu());
 }
 
-void Perte_Charge_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Perte_Charge_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
+  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
   le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
 }

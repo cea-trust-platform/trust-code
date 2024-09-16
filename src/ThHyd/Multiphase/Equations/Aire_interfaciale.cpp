@@ -27,7 +27,7 @@
 #include <Pb_Multiphase.h>
 #include <Neumann_paroi.h>
 #include <Discret_Thyd.h>
-#include <Domaine_dis.h>
+
 #include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <EChaine.h>
@@ -91,8 +91,8 @@ void Aire_interfaciale::discretiser()
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Domaine_dis& z = probleme().domaine_dis();
-  dis.discretiser_champ(typeChamp, z.valeur(), multi_scalaire, noms , unites, N, 0, diametre_bulles_);
+  const Domaine_dis_base& z = probleme().domaine_dis();
+  dis.discretiser_champ(typeChamp, z, multi_scalaire, noms , unites, N, 0, diametre_bulles_);
 
   champs_compris_.ajoute_champ(diametre_bulles_);
 

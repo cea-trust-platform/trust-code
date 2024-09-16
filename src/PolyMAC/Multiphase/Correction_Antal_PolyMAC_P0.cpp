@@ -66,7 +66,7 @@ void Correction_Antal_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& 
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe(),
                     &rho   = equation().milieu().masse_volumique()->passe(),
                      &d_bulles = equation().probleme().get_champ("diametre_bulles").valeurs();
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins(),
                 &fcl = ch.fcl();
   const DoubleVect& pe = equation().milieu().porosite_elem(),

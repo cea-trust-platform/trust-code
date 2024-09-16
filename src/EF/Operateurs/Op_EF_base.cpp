@@ -359,7 +359,7 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
 void Op_EF_base::modifier_flux( const Operateur_base& op) const
 {
   controle_modifier_flux_=1;
-  const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis().valeur());
+  const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis());
   DoubleTab& flux_bords_=op.flux_bords();
   int nb_compo=flux_bords_.dimension(1);
   const Probleme_base& pb=op.equation().probleme();
@@ -386,7 +386,7 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
  */
 int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 {
-  const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis().valeur());
+  const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis());
   const DoubleTab& flux_bords_=op.flux_bords();
   if (flux_bords_.nb_dim()!=2)
     {

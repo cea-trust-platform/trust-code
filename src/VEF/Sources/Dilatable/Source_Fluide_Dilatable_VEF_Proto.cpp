@@ -29,15 +29,15 @@
 #include <TRUSTTab_kokkos.tpp>
 #include <kokkos++.h>
 
-void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
+void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Domaine_dis_base& dds,const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Domaine_VEF,domaine.valeur());
+  le_dom = ref_cast(Domaine_VEF,dds);
   le_dom_Cl = ref_cast(Domaine_Cl_VEF,domaine_cl.valeur());
 }
 
-void Source_Fluide_Dilatable_VEF_Proto::associer_volume_porosite_impl(const Domaine_dis& domaine, DoubleVect& volumes, DoubleVect& porosites)
+void Source_Fluide_Dilatable_VEF_Proto::associer_volume_porosite_impl(const Domaine_dis_base& dds, DoubleVect& volumes, DoubleVect& porosites)
 {
-  volumes.ref(ref_cast(Domaine_VF,domaine.valeur()).volumes_entrelaces());
+  volumes.ref(ref_cast(Domaine_VF,dds).volumes_entrelaces());
   porosites.ref(le_dom_Cl->equation().milieu().porosite_face());
 }
 

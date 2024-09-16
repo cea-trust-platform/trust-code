@@ -63,8 +63,8 @@ void Source_Portance_interfaciale_base::creer_champ(const Motcle& motlu)
         noms[0] = "wobble";
         unites[0] = "none";
         Motcle typeChamp = "champ_elem" ;
-        const Domaine_dis& z = pb.domaine_dis();
-        dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, wobble);
+        const Domaine_dis_base& z = pb.domaine_dis();
+        dis.discretiser_champ(typeChamp, z, scalaire, noms , unites, N, 0, wobble);
         champs_compris_.ajoute_champ(wobble);
       }
   if (motlu == "C_lift")
@@ -77,8 +77,8 @@ void Source_Portance_interfaciale_base::creer_champ(const Motcle& motlu)
         noms[0] = "C_lift";
         unites[0] = "none";
         Motcle typeChamp = "champ_elem" ;
-        const Domaine_dis& z = pb.domaine_dis();
-        dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, C_lift);
+        const Domaine_dis_base& z = pb.domaine_dis();
+        dis.discretiser_champ(typeChamp, z, scalaire, noms , unites, N, 0, C_lift);
         champs_compris_.ajoute_champ(C_lift);
       }
 }

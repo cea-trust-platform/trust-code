@@ -28,7 +28,7 @@ class Paroi_scal_hyd_base_EF: public Turbulence_paroi_scal_base
 {
   Declare_base(Paroi_scal_hyd_base_EF);
 public:
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
   int init_lois_paroi() override;
   void imprimer_nusselt(Sortie&) const override;
 

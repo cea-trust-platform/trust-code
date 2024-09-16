@@ -215,7 +215,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& 
   const int N = resu.line_size();
   ArrOfInt marqueur_neuman;
   ArrOfInt marqueur_paroi=0;
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   if(N > 1)
     {
       remplir_marqueur_sommet_neumann( marqueur_neuman,domaine_ef,la_zcl_EF.valeur(),transpose_partout_ );
@@ -311,7 +311,7 @@ void Op_Dift_EF_Q1::ajouter_contribution(const DoubleTab& transporte, Matrice_Mo
   DoubleTab diffu(nu_);
 
   const int N = transporte.line_size();
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   const DoubleVect& volumes_thilde= domaine_ef.volumes_thilde();
   const DoubleVect& volumes= domaine_ef.volumes();
 
@@ -370,7 +370,7 @@ void Op_Dift_EF_Q1::ajouter_contribution_new(const DoubleTab& transporte, Matric
   DoubleTab diffu(nu_);
 
   const int N = transporte.line_size();
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   //const DoubleVect& volumes_thilde= domaine_ef.volumes_thilde();
   const DoubleVect& volumes= domaine_ef.volumes();
 
@@ -434,7 +434,7 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
   flux_bords_=0.;
   // const DoubleTab& tab_inconnue=equation().inconnue()->valeurs();
   // on parcourt toutes les faces de bord et on calcule lambda*gradT
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   const IntTab& face_voisins=domaine_ef.face_voisins();
   const DoubleTab& bij=domaine_ef.Bij();
   int nb_som_elem=domaine_ef.domaine().nb_som_elem();
@@ -772,7 +772,7 @@ void Op_Dift_EF_Q1::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 {
   const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
 
   const IntTab& face_sommets=domaine_ef.face_sommets();
   int nb_som_face=domaine_ef.nb_som_face();

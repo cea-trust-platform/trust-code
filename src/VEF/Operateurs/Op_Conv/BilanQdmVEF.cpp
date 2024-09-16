@@ -89,7 +89,7 @@ void BilanQdmVEF::bilan_qdm(const DoubleTab& dudt, const Domaine_Cl_VEF& domaine
         }
     }// for nbord
   {
-    const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, domaine_Cl_VEF.domaine_dis().valeur());
+    const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, domaine_Cl_VEF.domaine_dis());
     const int prems=domaine_VEF.premiere_face_int();
     const int nb_faces=domaine_VEF.nb_faces_tot();
     for(face=prems; face<nb_faces; face++)
@@ -175,7 +175,7 @@ void BilanQdmVEF::bilan_energie(const DoubleTab& dudt,
         }
     }// for nbord
   {
-    const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, domaine_Cl_VEF.domaine_dis().valeur());
+    const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, domaine_Cl_VEF.domaine_dis());
     const int prems=domaine_VEF.premiere_face_int();
     const int nb_faces=domaine_VEF.nb_faces_tot();
     for(face=prems; face<nb_faces; face++)

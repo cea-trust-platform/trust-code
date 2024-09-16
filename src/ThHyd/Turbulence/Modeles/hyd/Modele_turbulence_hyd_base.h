@@ -19,7 +19,7 @@
 #include <Support_Champ_Masse_Volumique.h>
 #include <Turbulence_paroi.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
+
 
 class Schema_Temps_base;
 class Equation_base;
@@ -59,12 +59,12 @@ public:
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double) =0;
   virtual void discretiser();
-  void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
-  void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
-  void discretiser_K(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
+  void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
+  void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
+  void discretiser_K(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
   virtual void completer() { /* Do nothing */ }
   void associer_eqn(const Equation_base&);
-  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&) { /* Do nothing */ }
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) { /* Do nothing */ }
   int reprendre(Entree&) override;
 
   void creer_champ(const Motcle& motlu) override;

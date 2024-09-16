@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
  *     * l'on associe le champ d'Ostwald et l'equation hydraulique, le fluide et la
  *     domaine_dis_base
  *     ** ( nouvelles procedures :
- *   void proprietes_physiques_fluide_Ostwald(Domaine_dis& ,Fluide_Ostwald& ,
+ *   void proprietes_physiques_fluide_Ostwald(Domaine_dis_base& ,Fluide_Ostwald& ,
  *            const Navier_Stokes_std& , const Champ_Inc& ) const;
  *    a besoin de la classe Fluide_Ostwald pour avoir acces au fluide etudie
  *                          Navier_Stokes_Std pour avoir acces a l'equation hydraulique
@@ -46,20 +46,20 @@ public :
                          const Nom& sous_type = NOM_VIDE) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
-  void domaine_Cl_dis(Domaine_dis& z, Domaine_Cl_dis& zcl) const override;
-  void distance_paroi(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
-  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const override; // Distance paroi definie sur tout le domaine
-  void proprietes_physiques_fluide_Ostwald(const Domaine_dis&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const override;
+  void domaine_Cl_dis(Domaine_dis_base& z, Domaine_Cl_dis& zcl) const override;
+  void distance_paroi(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
+  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const override; // Distance paroi definie sur tout le domaine
+  void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const override;
 
-  void vorticite(Domaine_dis&, const Champ_Inc&, Champ_Fonc&) const;
+  void vorticite(Domaine_dis_base&, const Champ_Inc&, Champ_Fonc&) const;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
-  void critere_Q(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
-  void y_plus(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
-  void grad_T(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const override;
-  void grad_u(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const override;
-  void h_conv(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
-  void taux_cisaillement(const Domaine_dis&, const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const override;
-  void residu(const Domaine_dis& , const Champ_Inc&, Champ_Fonc& ) const override;
+  void critere_Q(const Domaine_dis_base& z,const Domaine_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
+  void y_plus(const Domaine_dis_base& z,const Domaine_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
+  void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const override;
+  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const override;
+  void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
+  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const override;
+  void residu(const Domaine_dis_base& , const Champ_Inc&, Champ_Fonc& ) const override;
 
   bool is_vef() const override { return true; }
 
@@ -84,7 +84,7 @@ private:
 
   void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const override;
 
-  void discretiser(REF(Domaine_dis)&) const override;
+  Domaine_dis_base& discretiser() const override;
 };
 
 #endif /* VEF_discretisation_included */

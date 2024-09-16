@@ -37,12 +37,12 @@ Entree& EOS_Tools_VDF::readOn(Entree& is)
   return is;
 }
 
-void  EOS_Tools_VDF::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
+void  EOS_Tools_VDF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Domaine_VDF,domaine.valeur());
+  le_dom = ref_cast(Domaine_VDF,dds);
   le_dom_Cl = domaine_cl;
   Champ_Face_VDF toto;
-  toto.associer_domaine_dis_base(domaine.valeur());
+  toto.associer_domaine_dis_base(dds);
   toto.fixer_nb_comp(1);
   toto.fixer_nb_valeurs_nodales(le_dom->nb_faces());
   tab_rho_face=toto.valeurs();

@@ -497,7 +497,7 @@ const Frontiere_dis_base& Champ_front_contact_VEF::front_dis() const
 
 void Champ_front_contact_VEF::calcul_coeff_amort()
 {
-  const Domaine_VEF& le_dom_dis=ref_cast(Domaine_VEF, l_inconnue1->equation().domaine_dis().valeur());
+  const Domaine_VEF& le_dom_dis=ref_cast(Domaine_VEF, l_inconnue1->equation().domaine_dis());
   int rang_front = le_dom_dis.rang_frontiere(nom_bord1);
   const Front_VF& la_front_vf=ref_cast(Front_VF, le_dom_dis.frontiere_dis(rang_front));
   const DoubleVect& vol = le_dom_dis.volumes();
@@ -610,7 +610,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   associer_ch_inc_base(l_inconnue1.valeur()) ;
 
   assert (nom_bord != "??") ;
-  const Domaine_VEF& le_dom_dis1=ref_cast(Domaine_VEF, l_inconnue1->equation().domaine_dis().valeur());
+  const Domaine_VEF& le_dom_dis1=ref_cast(Domaine_VEF, l_inconnue1->equation().domaine_dis());
 
   int rang_front1 = le_dom_dis1.rang_frontiere(nom_bord1);
   const Front_VF& la_front_vf1=ref_cast(Front_VF, le_dom_dis1.frontiere_dis(rang_front1));
@@ -628,7 +628,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   associer_ch_inc_base(l_inconnue2.valeur()) ;
 
   assert (nom_bord != "??") ;
-  const Domaine_VEF& le_dom_dis2=ref_cast(Domaine_VEF, l_inconnue2->equation().domaine_dis().valeur());
+  const Domaine_VEF& le_dom_dis2=ref_cast(Domaine_VEF, l_inconnue2->equation().domaine_dis());
 
   int rang_front2 = le_dom_dis2.rang_frontiere(nom_bord2);
   const Front_VF& la_front_vf2=ref_cast(Front_VF, le_dom_dis2.frontiere_dis(rang_front2));

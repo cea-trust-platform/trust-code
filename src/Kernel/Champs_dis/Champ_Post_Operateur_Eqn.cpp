@@ -135,7 +135,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
   const Equation_base& eqn=ref_eq_.valeur();
   const MD_Vector& mdf = eqn.inconnue()->valeurs().get_md_vector(),
                    md = sub_type(MD_Vector_composite, mdf.valeur()) ? ref_cast(MD_Vector_composite, mdf.valeur()).get_desc_part(0) : mdf;
-  const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_->domaine_dis().valeur());
+  const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_->domaine_dis());
   if (md== zvf.face_sommets().get_md_vector())
     {
       localisation_inco_=Entity::FACE;
@@ -191,7 +191,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
 
     }
   int nb_comp = 1;
-  ref_eq_->discretisation().discretiser_champ(directive,ref_eq_->domaine_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
+  ref_eq_->discretisation().discretiser_champ(directive,ref_eq_->domaine_dis(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
   espace_stockage = espace_stockage_fonc;
   espace_stockage->fixer_nature_du_champ(scalaire);
 

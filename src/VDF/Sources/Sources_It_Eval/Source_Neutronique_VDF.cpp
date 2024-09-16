@@ -41,9 +41,9 @@ double Source_Neutronique_VDF::calculer_Tmoyenne()
   return T;
 }
 
-void Source_Neutronique_VDF::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Source_Neutronique_VDF::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
   le_dom = zvdf;
   iter_->associer_domaines(zvdf, zclvdf);

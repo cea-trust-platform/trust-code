@@ -191,7 +191,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
           }
         else // oui ... pour le vdf de corentin
           {
-            for (int e = 0; e < domaine_dis()->nb_elem(); e++)
+            for (int e = 0; e < domaine_dis().nb_elem(); e++)
               for (i = 0; i < D; i++)
                 for (j = 0; j < D; j++)
                   grad_vit_phases_[n]->valeurs()(e, D*i+j) = grad_u->valeurs()(e, N*( D*i+j ) + n ) ;

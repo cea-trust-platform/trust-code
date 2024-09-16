@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ Entree& Viscosite_turbulente_LES_base::readOn(Entree& is)
 void Viscosite_turbulente_LES_base::calculer_longueurs_caracteristiques()
 {
   Cerr << "LES filter length scale calculation ..." << finl;
-  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, pb_->domaine_dis());
   const DoubleVect& volume = domaine_VF.volumes();
   const int nb_elem = domaine_VF.domaine().nb_elem();
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,12 +52,12 @@ int Op_Diff_EF_base::impr(Sortie& os) const
   return Op_EF_base::impr(os, *this);
 }
 
-void Op_Diff_EF_base::associer(const Domaine_dis& domaine_dis,
+void Op_Diff_EF_base::associer(const Domaine_dis_base& domaine_dis,
                                const Domaine_Cl_dis& domaine_cl_dis,
                                const Champ_Inc& ch_transporte)
 {
 
-  const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis);
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis.valeur());
 
   le_dom_EF = zEF;
@@ -102,7 +102,7 @@ double Op_Diff_EF_base::calculer_dt_stab() const
         }
       else
         {
-          const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+          const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
           const DoubleTab& coord=domaine_ef.domaine().les_sommets();
           const IntTab& elems=domaine_ef.domaine().les_elems() ;
           const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();

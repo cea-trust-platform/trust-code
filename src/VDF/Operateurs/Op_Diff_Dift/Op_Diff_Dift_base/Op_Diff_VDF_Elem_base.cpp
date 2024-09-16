@@ -145,7 +145,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       else
         {
           int nl = N[0] * iter_->domaine().nb_elem_tot();
-          int nc = N[i] * op_ext[i]->equation().domaine_dis()->nb_elem_tot();
+          int nc = N[i] * op_ext[i]->equation().domaine_dis().nb_elem_tot();
           dimensionner_termes_croises(mat2, op_ext[i]->equation().probleme(),nl, nc);
         }
       mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;

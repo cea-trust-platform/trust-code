@@ -83,11 +83,11 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
   Text_->mettre_a_jour(temps);
 }
 
-void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines " << finl ;
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
   le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ Entree& IJK_discretization::readOn(Entree& is)
     }
 
   const Probleme_base& pb = ref_cast(Probleme_base, Interprete_bloc::objet_global(vdf_problem));
-  const Domaine_VF& domaine_vdf = ref_cast(Domaine_VF, pb.domaine_dis().valeur());
+  const Domaine_VF& domaine_vdf = ref_cast(Domaine_VF, pb.domaine_dis());
 
   IJK_Grid_Geometry grid_geom;
   grid_geom.initialize_from_unstructured(domaine_vdf.domaine(),

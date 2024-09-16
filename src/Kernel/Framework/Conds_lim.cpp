@@ -34,7 +34,7 @@ Entree& Conds_lim::readOn(Entree& s ) { return s ; }
 /*! @brief Appel Cond_lim::completer() sur chaque condition aux llimites du vecteur.
  *
  */
-void Conds_lim::completer(const Domaine_dis& z)
+void Conds_lim::completer(const Domaine_dis_base& z)
 {
   if (!size()) return; //rien a faire
   // Completer les CL.

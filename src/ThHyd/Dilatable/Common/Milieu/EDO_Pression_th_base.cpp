@@ -35,9 +35,9 @@ void EDO_Pression_th_base::associer_fluide(const Fluide_Dilatable_base& fl)
   le_fluide_ = fl;
 }
 
-void EDO_Pression_th_base::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
+void EDO_Pression_th_base::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Domaine_VF, domaine.valeur());
+  le_dom = ref_cast(Domaine_VF, dds);
   le_dom_Cl = domaine_cl;
 }
 

@@ -15,7 +15,7 @@
 
 #include <Gravite_Multiphase.h>
 #include <Pb_Multiphase.h>
-#include <Domaine_dis.h>
+
 #include <Discret_Thyd.h>
 #include <Champ_Don.h>
 
@@ -38,8 +38,8 @@ Entree& Gravite_Multiphase::readOn(Entree& is)
   noms[0] = "gravite";
   unites[0] = "m/s^2";
   Motcle typeChamp = "champ_elem" ;
-  const Domaine_dis& z = pb.domaine_dis();
-  dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, D, 0, gravite_);
+  const Domaine_dis_base& z = pb.domaine_dis();
+  dis.discretiser_champ(typeChamp, z, scalaire, noms , unites, D, 0, gravite_);
 
   champs_compris_.ajoute_champ(gravite_);
 

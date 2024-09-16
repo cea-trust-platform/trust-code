@@ -41,7 +41,7 @@ Entree& Loi_paroi_base::readOn(Entree& is)
 
 void Loi_paroi_base::completer()
 {
-  Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
+  Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis());
   int nf_tot = domaine.nb_faces_tot();
 
   // We create the table that enables us to know for which BC we must calculate the boundary law
@@ -81,7 +81,7 @@ void Loi_paroi_base::mettre_a_jour(double temps)
 
       if (sub_type(Navier_Stokes_std, pb_->equation(0)) && pb_->has_champ("y_plus"))
         {
-          Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis().valeur());
+          Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis());
           const IntTab& f_e = domaine.face_voisins();
           int nf_tot = domaine.nb_faces_tot();
           DoubleTab& y_p = valeurs_loi_paroi_["y_plus"], &y_p_e = valeurs_loi_paroi_["y_plus_elem"];

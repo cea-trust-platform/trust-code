@@ -49,7 +49,7 @@ protected:
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
 };
 
 #endif

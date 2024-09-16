@@ -78,7 +78,7 @@ void Terme_Source_Th_TdivU_VEF_Face::associer_eqn_t()
   eqn_t = equation();
 }
 
-void Terme_Source_Th_TdivU_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+void Terme_Source_Th_TdivU_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                        const Domaine_Cl_dis& domaine_Cl_dis)
 {
 }

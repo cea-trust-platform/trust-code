@@ -48,10 +48,10 @@ public:
   inline int loi_paroi_non_nulle() const;
   inline Turbulence_paroi_scal& loi_paroi();
   virtual void discretiser();
-  //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
+  //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
   void associer_eqn(const Equation_base&);
   virtual void completer();
-  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&);
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis&);
   void a_faire(Sortie&) const;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;

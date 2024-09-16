@@ -44,12 +44,12 @@ void Domaine_Cl_VDF::associer(const Domaine_VDF& domaine_vdf)
   num_Cl_face_.resize(domaine_vdf.nb_faces_bord());
 }
 
-void Domaine_Cl_VDF::completer(const Domaine_dis& un_domaine_dis)
+void Domaine_Cl_VDF::completer(const Domaine_dis_base& un_domaine_dis)
 {
   Cerr << "Domaine_Cl_VDF::completer ..." << finl;
-  if (sub_type(Domaine_VDF,un_domaine_dis.valeur()))
+  if (sub_type(Domaine_VDF,un_domaine_dis))
     {
-      const Domaine_VDF& le_dom_VDF = ref_cast(Domaine_VDF,un_domaine_dis.valeur());
+      const Domaine_VDF& le_dom_VDF = ref_cast(Domaine_VDF,un_domaine_dis);
 
       //  Remplissage du tableau d'entiers type_arete_bord_ + tableau intermediaire : les_faces_Cl
       //  On remplit le tableau d'entiers local les_faces_Cl qui donne la condition aux limites pour chaque face de bord  avec les conventions suivantes :
@@ -460,12 +460,12 @@ int Domaine_Cl_VDF::nb_faces_sortie_libre() const
 
 Domaine_VDF& Domaine_Cl_VDF::domaine_VDF()
 {
-  return ref_cast(Domaine_VDF, domaine_dis().valeur());
+  return ref_cast(Domaine_VDF, domaine_dis());
 }
 
 const Domaine_VDF& Domaine_Cl_VDF::domaine_VDF() const
 {
-  return ref_cast(Domaine_VDF, domaine_dis().valeur());
+  return ref_cast(Domaine_VDF, domaine_dis());
 }
 
 int Domaine_Cl_VDF::nb_faces_bord() const

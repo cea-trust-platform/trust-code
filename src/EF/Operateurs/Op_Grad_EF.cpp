@@ -60,11 +60,11 @@ void Op_Grad_EF::mettre_a_jour(double temps)
 /*! @brief
  *
  */
-void Op_Grad_EF::associer(const Domaine_dis& domaine_dis,
+void Op_Grad_EF::associer(const Domaine_dis_base& domaine_dis,
                           const Domaine_Cl_dis& domaine_Cl_dis,
                           const Champ_Inc& inc)
 {
-  const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis);
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
   le_dom_EF = zEF;
   la_zcl_EF = zclEF;
@@ -240,7 +240,7 @@ DoubleTab& Op_Grad_EF::ajouter(const DoubleTab& pression, DoubleTab& grad) const
   grad = 0;
   assert_espace_virtuel_vect(pression);
   Debog::verifier("pression dans Op_Grad_EF",pression);
-  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
 
 
   const DoubleTab& Bij_thilde=domaine_ef.Bij_thilde();

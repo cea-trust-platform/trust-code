@@ -44,7 +44,7 @@ void Sortie_libre_Gradient_Pression_impose::completer()
   const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
-  const Domaine_VDF& domaine_vdf = ref_cast(Domaine_VDF, eqn.domaine_dis().valeur());
+  const Domaine_VDF& domaine_vdf = ref_cast(Domaine_VDF, eqn.domaine_dis());
   const Champ_P0_VDF& pression = ref_cast(Champ_P0_VDF, eqn_hydr.pression().valeur());
   const IntTab& face_voisins = domaine_vdf.face_voisins();
   const DoubleVect& volumes_entrelaces = domaine_vdf.volumes_entrelaces();

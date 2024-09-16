@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Terme_Source_Constituant_PolyMAC_Elem: public Terme_Source_Constituant, pu
 public:
   Terme_Source_Constituant_PolyMAC_Elem() : Terme_Source_Constituant(), Terme_Source_PolyMAC_base(Iterateur_Source_Elem<Eval_Source_C_PolyMAC_Elem>()) { }
 
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
 };

@@ -402,9 +402,9 @@ void Probleme_base::discretiser(Discretisation_base& une_discretisation)
   le_domaine_->init_renum_perio();
 
   une_discretisation.associer_domaine(le_domaine_.valeur());
-  une_discretisation.discretiser(le_domaine_dis_);
+  le_domaine_dis_ = une_discretisation.discretiser();
   // Can not do this before, since the Domaine_dis is not typed yet:
-  le_domaine_dis_->valeur().associer_domaine(le_domaine_);
+  le_domaine_dis_->associer_domaine(le_domaine_);
 
   if (milieu_via_associer_)
     {
@@ -634,18 +634,18 @@ Domaine& Probleme_base::domaine()
  *
  * (version const)
  *
- * @return (Domaine_dis&) un domaine discretise
+ * @return (Domaine_dis_base&) un domaine discretise
  */
-const Domaine_dis& Probleme_base::domaine_dis() const
+const Domaine_dis_base& Probleme_base::domaine_dis() const
 {
   return le_domaine_dis_.valeur();
 }
 
 /*! @brief Renvoie le domaine discretise associe au probleme.
  *
- * @return (Domaine_dis&) un domaine discretise
+ * @return (Domaine_dis_base&) un domaine discretise
  */
-Domaine_dis& Probleme_base::domaine_dis()
+Domaine_dis_base& Probleme_base::domaine_dis()
 {
   return le_domaine_dis_.valeur();
 }
@@ -781,7 +781,7 @@ Equation_base& Probleme_base::equation(const Nom& type)
 
 void Probleme_base::creer_champ(const Motcle& motlu)
 {
-  domaine_dis()->creer_champ(motlu, *this);
+  domaine_dis().creer_champ(motlu, *this);
   milieu().creer_champ(motlu);
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
@@ -810,7 +810,7 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
 
   try
     {
-      champ = &domaine_dis()->get_champ(un_nom);
+      champ = &domaine_dis().get_champ(un_nom);
       if (champ) return true ;
     }
   catch (Champs_compris_erreur&)
@@ -864,7 +864,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
     }
   try
     {
-      return domaine_dis()->get_champ(un_nom);
+      return domaine_dis().get_champ(un_nom);
     }
   catch (Champs_compris_erreur&)
     {
@@ -923,7 +923,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 
 void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
 {
-  domaine_dis()->get_noms_champs_postraitables(noms, opt);
+  domaine_dis().get_noms_champs_postraitables(noms, opt);
   milieu().get_noms_champs_postraitables(noms,opt);
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
@@ -1027,7 +1027,7 @@ void Probleme_base::preparer_calcul()
   // ou il y a des conditions aux limites periodiques.
   // Rq : Si l'une des equations porte la condition a la limite periodique
   //      alors les autres doivent forcement la porter.
-  equation(0).domaine_dis()->modifier_pour_Cl(equation(0).domaine_Cl_dis()->les_conditions_limites());
+  equation(0).domaine_dis().modifier_pour_Cl(equation(0).domaine_Cl_dis()->les_conditions_limites());
   milieu().initialiser(temps);
   for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).preparer_calcul();
@@ -1298,7 +1298,7 @@ int Probleme_base::postraiter(int force)
   if(!restart_in_progress_)  //no projection during the iteration of resumption of computation
     {
       double temps = le_schema_en_temps_->temps_courant();
-      le_domaine_dis_->valeur().domaine().update_after_post(temps);
+      le_domaine_dis_->domaine().update_after_post(temps);
     }
   restart_in_progress_=0; //reset to false in order to make the following projections
   // end specific postraitements for mobile domain (like ALE)

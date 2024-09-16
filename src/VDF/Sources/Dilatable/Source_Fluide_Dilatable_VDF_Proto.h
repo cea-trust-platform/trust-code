@@ -18,18 +18,18 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VDF;
 class Equation_base;
 class Domaine_VDF;
+class Domaine_dis_base;
 
 class Source_Fluide_Dilatable_VDF_Proto
 {
 protected:
-  void associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl);
-  void associer_volume_porosite_impl(const Domaine_dis& domaine, DoubleVect& volumes, DoubleVect& porosites);
+  void associer_domaines_impl(const Domaine_dis_base& domaine,const Domaine_Cl_dis& domaine_cl);
+  void associer_volume_porosite_impl(const Domaine_dis_base& domaine, DoubleVect& volumes, DoubleVect& porosites);
   void ajouter_impl( const DoubleVect& g, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 
   REF(Domaine_Cl_VDF) le_dom_Cl;

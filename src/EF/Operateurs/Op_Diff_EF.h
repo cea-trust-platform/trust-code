@@ -91,7 +91,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_template(const DoubleTab& tab_inconnue, 
 {
   static constexpr bool IS_GEN = (_T_ == AJOUTE_SCAL::GEN), IS_D3_8 = (_T_ == AJOUTE_SCAL::D3_8), IS_D2_4 = (_T_ == AJOUTE_SCAL::D2_4);
 
-  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis());
 
   const int N = IS_GEN ? resu.line_size() : 1;
   const int nb_som_elem = IS_D3_8 ? 8 : ( IS_D2_4 ? 4 : domaine_ef.domaine().nb_som_elem() /* IS_GEN */);
@@ -153,7 +153,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_template(const DoubleTab& tab_inconnue,
 {
   static constexpr bool IS_GEN = (_T_ == AJOUTE_VECT::GEN), IS_D3_8 = (_T_ == AJOUTE_VECT::D3_8), IS_D2_4 = (_T_ == AJOUTE_VECT::D2_4);
 
-  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis().valeur());
+  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis());
 
   const int N = IS_D3_8 ? 3 : (IS_D2_4 ? 2 : resu.line_size() /* IS_GEN */);
   const int const_dimension = IS_GEN ? Objet_U::dimension : N;

@@ -131,7 +131,7 @@ void Terme_Source_Canal_perio::completer()
       set_fichier("Canal_perio");
       set_description("Energy source term = Integral(P*dv) [W]");
     }
-  int nb_bords = equation().domaine_dis()->nb_front_Cl();
+  int nb_bords = equation().domaine_dis().nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = equation().domaine_Cl_dis()->les_conditions_limites(n_bord);
@@ -283,7 +283,7 @@ double Terme_Source_Canal_perio::compute_heat_flux() const
     }
   // Loop on boundaries to evaluate total heat flux:
   double heat_flux=0;
-  int nb_bords = equation().domaine_dis()->nb_front_Cl();
+  int nb_bords = equation().domaine_dis().nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = equation().domaine_Cl_dis()->les_conditions_limites(n_bord);
@@ -306,7 +306,7 @@ ArrOfDouble Terme_Source_Canal_perio::source_convection_diffusion(double debit_e
   // Compute heat_flux:
   double heat_flux = compute_heat_flux();
 
-  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF,equation().domaine_dis().valeur());
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF,equation().domaine_dis());
   const double volume = domaine_vf.domaine().volume_total();
   int size = domaine_vf.nb_faces();
   ArrOfDouble s(size);

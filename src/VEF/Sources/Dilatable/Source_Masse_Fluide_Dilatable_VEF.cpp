@@ -89,7 +89,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
                     &val_flux0 = ch_front_source_->valeurs();
 
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_->valeur();
-  const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
   const IntTab& face_voisins = zvf.face_voisins();
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
@@ -150,7 +150,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_->valeur();
-  const Domaine_VEF& zp1b = ref_cast(Domaine_VEF, zclb.domaine_dis().valeur());
+  const Domaine_VEF& zp1b = ref_cast(Domaine_VEF, zclb.domaine_dis());
   const DoubleTab& val_flux0 = ch_front_source_->valeurs();
   DoubleTrav val_flux(zp1b.nb_faces(), 1);
 

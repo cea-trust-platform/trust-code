@@ -22,9 +22,9 @@ Entree& Op_Div_VDF_Elem::readOn(Entree& s ) { return s; }
 
 Op_Div_VDF_Elem::Op_Div_VDF_Elem() : Op_Div_VDF_base(Iterateur_VDF_Elem<Eval_Div_VDF_Elem>()) { }
 
-void Op_Div_VDF_Elem::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc& )
+void Op_Div_VDF_Elem::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc& )
 {
-  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_Cl_dis.valeur());
   // On n'associe pas div a la vitesse car non P0.
   // On n'associe pas div a la pression car div(P) n'a pas de sens. Donc on fait rien !

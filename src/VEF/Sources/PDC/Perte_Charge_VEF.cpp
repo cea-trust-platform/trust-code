@@ -330,9 +330,9 @@ void Perte_Charge_VEF::associer_pb(const Probleme_base& pb)
   le_fluide = ref_cast(Fluide_base,equation().milieu());
 }
 
-void Perte_Charge_VEF::associer_domaines(const Domaine_dis& domaine_dis,
+void Perte_Charge_VEF::associer_domaines(const Domaine_dis_base& domaine_dis,
                                          const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
   le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }

@@ -71,7 +71,7 @@ void Source_PDF_base::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
   abort();
 }
 
-void Source_PDF_base::associer_domaines(const Domaine_dis& domaine_dis,
+void Source_PDF_base::associer_domaines(const Domaine_dis_base& domaine_dis,
                                         const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;

@@ -52,7 +52,7 @@ Sortie& Domaine_Cl_dis_base::printOn(Sortie& os) const
 Entree& Domaine_Cl_dis_base::readOn(Entree& is)
 {
   assert(mon_equation.non_nul());
-  const Domaine& ledomaine=equation().domaine_dis()->domaine();
+  const Domaine& ledomaine=equation().domaine_dis().domaine();
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Nom nomlu;
@@ -118,7 +118,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
           delete sa;
         }
       les_conditions_limites(rang)->
-      associer_fr_dis_base(domaine_dis()->frontiere_dis(rang));
+      associer_fr_dis_base(domaine_dis().frontiere_dis(rang));
 
       //Test pour empecher l utilisation de 'Raccord_distant_homogene' en calcul sequentiel
       const Frontiere& frontiere=ledomaine.frontiere(rang);
@@ -134,7 +134,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
     }
   if (nb_clim!=n)
     {
-      domaine_dis()->ecrire_noms_bords(Cerr);
+      domaine_dis().ecrire_noms_bords(Cerr);
       Cerr << "It misses " << n-nb_clim << " boundaries conditions " << finl;
       Cerr << "We read " << nb_clim << " boundaries conditions " << finl;
       Cerr << "We waited " << n << " boundary conditions " << finl;
@@ -173,9 +173,9 @@ int Domaine_Cl_dis_base::contient_Cl(const Nom& type)
  * Cette Domaine_dis est associee au travers de l'equation
  *     associee et pas directement a l'objet Domaine_Cl_dis_base.
  *
- * @return (Domaine_dis&) le domaine discretisee associee a l'equation associe aux conditions aux limites.
+ * @return (Domaine_dis_base&) le domaine discretisee associee a l'equation associe aux conditions aux limites.
  */
-Domaine_dis& Domaine_Cl_dis_base::domaine_dis()
+Domaine_dis_base& Domaine_Cl_dis_base::domaine_dis()
 {
   return equation().domaine_dis();
 }
@@ -187,9 +187,9 @@ Domaine_dis& Domaine_Cl_dis_base::domaine_dis()
  *     associee et pas directement a l'objet Domaine_Cl_dis_base.
  *     (version const)
  *
- * @return (Domaine_dis&) le domaine discretisee associee a l'equation associe aux conditions aux limites.
+ * @return (Domaine_dis_base&) le domaine discretisee associee a l'equation associe aux conditions aux limites.
  */
-const Domaine_dis& Domaine_Cl_dis_base::domaine_dis() const
+const Domaine_dis_base& Domaine_Cl_dis_base::domaine_dis() const
 {
   return equation().domaine_dis();
 }
@@ -460,11 +460,11 @@ int  Domaine_Cl_dis_base::nb_faces_Cl() const
 
 Domaine& Domaine_Cl_dis_base::domaine()
 {
-  return domaine_dis()->domaine();
+  return domaine_dis().domaine();
 }
 const Domaine& Domaine_Cl_dis_base::domaine() const
 {
-  return domaine_dis()->domaine();
+  return domaine_dis().domaine();
 }
 
 /*! @brief A partir d'un indice de face de bord dans le Domaine_VF, renvoie la condition aux limites a laquelle cette face

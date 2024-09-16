@@ -63,10 +63,10 @@ Entree& Terme_Source_Canal_perio_VEF_P1NC::readOn(Entree& s )
   return Terme_Source_Canal_perio::readOn(s);
 }
 
-void Terme_Source_Canal_perio_VEF_P1NC::associer_domaines(const Domaine_dis& domaine_dis,
+void Terme_Source_Canal_perio_VEF_P1NC::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
   le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 

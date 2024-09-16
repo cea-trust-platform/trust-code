@@ -34,9 +34,9 @@ Entree& Terme_Puissance_Thermique_VEF_base::readOn(Entree& s)
   return s;
 }
 
-void Terme_Puissance_Thermique_VEF_base::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Puissance_Thermique_VEF_base::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   iter_->associer_domaines(zvef, zclvef);
 }

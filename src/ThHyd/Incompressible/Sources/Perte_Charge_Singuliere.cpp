@@ -379,7 +379,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
 
 double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const
 {
-  const Domaine_VF& zvf = ref_cast(Domaine_VF, eqn.domaine_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, eqn.domaine_dis());
   const DoubleTab& vit = eqn.inconnue()->valeurs(),
                    &fac = sub_type(Pb_Multiphase, eqn.probleme()) ? ref_cast(Pb_Multiphase, eqn.probleme()).equation_masse().champ_conserve().passe()
                           : eqn.probleme().get_champ("masse_volumique").valeurs(); // get_champ pour flica5 car la masse volumique n'est pas dans le milieu...

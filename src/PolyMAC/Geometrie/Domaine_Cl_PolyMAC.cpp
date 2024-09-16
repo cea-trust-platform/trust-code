@@ -37,7 +37,7 @@ Sortie& Domaine_Cl_PolyMAC::printOn(Sortie& os) const { return os; }
 
 Entree& Domaine_Cl_PolyMAC::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(is); }
 
-void Domaine_Cl_PolyMAC::completer(const Domaine_dis& )
+void Domaine_Cl_PolyMAC::completer(const Domaine_dis_base& )
 {
   modif_perio_fait_ = 0;
 }
@@ -177,10 +177,10 @@ int Domaine_Cl_PolyMAC::initialiser(double temps)
 
 Domaine_VF& Domaine_Cl_PolyMAC::domaine_vf()
 {
-  return ref_cast(Domaine_VF, domaine_dis().valeur());
+  return ref_cast(Domaine_VF, domaine_dis());
 }
 
 const Domaine_VF& Domaine_Cl_PolyMAC::domaine_vf() const
 {
-  return ref_cast(Domaine_VF, domaine_dis().valeur());
+  return ref_cast(Domaine_VF, domaine_dis());
 }

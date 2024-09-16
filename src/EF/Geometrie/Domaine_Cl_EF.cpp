@@ -59,11 +59,11 @@ void Domaine_Cl_EF::associer(const Domaine_EF& le_dom_EF)
 /*! @brief remplissage des tableaux
  *
  */
-void Domaine_Cl_EF::completer(const Domaine_dis& un_domaine_dis)
+void Domaine_Cl_EF::completer(const Domaine_dis_base& un_domaine_dis)
 {
-  if (sub_type(Domaine_EF,un_domaine_dis.valeur()))
+  if (sub_type(Domaine_EF,un_domaine_dis))
     {
-      const Domaine_EF& le_dom_EF = ref_cast(Domaine_EF, un_domaine_dis.valeur());
+      const Domaine_EF& le_dom_EF = ref_cast(Domaine_EF, un_domaine_dis);
       remplir_type_elem_Cl(le_dom_EF);
     }
   else
@@ -331,7 +331,7 @@ void Domaine_Cl_EF::imposer_symetrie(DoubleTab& values,int tous_les_sommets_sym)
   // return;
 
   assert(values.dimension(1)==dimension);
-  const Domaine& z = domaine_dis()->domaine();
+  const Domaine& z = domaine_dis().domaine();
   int nb_som_tot=z.nb_som_tot();
   assert(values.dimension_tot(0)==nb_som_tot);
 
@@ -456,7 +456,7 @@ void  Domaine_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, 
 {
   // return;
   assert(secmem.dimension(1)==dimension);
-  const Domaine& z = domaine_dis()->domaine();
+  const Domaine& z = domaine_dis().domaine();
   int nb_som=z.nb_som();
   assert(secmem.dimension(0)==nb_som);
   int nb_comp=secmem.dimension(1);
@@ -608,7 +608,7 @@ void Domaine_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   DoubleTab& ch_tab = ch->valeurs(temps);
   int nb_comp = ch->nb_comp();
-  const Domaine_EF& domaineEF =  domaine_EF(); //ref_cast(Domaine_EF,ch->equation().domaine_dis().valeur());
+  const Domaine_EF& domaineEF =  domaine_EF(); //ref_cast(Domaine_EF,ch->equation().domaine_dis());
   const IntTab& faces_sommets=domaineEF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
   const DoubleTab& coords= domaineEF.domaine().coord_sommets();
@@ -787,10 +787,10 @@ int Domaine_Cl_EF::initialiser(double temps)
 
 Domaine_EF& Domaine_Cl_EF::domaine_EF()
 {
-  return ref_cast(Domaine_EF, domaine_dis().valeur());
+  return ref_cast(Domaine_EF, domaine_dis());
 }
 
 const Domaine_EF& Domaine_Cl_EF::domaine_EF() const
 {
-  return ref_cast(Domaine_EF, domaine_dis().valeur());
+  return ref_cast(Domaine_EF, domaine_dis());
 }

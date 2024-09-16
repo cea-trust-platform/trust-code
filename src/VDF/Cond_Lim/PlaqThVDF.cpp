@@ -41,7 +41,7 @@ Entree& PlaqThVDF::readOn(Entree& s )
 void PlaqThVDF::mettre_a_jour(double )
 {
   const Equation_base& eqn = mon_dom_cl_dis->equation();
-  const Domaine_VDF& le_dom_VDF=ref_cast(Domaine_VDF, eqn.domaine_dis().valeur());
+  const Domaine_VDF& le_dom_VDF=ref_cast(Domaine_VDF, eqn.domaine_dis());
   const Front_VF& front= ref_cast(Front_VF,frontiere_dis());
 
   const Milieu_base& le_milieu=eqn.probleme().milieu();

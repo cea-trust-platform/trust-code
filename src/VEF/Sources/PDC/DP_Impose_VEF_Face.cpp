@@ -67,7 +67,7 @@ void DP_Impose_VEF_Face::completer()
 void DP_Impose_VEF_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
-  const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
+  const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis());
   int taille_bloc = dom.nb_elem();
   num_faces.resize(taille_bloc);
   lire_surfaces(s,le_domaine,dom,num_faces, sgn);
@@ -99,7 +99,7 @@ void DP_Impose_VEF_Face::mettre_a_jour(double temps)
 
 void DP_Impose_VEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
+  const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis());
 
   const std::string& nom_inco = equation().inconnue()->le_nom().getString();
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
@@ -122,7 +122,7 @@ void DP_Impose_VEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 
 void DP_Impose_VEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
+  const Domaine_VEF& dom = ref_cast(Domaine_VEF, equation().domaine_dis());
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces();
   const DoubleTab& vit = equation().inconnue()->valeurs(), &nf = dom.face_normales();
   const std::string& nom_inco = equation().inconnue()->le_nom().getString();

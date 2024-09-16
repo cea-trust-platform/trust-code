@@ -19,7 +19,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis.h>
 #include <Source_base.h>
-#include <Domaine_dis.h>
+
 #include <TRUST_Ref.h>
 
 class Fluide_Dilatable_base;
@@ -50,7 +50,7 @@ public:
   inline void associer_pb(const Probleme_base& ) override { }
 
 protected:
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override = 0;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override = 0;
   REF(Fluide_Dilatable_base) le_fluide;
   DoubleVect g;
 };

@@ -18,11 +18,11 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_dis.h>
 #include <TRUST_Ref.h>
 #include <Objet_U.h>
 
 class Fluide_Dilatable_base;
+class Domaine_dis_base;
 
 /*! @brief classe Abstraite EOS_Tools_base
  *
@@ -38,7 +38,7 @@ public :
   virtual const DoubleTab& rho_discvit() const=0;
   virtual const DoubleTab& rho_face_n() const=0;
   virtual const DoubleTab& rho_face_np1() const=0;
-  virtual void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) =0;
+  virtual void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&) =0;
   virtual void divu_discvit(const DoubleTab&, DoubleTab&)=0;
   virtual void secmembre_divU_Z(DoubleTab& ) const =0;
   virtual void calculer_rho_face_np1(const DoubleTab& rho)=0;

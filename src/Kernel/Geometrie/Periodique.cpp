@@ -67,7 +67,7 @@ void Periodique::completer()
 
   // Creation d'un tableau d'indices parallele sur toutes les faces frontieres
   IntTab tab_face_associee;
-  const Domaine_VF& domainevf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VF& domainevf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis());
   domainevf.creer_tableau_faces_bord(tab_face_associee, RESIZE_OPTIONS::NOCOPY_NOINIT);
   tab_face_associee = -1;
 
@@ -98,7 +98,7 @@ void Periodique::completer()
   const int nb_faces_front_tot = tab_face_associee.size_totale();
   ArrOfInt index(nb_faces_front_tot);
   index = -2;
-  const int nb_faces_domaine = domaine_Cl_dis().domaine_dis()->face_sommets().dimension(0);
+  const int nb_faces_domaine = domaine_Cl_dis().domaine_dis().face_sommets().dimension(0);
   for (i = 0; i < nb_faces_virt; i++)
     {
       const int face_domaine = frontiere.face_virt(i); // Indice d'une face du domaine

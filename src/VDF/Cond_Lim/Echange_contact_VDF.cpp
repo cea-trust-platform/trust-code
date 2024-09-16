@@ -234,7 +234,7 @@ void Echange_contact_VDF::calculer_h_mon_pb(DoubleTab& tab,double invhparoi,int 
   // forcement local
   const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const Milieu_base& mon_milieu = mon_eqn.milieu();
-  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   calculer_h_local(tab,mon_eqn,ma_zvdf,ma_front_vf,mon_milieu,invhparoi,opt);
 }
@@ -249,7 +249,7 @@ void Echange_contact_VDF::calculer_h_autre_pb(DoubleTab& tab,double invhparoi,in
   int nb_comp = le_milieu.conductivite()->nb_comp();
   assert(nb_comp==1);
 
-  Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis().valeur();
+  Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis();
   Nom nom_racc1=frontiere_dis().frontiere().le_nom();
   Nom nom_racc2=ch.nom_bord_oppose();
 
@@ -287,7 +287,7 @@ int Echange_contact_VDF::initialiser(double temps)
   const Milieu_base& le_milieu = ch.milieu();
   int nb_comp = le_milieu.conductivite()->nb_comp();
   Nom nom_racc1 = frontiere_dis().frontiere().le_nom();
-  Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis().valeur();
+  Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis();
   int nb_faces_raccord1 = domaine_dis1.domaine().raccord(nom_racc1)->nb_faces();
 
   h_imp_.typer("Champ_front_fonc");
@@ -400,7 +400,7 @@ void Echange_contact_VDF::calculer_Teta_paroi(DoubleTab& Teta_p,const DoubleTab&
 {
   const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const DoubleTab& mon_inco=mon_eqn.inconnue()->valeurs();
-  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   int ndeb = ma_front_vf.num_premiere_face();
   int nb_faces_bord = ma_front_vf.nb_faces();
@@ -423,7 +423,7 @@ void Echange_contact_VDF::calculer_Teta_paroi(DoubleTab& Teta_p,const DoubleTab&
 int Echange_contact_VDF::verifier_correspondance() const
 {
   const Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
-  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const Domaine_VDF& zvdf_2=ref_cast(Domaine_VDF, ch.domaine_dis());
   const Front_VF& front_vf=ref_cast(Front_VF, ch.front_dis());

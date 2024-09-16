@@ -59,7 +59,7 @@ Entree& Perte_Charge_Singuliere_VEF_Face::readOn(Entree& s)
 void Perte_Charge_Singuliere_VEF_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
-  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis());
   int taille_bloc = domaine_VEF.nb_elem();
   num_faces.resize(taille_bloc);
   lire_surfaces(s,le_domaine,domaine_VEF,num_faces, sgn);

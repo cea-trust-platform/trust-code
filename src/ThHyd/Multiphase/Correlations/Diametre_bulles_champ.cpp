@@ -15,7 +15,7 @@
 
 #include <Diametre_bulles_champ.h>
 #include <Pb_Multiphase.h>
-#include <Domaine_dis.h>
+
 #include <Discret_Thyd.h>
 #include <Champ_Don.h>
 
@@ -38,8 +38,8 @@ Entree& Diametre_bulles_champ::readOn(Entree& is)
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Domaine_dis& z = pb.domaine_dis();
-  dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, diametres_);
+  const Domaine_dis_base& z = pb.domaine_dis();
+  dis.discretiser_champ(typeChamp, z, scalaire, noms , unites, N, 0, diametres_);
 
   champs_compris_.ajoute_champ(diametres_);
 

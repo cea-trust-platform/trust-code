@@ -90,10 +90,10 @@ Entree& Terme_Source_Rappel_T_VEF_Face::readOn(Entree& is )
 
 }
 
-void Terme_Source_Rappel_T_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+void Terme_Source_Rappel_T_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                        const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
   le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
@@ -106,7 +106,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
   Source_base::completer();
   if (fct_ok == 0)
     {
-      const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+      const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis());
       const Domaine& domaine = domaine_VEF.domaine();
       const int nb_elem = domaine_VEF.nb_elem();
 
@@ -124,7 +124,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       rch = pb->get_champ(nom_inco);
       l_inconnue=ref_cast(Champ_Inc_base, rch.valeur()) ;
 
-      domaine_VEF_autre_pb = ref_cast(Domaine_VEF,pb->domaine_dis().valeur());
+      domaine_VEF_autre_pb = ref_cast(Domaine_VEF,pb->domaine_dis());
       const int nb_elem_autre_pb = domaine_VEF_autre_pb->nb_elem();
       const DoubleTab& xp_autre_pb = domaine_VEF_autre_pb->xp() ;
       const DoubleVect& volumes = domaine_VEF_autre_pb->volumes();

@@ -131,7 +131,7 @@ int Convection_Diffusion_Temperature::lire_motcle_non_standard(const Motcle& un_
           Cerr << "On attendait : " << accolade_ouverte << finl;
           exit();
         }
-      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
       domaine_vf.domaine().creer_tableau_elements(indic_pena_global);
       domaine_vf.creer_tableau_faces(indic_face_pena_global);
     }
@@ -407,7 +407,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
 
 double Convection_Diffusion_Temperature::get_time_factor() const
 {
-  return domaine_dis()->nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
+  return domaine_dis().nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
 }
 
 // ajoute les contributions des operateurs et des sources
@@ -608,7 +608,7 @@ void Convection_Diffusion_Temperature::transport_ibc(DoubleTrav& secmem_conv_vr,
   set_indic_pena_globale();
 
   // on calcule l indicatrice epaisse
-  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
   const IntTab& faces_elem = domaine_vf.face_voisins();
   IntTrav indic_pena_global_fat(indic_pena_global);
   for (int i_face = 0; i_face < indic_face_pena_global.size(); i_face++)
@@ -704,7 +704,7 @@ void Convection_Diffusion_Temperature::mise_en_place_domaine_fantome(DoubleTab& 
   for (int k_elem =0 ; k_elem <nb_elem; ++k_elem)  ((indicatrice_totale(k_elem)!=0) ? ++x : ++j);
 
   //traitement cellules fantomes (if any)
-  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
   const IntTab& elem_faces = domaine_vf.elem_faces();
   const IntTab& faces_elem = domaine_vf.face_voisins();
   const int nb_faces_elem = elem_faces.dimension(1);
@@ -885,7 +885,7 @@ void Convection_Diffusion_Temperature::calcul_indic_pena_global(IntTab& indicatr
             }
         }
       // fonction characteristique (numero ibc) pour l'ensemble des ibc
-      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
       const IntTab& face_voisins = domaine_vf.face_voisins();
       for (int i = 0; i < nfaces ; i++)
         {
@@ -927,7 +927,7 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
   set_indic_pena_globale();
 
   //calcul de T_voisinage pour tous les elemnts
-  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
   const IntTab& elem_faces = domaine_vf.elem_faces();
   const IntTab& faces_elem = domaine_vf.face_voisins();
   const int nb_faces_elem = elem_faces.dimension(1);
@@ -1118,7 +1118,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
   if (le_schema_en_temps->limpr())
     {
 
-      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
       const DoubleVect& vol_maille = domaine_vf.volumes();
       const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
       const DoubleTab& tab_rho = fluide_inc.masse_volumique()->valeurs();

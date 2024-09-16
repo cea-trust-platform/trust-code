@@ -90,7 +90,7 @@ void Echange_interne_global_impose::completer()
   Echange_global_impose::completer();
 
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
-  const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis());
 
   frontiere_dis().frontiere().creer_tableau_faces(surface_gap_, RESIZE_OPTIONS::NOCOPY_NOINIT);
 

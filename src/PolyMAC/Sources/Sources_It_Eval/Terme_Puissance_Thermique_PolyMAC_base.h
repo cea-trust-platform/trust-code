@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ class Terme_Puissance_Thermique_PolyMAC_base: public Terme_Puissance_Thermique, 
   Declare_base(Terme_Puissance_Thermique_PolyMAC_base);
 public:
   Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_PolyMAC_base(iter_base) { }
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
   int initialiser(double temps) override;
 };
 

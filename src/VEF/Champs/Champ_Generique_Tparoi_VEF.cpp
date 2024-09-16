@@ -109,7 +109,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
         {
           // const Paroi_scal_hyd_base_VEF& paroi_scal_vef = ref_cast(Paroi_scal_hyd_base_VEF,loiparth.valeur());
 
-          const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF,my_eqn.domaine_dis().valeur());
+          const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF,my_eqn.domaine_dis());
           const IntTab& elem_faces = domaine_VEF.elem_faces();
           const DoubleVect& vol = domaine_VEF.volumes();
           const IntTab& face_voisins = domaine_VEF.face_voisins();

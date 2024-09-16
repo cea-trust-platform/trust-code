@@ -42,7 +42,7 @@ public:
   inline const Correlation& correlation() const { return corr_ ;};
   inline const DoubleTab& alpha_() const { return tab_alpha_impl<Eval_Dift_Multiphase_VDF_Elem>(); }
 
-  inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override
   {
     associer_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(zd, zcd, ch);
   }

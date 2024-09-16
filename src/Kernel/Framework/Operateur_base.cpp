@@ -90,7 +90,7 @@ void Operateur_base::completer()
 {
   assert(mon_equation.non_nul());
   const Equation_base& eqn = equation();
-  const Domaine_dis& zdis= eqn.domaine_dis();
+  const Domaine_dis_base& zdis= eqn.domaine_dis();
 
   const Domaine_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->domaine_Cl_dis() : eqn.domaine_Cl_dis();
   const Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
@@ -358,7 +358,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
         {
           const Frontiere_dis_base& la_fr = les_cls[num_cl]->frontiere_dis();
-          if (type!="sum" || eqn.domaine_dis()->domaine().bords_a_imprimer_sum().contient(la_fr.le_nom()))
+          if (type!="sum" || eqn.domaine_dis().domaine().bords_a_imprimer_sum().contient(la_fr.le_nom()))
             {
               Nom ch = la_fr.le_nom();
               if (type=="moment")
@@ -481,7 +481,7 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 0.;
       const Domaine_Cl_dis_base& zcl_dis = equation().domaine_Cl_dis();
-      const Domaine_dis_base& zdis = equation().domaine_dis().valeur();
+      const Domaine_dis_base& zdis = equation().domaine_dis();
       int nb_front = zdis.nb_front_Cl();
 
       if (flux_bords_.nb_dim()==2)

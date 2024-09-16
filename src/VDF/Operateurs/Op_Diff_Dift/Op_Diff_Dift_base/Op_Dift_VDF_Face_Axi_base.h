@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
 public:
   double calculer_dt_stab() const override;
   void completer() override;
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   void associer_modele_turbulence(const Modele_turbulence_hyd_base& );
   void mettre_a_jour(double ) override;
   void contribue_au_second_membre(DoubleTab& ) const;

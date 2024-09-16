@@ -452,12 +452,12 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
   const DoubleTab& tab_rho_face_n = fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& vit = eqn.vitesse()->valeurs();
   const Conds_lim& lescl = eqn.domaine_Cl_dis()->les_conditions_limites();
-  const IntTab& face_voisins = eqn.domaine_dis()->face_voisins();
+  const IntTab& face_voisins = eqn.domaine_dis().face_voisins();
   const int taille = vpoint.line_size();
 
   if (taille==1)
     if (orientation_VDF_.size() == 0)
-      orientation_VDF_.ref(ref_cast(Domaine_VF,eqn.domaine_dis().valeur()).orientation());
+      orientation_VDF_.ref(ref_cast(Domaine_VF,eqn.domaine_dis()).orientation());
   for (auto& itr : lescl)
     {
       const Cond_lim_base& la_cl_base = itr.valeur();
@@ -483,7 +483,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
           else // VEF //
             {
               int dim = Objet_U::dimension;
-              int premiere_face_int = ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).premiere_face_int();
+              int premiere_face_int = ref_cast(Domaine_VF, eqn.domaine_dis()).premiere_face_int();
               copyPartialFromDevice(tab_rho_face_np1, 0, premiere_face_int, "tab_rho_face_np1 on boundary");
               copyPartialFromDevice(tab_rho_face_n, 0, premiere_face_int, "tab_rho_face_n on boundary");
               copyPartialFromDevice(vit, 0, premiere_face_int * dim, "vit on boundary");

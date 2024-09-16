@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public:
 protected:
   std::vector<double> lambda;
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
 };
 
 #endif /* Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included */

@@ -49,9 +49,9 @@ inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const
     }
 }
 
-void Source_Generique_Face_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl_dis)
+void Source_Generique_Face_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
+  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
   la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, zcl_dis.valeur());
 }
 

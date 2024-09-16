@@ -276,7 +276,7 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_un_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), b_rho);
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
 
@@ -319,7 +319,7 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_h = ch_h.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_un_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), b_rho);
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);
 
@@ -348,7 +348,7 @@ void Energie_Multiphase::init_champ_convecte() const
   if (champ_convecte_.non_nul()) return; //deja fait
   int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue()->valeurs().size_reelle_ok() ? inconnue()->valeurs().dimension(0) : -1, Nc = inconnue()->valeurs().line_size();
   //champ_convecte_ : meme type / support que l'inconnue
-  discretisation().creer_champ(champ_convecte_, domaine_dis().valeur(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  discretisation().creer_champ(champ_convecte_, domaine_dis(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
   champ_convecte_->nommer(nom_fonc.first);

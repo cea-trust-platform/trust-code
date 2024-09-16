@@ -321,10 +321,10 @@ void EF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
 
 }
 
-void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la distance paroi" << finl;
-  Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z.valeur());
+  Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
   ch.typer("Champ_Fonc_P0_EF");
   Champ_Fonc_P0_EF& ch_dist_paroi = ref_cast(Champ_Fonc_P0_EF, ch.valeur());
   ch_dist_paroi.associer_domaine_dis_base(domaine_EF);
@@ -335,10 +335,10 @@ void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void EF_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la vorticite " << finl;
-  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z.valeur());
+  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 
   if (sub_type(Tri_EF,domaine_EF.type_elem()) || sub_type(Segment_EF, domaine_EF.type_elem()) || sub_type(Tetra_EF, domaine_EF.type_elem()))
     {
@@ -444,17 +444,17 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, cons
 
 /*! @brief discretise en EF le fluide incompressible, donc  K e N
  *
- * @param (Domaine_dis&) domaine a discretiser
+ * @param (Domaine_dis_base&) domaine a discretiser
  * @param (Fluide_Ostwald&) fluide a discretiser
  * @param (Champ_Inc&) ch_vitesse
  * @param (Champ_Inc&) temperature
  */
-void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper) const
+void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper) const
 {
 
 #ifdef dependance
   Cerr << "Discretisation EF du fluide_Ostwald" << finl;
-  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z);
   const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
 
@@ -483,11 +483,10 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z
 #endif
 }
 
-void EF_discretisation::domaine_Cl_dis(Domaine_dis& z, Domaine_Cl_dis& zcl) const
+void EF_discretisation::domaine_Cl_dis(Domaine_dis_base& z, Domaine_Cl_dis& zcl) const
 {
   Cerr << "discretisation des conditions limites" << finl;
-  assert(z.non_nul());
-  Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z.valeur());
+  Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
   zcl.typer("Domaine_Cl_EF");
   assert(zcl.non_nul());
   Domaine_Cl_EF& domaine_cl_EF = ref_cast(Domaine_Cl_EF, zcl.valeur());
@@ -495,14 +494,14 @@ void EF_discretisation::domaine_Cl_dis(Domaine_dis& z, Domaine_Cl_dis& zcl) cons
   Cerr << "discretisation des conditions limites OK" << finl;
 }
 
-void EF_discretisation::critere_Q(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
   // mais on ne s'en sert pas!!!
   Cerr << "Discretisation du critere Q " << finl;
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
-  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z);
   ch.typer("Critere_Q_Champ_P1_EF");
   Critere_Q_Champ_P1_EF& ch_cQ=ref_cast(Critere_Q_Champ_P1_EF,ch.valeur());
   ch_cQ.associer_domaine_dis_base(domaine_EF);
@@ -515,11 +514,11 @@ void EF_discretisation::critere_Q(const Domaine_dis& z, const Domaine_Cl_dis& zc
 #endif
 }
 
-void EF_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de y_plus" << finl;
   const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse.valeur());
-  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z.valeur());
+  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
   const Domaine_Cl_EF& domaine_cl_EF = ref_cast(Domaine_Cl_EF, zcl.valeur());
   ch.typer("Y_plus_Champ_Q1");
   Y_plus_Champ_Q1& ch_yp = ref_cast(Y_plus_Champ_Q1, ch.valeur());
@@ -533,12 +532,12 @@ void EF_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl, 
   ch_yp.changer_temps(ch_vitesse->temps());
 }
 
-void EF_discretisation::grad_T(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
   const Champ_P1_EF& temp = ref_cast(Champ_P1_EF,ch_temperature.valeur());
-  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z);
   const Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
   ch.typer("gradient_temperature_Champ_P1_EF");
   grad_T_Champ_P1_EF& ch_gt=ref_cast(grad_T_Champ_P1_EF,ch.valeur());
@@ -553,12 +552,12 @@ void EF_discretisation::grad_T(const Domaine_dis& z, const Domaine_Cl_dis& zcl, 
 #endif
 }
 
-void EF_discretisation::h_conv(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void EF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
   const Champ_P1_EF& temp = ref_cast(Champ_P1_EF,ch_temperature.valeur());
-  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z);
   const Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
   ch.typer("h_conv_Champ_P1_EF");
   h_conv_Champ_P1_EF& ch_gt=ref_cast(h_conv_Champ_P1_EF,ch.valeur());

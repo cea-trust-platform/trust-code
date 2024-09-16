@@ -30,7 +30,7 @@ Entree& Source_Travail_pression_Elem_base::readOn(Entree& is) { return is; }
 
 void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleTab& inco = equation().inconnue()->valeurs();
   int i, j, e, eb, ne = domaine.nb_elem(), f,n, N = inco.line_size(), m,
@@ -66,7 +66,7 @@ void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, 
 void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(),
                     &fs = domaine.face_surfaces(), &ve = domaine.volumes();
 

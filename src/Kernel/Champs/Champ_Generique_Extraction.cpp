@@ -400,10 +400,7 @@ void Champ_Generique_Extraction::get_copy_domain(Domaine& domain) const
 const Domaine_dis_base& Champ_Generique_Extraction::get_ref_domaine_dis_base() const
 {
   if (domaine_.non_nul())
-    {
-      const Domaine_dis_base& domaine_dis = le_dom_dis->valeur();
-      return  domaine_dis;
-    }
+    return  le_dom_dis.valeur();
   else
     {
       Cerr<<"There is no domain associated to this Champ_Generique_Extraction"<<finl;

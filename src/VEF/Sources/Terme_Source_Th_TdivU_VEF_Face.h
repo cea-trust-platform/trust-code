@@ -45,7 +45,7 @@ protected:
   void modifier_domaine_cl();
 
 
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
   REF(Equation_base) eqn_t;
   Domaine_Cl_dis mon_domcl_;
   REF(Domaine_Cl_dis_base) domainecl_sa;

@@ -983,7 +983,7 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
     {
       DoubleTab& flux_bords=op_base->flux_bords();
-      const Domaine_PolyMAC& le_domaine_vdf=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis().valeur());
+      const Domaine_PolyMAC& le_domaine_vdf=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis());
       const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
       const IntTab& face_voisins=le_domaine_vdf.face_voisins();
@@ -1029,7 +1029,7 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
 template <class _TYPE_>  int Iterateur_PolyMAC_Elem<_TYPE_>::impr(Sortie& os) const
 {
   const Domaine& madomaine=le_domaine->domaine();
-  const Domaine_PolyMAC& zpoly=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis().valeur());
+  const Domaine_PolyMAC& zpoly=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis());
   const int impr_bord=(madomaine.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   double temps = sch.temps_courant();

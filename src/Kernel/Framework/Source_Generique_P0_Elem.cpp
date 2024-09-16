@@ -52,10 +52,10 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-void Source_Generique_P0_Elem::associer_domaines(const Domaine_dis& domaine_dis,
+void Source_Generique_P0_Elem::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                  const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom = ref_cast(Domaine_VF,domaine_dis.valeur());
+  le_dom = ref_cast(Domaine_VF,domaine_dis);
   le_dom_cl = zcl_dis;
 }
 

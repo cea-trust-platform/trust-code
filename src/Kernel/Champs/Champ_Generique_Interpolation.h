@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Champ_Generique_Interpolation_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Domaine_dis.h>
+
 
 /*! @brief Un champ generique qui est construit comme une interpolation d'un autre champ generique (interpolation aux sommets ou aux elements).
  *
@@ -82,7 +82,7 @@ private:
   Motcle            methode_;                      // calculer_champ_post, etc...
   Nom               nom_domaine_lu_;               // Nom du domaine lu
   REF(Domaine)      domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
-  REF(Domaine_dis)  le_dom_dis;                    // rempli si domaine d'interpolation different du domaine natif. Une REF car le Domaine_dis_cache est responsable de la memoire
+  REF(Domaine_dis_base)  le_dom_dis;                    // rempli si domaine d'interpolation different du domaine natif. Une REF car le Domaine_dis_cache est responsable de la memoire
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d un domaine discretise
   int optimisation_sous_maillage_,optimisation_demande_;
   ArrOfInt renumerotation_maillage_;

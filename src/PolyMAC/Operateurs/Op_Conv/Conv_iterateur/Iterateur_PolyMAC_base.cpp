@@ -33,9 +33,9 @@ void Iterateur_PolyMAC_base::calculer_flux_bord(const DoubleTab& inco) const
   Process::exit();
 }
 
-void Iterateur_PolyMAC_base::associer(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Operateur_base& op)
+void Iterateur_PolyMAC_base::associer(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Operateur_base& op)
 {
-  const Domaine_PolyMAC& domaine_vdf = ref_cast(Domaine_PolyMAC, z.valeur());
+  const Domaine_PolyMAC& domaine_vdf = ref_cast(Domaine_PolyMAC, z);
   const Domaine_Cl_PolyMAC& domaine_cl_vdf = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
   associer(domaine_vdf, domaine_cl_vdf, op);
 }

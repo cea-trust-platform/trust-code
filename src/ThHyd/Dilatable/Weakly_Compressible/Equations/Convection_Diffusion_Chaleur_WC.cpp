@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ void Convection_Diffusion_Chaleur_WC::completer()
   Op_Grad_WC_.associer_eqn(*this);
   Op_Grad_WC_.typer();
   Op_Grad_WC_.l_op_base().associer_eqn(*this);
-  const Domaine_dis& zdis = domaine_dis();
+  const Domaine_dis_base& zdis = domaine_dis();
   const Domaine_Cl_dis& zcl = domaine_Cl_dis();
   const Champ_Inc& inco = inconnue();
   Op_Grad_WC_->associer(zdis, zcl, inco);

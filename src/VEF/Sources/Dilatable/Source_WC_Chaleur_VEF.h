@@ -36,7 +36,7 @@ class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dil
   Declare_instanciable(Source_WC_Chaleur_VEF);
 
 protected:
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
   void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const override;
 
 private:

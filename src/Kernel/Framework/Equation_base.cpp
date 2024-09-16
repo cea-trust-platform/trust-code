@@ -87,11 +87,11 @@ int Equation_base::equation_non_resolue() const
 
 /*! @brief Renvoie le domaine discretisee associee a l'equation.
  *
- * @return (Domaine_dis&) le domaine discretisee asscoiee a l'equation
+ * @return (Domaine_dis_base&) le domaine discretisee asscoiee a l'equation
  * @throws l'objet domaine discretisee (Domaine_dis) est invalide,
  * probleme associe non discretise.
  */
-Domaine_dis& Equation_base::domaine_dis()
+Domaine_dis_base& Equation_base::domaine_dis()
 {
   if (!le_dom_dis.non_nul())
     {
@@ -107,11 +107,11 @@ Domaine_dis& Equation_base::domaine_dis()
  *
  * (version const)
  *
- * @return (Domaine_dis&) le domaine discretisee asssociee a l'equation
+ * @return (Domaine_dis_base&) le domaine discretisee asssociee a l'equation
  * @throws l'objet domaine discretisee (Domaine_dis) est invalide,
  * probleme associe non discretise.
  */
-const Domaine_dis& Equation_base::domaine_dis() const
+const Domaine_dis_base& Equation_base::domaine_dis() const
 {
   if (!le_dom_dis.non_nul())
     {
@@ -131,7 +131,7 @@ const Domaine_dis& Equation_base::domaine_dis() const
  *     Voir les methodes Source_base::completer(),
  *                       Operateur_base::completer()
  *                       Domaine_Cl_dis_base::completer()
- *                       Domaine_Cl_dis_base::completer(const Domaine_dis& )
+ *                       Domaine_Cl_dis_base::completer(const Domaine_dis_base& )
  *
  */
 void Equation_base::completer()
@@ -737,7 +737,7 @@ void Equation_base::discretiser()
   Nom typ = discretisation().get_name_of_type_for("Solveur_Masse", "??" /* rien */, *this);
   solveur_masse.typer(typ);
   solveur_masse->associer_eqn(*this);
-  solveur_masse->associer_domaine_dis_base(domaine_dis().valeur());
+  solveur_masse->associer_domaine_dis_base(domaine_dis());
   solveur_masse->associer_domaine_cl_dis_base(le_dom_Cl_dis.valeur());
 
   if (calculate_time_derivative())
@@ -752,7 +752,7 @@ void Equation_base::discretiser()
       Nom unite(inconnue()->unites()[0]);
       unite += "/s";
 
-      discretisation().discretiser_champ(directive,domaine_dis().valeur(),nom,unite,
+      discretisation().discretiser_champ(directive,domaine_dis(),nom,unite,
                                          inconnue()->nb_comp(),
                                          schema_temps().nb_valeurs_temporelles(),
                                          schema_temps().temps_courant(),derivee_en_temps());
@@ -808,9 +808,9 @@ const Schema_Temps_base& Equation_base::schema_temps() const
 
 /*! @brief Associe le domaine discretisee a l'equation.
  *
- * @param (Domaine_dis& z) le domaine discretisee a associee
+ * @param (Domaine_dis_base& z) le domaine discretisee a associee
  */
-void Equation_base::associer_domaine_dis(const Domaine_dis& z)
+void Equation_base::associer_domaine_dis(const Domaine_dis_base& z)
 {
   le_dom_dis=z;
 }
@@ -2042,7 +2042,7 @@ void Equation_base::init_champ_conserve() const
   if (champ_conserve_.non_nul()) return; //deja fait
   int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue()->valeurs().size_reelle_ok() ? inconnue()->valeurs().dimension(0) : -1, Nc = inconnue()->valeurs().line_size();
   //champ_conserve_ : meme type / support que l'inconnue
-  discretisation().creer_champ(champ_conserve_, domaine_dis().valeur(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  discretisation().creer_champ(champ_conserve_, domaine_dis(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_conserve();
   champ_conserve_->nommer(nom_fonc.first);

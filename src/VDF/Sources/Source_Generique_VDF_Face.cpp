@@ -69,10 +69,10 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   secmem.echange_espace_virtuel();
 }
 
-void Source_Generique_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+void Source_Generique_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                   const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis);
   la_zcl_VDF = ref_cast(Domaine_Cl_VDF,zcl_dis.valeur());
 }
 

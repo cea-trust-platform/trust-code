@@ -131,7 +131,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier()
 
 void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_pression()
 {
-  const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis().valeur());
+  const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis());
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();
@@ -181,7 +181,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
 
   //  Cerr << "la_pression " << mon_equation->pression()->valeurs() << finl;
   //   Cerr << "ch_p.valeurs() " << ch_p.valeurs() << finl;
-  // const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis().valeur());
+  // const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis());
   //   int i,comp;
   //   int nb_face = zvef.nb_faces();
   //   Champ_Inc la_pression = mon_equation->pression();

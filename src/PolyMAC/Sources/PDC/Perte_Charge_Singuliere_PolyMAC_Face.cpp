@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
 void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
-  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC,equation().domaine_dis().valeur());
+  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC,equation().domaine_dis());
   int taille_bloc = domaine_PolyMAC.nb_elem();
   num_faces.resize(taille_bloc);
   lire_surfaces(s,le_domaine,domaine_PolyMAC,num_faces, sgn);

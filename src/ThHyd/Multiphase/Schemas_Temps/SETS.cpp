@@ -453,7 +453,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
           /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
           tabs_t b_p;
           std::vector<std::set<std::pair<std::string, int>>> ordre;
-          if (eq_qdm.domaine_dis()->le_nom() == "PolyMAC_P0")
+          if (eq_qdm.domaine_dis().le_nom() == "PolyMAC_P0")
             ordre.push_back( { { "vitesse", 1 } }); //si PolyMAC_P0: on commence par ve
           ordre.push_back( { { "vitesse", 0 } }), ordre.push_back( { }); //puis vf, puis toutes les autres inconnues simultanement
           for (auto &&nom : noms)

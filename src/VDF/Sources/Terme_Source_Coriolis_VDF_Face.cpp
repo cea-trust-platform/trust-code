@@ -81,10 +81,10 @@ void Terme_Source_Coriolis_VDF_Face::associer_pb(const Probleme_base& pb)
 }
 
 
-void Terme_Source_Coriolis_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+void Terme_Source_Coriolis_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
                                                        const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis);
   le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 
 }
@@ -186,7 +186,7 @@ void Terme_Source_Coriolis_VDF_Face::calculer_force_de_Coriolis() const
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const DoubleTab& vitesse = eq_hydraulique().inconnue()->valeurs();
   //  int nb_faces = domaine_VDF.nb_faces();
-  const int nb_elems = eq_hydraulique().domaine_dis()->domaine().nb_elem();
+  const int nb_elems = eq_hydraulique().domaine_dis().domaine().nb_elem();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   //  const IntTab& face_voisins = domaine_VDF.face_voisins();
   DoubleVect om = omega();

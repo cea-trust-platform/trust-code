@@ -36,7 +36,7 @@ public :
   const DoubleTab& rho_discvit() const override;
   const DoubleTab& rho_face_n() const override;
   const DoubleTab& rho_face_np1() const override;
-  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&) override;
   void divu_discvit(const DoubleTab& , DoubleTab& ) override;
   double moyenne_vol(const DoubleTab&) const override;
   void secmembre_divU_Z(DoubleTab& ) const override;

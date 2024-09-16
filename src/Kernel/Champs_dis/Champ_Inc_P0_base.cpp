@@ -87,7 +87,7 @@ void Champ_Inc_P0_base::init_fcl() const
   const Conds_lim& cls = mon_dom_cl_dis.valeur()->les_conditions_limites();
   int i, f, n;
 
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, mon_equation->domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, mon_equation->domaine_dis());
   fcl_.resize(domaine.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {

@@ -17,7 +17,7 @@
 #define Domaine_32_64_included
 
 #include <Domaine_base.h>
-#include <Domaine_dis.h>
+
 #include <TRUST_Deriv.h>
 #include <Octree.h>
 #include <Elem_geom.h>
@@ -271,7 +271,7 @@ public:
   ///
   void init_renum_perio();
   inline int_t get_renum_som_perio(int_t i) const { return renum_som_perio_[i]; }
-  void construire_renum_som_perio(const Conds_lim&, const Domaine_dis&);
+  void construire_renum_som_perio(const Conds_lim&, const Domaine_dis_base&);
   inline void set_renum_som_perio(IntTab_t& renum)  {    renum_som_perio_=renum;   };
   const ArrOfInt_t& get_renum_som_perio() const { return renum_som_perio_; }
 

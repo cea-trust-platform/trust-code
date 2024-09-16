@@ -171,7 +171,7 @@ void Discretisation_base::discretiser_variables() const
   Process::exit("Discretisation_base::discretiser_variables() does nothing and must be overloaded !");
 }
 
-void Discretisation_base::discretiser_Domaine_Cl_dis(const Domaine_dis&, Domaine_Cl_dis&) const
+void Discretisation_base::discretiser_Domaine_Cl_dis(const Domaine_dis_base&, Domaine_Cl_dis&) const
 {
   Process::exit("Discretisation_base::discretiser_Domaine_Cl_dis does nothing and must be overloaded !");
 }
@@ -254,29 +254,29 @@ void Discretisation_base::creer_champ(Champ_Don& ch, const Domaine_dis_base& z, 
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
 }
 
-void Discretisation_base::discretiser(REF(Domaine_dis) &dom_dis) const
+Domaine_dis_base& Discretisation_base::discretiser() const
 {
   Nom type = "Domaine_", dis = que_suis_je();
   if (dis == "VEFPreP1B") dis = "VEF";
   type += dis;
   const Domaine& dom = le_domaine_.valeur();
-  dom_dis = Domaine_dis_cache::Build_or_get(type, dom);
+  return Domaine_dis_cache::Build_or_get(type, dom);
 }
 
-void Discretisation_base::volume_maille(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const
+void Discretisation_base::volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const
 {
   Cerr << "Discretization of the field 'volume of meshes'" << finl;
-  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z.valeur());
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z);
   discretiser_champ("champ_elem", domaine_VF, "volume_maille", "m3", 1, sch.temps_courant(), ch);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, ch.valeur());
   DoubleVect& tab = ch_fonc.valeurs();
   tab = domaine_VF.volumes();
 }
 
-void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis& z, Champ_Fonc& ch) const
+void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const
 {
   Cerr << "Discretization of the field mesh numbering" << finl;
-  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z.valeur());
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z);
   Noms noms(3);
   Noms unit(3);
   noms[0]="nodes"; // Composante 0: numerotation des sommets
@@ -289,7 +289,7 @@ void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Dom
   ch->nommer("mesh_numbering");
   DoubleTab& tab = ch->valeurs();
   tab=0;
-  const IntTab& les_elems = z->domaine().les_elems();
+  const IntTab& les_elems = z.domaine().les_elems();
   const IntTab& elem_faces = domaine_VF.elem_faces();
   int nb_elem = les_elems.dimension(0);
   int nb_soms_elem = les_elems.dimension(1);
@@ -306,7 +306,7 @@ void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Dom
     }
 }
 
-void Discretisation_base::residu(const Domaine_dis&, const Champ_Inc&, Champ_Fonc&) const
+void Discretisation_base::residu(const Domaine_dis_base&, const Champ_Inc&, Champ_Fonc&) const
 {
   Cerr << "Discret_Thyd::residu() does nothing ! " << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();

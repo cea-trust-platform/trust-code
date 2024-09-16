@@ -42,7 +42,7 @@ protected:
   REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
   IntVect num_faces;
   DoubleVect corr_front_ss;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
 };
 
 #endif /* Perte_Charge_VDF_Face_included */

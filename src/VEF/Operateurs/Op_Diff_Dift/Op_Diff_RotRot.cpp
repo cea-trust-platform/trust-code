@@ -20,7 +20,7 @@
 #include <Op_Diff_RotRot.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_Cl_VEF.h>
-#include <Domaine_dis.h>
+
 #include <SFichier.h>
 #include <Solv_GCP.h>
 #include <SSOR.h>
@@ -33,9 +33,9 @@ Entree& Op_Diff_RotRot::readOn(Entree& s) { return s; }
 
 const Domaine_VEF& Op_Diff_RotRot::domaine_vef() const { return ref_cast(Domaine_VEF, le_dom_vef.valeur()); }
 
-void Op_Diff_RotRot::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc& inco)
+void Op_Diff_RotRot::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc& inco)
 {
-  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;

@@ -118,7 +118,7 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
     {
       const DoubleTab& inco = equation().inconnue()->valeurs(), &passe = equation().inconnue()->passe();
       Matrice_Morse *mat = matrices[equation().inconnue()->le_nom().getString()]; //facultatif
-      const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+      const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
       const Conds_lim& cls = ref_cast(Domaine_Cl_dis_base, equation().domaine_Cl_dis().valeur()).les_conditions_limites();
       const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_base, equation().inconnue().valeur()).fcl();
       const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
@@ -166,7 +166,7 @@ DoubleTab& Masse_VDF_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, i
 {
   if (!sub_type(Pb_Multiphase, equation().probleme())) return Masse_VDF_base::corriger_solution(x,y,incr);
 
-  const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis().valeur());
+  const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis());
   const Conds_lim& cls = ref_cast(Domaine_Cl_dis_base, equation().domaine_Cl_dis().valeur()).les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Face_base, equation().inconnue().valeur()).fcl();
   const DoubleTab& vit = equation().inconnue()->valeurs();

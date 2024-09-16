@@ -43,7 +43,7 @@ class Source_WC_Chaleur_VDF : public Source_WC_Chaleur, public Source_Fluide_Dil
     return 1;
   };
 protected:
-  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl) override;
+  void associer_domaines(const Domaine_dis_base& domaine,const Domaine_Cl_dis& zcl) override;
   void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const override;
 
 private:
