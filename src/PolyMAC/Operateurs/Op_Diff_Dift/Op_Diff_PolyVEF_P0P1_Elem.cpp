@@ -80,14 +80,15 @@ double Op_Diff_PolyVEF_P0P1_Elem::calculer_dt_stab() const
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs(), &diffu_tot = nu();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = dom.volumes_entrelaces(), &ve = dom.volumes();
 
-  int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
+  int i, e, f, n, m, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1, multi = multiscalar_;
   double dt = 1e10;
   DoubleTrav flux(N);
   for (e = 0; e < dom.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
-          flux(n) += dom.nu_dot(&diffu_tot, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+          for (m = (multi ? 0 : n); m < (multi ? N : n + 1); m++)
+            flux(n) += dom.nu_dot(&diffu_tot, e, n, &nf(f, 0), &nf(f, 0), nullptr, nullptr, multi ? m : -1) / vf(f);
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
@@ -100,7 +101,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, j, k, e, eb, o_e, s = 0, sb = 0, o_s, f, o_f, m, n, M, p, n_ext = (int)op_ext.size(), semi = (int) semi_impl.count(nom_inco);
+  int i, j, k, e, eb, o_e, s = 0, sb = 0, o_s, f, o_f, m, n, M, p, n_ext = (int)op_ext.size(), semi = (int) semi_impl.count(nom_inco), multi = multiscalar_;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes, nombre d'elements total par pb
   std::vector<std::reference_wrapper<const Domaine_PolyVEF>> dom; //domaines
@@ -131,11 +132,13 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
           for (j = 0; j < 2 + f_s[0].get().dimension(1); j++)
             if (j < 2 ? !aux_only && (eb = f_e[0](f, j)) >= 0 : (sb = f_s[0](f, j - 2)) >= 0 && scl_d[0](sb) == scl_d[0](sb + 1))
               for (n = 0; n < N[0]; n++)
-                stencil[0].append_line(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n);
+                for (m = (multi ? 0 : n); m < (multi ? N[0] : n + 1); m++)
+                  stencil[0].append_line(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + m);
   /* lignes aux sommets */
   for (s = 0; s < dom[0].get().nb_som(); s++)
     for (n = 0; n < N[0]; n++)
-      stencil[0].append_line(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + n);
+      for (m = (multi ? 0 : n); m < (multi ? N[0] : n + 1); m++)
+        stencil[0].append_line(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (!aux_only * ne_tot[0] + s) + m);
 
   /* problemes distants : pour les Echange_contact */
   const Echange_contact_PolyMAC_P0P1NC *pcl;
@@ -166,7 +169,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, ib, j, k, l, m, e, eb, f, s = 0, sb = 0, n, M, n_ext = (int)op_ext.size(), semi = (int)semi_impl.count(nom_inco), d, D = dimension, n_sf, nt, ok;
+  int i, ib, j, k, l, m, e, eb, f, s = 0, sb = 0, n, nb, M, n_ext = (int)op_ext.size(), semi = (int)semi_impl.count(nom_inco), d, D = dimension, n_sf, nt, ok, multi = multiscalar_;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes
   std::vector<std::reference_wrapper<const Domaine_PolyVEF>> dom; //zones
@@ -209,7 +212,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
       for (ok = 0, i = 0; i < 2 + f_s[0].get().dimension(1); i++) /* si aucun element ou sommet reel autour de f, rien a faire */
         ok |= i < 2 ? (e = f_e[0](f, i)) >= 0 && e < dom[0].get().nb_elem() : (s = f_s[0](f, i - 2)) >= 0 && s < dom[0].get().nb_som() && scl_d[0](s) == scl_d[0](s + 1);
       if (!ok) continue;
-      dom[0].get().surf_elem_som(f, Sa), n_sf = Sa.dimension(0), nt = 2 + n_sf, Gf.resize(nt, D), Gfa.resize(n_sf, D, nt, D), A.resize(nt, nt, N[0]);
+      dom[0].get().surf_elem_som(f, Sa), n_sf = Sa.dimension(0), nt = 2 + n_sf, Gf.resize(nt, D), Gfa.resize(n_sf, D, nt, D), A.resize(nt, nt, N[0] * (multi ? N[0] : 1));
 
       /* Gf : gradient non stabilise dans le diamant */
       for (Gf = 0, i = 0; i < n_sf; i++)
@@ -239,10 +242,11 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
             for (fac = dom[0].get().dot(k ? &xs[0](sb, 0) : &xp[0](e, 0), &Sa(i, k ? 3 + j : j, 0), &xs[0](s, 0)) / D, l = 0; l < nt; l++)
               for (m = 0; m <= l; m++)
                 for (n = 0; n < N[0]; n++)
-                  A(l, m, n) += fac * dom[0].get().nu_dot(&diffu[0].get(), e, n, &Gfa(i, k ? 2 : j, l, 0), &Gfa(i, k ? 2 : j, m, 0));
+                  for (nb = (multi ? 0 : n); nb < (multi ? N[0] : n + 1); nb++)
+                    A(l, m, multi ? N[0] * n + nb : n) += fac * dom[0].get().nu_dot(&diffu[0].get(), e, n, &Gfa(i, k ? 2 : j, l, 0), &Gfa(i, k ? 2 : j, m, 0), nullptr, nullptr, multi ? nb : -1);
       for (i = 0; i < nt; i++) //symetrisation
         for (j = i + 1; j < nt; j++)
-          for (n = 0; n < N[0]; n++)
+          for (n = 0; n < N[0] * (multi ? N[0] : 1); n++)
             A(i, j, n) = A(j, i, n);
 
       /* contributions */
@@ -251,11 +255,12 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
           for (j = 0; j < nt; j++)
             if (j < 2 ? (eb = f_e[0](f, j)) >= 0 : (sb = f_s[0](f, j - 2)) >= 0)
               for (n = 0; n < N[0]; n++)
-                {
-                  secmem(i < 2 ? e : !aux_only * ne_tot[0] + s, n) -= A(i, j, n) * (j < 2 ? inco[0](eb, n) : v_aux[0](sb, n));
-                  if (mat[0] && !semi && (j < 2 ? !aux_only : scl_d[0](sb) == scl_d[0](sb + 1)))
-                    (*mat[0])(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + n) += A(i, j, n);
-                }
+                for (m = (multi ? 0 : n); m < (multi ? N[0] : n + 1); m++)
+                  {
+                    secmem(i < 2 ? e : !aux_only * ne_tot[0] + s, n) -= A(i, j, multi ? N[0] * n + m : n) * (j < 2 ? inco[0](eb, m) : v_aux[0](sb, m));
+                    if (mat[0] && !semi && (j < 2 ? !aux_only : scl_d[0](sb) == scl_d[0](sb + 1)))
+                      (*mat[0])(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + m) += A(i, j, multi ? N[0] * n + m : n);
+                  }
 
       /* CLs non Dirichlet -> injection aux sommets */
       if (fcl[0](f, 0) && fcl[0](f, 0) < 5)
@@ -265,18 +270,19 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
               double surf = dom[0].get().dot(&nf[0](f, 0), &Sa(i, 1, 0)) / fs[0](f); //partie de la surface vers le sommet
               if (fcl[0](f, 0) == 1 || fcl[0](f, 0) == 2) //Echange_{externe,global}_impose
                 for (n = 0; n < N[0]; n++)
-                  {
-                    const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
-                    double sh = surf * ech.h_imp(fcl[0](f, 2), n), T = ech.T_ext(fcl[0](f, 2), n);
-                    secmem(!aux_only * ne_tot[0] + s, n) -= sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
-                    if (f < dom[0].get().premiere_face_int())
-                      flux_bords_(f, n) += sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, n) : inco[0](e, n)) - T);
-                    if (mat[0] && (fcl[0](f, 0) == 1 || !aux_only) && !semi)
-                      (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (fcl[0](f, 0) == 1 ? !aux_only * ne_tot[0] + s : e) + n) += sh;
-                  }
+                  for (m = (multi ? 0 : n); m < (multi ? N[0] : n + 1); m++)
+                    {
+                      const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
+                      double sh = surf * ech.h_imp(fcl[0](f, 2), multi ? N[0] * n + m : n), T = ech.T_ext(fcl[0](f, 2), m);
+                      secmem(!aux_only * ne_tot[0] + s, n) -= sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, m) : inco[0](e, m)) - T);
+                      if (f < dom[0].get().premiere_face_int())
+                        flux_bords_(f, n) += sh * ((fcl[0](f, 0) == 1 ? v_aux[0](s, m) : inco[0](e, m)) - T);
+                      if (mat[0] && (fcl[0](f, 0) == 1 || !aux_only) && !semi)
+                        (*mat[0])(N[0] * (!aux_only * ne_tot[0] + s) + n, N[0] * (fcl[0](f, 0) == 1 ? !aux_only * ne_tot[0] + s : e) + m) += sh;
+                    }
               else if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
                 {
-                  if (fcl[0](f, 0) != 6 && fcl[0](f, 0) != 7 && fcl[0](f, 0) != 3)
+                  if ((fcl[0](f, 0) != 6 && fcl[0](f, 0) != 7 && fcl[0](f, 0) != 3) || multi)
                     abort(); //cas non geres
                   const Echange_contact_PolyMAC_P0P1NC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC_P0P1NC, cls[0].get()[fcl[0](f, 1)].valeur()) : nullptr;
                   int o_p = ech ? ech->o_idx : -1, o_s = ech ? ech->s_dist[s] : -1, k1, k2, wall = corr[0]->T_at_wall();
@@ -321,6 +327,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                   int o_p = ech.o_idx, o_f = ech.f_dist(fcl[0](f, 2)), o_e = f_e[o_p](o_f, 0), o_s = ech.s_dist[s], k1, k2; //autre pb/face/elem
                   if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
                     {
+                      if (multi) abort(); //pas gere
                       const Probleme_base& pbm = op_ext[o_p]->equation().probleme();
                       const DoubleTab* alpha = sub_type(Pb_Multiphase, pbm) ? &ref_cast(Pb_Multiphase, pbm).equation_masse().inconnue().passe() : nullptr, &dh = pbm.milieu().diametre_hydraulique_elem(),
                                        &press = ref_cast(Navier_Stokes_std, pbm.equation(0)).pression().passe(), &vit = pbm.equation(0).inconnue().passe(),

@@ -101,8 +101,8 @@ public :
   inline DoubleTab& volumes_entrelaces_dir() { return volumes_entrelaces_dir_; } // renvoie le tableau des volumes entrelaces par cote.
   inline const DoubleTab& volumes_entrelaces_dir() const { return volumes_entrelaces_dir_; }
 
-  //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
-  inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
+  //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb). Composante de destination n, composante de depart m (ou n si m = -1)
+  inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr, int m = -1) const;
 
   inline double dist_norm(int num_face) const override;
   inline double dist_norm_bord(int num_face) const override;
@@ -193,18 +193,20 @@ inline double Domaine_Poly_base::dist_face_elem1_period(int num_face,int n1,doub
 }
 
 //renvoie le produit scalaire a.nu.b quelle que soient le nombre de composantes et le type de tenseur de nu
-inline double Domaine_Poly_base::nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma, const double *mb) const
+inline double Domaine_Poly_base::nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma, const double *mb, int m) const
 {
-  if (!nu) return dot(a, b, ma, mb);
-  int d, db, D = dimension;
+  if (!nu) return m < 0 || m == n ? dot(a, b, ma, mb) : 0;
+  int d, db, D = dimension, multi = m >= 0;
   double resu = 0;
-  if (nu->nb_dim() == 2) resu += (*nu)(e, n) * dot(a, b, ma, mb); //isotrope
-  else if (nu->nb_dim() == 3)
+  if (nu->nb_dim() == 2 + multi) resu += (multi ? (*nu)(e, n, m) : (*nu)(e, n)) * dot(a, b, ma, mb); //isotrope
+  else if (nu->nb_dim() == 3 + multi)
     for (d = 0; d < D; d++) //anisotrope diagonal
-      resu += (*nu)(e, n, d) * (a[d] - (ma ? ma[d] : 0)) * (b[d] - (mb ? mb[d] : 0));
-  else for (d = 0; d < D; d++)
+      resu += (multi ? (*nu)(e, n, m, d) : (*nu)(e, n, d)) * (a[d] - (ma ? ma[d] : 0)) * (b[d] - (mb ? mb[d] : 0));
+  else if (nu->nb_dim() == 4 && !multi)
+    for (d = 0; d < D; d++)
       for (db = 0; db < D; db++)
         resu += (*nu)(e, n, d, db) * (a[d] - (ma ? ma[d] : 0)) * (b[db] - (mb ? mb[db] : 0));
+  else abort();
   return resu;
 }
 
