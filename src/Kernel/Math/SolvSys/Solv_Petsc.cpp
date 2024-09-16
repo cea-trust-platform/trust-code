@@ -2581,7 +2581,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
   // Build b
   VecDuplicate(SecondMembrePetsc_,&SolutionPetsc_);
   // Initialize x to avoid a crash on GPU later with VecSetValues... (bug PETSc?)
-  if (gpu_) VecSet(SolutionPetsc_,0.0);
+  // if (gpu_) VecSet(SolutionPetsc_,0.0);
 
   // Only in the case where TRUST and PETSc partitions are not the same
   // VecGetValues can only get values on the same processor, so need to gather values from
