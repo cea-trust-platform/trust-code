@@ -581,7 +581,7 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
     size = -1;
   else
     {
-      MCAuto<MEDFileMesh> mesh = MEDFileMesh::New(fileName, meshName, last_iter, last_order);
+      MCAuto<MEDFileMesh> mesh = MEDFileMesh::New(fileName, meshName, field->getMeshIteration(), field->getMeshOrder());
       size = field_type == MEDCoupling::ON_NODES ? mesh->getNumberOfNodes() : mesh->getNumberOfCellsAtLevel(0);
     }
 
