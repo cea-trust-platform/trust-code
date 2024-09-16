@@ -285,7 +285,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=tab_elem_faces.dimension(1);
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
-  int nb_dim = Objet_U::dimension;
+  const int nb_dim = Objet_U::dimension;
 
   //DoubleTab gradient_elem(nb_elem_tot,nb_comp,nb_dim);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
   if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, nb_dim);  // (du/dx du/dy dv/dx dv/dy) pour un poly
@@ -318,14 +318,13 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CDoubleTabView3 gradient_elem_ = gradient_elem.view3_ro(); //Gradient elem déclaré plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissée ici
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
-  Kokkos::fence();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
   {
     int rang=rang_elem_non_std(elem);
-    int face[nb_dim+1]; // Declare face inside the lambda
 
+    int face[4];
     for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
       face[facei_loc]=elem_faces(elem,facei_loc);
 
@@ -561,7 +560,6 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
       }//fin nb_dim==3
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-  Kokkos::fence();
 }
 
 void Op_Conv_Muscl_New_VEF_Face::
