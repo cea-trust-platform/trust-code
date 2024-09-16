@@ -201,14 +201,14 @@ void Pb_Multiphase::associer_milieu_base(const Milieu_base& mil)
  * Le test se fait sur les conditions
  *     aux limites discretisees de chaque equation.
  *     Appel la fonction de librairie hors classe:
- *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
+ *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis_base&,const Domaine_Cl_dis_base&)
  *
  * @return (int) code de retour propage
  */
 int Pb_Multiphase::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = equation_energie().domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_th = equation_energie().domaine_Cl_dis();
   return tester_compatibilite_hydr_thermique(domaine_Cl_hydr, domaine_Cl_th);
 }
 

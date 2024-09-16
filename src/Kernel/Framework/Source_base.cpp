@@ -81,7 +81,7 @@ void Source_base::resetTime(double t)
 /*! @brief Met a jour les references internes a l'objet Source_base.
  *
  * Appelle 2 methodes virtuelles pures protegees:
- *        Source_base::associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis&)
+ *        Source_base::associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base&)
  *        Source_base::associer_pb(const Probleme_base&)
  *
  */
@@ -89,7 +89,7 @@ void Source_base::completer()
 {
   const Equation_base& eqn = equation();
   const Domaine_dis_base& zdis= eqn.domaine_dis();
-  const Domaine_Cl_dis& zcldis = eqn.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& zcldis = eqn.domaine_Cl_dis();
   associer_domaines(zdis, zcldis);
   associer_pb(eqn.probleme());
   // Initialize the bilan_ array:

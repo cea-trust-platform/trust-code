@@ -657,18 +657,7 @@ void VEF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_b
   Cerr << "mu VEF est discretise " << finl;
 }
 
-void VEF_discretisation::domaine_Cl_dis(Domaine_dis_base& z, Domaine_Cl_dis& zcl) const
-{
-  Cerr << "discretisation des conditions limites" << finl;
-  Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, z);
-  zcl.typer("Domaine_Cl_VEF");
-  assert(zcl.non_nul());
-  Domaine_Cl_VEF& domaine_cl_VEF = ref_cast(Domaine_Cl_VEF, zcl.valeur());
-  domaine_cl_VEF.associer(domaine_VEF);
-  Cerr << "discretisation des conditions limites OK" << finl;
-}
-
-void VEF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void VEF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
   // mais on ne s'en sert pas!!!
@@ -686,12 +675,12 @@ void VEF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_d
   ch_cQ.changer_temps(ch_vitesse->temps());
 }
 
-void VEF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void VEF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de y_plus" << finl;
   const Champ_P1NC& vit = ref_cast(Champ_P1NC, ch_vitesse.valeur());
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z);
-  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl.valeur());
+  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl);
   ch.typer("Y_plus_Champ_P1NC");
   Y_plus_Champ_P1NC& ch_yp = ref_cast(Y_plus_Champ_P1NC, ch.valeur());
   ch_yp.associer_domaine_dis_base(domaine_vef);
@@ -704,13 +693,13 @@ void VEF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis&
   ch_yp.changer_temps(ch_vitesse->temps());
 }
 
-void VEF_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void VEF_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 
   const Champ_P1NC& vit = ref_cast(Champ_P1NC, ch_vitesse.valeur());
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z);
   const int nb_comp = dimension * dimension;
-  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl.valeur());
+  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl);
   ch.typer("grad_u_Champ_P1NC");
   grad_U_Champ_P1NC& ch_grad_u = ref_cast(grad_U_Champ_P1NC, ch.valeur());
   ch_grad_u.fixer_nature_du_champ(vectoriel);
@@ -745,7 +734,7 @@ void VEF_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis&
 
 }
 
-void VEF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void VEF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de gradient_temperature" << finl;
 
@@ -754,17 +743,17 @@ void VEF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis&
 
   grad_T_Champ_P1NC& ch_gt = ref_cast(grad_T_Champ_P1NC, ch.valeur());
   const Champ_P1NC& temp = ref_cast(Champ_P1NC, ch_temperature.valeur());
-  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl.valeur());
+  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl);
   ch_gt.associer_domaine_Cl_dis_base(domaine_cl_vef);
   ch_gt.associer_champ(temp);
 }
 
-void VEF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void VEF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
   Cerr << "Discretisation de h_conv" << finl;
   const Champ_P1NC& temp = ref_cast(Champ_P1NC, ch_temperature.valeur());
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z);
-  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl.valeur());
+  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl);
   ch.typer("h_conv_Champ_P1NC");
   h_conv_Champ_P1NC& ch_gt = ref_cast(h_conv_Champ_P1NC, ch.valeur());
   ch_gt.associer_domaine_dis_base(domaine_vef);
@@ -778,10 +767,10 @@ void VEF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis&
   ch_gt.changer_temps(ch_temperature->temps());
 }
 
-void VEF_discretisation::taux_cisaillement(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
+void VEF_discretisation::taux_cisaillement(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
 {
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z);
-  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl.valeur());
+  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl);
   champ.typer("Taux_cisaillement_P0_VEF");
   Taux_cisaillement_P0_VEF& ch = ref_cast(Taux_cisaillement_P0_VEF, champ.valeur());
   ch.associer_domaine_dis_base(domaine_vef);

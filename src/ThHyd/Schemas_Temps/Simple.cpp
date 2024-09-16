@@ -495,7 +495,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
         Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
       eqs[i]->inconnue()->futur() = eqs[i]->inconnue()->valeurs();
       const double t = eqs[i]->schema_temps().temps_courant() + eqs[i]->schema_temps().pas_de_temps();
-      eqs[i]->domaine_Cl_dis()->imposer_cond_lim(eqs[i]->inconnue(), t);
+      eqs[i]->domaine_Cl_dis().imposer_cond_lim(eqs[i]->inconnue(), t);
       eqs[i]->inconnue()->valeurs() = eqs[i]->inconnue()->futur();
       eqs[i]->inconnue()->Champ_base::changer_temps(t);
     }

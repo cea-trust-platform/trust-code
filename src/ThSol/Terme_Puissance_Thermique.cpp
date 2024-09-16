@@ -69,7 +69,7 @@ void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base&
   if (sub_type(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur()))
     {
       const Domaine_dis_base& zdis = eqn.domaine_dis();
-      const Domaine_Cl_dis_base& zcldis = eqn.domaine_Cl_dis().valeur();
+      const Domaine_Cl_dis_base& zcldis = eqn.domaine_Cl_dis();
       Champ_val_tot_sur_vol_base& champ_puis = ref_cast(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur());
       champ_puis.evaluer(zdis,zcldis);
     }

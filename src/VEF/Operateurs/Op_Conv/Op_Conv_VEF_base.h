@@ -40,7 +40,7 @@ public:
   void associer_vitesse(const Champ_base& ) override;
   inline const Champ_Inc_base& vitesse() const { return vitesse_.valeur(); }
   inline Champ_Inc_base& vitesse() { return vitesse_.valeur(); }
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& ,const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   void abortTimeStep() override;
   double calculer_dt_stab() const override ;

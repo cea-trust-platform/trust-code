@@ -23,7 +23,7 @@
 #include <Domaine_dis_base.h>
 #include <Neumann_homogene.h>
 #include <Neumann_val_ext.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Neumann_paroi.h>
 #include <Equation_base.h>
 #include <Dirichlet.h>
@@ -84,7 +84,7 @@ DoubleTab& Champ_Inc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, 
 //utilitaires pour CL
 void Champ_Inc_P0_base::init_fcl() const
 {
-  const Conds_lim& cls = mon_dom_cl_dis.valeur()->les_conditions_limites();
+  const Conds_lim& cls = mon_dom_cl_dis->les_conditions_limites();
   int i, f, n;
 
   const Domaine_VF& domaine = ref_cast(Domaine_VF, mon_equation->domaine_dis());

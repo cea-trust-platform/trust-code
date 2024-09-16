@@ -36,10 +36,10 @@ Sortie& Op_Dift_VEF_P1NCP1B_Face::printOn(Sortie& s) const { return s << que_sui
 
 Entree& Op_Dift_VEF_P1NCP1B_Face::readOn(Entree& s) { return s; }
 
-void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
+void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
-  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
+  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis);
   inconnue_ = ref_cast(Champ_P1NC, ch_transporte.valeur());
   solveur.typer("Solv_GCP");
   OWN_PTR(Precond_base) p;

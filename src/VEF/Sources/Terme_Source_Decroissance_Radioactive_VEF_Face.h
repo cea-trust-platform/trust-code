@@ -43,7 +43,7 @@ protected:
 
   std::vector<double> lambda;
   REF(Domaine_VEF) le_dom_VEF;
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 
 };
 

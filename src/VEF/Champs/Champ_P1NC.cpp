@@ -279,7 +279,7 @@ void calculer_gradientP1NC(const DoubleTab& tab_variable, const Domaine_VEF& dom
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const
 {
   // Calcul du gradient: par exemple gradient de la vitesse pour le calcul de la vorticite
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis().valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis());
   calculer_gradientP1NC(valeurs(), domaine_vef(), domaine_Cl_VEF, gradient_elem);
 
 }
@@ -343,7 +343,7 @@ Champ_base& Champ_P1NC::affecter_(const Champ_base& ch)
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_P1NC::verifie_valeurs_cl()
 {
-  const Domaine_Cl_dis_base& zcl = equation().domaine_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = equation().domaine_Cl_dis();
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int nb_compo = nb_comp();
@@ -381,7 +381,7 @@ void Champ_P1NC::verifie_valeurs_cl()
 
 void Champ_P1NC::calcul_critere_Q(DoubleVect& tab_Critere_Q) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis().valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis());
   const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
   const int dim = Objet_U::dimension;
 

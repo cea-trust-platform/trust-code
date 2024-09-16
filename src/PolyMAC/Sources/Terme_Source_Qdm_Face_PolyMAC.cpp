@@ -19,7 +19,7 @@
 #include <Neumann_homogene.h>
 #include <Domaine_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Neumann.h>
@@ -40,10 +40,10 @@ Entree& Terme_Source_Qdm_Face_PolyMAC::readOn(Entree& s)
   return s ;
 }
 
-void Terme_Source_Qdm_Face_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Source_Qdm_Face_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
+  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
 }
 
 DoubleTab& Terme_Source_Qdm_Face_PolyMAC::ajouter(DoubleTab& resu) const

@@ -224,7 +224,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
    * correction finale pour les dirichlets
    * on ne doit pas imposer un+1 mais rho_un+1 => on multiplie dons le resu par rho_face_np1
    */
-  const Conds_lim& lescl=eqn.domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& lescl=eqn.domaine_Cl_dis().les_conditions_limites();
 
   for (auto& itr : lescl)
     {
@@ -314,7 +314,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
    * correction finale pour les dirichlets
    * on ne doit pas imposer un+1 mais rho_un+1 => on multiplie dons le resu par rho_face_np1
    */
-  const Conds_lim& lescl=eqn.domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& lescl=eqn.domaine_Cl_dis().les_conditions_limites();
 
   for (auto& itr : lescl)
     {
@@ -451,7 +451,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
   const double dt_ = eqn.schema_temps().pas_de_temps();
   const DoubleTab& tab_rho_face_n = fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& vit = eqn.vitesse()->valeurs();
-  const Conds_lim& lescl = eqn.domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& lescl = eqn.domaine_Cl_dis().les_conditions_limites();
   const IntTab& face_voisins = eqn.domaine_dis().face_voisins();
   const int taille = vpoint.line_size();
 

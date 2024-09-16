@@ -37,8 +37,9 @@ Sortie& Domaine_Cl_VDF::printOn(Sortie& os) const
 
 Entree& Domaine_Cl_VDF::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(is); }
 
-void Domaine_Cl_VDF::associer(const Domaine_VDF& domaine_vdf)
+void Domaine_Cl_VDF::associer(const Domaine_dis_base& dom_dis)
 {
+  const Domaine_VDF& domaine_vdf = ref_cast(Domaine_VDF, dom_dis);
   type_arete_bord_.resize(domaine_vdf.nb_aretes_bord());
   type_arete_coin_.resize(domaine_vdf.nb_aretes_coin());
   num_Cl_face_.resize(domaine_vdf.nb_faces_bord());

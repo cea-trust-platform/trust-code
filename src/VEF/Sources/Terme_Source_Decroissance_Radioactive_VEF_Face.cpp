@@ -15,7 +15,7 @@
 
 #include <Terme_Source_Decroissance_Radioactive_VEF_Face.h>
 #include <Equation_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_VEF.h>
 #include <Synonyme_info.h>
 
@@ -52,7 +52,7 @@ Entree& Terme_Source_Decroissance_Radioactive_VEF_Face::readOn(Entree& s)
 }
 
 void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                                                       const Domaine_Cl_dis& domaine_Cl_dis)
+                                                                       const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   Cerr << " Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines " << finl ;
   le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);

@@ -39,7 +39,7 @@ public:
   void degres_liberte() const;
   int impr(Sortie& os) const override;
   void volumique(DoubleTab&) const override;
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base&,const Champ_Inc&) override;
 
   // Explicite
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;

@@ -23,7 +23,7 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Domaine_Cl_VDF.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_VDF.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>

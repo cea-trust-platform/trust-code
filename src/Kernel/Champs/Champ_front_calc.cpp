@@ -229,7 +229,7 @@ const Domaine_dis_base& Champ_front_calc::domaine_dis() const
  */
 const Domaine_Cl_dis_base& Champ_front_calc::domaine_Cl_dis() const
 {
-  return equation().domaine_Cl_dis().valeur();
+  return equation().domaine_Cl_dis();
 }
 
 /*! @brief Renvoie la frontiere discretisee correspondante au domaine sur lequel prend la trace.

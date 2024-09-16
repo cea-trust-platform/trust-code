@@ -95,7 +95,7 @@ int Pred_Cor::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 
   // Etape PREDICTOR
 
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
 
   // On tourne la roue pour que les operateurs utilisent les champs au temps futur
   eqn.inconnue()->avancer();
@@ -121,7 +121,7 @@ int Pred_Cor::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   xipls1  *= dt_;
   xipls1  += xi ;
 
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
   update_critere_statio(dudtpls1, eqn);
 
   return 1;

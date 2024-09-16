@@ -36,10 +36,10 @@ Sortie& Paroi_scal_hyd_base_VEF::printOn(Sortie& s) const { return s << que_suis
 
 Entree& Paroi_scal_hyd_base_VEF::readOn(Entree& s) { return s; }
 
-void Paroi_scal_hyd_base_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_scal_hyd_base_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
   // On initialise tout de suite la loi de paroi
   Paroi_scal_hyd_base_VEF::init_lois_paroi();
 }
@@ -167,7 +167,7 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
       if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())) || (sub_type(Paroi_decalee_Robin, la_cl.valeur())))
         {
           const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
-          const Domaine_Cl_VEF& domaine_Cl_VEF_th = ref_cast(Domaine_Cl_VEF, eqn.probleme().equation(1).domaine_Cl_dis().valeur());
+          const Domaine_Cl_VEF& domaine_Cl_VEF_th = ref_cast(Domaine_Cl_VEF, eqn.probleme().equation(1).domaine_Cl_dis());
           const Cond_lim& la_cl_th = domaine_Cl_VEF_th.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 

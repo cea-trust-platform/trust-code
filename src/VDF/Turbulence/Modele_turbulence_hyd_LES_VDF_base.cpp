@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_LES_VDF_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_Cl_VDF.h>
 #include <Domaine_VDF.h>
 

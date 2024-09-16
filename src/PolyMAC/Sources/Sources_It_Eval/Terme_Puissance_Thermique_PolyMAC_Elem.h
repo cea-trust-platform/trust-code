@@ -32,7 +32,7 @@ class Terme_Puissance_Thermique_PolyMAC_Elem : public Terme_Puissance_Thermique_
 public:
   Terme_Puissance_Thermique_PolyMAC_Elem() : Terme_Puissance_Thermique_PolyMAC_base(Iterateur_Source_Elem<Eval_Puiss_Th_PolyMAC_Elem>()) { }
 
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base& ) override;
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };

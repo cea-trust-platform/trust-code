@@ -22,8 +22,8 @@ class PolyMAC_P0_discretisation : public PolyMAC_P0P1NC_discretisation
 {
   Declare_instanciable(PolyMAC_P0_discretisation);
 public :
-  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
+  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
+  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc&, Champ_Fonc&) const override;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
   void residu(const Domaine_dis_base& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const override ;
 

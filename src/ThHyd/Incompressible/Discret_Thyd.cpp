@@ -93,9 +93,9 @@ void Discret_Thyd::creer_champ_vorticite(const Schema_Temps_base&, const Champ_I
  * @param (Champ_Inc&)
  * @param (Champ_Fonc&)
  */
-void Discret_Thyd::critere_Q(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&, Champ_Fonc&) const
+void Discret_Thyd::critere_Q(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&, Champ_Fonc&) const
 {
-  // pour le VDF, on a besoin du Domaine_Cl_dis, mais pas pour le VEF
+  // pour le VDF, on a besoin du OWN_PTR(Domaine_Cl_dis_base), mais pas pour le VEF
   // -->> on passe quand meme l argument mais on n en fait rien!!!
   Cerr << "Discret_Thyd::critere_Q() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
@@ -128,9 +128,9 @@ void Discret_Thyd::section_passage(const Domaine_dis_base& z, const DoubleVect& 
   tab.inject_array(section_passage_face);
 }
 
-void Discret_Thyd::y_plus(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&, Champ_Fonc&) const
+void Discret_Thyd::y_plus(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&, Champ_Fonc&) const
 {
-  // pour le VDF, on a besoin du Domaine_Cl_dis, mais pas pour le VEF
+  // pour le VDF, on a besoin du OWN_PTR(Domaine_Cl_dis_base), mais pas pour le VEF
   // -->> on passe quand meme l argument mais on n en fait rien!!!
   Cerr << "Discret_Thyd::y_plus() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
@@ -144,14 +144,14 @@ void Discret_Thyd::distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_
   Process::exit();
 }
 
-void Discret_Thyd::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& eqn, Champ_Fonc& ch) const
+void Discret_Thyd::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& eqn, Champ_Fonc& ch) const
 {
   Cerr << "Discret_Thyd::grad_T() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
 }
 
-void Discret_Thyd::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& eqn, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void Discret_Thyd::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& eqn, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
   Cerr << "Discret_Thyd::h_conv() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
@@ -172,7 +172,7 @@ void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, 
   Process::exit();
 }
 
-void Discret_Thyd::grad_u(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&, Champ_Fonc&) const
+void Discret_Thyd::grad_u(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&, Champ_Fonc&) const
 {
   Cerr << "\nDiscret_Thyd::grad_u() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;

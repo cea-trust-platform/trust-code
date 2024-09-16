@@ -61,11 +61,11 @@ void Op_Grad_EF::mettre_a_jour(double temps)
  *
  */
 void Op_Grad_EF::associer(const Domaine_dis_base& domaine_dis,
-                          const Domaine_Cl_dis& domaine_Cl_dis,
+                          const Domaine_Cl_dis_base& domaine_Cl_dis,
                           const Champ_Inc& inc)
 {
   const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis);
-  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
+  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
   le_dom_EF = zEF;
   la_zcl_EF = zclEF;
   //  const IntTab& face_sommets=zEF.face_sommets();

@@ -40,18 +40,18 @@ Entree& Terme_Boussinesq_VDF_Face::readOn(Entree& s )
 }
 
 void Terme_Boussinesq_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                                  const Domaine_Cl_dis& domaine_Cl_dis)
+                                                  const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis);
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
 }
 
 void Terme_Boussinesq_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const Domaine_Cl_VDF& domaine_Cl_VDF_hyd = le_dom_Cl_VDF.valeur();
-  const Domaine_Cl_dis& domaine_Cl_scal = equation_scalaire().domaine_Cl_dis();
-  const Domaine_Cl_VDF& domaine_Cl_VDF_scal = ref_cast(Domaine_Cl_VDF,domaine_Cl_scal.valeur());
+  const Domaine_Cl_dis_base& domaine_Cl_scal = equation_scalaire().domaine_Cl_dis();
+  const Domaine_Cl_VDF& domaine_Cl_VDF_scal = ref_cast(Domaine_Cl_VDF,domaine_Cl_scal);
   const DoubleTab& param = equation_scalaire().inconnue()->valeurs();
   const DoubleTab& beta_valeurs = beta()->valeurs();
   const DoubleVect& grav = gravite().valeurs();

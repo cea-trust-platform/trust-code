@@ -20,7 +20,7 @@
 #include <Champ_Fonc_Fonction.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Domaine_VF.h>
@@ -173,7 +173,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
     unsolved_species_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
 
-void Fluide_Weakly_Compressible::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
+void Fluide_Weakly_Compressible::checkTraitementPth(const Domaine_Cl_dis_base& domaine_cl)
 {
   if (traitement_PTh == 0)
     {

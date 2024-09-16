@@ -21,7 +21,7 @@
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>
 #include <Domaine_Cl_VDF.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Milieu_base.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
@@ -44,10 +44,10 @@ Entree& Terme_Source_Qdm_VDF_Face::readOn(Entree& s)
   return s;
 }
 
-void Terme_Source_Qdm_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Source_Qdm_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis);
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
 }
 
 void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const

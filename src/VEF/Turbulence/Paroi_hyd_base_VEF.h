@@ -29,7 +29,7 @@ class Paroi_hyd_base_VEF: public Turbulence_paroi_base
   Declare_base(Paroi_hyd_base_VEF);
 public:
 
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   void init_lois_paroi_();
   DoubleTab& corriger_derivee_impl(DoubleTab& d) const override;
   inline const ArrOfInt& face_keps_imposee() const { return face_keps_imposee_; }

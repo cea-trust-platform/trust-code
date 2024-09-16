@@ -26,7 +26,7 @@
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+
 #include <grad_U_Champ_Face_PolyMAC.h>
 
 Implemente_instanciable(PolyMAC_discretisation, "PolyMAC", Discret_Thyd);
@@ -416,18 +416,7 @@ void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_d
 #endif
 }
 
-void PolyMAC_discretisation::domaine_Cl_dis(Domaine_dis_base& z, Domaine_Cl_dis& zcl) const
-{
-  Cerr << "discretisation des conditions limites" << finl;
-  Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
-  zcl.typer("Domaine_Cl_PolyMAC");
-  assert(zcl.non_nul());
-  Domaine_Cl_PolyMAC& domaine_cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
-  domaine_cl_PolyMAC.associer(domaine_PolyMAC);
-  Cerr << "discretisation des conditions limites OK" << finl;
-}
-
-void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
@@ -447,13 +436,13 @@ void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_
 #endif
 }
 
-void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
   const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z);
-  const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("Y_plus_Champ_Som_PolyMAC");
   Y_plus_Champ_Som_PolyMAC& ch_yp=ref_cast(Y_plus_Champ_Som_PolyMAC,ch.valeur());
   ch_yp.associer_domaine_dis_base(domaine_PolyMAC);
@@ -467,13 +456,13 @@ void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_
 #endif
 }
 
-void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
   const Champ_Som_PolyMAC& temp = ref_cast(Champ_Som_PolyMAC,ch_temperature.valeur());
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z);
-  const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("gradient_temperature_Champ_Som_PolyMAC");
   grad_T_Champ_Som_PolyMAC& ch_gt=ref_cast(grad_T_Champ_Som_PolyMAC,ch.valeur());
   ch_gt.associer_domaine_dis_base(domaine_PolyMAC);
@@ -487,11 +476,11 @@ void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_
 #endif
 }
 
-void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vitesse.valeur());
   const Domaine_PolyMAC& domaine_poly = ref_cast(Domaine_PolyMAC, z);
-  const Domaine_Cl_PolyMAC& domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  const Domaine_Cl_PolyMAC& domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("grad_U_Champ_Face_PolyMAC");
   grad_U_Champ_Face_PolyMAC& ch_grad_u = ref_cast(grad_U_Champ_Face_PolyMAC, ch.valeur());
   ch_grad_u.associer_domaine_dis_base(domaine_poly);
@@ -525,13 +514,13 @@ void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_
   ch_grad_u.changer_temps(ch_vitesse->temps());
 }
 
-void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
   const Champ_Som_PolyMAC& temp = ref_cast(Champ_Som_PolyMAC,ch_temperature.valeur());
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z);
-  const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("h_conv_Champ_Som_PolyMAC");
   h_conv_Champ_Som_PolyMAC& ch_gt=ref_cast(h_conv_Champ_Som_PolyMAC,ch.valeur());
   ch_gt.associer_domaine_dis_base(domaine_PolyMAC);

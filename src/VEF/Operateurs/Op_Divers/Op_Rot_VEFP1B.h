@@ -25,7 +25,7 @@ class Op_Rot_VEFP1B : public Operateur_base
 {
   Declare_instanciable(Op_Rot_VEFP1B);
 public:
-  void associer( const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer( const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
   DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
 

@@ -416,7 +416,7 @@ Entree& Equation_base::lire_cl(Entree& is)
     {
       Cerr << "Error while reading boundaries conditions : " <<
            que_suis_je() << finl;
-      Cerr << "The Domaine_Cl_dis is empty ..." << finl;
+      Cerr << "The Domaine_Cl_dis_base is empty ..." << finl;
       exit();
     }
   is >> le_dom_Cl_dis.valeur();
@@ -727,7 +727,11 @@ void Equation_base::associer_pb_base(const Probleme_base& pb)
  */
 void Equation_base::discretiser()
 {
-  discretisation().domaine_Cl_dis(domaine_dis(), le_dom_Cl_dis);
+  Cerr << "Discretizing of the boundary conditions... ";
+  le_dom_Cl_dis.typer(discretisation().domaine_cl_dis_type());
+  le_dom_Cl_dis->associer(domaine_dis());
+  Cerr << " OK " << finl;
+
   le_dom_Cl_dis->associer_eqn(*this);
   le_dom_Cl_dis->associer_inconnue(inconnue());
 
@@ -833,7 +837,7 @@ void Equation_base::mettre_a_jour(double temps)
 
   // On tourne la roue des CLs
   // Update the boundary condition:
-  if (temps > schema_temps().temps_courant()) domaine_Cl_dis()->avancer(temps);
+  if (temps > schema_temps().temps_courant()) domaine_Cl_dis().avancer(temps);
 }
 
 //mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
@@ -912,7 +916,7 @@ int Equation_base::preparer_calcul()
   Debog::verifier(msg ,inconnue());
 
   les_sources.initialiser(temps);
-  domaine_Cl_dis()->imposer_cond_lim(inconnue(),temps);
+  domaine_Cl_dis().imposer_cond_lim(inconnue(),temps);
   inconnue()->valeurs().echange_espace_virtuel();
 
   /* initialisation de parametre_equation() par le schema en temps si celui-ci le permet */
@@ -958,11 +962,11 @@ bool Equation_base::initTimeStep(double dt)
       if (calculate_time_derivative()) derivee_en_temps()->futur(i)=derivee_en_temps()->valeurs();
 
       // Mise a jour du temps dans les CL
-      domaine_Cl_dis()->changer_temps_futur(tps,i);
+      domaine_Cl_dis().changer_temps_futur(tps,i);
     }
 
   // Mise a jour du temps par defaut des CLs
-  domaine_Cl_dis()->set_temps_defaut(sch.temps_defaut());
+  domaine_Cl_dis().set_temps_defaut(sch.temps_defaut());
 
   // Mise a jour des operateurs
   for(int i=0; i<nombre_d_operateurs(); i++)
@@ -986,10 +990,10 @@ bool Equation_base::updateGivenFields()
     {
       double tps=sch.temps_futur(i);
       // Calcul des CLs a ce temps.
-      domaine_Cl_dis()->mettre_a_jour(tps);
+      domaine_Cl_dis().mettre_a_jour(tps);
     }
   // Calcul du taux d'accroissement des CLs entre les temps present et futur.
-  domaine_Cl_dis()->calculer_derivee_en_temps(temps_present,temps_futur);
+  domaine_Cl_dis().calculer_derivee_en_temps(temps_present,temps_futur);
 
   //MaJ des operateurs
   for (int i = 0; i < nombre_d_operateurs(); i++)

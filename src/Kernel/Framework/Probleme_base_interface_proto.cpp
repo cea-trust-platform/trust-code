@@ -73,7 +73,7 @@ bool Probleme_base_interface_proto::initTimeStep_impl(Probleme_base& pb, double 
   // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
   double tps = pb.schema_temps().temps_defaut();
   for (int i = 0; i < pb.nombre_d_equations(); i++)
-    pb.equation(i).domaine_Cl_dis()->calculer_coeffs_echange(tps);
+    pb.equation(i).domaine_Cl_dis().calculer_coeffs_echange(tps);
 
   dt_validated = false;
   dt_defined = true;
@@ -92,7 +92,7 @@ bool Probleme_base_interface_proto::solveTimeStep_impl(Probleme_base& pb)
   // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
   double tps = pb.schema_temps().temps_defaut();
   for (int i = 0; i < pb.nombre_d_equations(); i++)
-    pb.equation(i).domaine_Cl_dis()->calculer_coeffs_echange(tps);
+    pb.equation(i).domaine_Cl_dis().calculer_coeffs_echange(tps);
 
   return ok;
 }
@@ -111,7 +111,7 @@ bool Probleme_base_interface_proto::iterateTimeStep_impl(Probleme_base& pb, bool
   // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
   double tps = pb.schema_temps().temps_defaut();
   for (int i = 0; i < pb.nombre_d_equations(); i++)
-    pb.equation(i).domaine_Cl_dis()->calculer_coeffs_echange(tps);
+    pb.equation(i).domaine_Cl_dis().calculer_coeffs_echange(tps);
 
   return ok;
 }

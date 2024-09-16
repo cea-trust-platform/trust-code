@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,8 @@ Equation_base& Pb_Dilatable_Proto::equation_impl(int i, Equation_base& eq1, Equa
 
 int Pb_Dilatable_Proto::verifier_impl(const Equation_base& eq1, const Equation_base& eq2, const bool is_thermal)
 {
-  const Domaine_Cl_dis& domaine_Cl_1 = eq1.domaine_Cl_dis(), domaine_Cl_2 = eq2.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_1 = eq1.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_2 = eq2.domaine_Cl_dis();
   return is_thermal == true ? tester_compatibilite_hydr_thermique(domaine_Cl_1,domaine_Cl_2) :
          tester_compatibilite_hydr_fraction_massique(domaine_Cl_1, domaine_Cl_2);
 }

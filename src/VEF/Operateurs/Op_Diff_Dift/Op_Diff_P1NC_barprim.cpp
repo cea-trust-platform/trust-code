@@ -15,7 +15,7 @@
 
 #include <Op_Diff_P1NC_barprim.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Champ_Uniforme.h>
 
 #include <Champ_P1NC.h>
@@ -33,10 +33,10 @@ Sortie& Op_Diff_P1NC_barprim::printOn(Sortie& s) const { return s << que_suis_je
 
 Entree& Op_Diff_P1NC_barprim::readOn(Entree& s) { return s; }
 
-void Op_Diff_P1NC_barprim::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
+void Op_Diff_P1NC_barprim::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_diffuse)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
-  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
+  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis);
   if (sub_type(Champ_P1NC, ch_diffuse.valeur()))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_diffuse.valeur());

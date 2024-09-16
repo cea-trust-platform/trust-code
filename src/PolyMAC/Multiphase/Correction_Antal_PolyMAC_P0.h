@@ -36,7 +36,7 @@ public :
   void check_multiphase_compatibility() const override {}; //of course
   void completer() override;
 
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override { };
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override { };
   void associer_pb(const Probleme_base& ) override { };
   void mettre_a_jour(double temps) override { };
 protected:

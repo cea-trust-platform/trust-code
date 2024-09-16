@@ -43,7 +43,7 @@ Entree& Source_Masse_Fluide_Dilatable_base::readOn(Entree& is)
   return is;
 }
 
-void Source_Masse_Fluide_Dilatable_base::associer_domaine_cl(const Domaine_Cl_dis& z)
+void Source_Masse_Fluide_Dilatable_base::associer_domaine_cl(const Domaine_Cl_dis_base& z)
 {
   domaine_cl_dis_ = z;
 }
@@ -58,9 +58,9 @@ void Source_Masse_Fluide_Dilatable_base::completer()
   //   - call initialiser()
   // This is all inspired by what happens in Conds_lim::completer() and Conds_lim::initialiser() ...
   bool ok = false;
-  for (int n_bord = 0; n_bord < domaine_cl_dis_->valeur().nb_cond_lim(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl_dis_->valeur().les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       if (le_bord.le_nom() == nom_bord_)
         {
@@ -77,12 +77,12 @@ void Source_Masse_Fluide_Dilatable_base::completer()
     }
 
   // Fix the number of temporal values for champ_front.
-  int nb_cases = domaine_cl_dis_->valeur().equation().schema_temps().nb_valeurs_temporelles();
+  int nb_cases = domaine_cl_dis_->equation().schema_temps().nb_valeurs_temporelles();
   ch_front_source_->fixer_nb_valeurs_temporelles(nb_cases);
 
   // Initialisation of the champ_front:
-  double tps = domaine_cl_dis_->valeur().equation().schema_temps().temps_courant();
-  ch_front_source_->initialiser(tps, domaine_cl_dis_->valeur().inconnue());  // first arrow is because of REF, then valeur() is because Domaine_Cl_dis is a DERIV
+  double tps = domaine_cl_dis_->equation().schema_temps().temps_courant();
+  ch_front_source_->initialiser(tps, domaine_cl_dis_->inconnue());
 
   ncomp_ = ch_front_source_->valeurs().line_size();
 }

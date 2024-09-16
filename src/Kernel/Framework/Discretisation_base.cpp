@@ -171,11 +171,6 @@ void Discretisation_base::discretiser_variables() const
   Process::exit("Discretisation_base::discretiser_variables() does nothing and must be overloaded !");
 }
 
-void Discretisation_base::discretiser_Domaine_Cl_dis(const Domaine_dis_base&, Domaine_Cl_dis&) const
-{
-  Process::exit("Discretisation_base::discretiser_Domaine_Cl_dis does nothing and must be overloaded !");
-}
-
 /*! @brief Fonction outil pour fixer les membres communs a tous les types de champs (utilisee dans creer_champ)
  *
  */

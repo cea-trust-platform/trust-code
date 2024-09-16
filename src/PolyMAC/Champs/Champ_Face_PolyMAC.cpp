@@ -22,7 +22,7 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+
 #include <TRUSTTab_parts.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
@@ -358,7 +358,7 @@ void Champ_Face_PolyMAC::init_va() const
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit) const
 {
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
-  const Conds_lim& cls = domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = domaine.face_normales();
   const DoubleVect& fs = domaine.face_surfaces(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr, *pe = pf ? &equation().milieu().porosite_elem() : nullptr;
 
@@ -411,7 +411,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
 void Champ_Face_PolyMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) const
 {
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
-  const Conds_lim& cls = domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins();
   const DoubleTab& nf = domaine.face_normales();
   const DoubleVect& fs = domaine.face_surfaces();

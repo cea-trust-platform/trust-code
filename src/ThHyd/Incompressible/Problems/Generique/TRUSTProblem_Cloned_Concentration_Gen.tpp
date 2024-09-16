@@ -129,8 +129,8 @@ template <typename _DERIVED_TYPE_, typename _EQUATION_TYPE_, typename _MEDIUM_TY
 int TRUSTProblem_Cloned_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::verifier()
 {
   _DERIVED_TYPE_::verifier();
-  const Domaine_Cl_dis& domaine_Cl_hydr = this->equation(0).domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_co = this->list_eq_concentration_.front().domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = this->equation(0).domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_co = this->list_eq_concentration_.front().domaine_Cl_dis();
   return tester_compatibilite_hydr_concentration(domaine_Cl_hydr, domaine_Cl_co);
 }
 

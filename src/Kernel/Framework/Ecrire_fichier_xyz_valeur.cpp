@@ -174,13 +174,13 @@ void Ecrire_fichier_xyz_valeur::write_fields() const
       const int nb_bords_post = (int)boundary_names_.size();
       if (nb_bords_post>0) // we'd like to post-process on some boundaries only
         {
-          int nb_cl = eqn_->domaine_Cl_dis()->nb_cond_lim();
+          int nb_cl = eqn_->domaine_Cl_dis().nb_cond_lim();
           for (auto bname : boundary_names_ )
             {
               int boundary_found = 0 ; // to assess that the name of the boundary does correspond to a border
               for (int i=0; i<nb_cl && !boundary_found; i++)
                 {
-                  const Cond_lim_base& la_cl = eqn_->domaine_Cl_dis()->les_conditions_limites(i);
+                  const Cond_lim_base& la_cl = eqn_->domaine_Cl_dis().les_conditions_limites(i);
                   const Frontiere& la_frontiere = la_cl.frontiere_dis().frontiere();
                   if (la_frontiere.le_nom() == bname)
                     {

@@ -22,10 +22,10 @@ Implemente_base(Op_Grad_VDF_Face_base,"Op_Grad_VDF_Face_base",Operateur_Grad_bas
 Sortie& Op_Grad_VDF_Face_base::printOn(Sortie& s ) const { return s << que_suis_je(); }
 Entree& Op_Grad_VDF_Face_base::readOn(Entree& s ) { return s; }
 
-void Op_Grad_VDF_Face_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc& )
+void Op_Grad_VDF_Face_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc& )
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, domaine_dis);
-  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
   le_dom_vdf = zvdf;
   la_zcl_vdf = zclvdf;
   porosite_surf.ref(la_zcl_vdf->equation().milieu().porosite_face());

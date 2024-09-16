@@ -84,7 +84,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
   const DoubleTab& Y = eqn.inconnue()->valeurs(),
                    &rho = fluide.masse_volumique()->valeurs(),
                     &val_flux0 = ch_front_source_->valeurs();
-  const Domaine_Cl_dis_base& zclb = domaine_cl_dis_->valeur();
+  const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
   const IntTab& face_voisins = zvf.face_voisins();
   DoubleTrav val_flux(zvf.nb_faces(), 1);
@@ -98,9 +98,9 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
     for (int ncomp = 0; ncomp < val_flux0.line_size(); ncomp++)
       val_flux(i, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i, ncomp);
 
-  for (int n_bord = 0; n_bord < domaine_cl_dis_->valeur().nb_cond_lim(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl_dis_->valeur().les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
       if (le_bord.le_nom() == nom_bord_)
@@ -130,7 +130,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
 void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
-  const Domaine_Cl_dis_base& zclb = domaine_cl_dis_->valeur();
+  const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
   const IntTab& face_voisins = zvf.face_voisins();
   const DoubleTab& val_flux0 = ch_front_source_->valeurs();
@@ -145,9 +145,9 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
     for (int ncomp = 0; ncomp < val_flux0.line_size(); ncomp++)
       val_flux(i, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i, ncomp);
 
-  for (int n_bord = 0; n_bord < domaine_cl_dis_->valeur().nb_cond_lim(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl_dis_->valeur().les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
       if (le_bord.le_nom() == nom_bord_)

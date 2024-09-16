@@ -40,7 +40,6 @@ class Domaine_Cl_EF : public Domaine_Cl_dis_base
 
 public :
 
-  void associer(const Domaine_EF& );
   void completer(const Domaine_dis_base& ) override;
 //  void mettre_a_jour(double );
   int initialiser(double temps) override;

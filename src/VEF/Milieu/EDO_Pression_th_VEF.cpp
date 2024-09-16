@@ -45,7 +45,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
   const IntTab& face_voisins = dom.face_voisins();
   const DoubleTab& face_normales = dom.face_normales();
   const DoubleVect& volumes_entrelaces = dom.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Domaine_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Domaine_Cl_VEF,le_dom_Cl.valeur()).volumes_entrelaces_Cl();
 
   double diff;
   int face, comp1;
@@ -71,7 +71,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
       // Seule la condition aux limites de type Periodicite modifie le gradient
       for (int n_bord = 0; n_bord < dom.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
           if (sub_type(Periodique, la_cl.valeur()))
             {
               //      const Periodique& la_cl_perio = (Periodique&) la_cl.valeur();
@@ -153,7 +153,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
           //faces de bord
           for (int n_bord = 0; n_bord < dom.nb_front_Cl(); n_bord++)
             {
-              const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
+              const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
 
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();

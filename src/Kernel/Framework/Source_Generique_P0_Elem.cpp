@@ -15,7 +15,7 @@
 
 #include <Source_Generique_P0_Elem.h>
 #include <Domaine_Cl_dis_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Synonyme_info.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
@@ -43,7 +43,7 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
 
   int nb_elem = le_dom->nb_elem();
   const DoubleVect& vol = le_dom->volumes();
-  const DoubleVect& poro_vol = le_dom_cl->valeur().equation().milieu().porosite_elem();
+  const DoubleVect& poro_vol = le_dom_cl->equation().milieu().porosite_elem();
 
   for (int elem = 0; elem<nb_elem; elem++)
     resu(elem) += valeurs_calc(elem)*vol(elem)*poro_vol(elem);
@@ -53,7 +53,7 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
 }
 
 void Source_Generique_P0_Elem::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                                 const Domaine_Cl_dis& zcl_dis)
+                                                 const Domaine_Cl_dis_base& zcl_dis)
 {
   le_dom = ref_cast(Domaine_VF,domaine_dis);
   le_dom_cl = zcl_dis;

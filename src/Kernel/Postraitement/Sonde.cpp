@@ -17,7 +17,7 @@
 #include <Champ_Generique_refChamp.h>
 #include <Domaine_Cl_dis_base.h>
 #include <Entree_complete.h>
-#include <Domaine_Cl_dis.h>
+
 #include <communications.h>
 #include <Champ_Inc_base.h>
 #include <Postraitement.h>
@@ -1452,24 +1452,21 @@ void Sonde::init_bords()
       Probleme_base& Pb = mon_post->probleme();
       REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
-      const Domaine_Cl_dis& zcl = ch_inc.domaine_Cl_dis();
+      const Domaine_Cl_dis_base& zcl = ch_inc.domaine_Cl_dis();
 
-      if (zcl.non_nul())
+      for (int iface=0; iface<nbf; iface++)
         {
-          for (int iface=0; iface<nbf; iface++)
+          int face = faces_bords_[iface];
+          for (int icl=0; icl<zcl.nb_cond_lim(); icl++)
             {
-              int face = faces_bords_[iface];
-              for (int icl=0; icl<zcl->nb_cond_lim(); icl++)
+              const Cond_lim& cl = zcl.les_conditions_limites(icl);
+              const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
+              const int ndeb = le_bord.num_premiere_face();
+              const int nfin = ndeb + le_bord.nb_faces();
+              for (int i=ndeb; i<nfin; i++)
                 {
-                  const Cond_lim& cl = zcl->les_conditions_limites(icl);
-                  const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
-                  const int ndeb = le_bord.num_premiere_face();
-                  const int nfin = ndeb + le_bord.nb_faces();
-                  for (int i=ndeb; i<nfin; i++)
-                    {
-                      if (i==face)
-                        rang_cl_[iface] = icl;
-                    }
+                  if (i==face)
+                    rang_cl_[iface] = icl;
                 }
             }
         }
@@ -1527,42 +1524,39 @@ void Sonde::mettre_a_jour_bords()
       Probleme_base& Pb = mon_post->probleme();
       REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
-      const Domaine_Cl_dis& zcl = ch_inc.domaine_Cl_dis();
+      const Domaine_Cl_dis_base& zcl = ch_inc.domaine_Cl_dis();
       const DoubleTab& vals_ch = ch_inc.valeurs();
-      if (zcl.non_nul())
+      const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
+      const IntTab& face_voisins = domaineVF.face_voisins();
+
+      int nbval = valeurs_locales.dimension(0);
+
+      for (int iface=0; iface<faces_bords_.size_array(); iface++)
         {
-          const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
-          const IntTab& face_voisins = domaineVF.face_voisins();
+          int face = faces_bords_[iface];
+          int icl = rang_cl_[iface];
+          const Cond_lim& cl = zcl.les_conditions_limites(icl);
+          const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
+          const int ndeb = le_bord.num_premiere_face();
+          DoubleVect valcl;
+          cl->champ_front()->valeurs_face(face-ndeb,valcl);
 
-          int nbval = valeurs_locales.dimension(0);
-
-          for (int iface=0; iface<faces_bords_.size_array(); iface++)
+          if (valcl.size() == 0)
             {
-              int face = faces_bords_[iface];
-              int icl = rang_cl_[iface];
-              const Cond_lim& cl = zcl->les_conditions_limites(icl);
-              const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
-              const int ndeb = le_bord.num_premiere_face();
-              DoubleVect valcl;
-              cl->champ_front()->valeurs_face(face-ndeb,valcl);
+              int elem0 = face_voisins(face,0);
+              int elem1 = face_voisins(face,1);
 
-              if (valcl.size() == 0)
-                {
-                  int elem0 = face_voisins(face,0);
-                  int elem1 = face_voisins(face,1);
-
-                  if (elem0 != -1)
-                    valeurs_locales(nbval-1) = vals_ch[elem0];
-                  else
-                    valeurs_locales(0) = vals_ch[elem1];
-                }
+              if (elem0 != -1)
+                valeurs_locales(nbval-1) = vals_ch[elem0];
               else
-                {
-                  if (face_voisins(face,0) != -1)
-                    valeurs_locales(nbval-1) = valcl[0];
-                  else
-                    valeurs_locales(0) = valcl[0];
-                }
+                valeurs_locales(0) = vals_ch[elem1];
+            }
+          else
+            {
+              if (face_voisins(face,0) != -1)
+                valeurs_locales(nbval-1) = valcl[0];
+              else
+                valeurs_locales(0) = valcl[0];
             }
         }
     }

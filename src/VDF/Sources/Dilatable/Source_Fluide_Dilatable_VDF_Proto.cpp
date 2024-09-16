@@ -18,15 +18,15 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Domaine_Cl_VDF.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Dirichlet.h>
 #include <TRUSTTab.h>
 #include <Domaine_VDF.h>
 
-void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Domaine_dis_base& dds,const Domaine_Cl_dis& domaine_cl)
+void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Domaine_dis_base& dds,const Domaine_Cl_dis_base& domaine_cl)
 {
   le_dom = ref_cast(Domaine_VDF,dds);
-  le_dom_Cl = ref_cast(Domaine_Cl_VDF,domaine_cl.valeur());
+  le_dom_Cl = ref_cast(Domaine_Cl_VDF,domaine_cl);
 }
 
 void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Domaine_dis_base& dds, DoubleVect& volumes, DoubleVect& porosites)

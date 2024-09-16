@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,16 +24,16 @@
  */
 int Pb_Hydraulique_Concentration_Turbulent::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
   tester_compatibilite_hydr_concentration(domaine_Cl_hydr,domaine_Cl_co);
   return 1;
 }
 
 int Pb_Hydraulique_Melange_Binaire_Turbulent_QC::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_fm = eq_frac_mass.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_fm = eq_frac_mass.domaine_Cl_dis();
   tester_compatibilite_hydr_fraction_massique(domaine_Cl_hydr,domaine_Cl_fm);
   return 1;
 }
@@ -45,9 +45,9 @@ int Pb_Hydraulique_Turbulent::verifier()
 
 int Pb_Thermohydraulique_Concentration_Turbulent::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
   tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
   tester_compatibilite_hydr_concentration(domaine_Cl_hydr,domaine_Cl_co);
   return 1;
@@ -55,16 +55,16 @@ int Pb_Thermohydraulique_Concentration_Turbulent::verifier()
 
 int Pb_Thermohydraulique_Turbulent_QC::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
   tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
   return 1;
 }
 
 int Pb_Thermohydraulique_Turbulent::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
   tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
   return 1;
 }

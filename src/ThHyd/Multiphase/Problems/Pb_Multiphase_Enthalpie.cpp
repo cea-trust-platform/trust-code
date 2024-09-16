@@ -37,7 +37,7 @@ void Pb_Multiphase_Enthalpie::associer_milieu_base(const Milieu_base& mil)
 
 int Pb_Multiphase_Enthalpie::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_energie_enthalpie_.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_th = eq_energie_enthalpie_.domaine_Cl_dis();
   return tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
 }

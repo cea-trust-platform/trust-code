@@ -33,7 +33,7 @@ Entree& Champ_Q1NC::readOn(Entree& s)
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_Q1NC::verifie_valeurs_cl()
 {
-  const Domaine_Cl_dis_base& zcl = equation().domaine_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = equation().domaine_Cl_dis();
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int nb_compo = nb_comp();

@@ -37,7 +37,7 @@ protected:
   // pour les deux !
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>
-  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
+  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_transporte)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Elem>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Elem>::value;
     const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_transporte.valeur());
@@ -46,7 +46,7 @@ protected:
 
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>
-  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_vit)
+  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_vit)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Face>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Face>::value;
     const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vit.valeur());
@@ -92,10 +92,10 @@ private:
 
   // Methode enorme pour tout le monde !
   template <typename EVAL_TYPE, bool is_QUICK, bool is_CENTRE4>
-  EVAL_TYPE& associer_(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+  EVAL_TYPE& associer_(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
   {
     const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
-    const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
+    const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis);
     iter_vdf()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this)); // Et ouiiiiiiiii
     EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur()); // Mais ouiiiiiiiiiiii
     eval_conv.associer_domaines(zvdf, zclvdf );

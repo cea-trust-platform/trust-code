@@ -17,7 +17,7 @@
 #include <Domaine_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Equation_base.h>
 #include <Milieu_base.h>
 
@@ -49,10 +49,10 @@ inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const
     }
 }
 
-void Source_Generique_Face_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& zcl_dis)
+void Source_Generique_Face_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl_dis)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, zcl_dis.valeur());
+  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, zcl_dis);
 }
 
 Nom Source_Generique_Face_PolyMAC::localisation_source()

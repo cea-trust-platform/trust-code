@@ -485,7 +485,7 @@ const Domaine_dis_base& Champ_front_contact_VEF::domaine_dis() const
 
 const Domaine_Cl_dis_base& Champ_front_contact_VEF::domaine_Cl_dis() const
 {
-  return equation().domaine_Cl_dis().valeur();
+  return equation().domaine_Cl_dis();
 }
 
 
@@ -541,7 +541,7 @@ void Champ_front_contact_VEF::associer_front_vf_et_ch_front_autre_pb()
 {
   const Champ_Inc_base& temp_autre = l_inconnue2.valeur();
   const Equation_base& eqn = temp_autre.equation();
-  const Domaine_Cl_dis_base& zcl = eqn.domaine_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = eqn.domaine_Cl_dis();
 
   int num_cl;
   for (num_cl = 0; num_cl<zcl.nb_cond_lim(); num_cl++)
@@ -819,7 +819,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
 
 void Champ_front_contact_VEF::remplir_faces_coin()
 {
-  const Domaine_Cl_VEF& la_zcl_dis1=ref_cast(Domaine_Cl_VEF, l_inconnue1->equation().domaine_Cl_dis().valeur());
+  const Domaine_Cl_VEF& la_zcl_dis1=ref_cast(Domaine_Cl_VEF, l_inconnue1->equation().domaine_Cl_dis());
   const Conds_lim& conds_lim = la_zcl_dis1.les_conditions_limites();
   int size_cl = conds_lim.size();
   int size = elems_voisin_bord_.size();
@@ -907,7 +907,7 @@ void Champ_front_contact_VEF::test_faces_coin()
 {
   const Domaine_VEF& le_dom_dis1=ref_cast(Domaine_VEF, l_inconnue1->domaine_dis_base());
   const DoubleTab& xv1 = le_dom_dis1.xv();
-  const Domaine_Cl_VEF& la_zcl_dis1=ref_cast(Domaine_Cl_VEF, l_inconnue1->equation().domaine_Cl_dis().valeur());
+  const Domaine_Cl_VEF& la_zcl_dis1=ref_cast(Domaine_Cl_VEF, l_inconnue1->equation().domaine_Cl_dis());
   const Conds_lim& conds_lim = la_zcl_dis1.les_conditions_limites();
   int size_cl = conds_lim.size();
 

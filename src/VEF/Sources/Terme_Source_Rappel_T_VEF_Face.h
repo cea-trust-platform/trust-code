@@ -40,7 +40,7 @@ public :
   void mettre_a_jour(double temps) override {  } ;
 
 protected :
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   REF(Domaine_VEF) le_dom_VEF;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 

@@ -17,7 +17,7 @@
 #define Paroi_scal_hyd_base_EF_included
 
 #include <Turbulence_paroi_scal_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <TRUSTVects.h>
 #include <TRUST_Ref.h>
 
@@ -28,7 +28,7 @@ class Paroi_scal_hyd_base_EF: public Turbulence_paroi_scal_base
 {
   Declare_base(Paroi_scal_hyd_base_EF);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   int init_lois_paroi() override;
   void imprimer_nusselt(Sortie&) const override;
 

@@ -30,8 +30,8 @@ public:
 
   void residu(const Domaine_dis_base& z, const Champ_Inc& ch_inco, Champ_Fonc& champ) const override;
 
-  void y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis&, const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
-  void grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const override;
+  void y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base&, const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
+  void grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const override;
 
   inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_AJOUTER; }
 

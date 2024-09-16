@@ -186,7 +186,7 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
  * traitement_PTh=1 => pression calculee pour conserver la masse
  * traitement_PTh=2 => pression laissee cste.
  */
-void Fluide_Dilatable_base::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
+void Fluide_Dilatable_base::checkTraitementPth(const Domaine_Cl_dis_base& domaine_cl)
 {
   if (traitement_PTh==0)
     {
@@ -195,11 +195,11 @@ void Fluide_Dilatable_base::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
   else
     {
       int pression_imposee=0;
-      int size=domaine_cl->les_conditions_limites().size();
+      int size=domaine_cl.les_conditions_limites().size();
       assert(size!=0);
       for (int n=0; n<size; n++)
         {
-          const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n);
+          const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n);
           if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
         }
 

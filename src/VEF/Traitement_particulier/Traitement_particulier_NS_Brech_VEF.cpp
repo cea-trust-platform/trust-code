@@ -377,7 +377,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 {
   const Domaine_dis_base& zdis=mon_equation->domaine_dis();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis() );
 
   REF(Champ_base) rch1 ;
   REF(Champ_Inc_base) l_inco ;

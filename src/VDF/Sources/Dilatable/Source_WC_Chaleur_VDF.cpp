@@ -31,7 +31,7 @@ Sortie& Source_WC_Chaleur_VDF::printOn(Sortie& os) const
 
 Entree& Source_WC_Chaleur_VDF::readOn(Entree& is) { return is; }
 
-void Source_WC_Chaleur_VDF::associer_domaines(const Domaine_dis_base& domaine,const Domaine_Cl_dis& zcl)
+void Source_WC_Chaleur_VDF::associer_domaines(const Domaine_dis_base& domaine,const Domaine_Cl_dis_base& zcl)
 {
   associer_domaines_impl(domaine,zcl);
   associer_volume_porosite_impl(domaine,volumes,porosites);
@@ -121,12 +121,12 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
   // We use that of NS because we test the CL too (attention mon_equation is Chaleur...)
   const Domaine_dis_base& domaine_dis = eqHyd.inconnue()->domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
-  const Domaine_Cl_dis& domaine_cl = eqHyd.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_cl = eqHyd.domaine_Cl_dis();
   assert (domaine_dis.que_suis_je() == "Domaine_VDF");
 
   for (int n_bord=0; n_bord<domaine.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n_bord);
       // corrige si Neumann_sortie_libre
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {

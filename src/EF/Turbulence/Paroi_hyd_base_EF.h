@@ -17,7 +17,7 @@
 #define Paroi_hyd_base_EF_included
 
 #include <Turbulence_paroi_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_Cl_EF.h>
 #include <Domaine_EF.h>
 #include <TRUST_Ref.h>
@@ -30,7 +30,7 @@ class Paroi_hyd_base_EF: public Turbulence_paroi_base
 {
   Declare_base(Paroi_hyd_base_EF);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   void init_lois_paroi_();
   DoubleTab& corriger_derivee_impl(DoubleTab& d) const override;
   inline const ArrOfInt& face_keps_imposee() const { return face_keps_imposee_; }

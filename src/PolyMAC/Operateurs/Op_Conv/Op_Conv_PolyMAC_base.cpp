@@ -37,10 +37,10 @@ void Op_Conv_PolyMAC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zc
   la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl);
 }
 
-void Op_Conv_PolyMAC_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& zcl, const Champ_Inc&)
+void Op_Conv_PolyMAC_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl, const Champ_Inc&)
 {
   le_dom_poly_ = ref_cast(Domaine_PolyMAC, domaine_dis);
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl);
 }
 
 int Op_Conv_PolyMAC_base::impr(Sortie& os) const

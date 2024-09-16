@@ -41,10 +41,10 @@ const Domaine_VEF& Op_Grad_VEF_P1B_Face::domaine_vef() const
   return ref_cast(Domaine_VEF, le_dom_vef.valeur());
 }
 
-void Op_Grad_VEF_P1B_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
+void Op_Grad_VEF_P1B_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
-  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
 }
 
 static int chercher_arete(int elem, int somi, int somj, const IntTab& elem_aretes, const IntTab& aretes_som)

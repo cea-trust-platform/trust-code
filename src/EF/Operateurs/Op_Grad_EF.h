@@ -37,7 +37,7 @@ class Op_Grad_EF : public Operateur_Grad_base
 
 public:
 
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base&,const Champ_Inc&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;

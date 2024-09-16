@@ -21,7 +21,7 @@
 #include <Paroi_hyd_base_EF.h>
 #include <Schema_Temps_base.h>
 #include <communications.h>
-#include <Domaine_Cl_dis.h>
+
 #include <EcrFicPartage.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
@@ -67,7 +67,7 @@ const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
           int nb_front = my_eqn.domaine_dis().nb_front_Cl();
           for (int n_bord = 0; n_bord < nb_front; n_bord++)
             {
-              const Cond_lim& la_cl = my_eqn.domaine_Cl_dis()->les_conditions_limites(n_bord);
+              const Cond_lim& la_cl = my_eqn.domaine_Cl_dis().les_conditions_limites(n_bord);
               if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
                 {
                   const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
@@ -95,10 +95,10 @@ void Paroi_hyd_base_EF::get_noms_champs_postraitables(Noms& nom, Option opt) con
   Turbulence_paroi_base::get_noms_champs_postraitables(nom, opt);
 }
 
-void Paroi_hyd_base_EF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_hyd_base_EF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
-  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
 }
 
 void Paroi_hyd_base_EF::init_lois_paroi_()

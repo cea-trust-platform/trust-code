@@ -17,7 +17,7 @@
 #define Paroi_hyd_base_VDF_included
 
 #include <Turbulence_paroi_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <distances_VDF.h>
 #include <TRUST_Ref.h>
 
@@ -29,7 +29,7 @@ class Paroi_hyd_base_VDF : public Turbulence_paroi_base
 {
   Declare_base(Paroi_hyd_base_VDF);
 public:
-  void associer(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   void init_lois_paroi_();
   void imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const override;
   void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom& ) const override;

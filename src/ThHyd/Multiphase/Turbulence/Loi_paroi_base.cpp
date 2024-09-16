@@ -49,9 +49,9 @@ void Loi_paroi_base::completer()
   domaine.creer_tableau_faces(Faces_a_calculer_);
 
   for (int i = 0 ; i <pb_->nombre_d_equations() ; i++)
-    for (int j = 0 ; j<pb_->equation(i).domaine_Cl_dis()->nb_cond_lim(); j++)
+    for (int j = 0 ; j<pb_->equation(i).domaine_Cl_dis().nb_cond_lim(); j++)
       {
-        Cond_lim& cond_lim_loc = pb_->equation(i).domaine_Cl_dis()->les_conditions_limites(j);
+        Cond_lim& cond_lim_loc = pb_->equation(i).domaine_Cl_dis().les_conditions_limites(j);
         if sub_type(Dirichlet_loi_paroi, cond_lim_loc.valeur())
           ref_cast(Dirichlet_loi_paroi, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
         else if sub_type(Frottement_global_impose, cond_lim_loc.valeur())

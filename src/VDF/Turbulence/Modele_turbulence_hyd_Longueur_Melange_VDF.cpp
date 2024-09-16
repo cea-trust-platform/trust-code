@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_Longueur_Melange_VDF.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_Cl_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Equation_base.h>

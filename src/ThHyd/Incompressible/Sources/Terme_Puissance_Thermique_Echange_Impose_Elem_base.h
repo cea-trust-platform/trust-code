@@ -41,7 +41,7 @@ protected:
   REF(Domaine_VF) le_dom;
   REF(Domaine_Cl_dis_base) le_dom_Cl;
   Champ_Don himp_,Text_;
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   // PID controler
   int regul_ = 0;
   Parser_U pow_cible_, Kp_, Ki_, Kd_;

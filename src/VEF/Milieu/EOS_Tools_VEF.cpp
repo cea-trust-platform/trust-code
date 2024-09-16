@@ -45,9 +45,9 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
 /*! @brief Associe les domaines a l'EDO
  *
  * @param (Domaine_dis_base& domaine) domaine
- * @param (Domaine_Cl_dis& domaine_cl) domaine cl
+ * @param (Domaine_Cl_dis_base& domaine_cl) domaine cl
  */
-void  EOS_Tools_VEF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis& domaine_cl)
+void  EOS_Tools_VEF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis_base& domaine_cl)
 {
   le_dom = ref_cast(Domaine_VEF,dds);
   le_dom_Cl = domaine_cl;
@@ -101,7 +101,7 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
   //Corrections pour moyenner div(u) sur les faces
   const DoubleVect& volumes = le_dom->volumes();
   const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Domaine_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Domaine_Cl_VEF,le_dom_Cl.valeur()).volumes_entrelaces_Cl();
 
   IntTab& face_voisins = le_dom->face_voisins();
   int premiere_fac_std=le_dom->premiere_face_std();

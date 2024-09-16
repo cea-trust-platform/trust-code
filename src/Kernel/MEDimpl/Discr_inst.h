@@ -34,16 +34,17 @@ public:
   //
   // Methodes surchargees de Discretisation_base
   //
-  void domaine_Cl_dis(Domaine_dis_base& , Domaine_Cl_dis& ) const override
-  {
-    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
-    exit();
-  };
   void volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z,Champ_Fonc& ch) const
   {
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     exit();
-  };
+  }
+  Nom domaine_cl_dis_type() const override
+  {
+    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
+    exit();
+    return "";
+  }
   void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override
   {
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;

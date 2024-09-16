@@ -18,7 +18,7 @@
 #include <Paroi_hyd_base_VEF.h>
 #include <Modele_turbulence_hyd_base.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <communications.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
@@ -32,10 +32,10 @@ Sortie& Paroi_hyd_base_VEF::printOn(Sortie& s) const { return s << que_suis_je()
 
 Entree& Paroi_hyd_base_VEF::readOn(Entree& s) { return Turbulence_paroi_base::readOn(s); }
 
-void Paroi_hyd_base_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_hyd_base_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
 }
 
 void Paroi_hyd_base_VEF::init_lois_paroi_()

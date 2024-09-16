@@ -68,8 +68,9 @@ Sortie& Domaine_Cl_VEF::printOn(Sortie& os) const
 
 Entree& Domaine_Cl_VEF::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(is); }
 
-void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
+void Domaine_Cl_VEF::associer(const Domaine_dis_base& dom_dis)
 {
+  const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, dom_dis);
   int nb_faces_non_std = le_dom_VEF.nb_faces_non_std();
   const Elem_VEF_base& type_elem = le_dom_VEF.type_elem();
   int nb_fa7_elem = type_elem.nb_facette();

@@ -144,7 +144,7 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
   // Calculs coeffs echange sur l'instant sur lequel doivent agir les operateurs.
   double tps=schema_temps().temps_defaut();
   for(int i=0; i<nombre_d_equations(); i++)
-    equation(i).domaine_Cl_dis()->calculer_coeffs_echange(tps);
+    equation(i).domaine_Cl_dis().calculer_coeffs_echange(tps);
 
   converged=true;
   return true;

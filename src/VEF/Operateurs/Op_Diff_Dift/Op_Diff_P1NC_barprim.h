@@ -31,7 +31,7 @@ class Op_Diff_P1NC_barprim: public Operateur_Diff_base, public Op_VEF_Face
   Declare_instanciable(Op_Diff_P1NC_barprim);
 public:
   double calculer_dt_stab() const override;
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
   const Champ_base& diffusivite() const override;

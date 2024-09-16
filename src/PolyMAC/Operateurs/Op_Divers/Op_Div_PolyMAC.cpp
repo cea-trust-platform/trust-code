@@ -32,10 +32,10 @@ Sortie& Op_Div_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je(); }
 
 Entree& Op_Div_PolyMAC::readOn(Entree& s) { return s; }
 
-void Op_Div_PolyMAC::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
+void Op_Div_PolyMAC::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
+  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
 }
 
 DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const

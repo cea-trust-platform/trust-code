@@ -17,7 +17,7 @@
 #define Source_Generique_P0_Elem_included
 
 #include <Source_Generique_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <TRUST_Ref.h>
 
 class Domaine_VF;
@@ -34,12 +34,12 @@ class Source_Generique_P0_Elem: public Source_Generique_base
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base&) override;
   Nom localisation_source() override;
 
 protected:
   REF(Domaine_VF) le_dom;
-  REF(Domaine_Cl_dis) le_dom_cl;
+  REF(Domaine_Cl_dis_base) le_dom_cl;
 };
 
 #endif

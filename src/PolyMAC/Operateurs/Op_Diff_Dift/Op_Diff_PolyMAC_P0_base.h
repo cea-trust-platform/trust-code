@@ -32,7 +32,7 @@ class Op_Diff_PolyMAC_P0_base: public Operateur_Diff_base
 {
   Declare_base(Op_Diff_PolyMAC_P0_base);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
 
   void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
   void completer() override;

@@ -41,7 +41,7 @@ class Op_Conv_Centre_PolyMAC_Elem: public Op_Conv_PolyMAC_iterateur_base, public
 public:
 
   Op_Conv_Centre_PolyMAC_Elem();
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
   void associer_vitesse(const Champ_base&) override;
   const Champ_base& vitesse() const override;
   Champ_base& vitesse() override;

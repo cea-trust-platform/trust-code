@@ -41,11 +41,11 @@ void Source_Dirac_VEF_Face::associer_pb(const Probleme_base& pb)
   eval_puis.le_point.copy(point);
 }
 
-void Source_Dirac_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Source_Dirac_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
 {
   Terme_Puissance_Thermique_VEF_base::associer_domaines(domaine_dis, domaine_cl_dis);
   Eval_Dirac_VEF_Face& eval_grav = dynamic_cast<Eval_Dirac_VEF_Face&> (iter_->evaluateur());
-  eval_grav.associer_domaines(domaine_dis, domaine_cl_dis.valeur());
+  eval_grav.associer_domaines(domaine_dis, domaine_cl_dis);
 
   int nb_elem = domaine_dis.nb_elem();
   const Domaine& mon_dom = domaine_dis.domaine();

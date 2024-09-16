@@ -36,7 +36,7 @@ public:
   Source_Neutronique_VDF(const Iterateur_Source_base& iter_base) { iter_ = iter_base; }
   inline DoubleTab& calculer(DoubleTab& resu) const override { return iter_->calculer(resu); }
   void completer() override;
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base& ) override;
   void associer_pb(const Probleme_base& ) override;
   double calculer_Tmoyenne() override;
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}

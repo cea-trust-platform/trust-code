@@ -15,7 +15,7 @@
 
 #include <Domaine_Cl_dis_base.h>
 #include <Champ_Uniforme.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Source_Qdm_EF.h>
 #include <Equation_base.h>
 #include <Domaine_Cl_EF.h>
@@ -47,10 +47,10 @@ void Source_Qdm_EF::associer_pb(const Probleme_base& )
 }
 
 void Source_Qdm_EF::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                      const Domaine_Cl_dis& domaine_Cl_dis)
+                                      const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
-  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
 }
 
 

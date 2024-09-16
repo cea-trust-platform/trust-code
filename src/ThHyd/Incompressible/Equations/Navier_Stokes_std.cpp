@@ -338,13 +338,13 @@ void Navier_Stokes_std::completer()
   la_pression_en_pa->associer_domaine_cl_dis(le_dom_Cl_dis);
   divergence.completer();
   gradient.completer();
-  assembleur_pression_->associer_domaine_cl_dis_base(domaine_Cl_dis().valeur());
+  assembleur_pression_->associer_domaine_cl_dis_base(domaine_Cl_dis());
   assembleur_pression_->completer(*this);
 
   if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
       Domaine_dis_base& domaine = domaine_dis();
-      domaine.init_dist_paroi_globale(domaine_Cl_dis()->les_conditions_limites());
+      domaine.init_dist_paroi_globale(domaine_Cl_dis().les_conditions_limites());
       Cerr << "Initializing distance_paroi_globale ... " << finl;
       const DoubleTab& dist_calc = domaine.y_elem();
       for (int e = 0 ; e < domaine.nb_elem() ; e++) distance_paroi_globale->valeurs()(e, 0) = dist_calc(e);

@@ -16,7 +16,7 @@
 #include <Domaine_Cl_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Source_PDF_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <SFichier.h>
@@ -72,7 +72,7 @@ void Source_PDF_base::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 }
 
 void Source_PDF_base::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                        const Domaine_Cl_dis& domaine_Cl_dis)
+                                        const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();

@@ -41,10 +41,10 @@ Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s) const { return Terme_B
 
 Entree& Terme_Boussinesq_PolyMAC_Face::readOn(Entree& s) { return Terme_Boussinesq_base::readOn(s); }
 
-void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
+  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
 }
 
 void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const

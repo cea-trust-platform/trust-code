@@ -65,7 +65,8 @@ public:
                          int nb_comp, double temps,
                          Champ_Don& champ) const override;
 
-  void domaine_Cl_dis(Domaine_dis_base& z, Domaine_Cl_dis& zcl) const override;
+  Nom domaine_cl_dis_type() const override { return "Domaine_Cl_VDF"; }
+
   void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const override;
 
   void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& ,Fluide_Ostwald& ,
@@ -73,13 +74,13 @@ public:
                                            const Champ_Inc& ) const override;
   void vorticite(Domaine_dis_base& ,const Champ_Inc& , Champ_Fonc& ) const;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
-  void grad_u(const Domaine_dis_base& ,const Domaine_Cl_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
-  void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const override;
+  void grad_u(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ,const Champ_Inc& , Champ_Fonc& ) const override;
+  void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc&, Champ_Fonc& ) const override;
   void reynolds_maille(const Domaine_dis_base&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const override;
   void courant_maille(const Domaine_dis_base&, const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const override;
-  void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const override;
-//  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
+  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc&, Champ_Fonc&) const override;
+  void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc&, Champ_Fonc& ) const override;
+//  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
   void residu( const Domaine_dis_base& ,const Champ_Inc& , Champ_Fonc& ) const override;
   bool is_vdf() const override { return true; }
 

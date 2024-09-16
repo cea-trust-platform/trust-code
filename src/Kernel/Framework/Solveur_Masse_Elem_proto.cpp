@@ -86,7 +86,7 @@ void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
 {
   const Domaine_VF& domaine = le_dom_.valeur();
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
-  const Conds_lim& cls = solv_mass_->equation().domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = solv_mass_->equation().domaine_Cl_dis().les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue().valeur()).fcl(), &f_e = domaine.face_voisins();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
   const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem(), &fs = domaine.face_surfaces();

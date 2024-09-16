@@ -41,7 +41,7 @@ class Op_Diff_EF_base : public Operateur_Diff_base, public Op_EF_base
 public:
 
   int impr(Sortie& os) const override;
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& ,const Champ_Inc& ) override;
   double calculer_dt_stab() const override;
   virtual void remplir_nu(DoubleTab&) const=0;
 

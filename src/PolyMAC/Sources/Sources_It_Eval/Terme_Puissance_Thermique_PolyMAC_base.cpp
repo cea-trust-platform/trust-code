@@ -34,10 +34,10 @@ Entree& Terme_Puissance_Thermique_PolyMAC_base::readOn(Entree& s)
   return s;
 }
 
-void Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
 {
   const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis);
-  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis);
   iter_->associer_domaines(zvdf, zclvdf);
 }
 

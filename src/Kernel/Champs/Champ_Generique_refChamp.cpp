@@ -287,7 +287,7 @@ const Domaine_Cl_dis_base& Champ_Generique_refChamp::get_ref_zcl_dis_base() cons
 {
   const Champ_base& ch = get_ref_champ_base();
   if (sub_type(Champ_Inc_base,ch))
-    return ref_cast(Champ_Inc_base,ch).equation().domaine_Cl_dis().valeur();
+    return ref_cast(Champ_Inc_base,ch).equation().domaine_Cl_dis();
   else
     {
       Cerr<<"No zcl_dis is available for the field "<<ch.que_suis_je()<<finl;

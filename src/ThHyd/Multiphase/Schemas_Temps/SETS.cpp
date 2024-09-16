@@ -386,8 +386,8 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
 
       /* reglage de p_degen si non lu : si incompressible sans CLs de pression imposee, alors la pression est degeneree */
       if (p_degen_ < 0)
-        for (p_degen_ = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.domaine_Cl_dis()->nb_cond_lim(); i++)
-          p_degen_ &= !sub_type(Neumann_val_ext, eq_qdm.domaine_Cl_dis()->les_conditions_limites(i).valeur());
+        for (p_degen_ = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.domaine_Cl_dis().nb_cond_lim(); i++)
+          p_degen_ &= !sub_type(Neumann_val_ext, eq_qdm.domaine_Cl_dis().les_conditions_limites(i).valeur());
     }
 
   /* increments et residus pour l'algorithme de Newton */

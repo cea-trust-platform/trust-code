@@ -31,7 +31,7 @@ class Op_Dift_VEF_P1NCP1B_Face: public Op_Dift_VEF_base
 {
   Declare_instanciable(Op_Dift_VEF_P1NCP1B_Face);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
 
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
 

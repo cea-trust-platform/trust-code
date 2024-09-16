@@ -113,7 +113,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
       const Op_Diff_PolyMAC_P0_Elem *op = *op_ext_tbd.begin();
       op_ext_tbd.erase(op_ext_tbd.begin());
       //elargissement de op_ext
-      const Conds_lim& cls = op->equation().domaine_Cl_dis()->les_conditions_limites();
+      const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
       for (const auto &itr : cls)
         if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
           {
@@ -150,7 +150,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
     e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets())), som_elem.push_back(std::ref(zo.get().som_elem()));
 
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
-  const Conds_lim& cls = equation().domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = equation().domaine_Cl_dis().les_conditions_limites();
   int has_flux = (sub_type(Energie_Multiphase, equation()) || sub_type(Convection_Diffusion_Temperature, equation())) && equation().probleme().has_correlation("flux_parietal");
   for (i = 0; i < cls.size(); i++)
     if (has_flux || sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
@@ -182,7 +182,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
                 ok |= sb == s_l;
               if (!ok || fcl[iop](f, 0) != 3)
                 continue; //face ne touchant pas le sommet ou non Echange_contact
-              const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_ext[iop]->equation().domaine_Cl_dis()->les_conditions_limites()[fcl[iop](f, 1)].valeur());
+              const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_ext[iop]->equation().domaine_Cl_dis().les_conditions_limites()[fcl[iop](f, 1)].valeur());
               int o_iop = (int) (std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin()), o_f = cl.f_dist(fcl[iop](f, 2)); //operateur / face de l'autre cote
               std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f };
               s_pf.insert( { arr }); //stocke dans l'ordre
@@ -314,7 +314,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
       fs.push_back(std::ref(domaine[i].get().face_surfaces())), nf.push_back(std::ref(domaine[i].get().face_normales()));
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv())), xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));
-      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis()->les_conditions_limites()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0_Elem, *op_ext[i]).nu());
       const Champ_Inc& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
       const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, ch_inc.valeur());

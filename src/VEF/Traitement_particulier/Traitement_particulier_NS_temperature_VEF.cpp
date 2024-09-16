@@ -53,7 +53,7 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
 {
   const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis() );
   //  const DoubleTab& xv = domaine_VEF.xv();    // centre de gravite des faces
   int nb_front=domaine_VEF.nb_front_Cl();
 

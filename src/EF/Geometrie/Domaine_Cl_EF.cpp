@@ -48,14 +48,6 @@ Entree& Domaine_Cl_EF::readOn(Entree& is )
   return Domaine_Cl_dis_base::readOn(is) ;
 }
 
-/*! @brief etape de discretisation : dimensionnement des tableaux
- *
- */
-void Domaine_Cl_EF::associer(const Domaine_EF& le_dom_EF)
-{
-  //  int nb_elem_Cl  = le_dom_EF.nb_elem_Cl();
-}
-
 /*! @brief remplissage des tableaux
  *
  */

@@ -53,7 +53,7 @@ public:
 protected:
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&) override;   //!< associe le_dom_VEF et le_dom_Cl_VEF
+  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis_base&) override;   //!< associe le_dom_VEF et le_dom_Cl_VEF
 
   //! Appele pour chaque face par ajouter()
   /**

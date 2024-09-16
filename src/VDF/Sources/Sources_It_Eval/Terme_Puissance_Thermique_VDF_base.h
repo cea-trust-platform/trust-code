@@ -26,7 +26,7 @@ public:
   Terme_Puissance_Thermique_VDF_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_VDF_base(iter_base) { }
   int initialiser(double temps) override;
   virtual void resetTime(double temps) override { Terme_Puissance_Thermique::resetTime(temps); }
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base& ) override;
 };
 
 #endif /* Terme_Puissance_Thermique_VDF_base_included */

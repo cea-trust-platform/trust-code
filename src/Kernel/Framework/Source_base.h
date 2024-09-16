@@ -19,7 +19,7 @@
 #include <Champs_compris_interface.h>
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
 
@@ -54,7 +54,7 @@ public:
   virtual void contribuer_au_second_membre(DoubleTab&) const;
   virtual int impr(Sortie& os) const;
   // temporaire : associer_domaines sera rendue publique
-  inline void associer_domaines_public(const Domaine_dis_base& zdis, const Domaine_Cl_dis& zcldis) { associer_domaines(zdis,zcldis); }
+  inline void associer_domaines_public(const Domaine_dis_base& zdis, const Domaine_Cl_dis_base& zcldis) { associer_domaines(zdis,zcldis); }
   virtual int initialiser(double temps);
   virtual void associer_champ_rho(const Champ_base& champ_rho);
   virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
@@ -89,7 +89,7 @@ public:
 
 protected:
 
-  virtual void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) =0;
+  virtual void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) =0;
   virtual void associer_pb(const Probleme_base&) =0;
   int col_width_ = 0;
   Nom out_;                  // Nom du fichier .out pour l'impression

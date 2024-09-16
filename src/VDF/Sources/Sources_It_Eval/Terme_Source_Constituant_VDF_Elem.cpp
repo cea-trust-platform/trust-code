@@ -40,10 +40,10 @@ void Terme_Source_Constituant_VDF_Elem::completer()
   col_width_ = Terme_Source_Constituant::completer(equation().inconnue().valeur());
 }
 
-void Terme_Source_Constituant_VDF_Elem::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Source_Constituant_VDF_Elem::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
-  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis);
   iter_->associer_domaines(zvdf, zclvdf);
   Eval_Source_C_VDF_Elem& eval_puis = static_cast<Eval_Source_C_VDF_Elem&> (iter_->evaluateur());
   eval_puis.associer_domaines(zvdf,zclvdf);

@@ -18,7 +18,7 @@
 #include <Connectivite_som_elem.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <MD_Vector_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Pb_Multiphase.h>
 
 Implemente_instanciable(Champ_Elem_PolyMAC_P0P1NC,"Champ_Elem_PolyMAC_P0P1NC",Champ_Elem_PolyMAC);

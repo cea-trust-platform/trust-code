@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,13 @@
 #ifndef Source_Masse_Fluide_Dilatable_base_included
 #define Source_Masse_Fluide_Dilatable_base_included
 
-#include <Domaine_Cl_dis.h>
+
 #include <Champ_front.h>
 #include <TRUST_Ref.h>
 
 class Convection_Diffusion_Fluide_Dilatable_base;
 class Fluide_Dilatable_base;
+class Domaine_Cl_dis_base;
 
 /*! @brief : classe Source_Masse_Fluide_Dilatable_base Une source speciale pour l'equation de masse (utilisee seulement lors de la projection/correction donc).
  *
@@ -40,7 +41,7 @@ public :
   void changer_temps_futur(double temps, int i);
   void set_temps_defaut(double temps);
 
-  virtual void associer_domaine_cl(const Domaine_Cl_dis&);
+  virtual void associer_domaine_cl(const Domaine_Cl_dis_base&);
 
   inline int nb_comp() { return ncomp_; }
 
@@ -52,7 +53,7 @@ protected :
   int ncomp_ = -1;
   Nom nom_bord_;
   Champ_front ch_front_source_;
-  REF(Domaine_Cl_dis) domaine_cl_dis_;
+  REF(Domaine_Cl_dis_base) domaine_cl_dis_;
 };
 
 #endif /* Source_Masse_Fluide_Dilatable_base_included */

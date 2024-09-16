@@ -17,18 +17,18 @@
 #define Source_Fluide_Dilatable_VEF_Proto_included
 
 #include <TRUSTTabs_forward.h>
-#include <Domaine_Cl_dis.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VEF;
 class Equation_base;
 class Domaine_VEF;
 class Domaine_dis_base;
+class Domaine_Cl_dis_base;
 
 class Source_Fluide_Dilatable_VEF_Proto
 {
 protected:
-  void associer_domaines_impl(const Domaine_dis_base& domaine,const Domaine_Cl_dis& domaine_cl);
+  void associer_domaines_impl(const Domaine_dis_base& domaine,const Domaine_Cl_dis_base& domaine_cl);
   void associer_volume_porosite_impl(const Domaine_dis_base& domaine, DoubleVect& volumes, DoubleVect& porosites);
   void ajouter_impl(const Equation_base& eqn, const DoubleVect& g, const int dimension, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 

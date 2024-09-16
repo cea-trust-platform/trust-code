@@ -17,7 +17,7 @@
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VDF.h>
 #include <Milieu_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
 #include <Domaine_VDF.h>
@@ -44,12 +44,12 @@ Entree& Terme_Source_Acceleration_VDF_Face::readOn(Entree& s )
  *
  */
 void Terme_Source_Acceleration_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                                           const Domaine_Cl_dis& domaine_Cl_dis)
+                                                           const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   if (je_suis_maitre())
     Cerr << "Terme_Source_Acceleration_VDF_Face::associer_domaines" << finl;
   le_dom_VDF_    = ref_cast(Domaine_VDF, domaine_dis);
-  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
 }
 
 /*! @brief Fonction outil pour Terme_Source_Acceleration_VDF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:

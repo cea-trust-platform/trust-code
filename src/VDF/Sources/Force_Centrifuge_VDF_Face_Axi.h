@@ -62,7 +62,7 @@ protected:
   DoubleVect volume_entrelaces;
   DoubleVect porosite_surf;
 
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 
 };
 

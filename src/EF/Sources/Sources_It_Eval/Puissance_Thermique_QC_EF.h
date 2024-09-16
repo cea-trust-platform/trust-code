@@ -33,7 +33,7 @@ class Puissance_Thermique_QC_EF: public Terme_Puissance_Thermique, public Terme_
   Declare_instanciable_sans_constructeur(Puissance_Thermique_QC_EF);
 public:
   Puissance_Thermique_QC_EF() : Terme_Puissance_Thermique(), Terme_Source_EF_base(Iterateur_Source_EF_Som<Eval_Puiss_Th_QC_EF>()) { }
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
   const Champ_base& get_champ(const Motcle& nom) const override;

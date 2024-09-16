@@ -114,7 +114,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
           const DoubleVect& vol = domaine_VEF.volumes();
           const IntTab& face_voisins = domaine_VEF.face_voisins();
           const DoubleTab& face_normale = domaine_VEF.face_normales();
-          const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF,my_eqn.domaine_Cl_dis().valeur());
+          const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF,my_eqn.domaine_Cl_dis());
           int nb_dim_pb=Objet_U::dimension;
           DoubleVect le_mauvais_gradient(nb_dim_pb);
           int nb_front=domaine_VEF.nb_front_Cl();

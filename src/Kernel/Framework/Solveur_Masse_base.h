@@ -18,7 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
-#include <Domaine_Cl_dis.h>
+
 #include <TRUST_Deriv.h>
 #include <MorEqn.h>
 

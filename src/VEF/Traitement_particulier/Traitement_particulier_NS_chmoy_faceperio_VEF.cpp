@@ -51,7 +51,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats(void)
 {
   const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis() );
   const DoubleTab& xv = domaine_VEF.xv();    // centre de gravite des faces
   // Imprime dans un fichier les faces periodiques (numero+coordonnees du centre)
   int nb_front=domaine_VEF.nb_front_Cl();
@@ -85,7 +85,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::calcul_chmoy_faceperio(doubl
 {
   const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis() );
   const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
 
   // Calcul de la moyenne temporelle de la vitesse sur les frontieres periodiques:

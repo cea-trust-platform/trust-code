@@ -52,9 +52,9 @@ void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Perte_Charge_PolyMAC_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Perte_Charge_PolyMAC_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   Cerr << " Perte_Charge_PolyMAC_Face::associer_domaines " << finl;
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
+  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
 }

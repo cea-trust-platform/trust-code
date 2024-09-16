@@ -32,7 +32,7 @@ class Terme_Gravite_VDF_Face : public Terme_Source_VDF_base
 public:
   Terme_Gravite_VDF_Face() : Terme_Source_VDF_base(Iterateur_Source_Face<Eval_Gravite_VDF_Face>()) { }
   void associer_pb(const Probleme_base& ) override;
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base& ) override;
   inline void mettre_a_jour(double temps) override { gravite->mettre_a_jour(temps); }
 
 protected:

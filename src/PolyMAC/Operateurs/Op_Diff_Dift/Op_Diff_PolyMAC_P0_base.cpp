@@ -74,7 +74,7 @@ void Op_Diff_PolyMAC_P0_base::completer()
 
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   domaine.domaine().creer_tableau_elements(nu_);
-  const Conds_lim& cls = eq.domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = eq.domaine_Cl_dis().les_conditions_limites();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite()));
   if (nu_constant_)
     for (auto &itr : cls)
@@ -212,10 +212,10 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
   return 1;
 }
 
-void Op_Diff_PolyMAC_P0_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& zcl, const Champ_Inc&)
+void Op_Diff_PolyMAC_P0_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl, const Champ_Inc&)
 {
   le_dom_poly_ = ref_cast(Domaine_PolyMAC_P0, domaine_dis);
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl);
 }
 
 DoubleTab& Op_Diff_PolyMAC_P0_base::calculer(const DoubleTab& inco, DoubleTab& resu) const

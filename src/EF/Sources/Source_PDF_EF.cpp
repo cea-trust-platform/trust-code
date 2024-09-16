@@ -361,10 +361,10 @@ void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 }
 
 void Source_PDF_EF::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                      const Domaine_Cl_dis& domaine_Cl_dis)
+                                      const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
-  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
 }
 
 DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const

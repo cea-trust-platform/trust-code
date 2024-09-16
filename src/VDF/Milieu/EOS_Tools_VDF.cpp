@@ -37,7 +37,7 @@ Entree& EOS_Tools_VDF::readOn(Entree& is)
   return is;
 }
 
-void  EOS_Tools_VDF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis& domaine_cl)
+void  EOS_Tools_VDF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis_base& domaine_cl)
 {
   le_dom = ref_cast(Domaine_VDF,dds);
   le_dom_Cl = domaine_cl;

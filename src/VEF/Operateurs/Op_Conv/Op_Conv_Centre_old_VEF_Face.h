@@ -37,7 +37,7 @@ class Op_Conv_Centre_old_VEF_Face : public Op_Conv_VEF_base
 
 public:
 
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& ,const Champ_Inc& ) override;
   DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
 
 protected:

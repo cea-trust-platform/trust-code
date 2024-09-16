@@ -32,7 +32,7 @@ class Fluide_Weakly_Compressible : public Fluide_Dilatable_base
 public :
   void set_param(Param& param) override;
   void completer(const Probleme_base&) override;
-  void checkTraitementPth(const Domaine_Cl_dis&) override;
+  void checkTraitementPth(const Domaine_Cl_dis_base&) override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   void abortTimeStep() override;
   void calculer_pression_tot() override;

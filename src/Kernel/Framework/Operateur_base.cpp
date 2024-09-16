@@ -92,10 +92,10 @@ void Operateur_base::completer()
   const Equation_base& eqn = equation();
   const Domaine_dis_base& zdis= eqn.domaine_dis();
 
-  const Domaine_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->domaine_Cl_dis() : eqn.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->domaine_Cl_dis() : eqn.domaine_Cl_dis();
   const Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
   associer(zdis, zcl, inco);
-  const Conds_lim& les_cl = zcl->les_conditions_limites();
+  const Conds_lim& les_cl = zcl.les_conditions_limites();
   for (auto& itr : les_cl)
     {
       const Frontiere_dis_base& la_fr = itr->frontiere_dis();
@@ -335,7 +335,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       os.set_col_width(wcol - !gnuplot_header);
       os.add_col("Time");
       os.set_col_width(wcol);
-      const Conds_lim& les_cls=eqn.inconnue()->domaine_Cl_dis()->les_conditions_limites();
+      const Conds_lim& les_cls=eqn.inconnue()->domaine_Cl_dis().les_conditions_limites();
 
       if (flux_bords_.nb_dim()!=2)
         {

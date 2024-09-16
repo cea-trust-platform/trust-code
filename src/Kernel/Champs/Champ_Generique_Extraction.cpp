@@ -112,7 +112,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     {
       int num_bord =  domaine_dis_source.rang_frontiere(nom_fr_);
       const Champ_Inc_base& source_inconnue = ref_cast(Champ_Inc_base,source_stockage);
-      const Cond_lim& cl =  source_inconnue.equation().domaine_Cl_dis()->les_conditions_limites(num_bord);
+      const Cond_lim& cl =  source_inconnue.equation().domaine_Cl_dis().les_conditions_limites(num_bord);
       if (sub_type(Dirichlet_homogene,cl.valeur()))
         {
           Cerr<<"A boundary condition of type Dirichlet homogeneous does not use field boundary"<<finl;
@@ -182,7 +182,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     {
       int num_bord =  domaine_dis_source.rang_frontiere(nom_fr_);
       const Champ_Inc_base& source_inconnue = ref_cast(Champ_Inc_base,source_stockage);
-      const Champ_front& champ_fr =  source_inconnue.equation().domaine_Cl_dis()->les_conditions_limites(num_bord)->champ_front();
+      const Champ_front& champ_fr =  source_inconnue.equation().domaine_Cl_dis().les_conditions_limites(num_bord)->champ_front();
 
       if (sub_type(Champ_front_uniforme,champ_fr.valeur()))
         {

@@ -42,7 +42,7 @@ public:
 protected:
 
   REF(Domaine_EF) le_dom_EF;
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 
   Champ_Don la_source_,la_source_lu_;
 };

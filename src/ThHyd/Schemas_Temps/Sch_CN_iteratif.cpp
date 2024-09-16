@@ -282,7 +282,7 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
   // couple thermique VEF avec Chap_front_contact_VEF, meme avant convergence.
   // WEC :  /!\ la vitesse au temps intermediaire
   // n'est pas forcement a divergence nulle.
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
 
   // Calcul de la derivee dudt pour la valeur intermediaire de l'inconnue.
   // Bidouille : Comme les operateurs prennent par defaut le present,
@@ -298,12 +298,12 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
   intermediaire = dudt;
   intermediaire*= dt_intermediaire;
   intermediaire+= present;
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
   intermediaire.echange_espace_virtuel();
   final = dudt;
   final*= dt_final;
   final+= present;
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_final);
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_final);
   final.echange_espace_virtuel();
 
   delta+=intermediaire; // delta = Contient u(n+1/2,p+1) - u(n+1/2,p)

@@ -126,7 +126,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
       /* doit-on fixer P(elem 0) = 0 ? */
       int has_P_ref=0;
-      const Conds_lim& cls = eqnNS.domaine_Cl_dis()->les_conditions_limites();
+      const Conds_lim& cls = eqnNS.domaine_Cl_dis().les_conditions_limites();
       for (int n_bord=0; n_bord < cls.size(); n_bord++)
         if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
 
@@ -160,7 +160,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
       /* doit-on fixer P(elem 0) = 0 ? */
       int has_P_ref=0;
-      const Conds_lim& cls = eqnNS.domaine_Cl_dis()->les_conditions_limites();
+      const Conds_lim& cls = eqnNS.domaine_Cl_dis().les_conditions_limites();
       for (int n_bord=0; n_bord < cls.size(); n_bord++)
         if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
 

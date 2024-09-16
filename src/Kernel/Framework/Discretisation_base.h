@@ -17,7 +17,7 @@
 #define Discretisation_base_included
 
 #include <Domaine_forward.h>
-#include <Domaine_Cl_dis.h>
+
 
 #include <Champ_base.h> // Pour Nature_du_champ
 #include <Champ_Fonc.h>
@@ -41,7 +41,7 @@ class Motcle;
  *      abstraite qui est a la base de la hierarchie des discretisations
  *      en espace.
  *
- * @sa Probleme_base, Classe abstraite dont toutes les discretisations en espace doivent, deriver., Methode abstraite:, void domaine_Cl_dis(Domaine_dis_base& , Domaine_Cl_dis& ) const
+ * @sa Probleme_base, Classe abstraite dont toutes les discretisations en espace doivent, deriver., Methode abstraite:, void domaine_Cl_dis(Domaine_dis_base& , Domaine_Cl_dis_base& ) const
  */
 class Discretisation_base : public Objet_U
 {
@@ -62,10 +62,10 @@ public :
 
   void associer_domaine(const Domaine& dom);
 
+  virtual Nom domaine_cl_dis_type() const = 0;
+
   virtual void discretiser_variables() const;
-  virtual void discretiser_Domaine_Cl_dis(const Domaine_dis_base&, Domaine_Cl_dis&) const;
   virtual Domaine_dis_base& discretiser() const;
-  virtual void domaine_Cl_dis(Domaine_dis_base&, Domaine_Cl_dis&) const = 0;
 
   // Creation de champs scalaires ou vectoriels (essentiellement appel a la methode generale, ne pas surcharger ces methodes, elles ne sont la que par commodite)
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,

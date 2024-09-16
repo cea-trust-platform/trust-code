@@ -31,7 +31,6 @@ class Domaine_Cl_PolyMAC : public Domaine_Cl_dis_base
 
 public :
 
-  void associer(const Domaine_VF& ) { }
   void completer(const Domaine_dis_base& ) override;
   int initialiser(double temps) override;
   void imposer_cond_lim(Champ_Inc&, double) override;

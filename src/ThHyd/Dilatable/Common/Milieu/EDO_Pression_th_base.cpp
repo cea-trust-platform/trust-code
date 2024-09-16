@@ -17,7 +17,7 @@
 #include <Fluide_Weakly_Compressible.h>
 #include <EDO_Pression_th_base.h>
 #include <Domaine_Cl_dis_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Cond_lim.h>
 
 Implemente_base(EDO_Pression_th_base, "EDO_Pression_th_base", Objet_U);
@@ -35,7 +35,7 @@ void EDO_Pression_th_base::associer_fluide(const Fluide_Dilatable_base& fl)
   le_fluide_ = fl;
 }
 
-void EDO_Pression_th_base::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis& domaine_cl)
+void EDO_Pression_th_base::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis_base& domaine_cl)
 {
   le_dom = ref_cast(Domaine_VF, dds);
   le_dom_Cl = domaine_cl;
@@ -63,7 +63,7 @@ void EDO_Pression_th_base::mettre_a_jour_CL(double P)
 
   for (int n_bord = 0; n_bord < le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl.valeur()->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
       if (sub_type(Sortie_libre_pression_imposee_QC, la_cl.valeur()))
         {
           Sortie_libre_pression_imposee_QC& cl = ref_cast_non_const(Sortie_libre_pression_imposee_QC, la_cl.valeur());

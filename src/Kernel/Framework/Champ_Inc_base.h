@@ -18,7 +18,7 @@
 
 #include <Interface_blocs.h>
 #include <Domaine_forward.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_VF.h>
 #include <Champ_base.h>
 #include <Domaine_VF.h>
@@ -118,11 +118,11 @@ public:
   int a_un_domaine_dis_base() const override { return 1; }
 
   virtual void associer_eqn(const Equation_base&);
-  virtual void associer_domaine_cl_dis(const Domaine_Cl_dis&);
+  virtual void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
   void associer_domaine_dis_base(const Domaine_dis_base&) override;
 
-  const Domaine_Cl_dis& domaine_Cl_dis() const;
-  Domaine_Cl_dis& domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_dis() const;
+  Domaine_Cl_dis_base& domaine_Cl_dis();
   const Domaine_dis_base& domaine_dis_base() const override { return le_dom_VF.valeur(); }
   const Domaine_VF& domaine_vf() const { return le_dom_VF.valeur(); }
 
@@ -164,7 +164,7 @@ protected:
   virtual void creer_tableau_distribue(const MD_Vector&, RESIZE_OPTIONS = RESIZE_OPTIONS::COPY_INIT);
 
   Roue_ptr les_valeurs;
-  REF(Domaine_Cl_dis) mon_dom_cl_dis;
+  REF(Domaine_Cl_dis_base) mon_dom_cl_dis;
   REF(Domaine_VF) le_dom_VF;
 
   /* pour les champs dependant d'autres Champ_Inc */

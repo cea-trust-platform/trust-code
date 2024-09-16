@@ -18,7 +18,7 @@
 
 #include <Support_Champ_Masse_Volumique.h>
 #include <Turbulence_paroi.h>
-#include <Domaine_Cl_dis.h>
+
 
 
 class Schema_Temps_base;
@@ -64,7 +64,7 @@ public:
   void discretiser_K(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
   virtual void completer() { /* Do nothing */ }
   void associer_eqn(const Equation_base&);
-  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) { /* Do nothing */ }
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) { /* Do nothing */ }
   int reprendre(Entree&) override;
 
   void creer_champ(const Motcle& motlu) override;

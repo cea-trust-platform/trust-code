@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,15 +83,15 @@ void Pb_Thermohydraulique_Concentration::associer_milieu_base(const Milieu_base&
  * Le test se fait sur les conditions
  *     aux limites discretisees de chaque equation.
  *     Appels aux fonctions de librairie hors classe:
- *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
- *       tester_compatibilite_hydr_concentration(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
+ *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis_base&,const Domaine_Cl_dis_base&)
+ *       tester_compatibilite_hydr_concentration(const Domaine_Cl_dis_base&,const Domaine_Cl_dis_base&)
  *
  * @return (int) code de retour propage
  */
 int Pb_Thermohydraulique_Concentration::verifier()
 {
   Pb_Thermohydraulique::verifier();
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis_base& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
   return tester_compatibilite_hydr_concentration(domaine_Cl_hydr, domaine_Cl_co);
 }

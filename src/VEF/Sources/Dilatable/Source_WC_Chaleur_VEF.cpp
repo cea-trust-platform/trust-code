@@ -31,7 +31,7 @@ Sortie& Source_WC_Chaleur_VEF::printOn(Sortie& os) const
 
 Entree& Source_WC_Chaleur_VEF::readOn(Entree& is) { return is; }
 
-void Source_WC_Chaleur_VEF::associer_domaines(const Domaine_dis_base& domaine,const Domaine_Cl_dis& zcl)
+void Source_WC_Chaleur_VEF::associer_domaines(const Domaine_dis_base& domaine,const Domaine_Cl_dis_base& zcl)
 {
   associer_domaines_impl(domaine,zcl);
   associer_volume_porosite_impl(domaine,volumes,porosites);

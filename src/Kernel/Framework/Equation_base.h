@@ -25,7 +25,7 @@
 #include <Interface_blocs.h>
 #include <Value_Input_Int.h>
 #include <TRUSTTab_parts.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Matrice_Morse.h>
 
 #include <Champs_Fonc.h>
@@ -132,8 +132,8 @@ public :
 
   const Discretisation_base& discretisation() const;
 
-  virtual inline Domaine_Cl_dis& domaine_Cl_dis();
-  virtual inline const Domaine_Cl_dis& domaine_Cl_dis() const;
+  virtual inline Domaine_Cl_dis_base& domaine_Cl_dis();
+  virtual inline const Domaine_Cl_dis_base& domaine_Cl_dis() const;
   Domaine_dis_base& domaine_dis();
   const Domaine_dis_base& domaine_dis() const;
   //
@@ -247,7 +247,7 @@ protected :
   Sources les_sources;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Domaine_dis_base) le_dom_dis;
-  Domaine_Cl_dis le_dom_Cl_dis;
+  OWN_PTR(Domaine_Cl_dis_base) le_dom_Cl_dis;
   REF(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -316,22 +316,24 @@ inline const Nom& Equation_base::le_nom() const
 
 /*! @brief Renvoie le domaine des conditions aux limite discretisee associee a l'equation
  *
- * @return (Domaine_Cl_dis&) Domaine de condition aux limites discretisee
+ * @return (Domaine_Cl_dis_base&) Domaine de condition aux limites discretisee
  */
-inline Domaine_Cl_dis& Equation_base::domaine_Cl_dis()
+inline Domaine_Cl_dis_base& Equation_base::domaine_Cl_dis()
 {
-  return le_dom_Cl_dis;
+  assert(le_dom_Cl_dis.non_nul());
+  return le_dom_Cl_dis.valeur();
 }
 
 /*! @brief Renvoie le domaine des conditions aux limite discretisee associee a l'equation
  *
  *     (version const)
  *
- * @return (Domaine_Cl_dis&) Domaine de condition aux limites discretisee
+ * @return (Domaine_Cl_dis_base&) Domaine de condition aux limites discretisee
  */
-inline const Domaine_Cl_dis& Equation_base::domaine_Cl_dis() const
+inline const Domaine_Cl_dis_base& Equation_base::domaine_Cl_dis() const
 {
-  return le_dom_Cl_dis;
+  assert(le_dom_Cl_dis.non_nul());
+  return le_dom_Cl_dis.valeur();
 }
 
 /*! @brief Renvoie le solveur de masse associe a l'equation.

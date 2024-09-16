@@ -730,7 +730,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
   const RefObjU& modele_turbulence         = mon_equation->get_modele(TURBULENCE);
   const Equation_base& eqn                 = ref_cast(Equation_base,mon_equation.valeur()) ;
-  const Domaine_Cl_dis_base& domaine_Cl_dis_base = ref_cast(Domaine_Cl_dis_base,eqn.domaine_Cl_dis().valeur());
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base = ref_cast(Domaine_Cl_dis_base,eqn.domaine_Cl_dis());
   const Conds_lim& les_cl                  = domaine_Cl_dis_base.les_conditions_limites();
   const Domaine_VF& domaine_VF                   = ref_cast(Domaine_VF,eqn.domaine_dis());
   double tps                               = mon_equation->inconnue()->temps();

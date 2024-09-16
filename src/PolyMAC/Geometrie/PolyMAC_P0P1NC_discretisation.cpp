@@ -25,7 +25,7 @@
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_P0P1NC_base.h>
 
@@ -238,7 +238,7 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(const Motcle& dir
     }
 }
 
-void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale
   Noms noms(1), unites(1);
@@ -251,7 +251,7 @@ void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis_base& z, const Doma
       tab_y_p(i, n) = -1.;
 }
 
-void PolyMAC_P0P1NC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0P1NC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   abort();
 }

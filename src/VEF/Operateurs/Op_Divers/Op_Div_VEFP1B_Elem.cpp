@@ -86,10 +86,10 @@ static int verifier(const Op_Div_VEFP1B_Elem& op, int& init, const Domaine_VEF& 
   return 1;
 }
 
-void Op_Div_VEFP1B_Elem::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
+void Op_Div_VEFP1B_Elem::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
-  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
 }
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div) const

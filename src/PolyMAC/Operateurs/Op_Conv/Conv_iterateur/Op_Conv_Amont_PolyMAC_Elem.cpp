@@ -29,10 +29,10 @@ Entree& Op_Conv_Amont_PolyMAC_Elem::readOn(Entree& s)
   return s;
 }
 
-void Op_Conv_Amont_PolyMAC_Elem::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
+void Op_Conv_Amont_PolyMAC_Elem::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis);
-  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis);
   const Champ_Elem_PolyMAC& inco = ref_cast(Champ_Elem_PolyMAC, ch_transporte.valeur());
 
   iter_->associer(zvdf, zclvdf, *this);

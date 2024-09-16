@@ -17,7 +17,7 @@
 #define Source_QC_Chaleur_Verif_included
 
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
-#include <Domaine_Cl_dis.h>
+
 
 #include <TRUST_Ref.h>
 
@@ -41,7 +41,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override ;
 
 protected:
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override { }
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override { }
   int mode;
 };
 

@@ -53,17 +53,17 @@ public :
 
   // Methodes virtuelles
   virtual void creer_champ_vorticite(const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const;
-  virtual void grad_u(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&, Champ_Fonc&) const;
+  virtual void grad_u(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&, Champ_Fonc&) const;
   virtual void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const;
 
   // cette methode permets de calculer/visualiser y dans tout le domaine : utile pour k-omega SST et les forces parois
   virtual void distance_paroi_globale(const Schema_Temps_base& , Domaine_dis_base&, Champ_Fonc&) const;
-  virtual void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const;
-  virtual void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch) const;
-  virtual void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch, Motcle& nom, int temp_ref) const;
+  virtual void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,  const Champ_Inc&, Champ_Fonc& ) const;
+  virtual void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc& eqn,Champ_Fonc& ch) const;
+  virtual void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc& eqn,Champ_Fonc& ch, Motcle& nom, int temp_ref) const;
 
   //pour VEF implemente const =0;
-  virtual void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const;
+  virtual void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,  const Champ_Inc&, Champ_Fonc& ) const;
 
   inline virtual void reynolds_maille(const Domaine_dis_base&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const
   {
@@ -77,14 +77,14 @@ public :
     Process::exit();
   }
 
-  inline virtual void estimateur_aposteriori(const Domaine_dis_base&, const Domaine_Cl_dis&, const Champ_Inc&, const Champ_Inc&, const Champ_Don&, Champ_Fonc&) const
+  inline virtual void estimateur_aposteriori(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&, const Champ_Inc&, const Champ_Don&, Champ_Fonc&) const
   {
     Cerr << "estimateur_aposteriori keyword not available for this discretization." << finl;
     Cerr << "You should use it with the VEF_Aposteriori_discretisation !! " << finl;
     Process::exit();
   }
 
-  inline virtual void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const
+  inline virtual void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc&, Champ_Fonc&) const
   {
     Cerr << "Taux_cisaillement keyword not available for this discretization." << finl;
     Process::exit();

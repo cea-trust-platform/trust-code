@@ -21,7 +21,7 @@
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>
 #include <Milieu_base.h>

@@ -15,7 +15,7 @@
 
 #include <Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Equation_base.h>
 #include <Synonyme_info.h>
 #include <Probleme_base.h>
@@ -56,7 +56,7 @@ Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s)
   return s ;
 }
 
-void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines " << finl;
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);

@@ -33,7 +33,7 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   DoubleTrav dudt(futur); // just for initializing the array structure ... Trav is highly recommanded!! Otherwise we allocate at each time step!!
 
   // Boundary conditions applied on Un+1:
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
   // At this point, the inconnue() is in the following state:
   //   present(): holds the current value, but updates for the BC have already been done (line just above)
@@ -50,7 +50,7 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   futur *= dt_;
   futur += present;
 
-  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
   update_critere_statio(dudt, eqn);
 
   return 1;

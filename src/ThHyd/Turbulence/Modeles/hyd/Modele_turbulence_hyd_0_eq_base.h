@@ -17,7 +17,7 @@
 #define Modele_turbulence_hyd_0_eq_base_included
 
 #include <Modele_turbulence_hyd_base.h>
-#include <Domaine_Cl_dis.h>
+
 
 #include <TRUST_Ref.h>
 
@@ -38,7 +38,7 @@ public:
   int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
   int comprend_champ(const Motcle& mot) const;
 
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
 
   void completer() override;
   void mettre_a_jour(double) override;

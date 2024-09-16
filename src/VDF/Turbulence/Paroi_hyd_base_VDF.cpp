@@ -19,7 +19,7 @@
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Domaine_Cl_dis.h>
+
 #include <EcrFicPartage.h>
 #include <Modele_turbulence_hyd_base.h>
 #include <Schema_Temps_base.h>
@@ -34,10 +34,10 @@ Sortie& Paroi_hyd_base_VDF::printOn(Sortie& s) const { return s << que_suis_je()
 
 Entree& Paroi_hyd_base_VDF::readOn(Entree& s) { return Turbulence_paroi_base::readOn(s); }
 
-void Paroi_hyd_base_VDF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
+void Paroi_hyd_base_VDF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis);
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
 }
 
 void Paroi_hyd_base_VDF::init_lois_paroi_()

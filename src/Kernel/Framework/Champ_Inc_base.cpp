@@ -619,7 +619,7 @@ void Champ_Inc_base::associer_eqn(const Equation_base& eqn)
   MorEqn::associer_eqn(eqn);
 }
 
-void Champ_Inc_base::associer_domaine_cl_dis(const Domaine_Cl_dis& zcl)
+void Champ_Inc_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
   mon_dom_cl_dis = zcl;
 }
@@ -629,7 +629,7 @@ void Champ_Inc_base::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
   le_dom_VF = ref_cast(Domaine_VF, z_dis);
 }
 
-const Domaine_Cl_dis& Champ_Inc_base::domaine_Cl_dis() const
+const Domaine_Cl_dis_base& Champ_Inc_base::domaine_Cl_dis() const
 {
   if (!mon_dom_cl_dis.non_nul())
     return equation().domaine_Cl_dis();
@@ -637,7 +637,7 @@ const Domaine_Cl_dis& Champ_Inc_base::domaine_Cl_dis() const
     return mon_dom_cl_dis.valeur();
 }
 
-Domaine_Cl_dis& Champ_Inc_base::domaine_Cl_dis()
+Domaine_Cl_dis_base& Champ_Inc_base::domaine_Cl_dis()
 {
   if (!mon_dom_cl_dis.non_nul())
     return equation().domaine_Cl_dis();
@@ -670,7 +670,7 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
   const IntTab& f_e = domaine.face_voisins(), &f_s = domaine.face_sommets();
   DoubleTrav result(domaine.xv_bord().dimension_tot(0), valeurs().line_size());
 
-  const Conds_lim& cls = domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   int j, k, f, fb, s, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure")), n_som;
   for (const auto& itr : cls)
     {

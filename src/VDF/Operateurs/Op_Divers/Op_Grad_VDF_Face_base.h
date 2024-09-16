@@ -27,7 +27,7 @@ class Op_Grad_VDF_Face_base : public Operateur_Grad_base
   Declare_base(Op_Grad_VDF_Face_base);
 public:
   void check_multiphase_compatibility() const override { }
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& , const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
 

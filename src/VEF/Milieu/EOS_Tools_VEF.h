@@ -17,7 +17,7 @@
 #define EOS_Tools_VEF_included
 
 #include <EOS_Tools_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
@@ -36,7 +36,7 @@ public :
   const DoubleTab& rho_discvit() const override;
   const DoubleTab& rho_face_n() const override;
   const DoubleTab& rho_face_np1() const override;
-  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis_base&) override;
   void divu_discvit(const DoubleTab& , DoubleTab& ) override;
   double moyenne_vol(const DoubleTab&) const override;
   void secmembre_divU_Z(DoubleTab& ) const override;
@@ -45,7 +45,7 @@ public :
 
 protected :
   REF(Domaine_VEF) le_dom;
-  REF(Domaine_Cl_dis) le_dom_Cl;
+  REF(Domaine_Cl_dis_base) le_dom_Cl;
   DoubleVect un_;
 };
 

@@ -57,6 +57,8 @@ public:
   Domaine&            domaine();
   const Domaine&      domaine() const;
 
+  virtual void associer(const Domaine_dis_base& ddb) { /* Does nothing by default */ }
+
   virtual int   calculer_coeffs_echange(double temps);
   // !SC : passage du Champ_Inc n'est plus necessaire car il y a une ref maintenant
   virtual void     imposer_cond_lim(Champ_Inc&,double ) = 0;

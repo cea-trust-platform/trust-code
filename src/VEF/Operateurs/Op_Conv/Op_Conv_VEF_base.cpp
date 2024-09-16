@@ -233,11 +233,11 @@ void Op_Conv_VEF_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& domain
 }
 
 void Op_Conv_VEF_base::associer(const Domaine_dis_base& domaine_dis,
-                                const Domaine_Cl_dis& domaine_cl_dis,
+                                const Domaine_Cl_dis_base& domaine_cl_dis,
                                 const Champ_Inc& )
 {
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis);
-  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis);
 
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;

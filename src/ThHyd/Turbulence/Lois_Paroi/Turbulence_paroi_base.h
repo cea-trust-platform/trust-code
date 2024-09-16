@@ -17,7 +17,7 @@
 #define Turbulence_paroi_base_included
 
 #include <Champs_compris_interface.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Champs_compris.h>
 
 #include <Champ_Fonc.h>
@@ -34,7 +34,7 @@ class Param;
  *     de calcul des grandeurs turbulentes aux voisinages des parois.
  *     Contient une reference a un modele de turbulence.
  *
- * @sa Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF, Classe abstraite, Methodes abstraites, void associer(const Domaine_dis_base&, const Domaine_Cl_dis&), int init_lois_paroi(), int calculer_hyd(DoubleTab& ), int calculer_hyd(DoubleTab& , DoubleTab& )
+ * @sa Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF, Classe abstraite, Methodes abstraites, void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&), int init_lois_paroi(), int calculer_hyd(DoubleTab& ), int calculer_hyd(DoubleTab& , DoubleTab& )
  */
 class Turbulence_paroi_base: public Champs_compris_interface, public Objet_U
 {
@@ -45,7 +45,7 @@ public:
 
   virtual void set_param(Param& param) { /* Do nothing */ }
   inline void associer_modele(const Modele_turbulence_hyd_base&);
-  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis&)=0;
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&)=0;
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
   inline int calculer_hyd(Champ_Inc&);

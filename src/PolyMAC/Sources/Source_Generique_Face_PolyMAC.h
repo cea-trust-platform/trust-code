@@ -27,7 +27,7 @@ class Source_Generique_Face_PolyMAC: public Source_Generique_base
   Declare_instanciable(Source_Generique_Face_PolyMAC);
 public:
   DoubleTab& ajouter(DoubleTab&) const override;
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   Nom localisation_source() override;
 
 protected:

@@ -43,7 +43,7 @@ public:
 
 protected:
   const DoubleTab& calculer_vitesse_faces(DoubleTab& v_faces_stockage) const override;
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 
 private:
   // References remplies par associer_champ_rho

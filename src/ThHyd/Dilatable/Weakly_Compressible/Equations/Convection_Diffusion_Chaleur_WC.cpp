@@ -70,7 +70,7 @@ void Convection_Diffusion_Chaleur_WC::completer()
   Op_Grad_WC_.typer();
   Op_Grad_WC_.l_op_base().associer_eqn(*this);
   const Domaine_dis_base& zdis = domaine_dis();
-  const Domaine_Cl_dis& zcl = domaine_Cl_dis();
+  const Domaine_Cl_dis_base& zcl = domaine_Cl_dis();
   const Champ_Inc& inco = inconnue();
   Op_Grad_WC_->associer(zdis, zcl, inco);
 }

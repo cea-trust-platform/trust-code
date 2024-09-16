@@ -18,7 +18,7 @@
 
 #include <EDO_Pression_th_base.h>
 #include <EOS_Tools_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Loi_Etat_base.h>
 #include <Fluide_base.h>
 #include <TRUST_Deriv.h>
@@ -60,7 +60,7 @@ public :
   void preparer_calcul() override;
   virtual void completer(const Probleme_base&);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  virtual void checkTraitementPth(const Domaine_Cl_dis&);
+  virtual void checkTraitementPth(const Domaine_Cl_dis_base&);
   void prepare_pressure_edo();
   virtual void write_mean_edo(double);
   virtual void write_header_edo();

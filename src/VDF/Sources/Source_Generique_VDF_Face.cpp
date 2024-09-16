@@ -17,7 +17,7 @@
 #include <Dirichlet_homogene.h>
 #include <Equation_base.h>
 #include <Domaine_Cl_VDF.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Milieu_base.h>
 #include <Dirichlet.h>
 #include <Domaine_VDF.h>
@@ -70,10 +70,10 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
 }
 
 void Source_Generique_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                                  const Domaine_Cl_dis& zcl_dis)
+                                                  const Domaine_Cl_dis_base& zcl_dis)
 {
   le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis);
-  la_zcl_VDF = ref_cast(Domaine_Cl_VDF,zcl_dis.valeur());
+  la_zcl_VDF = ref_cast(Domaine_Cl_VDF,zcl_dis);
 }
 
 Nom Source_Generique_VDF_Face::localisation_source()

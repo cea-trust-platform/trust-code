@@ -77,10 +77,10 @@ int Source_Forchheimer_VDF_Face::lire_motcle_non_standard(const Motcle& mot, Ent
 }
 
 
-void Source_Forchheimer_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Source_Forchheimer_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
-  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis);
   iter_->associer_domaines(zvdf, zclvdf);
   eval().associer_domaines(zvdf, zclvdf );
 }

@@ -18,7 +18,7 @@
 
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
-#include <Domaine_Cl_dis.h>
+
 
 #include <Champ_Fonc.h>
 #include <TRUSTVects.h>
@@ -52,7 +52,7 @@ public:
   int reprendre(Entree& is) override { return 1; }
 
   inline void associer_modele(const Modele_turbulence_scal_base&);
-  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis&)=0;
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&)=0;
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
   inline int calculer_scal(Champ_Fonc&);

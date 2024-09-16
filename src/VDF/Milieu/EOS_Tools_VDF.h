@@ -17,7 +17,7 @@
 #define EOS_Tools_VDF_included
 
 #include <EOS_Tools_base.h>
-#include <Domaine_Cl_dis.h>
+
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
@@ -34,7 +34,7 @@ class EOS_Tools_VDF: public EOS_Tools_base
   Declare_instanciable(EOS_Tools_VDF);
 public :
   const DoubleTab& rho_discvit() const override;
-  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&,const Domaine_Cl_dis_base&) override;
   void divu_discvit(const DoubleTab&, DoubleTab&) override;
   void secmembre_divU_Z(DoubleTab& ) const override;
   void mettre_a_jour(double temps) override;
@@ -46,7 +46,7 @@ public :
 
 protected :
   REF(Domaine_VDF) le_dom;
-  REF(Domaine_Cl_dis) le_dom_Cl;
+  REF(Domaine_Cl_dis_base) le_dom_Cl;
   DoubleTab tab_rho_face, tab_rho_face_demi, tab_rho_face_np1;
 };
 

@@ -63,10 +63,10 @@ int Source_Darcy_VEF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& i
   return -1;
 }
 
-void Source_Darcy_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Source_Darcy_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
 {
   const Domaine_VEF& zvdf = ref_cast(Domaine_VEF,domaine_dis);
-  const Domaine_Cl_VEF& zclvdf = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
+  const Domaine_Cl_VEF& zclvdf = ref_cast(Domaine_Cl_VEF,domaine_cl_dis);
   iter_->associer_domaines(zvdf, zclvdf);
   eval().associer_domaines(zvdf, zclvdf);
 }

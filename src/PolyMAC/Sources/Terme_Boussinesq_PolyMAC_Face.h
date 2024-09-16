@@ -40,7 +40,7 @@ public:
 protected:
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 };
 
 #endif /* Terme_Boussinesq_PolyMAC_Face_included */

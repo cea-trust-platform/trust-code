@@ -82,11 +82,11 @@ void Perte_Charge_VEF_Face::associer_pb(const Probleme_base& pb)
 }
 
 void Perte_Charge_VEF_Face::associer_domaines(const Domaine_dis_base& domaine_dis,
-                                              const Domaine_Cl_dis& domaine_Cl_dis)
+                                              const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
   Cerr << " Perte_Charge_VEF_Face::associer_domaines " << finl ;
   le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis);
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
 }
 
 

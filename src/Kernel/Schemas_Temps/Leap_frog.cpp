@@ -128,7 +128,7 @@ int Leap_frog::faire_un_pas_de_temps_eqn_base(Equation_base& eq)
       futur+=present;
     }
 
-  eq.domaine_Cl_dis()->imposer_cond_lim(eq.inconnue(),temps_courant()+pas_de_temps());
+  eq.domaine_Cl_dis().imposer_cond_lim(eq.inconnue(),temps_courant()+pas_de_temps());
   DoubleTab tmp(futur);
   tmp -= present;
   tmp /= dt_;

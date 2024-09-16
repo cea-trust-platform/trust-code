@@ -71,7 +71,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
   const DoubleTab& ch = cha.valeurs();
 
   const Domaine_VEF& domaine_VEF = cha.domaine_vef();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, cha.equation().domaine_Cl_dis().valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, cha.equation().domaine_Cl_dis());
   const IntTab& elem_som = dom.les_elems();
   double mijK, miiK;
   DoubleTab& vit_som=cha.ch_som();
@@ -711,7 +711,7 @@ valeur_P1_H1(const Champ_P1NC& cha,
   const DoubleTab& ch = cha.valeurs();
   const Domaine_VEF& domaine_VEF = cha.domaine_vef();
   const DoubleTab& normales=domaine_VEF.face_normales();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, cha.equation().domaine_Cl_dis().valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, cha.equation().domaine_Cl_dis());
   const IntTab& elem_som = domaine.les_elems();
   const IntTab& elem_faces=domaine_VEF.elem_faces();
   double mijK;
@@ -965,7 +965,7 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
                   //  Interpolation des vitesses a la paroi
 
                   const Domaine_VEF& domaine_VE_chF = ch_inc_P1NC.domaine_vef();
-                  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,ch_inc_P1NC.equation().domaine_Cl_dis().valeur());
+                  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,ch_inc_P1NC.equation().domaine_Cl_dis());
                   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
                   const Domaine& domchF = domaine_VE_chF.domaine();
                   const IntTab& face_voisins = domaine_VE_chF.face_voisins();
@@ -1125,7 +1125,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
     }
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,
-                                                  cha.equation().domaine_Cl_dis().valeur());
+                                                  cha.equation().domaine_Cl_dis());
   const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleVect& volumes_entrelaces= domaine_VEF.volumes_entrelaces();
   const Domaine& dom =domaine_VEF.domaine();

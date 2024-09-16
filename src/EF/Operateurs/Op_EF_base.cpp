@@ -443,8 +443,8 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
       flux_bord=0;
-      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl)->frontiere_dis();
-      const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
+      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl)->frontiere_dis();
+      const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
@@ -503,8 +503,8 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   // Impression sur chaque face si demande
   for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
-      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl)->frontiere_dis();
-      const Cond_lim& la_cl = op.equation().domaine_Cl_dis()->les_conditions_limites(num_cl);
+      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl)->frontiere_dis();
+      const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();

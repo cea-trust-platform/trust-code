@@ -18,7 +18,7 @@
 #include <Domaine_VF.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_dis.h>
+
 #include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
@@ -262,7 +262,7 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 {
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
   if (valeurs().get_md_vector() != domaine.mdv_ch_face) return; //pas de variables auxiliaires -> on sort
-  const Conds_lim& cls = domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = domaine.nb_faces_tot();
   init_ve2(), init_fcl();
 
