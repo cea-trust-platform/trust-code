@@ -324,7 +324,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
                          const int elem)
   {
     int rang=rang_elem_non_std(elem);
-    int face[nb_faces_elem]; // Declare face inside the lambda
+    int face[nb_dim+1]; // Declare face inside the lambda
 
     for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
       face[facei_loc]=elem_faces(elem,facei_loc);
