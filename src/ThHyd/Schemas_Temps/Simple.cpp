@@ -419,7 +419,7 @@ bool Simple::iterer_eqs(LIST(OBS_PTR(Equation_base)) eqs, int nb_iter, int& ok)
             {
               Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
               if (!mat.nb_colonnes())
-                mat.dimensionner(eqs[i]->inconnue()->valeurs().size_totale(), eqs[j]->inconnue()->valeurs().size_totale(), 0);
+                mat.dimensionner(eqs[i]->inconnue().valeurs().size_totale(), eqs[j]->inconnue().valeurs().size_totale(), 0);
             }
       else for (i = 0; i < eqs.size(); i++)
           for (j = 0; j < eqs.size(); j++)

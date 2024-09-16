@@ -66,3 +66,8 @@ const Champ_base& Operateur_Diff_base::diffusivite_pour_pas_de_temps() const
   assert( diffusivite_pour_pas_de_temps_.non_nul() );
   return diffusivite_pour_pas_de_temps_.valeur();
 }
+
+void Operateur_Diff_base::set_multiscalar(int is_multiscalar)
+{
+  Process::exit(que_suis_je() + "::set_multiscalar() not implemented");
+}

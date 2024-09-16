@@ -43,6 +43,8 @@ public :
   void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { };
+
+  void set_multiscalar(int multi) override { multiscalar_ = multi; }
 };
 
 #endif /* Op_Diff_PolyVEF_P0P1_Elem_included */
