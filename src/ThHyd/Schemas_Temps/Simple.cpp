@@ -414,7 +414,13 @@ bool Simple::iterer_eqs(LIST(OBS_PTR(Equation_base)) eqs, int nb_iter, int& ok)
     {
       /* dimensionnement de la matrice globale */
       if (interface_blocs_ok)
-        for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
+        for (i = 0; i < eqs.size(); i++)
+          for (eqs[i]->dimensionner_blocs(mats[i], {}), j = 0; j < eqs.size(); j++)
+            {
+              Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+              if (!mat.nb_colonnes())
+                mat.dimensionner(eqs[i]->inconnue().valeurs().size_totale(), eqs[j]->inconnue().valeurs().size_totale(), 0);
+            }
       else for (i = 0; i < eqs.size(); i++)
           for (j = 0; j < eqs.size(); j++)
             {
