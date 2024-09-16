@@ -1,0 +1,53 @@
+Statistiques d'initialisation du calcul
+
+Temps total                       97.7841
+
+Statistiques de resolution du probleme
+
+Temps total                       66.0946
+
+
+Timesteps                         10
+Secondes / pas de temps           6.60945
+Dont solveurs Ax=B                0.460607  6% (4 appels/pas de temps)
+Dont solveur diffusion_implicite  0.384264  5% (6 appels/pas de temps)
+Dont assemblage matrice_implicite 0.715183 10% (6 appels/pas de temps)
+Dont mettre_a_jour                0.077793  1% (5 appels/pas de temps)
+Dont operateurs convection        3.661810 55% (8 appels/pas de temps)
+Dont operateurs diffusion         0.413929  6% (35.9 appels/pas de temps)
+Dont operateurs gradient          0.067630  1% (9 appels/pas de temps)
+Dont operateurs divergence        0.047912  0% (8.2 appels/pas de temps)
+Dont operateurs source            0.010442  0% (6 appels/pas de temps)
+Dont operations postraitement     0.311831  4% (2 appels/pas de temps)
+Dont calcul dt                    0.024335  0% (10 appels/pas de temps)
+Dont modele turbulence            0.020418  0% (2 appels/pas de temps)
+Dont calcul divers                0.413295  6% (0 appels/pas de temps)
+Nb solveur / pas de temps         4
+Secondes / solveur                0.115152
+Iterations / solveur              46.55
+GPU statistics per time step (experimental):
+Libraries: 0.459717 s  7.0%  4.0 calls
+Kernels  : 2.019712 s 30.6% 1625.3 calls
+Copy H2D : 0.449560 s  6.8% 155.8 calls 10.6 GB/s
+Copy D2H : 0.485053 s  7.3% 157.9 calls  8.7 GB/s
+GPU: 37.5% Copy H<->D: 14.1% Comm: 0% CPU & Others: 48.3%
+I/O:
+
+Timesteps = number of time steps
+Nb solveur = number of linear system resolutions
+Nb assemblage implicite = number of matrix assemblies for the implicit scheme
+Iterations = average number of iterations of the solver
+Communications = fraction of the time spent
+                 in communications between processors (excluding io files)
+Network latency = time of one mpsum measured by an internal bench over 0.1s
+Network bandwidth = maximum on all processors
+                    of the average bandwidth of send_recv operations
+Waiting time = estimation of the waiting time of the different processors
+
+Max_waiting_time big    => probably due to a bad partitioning
+Communications > 30%    => too many processors or network too slow
+
+Statistiques de post resolution
+
+Temps total                       0.423866
+

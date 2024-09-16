@@ -7,6 +7,7 @@ domaine dom
 
 # BEGIN MESH #
 lire_fichier dom maillage.geom
+/* raffiner_isotrope dom raffiner_isotrope dom */
 # END MESH #
 
 # BEGIN PARTITION
@@ -34,7 +35,7 @@ lire sch
     tmax 5.0
     dt_start dt_fixe 0.0031
     dt_max 0.0031
-    dt_impr 1e-6
+    dt_impr 1
     facsec 1
     diffusion_implicite 1
     impr_diffusion_implicite 1
@@ -121,11 +122,7 @@ lire pb
             Tmin Tmin periode 1e-6 numero_elem_sur_maitre 0
             Tmax Tmax periode 1e-6 numero_elem_sur_maitre 0
         }
-        format lml
-        champs dt_post 1	{
-            vitesse elem
-            temperature elem
-        }
+        format lml champs dt_post 1 { vitesse elem temperature elem }
     }
 }
 
