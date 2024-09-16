@@ -20,7 +20,7 @@ Mailler box
         Pave Entree
         {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 11 2 2
+        Nombre_de_Noeuds 11 3 3
         /* Nombre_de_Noeuds 161 17 17 */
         Longueurs 10 1 1
         }
@@ -42,7 +42,7 @@ Mailler dom
         Pave Entree
         {
         Origine 10. 0. 0.
-        Nombre_de_Noeuds 11 2 2
+        Nombre_de_Noeuds 11 3 3
         /* Nombre_de_Noeuds 161 17 17 */
         Longueurs 10 1 1
         }
