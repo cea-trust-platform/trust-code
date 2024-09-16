@@ -319,245 +319,112 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
-                         const int elem)
+                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(const int elem)
   {
-    int rang=rang_elem_non_std(elem);
+    int rang = rang_elem_non_std(elem);
+    int face[4];  // Declare face inside the lambda, with compile time size ! (sneaky bug otherwise)
 
-    int face[4];
-    for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-      face[facei_loc]=elem_faces(elem,facei_loc);
+    for (int facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
+      face[facei_loc] = elem_faces(elem, facei_loc);
 
-    if (nb_dim==2)
+    for (int fa7 = 0; fa7 < nfa7; fa7++)
       {
-        if (rang==-1)
-          for (int fa7=0; fa7<nfa7; fa7++)
-            {
-              int facei_loc=KEL(0,fa7);
-              int facej_loc=KEL(1,fa7);
+        int facei_loc = KEL(0, fa7);
+        int facej_loc = KEL(1, fa7);
 
-              int facei=face[facei_loc];
-              int facej=face[facej_loc];
+        int facei = face[facei_loc];
+        int facej = face[facej_loc];
 
-              //REMARQUE : ON N'OUBLIE PAS QUE LES NORMALES FA7 SONT ORIENTeES DE FACE_LOCI VERS FACE_LOCJ PAR DEFAUT
-              //LES PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S SONT DONC CALCULeS POUR OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCI
-              //ET EMIS PAR LA FACE_LOCJ
-              //SI L'ON VEUT OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCJ ET EMIS PAR LA FACE_LOCI, IL FAUT MULTIPLIER LES
-              //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
-              //FACE_LOCI
-              //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-              const double psc_m = Kij(elem,facei_loc,facej_loc);
-              const double psc_c = Cij(elem,fa7);
-              const double psc_s = Sij(elem,fa7);
+        //REMARQUE : ON N'OUBLIE PAS QUE LES NORMALES FA7 SONT ORIENTeES DE FACE_LOCI VERS FACE_LOCJ PAR DEFAUT
+        //LES PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S SONT DONC CALCULeS POUR OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCI
+        //ET EMIS PAR LA FACE_LOCJ
+        //SI L'ON VEUT OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCJ ET EMIS PAR LA FACE_LOCI, IL FAUT MULTIPLIER LES
+        //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
+        //FACE_LOCI
+        //MEME REMARQUE POUR LE SCALAIRE "FLUX"
 
-              int face_amont, dir;
-              if (psc_m>=0.)
-                face_amont=facei,dir=0;
-              else
-                face_amont=facej,dir=1;
+        // Compute psc_m, psc_c, psc_s, psc_s2
+        const double psc_m = Kij(elem, facei_loc, facej_loc);
+        const double psc_c = Cij(elem, fa7);
 
-              int s=sommet_elem(elem,KEL(2,fa7));
+        // Arrays to handle both dimensions
+        double psc_s_array[2];
+        int s_array[2];
 
-              for (int comp=0; comp<nb_comp; comp++)
-                {
-                  //Calcul de la valeur de l'inconnue aux points d'integration de la formule de Simspon
-                  double inco_m=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_m+=gradient_elem_(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
+        if (nb_dim == 2)
+          {
+            psc_s_array[0] = Sij(elem, fa7);
+            s_array[0] = sommet_elem(elem, KEL(2, fa7));
+          }
+        else      // nb_dim == 3
+          {
+            psc_s_array[0] = Sij(elem, fa7);
+            psc_s_array[1] = Sij2(elem, fa7);
+            s_array[0] = sommet_elem(elem, KEL(2, fa7));
+            s_array[1] = sommet_elem(elem, KEL(3, fa7));
+          }
 
-                  double inco_s=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_s+=gradient_elem_(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
+        int face_amont, dir;
+        if (psc_m >= 0.)
+          face_amont = facei, dir = 0;
+        else
+          face_amont = facej, dir = 1;
 
-                  double inco_c=2.*inco_m-inco_s;
+        for (int comp = 0; comp < nb_comp; comp++)
+          {
+            //Calcul de la valeur de l'inconnue aux points d'integration de la formule de Simspon
+            double inco_m = transporteVect(face_amont, comp);
+            for (int dim = 0; dim < nb_dim; dim++)
+              {
+                if (rang == -1)
+                  inco_m += gradient_elem_(elem, comp, dim) * vecteur_face_facette(elem, fa7, dim, dir);
+                else
+                  inco_m += gradient_elem_(elem, comp, dim) * vecteur_face_facette_Cl(rang, fa7, dim, dir);
+              }
 
-                  //Calcul du flux final : formule d'integration de Simpson
-                  double flux=inco_c*psc_c;
-                  flux+=4*inco_m*psc_m;
-                  flux+=inco_s*psc_s;
-                  flux/=6.;
+            // Compute inco_s_array
+            double inco_s_array[2];
+            int num_integration_points = (nb_dim == 2) ? 1 : 2;
+            for (int ip = 0; ip < num_integration_points; ip++)
+              {
+                double inco_s = transporteVect(face_amont, comp);
+                for (int dim = 0; dim < nb_dim; dim++)
+                  {
+                    inco_s += gradient_elem_(elem, comp, dim) *
+                              (coord_sommets(s_array[ip], dim) - xv(face_amont, dim));
+                  }
+                inco_s_array[ip] = inco_s;
+              }
 
-                  //Fij(elem,facei_loc,facej_loc,comp) est le flux recu par la facei_loc dans elem
-                  //envoye par la face facej_loc dans elem pour la composante comp de l'inconnue
-                  Fij(elem,facei_loc,facej_loc,comp)=flux-psc_m*transporteVect(facei, comp);
-                  Fij(elem,facej_loc,facei_loc,comp)=psc_m*transporteVect(facej, comp)-flux;
-                }
-            }
-        else //rang!=-1
-          for (int fa7=0; fa7<nfa7; fa7++)
-            {
-              int facei_loc=KEL(0,fa7);
-              int facej_loc=KEL(1,fa7);
+            // Compute inco_c
+            double inco_c = (nb_dim == 2 ? 2.0 : 3.0) * inco_m;
+            for (int ip = 0; ip < num_integration_points; ip++)
+              {
+                inco_c -= inco_s_array[ip];
+              }
 
-              int facei=face[facei_loc];
-              int facej=face[facej_loc];
-
-              //REMARQUE : ON N'OUBLIE PAS QUE LES NORMALES FA7 SONT ORIENTeES DE FACE_LOCI VERS FACE_LOCJ PAR DEFAUT
-              //LES PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S SONT DONC CALCULeS POUR OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCI
-              //ET EMIS PAR LA FACE_LOCJ
-              //SI L'ON VEUT OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCJ ET EMIS PAR LA FACE_LOCI, IL FAUT MULTIPLIER LES
-              //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
-              //FACE_LOCI
-              //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-              const double psc_m = Kij(elem,facei_loc,facej_loc);
-              const double psc_c = Cij(elem,fa7);
-              const double psc_s = Sij(elem,fa7);
-
-              int face_amont, dir;
-              if (psc_m>=0.)
-                face_amont=facei,dir=0;
-              else
-                face_amont=facej,dir=1;
-
-              int s=sommet_elem(elem,KEL(2,fa7));
-
-              for (int comp=0; comp<nb_comp; comp++)
-                {
-                  //Calcul de la valeur de l'inconnue aux points d'integration de la formule de Simspon
-                  double inco_m=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_m+=gradient_elem_(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
-
-                  double inco_s=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_s+=gradient_elem_(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
-
-                  double inco_c=2.*inco_m-inco_s;
-
-                  //Calcul du flux final : formule d'integration de Simpson
-                  double flux=inco_c*psc_c;
-                  flux+=4*inco_m*psc_m;
-                  flux+=inco_s*psc_s;
-                  flux/=6.;
-
-                  //Fij(elem,facei_loc,facej_loc,comp) est le flux recu par la facei_loc dans elem
-                  //envoye par la face facej_loc dans elem pour la composante comp de l'inconnue
-                  Fij(elem,facei_loc,facej_loc,comp)=flux-psc_m*transporteVect(facei, comp);
-                  Fij(elem,facej_loc,facei_loc,comp)=psc_m*transporteVect(facej, comp)-flux;
-                }
-            }
-      }//fin nb_dim==2
-    else //nb_dim==3
-      {
-        if (rang==-1)
-          for (int fa7=0; fa7<nfa7; fa7++)
-            {
-              int facei_loc=KEL(0,fa7);
-              int facej_loc=KEL(1,fa7);
-
-              int facei=face[facei_loc];
-              int facej=face[facej_loc];
-
-              //REMARQUE : ON N'OUBLIE PAS QUE LES NORMALES FA7 SONT ORIENTeES DE FACE_LOCI VERS FACE_LOCJ PAR DEFAUT
-              //LES PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S, PSC_S2 SONT DONC CALCULeS POUR OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCI
-              //ET EMIS PAR LA FACE_LOCJ
-              //SI L'ON VEUT OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCJ ET EMIS PAR LA FACE_LOCI, IL FAUT MULTIPLIER LES
-              //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S, PSC_S2 PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
-              //FACE_LOCI
-              //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-              const double psc_c = Cij(elem,fa7);
-              const double psc_s = Sij(elem,fa7);
-              const double psc_s2 = Sij2(elem,fa7);
-              const double psc_m = Kij(elem,facei_loc,facej_loc);
-
-              int face_amont, dir;
-              if (psc_m>=0.)
-                face_amont=facei,dir=0;
-              else
-                face_amont=facej,dir=1;
-
-              int s=sommet_elem(elem,KEL(2,fa7));
-              int s2=sommet_elem(elem,KEL(3,fa7));
-
-              for (int comp=0; comp<nb_comp; comp++)
-                {
-                  //Calcul de la valeur de l'inconnue aux points d'integration de la formule 3D
-                  double inco_m=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_m+=gradient_elem_(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
-
-                  double inco_s=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_s+=gradient_elem_(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
-
-                  double inco_s2=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_s2+=gradient_elem_(elem,comp,dim)*(coord_sommets(s2,dim)-xv(face_amont,dim));
-
-                  double inco_c=3.*inco_m-inco_s-inco_s2;
-
-                  //Calcul du flux final : formule d'integration 3D exacte pour les polynomes de degre 2
-                  double flux=(inco_s+inco_s2)*(psc_s+psc_s2);
-                  flux+=(inco_s+inco_c)*(psc_s+psc_c);
-                  flux+=(inco_s2+inco_c)*(psc_s2+psc_c);
-                  flux/=12.;
-
-                  //Fij(elem,facei_loc,facej_loc,comp) est le flux recu par la facei_loc dans elem
-                  //envoye par la face facej_loc dans elem pour la composante comp de l'inconnue
-                  Fij(elem,facei_loc,facej_loc,comp)=flux-psc_m*transporteVect(facei, comp);
-                  Fij(elem,facej_loc,facei_loc,comp)=psc_m*transporteVect(facej, comp)-flux;
-                }
-            }
-        else //rang!=-1
-          for (int fa7=0; fa7<nfa7; fa7++)
-            {
-              int facei_loc=KEL(0,fa7);
-              int facej_loc=KEL(1,fa7);
-
-              int facei=face[facei_loc];
-              int facej=face[facej_loc];
-
-              //REMARQUE : ON N'OUBLIE PAS QUE LES NORMALES FA7 SONT ORIENTeES DE FACE_LOCI VERS FACE_LOCJ PAR DEFAUT
-              //LES PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S, PSC_S2 SONT DONC CALCULeS POUR OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCI
-              //ET EMIS PAR LA FACE_LOCJ
-              //SI L'ON VEUT OBTENIR LE FLUX REcU PAR LA FACE FACE_LOCJ ET EMIS PAR LA FACE_LOCI, IL FAUT MULTIPLIER LES
-              //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S, PSC_S2 PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
-              //FACE_LOCI
-              //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-              const double psc_c = Cij(elem,fa7);
-              const double psc_s = Sij(elem,fa7);
-              const double psc_s2 = Sij2(elem,fa7);
-              const double psc_m = Kij(elem,facei_loc,facej_loc);
-
-              int face_amont, dir;
-              if (psc_m>=0.)
-                face_amont=facei,dir=0;
-              else
-                face_amont=facej,dir=1;
-
-              int s=sommet_elem(elem,KEL(2,fa7));
-              int s2=sommet_elem(elem,KEL(3,fa7));
-
-              for (int comp=0; comp<nb_comp; comp++)
-                {
-                  //Calcul de la valeur de l'inconnue aux points d'integration de la formule 3D
-                  double inco_m=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_m+=gradient_elem_(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
-
-                  double inco_s=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_s+=gradient_elem_(elem,comp,dim)*(coord_sommets(s,dim)-xv(face_amont,dim));
-
-                  double inco_s2=transporteVect(face_amont, comp);
-                  for(int dim=0; dim<nb_dim; dim++)
-                    inco_s2+=gradient_elem_(elem,comp,dim)*(coord_sommets(s2,dim)-xv(face_amont,dim));
-
-                  double inco_c=3.*inco_m-inco_s-inco_s2;
-
-                  //Calcul du flux final : formule d'integration 3D exacte pour les polynomes de degre 2
-                  double flux=(inco_s+inco_s2)*(psc_s+psc_s2);
-                  flux+=(inco_s+inco_c)*(psc_s+psc_c);
-                  flux+=(inco_s2+inco_c)*(psc_s2+psc_c);
-                  flux/=12.;
-
-                  //Fij(elem,facei_loc,facej_loc,comp) est le flux recu par la facei_loc dans elem
-                  //envoye par la face facej_loc dans elem pour la composante comp de l'inconnue
-                  Fij(elem,facei_loc,facej_loc,comp)=flux-psc_m*transporteVect(facei, comp);
-                  Fij(elem,facej_loc,facei_loc,comp)=psc_m*transporteVect(facej, comp)-flux;
-                }
-            }
-      }//fin nb_dim==3
+            //Calcul du flux final : formule d'integration de Simpson
+            double flux;
+            if (nb_dim == 2)
+              {
+                flux = inco_c * psc_c;
+                flux += 4 * inco_m * psc_m;
+                flux += inco_s_array[0] * psc_s_array[0];
+                flux /= 6.0;
+              }
+            else      // nb_dim == 3
+              {
+                double sum1 = (inco_s_array[0] + inco_s_array[1]) * (psc_s_array[0] + psc_s_array[1]);
+                double sum2 = (inco_s_array[0] + inco_c) * (psc_s_array[0] + psc_c);
+                double sum3 = (inco_s_array[1] + inco_c) * (psc_s_array[1] + psc_c);
+                flux = (sum1 + sum2 + sum3) / 12.0;
+              }
+            //Fij(elem,facei_loc,facej_loc,comp) est le flux recu par la facei_loc dans elem
+            //envoye par la face facej_loc dans elem pour la composante comp de l'inconnue
+            Fij(elem, facei_loc, facej_loc, comp) = flux - psc_m * transporteVect(facei, comp);
+            Fij(elem, facej_loc, facei_loc, comp) = psc_m * transporteVect(facej, comp) - flux;
+          }
+      }
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
