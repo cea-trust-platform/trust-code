@@ -318,6 +318,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CDoubleTabView3 gradient_elem_ = gradient_elem.view3_ro(); //Gradient elem déclaré plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissée ici
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
+  Kokkos::fence();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
@@ -560,6 +561,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
       }//fin nb_dim==3
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  Kokkos::fence();
 }
 
 void Op_Conv_Muscl_New_VEF_Face::
