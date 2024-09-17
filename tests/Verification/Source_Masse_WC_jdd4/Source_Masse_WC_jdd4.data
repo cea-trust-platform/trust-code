@@ -1,5 +1,5 @@
 # Pb_ThermoHydraulique_Especes_WC 3D GAZ PEMFC #
-# PARALLEL OK #
+# PARALLEL NOT #
 dimension 3
 Pb_ThermoHydraulique_Especes_WC pb
 
