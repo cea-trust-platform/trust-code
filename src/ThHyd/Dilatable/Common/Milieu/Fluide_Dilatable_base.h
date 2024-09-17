@@ -91,6 +91,10 @@ public :
   inline Champ_Don& source_masse_espece() { assert (source_masse_esp_.non_nul()); return source_masse_esp_; }
   inline const Champ_Don& source_masse_projection() const { assert (source_masse_proj_.non_nul()); return source_masse_proj_; }
   inline Champ_Don& source_masse_projection() { assert (source_masse_proj_.non_nul()); return source_masse_proj_; }
+
+  inline bool has_source_masse_espece_champ() const { return source_masse_esp_.non_nul(); }
+  inline bool has_source_masse_projection_champ() const { return source_masse_proj_.non_nul(); }
+
   inline const  DoubleTab& rho_n() const { return loi_etat_->rho_n(); }
   inline const  DoubleTab& rho_np1() const { return loi_etat_->rho_np1(); }
   inline void calculer_coeff_T();
