@@ -1,5 +1,5 @@
 # Pb_ThermoHydraulique_Especes_WC 3D GAZ PEMFC #
-# PARALLEL OK #
+# PARALLEL OK 2 #
 dimension 3
 Pb_ThermoHydraulique_Especes_WC pb
 
@@ -10,7 +10,7 @@ Mailler dom
   Pave DOM_DOM
   {
     Origine 0. -5.e-3 0.
-    Nombre_de_Noeuds 6 51 6 # 3 3 3 #
+    Nombre_de_Noeuds 6 51 6
     Longueurs 1.e-3 50.e-3 1.e-3
   }
   {
