@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) GPU          : When enabling GPU communications with MPI GPU-aware library, fix KSP_DIVERGED produced by PETSc GPU solvers (especially when using classical multigrid preconditioners) by using OpenMPI 5.x instead of OpenMPI 4.x
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------

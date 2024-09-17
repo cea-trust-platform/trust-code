@@ -1,7 +1,7 @@
 #!/bin/bash
 # OpenMPI install script
 default_version=2.0.4
-latest_version=4.1.0
+latest_version=4.1.0 && [ "$TRUST_USE_CUDA" = 1 ] && latest_version=5.0.5
 [ `uname -s` = Darwin ] && latest_version=4.1.6
 
 version=$default_version
@@ -76,7 +76,7 @@ options="--with-memory-manager=none --with-hwloc=internal --disable-libompitrace
 options=$options" --enable-static --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma"
 
 # Ajout CUDA:
-[ "$TRUST_USE_CUDA" = 1 ] && options=$options" --with-cuda=$CUDA_INC_PATH --disable-mca-dso"
+[ "$TRUST_USE_CUDA" = 1 ] && options=$options" --with-cuda=$CUDA_ROOT --disable-mca-dso"
 
 # A partir d'OpenMPI 1.7, mpif77 et mpif90 -> mpifort
 [ "`grep f77 ../configure.help`" != "" ] && options=$options" --with-wrapper-ldflags=-lmpi_f77"
@@ -94,5 +94,9 @@ $TRUST_MAKE || exit -1
 make install || exit -1
 cd ..
 rm -r -f $src configure.help
+
+# Check MPI Cuda awareness:
+[ "$TRUST_USE_CUDA" = 1 ] && [ "`$TRUST_ROOT/lib/src/LIBMPI/openmpi/bin/ompi_info --parsable --all | grep mpi_built_with_cuda_support:value:true`" = "" ] && echo "Error, MPI not built with Cuda support !" && exit -1
+
 
 exit 0
