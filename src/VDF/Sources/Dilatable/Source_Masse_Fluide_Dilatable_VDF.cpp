@@ -90,7 +90,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
-  Champ_Don * post_src_ch = fluide.source_masse_espece().non_nul() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
+  Champ_Don * post_src_ch = fluide.has_source_masse_espece_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
@@ -137,7 +137,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
-  Champ_Don * post_src_ch = fluide.source_masse_projection().non_nul() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
+  Champ_Don * post_src_ch = fluide.has_source_masse_projection_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
