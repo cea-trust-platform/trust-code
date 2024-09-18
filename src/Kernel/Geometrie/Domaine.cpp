@@ -1384,7 +1384,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh(bool virt) const
 }
 
 template<typename _SZ_>
-void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain)
+void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain) const
 {
 #ifdef MEDCOUPLING_
   using namespace MEDCoupling;
@@ -1404,7 +1404,7 @@ void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain)
 }
 
 template <typename _SIZE_>
-void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc)
+void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc) const
 {
 #if defined(MEDCOUPLING_) && defined(MPI_)
   using namespace MEDCoupling;
@@ -1435,7 +1435,7 @@ void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, 
 #ifdef MEDCOUPLING_
 
 template <typename _SIZE_>
-MEDCoupling::MEDCouplingRemapper* Domaine_32_64<_SIZE_>::get_remapper(const Domaine_32_64& other_domain)
+MEDCoupling::MEDCouplingRemapper* Domaine_32_64<_SIZE_>::get_remapper(const Domaine_32_64& other_domain) const
 {
   if (!rmps.count(&other_domain))
     prepare_rmp_with(other_domain);
@@ -1444,7 +1444,7 @@ MEDCoupling::MEDCouplingRemapper* Domaine_32_64<_SIZE_>::get_remapper(const Doma
 
 #ifdef MPI_
 template <typename _SIZE_>
-MEDCoupling::OverlapDEC* Domaine_32_64<_SIZE_>::get_dec(const Domaine_32_64& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc)
+MEDCoupling::OverlapDEC* Domaine_32_64<_SIZE_>::get_dec(const Domaine_32_64& other_domain, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc) const
 {
   if (!decs.count({ &other_domain, dist->getNature() } ))
     prepare_dec_with(other_domain, dist, loc);
