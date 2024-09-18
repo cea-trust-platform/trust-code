@@ -622,7 +622,7 @@ class Table:  # ancien tableau
         
         """
         dftmp = pd.DataFrame(ligne, columns=self.columns, index=[name])
-        self.df = pd.concat([self.df, dftmp])
+        self.df = pd.concat([self.df.astype(dftmp.dtypes), dftmp.astype(self.df.dtypes)])
 
     def setTitle(self,title):
         """
@@ -712,7 +712,7 @@ class Table:  # ancien tableau
         s= self.df.to_latex()
         s = s.replace(r"\textbackslash", "")
         s = s.replace(r"\$","$")
-        s = "\\begin{center} \n %s \n \end{center}" % s
+        s = r"\begin{center} %s \end{center}" % s
         return s
 
     def _repr_html_(self):

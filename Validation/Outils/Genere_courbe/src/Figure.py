@@ -292,7 +292,7 @@ class Figure:
             if (debug_figure==None) or (debug_figure==-1) or (debug_figure==indice):
                 pipe = os.system('LC_ALL=C.UTF-8 gnuplot %s' % nomFichierPlotComplet)
                 if self.format=='epslatex':
-                    cmd='sed "s/\.\/\.tmp/\\\\\orig/.tmp/" %s > .pp; mv .pp %s '%(self.fichierGraphiqueComplet,self.fichierGraphiqueComplet)
+                    cmd=r'sed "s/\.\/\.tmp/\\\\\orig/.tmp/" %s > .pp; mv .pp %s '%(self.fichierGraphiqueComplet,self.fichierGraphiqueComplet)
 
                     os.system(cmd)
                     cmd='epstopdf %s'%(self.fichierGraphiqueComplet.replace('.tex','.eps'))

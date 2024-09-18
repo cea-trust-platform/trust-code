@@ -354,8 +354,8 @@ def replace_value_in_file(chaine):
 
 def chaine2Tex(chaine):
     from filelist import FileAccumulator
-    separateur_debut='\latex_('
-    separateur_fin='\latex_)'
+    separateur_debut=r'\latex_('
+    separateur_fin=r'\latex_)'
     deb=chaine.find(separateur_debut)
     if deb!=-1:
         res=chaine2Tex(chaine[:deb])
@@ -417,11 +417,11 @@ def chaine2Tex(chaine):
         ff = fname.replace("\"","")
         morekeywords = filter(lambda x : not x.lstrip().startswith('lstset:'), mots)
         extra_lstset = filter(lambda x : x.lstrip().startswith('lstset:'), mots)
-        lstset=['basicstyle=\small', 'numbers=none', 'tabsize=2', 'extendedchars=true', 'linewidth=16cm', 'emptylines=0', 'breaklines=true', 'language=perso']
-        res+="\n\lstdefinelanguage{perso}{morekeywords={"
+        lstset=[r'basicstyle=\small', 'numbers=none', 'tabsize=2', 'extendedchars=true', 'linewidth=16cm', 'emptylines=0', 'breaklines=true', 'language=perso']
+        res+=r"\n\lstdefinelanguage{perso}{morekeywords={"
         res+=",".join(morekeywords).replace('"','')
         res+="}, sensitive=false}"
-        res+="\n\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso"
+        res+=r"\n\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso"
         if extra_lstset:
             res+= "," + ",".join(extra_lstset).replace('lstset:','').replace('"','')
         res+="}\n"
@@ -431,28 +431,28 @@ def chaine2Tex(chaine):
             print("in prm, incluce_text_file can't read data file :",ff)
         FileAccumulator.Append(ff)
 
-        res+="\lstinputlisting{\orig/%s}\n"%fname
+        res+=r"\lstinputlisting{\orig/%s}\n"%fname
         res+=chaine2Tex(suite[fin+len(separateur_fin):])
         return res
     res = chaine.replace('"','')
-    res = res.replace('{','\{')
-    res = res.replace('}','\}')
-    res = res.replace('à','\`{a}')
-    res = res.replace('â','\^{a}')
-    res = res.replace('é','\\\'{e}')
-    res = res.replace('è','\`{e}')
-    res = res.replace('ê','\^{e}')
-    res = res.replace('ë','\"{e}')
-    res = res.replace('î','\^{i}')
-    res = res.replace('ï','\"{i}')
-    res = res.replace('ô','\^{o}')
-    res = res.replace('ö','\"{o}')
-    res = res.replace('ù','\`{u}')
-    res = res.replace('û','\^{u}')
-    res = res.replace('ü','\"{u}')
-    res = res.replace('ç','\c{c}')
-    res = res.replace('_','\_')
-    res = res.replace('%','\%')
+    res = res.replace('{',r'\{')
+    res = res.replace('}',r'\}')
+    res = res.replace('à',r'\`{a}')
+    res = res.replace('â',r'\^{a}')
+    res = res.replace('é',r'\\\'{e}')
+    res = res.replace('è',r'\`{e}')
+    res = res.replace('ê',r'\^{e}')
+    res = res.replace('ë',r'\"{e}')
+    res = res.replace('î',r'\^{i}')
+    res = res.replace('ï',r'\"{i}')
+    res = res.replace('ô',r'\^{o}')
+    res = res.replace('ö',r'\"{o}')
+    res = res.replace('ù',r'\`{u}')
+    res = res.replace('û',r'\^{u}')
+    res = res.replace('ü',r'\"{u}')
+    res = res.replace('ç',r'\c{c}')
+    res = res.replace('_',r'\_')
+    res = res.replace('%',r'\%')
     res = res.replace('<','$<$')
     res = res.replace('>','$>$')
     #print 'chaine2Tex "%s" == "%s"' % (chaine, res)
