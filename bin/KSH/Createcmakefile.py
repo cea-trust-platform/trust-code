@@ -12,7 +12,7 @@ COMMON_HDR = '''#
 # !!Do not edit directly!! - changes will be overwritten!
 #
 
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5)
 '''
 
 #
@@ -530,8 +530,8 @@ def generate_baltik_cmake():
     """ Generate CMakeLists.txt for a baltik
     """
     out = open('CMakeLists.txt','w')
-    out.write('''
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+    out.write(r'''
+cmake_minimum_required(VERSION 3.5)
 
 include_directories(.)
 set(ATELIER ON)
