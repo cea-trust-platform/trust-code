@@ -16,7 +16,7 @@
 #ifndef Masse_DG_base_included
 #define Masse_DG_base_included
 
-#include <Solveur_Masse.h>
+#include <Solveur_Masse_base.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_DG;

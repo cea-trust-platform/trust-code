@@ -45,6 +45,18 @@ static constexpr double LAMBDA_FACETS[5][2] =
 static constexpr int ORDER = 5;
 }
 
+Implemente_instanciable(Quadrature_Ord5_Triangle,"Quadrature_Ord5_Triangle",Quadrature_base);
+
+Sortie& Quadrature_Ord5_Triangle::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}
+
+Entree& Quadrature_Ord5_Triangle::readOn(Entree& s )
+{
+  return s;
+}
+
 void Quadrature_Ord5_Triangle::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!

@@ -23,6 +23,6 @@ Entree& Terme_Source_DG_base::readOn(Entree& s) { return s; }
 void Terme_Source_DG_base::completer()
 {
   Source_base::completer();
-  iter->associer(*this);
-  iter->completer_();
+  iter_->associer(*this);
+  iter_->completer_();
 }

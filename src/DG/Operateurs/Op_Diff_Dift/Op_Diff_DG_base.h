@@ -23,7 +23,6 @@
 #include <SFichier.h>
 
 class Domaine_Cl_DG;
-class Champ_Fonc;
 
 class Op_Diff_DG_base: public Operateur_Diff_base, public Op_Diff_Turbulent_base
 {

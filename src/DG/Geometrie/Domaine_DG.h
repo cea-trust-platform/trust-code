@@ -20,7 +20,7 @@
 #include <Domaine_Poly_base.h>
 #include <Option_DG.h>
 
-class Quadrature;
+//class Quadrature;
 
 class Domaine_DG : public Domaine_Poly_base
 {
@@ -37,8 +37,8 @@ public :
 
   void initialize_dof(const Nom& nom);
 
-  void set_quadrature(int order, const Quadrature* quad);
-  const Quadrature& get_quadrature(int order) const;
+//  void set_quadrature(int order, const Quadrature* quad);
+//  const Quadrature& get_quadrature(int order) const;
 
 private:
 
@@ -48,8 +48,7 @@ private:
 
   // A voir si on rajoute un tableau elem_voisins (mix de elem_faces+face_voisins)
 
-  std::map<int, const Quadrature*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
-  void remplir_elem_faces() override;
+//  std::map<int, const Quadrature*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
   void remplir_elem_voisins();
 };
 

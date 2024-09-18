@@ -22,6 +22,19 @@ static constexpr double WEIGHTS_FACETS[1] = {1.0};
 static constexpr int ORDER = 1;
 }
 
+Implemente_instanciable(Quadrature_Ord1_Triangle,"Quadrature_Ord1_Triangle",Quadrature_base);
+
+Sortie& Quadrature_Ord1_Triangle::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}
+
+Entree& Quadrature_Ord1_Triangle::readOn(Entree& s )
+{
+  return s;
+}
+
+
 void Quadrature_Ord1_Triangle::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
@@ -43,11 +56,11 @@ void Quadrature_Ord1_Triangle::compute_integ_points()
         }
     }
   // We ensure that sum(weights)=1;
-  weights_(nb_pts_integ)=1;
+  weights_(nb_pts_integ-1)=1;
   for (int pts = 0; pts < nb_pts_integ-1; pts++)
     {
       weights_(pts) = ::WEIGHTS[pts];
-      weights_(nb_pts_integ)-=weights_(pts);
+      weights_(nb_pts_integ-1)-=weights_(pts);
     }
 }
 
@@ -70,9 +83,9 @@ void Quadrature_Ord1_Triangle::compute_integ_points_on_facet()
         }
       weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
     }
-  weights_facets_(nb_pts_integ)=1;
+  weights_facets_(nb_pts_integ-1)=1;
   for (int pts = 0; pts < nb_pts_integ-1; pts++)
     {
-      weights_facets_(nb_pts_integ)-=weights_facets_(pts);
+      weights_facets_(nb_pts_integ-1)-=weights_facets_(pts);
     }
 }

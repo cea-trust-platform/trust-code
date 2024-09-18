@@ -15,18 +15,12 @@
 #ifndef Quadrature_Ord5_Triangle_included
 #define Quadrature_Ord5_Triangle_included
 
-#include <Quadrature.h>
+#include <Quadrature_base.h>
 
-class Quadrature_Ord5_Triangle : public Quadrature
+class Quadrature_Ord5_Triangle : public Quadrature_base
 {
+  Declare_instanciable(Quadrature_Ord5_Triangle);
 public:
-  Quadrature_Ord5_Triangle(const Domaine_DG& dom) : Quadrature(dom)
-  {
-    compute_integ_points();
-    compute_integ_points_on_facet();
-  }
-
-  int order() override { return 5; }
 
   /*! Compute for the whole domain the exact location of integration points per element
    */

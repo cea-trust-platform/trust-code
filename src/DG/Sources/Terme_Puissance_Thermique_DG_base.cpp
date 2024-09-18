@@ -38,7 +38,7 @@ void Terme_Puissance_Thermique_DG_base::associer_domaines(const Domaine_dis& dom
 {
   const Domaine_DG& zvdf = ref_cast(Domaine_DG, domaine_dis.valeur());
   const Domaine_Cl_DG& zclvdf = ref_cast(Domaine_Cl_DG, domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf, zclvdf);
+  iter_->associer_domaines(zvdf, zclvdf);
 }
 
 int Terme_Puissance_Thermique_DG_base::initialiser(double temps)

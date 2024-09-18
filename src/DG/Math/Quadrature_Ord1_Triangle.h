@@ -15,18 +15,13 @@
 #ifndef Quadrature_Ord1_Triangle_included
 #define Quadrature_Ord1_Triangle_included
 
-#include <Quadrature.h>
+#include <Quadrature_base.h>
 
-class Quadrature_Ord1_Triangle : public Quadrature
+class Quadrature_Ord1_Triangle : public Quadrature_base
 {
-public:
-  Quadrature_Ord1_Triangle(const Domaine_DG& dom) : Quadrature(dom)
-  {
-    compute_integ_points();
-    compute_integ_points_on_facet();
-  }
+  Declare_instanciable(Quadrature_Ord1_Triangle);
 
-  int order() override { return 1; }
+public:
 
   /*! Compute for the whole domain the exact location of integration points per element
    */

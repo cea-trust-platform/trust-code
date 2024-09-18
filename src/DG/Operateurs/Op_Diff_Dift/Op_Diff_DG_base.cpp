@@ -86,7 +86,7 @@ double Op_Diff_DG_base::calculer_dt_stab() const
               // get the thermal conductivity
               const Equation_base& mon_eqn = le_dom_cl_dg.equation();
               const Milieu_base& mon_milieu = mon_eqn.milieu();
-              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
+              const DoubleVect& tab_lambda = mon_milieu.conductivite()->valeurs();
               double max_conductivity = local_max_vect(tab_lambda);
 
               // compute Biot number given by Bi = L*h/lambda.
@@ -186,7 +186,7 @@ int Op_Diff_DG_base::impr(Sortie& os) const
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl_dg_->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       for (face = ndeb; face < nfin; face++)
@@ -266,9 +266,9 @@ int Op_Diff_DG_base::impr(Sortie& os) const
       ouvrir_fichier_partage(Flux_face, "", impr_bord);
       for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl_dg_->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl_dg_->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl_dg_->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
@@ -345,7 +345,7 @@ void Op_Diff_DG_base::update_nu() const
     {
       throw;
 
-      const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
+      const DoubleTab& diffu_turb = diffusivite_turbulente()->valeurs();
       if (equation().que_suis_je() == "Transport_K_Eps")
         {
           bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());
@@ -388,8 +388,8 @@ void Op_Diff_DG_base::update_nu() const
 
   for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
     {
-      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : domaine.premiere_face_int(), num =
-                  i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces() : domaine.nb_faces() - domaine.premiere_face_int();
+      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i]->frontiere_dis()).num_premiere_face() : domaine.premiere_face_int(), num =
+                  i < cls.size() ? ref_cast(Front_VF, cls[i]->frontiere_dis()).nb_faces() : domaine.nb_faces() - domaine.premiere_face_int();
       for (f = deb; f < deb + num; f++) //nu par composante a chaque face
         {
           if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi

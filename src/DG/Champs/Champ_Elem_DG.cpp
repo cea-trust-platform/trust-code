@@ -17,6 +17,7 @@
 #include <TRUSTTab_parts.h>
 #include <Domaine_Cl_dis.h>
 #include <Domaine_DG.h>
+#include <Option_DG.h>
 
 Implemente_instanciable(Champ_Elem_DG, "Champ_Elem_DG", Champ_Inc_P0_base);
 
@@ -61,12 +62,33 @@ int Champ_Elem_DG::fixer_nb_valeurs_nodales(int n)
   return n;
 }
 
+
+void Champ_Elem_DG::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
+{
+  le_dom_VF = ref_cast(Domaine_VF, z_dis);
+
+  int order = Option_DG::Get_order_for(nom_)+1;
+
+  Nom nom_domaine =le_dom_VF->domaine().le_nom();
+  Nom type_quadrature="Quadrature_Ord"+std::to_string(order)+"_Triangle"; //Todo DG varier avec type_elem + renommer ordre ?
+  Nom nom_quadrature = type_quadrature+"_"+nom_domaine;
+
+  Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
+  quadrature_ = quad;
+}
+
 Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
 //  DoubleTab_parts part(valeurs());
 //  for (int i = 0; i < part.size(); i++) ch.valeur_aux(i ? domaine.xv() : domaine.xp(), part[i]);
+
+  //creation d'un DoubleTab intermediaire pour recuperer les valeurs du champ ch sur les points de quadrature ?
+
   ch.valeur_aux(domaine.xp(), valeurs());
+
+  // calcul de la quadrature pour remplir le tableau valeurs
+
   valeurs().echange_espace_virtuel();
   return *this;
 }

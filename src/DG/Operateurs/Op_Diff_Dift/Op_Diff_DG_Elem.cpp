@@ -31,8 +31,8 @@
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <cmath>
-#include <Quadrature.h>
 #include <Quadrature_Ord2_Triangle.h> // TODO: Faire du Polymorphisme avec Quadrature.h pour remplacer cette bib -> see A. PEITA 
+#include <Quadrature_base.h>
 
 Implemente_instanciable( Op_Diff_DG_Elem , "Op_Diff_DG_Elem|Op_Diff_DG_var_Elem" , Op_Diff_DG_base );
 
@@ -200,8 +200,12 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
 
   int premiere_face_int = domaine.premiere_face_int();
 
-  Quadrature_Ord2_Triangle quad(domaine); // = domaine.get_quadrature(2); // Todo: Replace by quadrature
-  const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
+
+  const Champ_Elem_DG& champ_inc = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  OWN_PTR(Quadrature_base) quad = champ_inc.quadrature();
+
+  //Quadrature_Ord2_Triangle quad(domaine); // = domaine.get_quadrature(2); // Todo: Replace by quadrature
+  const DoubleTab& integ_points_facets = quad->get_integ_points_facets();
   int nb_pts_int_fac = integ_points_facets.dimension(1);
   DoubleTab val_pts_integ(nb_pts_int_fac);
   double integral;
@@ -260,17 +264,17 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               // x x
               for (int pts=0; pts<nb_pts_int_fac; pts++ )
                 val_pts_integ(pts)=invh_carr[i_elem]*(integ_points_facets(f,pts,0)-xp(elem,0))*(integ_points_facets(f,pts,0)-xp(elem,0));
-              integral = quad.compute_integral_on_facet(f, val_pts_integ);
+              integral = quad->compute_integral_on_facet(f, val_pts_integ);
               matrice(ind_elem+1, ind_elem+1) += eta_F*integral;
               // y y
               for (int pts=0; pts<nb_pts_int_fac; pts++ )
                 val_pts_integ(pts)=invh_carr[i_elem]*(integ_points_facets(f,pts,1)-xp(elem,1))*(integ_points_facets(f,pts,1)-xp(elem,1));
-              integral = quad.compute_integral_on_facet(f, val_pts_integ);
+              integral = quad->compute_integral_on_facet(f, val_pts_integ);
               matrice(ind_elem+2, ind_elem+2) += eta_F*integral;
               // x y
               for (int pts=0; pts<nb_pts_int_fac; pts++ )
                 val_pts_integ(pts)=invh_carr[i_elem]*(integ_points_facets(f,pts,0)-xp(elem,0))*(integ_points_facets(f,pts,1)-xp(elem,1));
-              integral = quad.compute_integral_on_facet(f, val_pts_integ);
+              integral = quad->compute_integral_on_facet(f, val_pts_integ);
               matrice(ind_elem+1, ind_elem+2) += eta_F*integral;
               matrice(ind_elem+2, ind_elem+1) += eta_F*integral;
             }
@@ -292,25 +296,25 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
 
           for (int pts=0; pts<nb_pts_int_fac; pts++ )
             val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,0)-xp(elem0,0))*(integ_points_facets(f,pts,0)-xp(elem1,0));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          integral = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem0+1, ind_elem1+1) -= eta_F*integral; // x0,x1
           matrice(ind_elem1+1, ind_elem0+1) = eta_F*integral;//sym
 
           for (int pts=0; pts<nb_pts_int_fac; pts++ )
             val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,0)-xp(elem0,0))*(integ_points_facets(f,pts,1)-xp(elem1,1));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          integral = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem0+1, ind_elem1+2) -= eta_F*integral; //x0,y1
           matrice(ind_elem1+2, ind_elem0+1) = eta_F*integral;//sym
 
           for (int pts=0; pts<nb_pts_int_fac; pts++ )
             val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,1)-xp(elem0,1))*(integ_points_facets(f,pts,0)-xp(elem1,0));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          integral = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem0+2, ind_elem1+1) -= eta_F*integral; //y0 x1
           matrice(ind_elem1+1, ind_elem0+2) = eta_F*integral;//sym
 
           for (int pts=0; pts<nb_pts_int_fac; pts++ )
             val_pts_integ(pts)=invh12*(integ_points_facets(f,pts,1)-xp(elem0,1))*(integ_points_facets(f,pts,1)-xp(elem1,1));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
+          integral = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem0+2, ind_elem1+2) -= eta_F*integral; //y0 y1
           matrice(ind_elem1+2, ind_elem0+2) = eta_F*integral;//sym
 
@@ -383,17 +387,17 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
           // x x
           for (int pts = 0; pts < nb_pts_int_fac; pts++)
             val_pts_integ(pts) = invh_carr * (integ_points_facets(f, pts, 0) - xp(elem, 0)) * (integ_points_facets(f, pts, 0) - xp(elem, 0));
-          inte_xx = quad.compute_integral_on_facet(f, val_pts_integ);
+          inte_xx = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem + 1, ind_elem + 1) += eta_F * inte_xx;
           // y y
           for (int pts = 0; pts < nb_pts_int_fac; pts++)
             val_pts_integ(pts) = invh_carr * (integ_points_facets(f, pts, 1) - xp(elem, 1)) * (integ_points_facets(f, pts, 1) - xp(elem, 1));
-          inte_yy = quad.compute_integral_on_facet(f, val_pts_integ);
+          inte_yy = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem + 2, ind_elem + 2) += eta_F * inte_yy;
           // x y
           for (int pts = 0; pts < nb_pts_int_fac; pts++)
             val_pts_integ(pts) = invh_carr * (integ_points_facets(f, pts, 0) - xp(elem, 0)) * (integ_points_facets(f, pts, 1) - xp(elem, 1));
-          inte_xy = quad.compute_integral_on_facet(f, val_pts_integ);
+          inte_xy = quad->compute_integral_on_facet(f, val_pts_integ);
           matrice(ind_elem + 1, ind_elem + 2) += eta_F * inte_xy;
           matrice(ind_elem + 2, ind_elem + 1) += eta_F * inte_xy;
 

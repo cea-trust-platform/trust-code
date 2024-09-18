@@ -12,30 +12,32 @@
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************/
-#ifndef Quadrature_included
-#define Quadrature_included
+#ifndef Quadrature_base_included
+#define Quadrature_base_included
 
 #include <TRUSTTabs_forward.h>
 #include <Parser_U.h>
 #include <Domaine_DG.h>
+#include <Objet_U.h>
 
-class Quadrature
+class Quadrature_base : public Objet_U
 {
+  Declare_base(Quadrature_base);
 public:
-  Quadrature(const Domaine_DG& dom) : dom_(dom)
-  { }
-  virtual ~Quadrature() {}
 
-  void register_quadrature();
   const DoubleTab& get_integ_points();
   const DoubleTab& get_integ_points_facets();
 
+//  void register_quadrature();
 //  DoubleTab get_weights();
 //  DoubleTab get_weights_facets();
 
   virtual void compute_integ_points() = 0;
   virtual void compute_integ_points_on_facet() = 0;
-  virtual int order() = 0;
+
+  void associer_domaine(const Domaine_DG& dom);
+  void initialiser_weights_and_points();
+
 
   /*! Compute the integral of a function on the whole domain
    */
@@ -66,6 +68,7 @@ protected:
   DoubleTab integ_points_facets_;
   DoubleTab weights_;
   DoubleTab weights_facets_;
+
 };
 
 #endif

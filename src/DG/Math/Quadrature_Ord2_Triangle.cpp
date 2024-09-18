@@ -34,6 +34,18 @@ static constexpr double WEIGHTS_FACETS[2] = {0.5, 0.5};
 static constexpr int ORDER = 2;
 }
 
+Implemente_instanciable(Quadrature_Ord2_Triangle,"Quadrature_Ord2_Triangle",Quadrature_base);
+
+Sortie& Quadrature_Ord2_Triangle::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}
+
+Entree& Quadrature_Ord2_Triangle::readOn(Entree& s )
+{
+  return s;
+}
+
 void Quadrature_Ord2_Triangle::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!

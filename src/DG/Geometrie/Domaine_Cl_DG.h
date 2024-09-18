@@ -22,7 +22,6 @@
 #include <Champ_Don.h>
 
 class Domaine_VF;
-class Champ_Inc;
 
 class Domaine_Cl_DG : public Domaine_Cl_dis_base
 {

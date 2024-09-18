@@ -26,6 +26,10 @@
 #include <Motcle.h>
 #include <Domaine_Cl_DG.h>
 #include <Domaine_Cl_dis.h>
+#include <Option_DG.h>
+#include <Interprete_bloc.h>
+#include <Quadrature_base.h>
+#include <Champ_Elem_DG.h>
 //#include <grad_U_Champ_Face_DG.h>
 
 Implemente_instanciable(DG_discretisation, "DG", Discret_Thyd);
@@ -48,10 +52,10 @@ Sortie& DG_discretisation::printOn(Sortie& s) const { return s; }
  *  le type de champ cree.
  *
  */
-void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
+void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& dom_dis, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
                                           double temps, Champ_Inc& champ, const Nom& sous_type) const
 {
-//  const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, z);
+//  const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, dom_dis);
 
   Motcles motcles(7);
   motcles[0] = "vitesse";     // Choix standard pour la vitesse
@@ -68,6 +72,7 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
   Nom type;
   int default_order = 0; // Valeur par defaut du nombre de composantes
   int rang = motcles.search(directive);
+  const int order_DG = Option_DG::Get_order_for(noms[0]);
   switch(rang)
     {
     case 0: // TODO for velocity
@@ -78,7 +83,7 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
     case 4:
     case 5:
       type = type_elem;
-      default_order = 1+Objet_U::dimension;
+      default_order = Option_DG::Nb_col_from_order(order_DG);
       break;
     default:
       assert(rang < 0);
@@ -95,20 +100,47 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
   // alors on appelle l'ancetre :
   if (rang < 0)
     {
-      Discret_Thyd::discretiser_champ(directive, z, nature, noms, unites, nb_comp, nb_pas_dt, temps, champ);
+      Discret_Thyd::discretiser_champ(directive, dom_dis, nature, noms, unites, nb_comp, nb_pas_dt, temps, champ);
       return;
     }
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
   if (type.debute_par(type_elem))
-    nb_ddl = z.nb_elem();
+    nb_ddl = dom_dis.nb_elem();
   else
     assert(0);
 
-  creer_champ(champ, z, type, noms[0], unites[0], default_order, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
+  //associer une quadrature si temperature, vitesse ou pression
+  // Nom de la quadrature que l'on va associer
+  Nom nom_domaine =dom_dis.domaine().le_nom();
+  Nom type_quadrature="Quadrature_Ord"+std::to_string(order_DG+1)+"_Triangle"; //Todo DG varier avec type_elem + renommer ordre ?
+  Nom nom_quadrature = type_quadrature+"_"+nom_domaine;
 
-  champ->fixer_nature_du_champ(basis_function);
+  // Creation
+  Cerr << "Creating a quadrature named " << nom_quadrature << " based on the domain " << nom_domaine << finl;
+
+
+  Interprete_bloc& interp = Interprete_bloc::interprete_courant();
+  if (interp.objet_global_existant(nom_quadrature))
+    {
+      Cerr << "Quadrature " << nom_quadrature
+           << " already exists, writing to this object." << finl;
+    }
+  else
+    {
+      DerObjU ob;
+      ob.typer(type_quadrature);
+      interp.ajouter(nom_quadrature, ob);
+    }
+
+  Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
+  const Domaine_DG& dom_dg = ref_cast(Domaine_DG, dom_dis);
+  quad.associer_domaine(dom_dg);
+
+  creer_champ(champ, dom_dis, type, noms[0], unites[0], default_order, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
+  
+	champ->fixer_nature_du_champ(basis_function);
 
   if (nature == multi_scalaire)
     {
@@ -151,14 +183,9 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
 void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
                                                    Objet_U& champ) const
 {
-  // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc,
-  // suivant le type de l'objet champ.
-  Champ_Fonc *champ_fonc = 0;
-  Champ_Don *champ_don = 0;
-  if (sub_type(Champ_Fonc, champ))
-    champ_fonc = &ref_cast(Champ_Fonc, champ);
-  else
-    champ_don = &ref_cast(Champ_Don, champ);
+  // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
+  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
+  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, z);
 

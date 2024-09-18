@@ -28,12 +28,12 @@ Entree& Terme_Puissance_Thermique_DG_Elem::readOn(Entree& s) { return Terme_Puis
 void Terme_Puissance_Thermique_DG_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
   Terme_Puissance_Thermique_DG_base::associer_domaines(domaine_dis, domaine_cl_dis);
-  Eval_Puiss_Th_DG_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_DG_Elem&> (iter->evaluateur());
+  Eval_Puiss_Th_DG_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_DG_Elem&> (iter_->evaluateur());
   eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
 }
 
 void Terme_Puissance_Thermique_DG_Elem::associer_pb(const Probleme_base& pb)
 {
-  Eval_Puiss_Th_DG_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_DG_Elem&> (iter->evaluateur());
+  Eval_Puiss_Th_DG_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_DG_Elem&> (iter_->evaluateur());
   eval_puis.associer_champs(la_puissance);
 }

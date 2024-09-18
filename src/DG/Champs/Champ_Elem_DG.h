@@ -18,6 +18,7 @@
 
 #include <Champ_Inc_P0_base.h>
 #include <Operateur.h>
+#include <Quadrature_base.h>
 
 // Champ correspondant a une inconnue scalaire (type temperature ou pression)
 // Degres de libertes : valeur aux elements + flux aux faces
@@ -29,33 +30,16 @@ public:
   int imprime(Sortie&, int) const override;
 
   int fixer_nb_valeurs_nodales(int n) override;
+  inline const OWN_PTR(Quadrature_base)& quadrature() const { return quadrature_; }
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
 
   /* fonctions reconstruisant de maniere plus precise le champ aux faces */
   DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
-//  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const override;
 
+protected:
+
+  OWN_PTR(Quadrature_base) quadrature_;
 };
 
-//inline DoubleTab& Champ_Elem_DG::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
-//{
-////  /* dimensionnement du tableau de destination x si necessaire */
-////  const DoubleTab& src = valeurs();
-////  const Front_VF& fvf = ref_cast(Front_VF, fr);
-////  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis_base());
-////  const IntTab& f_e = domaine.face_voisins();
-////
-////  DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)
-////  int i, n, e, f, N = src.nb_dim() > 1 ? src.dimension(1): 1, has_faces = src.dimension_tot(0) > domaine.nb_elem_tot();
-////  if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
-////  dst.resize(domaine.nb_faces(), N);
-////  for (i = 0; i < fvf.nb_faces(); i++)
-////    for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++)
-////      dst(f, n) = src(has_faces ? domaine.nb_elem_tot() + f : e, n);
-////
-////  if (distant) fr.frontiere().trace_face_distant(dst, x);
-////  else fr.frontiere().trace_face_local(dst, x);
-//
-//  return 1e30;
-//}
 
 #endif /* Champ_Elem_DG_included */

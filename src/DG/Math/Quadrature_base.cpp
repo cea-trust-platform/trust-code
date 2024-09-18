@@ -13,19 +13,31 @@
  *
  *****************************************************************************/
 
-#include <Quadrature.h>
+#include <Quadrature_base.h>
 
-void Quadrature::register_quadrature()
+Implemente_base(Quadrature_base,"Quadrature_base",Objet_U);
+
+Sortie& Quadrature_base::printOn(Sortie& os) const
 {
-  dom_->set_quadrature(order(), this);
+  return os << que_suis_je() << finl;
 }
 
-const DoubleTab& Quadrature::get_integ_points()
+Entree& Quadrature_base::readOn(Entree& is)
+{
+  return is;
+}
+
+//void Quadrature::register_quadrature()
+//{
+//  dom_->set_quadrature(order(), this);
+//}
+
+const DoubleTab& Quadrature_base::get_integ_points()
 {
   return integ_points_;
 }
 
-const DoubleTab& Quadrature::get_integ_points_facets()
+const DoubleTab& Quadrature_base::get_integ_points_facets()
 {
   return integ_points_facets_;
 }
@@ -40,7 +52,23 @@ const DoubleTab& Quadrature::get_integ_points_facets()
 //  return weights_facets_;
 //}
 
-double Quadrature::compute_integral_on_elem(int num_elem, Parser_U& parser) const
+void Quadrature_base::associer_domaine(const Domaine_DG& dom)
+{
+  dom_ = dom;
+  initialiser_weights_and_points();
+}
+
+void Quadrature_base::initialiser_weights_and_points()
+{
+  if (integ_points_.dimension_tot(0) == 0)
+    {
+      compute_integ_points();
+      compute_integ_points_on_facet();
+    }
+}
+
+
+double Quadrature_base::compute_integral_on_elem(int num_elem, Parser_U& parser) const
 {
   int nb_pts_integ = integ_points_.dimension(1);
   DoubleTab val_pts_integ(nb_pts_integ);
@@ -55,7 +83,7 @@ double Quadrature::compute_integral_on_elem(int num_elem, Parser_U& parser) cons
   return compute_integral_on_elem(num_elem, val_pts_integ);
 }
 
-double Quadrature::compute_integral_on_elem(int num_elem, DoubleTab& val_pts_integ) const
+double Quadrature_base::compute_integral_on_elem(int num_elem, DoubleTab& val_pts_integ) const
 {
   double volume = dom_->volumes()[num_elem];
   int nb_pts_integ = integ_points_.dimension(1);
@@ -69,7 +97,7 @@ double Quadrature::compute_integral_on_elem(int num_elem, DoubleTab& val_pts_int
   return acc * volume;
 }
 
-double Quadrature::compute_integral_on_facet(int num_facet, Parser_U& parser) const
+double Quadrature_base::compute_integral_on_facet(int num_facet, Parser_U& parser) const
 {
   int nb_pts_integ = integ_points_.dimension(1);
   DoubleTab val_pts_integ(nb_pts_integ);
@@ -84,7 +112,7 @@ double Quadrature::compute_integral_on_facet(int num_facet, Parser_U& parser) co
   return compute_integral_on_facet(num_facet, val_pts_integ);
 }
 
-double Quadrature::compute_integral_on_facet(int num_facet, DoubleTab& val_pts_integ) const
+double Quadrature_base::compute_integral_on_facet(int num_facet, DoubleTab& val_pts_integ) const
 {
   double surface = dom_->face_surfaces(num_facet);
   int nb_pts_integ = integ_points_facets_.dimension(1);
@@ -97,17 +125,17 @@ double Quadrature::compute_integral_on_facet(int num_facet, DoubleTab& val_pts_i
   return acc * surface;
 }
 
-double Quadrature::compute_integral(Parser_U& parser) const
+double Quadrature_base::compute_integral(Parser_U& parser) const
 {
   int nb_elem = dom_->nb_elem();
   double acc = 0.;
   for (int e = 0; e < nb_elem; e++)
-    acc += Quadrature::compute_integral_on_elem(e, parser);
+    acc += Quadrature_base::compute_integral_on_elem(e, parser);
   Process::mp_sum(acc);
   return acc;
 }
 
-double Quadrature::compute_integral(DoubleTab& vals_pts_integ) const
+double Quadrature_base::compute_integral(DoubleTab& vals_pts_integ) const
 {
   int nb_elem = dom_->nb_elem();
   double acc = 0.;
@@ -117,7 +145,7 @@ double Quadrature::compute_integral(DoubleTab& vals_pts_integ) const
     {
       for (int pts = 0; pts < nb_pts_integ; pts++)
         val_pt_inte(pts) = vals_pts_integ(e, pts);
-      acc += Quadrature::compute_integral_on_elem(e, val_pt_inte);
+      acc += Quadrature_base::compute_integral_on_elem(e, val_pt_inte);
     }
   Process::mp_sum(acc);
   return acc;

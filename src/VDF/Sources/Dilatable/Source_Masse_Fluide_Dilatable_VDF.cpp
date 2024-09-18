@@ -110,7 +110,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
             {
               const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
               int elem = elem1 == -1 ? elem2 : elem1;
-              const double surface_elem = zvf.surface(num_face);
+              const double surface_elem = zvf.face_surfaces(num_face);
               double srcmass = -(Y(elem) * val_flux(num_face - ndeb, 0) * surface_elem) / rho(elem);
               if (is_expl)
                 srcmass /= zvf.volumes(elem); // on divise par volume (pas de solveur masse dans l'equation ...)
@@ -158,7 +158,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
             {
               const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
               int elem = elem1 == -1 ? elem2 : elem1;
-              const double surf = zvf.surface(num_face);
+              const double surf = zvf.face_surfaces(num_face);
               const double source_per_dv = val_flux(num_face - ndeb, 0) * surf / zvf.volumes(elem);  // TODO multiple elements!! units [kg.s-1] / zvf.volumes(elem)
               resu(elem) -= source_per_dv;  // in [kg.m-3.s-1]
 
