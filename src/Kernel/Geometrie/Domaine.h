@@ -337,10 +337,10 @@ public:
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  { mc_mesh_ = m;    }
   inline const MEDCouplingUMesh* get_mc_face_mesh() const    { return mc_face_mesh_; }
   // remapper with other domains
-  MEDCouplingRemapper* get_remapper(const Domaine_32_64& other_dom);
+  MEDCouplingRemapper* get_remapper(const Domaine_32_64& other_dom) const;
   // DEC with other domains
 #ifdef MPI_
-  OverlapDEC* get_dec(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc);
+  OverlapDEC* get_dec(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc) const;
 #endif
 #endif
   void build_mc_mesh(bool virt = false) const;
@@ -432,17 +432,17 @@ protected:
   ///! MEDCoupling version of the face domain:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
   // One remapper per distant domain...
-  std::map<const Domaine_32_64*, MEDCoupling::MEDCouplingRemapper> rmps;
+  mutable std::map<const Domaine_32_64*, MEDCoupling::MEDCouplingRemapper> rmps;
 #ifdef MPI_
   // ... but one DEC per (distant domain, field nature)
-  std::map<std::pair<const Domaine_32_64*, MEDCoupling::NatureOfField>, OverlapDEC> decs;
+  mutable std::map<std::pair<const Domaine_32_64*, MEDCoupling::NatureOfField>, OverlapDEC> decs;
 #endif
   mutable bool mc_mesh_ready_ = false, mc_mesh_virt_ready_ = false;
 #endif
 
 private:
-  void prepare_rmp_with(const Domaine_32_64& other_dom);
-  void prepare_dec_with(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc);
+  void prepare_rmp_with(const Domaine_32_64& other_dom) const;
+  void prepare_dec_with(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc) const;
 
   template<typename _BORD_TYP_>
   void correct_type_single_border_type(std::list<_BORD_TYP_>& list);
