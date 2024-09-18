@@ -166,7 +166,7 @@ void Modele_turbulence_scal_base::a_faire(Sortie& os) const
     {
       Nom mon_ident(que_suis_je());
       mon_ident += equation().probleme().domaine().le_nom();
-      double temps = equation().inconnue()->temps();
+      double temps = equation().inconnue().temps();
       mon_ident += Nom(temps, "%e");
       os << mon_ident << finl;
       os << que_suis_je() << finl;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,7 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Champ_Inc.h>
+
+#include <Champ_Inc_base.h>
 #include <Debog_Pb.h>
 #include <Debog.h>
 
@@ -32,12 +33,6 @@ void Debog::verifier(const char* const msg, int x)
 void Debog::verifier_bord(const char* const msg, const DoubleVect& arr, int num_deb)
 {
   // Ne fait rien
-}
-
-void Debog::verifier(const char* const msg, const Champ_Inc& x)
-{
-  if (Debog_Pb::get_debog_instance().non_nul())
-    Debog_Pb::get_debog_instance()->verifier(msg, x->valeurs());
 }
 
 void Debog::verifier(const char* const msg, const Champ_Inc_base& x)

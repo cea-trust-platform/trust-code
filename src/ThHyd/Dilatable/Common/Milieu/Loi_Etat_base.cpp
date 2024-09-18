@@ -178,7 +178,7 @@ void Loi_Etat_base::calculer_nu()
     }
   else // VEF
     {
-      const IntTab& ef = ref_cast(Domaine_VF,le_fluide->vitesse()->domaine_dis_base()).elem_faces();
+      const IntTab& ef = ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       int nfe = ef.line_size();
       CIntTabView elem_faces = ef.view_ro();
       CDoubleArrView rho = static_cast<const DoubleVect&>(tab_rho).view_ro();
@@ -242,7 +242,7 @@ void Loi_Etat_base::calculer_nu_sur_Sc()
  */
 void Loi_Etat_base::calculer_masse_volumique()
 {
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();

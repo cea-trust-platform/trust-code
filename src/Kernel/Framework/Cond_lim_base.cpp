@@ -220,7 +220,7 @@ void Cond_lim_base::champ_front(int face, DoubleVect& var) const
   le_champ_front->valeurs_face(face, var);
 }
 
-void Cond_lim_base::injecter_dans_champ_inc(const Champ_Inc&) const
+void Cond_lim_base::injecter_dans_champ_inc(const Champ_Inc_base&) const
 {
   Cerr << "Cond_lim_base::injecter_dans_champ_inc()" << finl;
   Cerr << "this method does nothing and must be overloaded " << finl;

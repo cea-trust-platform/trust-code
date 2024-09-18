@@ -49,7 +49,7 @@ Entree& Op_Conv_EF_base::readOn(Entree& s )
  */
 int  Op_Conv_EF_base::phi_u_transportant(const Equation_base& eq) const
 {
-  if (eq.inconnue()->le_nom()=="vitesse")
+  if (eq.inconnue().le_nom()=="vitesse")
     return 0;
   return 1;
 }
@@ -155,7 +155,7 @@ void Op_Conv_EF_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& domaine
 
 void Op_Conv_EF_base::associer(const Domaine_dis_base& domaine_dis,
                                const Domaine_Cl_dis_base& domaine_cl_dis,
-                               const Champ_Inc& )
+                               const Champ_Inc_base& )
 {
   const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis);
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis);
@@ -195,7 +195,7 @@ void Op_Conv_EF_base::remplir_fluent() const
   // C'est cher mais au moins cela corrige (en attendant
   // d'optimiser) le probleme d'un pas de temps de convection
   // calcule avec des vitesses du passe
-  DoubleTrav tmp(equation().inconnue()->valeurs());
+  DoubleTrav tmp(equation().inconnue().valeurs());
   DoubleTab flux_bords_sauve(flux_bords_);  // On sauve les flux_bords car sinon mis a 0
   ajouter(tmp,tmp);
   flux_bords_=flux_bords_sauve;

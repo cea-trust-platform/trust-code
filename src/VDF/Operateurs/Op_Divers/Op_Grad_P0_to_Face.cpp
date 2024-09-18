@@ -43,7 +43,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
    }
    */
   statistiques().begin_count(gradient_counter_);
-  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue()->valeurs();
+  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue().valeurs();
   assert_espace_virtuel_vect(inco);
   const Domaine_VDF& zvdf = le_dom_vdf.valeur();
   const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();

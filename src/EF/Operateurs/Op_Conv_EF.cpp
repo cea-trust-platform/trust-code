@@ -476,12 +476,12 @@ double Op_Conv_EF::calculer_dt_stab() const
 void Op_Conv_EF::contribue_au_second_membre(DoubleTab& resu ) const
 {
   // on a rien implicite
-  ajouter_sous_cond(equation().inconnue()->valeurs(),resu,((btd_hors_conv_==1)||btd_impl_),((hourglass_hors_conv_==1)||hourglass_impl_),centre_impl_);
+  ajouter_sous_cond(equation().inconnue().valeurs(),resu,((btd_hors_conv_==1)||btd_impl_),((hourglass_hors_conv_==1)||hourglass_impl_),centre_impl_);
 }
 
 void Op_Conv_EF::contribue_au_second_membre_a_la_diffusion(DoubleTab& resu ) const
 {
-  ajouter_sous_cond(equation().inconnue()->valeurs(),resu,((btd_hors_conv_==0)||btd_impl_),((hourglass_hors_conv_==0)||hourglass_impl_),1);
+  ajouter_sous_cond(equation().inconnue().valeurs(),resu,((btd_hors_conv_==0)||btd_impl_),((hourglass_hors_conv_==0)||hourglass_impl_),1);
 }
 
 const Champ_base& Op_Conv_EF::get_champ(const Motcle& nom) const

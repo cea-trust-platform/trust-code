@@ -50,7 +50,7 @@ void Sortie_libre_Gradient_Pression_libre_VEF::completer()
 
   //  const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF,eqn.domaine_dis());
 
-  const Champ_P0_VEF& pression = ref_cast(Champ_P0_VEF, eqn_hydr.pression().valeur());
+  const Champ_P0_VEF& pression = ref_cast(Champ_P0_VEF, eqn_hydr.pression());
 
   pression_interne = pression;
 
@@ -136,7 +136,7 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face) const
   //  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
   const IntTab& elem_faces = mon_dom_VEF.elem_faces();
   const DoubleTab& face_normales = mon_dom_VEF.face_normales();
-  const Champ_P0_VEF& pre = ref_cast(Champ_P0_VEF, eqn_hydr.pression().valeur());
+  const Champ_P0_VEF& pre = ref_cast(Champ_P0_VEF, eqn_hydr.pression());
 
   double Pimp, diff, grad;
 

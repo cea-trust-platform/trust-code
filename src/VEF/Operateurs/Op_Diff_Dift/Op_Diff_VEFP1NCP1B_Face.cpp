@@ -173,7 +173,7 @@ Entree& Op_Diff_VEFP1NCP1B_Face::readOn(Entree& s )
 
 void Op_Diff_VEFP1NCP1B_Face::associer(const Domaine_dis_base& domaine_dis,
                                        const Domaine_Cl_dis_base& domaine_cl_dis,
-                                       const Champ_Inc& ch_diffuse)
+                                       const Champ_Inc_base& ch_diffuse)
 {
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis);
@@ -182,7 +182,7 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Domaine_dis_base& domaine_dis,
   for (int i = 0; i<zclvef.nb_cond_lim(); i++)
     {
       Cond_lim la_cl = zclvef.les_conditions_limites(i);
-      if ( sub_type(Symetrie,la_cl.valeur()) && (ch_diffuse->nature_du_champ()==vectoriel) )
+      if ( sub_type(Symetrie,la_cl.valeur()) && (ch_diffuse.nature_du_champ()==vectoriel) )
         {
           Cerr << "\nBoundary conditions of 'Symetrie' type with P1NCP1B diffusion operator are only allowed for Conduction equation!" << finl;
           Cerr << "Here you use a P1NCP1B diffusion operator in a '" << equation().que_suis_je() << "' equation where" << finl;
@@ -191,9 +191,9 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Domaine_dis_base& domaine_dis,
         }
     }
 
-  if (sub_type(Champ_P1NC,ch_diffuse.valeur()))
+  if (sub_type(Champ_P1NC,ch_diffuse))
     {
-      const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_diffuse.valeur());
+      const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_diffuse);
       inconnue_ = inco;
     }
 
@@ -961,7 +961,7 @@ calculer_laplacien_som(const DoubleTab& nu_som) const
 
   DoubleVect& coeff=laplacien_p1_.get_set_coeff();
 
-  const DoubleTab& inconnue1=equation().inconnue()->valeurs();
+  const DoubleTab& inconnue1=equation().inconnue().valeurs();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
 
   assert(laplacien_p1_.nb_lignes()>2);
@@ -1073,7 +1073,7 @@ void Op_Diff_VEFP1NCP1B_Face::initialiser()
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
 
-  const DoubleTab& unknown = equation().inconnue()->valeurs();
+  const DoubleTab& unknown = equation().inconnue().valeurs();
   const int size = unknown.line_size();
 
   //Definition des gradients
@@ -3185,7 +3185,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   const int firstFaceInt=domaine_VEF.premiere_face_int();
   const int nb_som_tot=dom.nb_som_tot();
 
-  const DoubleTab& unknown = equation().inconnue()->valeurs();
+  const DoubleTab& unknown = equation().inconnue().valeurs();
   const DoubleTab& xv=domaine_VEF.xv();
   const DoubleTab& xs=dom.les_sommets();
 

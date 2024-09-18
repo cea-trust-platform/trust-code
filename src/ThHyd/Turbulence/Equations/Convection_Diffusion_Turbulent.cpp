@@ -86,7 +86,7 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
       if ((terme_diffusif.diffusivite().nb_comp() != 1) && ((disc == "VDF")))
         nb_inc = "_Multi_inco_";
 
-      Nom type_inco = eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue().que_suis_je();
 
       type += disc;
       type += nb_inc;
@@ -115,7 +115,7 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
 
       type += nb_inc;
 
-      Nom type_inco = eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue().que_suis_je();
       if (type_inco == "Champ_Q1_EF")
         type += "Q1";
       else

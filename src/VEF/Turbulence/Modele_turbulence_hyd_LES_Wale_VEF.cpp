@@ -43,10 +43,10 @@ void Modele_turbulence_hyd_LES_Wale_VEF::set_param(Param& param)
 Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
-  double temps = mon_equation_->inconnue()->temps();
+  double temps = mon_equation_->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
   const int nb_elem = domaine_VEF.nb_elem();
-  const DoubleTab& la_vitesse = mon_equation_->inconnue()->valeurs();
+  const DoubleTab& la_vitesse = mon_equation_->inconnue().valeurs();
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_.valeur());
 
   if (visco_turb.size() != nb_elem)
@@ -59,7 +59,7 @@ Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   DoubleTrav duidxj(nb_elem_tot,dimension,dimension);
   // Patrick : on travaille sur le champ filtre.
-  //const Champ_P1NC& ch=(const Champ_P1NC&) mon_equation->inconnue().valeur();
+  //const Champ_P1NC& ch=(const Champ_P1NC&) mon_equation->inconnue();
   //DoubleTab ubar(la_vitesse);
   //ch.filtrer_L2(ubar);
   //Champ_P1NC::calcul_gradient(ubar,duidxj,domaine_Cl_VEF);

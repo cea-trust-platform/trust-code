@@ -20,7 +20,7 @@
 //  les condition aux limites dans la formulation PolyMAC
 #include <Domaine_Cl_dis_base.h>
 #include <Champ_Don.h>
-#include <Champ_Inc.h>
+
 
 class Domaine_VF;
 
@@ -33,7 +33,7 @@ public :
 
   void completer(const Domaine_dis_base& ) override;
   int initialiser(double temps) override;
-  void imposer_cond_lim(Champ_Inc&, double) override;
+  void imposer_cond_lim(Champ_Inc_base&, double) override;
 
   int nb_faces_sortie_libre() const;
 

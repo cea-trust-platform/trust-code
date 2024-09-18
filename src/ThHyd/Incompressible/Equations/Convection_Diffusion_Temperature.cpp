@@ -68,7 +68,7 @@ Entree& Convection_Diffusion_Temperature::readOn(Entree& is)
   //Nom unite;
   //if (dimension+bidim_axi==2) unite="[W/m]";
   //else unite="[W]";
-  Nom num=inconnue()->le_nom(); // On prevoir le cas d'equation de scalaires passifs
+  Nom num=inconnue().le_nom(); // On prevoir le cas d'equation de scalaires passifs
   num.suffix("temperature");
   Nom nom="Convection_chaleur";
   nom+=num;
@@ -359,10 +359,10 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
     {
       const double rhoCp = get_time_factor();
       // Specific code if temperature equation is penalized
-      derivee=inconnue()->valeurs();
+      derivee=inconnue().valeurs();
       //   Mise en place d'une methode de mise en place d'un domaine fantome
       mise_en_place_domaine_fantome(derivee);
-      DoubleTab& inc=inconnue()->valeurs();
+      DoubleTab& inc=inconnue().valeurs();
       inc = derivee;
 
       DoubleTrav secmem(derivee);
@@ -391,8 +391,8 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
       if (calculate_time_derivative())
         {
           // Store dI/dt(n) = M-1 secmem :
-          derivee_en_temps()->valeurs()=secmem;
-          solveur_masse->appliquer(derivee_en_temps()->valeurs());
+          derivee_en_temps().valeurs()=secmem;
+          solveur_masse->appliquer(derivee_en_temps().valeurs());
           schema_temps().modifier_second_membre((*this),secmem); // Change secmem for some schemes (eg: Adams_Bashforth)
         }
 
@@ -547,9 +547,9 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
 
   statistiques().begin_count(assemblage_sys_counter_);
 
-  const std::string& nom_inco = inconnue()->le_nom().getString();
+  const std::string& nom_inco = inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
-  if(mat) mat->ajouter_multvect(inconnue()->valeurs(), secmem);
+  if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
 
   for (auto &&i_m : mats2)
     delete i_m.second;
@@ -931,7 +931,7 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
   const IntTab& elem_faces = domaine_vf.elem_faces();
   const IntTab& faces_elem = domaine_vf.face_voisins();
   const int nb_faces_elem = elem_faces.dimension(1);
-  const DoubleTab& inc=inconnue()->valeurs();
+  const DoubleTab& inc=inconnue().valeurs();
   // inconnue doit etre scalaire
   assert(inc.line_size() == 1);
   DoubleTrav t_voisinage(inc);
@@ -1129,7 +1129,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       //  Methode pour calculer le flux total sur les ibc
 
       //Calcul de T_n+1 apres penalisation
-      const DoubleTab& inc=inconnue()->valeurs();
+      const DoubleTab& inc=inconnue().valeurs();
       const int nb_elem  = u.dimension(0);
       const double dt = schema_temps().pas_de_temps();
       DoubleTab tkp1(inc);
@@ -1236,7 +1236,7 @@ void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, Dou
 {
   const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
-  const Champ_Inc_base& ch_T = eqn.inconnue().valeur();
+  const Champ_Inc_base& ch_T = eqn.inconnue();
   const Champ_base& ch_rho = fl.masse_volumique().valeur();
   assert(sub_type(Champ_Uniforme, ch_rho));
   const Champ_Don& ch_cp = fl.capacite_calorifique();

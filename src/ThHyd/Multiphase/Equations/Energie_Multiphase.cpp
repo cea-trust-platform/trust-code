@@ -346,9 +346,9 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
 void Energie_Multiphase::init_champ_convecte() const
 {
   if (champ_convecte_.non_nul()) return; //deja fait
-  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue()->valeurs().size_reelle_ok() ? inconnue()->valeurs().dimension(0) : -1, Nc = inconnue()->valeurs().line_size();
+  int Nt = inconnue().nb_valeurs_temporelles(), Nl = inconnue().valeurs().size_reelle_ok() ? inconnue().valeurs().dimension(0) : -1, Nc = inconnue().valeurs().line_size();
   //champ_convecte_ : meme type / support que l'inconnue
-  discretisation().creer_champ(champ_convecte_, domaine_dis(), inconnue()->que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  discretisation().creer_champ(champ_convecte_, domaine_dis(), inconnue().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
   champ_convecte_->nommer(nom_fonc.first);

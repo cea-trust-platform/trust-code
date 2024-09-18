@@ -47,7 +47,7 @@ Entree& Op_Div_EF::readOn(Entree& s)
  */
 void Op_Div_EF::associer(const Domaine_dis_base& domaine_dis,
                          const Domaine_Cl_dis_base& domaine_Cl_dis,
-                         const Champ_Inc&)
+                         const Champ_Inc_base&)
 {
   const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis);
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);

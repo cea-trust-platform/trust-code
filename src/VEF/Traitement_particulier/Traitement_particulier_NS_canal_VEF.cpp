@@ -39,7 +39,7 @@ void Traitement_particulier_NS_canal_VEF::remplir_Y(DoubleVect& tabY,  DoubleVec
   // utiles au calcul des differentes moyennes
   // Initialisation de : Y, compt
 
-  const Domaine_dis_base& zdisbase = mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase = mon_equation->inconnue().domaine_dis_base();
   const Domaine_VF& domaine_VF=ref_cast(Domaine_VF, zdisbase);
   const DoubleTab& xv = domaine_VF.xv();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
@@ -102,11 +102,11 @@ void Traitement_particulier_NS_canal_VEF::remplir_Y(DoubleVect& tabY,  DoubleVec
 
 void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab& val_moy) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
   const DoubleTab& xv = domaine_VEF.xv();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
-  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   double y,u,v,wl;
   int nb_faces = domaine_VEF.nb_faces();
   int num_face,i,elem0,elem1;
@@ -184,7 +184,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_vitesse_rho_
 
 void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_nut(DoubleTab& val_moy) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
   const DoubleTab& xv = domaine_VEF.xv();
   const Equation_base& N_S_Turb  = mon_equation.valeur();
@@ -223,11 +223,11 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_nut(DoubleTa
 
 void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_Temp(DoubleTab& val_moy) const
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
   const DoubleTab& xv = domaine_VEF.xv();
   const DoubleTab& temperature = Temp->valeurs();
-  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   double y,u,v,wl,T;
   int nb_faces = domaine_VEF.nb_faces();
   int num_face,i;

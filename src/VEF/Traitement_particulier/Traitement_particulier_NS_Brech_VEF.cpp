@@ -140,7 +140,7 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
             case 1 :
               {
                 Cerr << " Lire Richardson " << finl;
-                const Domaine_dis_base& zdis=mon_equation->inconnue()->domaine_dis_base();
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
                 const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_faces = domaine_VEF.nb_faces() ;
@@ -158,7 +158,7 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
             case 2 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Domaine_dis_base& zdis=mon_equation->inconnue()->domaine_dis_base();
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
                 const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_elem = domaine_VEF.nb_elem() ;
@@ -308,11 +308,11 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       double fluxE ;
       // fin modifs VB
 
-      const Domaine_dis_base& zdis=mon_equation->inconnue()->domaine_dis_base();
+      const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
       const Domaine& domaine=zdis.domaine();
       IntVect les_polys(coord_trace.dimension(0));
       domaine.chercher_elements(coord_trace, les_polys);
-      mon_equation->inconnue()->valeur_aux_elems(coord_trace, les_polys, valeurs_);
+      mon_equation->inconnue().valeur_aux_elems(coord_trace, les_polys, valeurs_);
 
       // Modifs VB pour prise en compte rho et calcul du flux enthalpique + Tmoy
       mon_equation->fluide().masse_volumique()->valeur_aux_elems(coord_trace, les_polys, rho_);
@@ -394,7 +394,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
   const Champ_Inc_base& temp = l_inco.valeur();
   const DoubleTab& temperature = temp.valeurs();
 
-  const DoubleTab&  vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab&  vitesse = mon_equation->inconnue().valeurs();
   const DoubleVect& gravite = mon_equation->fluide().gravite().valeurs();
   const DoubleVect& beta     = mon_equation->fluide().beta_t()->valeurs();
 
@@ -422,7 +422,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
       else richard_loc [i] = 0. ;
     }
 
-  ch_ri.changer_temps(mon_equation->inconnue()->temps());
+  ch_ri.changer_temps(mon_equation->inconnue().temps());
 
 }
 
@@ -432,14 +432,12 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pre
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();
-  //Champ_Inc la_pression = mon_equation->pression();
-  //Champ_Inc la_vitesse =  mon_equation->vitesse();
   Operateur_Div divergence = mon_equation->operateur_divergence();
   Operateur_Grad gradient = mon_equation->operateur_gradient();
   SolveurSys solveur_pression_ = mon_equation->solveur_pression();
 
-  DoubleTab& pression=mon_equation->pression()->valeurs();
-  DoubleTab& vitesse=mon_equation->vitesse()->valeurs();
+  DoubleTab& pression=mon_equation->pression().valeurs();
+  DoubleTab& vitesse=mon_equation->vitesse().valeurs();
   //DoubleTrav gradP(la_vitesse.valeurs());
   //DoubleTrav gradP(vitesse);
   //DoubleTrav inc_pre(pression);
@@ -451,14 +449,12 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pre
   //DoubleTrav secmem(pression);
   DoubleTab secmem(pression);
 
-  gradient.calculer(mon_equation->pression()->valeurs(),gradP);
+  gradient.calculer(mon_equation->pression().valeurs(),gradP);
   //gradient.calculer(la_pression,gradP);
   // Cerr << "gradP " << gradP << finl;
   //on veut BM-1Bt(psi*Pression)
   mon_equation->solv_masse()->appliquer(gradP);
 
-  //DoubleTrav grad_temp(la_vitesse.valeurs());
-  //DoubleTrav grad_temp(vitesse);
   DoubleTab grad_temp(vitesse);
   for(i=0; i<nb_face; i++)
     {
@@ -469,13 +465,10 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pre
   divergence.calculer(grad_temp, secmem);
   secmem *= -1; // car div =-B
   solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre);
-  // solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre, la_pression.valeur());
-  // Cerr << "la pression " << pression << finl;
-  //Cerr << "inc_pre " << inc_pre << finl;
 
   DoubleVect& la_pression_porosite = ch_p.valeurs();
   la_pression_porosite = inc_pre ;
-  Cerr << "la_pression " << mon_equation->pression()->valeurs() << finl;
+  Cerr << "la_pression " << mon_equation->pression().valeurs() << finl;
   Cerr << "ch_p.valeurs() " << ch_p.valeurs() << finl;
 }
 

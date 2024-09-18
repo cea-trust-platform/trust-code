@@ -640,7 +640,7 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
 void Milieu_base::update_rho_cp(double temps)
 {
   // Si l'inconnue est sur le device, on copie les donnees aussi:
-  if (equation_.size() && (*(equation_.begin()->second)).inconnue()->valeurs().isDataOnDevice())
+  if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       mapToDevice(rho_cp_elem_->valeurs(), "rho_cp_elem_");
       mapToDevice(rho_cp_comme_T_->valeurs(), "rho_cp_comme_T_");
@@ -956,12 +956,12 @@ int Milieu_base::est_deja_associe()
 
 void Milieu_base::associer_equation(const Equation_base *eqn) const
 {
-  std::string nom_inco(eqn->inconnue()->le_nom().getString());
+  std::string nom_inco(eqn->inconnue().le_nom().getString());
   // E. Saikali
   // At the initialization step, FT problem can have several equations with same unknown name "concentration"
   if (equation_.count(nom_inco) && eqn->probleme().que_suis_je() != "Probleme_FT_Disc_gen")
     {
-      Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue()->le_nom() << " !" << finl;
+      Cerr << que_suis_je() << " multiple equations solve the unknown " << eqn->inconnue().le_nom() << " !" << finl;
       Process::exit();
     }
   equation_[nom_inco] = eqn;

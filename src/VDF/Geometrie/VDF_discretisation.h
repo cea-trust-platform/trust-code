@@ -24,7 +24,7 @@
  *     * l'on associe le champ d'Ostwald, le fluide et le domaine_dis_base
  *     ** ( nouvelles procedures :
  *   void proprietes_physiques_fluide_Ostwald(Domaine_dis_base& ,Fluide_Ostwald& ,
- *            const Navier_Stokes_std& , const Champ_Inc& ) const;
+ *            const Navier_Stokes_std& , const Champ_Inc_base& ) const;
  *    a besoin de la classe Fluide_Ostwald pour avoir acces au fluide etudie
  *                          Navier_Stokes_Std pour avoir acces a l'equation hydraulique
  *                          (donc a la vitesse
@@ -53,7 +53,7 @@ public:
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ, const Nom& sous_type = NOM_VIDE) const override;
+                         OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type = NOM_VIDE) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
@@ -71,17 +71,17 @@ public:
 
   void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& ,Fluide_Ostwald& ,
                                            const Navier_Stokes_std& ,
-                                           const Champ_Inc& ) const override;
-  void vorticite(Domaine_dis_base& ,const Champ_Inc& , Champ_Fonc& ) const;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
-  void grad_u(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ,const Champ_Inc& , Champ_Fonc& ) const override;
-  void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc&, Champ_Fonc& ) const override;
-  void reynolds_maille(const Domaine_dis_base&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const override;
-  void courant_maille(const Domaine_dis_base&, const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc&, Champ_Fonc&) const override;
-  void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc&, Champ_Fonc& ) const override;
+                                           const Champ_Inc_base& ) const override;
+  void vorticite(Domaine_dis_base& ,const Champ_Inc_base& , Champ_Fonc& ) const;
+  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, Champ_Fonc& ) const override;
+  void grad_u(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ,const Champ_Inc_base& , Champ_Fonc& ) const override;
+  void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc& ) const override;
+  void reynolds_maille(const Domaine_dis_base&, const Fluide_base&, const Champ_Inc_base&, Champ_Fonc&) const override;
+  void courant_maille(const Domaine_dis_base&, const Schema_Temps_base&, const Champ_Inc_base&, Champ_Fonc&) const override;
+  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc&) const override;
+  void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc& ) const override;
 //  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
-  void residu( const Domaine_dis_base& ,const Champ_Inc& , Champ_Fonc& ) const override;
+  void residu( const Domaine_dis_base& ,const Champ_Inc_base& , Champ_Fonc& ) const override;
   bool is_vdf() const override { return true; }
 
 private:

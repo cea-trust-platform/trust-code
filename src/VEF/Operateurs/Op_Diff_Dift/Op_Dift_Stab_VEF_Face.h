@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ public:
 
 private:
   IntTab is_dirichlet_faces_;
-  REF(Champ_Inc) divergence_U;
+  REF(Champ_Inc_base) divergence_U;
 
   int nu_lu_ = 1, nut_lu_ = 1, nu_transp_lu_ = 0, nut_transp_lu_ = 1;
   int new_jacobian_ = 0, standard_ = 0;

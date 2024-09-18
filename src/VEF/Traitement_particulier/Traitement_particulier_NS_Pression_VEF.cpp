@@ -77,7 +77,7 @@ Entree& Traitement_particulier_NS_Pression_VEF::lire(Entree& is)
             case 0 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Domaine_dis_base& zdis=mon_equation->inconnue()->domaine_dis_base();
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
                 const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_elem = domaine_VEF.nb_elem() ;
@@ -139,8 +139,8 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
   Operateur_Grad gradient = mon_equation->operateur_gradient();
   SolveurSys solveur_pression_ = mon_equation->solveur_pression();
 
-  DoubleTab& pression=mon_equation->pression()->valeurs();
-  DoubleTab& vitesse=mon_equation->vitesse()->valeurs();
+  DoubleTab& pression=mon_equation->pression().valeurs();
+  DoubleTab& vitesse=mon_equation->vitesse().valeurs();
   DoubleTab gradP(vitesse);
   DoubleTab inc_pre(pression);
   DoubleTab secmem(pression);
@@ -151,7 +151,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
   gradP = 0. ;
   grad_temp = 0. ;
 
-  gradient.calculer(mon_equation->pression()->valeurs(),gradP);
+  gradient.calculer(mon_equation->pression().valeurs(),gradP);
 
   //on veut BM-1Bt(psi*Pression)
   mon_equation->solv_masse()->appliquer(gradP);
@@ -169,55 +169,11 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
   // Correction du second membre d'apres les conditions aux limites :
   mon_equation->assembleur_pression()->modifier_secmem(secmem);
 
-  //solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre,mon_equation->pression().valeur());
+  //solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre,mon_equation->pression());
   solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre);
   DoubleVect& la_pression_porosite = ch_p.valeurs();
   la_pression_porosite = pression;
   //  Cerr << " la_pression_porosite = pression " << la_pression_porosite  << finl;
   //   Cerr << " inc_pre " << inc_pre << finl;
   la_pression_porosite += inc_pre;
-
-
-
-  //  Cerr << "la_pression " << mon_equation->pression()->valeurs() << finl;
-  //   Cerr << "ch_p.valeurs() " << ch_p.valeurs() << finl;
-  // const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis());
-  //   int i,comp;
-  //   int nb_face = zvef.nb_faces();
-  //   Champ_Inc la_pression = mon_equation->pression();
-  //   Champ_Inc la_vitesse =  mon_equation->vitesse();
-  //   Operateur_Div divergence = mon_equation->operateur_divergence();
-  //   Operateur_Grad gradient = mon_equation->operateur_gradient();
-  //   SolveurSys solveur_pression_ = mon_equation->solveur_pression();
-
-  //   DoubleTab& pression=la_pression.valeurs();
-  //   DoubleTrav gradP(la_vitesse.valeurs());
-  //   DoubleTrav inc_pre(pression);
-
-  //  //  DoubleVect& inc_pre = ch_p.valeurs();
-  // //   inc_pre  = 0. ;
-  //   DoubleTrav secmem(pression);
-
-  //   gradient.calculer(la_pression,gradP);
-  //   // Cerr << "gradP " << gradP << finl;
-  //   //on veut BM-1Bt(psi*Pression)
-  //   mon_equation->solv_masse().appliquer(gradP);
-
-  //   DoubleTrav grad_temp(la_vitesse.valeurs());
-  //   for(i=0; i<nb_face; i++)
-  //     {
-  //       for (comp=0; comp<dimension; comp++)
-  //         grad_temp(i,comp) = gradP(i,comp)/porosite_face(i);
-  //     }
-
-  //   divergence.calculer(grad_temp, secmem);
-  //   secmem *= -1; // car div =-B
-  //   solveur_pression_.resoudre_systeme(mon_equation->matrice_pression().valeur(),secmem, inc_pre, la_pression.valeur());
-  //   // Cerr << "la pression " << pression << finl;
-  //   //Cerr << "inc_pre " << inc_pre << finl;
-
-  //   DoubleVect& la_pression_porosite = ch_p.valeurs();
-  //   la_pression_porosite = inc_pre ;
-  //   Cerr << "la_pression_porosite" << la_pression_porosite << finl;
-  //   Cerr << "ch_p.valeurs() " << ch_p.valeurs() << finl;
 }

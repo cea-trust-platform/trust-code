@@ -63,7 +63,7 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
 {
   Op_Diff_PolyMAC_P0_base::completer();
   const Equation_base& eq = equation();
-  const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, eq.inconnue().valeur());
+  const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, eq.inconnue());
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
@@ -145,7 +145,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
   for (auto &&op : op_ext)
     domaines.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op->equation().domaine_dis())));
   for (auto &&op : op_ext)
-    fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue().valeur()).fcl()));
+    fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue()).fcl()));
   for (auto &&zo : domaines)
     e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets())), som_elem.push_back(std::ref(zo.get().som_elem()));
 
@@ -201,16 +201,16 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 {
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
-  const Champ_Elem_PolyMAC_P0& 	ch	= ref_cast(Champ_Elem_PolyMAC_P0, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC_P0& 	ch	= ref_cast(Champ_Elem_PolyMAC_P0, equation().inconnue());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() :
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() :
                           (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr),
                           &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
-  int i, e, f, n, N = equation().inconnue()->valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
+  int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
   double dt = 1e10;
   DoubleTrav flux(N);
   for (e = 0; e < domaine.nb_elem(); e++)
@@ -231,7 +231,7 @@ double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   init_op_ext(), update_phif(!nu_constant_); //calcul de (nf.nu.grad T) : si nu variable, stencil complet
-  const std::string nom_inco = equation().inconnue()->le_nom().getString();
+  const std::string nom_inco = equation().inconnue().le_nom().getString();
   if (semi_impl.count(nom_inco))
     return; //semi-implicite -> rien a dimensionner
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
@@ -248,7 +248,7 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   for (i = 0; i < (int) op_ext.size(); i++)
     {
       stencil[i].resize(0, 2);
-      N[i] = op_ext[i]->equation().inconnue()->valeurs().line_size();
+      N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
     }
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
@@ -296,7 +296,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 #else
   statistiques().begin_count(diffusion_counter_);
   init_op_ext(), update_phif();
-  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
   int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = (int) op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it,
                                                                                cv, nonlinear;
   std::vector<Matrice_Morse*> mat(n_ext); //matrices
@@ -316,8 +316,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv())), xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));
       cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0_Elem, *op_ext[i]).nu());
-      const Champ_Inc& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
-      const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, ch_inc.valeur());
+      const Champ_Inc_base& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
+      const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, ch_inc);
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs()));
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
@@ -385,7 +385,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
         if (op_ext[i]->equation().probleme().has_correlation("flux_parietal"))
           {
             Ts_tab[i].resize(nbelem_tot, nb_max_sat), Sigma_tab[i].resize(nbelem_tot, nb_max_sat), Lvap_tab[i].resize(nbelem_tot, nb_max_sat);
-            const DoubleTab& press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression()->passe();
+            const DoubleTab& press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression().passe();
             for (k = 0; k < N[i]; k++)
               for (l = k + 1; l < N[i]; l++)
                 if (milc.has_saturation(k, l))
@@ -641,9 +641,9 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             //equations sur les correlations
                             const Probleme_base& pbp = op_ext[p]->equation().probleme();
                             const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbp.get_correlation("Flux_parietal").valeur());
-                            const DoubleTab* alpha = sub_type(Pb_Multiphase, pbp) ? &ref_cast(Pb_Multiphase, pbp).equation_masse().inconnue()->passe() : nullptr,
-                                             &dh = pbp.milieu().diametre_hydraulique_elem(), &press = ref_cast(Navier_Stokes_std, pbp.equation(0)).pression()->passe(),
-                                              &vit = ref_cast(Navier_Stokes_std, pbp.equation(0)).inconnue()->passe(),
+                            const DoubleTab* alpha = sub_type(Pb_Multiphase, pbp) ? &ref_cast(Pb_Multiphase, pbp).equation_masse().inconnue().passe() : nullptr,
+                                             &dh = pbp.milieu().diametre_hydraulique_elem(), &press = ref_cast(Navier_Stokes_std, pbp.equation(0)).pression().passe(),
+                                              &vit = ref_cast(Navier_Stokes_std, pbp.equation(0)).inconnue().passe(),
                                                &lambda = pbp.milieu().conductivite()->passe(),
                                                 &mu = ref_cast(Fluide_base, pbp.milieu()).viscosite_dynamique()->passe(),
                                                  &rho = pbp.milieu().masse_volumique()->passe(),

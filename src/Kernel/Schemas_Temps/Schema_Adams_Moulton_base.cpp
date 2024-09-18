@@ -56,22 +56,22 @@ void Schema_Adams_Moulton_base::associer_pb(const Probleme_base& un_probleme)
 
 double Schema_Adams_Moulton_base::changer_temps(Equation_base& eqn, const double temps)
 {
-  eqn.inconnue()->Champ_base::changer_temps(temps);
-  eqn.derivee_en_temps()->Champ_base::changer_temps(temps);
+  eqn.inconnue().Champ_base::changer_temps(temps);
+  eqn.derivee_en_temps().Champ_base::changer_temps(temps);
   return temps;
 }
 
 void Schema_Adams_Moulton_base::update_time_derivative(Equation_base& eqn, const DoubleTab& data)
 {
-  DoubleTab& time_derivative = eqn.derivee_en_temps()->futur();
+  DoubleTab& time_derivative = eqn.derivee_en_temps().futur();
   time_derivative = data;                                //here "data" is supposed to contain "vpoint" table
   modifier_second_membre_full_impl(eqn,time_derivative);
 }
 
 void Schema_Adams_Moulton_base::mettre_a_jour_equation(Equation_base& eqn, const double temps)
 {
-  eqn.inconnue()->mettre_a_jour(temps);
-  eqn.derivee_en_temps()->mettre_a_jour(temps);
+  eqn.inconnue().mettre_a_jour(temps);
+  eqn.derivee_en_temps().mettre_a_jour(temps);
 }
 
 void Schema_Adams_Moulton_base::compute_coefficients(double time_step, const DoubleTab& times) const
@@ -96,7 +96,7 @@ void Schema_Adams_Moulton_base::add_multi_timestep_data(const Equation_base& eqn
   scaling                 = 1./coefficients()[nb_valeurs_passees()+1];
 
   //Modification due to pressure gradient
-  DoubleTab correction(eqn.inconnue()->valeurs());
+  DoubleTab correction(eqn.inconnue().valeurs());
 
   correction = 0.;
   eqn_bis.corriger_derivee_expl(correction);
@@ -104,13 +104,13 @@ void Schema_Adams_Moulton_base::add_multi_timestep_data(const Equation_base& eqn
   secmem     += correction;
 
   //Modification due to present time and past times
-  DoubleTab dudt(eqn.inconnue()->passe(1)); //due to Initialiser_Champs() offset
+  DoubleTab dudt(eqn.inconnue().passe(1)); //due to Initialiser_Champs() offset
   DoubleTab tmp(dudt);
 
   for (i=0; i<nb_valeurs_passees()+1; ++i)
     {
       offset  = nb_valeurs_passees()-i; //present time if offset==0 else past times
-      tmp     = eqn.derivee_en_temps()->passe(offset);
+      tmp     = eqn.derivee_en_temps().passe(offset);
       tmp    *= coefficients()[i] * time_step;
       dudt   += tmp;
     }
@@ -139,7 +139,7 @@ void Schema_Adams_Moulton_base::modifier_second_membre_full_impl(const Equation_
       for (i=0; i<nb_valeurs_passees()+1; ++i )
         {
           offset      = nb_valeurs_passees() - i;
-          correction  = eqn.derivee_en_temps()->passe(offset);//present time if i==nb_valeurs_passees() else past times
+          correction  = eqn.derivee_en_temps().passe(offset);//present time if i==nb_valeurs_passees() else past times
           correction *= coefficients()[i];
           secmem     -= correction;
         }

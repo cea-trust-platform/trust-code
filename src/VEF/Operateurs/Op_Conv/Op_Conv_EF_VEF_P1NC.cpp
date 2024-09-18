@@ -99,7 +99,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_face_absolue=la_vitesse.valeurs();
-  const Champ_P1NC& ch=ref_cast(Champ_P1NC,mon_equation->inconnue().valeur());
+  const Champ_P1NC& ch=ref_cast(Champ_P1NC,mon_equation->inconnue());
 
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();

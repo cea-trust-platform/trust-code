@@ -40,7 +40,7 @@ int est_un_coin(int num, const ArrOfInt& coins)
   return 0;
 }
 
-void Op_Rot_VEFP1B::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
+void Op_Rot_VEFP1B::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc_base&)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);

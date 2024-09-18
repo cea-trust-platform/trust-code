@@ -41,7 +41,7 @@ public:
   void check_multiphase_compatibility() const override { }
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
@@ -65,7 +65,7 @@ public:
   Op_Conv_Centre_VDF_Face();
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Centre_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre_VDF_Face>(); }
@@ -84,7 +84,7 @@ class Op_Conv_Centre4_VDF_Face : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_
 public:
   Op_Conv_Centre4_VDF_Face();
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre4_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre4_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre4_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Centre4_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre4_VDF_Face>(); }
@@ -102,7 +102,7 @@ class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base, public Op_Conv_VDF<O
 public:
   Op_Conv_Quick_VDF_Face_Axi();
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face_Axi>(zd,zcd,ch); }
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face_Axi>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Quick_VDF_Face_Axi>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Quick_VDF_Face_Axi>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Quick_VDF_Face_Axi>(); }
@@ -121,7 +121,7 @@ public:
   Op_Conv_Quick_VDF_Face();
   void preparer_calcul() override { Op_Conv_VDF_base::associer_champ_convecte_face(); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd,const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Quick_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Quick_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Quick_VDF_Face>(); }

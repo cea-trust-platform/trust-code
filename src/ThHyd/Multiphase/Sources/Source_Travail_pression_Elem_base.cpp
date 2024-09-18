@@ -32,9 +32,9 @@ void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, 
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  const DoubleTab& inco = equation().inconnue()->valeurs();
+  const DoubleTab& inco = equation().inconnue().valeurs();
   int i, j, e, eb, ne = domaine.nb_elem(), f,n, N = inco.line_size(), m,
-                   M = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression()->valeurs().line_size();
+                   M = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().valeurs().line_size();
 
   for (auto &&n_m : matrices)
     if (n_m.first == "pression" || (n_m.first == "alpha" && !semi_impl.count("alpha")) || n_m.first == "vitesse")
@@ -70,9 +70,9 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(),
                     &fs = domaine.face_surfaces(), &ve = domaine.volumes();
 
-  const Champ_Inc_base& ch_a = pbm.equation_masse().inconnue().valeur(),
-                        &ch_v = pbm.equation_qdm().inconnue().valeur(),
-                         &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeur();
+  const Champ_Inc_base& ch_a = pbm.equation_masse().inconnue(),
+                        &ch_v = pbm.equation_qdm().inconnue(),
+                         &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression();
 
   /* trois tableaux de alpha : present / passe et champ convecte (peut etre semi-implicite) */
   const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha,

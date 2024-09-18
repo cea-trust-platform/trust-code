@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,11 @@
 #define Champ_Fonc_reprise_included
 
 #include <Champ_Fonc_base.h>
-#include <Champ_Inc.h>
+#include <Champ_Inc_base.h>
 
 /*! @brief classe Champ_Fonc_reprise Cette classe permet de relire un champ sauvegarde dans un fichier xyz
  *
- *  elle porte un champ de type Champ_Inc qui est du meme type que le
+ *  elle porte un champ de type OWN_PTR(Champ_Inc_base) qui est du meme type que le
  *  champ passe en argument
  *
  */
@@ -71,7 +71,7 @@ public:
   }
 
 private:
-  Champ_Inc vrai_champ_;
+  OWN_PTR(Champ_Inc_base) vrai_champ_;
   inline virtual const Champ_Inc_base& le_champ() const { return vrai_champ_.valeur(); }
   inline virtual Champ_Inc_base& le_champ() { return vrai_champ_.valeur(); }
 };

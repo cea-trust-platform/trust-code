@@ -51,7 +51,7 @@ DoubleTab& Masse_PolyMAC_P0P1NC_Face::appliquer_impl(DoubleTab& sm) const
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const IntTab& f_e = domaine.face_voisins();
   const DoubleVect& pf = equation().milieu().porosite_face();
-  int i, e, f, n, N = equation().inconnue()->valeurs().line_size();
+  int i, e, f, n, N = equation().inconnue().valeurs().line_size();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : nullptr,
                    &vfd = domaine.volumes_entrelaces_dir();
   double fac;
@@ -85,8 +85,8 @@ DoubleTab& Masse_PolyMAC_P0P1NC_Face::corriger_solution(DoubleTab& x, const Doub
 {
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
-  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
-  const DoubleTab& nf = domaine.face_normales(), &vit = equation().inconnue()->valeurs();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue()).fcl();
+  const DoubleTab& nf = domaine.face_normales(), &vit = equation().inconnue().valeurs();
   const DoubleVect& fs = domaine.face_surfaces();
   int f, n, N = x.line_size(), d, D = dimension;
 

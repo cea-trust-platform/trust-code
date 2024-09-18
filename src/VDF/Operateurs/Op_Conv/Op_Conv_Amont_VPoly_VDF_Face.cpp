@@ -29,7 +29,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   tab_flux_bords.resize(domaine.nb_faces_bord(), dimension);
   tab_flux_bords = 0.;
 
-  const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
+  const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue());
   const Conds_lim& cls = iter_->domaine_Cl().les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& vit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir();
@@ -40,7 +40,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : nullptr;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs(), *a_r =
-                            !pbm ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->equation_masse().champ_conserve().valeurs(), *alp = pbm ? &pbm->equation_masse().inconnue()->passe() : nullptr, &rho =
+                            !pbm ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->equation_masse().champ_conserve().valeurs(), *alp = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, &rho =
                                   equation().milieu().masse_volumique()->passe();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 

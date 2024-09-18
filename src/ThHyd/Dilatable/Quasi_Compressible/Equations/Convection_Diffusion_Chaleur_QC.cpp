@@ -122,18 +122,18 @@ void Convection_Diffusion_Chaleur_QC::calculer_div_u_ou_div_rhou(DoubleTab& Div)
     {
       // Compute Div([rho]u) with Divergence operator
       const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,probleme().equation(0));
-      const DoubleTab& pression = eqn_hydr.pression()->valeurs();
-      const Champ_Inc& vitesse = eqn_hydr.inconnue();
+      const DoubleTab& pression = eqn_hydr.pression().valeurs();
+      const Champ_Inc_base& vitesse = eqn_hydr.inconnue();
 
       // Div = Div([rho]u) located on pressure nodes:
       DoubleTab Div_on_pressure_nodes(pression);
-      eqn_hydr.operateur_divergence().calculer(vitesse->valeurs(),Div_on_pressure_nodes);
+      eqn_hydr.operateur_divergence().calculer(vitesse.valeurs(),Div_on_pressure_nodes);
 
       // Test on the discretization:
-      if (vitesse->valeurs().line_size() > 1) // VEF
+      if (vitesse.valeurs().line_size() > 1) // VEF
         {
           // VEF (temperature and pressure are not the same) =>  Div extrapolated on velocity nodes:
-          DoubleTab Div_on_temperature_nodes(inconnue()->valeurs());
+          DoubleTab Div_on_temperature_nodes(inconnue().valeurs());
           Div_on_pressure_nodes.echange_espace_virtuel();
           ref_cast_non_const(Fluide_Quasi_Compressible,le_fluide.valeur()).divu_discvit(Div_on_pressure_nodes,Div_on_temperature_nodes);
           const int nsom = Div_on_temperature_nodes.dimension_tot(0);

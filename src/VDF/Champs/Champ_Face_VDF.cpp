@@ -431,7 +431,7 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Domaine_Cl_VDF& doma
  */
 DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
-  const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
+  const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue());
   const Domaine_Cl_VDF& dclvdf = ref_cast(Domaine_Cl_VDF, vit.domaine_Cl_dis());
   const Domaine_VDF& domaine_VDF = domaine_vdf();
   const int nb_elem = domaine_VDF.domaine().nb_elem_tot(), N = vitesse.line_size();
@@ -835,7 +835,7 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
 {
   const int contribution_paroi = 0;
 
-  const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
+  const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue());
   const Domaine_VDF& domaine_VDF = domaine_vdf();
   const IntTab& face_voisins = domaine_VDF.face_voisins(), &elem_faces = domaine_VDF.elem_faces(), &Qdm = domaine_VDF.Qdm();
   const IntVect& orientation = domaine_VDF.orientation();

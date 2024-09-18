@@ -56,7 +56,7 @@ void Viscosite_turbulente_WALE::eddy_viscosity(DoubleTab& nu_t) const
   else
     {
       const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, pb_->domaine_dis());
-      const Champ_Face_base& vit = ref_cast(Champ_Face_base, pb_->equation(0).inconnue().valeur());
+      const Champ_Face_base& vit = ref_cast(Champ_Face_base, pb_->equation(0).inconnue());
 
       // Nota bene : en PolyMAC_P0, grad_u__ contient (nf.grad)u_i aux faces, puis (d_j u_i) aux elements
       const DoubleTab& grad_u__ = pb_->get_champ("gradient_vitesse").valeurs();

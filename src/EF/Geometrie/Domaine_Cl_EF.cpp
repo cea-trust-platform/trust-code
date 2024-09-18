@@ -203,7 +203,7 @@ void Domaine_Cl_EF::remplir_type_elem_Cl(const Domaine_EF& le_dom_EF)
         }
     }
   // On cree la connectivite sommet -> face de bord symetrie
-  if (equation().inconnue()->nature_du_champ()==vectoriel)
+  if (equation().inconnue().nature_du_champ()==vectoriel)
     {
       equation().probleme().discretisation().discretiser_champ("VITESSE",le_dom_EF,"normales_nodales","1",dimension,0.,normales_symetrie_);
       equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",le_dom_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_bis_);
@@ -459,7 +459,7 @@ void  Domaine_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, 
   const IntVect& tab1=la_matrice.get_tab1();
   const IntVect& tab2=la_matrice.get_tab2();
 
-  const DoubleTab& champ_inconnue = equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   for (int som=0; som<nb_som; som++)
@@ -596,11 +596,11 @@ void  Domaine_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, 
 /*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
  *
  */
-void Domaine_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
+void Domaine_Cl_EF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
-  DoubleTab& ch_tab = ch->valeurs(temps);
-  int nb_comp = ch->nb_comp();
-  const Domaine_EF& domaineEF =  domaine_EF(); //ref_cast(Domaine_EF,ch->equation().domaine_dis());
+  DoubleTab& ch_tab = ch.valeurs(temps);
+  int nb_comp = ch.nb_comp();
+  const Domaine_EF& domaineEF =  domaine_EF(); //ref_cast(Domaine_EF,ch.equation().domaine_dis());
   const IntTab& faces_sommets=domaineEF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
   const DoubleTab& coords= domaineEF.domaine().coord_sommets();
@@ -725,7 +725,7 @@ void Domaine_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
       */
       // provsoire a fair equ'une fois
       else if ( (sub_type(Symetrie,la_cl) ) &&
-                (ch->nature_du_champ()==vectoriel) )
+                (ch.nature_du_champ()==vectoriel) )
         {
           imposer_symetrie(ch_tab);
         }

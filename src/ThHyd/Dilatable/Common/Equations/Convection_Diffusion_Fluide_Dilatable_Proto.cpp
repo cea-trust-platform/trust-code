@@ -144,7 +144,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   DoubleTrav convection(derivee);
 
   // Add Y div (rho*u) or T div (rho*u)
-  const DoubleTab& inco = eqn.inconnue()->valeurs();
+  const DoubleTab& inco = eqn.inconnue().valeurs();
   calculer_div_u_ou_div_rhou(convection);
 
   tab_multiply_any_shape(convection, inco);
@@ -164,12 +164,12 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   DoubleTrav mass_source_term(derivee);
   mass_source_term = 0.0;
 
-  const bool has_mass_flux = (sub_type(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation())) ?
-                             ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation()).has_source_masse() : false;
+  const bool has_mass_flux = (sub_type(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse().equation())) ?
+                             ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse().equation()).has_source_masse() : false;
 
   if (!is_thermal() && has_mass_flux) /* species equation */
     {
-      const Source_Masse_Fluide_Dilatable_base& src_masse = ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse()->equation()).source_masse();
+      const Source_Masse_Fluide_Dilatable_base& src_masse = ref_cast(Navier_Stokes_Fluide_Dilatable_base, fluide_dil.vitesse().equation()).source_masse();
       src_masse.ajouter_eq_espece(eqn, fluide_dil, is_expl, mass_source_term);
     }
 
@@ -184,7 +184,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   if (diffusion_implicite)
     {
-      const DoubleTab& Tfutur=eqn.inconnue()->futur();
+      const DoubleTab& Tfutur=eqn.inconnue().futur();
       DoubleTrav secmem(derivee);
       secmem=derivee; // sans contribution terme source
       eqn.solv_masse()->appliquer(secmem);
@@ -343,7 +343,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
 
 void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Diffusion_Fluide_Dilatable_base& eqn,matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
-  const std::string& nom_inco = eqn.inconnue()->le_nom().getString();
+  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
 
   Fluide_Dilatable_base& fluide_dil = eqn.fluide();
@@ -408,7 +408,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
   // on a la matrice approchee on recalcule le residu;
   secmem=0;
   derivee_en_temps_inco_sans_solveur_masse_impl(eqn,secmem,false /* implicit */);
-  if(mat) mat->ajouter_multvect(eqn.inconnue()->valeurs(),secmem);
+  if(mat) mat->ajouter_multvect(eqn.inconnue().valeurs(),secmem);
 }
 
 
@@ -426,7 +426,10 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
   if (a_faire)
     {
       Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
-      Champ_Inc p_tab = FWC.inco_chaleur(); // Initialize with same discretization
+      OWN_PTR(Champ_Inc_base) p_tab;
+      p_tab.typer(FWC.inco_chaleur().que_suis_je()); // Initialize with same discretization
+      p_tab.valeur() = FWC.inco_chaleur();
+
       p_tab->nommer("Pression_EOS");
       p_tab->valeurs() = FWC.pression_th_tab(); // Use good values
       if (special && Process::is_parallel())
@@ -442,7 +445,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
                                                               double temps,
                                                               Convection_Diffusion_std& eq,
                                                               Fluide_Dilatable_base& fld,
-                                                              Champ_Inc& inco,
+                                                              Champ_Inc_base& inco,
                                                               Probleme_base& pb)
 {
   // start resuming
@@ -452,7 +455,10 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,fld);
   FWC.set_resume_flag();
   // resume EOS pressure field
-  Champ_Inc p_tab = inco; // Same discretization normally
+  OWN_PTR(Champ_Inc_base) p_tab;
+  p_tab.typer(inco.que_suis_je()); // Same discretization normally
+  p_tab.valeur() = inco;
+
   p_tab->nommer("Pression_EOS");
   Nom field_tag(p_tab->le_nom());
   field_tag += p_tab->que_suis_je();

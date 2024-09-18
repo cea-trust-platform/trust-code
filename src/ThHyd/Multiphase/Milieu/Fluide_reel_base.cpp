@@ -63,8 +63,8 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
     Process::exit("Incompressible fluid :: NOT YET PORTED TO ENTHALPY EQUATION (BUG DEDANS) ! TODO FIXME !!");
 
   /* masse volumique, energie interne, enthalpie : champ_inc */
-  Champ_Inc rho_inc, ei_inc, h_ou_T_inc;
-  int nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
+  OWN_PTR(Champ_Inc_base) rho_inc, ei_inc, h_ou_T_inc;
+  int nc = pb.equation(0).inconnue().nb_valeurs_temporelles();
   if (is_incompressible()) /* cas incompressible  -> rho champ uniforme */
     {
       Nom val_rho;
@@ -159,8 +159,8 @@ void Fluide_reel_base::mettre_a_jour(double t)
   beta_th->mettre_a_jour(t);
   if (rho_cp_comme_T_.non_nul()) update_rho_cp(t);
 
-  const Champ_Inc_base& ch_T_ou_h = res_en_T_ ? equation("temperature").inconnue().valeur() : equation("enthalpie").inconnue().valeur(),
-                        &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
+  const Champ_Inc_base& ch_T_ou_h = res_en_T_ ? equation("temperature").inconnue() : equation("enthalpie").inconnue(),
+                        &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression();
 
   const DoubleTab& temp_ou_enthalp = ch_T_ou_h.valeurs(), &pres = ch_p.valeurs();
 
@@ -223,7 +223,7 @@ int Fluide_reel_base::check_unknown_range() const
   int ok = 1, zero = 0, nl = e_int->valeurs().dimension_tot(0); //on n'impose pas de contraintes aux lignes correspondant a des variables auxiliaires (eg pressions aux faces dans PolyMAC_P0P1NC)
   for (auto &&i_r : res_en_T_ ? unknown_range() : unknown_range_h())
     {
-      const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression()->valeurs() : equation(i_r.first).inconnue()->valeurs();
+      const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeurs() : equation(i_r.first).inconnue().valeurs();
       double vmin = DBL_MAX, vmax = -DBL_MAX;
       for (int i = 0, j = std::min(std::max(id_composite, zero), vals.dimension(1) - 1); i < nl; i++)
         vmin = std::min(vmin, vals(i, j)), vmax = std::max(vmax, vals(i, j));
@@ -261,7 +261,7 @@ bool Fluide_reel_base::initTimeStep(double dt)
 void Fluide_reel_base::calculate_fluid_properties_incompressible()
 {
   assert (is_incompressible() && res_en_T_);
-  const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur();
+  const Champ_Inc_base& ch_T = equation("temperature").inconnue();
   const DoubleTab& T = ch_T.valeurs(), &bT = ch_T.valeur_aux_bords();
 
   Champ_Inc_base& ch_h = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());
@@ -304,7 +304,7 @@ void Fluide_reel_base::calculate_fluid_properties_incompressible()
 void Fluide_reel_base::calculate_fluid_properties_enthalpie_incompressible()
 {
   assert (is_incompressible() && !res_en_T_) ;
-  const Champ_Inc_base& ch_enth = equation("enthalpie").inconnue().valeur();
+  const Champ_Inc_base& ch_enth = equation("enthalpie").inconnue();
   const DoubleTab& enth = ch_enth.valeurs(), &benth = ch_enth.valeur_aux_bords();
 
   Champ_Inc_base& ch_temp = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());
@@ -346,7 +346,7 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie_incompressible()
 
 void Fluide_reel_base::calculate_fluid_properties()
 {
-  const Champ_Inc_base& ch_T = equation("temperature").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
+  const Champ_Inc_base& ch_T = equation("temperature").inconnue(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs(), &bT = ch_T.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
 
   Champ_Inc_base& ch_rho = ref_cast_non_const(Champ_Inc_base, rho.valeur());
@@ -403,7 +403,7 @@ void Fluide_reel_base::calculate_fluid_properties()
 
 void Fluide_reel_base::calculate_fluid_properties_enthalpie()
 {
-  const Champ_Inc_base& ch_enth = equation("enthalpie").inconnue().valeur(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeur();
+  const Champ_Inc_base& ch_enth = equation("enthalpie").inconnue(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression();
   const DoubleTab& enth = ch_enth.valeurs(), &p = ch_p.valeurs(), &benth = ch_enth.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
 
   Champ_Inc_base& ch_rho = ref_cast_non_const(Champ_Inc_base, rho.valeur());

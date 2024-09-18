@@ -46,7 +46,7 @@ Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s)
       lambda.push_back(lambda_tmp);
     }
 
-  const int N = equation().inconnue()->valeurs().line_size(), ng = (int)lambda.size();
+  const int N = equation().inconnue().valeurs().line_size(), ng = (int)lambda.size();
   if (N != ng)
     {
       Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << ng
@@ -65,9 +65,9 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
-  const DoubleTab& inco = equation().inconnue()->valeurs();
+  const DoubleTab& inco = equation().inconnue().valeurs();
   const int ne = domaine.nb_elem(), N = inco.line_size();
-  std::string nom_inco = equation().inconnue()->le_nom().getString();
+  std::string nom_inco = equation().inconnue().le_nom().getString();
 
   for (auto &&n_m : matrices)
     if (n_m.first == nom_inco)
@@ -88,8 +88,8 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_
 {
   const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
-  const DoubleTab& c = equation().inconnue()->valeurs();
-  std::string nom_inco = equation().inconnue()->le_nom().getString();
+  const DoubleTab& c = equation().inconnue().valeurs();
+  std::string nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *Mc = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   const int N = c.line_size();
 

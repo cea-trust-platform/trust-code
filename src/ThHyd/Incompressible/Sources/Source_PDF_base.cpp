@@ -172,14 +172,14 @@ void  Source_PDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 DoubleTab& Source_PDF_base::calculer(DoubleTab& resu) const
 {
   resu = 0;
-  const DoubleTab& vitesse=equation().inconnue()->valeurs();
+  const DoubleTab& vitesse=equation().inconnue().valeurs();
   return ajouter_(vitesse,resu);
 }
 
 DoubleTab& Source_PDF_base::calculer(DoubleTab& resu, const int i_traitement_special) const
 {
   resu = 0;
-  const DoubleTab& vitesse=equation().inconnue()->valeurs();
+  const DoubleTab& vitesse=equation().inconnue().valeurs();
   return ajouter_(vitesse,resu, i_traitement_special);
 }
 

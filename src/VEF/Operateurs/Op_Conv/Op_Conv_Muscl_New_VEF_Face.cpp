@@ -793,8 +793,8 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
       const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
 
       int nb_comp=1;
-      if(equation().inconnue()->valeurs().nb_dim()!=1)
-        nb_comp=equation().inconnue()->valeurs().dimension(1);
+      if(equation().inconnue().valeurs().nb_dim()!=1)
+        nb_comp=equation().inconnue().valeurs().dimension(1);
 
       double dt_stab = Op_Conv_VEF_Face::calculer_dt_stab();
       double security_coeff=0.95;

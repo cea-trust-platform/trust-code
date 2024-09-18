@@ -94,7 +94,7 @@ void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, con
 
 void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
-  const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
+  const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue());
   const Domaine_VDF& domaine = iter_->domaine();
   const IntTab& f_e = domaine.face_voisins();
   const Conds_lim& cls = iter_->domaine_Cl().les_conditions_limites();
@@ -125,7 +125,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, 
 
 void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const std::string nom_inco = equation().inconnue()->le_nom().getString();
+  const std::string nom_inco = equation().inconnue().le_nom().getString();
   if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
 
   if (!op_ext_init_) init_op_ext();
@@ -135,7 +135,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
   std::vector<int> N(n_ext); //nombre de composantes par probleme de op_ext
   for (int i = 0; i < n_ext; i++)
     {
-      N[i] = op_ext[i]->equation().inconnue()->valeurs().line_size();
+      N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
 
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
@@ -171,7 +171,7 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 
 void Op_Diff_VDF_Elem_base::ajouter_blocs_pour_monolithique(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
   int n_ext = (int)op_ext.size() - 1; // pour la thermique monolithique, -1 car 1er (i.e. *this) est deja fait via ajouter_blocs
   std::vector<Matrice_Morse *> mat(n_ext);
   std::vector<const DoubleTab *> inco(n_ext); //inconnues
@@ -182,8 +182,8 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs_pour_monolithique(matrices_t matrices,
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       if(mat[i])
         {
-          inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i + 1]->equation().inconnue()->valeurs();
-          contribuer_termes_croises(*inco[i], op_ext[i + 1]->equation().probleme(), op_ext[i + 1]->equation().inconnue()->valeurs(), *mat[i]);
+          inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i + 1]->equation().inconnue().valeurs();
+          contribuer_termes_croises(*inco[i], op_ext[i + 1]->equation().probleme(), op_ext[i + 1]->equation().inconnue().valeurs(), *mat[i]);
         }
     }
 }

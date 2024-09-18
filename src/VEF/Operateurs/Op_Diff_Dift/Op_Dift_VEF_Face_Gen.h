@@ -19,8 +19,8 @@
 enum class Type_Champ { SCALAIRE, VECTORIEL };
 enum class Type_Schema { EXPLICITE, IMPLICITE };
 
-
 #include <Domaine_Cl_VEF.h>
+#include <Matrice_Morse.h>
 #include <Domaine_VEF.h>
 #include <TRUST_Ref.h>
 

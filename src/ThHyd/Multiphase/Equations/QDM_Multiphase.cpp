@@ -143,15 +143,15 @@ void QDM_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab
 void QDM_Multiphase::mettre_a_jour(double temps)
 {
   Equation_base::mettre_a_jour(temps);  //on saute celui de Navier_Stokes_std
-  pression()->mettre_a_jour(temps);
-  pression_pa()->mettre_a_jour(temps);
+  pression().mettre_a_jour(temps);
+  pression_pa().mettre_a_jour(temps);
 
   int i, j, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases(), d, D = dimension;
   for (n = 0; n < N; n++)
     if (vit_phases_[n].non_nul())
       {
         vit_phases_[n]->mettre_a_jour(temps);
-        DoubleTab_parts psrc(inconnue()->valeurs()), pdst(vit_phases_[n]->valeurs());
+        DoubleTab_parts psrc(inconnue().valeurs()), pdst(vit_phases_[n]->valeurs());
         for (i = 0; i < std::min(psrc.size(), pdst.size()); i++)
           {
             DoubleTab& src = psrc[i], &dst = pdst[i];
@@ -209,16 +209,16 @@ void QDM_Multiphase::mettre_a_jour(double temps)
 bool QDM_Multiphase::initTimeStep(double dt)
 {
   Schema_Temps_base& sch=schema_temps();
-  ConstDoubleTab_parts ppart(pression()->valeurs());
+  ConstDoubleTab_parts ppart(pression().valeurs());
   /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC_P0P1NC), alors on ne copie que la 1ere partie */
-  const DoubleTab& p_red = pression_pa()->valeurs().dimension_tot(0) < pression()->valeurs().dimension_tot(0) ? ppart[0] : pression()->valeurs();
+  const DoubleTab& p_red = pression_pa().valeurs().dimension_tot(0) < pression().valeurs().dimension_tot(0) ? ppart[0] : pression().valeurs();
   for (int i=1; i<=sch.nb_valeurs_futures(); i++)
     {
       // Mise a jour du temps dans la pression
-      pression()->changer_temps_futur(sch.temps_futur(i),i);
-      pression()->futur(i)=pression()->valeurs();
-      pression_pa()->changer_temps_futur(sch.temps_futur(i),i);
-      pression_pa()->futur(i) = p_red;
+      pression().changer_temps_futur(sch.temps_futur(i),i);
+      pression().futur(i)=pression().valeurs();
+      pression_pa().changer_temps_futur(sch.temps_futur(i),i);
+      pression_pa().futur(i) = p_red;
     }
   return Equation_base::initTimeStep(dt);
 }
@@ -268,9 +268,9 @@ void QDM_Multiphase::completer()
   Cerr<<" Navier_Stokes_std::completer_deb"<<finl;
   Navier_Stokes_std::completer();
   Cerr<<" Navier_Stokes_std::completer_fin"<<finl;
-  Cerr<<"unknow field type  "<<inconnue()->que_suis_je()<<finl;
-  Cerr<<"unknow field name  "<<inconnue()->le_nom()<<finl;
-  Cerr<<"equation type "<<inconnue()->equation().que_suis_je()<<finl;
+  Cerr<<"unknow field type  "<<inconnue().que_suis_je()<<finl;
+  Cerr<<"unknow field name  "<<inconnue().le_nom()<<finl;
+  Cerr<<"equation type "<<inconnue().equation().que_suis_je()<<finl;
 
   /* liste des choses qui doivent etre compatibles avec le multiphase */
   std::vector<const MorEqn*> morceaux = { &solveur_masse.valeur(), &les_sources, &terme_convectif.valeur(), &terme_diffusif.valeur(), &gradient.valeur() };
@@ -401,8 +401,8 @@ int QDM_Multiphase::preparer_calcul()
 
   // XXX Elie Saikali : utile pour cas reprise !
   const double temps = schema_temps().temps_courant();
-  pression()->changer_temps(temps);
-  pression_pa()->changer_temps(temps);
+  pression().changer_temps(temps);
+  pression_pa().changer_temps(temps);
 
   return 1;
 }

@@ -144,7 +144,7 @@ const Champ_base& Navier_Stokes_Turbulent_QC::get_champ(const Motcle& nom) const
 {
 
   if (nom == "rho_u")
-    return rho_la_vitesse().valeur();
+    return rho_la_vitesse();
   try
     {
       return Navier_Stokes_Turbulent::get_champ(nom);
@@ -191,7 +191,7 @@ void Navier_Stokes_Turbulent_QC::assembler_avec_inertie(Matrice_Morse& mat_morse
 bool Navier_Stokes_Turbulent_QC::initTimeStep(double dt)
 {
 
-  DoubleTab& tab_vitesse = inconnue()->valeurs();
+  DoubleTab& tab_vitesse = inconnue().valeurs();
 
   Fluide_Quasi_Compressible& fluide_QC = ref_cast(Fluide_Quasi_Compressible, le_fluide.valeur());
 

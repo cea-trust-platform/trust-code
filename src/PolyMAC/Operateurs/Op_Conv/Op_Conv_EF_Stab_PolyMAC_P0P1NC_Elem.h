@@ -53,11 +53,11 @@ public :
 
 protected :
   /* si operateur de convection de Masse_Multiphase */
-  std::vector<Champ_Inc> cc_phases_; //flux massiques (kg/m2/s)
+  std::vector<OWN_PTR(Champ_Inc_base)> cc_phases_; //flux massiques (kg/m2/s)
   Motcles noms_cc_phases_; //leurs noms
-  std::vector<Champ_Inc> vd_phases_; //vitesses debitantes
+  std::vector<OWN_PTR(Champ_Inc_base)> vd_phases_; //vitesses debitantes
   Motcles noms_vd_phases_; //leurs noms
-  std::vector<Champ_Inc> x_phases_; //titres par phase
+  std::vector<OWN_PTR(Champ_Inc_base)> x_phases_; //titres par phase
   Motcles noms_x_phases_; //leurs noms
 };
 

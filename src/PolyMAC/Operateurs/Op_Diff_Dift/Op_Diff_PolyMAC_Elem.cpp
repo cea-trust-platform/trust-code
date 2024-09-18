@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ Entree& Op_Dift_Nonlinear_PolyMAC_Elem::readOn(Entree& is) { return Op_Diff_Poly
 void Op_Diff_PolyMAC_Elem::completer()
 {
   Op_Diff_PolyMAC_base::completer();
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
@@ -79,7 +79,7 @@ void Op_Diff_PolyMAC_Elem::update_delta_int() const
 {
   if (delta_int_a_jour_)
     return; //deja fait
-  const DoubleTab& inco = equation().inconnue()->valeurs();
+  const DoubleTab& inco = equation().inconnue().valeurs();
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces();
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
@@ -122,7 +122,7 @@ void Op_Diff_PolyMAC_Elem::update_delta() const
 {
   if (delta_a_jour_)
     return; //deja fait
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   int i, f, n, N = ch.valeurs().line_size();
@@ -148,7 +148,7 @@ void Op_Diff_PolyMAC_Elem::update_delta() const
 
 void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces();
   int i, j, k, l, e, f, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), n, N = ch.valeurs().line_size();
@@ -187,7 +187,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner(Matrice_Morse& mat) const
 
 void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
@@ -215,7 +215,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, c
 
 void Op_Diff_PolyMAC_Elem::ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
@@ -253,7 +253,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_termes_croises(const DoubleTab& inco, const P
 
 void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, k, l, f, n, N = ch.valeurs().line_size(), ne_tot = domaine.nb_elem_tot();
@@ -280,7 +280,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, cons
 
 DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& e_f = domaine.elem_faces();
@@ -344,7 +344,7 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu)
 
 void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue());
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& e_f = domaine.elem_faces();

@@ -18,7 +18,6 @@
 
 #include <Interface_blocs.h>
 #include <Domaine_forward.h>
-
 #include <Domaine_VF.h>
 #include <Champ_base.h>
 #include <Domaine_VF.h>
@@ -43,9 +42,9 @@ class MD_Vector;
  *       - ses valeurs aux bords (stockees dans un tableau, car le champ n'a pas
  *         de CL associee);
  *
- *      Champ_Inc est un morceaux d'equation car il herite de MorEqn.
+ *      OWN_PTR(Champ_Inc_base) est un morceaux d'equation car il herite de MorEqn.
  *
- * @sa MorEqn Champ_Inc Champ_base Ch_proto Equation_base, Classe abstraite, Methodes abstraites:, const Domaine_dis_base& associer_domaine_dis_base(const Domaine_dis_base&), const Domaine_dis_base& domaine_dis_base() const, DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
+ * @sa MorEqn OWN_PTR(Champ_Inc_base) Champ_base Ch_proto Equation_base, Classe abstraite, Methodes abstraites:, const Domaine_dis_base& associer_domaine_dis_base(const Domaine_dis_base&), const Domaine_dis_base& domaine_dis_base() const, DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
  */
 
 class Champ_Inc_base : public Champ_base, public MorEqn
@@ -141,7 +140,7 @@ public:
   tabs_t& derivees() { return deriv_; }
   DoubleTab& val_bord() { return val_bord_; }
 
-  //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
+  //champ dependant d'autres OWN_PTR(Champ_Inc_base) : reglage de la fonciton de calcul, initialisation de val_bord_
   void init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc);
   //pour forcer le calcul de toutes les cases au prochain mettre_a_jour() (normalement fait une seule fois)
   void reset_champ_calcule() { fonc_calc_init_ = 0; }
@@ -167,7 +166,7 @@ protected:
   REF(Domaine_Cl_dis_base) mon_dom_cl_dis;
   REF(Domaine_VF) le_dom_VF;
 
-  /* pour les champs dependant d'autres Champ_Inc */
+  /* pour les champs dependant d'autres OWN_PTR(Champ_Inc_base) */
   fonc_calc_t fonc_calc_;  //fonction de calcul
   int fonc_calc_init_ = 0; //1 une fois qu'on a calcule le champ au moins une fois
   RefObjU obj_calc_; //un objet a passer en argument

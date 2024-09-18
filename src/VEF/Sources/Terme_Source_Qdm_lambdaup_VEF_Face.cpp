@@ -115,7 +115,7 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::associer_pb(const Probleme_base& pb)
       const Equation_base& eqn = pb.equation(i);
       if  (sub_type(Navier_Stokes_std,eqn))
         {
-          la_vitesse = ref_cast(Champ_P1NC,eqn.inconnue().valeur());
+          la_vitesse = ref_cast(Champ_P1NC,eqn.inconnue());
           associer_domaines(eqn.domaine_dis(),eqn.domaine_Cl_dis());
           i = nb_eqn;
           ok = 1;

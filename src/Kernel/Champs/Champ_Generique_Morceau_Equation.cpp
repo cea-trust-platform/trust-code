@@ -87,7 +87,7 @@ void Champ_Generique_Morceau_Equation::completer(const Postraitement_base& post)
             while (i<nb_eq)
               {
                 const Equation_base& eq_test = Pb.equation(i);
-                if ((eq_test.inconnue()->le_nom() == mon_champ_inc.le_nom()))
+                if ((eq_test.inconnue().le_nom() == mon_champ_inc.le_nom()))
                   {
                     numero_eq_=i;
                     break;
@@ -221,12 +221,12 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
         else if (Motcle(option_).debute_par("FLUX_"))
           {
             // Tres incomplet mais bon...:
-            if (ref_eq_->inconnue()->le_nom()=="vitesse")
+            if (ref_eq_->inconnue().le_nom()=="vitesse")
               {
                 if (numero_morceau_<2) unites[0]="N";
                 else if (numero_morceau_==3) unites[0]=(dimension==2 ? "m2/s" : "m3/s");
               }
-            else if (ref_eq_->inconnue()->le_nom()=="temperature") unites[0]="W";
+            else if (ref_eq_->inconnue().le_nom()=="temperature") unites[0]="W";
             if (Motcle(option_)==Motcle("flux_surfacique_bords"))
               unites[0]+="/m2";
           }

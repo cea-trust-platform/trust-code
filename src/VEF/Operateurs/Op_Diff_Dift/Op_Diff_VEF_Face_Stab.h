@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ inline void Op_Diff_VEF_Face_Stab::contribuer_a_avec(const DoubleTab& inco, Matr
     Op_Diff_VEF_Face::contribuer_a_avec(inco,matrice);
   else
     {
-      const Champ_base& inconnue = equation().inconnue().valeur();
+      const Champ_base& inconnue = equation().inconnue();
       const Nature_du_champ nature_champ = inconnue.nature_du_champ();
 
       if (nature_champ!=multi_scalaire)

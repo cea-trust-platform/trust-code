@@ -81,7 +81,7 @@ Entree& Source_Masse_Fluide_Dilatable_VDF::readOn(Entree& is) { return Source_Ma
 void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffusion_Fluide_Dilatable_base& eqn, const Fluide_Dilatable_base& fluide, const bool is_expl, DoubleVect& resu) const
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
-  const DoubleTab& Y = eqn.inconnue()->valeurs(),
+  const DoubleTab& Y = eqn.inconnue().valeurs(),
                    &rho = fluide.masse_volumique()->valeurs(),
                     &val_flux0 = ch_front_source_->valeurs();
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
@@ -124,7 +124,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
 
   // pour post
   if (post_src_ch)
-    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur()->temps());
+    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur().temps());
 }
 
 void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
@@ -170,5 +170,5 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
 
   // pour post
   if (post_src_ch)
-    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur()->temps());
+    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur().temps());
 }

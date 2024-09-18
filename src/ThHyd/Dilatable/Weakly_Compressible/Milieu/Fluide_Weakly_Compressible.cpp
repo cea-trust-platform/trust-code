@@ -268,7 +268,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
 void Fluide_Weakly_Compressible::calculer_pression_hydro()
 {
   DoubleTab& tab_Phydro = pression_hydro_->valeurs();
-  const Domaine_dis_base& domaine_dis= pression_->valeur().domaine_dis_base();
+  const Domaine_dis_base& domaine_dis= pression_->domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   int is_VDF = domaine_dis.que_suis_je() == "Domaine_VDF" ? 1 : 0;
   const DoubleTab& centres_de_gravites = is_VDF ? domaine.xp() : domaine.xv();
@@ -304,7 +304,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
           else // VEF : on verra le jour ou on fait du PolyMAC_P0P1NC
             {
               // on a P_NS_elem_ aux elems et Pth_tab_ comme rho, i.e aux faces
-              const Domaine_VF& zvf = ref_cast(Domaine_VF, inco_chaleur()->domaine_dis_base());
+              const Domaine_VF& zvf = ref_cast(Domaine_VF, inco_chaleur().domaine_dis_base());
               assert(Pth_tab_.dimension_tot(0) == zvf.nb_faces_tot());
 
               const IntTab& elem_faces = zvf.elem_faces();
@@ -360,7 +360,7 @@ void Fluide_Weakly_Compressible::write_header_edo()
 
 void Fluide_Weakly_Compressible::write_mean_edo(double temps)
 {
-  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_.valeur()->valeurs());
+  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
   const double rhom = eos_tools_->moyenne_vol(rho->valeurs());
 
   if (je_suis_maitre() && traitement_PTh != 2)

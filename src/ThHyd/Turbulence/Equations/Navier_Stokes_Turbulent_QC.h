@@ -43,7 +43,7 @@ public:
   DoubleTab& derivee_en_temps_inco(DoubleTab&) override;
   void assembler(Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override;
   void assembler_avec_inertie(Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override;
-  inline const Champ_Inc& rho_la_vitesse() const override { return rho_la_vitesse_; }
+  inline const Champ_Inc_base& rho_la_vitesse() const override { return rho_la_vitesse_; }
   void discretiser() override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   const Champ_Don& diffusivite_pour_transport() const override;

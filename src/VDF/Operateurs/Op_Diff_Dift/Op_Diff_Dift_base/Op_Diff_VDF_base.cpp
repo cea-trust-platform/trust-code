@@ -35,7 +35,7 @@ void Op_Diff_VDF_base::completer()
   if (iter_.non_nul())
     {
       iter_->completer_();
-      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().inconnue();
+      const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue();
       iter_->associer_champ_convecte_ou_inc(cc, nullptr);
       iter_->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
       iter_->set_convective_op_pb_type(false /* diff op */, sub_type(Pb_Multiphase, equation().probleme()));
@@ -85,9 +85,9 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
 {
   if (equation().domaine_application() == Motcle("Hydraulique")) // On est dans le cas des equations de Navier_Stokes
     {
-      const std::string& nom_inco = equation().inconnue()->le_nom().getString();
+      const std::string& nom_inco = equation().inconnue().le_nom().getString();
       Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
-      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue()->valeurs();
+      const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
 
       if (Objet_U::bidim_axi == 1)
         {
@@ -161,7 +161,7 @@ double Op_Diff_VDF_base::calculer_dt_stab_(const Domaine_VDF& zone_VDF) const
   //      initial (comme en thermique) et non le Max sur les volumes de Qdm.
   double dt_stab = DMAXFLOAT;
   const Champ_base& ch_diffu = has_champ_masse_volumique() ? diffusivite() : diffusivite_pour_pas_de_temps();
-  const DoubleTab& diffu = ch_diffu.valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+  const DoubleTab& diffu = ch_diffu.valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const bool Cdiffu = sub_type(Champ_Uniforme, ch_diffu);
 
   // Si la diffusivite est variable, ce doit etre un champ aux elements.

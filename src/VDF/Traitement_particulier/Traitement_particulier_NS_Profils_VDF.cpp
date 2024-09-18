@@ -126,7 +126,7 @@ void Traitement_particulier_NS_Profils_VDF::post_traitement_particulier()
   DoubleTab nu_t_inst_p(n_probes,Nap);
   nu_t_inst_p=0.;
 
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   if (oui_u_inst != 0)
     {
       calculer_moyenne_spatiale_vitesse(umoy_x_m,umoy_2_m,umoy_3_m,umoy_4_m,corresp_u_m,compt_x_m,Nxy,0,xUm);
@@ -168,7 +168,7 @@ void Traitement_particulier_NS_Profils_VDF::post_traitement_particulier()
   ////// Moyenne temporelle*********************************************//
   if (oui_stat != 0)
     {
-      double tpsbis = mon_equation->inconnue()->temps();
+      double tpsbis = mon_equation->inconnue().temps();
       if ((tpsbis>=temps_deb)&&(tpsbis<=temps_fin))
         {
           static int init_stat_temps = 0;
@@ -230,7 +230,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
   // utiles au calcul des differentes moyennes
   // Initialisation de : Yu,Yv,Yw,Yuv + compt_x,compt_y,compt_z,compt_uv
   // + corresp_u,corresp_v,corresp_w,corresp_uv
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
   const DoubleTab& xv = domaine_VDF.xv();
@@ -821,7 +821,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
 void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(DoubleTab& u_moy, const IntTab& corresp, const IntTab& compt, const IntVect& tab_Nuv, const DoubleTab& xUV)
 {
   int i,j;
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const DoubleTab& xp = domaine_VDF.xp();
 
@@ -883,11 +883,11 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(Double
 void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_vitesse(DoubleTab& u_moy,DoubleTab& u_moy_2,DoubleTab& u_moy_3,DoubleTab& u_moy_4, const IntTab& corresp, const IntTab& compt, const IntVect& NN, const int ori, const DoubleTab& xU)
 {
   int i,j;
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const DoubleTab& xv = domaine_VDF.xv();
 
-  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   int nb_faces = domaine_VDF.nb_faces();
   const IntVect& orientation = domaine_VDF.orientation();
 
@@ -985,11 +985,11 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_vitesse(Do
 void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_uv(DoubleTab& uv_moy, const IntTab& corresp, const IntTab& compt, const IntVect& NN , const DoubleTab& xUV)
 {
   int i,j;
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const DoubleTab& xp = domaine_VDF.xp();
 
-  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
 
   int nb_elems = domaine_VDF.domaine().nb_elem();
@@ -1152,7 +1152,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat(const Dou
       Nom pos  = Nom(positions(i));
       nom_fic += pos;
       nom_fic += "_t_";
-      double tps = mon_equation->inconnue()->temps();
+      double tps = mon_equation->inconnue().temps();
       Nom temps  = Nom(tps);
       nom_fic   += temps;
       nom_fic   += ".dat";
@@ -1254,7 +1254,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat_1col(cons
       Nom pos  = Nom(positions(i));
       nom_fic += pos;
       nom_fic += "_t_";
-      double tps = mon_equation->inconnue()->temps();
+      double tps = mon_equation->inconnue().temps();
       Nom temps = Nom(tps);
       nom_fic+= temps;
       nom_fic+= ".dat";
@@ -1331,7 +1331,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp(const Dou
       nom_fic += pos;
       nom_fic += "_t_";
 
-      double tps = mon_equation->inconnue()->temps();
+      double tps = mon_equation->inconnue().temps();
       Nom temps = Nom(tps);
       nom_fic+= temps;
       nom_fic+= ".dat";
@@ -1415,7 +1415,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp_1col(cons
       Nom pos  = Nom(positions(i));
       nom_fic += pos;
       nom_fic += "_t_";
-      double tps = mon_equation->inconnue()->temps();
+      double tps = mon_equation->inconnue().temps();
       Nom temps = Nom(tps);
       nom_fic+= temps;
       nom_fic+= ".dat";

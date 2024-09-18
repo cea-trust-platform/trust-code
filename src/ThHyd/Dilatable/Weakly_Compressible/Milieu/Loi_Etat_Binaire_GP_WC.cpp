@@ -48,7 +48,7 @@ double Loi_Etat_Binaire_GP_WC::calculer_masse_volumique(double P, double Y1) con
  */
 void Loi_Etat_Binaire_GP_WC::calculer_masse_volumique()
 {
-  const DoubleTab& tab_Y1 = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   const DoubleTab& pres = FWC.pression_th_tab();

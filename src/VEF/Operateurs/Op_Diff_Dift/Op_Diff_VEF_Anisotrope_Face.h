@@ -19,7 +19,7 @@
 #include <Op_Diff_VEF_base.h>
 #include <Champ_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
+
 
 class Matrice_Morse;
 
@@ -94,7 +94,7 @@ inline void Op_Diff_VEF_Anisotrope_Face::modifier_pour_Cl(Matrice_Morse& matrice
 inline void Op_Diff_VEF_Anisotrope_Face::contribuer_a_avec(const DoubleTab& inco,
                                                            Matrice_Morse& matrice) const
 {
-  const Champ_base& inconnue = equation().inconnue().valeur();
+  const Champ_base& inconnue = equation().inconnue();
   const Nature_du_champ nature_champ = inconnue.nature_du_champ();
   if (nature_champ!=multi_scalaire)
     ajouter_contribution(inco, matrice);

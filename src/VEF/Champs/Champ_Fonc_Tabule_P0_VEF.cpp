@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Tabule_P0_VEF.h>
-#include <Champ_Inc.h>
+
 #include <Domaine_VF.h>
 #include <Table.h>
 

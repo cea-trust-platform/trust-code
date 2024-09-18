@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ public :
   void associer_milieu_base(const Milieu_base& ) override;
   inline void associer_constituant(const Constituant& );
   void discretiser() override;
-  inline const Champ_Inc& inconnue() const override;
-  inline Champ_Inc& inconnue() override;
+  inline const Champ_Inc_base& inconnue() const override;
+  inline Champ_Inc_base& inconnue() override;
   inline int nb_constituants() const;
   int impr(Sortie& os) const override;
   int preparer_calcul() override;
@@ -59,7 +59,7 @@ public :
 protected :
 
   int nb_constituants_;
-  Champ_Inc la_concentration;
+  OWN_PTR(Champ_Inc_base) la_concentration;
   REF(Constituant) le_constituant;
   double masse_molaire_;
 };
@@ -79,9 +79,9 @@ inline void Convection_Diffusion_Concentration::associer_constituant(const Const
  *
  * (version const)
  *
- * @return (Champ_Inc&) le champ inconnue de l'equation, la concentration.
+ * @return (Champ_Inc_base&) le champ inconnue de l'equation, la concentration.
  */
-inline const Champ_Inc& Convection_Diffusion_Concentration::inconnue() const
+inline const Champ_Inc_base& Convection_Diffusion_Concentration::inconnue() const
 {
   return la_concentration;
 }
@@ -89,9 +89,9 @@ inline const Champ_Inc& Convection_Diffusion_Concentration::inconnue() const
 
 /*! @brief Renvoie le champ inconnue de l'equation: la concentration.
  *
- * @return (Champ_Inc&) le champ inconnue de l'equation, la concentration.
+ * @return (Champ_Inc_base&) le champ inconnue de l'equation, la concentration.
  */
-inline Champ_Inc& Convection_Diffusion_Concentration::inconnue()
+inline Champ_Inc_base& Convection_Diffusion_Concentration::inconnue()
 {
   return la_concentration;
 }

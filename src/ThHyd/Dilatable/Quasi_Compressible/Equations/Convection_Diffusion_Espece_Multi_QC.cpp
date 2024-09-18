@@ -64,7 +64,7 @@ int Convection_Diffusion_Espece_Multi_QC::lire_motcle_non_standard(const Motcle&
   else if (mot=="convection")
     {
       const Probleme_base& pb = probleme();
-      const Champ_Inc& vit_transportante = ref_cast(Navier_Stokes_QC,pb.equation(0)).rho_la_vitesse();
+      const Champ_Inc_base& vit_transportante = ref_cast(Navier_Stokes_QC,pb.equation(0)).rho_la_vitesse();
       associer_vitesse(vit_transportante);
       terme_convectif.associer_vitesse(vit_transportante);
       is >> terme_convectif;
@@ -133,7 +133,7 @@ DoubleTab& Convection_Diffusion_Espece_Multi_QC::derivee_en_temps_inco(DoubleTab
   DoubleTrav derivee_bis(derivee);
 
   // on commence par retirer phi*div(1 U)
-  const DoubleTab& frac_mass = inconnue()->valeurs();
+  const DoubleTab& frac_mass = inconnue().valeurs();
 
   Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(derivee_bis,*this);
 
@@ -224,8 +224,8 @@ void Convection_Diffusion_Espece_Multi_QC::assembler(Matrice_Morse& matrice, con
 void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   statistiques().begin_count(assemblage_sys_counter_);
-  const std::string& nom_inco = inconnue()->le_nom().getString();
-  const DoubleTab& inco = inconnue()->valeurs();
+  const std::string& nom_inco = inconnue().le_nom().getString();
+  const DoubleTab& inco = inconnue().valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   secmem = 0;

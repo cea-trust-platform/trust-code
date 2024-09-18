@@ -87,6 +87,6 @@ void Source_Forchheimer_VDF_Face::associer_domaines(const Domaine_dis_base& doma
 
 void Source_Forchheimer_VDF_Face::associer_pb(const Probleme_base& pb)
 {
-  const Champ_Inc& vit = pb.equation(0).inconnue();
+  const Champ_Inc_base& vit = pb.equation(0).inconnue();
   eval().associer(vit);
 }

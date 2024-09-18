@@ -176,7 +176,7 @@ DoubleTab& Force_Centrifuge_VDF_Face_Axi::calculer(DoubleTab& resu) const
 void Force_Centrifuge_VDF_Face_Axi::completer()
 {
   Source_base::completer();
-  la_vitesse = ref_cast(Champ_Face_VDF,equation().inconnue().valeur());
+  la_vitesse = ref_cast(Champ_Face_VDF,equation().inconnue());
 
 }
 

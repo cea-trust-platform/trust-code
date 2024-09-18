@@ -26,7 +26,7 @@
  * @sa Domaine_Cl_dis_base
  */
 #include <Domaine_Cl_dis_base.h>
-#include <Champ_Inc.h>
+
 #include <Champ_Don.h>
 
 
@@ -43,7 +43,7 @@ public :
   void completer(const Domaine_dis_base& ) override;
 //  void mettre_a_jour(double );
   int initialiser(double temps) override;
-  void imposer_cond_lim(Champ_Inc&, double) override;
+  void imposer_cond_lim(Champ_Inc_base&, double) override;
 
   void imposer_symetrie(DoubleTab&,int tous_les_sommets_sym=0) const;
   void imposer_symetrie_partiellement(DoubleTab&,const Noms&) const;

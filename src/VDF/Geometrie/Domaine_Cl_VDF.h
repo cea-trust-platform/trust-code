@@ -17,7 +17,7 @@
 #define Domaine_Cl_VDF_included
 
 #include <Domaine_Cl_dis_base.h>
-#include <Champ_Inc.h>
+
 
 class Domaine_VDF;
 
@@ -65,7 +65,7 @@ class Domaine_Cl_VDF : public Domaine_Cl_dis_base
 public :
   void associer(const Domaine_dis_base&) override;
   void completer(const Domaine_dis_base&) override;
-  void imposer_cond_lim(Champ_Inc&, double) override;
+  void imposer_cond_lim(Champ_Inc_base&, double) override;
   int nb_faces_sortie_libre() const;
   int nb_faces_bord() const;
   Domaine_VDF& domaine_VDF();

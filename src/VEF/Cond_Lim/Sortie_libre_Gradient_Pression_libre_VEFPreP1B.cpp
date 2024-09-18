@@ -50,7 +50,7 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::completer()
 
   const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis());
 
-  const Champ_P1_isoP1Bulle& pression = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression().valeur());
+  const Champ_P1_isoP1Bulle& pression = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression());
 
   const IntTab& face_voisins = mon_dom_VEF.face_voisins();
 

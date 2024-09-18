@@ -24,7 +24,7 @@
  *     domaine_dis_base
  *     ** ( nouvelles procedures :
  *   void proprietes_physiques_fluide_Ostwald(Domaine_dis_base& ,Fluide_Ostwald& ,
- *            const Navier_Stokes_std& , const Champ_Inc& ) const;
+ *            const Navier_Stokes_std& , const Champ_Inc_base& ) const;
  *    a besoin de la classe Fluide_Ostwald pour avoir acces au fluide etudie
  *                          Navier_Stokes_Std pour avoir acces a l'equation hydraulique
  *
@@ -46,22 +46,22 @@ public :
   //
   // Methodes surchargees de Discretisation_base
   //
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,
                          const Nom& sous_type = NOM_VIDE) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
   Nom domaine_cl_dis_type() const override { return "Domaine_Cl_EF"; }
 
   void distance_paroi(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
-  void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const override;
+  void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc_base&) const override;
 
-  void vorticite(Domaine_dis_base&, const Champ_Inc&, Champ_Fonc&) const;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
-  void critere_Q(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
-  void y_plus(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
-  void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc& temperature, Champ_Fonc& ch) const override;
-  ////void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc& temperature, Champ_Fonc& ch) const;
-  void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
+  void vorticite(Domaine_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const;
+  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, Champ_Fonc& ) const override;
+  void critere_Q(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& vitesse, Champ_Fonc& ch) const override;
+  void y_plus(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& vitesse, Champ_Fonc& ch) const override;
+  void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, Champ_Fonc& ch) const override;
+  ////void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, Champ_Fonc& ch) const;
+  void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
   inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_CONTRIBUER_AU_SECOND_MEMBRE; }
 
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;

@@ -16,7 +16,7 @@
 #include <Source_Neutronique_VDF.h>
 #include <Probleme_base.h>
 #include <Domaine_Cl_VDF.h>
-#include <Champ_Inc.h>
+
 #include <Domaine_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Source_Neutronique_VDF,"Source_Neutronique_VDF_P0_VDF",Source_Neutronique);
@@ -34,7 +34,7 @@ double Source_Neutronique_VDF::calculer_Tmoyenne()
 {
   double T = 0.;
   const int nb_elem = le_dom->nb_elem();
-  const DoubleTab& temp = equation().inconnue()->valeurs();
+  const DoubleTab& temp = equation().inconnue().valeurs();
   for (int i = 0; i < nb_elem; i++) T += temp(i);
 
   T = T / nb_elem;

@@ -61,23 +61,23 @@ void Schema_Adams_Bashforth_base::modifier_second_membre(const Equation_base& eq
       for (i=0; i<nb_valeurs_passees(); ++i)
         {
           offset   =  nb_valeurs_passees()-i;
-          times[i] =  eqn_bis.inconnue()->recuperer_temps_passe(offset); //past
+          times[i] =  eqn_bis.inconnue().recuperer_temps_passe(offset); //past
         }
-      times[nb_valeurs_passees()]   = eqn_bis.inconnue()->recuperer_temps_futur(0); //present
-      times[nb_valeurs_passees()+1] = eqn_bis.inconnue()->recuperer_temps_futur(1); //future
+      times[nb_valeurs_passees()]   = eqn_bis.inconnue().recuperer_temps_futur(0); //present
+      times[nb_valeurs_passees()+1] = eqn_bis.inconnue().recuperer_temps_futur(1); //future
 
       compute_coefficients(time_step,times);
 
       //Modification due to present time and past times
       secmem*=coefficients()[nb_valeurs_passees()]; //present time
 
-      DoubleTrav dudt(eqn.inconnue()->valeurs());
+      DoubleTrav dudt(eqn.inconnue().valeurs());
       DoubleTrav tmp(dudt);
       // Compute sum(coeff*dudt)
       for (i=0; i<nb_valeurs_passees(); ++i)
         {
           offset = nb_valeurs_passees()-i;
-          tmp = eqn.derivee_en_temps()->passe(offset);
+          tmp = eqn.derivee_en_temps().passe(offset);
           tmp *= coefficients()[i];
           dudt += tmp; //past time
         }

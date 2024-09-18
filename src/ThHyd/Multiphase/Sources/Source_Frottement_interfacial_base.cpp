@@ -54,7 +54,7 @@ void Source_Frottement_interfacial_base::completer()
 
 void Source_Frottement_interfacial_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
   if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
   Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());

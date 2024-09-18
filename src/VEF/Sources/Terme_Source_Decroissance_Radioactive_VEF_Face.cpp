@@ -41,7 +41,7 @@ Entree& Terme_Source_Decroissance_Radioactive_VEF_Face::readOn(Entree& s)
       lambda.push_back(lambda_tmp);
     }
 
-  const int N = equation().inconnue()->valeurs().line_size(), ng = (int)lambda.size();
+  const int N = equation().inconnue().valeurs().line_size(), ng = (int)lambda.size();
   if (N != ng)
     {
       Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << ng
@@ -62,7 +62,7 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& re
 {
   const Domaine_VF& domaine = le_dom_VEF.valeur();
   const DoubleVect& vf = domaine.volumes_entrelaces();
-  const DoubleTab& c = equation().inconnue()->valeurs();
+  const DoubleTab& c = equation().inconnue().valeurs();
   const int nb_faces = le_dom_VEF->nb_faces(), N = c.line_size();
 
   for (int f = 0; f < nb_faces; f++)
@@ -83,7 +83,7 @@ void Terme_Source_Decroissance_Radioactive_VEF_Face::contribuer_a_avec(const Dou
 {
   const Domaine_VF& domaine = le_dom_VEF.valeur();
   const DoubleVect& vf = domaine.volumes_entrelaces();
-  const int nb_faces = le_dom_VEF->nb_faces(), N = equation().inconnue()->valeurs().line_size();
+  const int nb_faces = le_dom_VEF->nb_faces(), N = equation().inconnue().valeurs().line_size();
 
   for (int f = 0; f < nb_faces; f++)
     for (int l = 0; l < N; l++)

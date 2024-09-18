@@ -133,7 +133,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
   int nb_som_elem=domaine_ef.domaine().nb_som_elem();
 
   int N = resu.line_size();
-  Nature_du_champ nat= equation().inconnue()->nature_du_champ();
+  Nature_du_champ nat= equation().inconnue().nature_du_champ();
   if (nat==vectoriel)
     {
       if ((dimension==3)&&(nb_som_elem==8))
@@ -395,7 +395,7 @@ void Op_Diff_EF::contribuer_au_second_membre(DoubleTab& resu ) const
 
   if ((equation().nombre_d_operateurs()>1)&&sub_type(Op_Conv_EF,equation().operateur(1).l_op_base()))
     ref_cast(Op_Conv_EF,equation().operateur(1).l_op_base()).contribue_au_second_membre_a_la_diffusion(resu);
-  const DoubleTab& tab_inconnue=equation().inconnue()->valeurs();
+  const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
   ajouter_bords(tab_inconnue,resu,0);
 }
 void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  int contrib_interne ) const
@@ -405,7 +405,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
   const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   flux_bords_=0.;
-  // const DoubleTab& tab_inconnue=equation().inconnue()->valeurs();
+  // const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
   // on parcourt toutes les faces de bord et on calcule lambda*gradT
   const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis());
   const IntTab& face_voisins=domaine_ef.face_voisins();
@@ -662,7 +662,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
   const IntTab& face_sommets=domaine_ef.face_sommets();
   int nb_som_face=domaine_ef.nb_som_face();
 
-  int N = equation().inconnue()->valeurs().line_size();
+  int N = equation().inconnue().valeurs().line_size();
 
   if (N > 1)
     {

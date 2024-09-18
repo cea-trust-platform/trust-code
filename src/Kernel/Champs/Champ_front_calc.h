@@ -30,7 +30,7 @@ class Milieu_base;
 /*! @brief classe Champ_front_calc Classe derivee de Champ_front_var qui represente les
  *
  *      champs a la frontiere obtenus en prenant la trace
- *      d'un objet de type Champ_Inc (champ inconnue d'une equation)
+ *      d'un objet de type OWN_PTR(Champ_Inc_base) (champ inconnue d'une equation)
  *
  * @sa Champ_front_var_instationnaire Champ_Inc
  */

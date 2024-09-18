@@ -99,8 +99,8 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Domaine& domaine = le_dom_VDF->domaine();
   int nb_elem = domaine.nb_elem();
   const Champ_Uniforme& ch_beta = ref_cast(Champ_Uniforme,beta().valeur());
-  const DoubleTab& vitesse = eq_hydraulique().inconnue()->valeurs();
-  const DoubleVect& temperature = eq_thermique().inconnue()->valeurs();
+  const DoubleTab& vitesse = eq_hydraulique().inconnue().valeurs();
+  const DoubleVect& temperature = eq_thermique().inconnue().valeurs();
   DoubleVect cell_cent_temp(temperature);
   int ndeb,nfin,ncomp,num_face;
   //   double debit_e=0.,dt,vol,Surf;
@@ -117,8 +117,8 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   //   static double debnm1;
   //   static double debit_ref=0.;
   //   Cerr << " debut de inc" << finl;
-  //   double tps = eq_hydraulique().inconnue()->temps();
-  //   const DoubleVect& vit = eq_hydraulique().inconnue()->valeurs();
+  //   double tps = eq_hydraulique().inconnue().temps();
+  //   const DoubleVect& vit = eq_hydraulique().inconnue().valeurs();
 
   // calculer_cell_cent_vel
   // -------------------------------------------------------------------
@@ -146,7 +146,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   DoubleVect inc_dt(cell_cent_temp);
   DoubleVect dQij_j(cell_cent_temp);
 
-  //   const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  //   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   //   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   //   int nb_elem_tot = domaine_VDF.domaine().nb_elem_tot();
   const IntTab& elem_faces = domaine_VDF.elem_faces();

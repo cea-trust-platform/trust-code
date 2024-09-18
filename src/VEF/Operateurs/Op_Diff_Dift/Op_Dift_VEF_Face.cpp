@@ -59,7 +59,7 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
   Debog::verifier("Op_Dift_VEF_Face::ajouter inconnue_org", inconnue_org);
   Debog::verifier("Op_Dift_VEF_Face::ajouter inconnue", inconnue);
 
-  if (equation().inconnue()->nature_du_champ() == vectoriel)
+  if (equation().inconnue().nature_du_champ() == vectoriel)
     {
       fill_grad_Re<Type_Champ::VECTORIEL>(inconnue, resu, nu, nu_turb);
       ajouter_bord_gen<Type_Champ::VECTORIEL>(inconnue, resu, flux_bords_, nu, nu_turb);
@@ -94,7 +94,7 @@ void Op_Dift_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
   if (!marq) porosite_eventuelle = 1;
 
-  if (equation().inconnue()->nature_du_champ() == vectoriel)
+  if (equation().inconnue().nature_du_champ() == vectoriel)
     {
       ajouter_contribution_bord_gen<Type_Champ::VECTORIEL>(inco, matrice, nu, nu_turb, porosite_eventuelle);
       ajouter_contribution_interne_gen<Type_Champ::VECTORIEL>(inco, matrice, nu, nu_turb, porosite_eventuelle);
@@ -118,9 +118,9 @@ void Op_Dift_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
   const int nb_faces = domaine_VEF.nb_faces(), nb_comp = resu.line_size();
 
   // On traite les faces bord
-  if (equation().inconnue()->nature_du_champ() == vectoriel)
+  if (equation().inconnue().nature_du_champ() == vectoriel)
     {
-      const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs(), &inconnue_org = equation().inconnue()->valeurs();
+      const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs(), &inconnue_org = equation().inconnue().valeurs();
       DoubleTab nu, nu_turb_m, tab_inconnue;
 
       int marq = phi_psi_diffuse(equation());

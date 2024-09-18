@@ -41,7 +41,7 @@ class Op_Diff_VEF_base : public Operateur_Diff_base, public Op_VEF_Face
 public:
 
   int impr(Sortie& os) const override;
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& ,const Champ_Inc_base& ) override;
 
   template <typename _TYPE_>
   double viscA(int face_i, int face_j, int num_elem, const _TYPE_& diffu) const;

@@ -43,9 +43,9 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
         return Pth_n;
     }
   double Pth;
-  const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse()->valeurs();
-  const DoubleTab& tab_hnp1 = le_fluide_->inco_chaleur()->valeurs();       //actuel
-  const DoubleTab& tab_hn = le_fluide_->inco_chaleur()->passe();        //passe
+  const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse().equation()).vitesse().valeurs();
+  const DoubleTab& tab_hnp1 = le_fluide_->inco_chaleur().valeurs();       //actuel
+  const DoubleTab& tab_hn = le_fluide_->inco_chaleur().passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique()->valeurs();    //actuel
   const OWN_PTR(Loi_Etat_base)& loi_ = le_fluide_->loi_etat();
   //  const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
@@ -56,7 +56,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   double Fnp1 = 0; //integrale 1 a l'etape n+1
   double S = 0; //second membre
 
-  double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+  double dt = le_fluide_->vitesse().equation().schema_temps().pas_de_temps();
   double v, al, bn, bnp1, hn, hnp1, divu;
 
   int i, face, nb_faces = le_dom->nb_faces();
@@ -90,7 +90,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
     }
   //calcul divU en P0 et P1
   DoubleTrav divUP0(nb_elem);
-  ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit, divUP0);
+  ref_cast(Navier_Stokes_std,le_fluide_->vitesse().equation()).operateur_divergence().calculer(tab_vit, divUP0);
   DoubleTrav divU(nb_faces);
   int e0, e1;
   for (face = 0; face < nb_faces; face++)

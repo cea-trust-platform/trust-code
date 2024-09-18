@@ -57,11 +57,11 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::rho_vitesse_impl(const DoubleTa
 int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn,Sortie& os) const
 {
   const Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.fluide());
-  const DoubleTab& vit = eqn.vitesse()->valeurs(), &rho = fluide_dil.rho_face_np1();
+  const DoubleTab& vit = eqn.vitesse().valeurs(), &rho = fluide_dil.rho_face_np1();
   DoubleTrav mass_flux(vit);
   rho_vitesse_impl(rho,vit,mass_flux);
 
-  DoubleTrav array(eqn.div()->valeurs());
+  DoubleTrav array(eqn.div().valeurs());
   if (tab_W.get_md_vector().non_nul())
     {
       operator_egal(array, tab_W ); //, VECT_REAL_ITEMS); // initialise
@@ -119,7 +119,7 @@ int Navier_Stokes_Fluide_Dilatable_Proto::impr_impl(const Navier_Stokes_std& eqn
 DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navier_Stokes_std& eqn,DoubleTab& vpoint)
 {
   const Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,eqn.milieu());
-  DoubleTab& press = eqn.pression()->valeurs(), &vit = eqn.vitesse()->valeurs();
+  DoubleTab& press = eqn.pression().valeurs(), &vit = eqn.vitesse().valeurs();
   DoubleTrav secmem(press);
   DoubleTrav inc_pre(press);
   DoubleTrav rhoU(vit);
@@ -214,7 +214,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
   const double dt=eqn.schema_temps().pas_de_temps();
   eqn.solv_masse()->ajouter_masse(dt,mat_morse,0);
 
-  rho_vitesse_impl(tab_rho_face_n,eqn.inconnue()->passe(),rhovitesse);
+  rho_vitesse_impl(tab_rho_face_n,eqn.inconnue().passe(),rhovitesse);
   eqn.solv_masse()->ajouter_masse(dt,secmem,rhovitesse,0);
 
   // blocage_cl faux si dirichlet u!=0 !!!!!! manque multiplication par rho
@@ -249,9 +249,9 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
 void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Navier_Stokes_std& eqn, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   statistiques().begin_count(assemblage_sys_counter_);
-  const std::string& nom_inco = eqn.inconnue()->le_nom().getString();
+  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):nullptr;
-  const DoubleTab& present = eqn.inconnue()->valeurs();
+  const DoubleTab& present = eqn.inconnue().valeurs();
 
   // ******   avant inertie   ******
   // diffusion en div(mu grad u ) or on veut impliciter en rho * u => on divise les contributions par le rho_face associe
@@ -304,7 +304,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
   // ajout de l'inertie
   const double dt=eqn.schema_temps().pas_de_temps();
   eqn.solv_masse()->ajouter_masse(dt,*mat,0);
-  rho_vitesse_impl(tab_rho_face_n,eqn.inconnue()->passe(),rhovitesse);
+  rho_vitesse_impl(tab_rho_face_n,eqn.inconnue().passe(),rhovitesse);
   eqn.solv_masse()->ajouter_masse(dt,secmem,rhovitesse,0);
 
   // blocage_cl faux si dirichlet u!=0 !!!!!! manque multiplication par rho
@@ -356,7 +356,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
 {
   const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
   const DoubleTab& tab_rho = fluide_dil.rho_discvit(); // rho avec la meme discretisation que la vitesse
-  const DoubleTab& vit = eqn.vitesse()->valeurs();
+  const DoubleTab& vit = eqn.vitesse().valeurs();
 
   fluide_dil.secmembre_divU_Z(tab_W); //Calcule W=-dZ/dt, 2nd membre de l'equation div(rhoU) = W
   vpoint=0;
@@ -364,7 +364,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
   // ajout diffusion (avec la viscosite dynamique)
   if (!eqn.schema_temps().diffusion_implicite()) eqn.operateur(0).ajouter(vpoint);
 
-  DoubleTab& rhovitesse = ref_cast_non_const(DoubleTab,eqn.rho_la_vitesse()->valeurs());
+  DoubleTab& rhovitesse = ref_cast_non_const(DoubleTab,eqn.rho_la_vitesse().valeurs());
   rho_vitesse_impl(tab_rho,vit,rhovitesse);
 
   // ajout convection utilise rhovitesse
@@ -419,8 +419,8 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
       rho_vitesse_impl(dr,vit,vpoint);
       secmemV += vpoint;
 
-      DoubleTrav delta_u(eqn.inconnue()->futur());
-      delta_u = eqn.inconnue()->futur();
+      DoubleTrav delta_u(eqn.inconnue().futur());
+      delta_u = eqn.inconnue().futur();
       eqn.Gradient_conjugue_diff_impl(secmemV, delta_u ) ;
 
       /*
@@ -450,7 +450,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
   // NOTE : en incompressible le terme est rajoute par modifier_secmem
   const double dt_ = eqn.schema_temps().pas_de_temps();
   const DoubleTab& tab_rho_face_n = fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
-  const DoubleTab& vit = eqn.vitesse()->valeurs();
+  const DoubleTab& vit = eqn.vitesse().valeurs();
   const Conds_lim& lescl = eqn.domaine_Cl_dis().les_conditions_limites();
   const IntTab& face_voisins = eqn.domaine_dis().face_voisins();
   const int taille = vpoint.line_size();
@@ -511,7 +511,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::solve_pressure_increment(Navier_Stoke
                                                                     DoubleTab& inc_pre, DoubleTab& vpoint)
 {
   const DoubleTab& tab_rho_face_n =fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
-  const DoubleTab& vit = eqn.vitesse()->valeurs();
+  const DoubleTab& vit = eqn.vitesse().valeurs();
   const double dt_ = eqn.schema_temps().pas_de_temps(), t = eqn.schema_temps().temps_courant();
 
   // Resolution pression
@@ -560,8 +560,8 @@ void Navier_Stokes_Fluide_Dilatable_Proto::correct_and_compute_u_np1(Navier_Stok
                                                                      DoubleTab& vpoint)
 {
   const DoubleTab& tab_rho_face_np1=fluide_dil.rho_face_np1();
-  const DoubleTab& vit = eqn.vitesse()->valeurs();
-  DoubleTab& press = eqn.pression()->valeurs();
+  const DoubleTab& vit = eqn.vitesse().valeurs();
+  DoubleTab& press = eqn.pression().valeurs();
   const double dt_ = eqn.schema_temps().pas_de_temps();
 
   // On a besoin de l'espace virtuel de la pression pour calculer le gradient plus bas

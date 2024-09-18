@@ -155,7 +155,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_pb(const Probleme_base& pb)
 
 void Terme_Source_Canal_RANS_LES_VDF_Elem::init()
 {
-  const Domaine_dis_base& zdisbase=mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const double tps = mon_equation->schema_temps().temps_courant();
 
@@ -228,7 +228,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
 
   //vitesse=temperature
 
-  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double tps = mon_equation->schema_temps().temps_courant();
   int nb_elems = domaine_VDF.nb_elem();
@@ -249,7 +249,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
           pb_rans = ref_cast(Probleme_base, obj);
         }
 
-      U_RANS = pb_rans->equation(1).inconnue()->valeurs();
+      U_RANS = pb_rans->equation(1).inconnue().valeurs();
 
     }
   //***************************************************
@@ -345,7 +345,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter_blocs(matrices_t matrices, Do
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   //vitesse=temperature
-  const DoubleTab& vitesse = mon_equation->inconnue()->valeurs();
+  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
 
   double vol=0.;
   SFichier fic_f("f_temp.dat", ios::app);

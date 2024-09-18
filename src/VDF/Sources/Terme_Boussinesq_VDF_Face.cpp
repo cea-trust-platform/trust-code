@@ -52,7 +52,7 @@ void Terme_Boussinesq_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   const Domaine_Cl_VDF& domaine_Cl_VDF_hyd = le_dom_Cl_VDF.valeur();
   const Domaine_Cl_dis_base& domaine_Cl_scal = equation_scalaire().domaine_Cl_dis();
   const Domaine_Cl_VDF& domaine_Cl_VDF_scal = ref_cast(Domaine_Cl_VDF,domaine_Cl_scal);
-  const DoubleTab& param = equation_scalaire().inconnue()->valeurs();
+  const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta()->valeurs();
   const DoubleVect& grav = gravite().valeurs();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
@@ -60,7 +60,7 @@ void Terme_Boussinesq_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   const DoubleTab& xv = domaine_VDF.xv();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
-  const DoubleTab& vitesse = equation().inconnue()->valeurs();
+  const DoubleTab& vitesse = equation().inconnue().valeurs();
 
   DoubleVect g(dimension);
   g = grav;

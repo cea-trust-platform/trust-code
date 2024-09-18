@@ -55,13 +55,13 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, co
    */
 
   const Navier_Stokes_WC& eqHyd = ref_cast(Navier_Stokes_WC,mon_equation->probleme().equation(0));
-  const DoubleTab& la_vitesse = eqHyd.vitesse()->valeurs();
-  DoubleTab grad_Ptot(eqHyd.grad_P()->valeurs()); // initialise avec grad(P) car face
+  const DoubleTab& la_vitesse = eqHyd.vitesse().valeurs();
+  DoubleTab grad_Ptot(eqHyd.grad_P().valeurs()); // initialise avec grad(P) car face
   const Convection_Diffusion_Chaleur_WC& eq_chal = ref_cast(Convection_Diffusion_Chaleur_WC,mon_equation.valeur());
   const Operateur_Grad& Op_Grad = eq_chal.operateur_gradient_WC();
   Op_Grad.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
-  const Domaine_dis_base& domaine_dis = mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& domaine_dis = mon_equation->inconnue().domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   assert (domaine_dis.que_suis_je() == "Domaine_VDF");
 
@@ -97,8 +97,8 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
 {
   // compute the grad
   const Navier_Stokes_WC& eqHyd = ref_cast(Navier_Stokes_WC,mon_equation->probleme().equation(0));
-  const DoubleTab& la_vitesse = eqHyd.vitesse()->valeurs();
-  DoubleTab grad_Ptot(eqHyd.grad_P()->valeurs()); // initialise avec grad(P) car face
+  const DoubleTab& la_vitesse = eqHyd.vitesse().valeurs();
+  DoubleTab grad_Ptot(eqHyd.grad_P().valeurs()); // initialise avec grad(P) car face
   const Operateur_Grad& gradient = eqHyd.operateur_gradient(); // recuperer op grad de NS
   gradient.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
@@ -119,7 +119,7 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
    */
 
   // We use that of NS because we test the CL too (attention mon_equation is Chaleur...)
-  const Domaine_dis_base& domaine_dis = eqHyd.inconnue()->domaine_dis_base();
+  const Domaine_dis_base& domaine_dis = eqHyd.inconnue().domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   const Domaine_Cl_dis_base& domaine_cl = eqHyd.domaine_Cl_dis();
   assert (domaine_dis.que_suis_je() == "Domaine_VDF");

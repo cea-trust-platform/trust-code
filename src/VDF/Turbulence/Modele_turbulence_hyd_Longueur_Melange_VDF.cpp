@@ -58,7 +58,7 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
   const double Kappa = 0.415;
   double Cmu = CMU;
 
-  double temps = mon_equation_->inconnue()->temps();
+  double temps = mon_equation_->inconnue().temps();
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   DoubleTab& visco_turb = la_viscosite_turbulente_->valeurs();
   DoubleVect& k = energie_cinetique_turb_->valeurs();
@@ -105,8 +105,8 @@ Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbu
 
 void Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_Sij2()
 {
-  const DoubleTab& vitesse = mon_equation_->inconnue()->valeurs();
-  Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, mon_equation_->inconnue().valeur());
+  const DoubleTab& vitesse = mon_equation_->inconnue().valeurs();
+  Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, mon_equation_->inconnue());
   const Domaine_Cl_VDF& domaine_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_.valeur());
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_VF_.valeur());
   const int nb_elem = domaine_VDF.nb_elem_tot();

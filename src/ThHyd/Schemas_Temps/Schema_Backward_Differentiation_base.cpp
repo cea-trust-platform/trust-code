@@ -53,7 +53,7 @@ Entree& Schema_Backward_Differentiation_base::readOn(Entree& s)
 
 double Schema_Backward_Differentiation_base::changer_temps(Equation_base& eqn, const double temps)
 {
-  eqn.inconnue()->Champ_base::changer_temps(temps);
+  eqn.inconnue().Champ_base::changer_temps(temps);
   return temps;
 }
 
@@ -64,7 +64,7 @@ void Schema_Backward_Differentiation_base::update_time_derivative(Equation_base&
 
 void Schema_Backward_Differentiation_base::mettre_a_jour_equation(Equation_base& eqn, const double temps)
 {
-  eqn.inconnue()->mettre_a_jour(temps);
+  eqn.inconnue().mettre_a_jour(temps);
 }
 
 void Schema_Backward_Differentiation_base::compute_coefficients(double time_step, const DoubleTab& times) const
@@ -80,7 +80,7 @@ void Schema_Backward_Differentiation_base::store_equation_parameters(Equation_ba
       if (sub_type(Navier_Stokes_std,eqn))
         {
           Navier_Stokes_std& navier_stokes = ref_cast(Navier_Stokes_std,eqn);
-          stored_parameters = navier_stokes.pression()->valeurs(); //store pressure at time tn
+          stored_parameters = navier_stokes.pression().valeurs(); //store pressure at time tn
         }
     }
 }
@@ -94,7 +94,7 @@ void Schema_Backward_Differentiation_base::modify_equation_parameters(Equation_b
         {
           Navier_Stokes_std& navier_stokes = ref_cast(Navier_Stokes_std,eqn);
 
-          DoubleTab& pressure = navier_stokes.pression()->valeurs(); //pressure at time tnplus1 that is to say P(n+1)
+          DoubleTab& pressure = navier_stokes.pression().valeurs(); //pressure at time tnplus1 that is to say P(n+1)
           DoubleTab  delta_pressure(pressure);
 
           delta_pressure -= stored_parameters; //contains P(n+1) - P(n)
@@ -119,14 +119,14 @@ void Schema_Backward_Differentiation_base::add_multi_timestep_data(const Equatio
   effective_time_step     = coefficients()[nb_valeurs_passees()+1] * time_step;
 
   //Modification due to present time and past times
-  DoubleTab dudt(eqn.inconnue()->valeurs());
+  DoubleTab dudt(eqn.inconnue().valeurs());
   DoubleTab tmp(dudt);
 
   dudt = 0.;
   for (i=0; i<nb_valeurs_passees()+1; ++i)
     {
       offset  = nb_valeurs_passees()-i + 1;//due to Initialiser_Champs() offset
-      tmp     = eqn.inconnue()->passe(offset);
+      tmp     = eqn.inconnue().passe(offset);
       tmp    *= coefficients()[i] ;
       dudt   += tmp; //past times and present time if i==nb_valeurs_passees()
     }

@@ -17,11 +17,12 @@
 #define Convection_Diffusion_Fluide_Dilatable_Proto_included
 
 #include <TRUSTTabs_forward.h>
-#include <Champ_Inc.h>
+#include <Interface_blocs.h>
 
 class Convection_Diffusion_Fluide_Dilatable_base;
 class Convection_Diffusion_std;
 class Fluide_Dilatable_base;
+class Champ_Inc_base;
 class Probleme_base;
 class Matrice_Morse;
 class Sortie;
@@ -36,7 +37,7 @@ public:
   // [ Vive les classes templates ... dommage !]
   static int Sauvegarder_WC(Sortie& os, const Convection_Diffusion_std& eq, const Fluide_Dilatable_base& fld);
   static int Reprendre_WC(Entree& is, double temps,Convection_Diffusion_std& eq, Fluide_Dilatable_base& fld,
-                          Champ_Inc& inco, Probleme_base& pb);
+                          Champ_Inc_base& inco, Probleme_base& pb);
 
   virtual ~Convection_Diffusion_Fluide_Dilatable_Proto() {}
 
@@ -52,7 +53,7 @@ protected:
   virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
   virtual bool is_thermal() const = 0;
   virtual bool is_generic() const = 0;
-  mutable Champ_Inc ch_unite_;
+  mutable OWN_PTR(Champ_Inc_base) ch_unite_;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_Proto_included */

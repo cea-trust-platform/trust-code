@@ -326,7 +326,7 @@ void Perte_Charge_VEF::completer()
 
 void Perte_Charge_VEF::associer_pb(const Probleme_base& pb)
 {
-  la_vitesse = ref_cast(Champ_P1NC,equation().inconnue().valeur());
+  la_vitesse = ref_cast(Champ_P1NC,equation().inconnue());
   le_fluide = ref_cast(Fluide_base,equation().milieu());
 }
 

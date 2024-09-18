@@ -59,13 +59,13 @@ void Echange_global_impose_turbulent::mettre_a_jour(double tps)
 
 int Echange_global_impose_turbulent::initialiser(double temps)
 {
-  h_.resize(0,domaine_Cl_dis().equation().inconnue()->valeurs().line_size());
+  h_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
   la_frontiere_dis->frontiere().creer_tableau_faces(h_);
 
-  h_grad_.resize(0,domaine_Cl_dis().equation().inconnue()->valeurs().line_size());
+  h_grad_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
   la_frontiere_dis->frontiere().creer_tableau_faces(h_grad_);
 
-  T_.resize(0,domaine_Cl_dis().equation().inconnue()->valeurs().line_size());
+  T_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
   la_frontiere_dis->frontiere().creer_tableau_faces(T_);
 
   correlation_loi_paroi_ = domaine_Cl_dis().equation().probleme().get_correlation("Loi_paroi");

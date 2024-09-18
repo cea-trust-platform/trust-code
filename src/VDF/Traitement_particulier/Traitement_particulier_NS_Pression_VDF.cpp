@@ -79,7 +79,7 @@ Entree& Traitement_particulier_NS_Pression_VDF::lire(Entree& is)
             case 0 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Domaine_dis_base& zdis=mon_equation->inconnue()->domaine_dis_base();
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
                 const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_elem = domaine_VDF.nb_elem() ;
@@ -135,16 +135,16 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i;
   int nb_face = zvdf.nb_faces();
-  Champ_Inc gradient_P;
-  Champ_Inc la_pression = mon_equation->pression();
+  OWN_PTR(Champ_Inc_base) gradient_P;
+  throw; // ca passe jamais avec l'implementation ...
   Operateur_Div divergence = mon_equation->operateur_divergence();
   Operateur_Grad gradient = mon_equation->operateur_gradient();
   SolveurSys solveur_pression_ = mon_equation->solveur_pression();
 
-  DoubleTab& pression=la_pression->valeurs();
+  DoubleTab& pression=mon_equation->pression().valeurs();
   DoubleTrav inc_pre(pression);
   DoubleTrav secmem(pression);
-  gradient.calculer(la_pression->valeurs(),gradient_P->valeurs());
+  gradient.calculer(mon_equation->pression().valeurs(),gradient_P->valeurs());
 
   //on veut BM-1Bt(spi*Pression)
   DoubleTab& grad=gradient_P->valeurs();

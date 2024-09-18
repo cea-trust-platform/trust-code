@@ -16,10 +16,11 @@
 #ifndef Operateur_negligeable_included
 #define Operateur_negligeable_included
 
-
-
-#include <Champ_Inc.h>
 #include <TRUSTTab.h>
+
+class Domaine_Cl_dis_base;
+class Domaine_dis_base;
+class Champ_Inc_base;
 
 /*! @brief Classe Opnegligeable Cette classe definit l'interface d'un operateur negligeable
  *
@@ -39,7 +40,7 @@ public :
   inline void mettre_a_jour(double );
 
 protected :
-  inline void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&);
+  inline void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&);
 };
 
 
@@ -84,9 +85,9 @@ inline void Operateur_negligeable::mettre_a_jour(double )
  *
  * @param (Domaine_dis_base&)
  * @param (Domaine_Cl_dis_base&)
- * @param (Champ_Inc&)
+ * @param (Champ_Inc_base&)
  */
-inline void Operateur_negligeable::associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&)
+inline void Operateur_negligeable::associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&)
 {
 }
 #endif

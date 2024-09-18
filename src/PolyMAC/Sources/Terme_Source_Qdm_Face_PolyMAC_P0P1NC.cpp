@@ -35,13 +35,13 @@ Entree& Terme_Source_Qdm_Face_PolyMAC_P0P1NC::readOn(Entree& s) { return Terme_S
 void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
-  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue());
   const DoubleTab& vals = la_source->valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &rho = equation().milieu().masse_volumique()->passe(), &nf = domaine.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(),
                     &fs = domaine.face_surfaces();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
-  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot(), n, N = equation().inconnue()->valeurs().line_size(), d,
+  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d,
                D = dimension, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); //en PolyMAC_P0P1NC V1, on calcule aux CL
 
   /* contributions aux faces (par chaque voisin), aux elems */

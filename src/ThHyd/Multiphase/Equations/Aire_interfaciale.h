@@ -33,8 +33,8 @@ public :
   Aire_interfaciale();
 
   void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const override { return l_inco_ch_; }
-  inline Champ_Inc& inconnue() override { return l_inco_ch_; }
+  inline const Champ_Inc_base& inconnue() const override { return l_inco_ch_; }
+  inline Champ_Inc_base& inconnue() override { return l_inco_ch_; }
   void discretiser() override;
   const Milieu_base& milieu() const override;
   Milieu_base& milieu() override;
@@ -54,7 +54,7 @@ public :
   const Motcle& domaine_application() const override;
 
 protected :
-  Champ_Inc l_inco_ch_;
+  OWN_PTR(Champ_Inc_base) l_inco_ch_;
   Champ_Fonc diametre_bulles_;
   REF(Fluide_base) le_fluide_;
 

@@ -77,7 +77,7 @@ void Sortie_libre_pression_moyenne_imposee::completer()
 void Sortie_libre_pression_moyenne_imposee::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
-  const DoubleTab& tab_P = ref_cast(Navier_Stokes_std,mon_dom_cl_dis->equation()).pression()->valeurs();
+  const DoubleTab& tab_P = ref_cast(Navier_Stokes_std,mon_dom_cl_dis->equation()).pression().valeurs();
 
   int face, elem, facegl;
   DoubleTab& Pimp = le_champ_front->valeurs();

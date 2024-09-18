@@ -54,7 +54,7 @@ int Op_Diff_EF_base::impr(Sortie& os) const
 
 void Op_Diff_EF_base::associer(const Domaine_dis_base& domaine_dis,
                                const Domaine_Cl_dis_base& domaine_cl_dis,
-                               const Champ_Inc& ch_transporte)
+                               const Champ_Inc_base& ch_transporte)
 {
 
   const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis);

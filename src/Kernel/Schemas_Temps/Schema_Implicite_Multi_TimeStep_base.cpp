@@ -140,7 +140,7 @@ void Schema_Implicite_Multi_TimeStep_base::Initialiser_Champs(Probleme_base& pb)
         {
           for (j=nb_valeurs_passees(); j>-1; j--)
             {
-              pb.equation(i).inconnue()->passe(j+1) = pb.equation(i).inconnue()->passe(j);
+              pb.equation(i).inconnue().passe(j+1) = pb.equation(i).inconnue().passe(j);
             }
         }
     }
@@ -171,8 +171,8 @@ int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
         ii = i;
 
       Equation_base& eqn               = pb.equation(ii);
-      DoubleTab&     present           = eqn.inconnue()->valeurs();
-      DoubleTab&     futur             = eqn.inconnue()->futur();
+      DoubleTab&     present           = eqn.inconnue().valeurs();
+      DoubleTab&     futur             = eqn.inconnue().futur();
       double         temps             = temps_courant_+dt_;
 
       DoubleTab      stored_parameters;
@@ -211,9 +211,9 @@ void Schema_Implicite_Multi_TimeStep_base::test_stationnaire(Probleme_base& pb)
   for(i=0; i<pb.nombre_d_equations(); i++)
     {
       // treatement of time convergency
-      DoubleTab& passe = pb.equation(i).inconnue()->passe();
-      DoubleTab& present = pb.equation(i).inconnue()->valeurs();
-      DoubleTab& futur = pb.equation(i).inconnue()->futur();
+      DoubleTab& passe = pb.equation(i).inconnue().passe();
+      DoubleTab& present = pb.equation(i).inconnue().valeurs();
+      DoubleTab& futur = pb.equation(i).inconnue().futur();
 
       futur    = present;
       pb.equation(i).domaine_Cl_dis().imposer_cond_lim(pb.equation(i).inconnue(),temps_courant()+pas_de_temps());
@@ -223,7 +223,7 @@ void Schema_Implicite_Multi_TimeStep_base::test_stationnaire(Probleme_base& pb)
       update_time_derivative(pb.equation(i),present);
       for (j=0; j<nb_valeurs_passees(); j++)
         {
-          pb.equation(i).inconnue()->passe(j) = pb.equation(i).inconnue()->passe(j+1);
+          pb.equation(i).inconnue().passe(j) = pb.equation(i).inconnue().passe(j+1);
         }
     }
 }
@@ -236,7 +236,7 @@ static void Implicite_Multi_TimeStep_recommencer_pb(int nb_valeurs_passees, Prob
     {
       for (j=0; j<nb_valeurs_passees; j++)
         {
-          pb.equation(i).inconnue()->passe(j) = pb.equation(i).inconnue()->passe(j+1);
+          pb.equation(i).inconnue().passe(j) = pb.equation(i).inconnue().passe(j+1);
         }
     }
 }
@@ -399,10 +399,10 @@ void Schema_Implicite_Multi_TimeStep_base::ajouter_inertie(Matrice_Base& mat_mor
       for (i=0; i<nb_valeurs_passees(); ++i)
         {
           offset   =  nb_valeurs_passees()-i;
-          times[i] =  eqn_bis.inconnue()->recuperer_temps_passe(offset); //past time
+          times[i] =  eqn_bis.inconnue().recuperer_temps_passe(offset); //past time
         }
-      times[nb_valeurs_passees()]   = eqn_bis.inconnue()->recuperer_temps_futur(0); //present time
-      times[nb_valeurs_passees()+1] = eqn_bis.inconnue()->recuperer_temps_futur(1); //future time
+      times[nb_valeurs_passees()]   = eqn_bis.inconnue().recuperer_temps_futur(0); //present time
+      times[nb_valeurs_passees()+1] = eqn_bis.inconnue().recuperer_temps_futur(1); //future time
 
       compute_coefficients(time_step,times);
       add_multi_timestep_data(eqn, mat_morse, secmem);
@@ -419,9 +419,9 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
   //Necessary because of equations like Transport_K_Eps which must be time incremented but
   //are not equations of the solved problem and therefore are not seen by Schema_Implicite_Multi_TimeStep_base::iterateTimeStep
 
-  DoubleTab& passe           = eqn.inconnue()->passe();
-  DoubleTab& present         = eqn.inconnue()->valeurs();
-  DoubleTab& futur           = eqn.inconnue()->futur();
+  DoubleTab& passe           = eqn.inconnue().passe();
+  DoubleTab& present         = eqn.inconnue().valeurs();
+  DoubleTab& futur           = eqn.inconnue().futur();
   int        compteur        = 0, ok = 1;
   int        i               = 0;
   bool       convergence_eqn = false;
@@ -435,7 +435,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
     {
       for (i=nb_valeurs_passees(); i>-1; i--)
         {
-          eqn.inconnue()->passe(i+1) = eqn.inconnue()->passe(i);
+          eqn.inconnue().passe(i+1) = eqn.inconnue().passe(i);
         }
     }
 
@@ -470,7 +470,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
   //Update time data
   for (i=0; i<nb_valeurs_passees(); i++)
     {
-      eqn.inconnue()->passe(i) = eqn.inconnue()->passe(i+1);
+      eqn.inconnue().passe(i) = eqn.inconnue().passe(i+1);
     }
 
   return 1;

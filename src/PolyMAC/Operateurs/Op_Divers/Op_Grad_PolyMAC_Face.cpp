@@ -32,7 +32,7 @@ Sortie& Op_Grad_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je
 
 Entree& Op_Grad_PolyMAC_Face::readOn(Entree& s) { return s; }
 
-void Op_Grad_PolyMAC_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
+void Op_Grad_PolyMAC_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc_base&)
 {
   const Domaine_PolyMAC& zPolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC, domaine_dis);
   const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);

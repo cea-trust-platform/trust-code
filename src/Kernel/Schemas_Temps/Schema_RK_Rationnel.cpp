@@ -44,7 +44,7 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 
   const double b1 = 2.0, b2 = -1, c2 = 0.5;
 
-  DoubleTab& present = eqn.inconnue()->valeurs(), &futur = eqn.inconnue()->futur();
+  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
 
   // g1=futur=f(y0)
   DoubleTab g1(present), g2(present); // just for initializing the array structure ...

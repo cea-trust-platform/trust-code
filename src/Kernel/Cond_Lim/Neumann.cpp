@@ -13,6 +13,8 @@
 *
 *****************************************************************************/
 
+#include <Frontiere_dis_base.h>
+#include <Front_VF.h>
 #include <Neumann.h>
 
 Implemente_base(Neumann, "Neumann", Cond_lim_base);

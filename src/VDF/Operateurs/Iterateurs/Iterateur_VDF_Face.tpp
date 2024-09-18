@@ -25,8 +25,8 @@ template<class _TYPE_>
 void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
-  assert(op_base->equation().inconnue()->valeurs().nb_dim() < 3);
-  const int ncomp = op_base->equation().inconnue()->valeurs().line_size();
+  assert(op_base->equation().inconnue().valeurs().nb_dim() < 3);
+  const int ncomp = op_base->equation().inconnue().valeurs().line_size();
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   tab_flux_bords.resize(le_dom->nb_faces_bord(), dimension);
   tab_flux_bords = 0.;

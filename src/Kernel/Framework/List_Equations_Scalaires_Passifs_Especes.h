@@ -60,8 +60,8 @@ public :
   const Operateur& operateur(int) const override { throw; }
   Operateur& operateur(int) override { throw; }
 
-  const Champ_Inc& inconnue() const override { throw; }
-  Champ_Inc& inconnue() override { throw; }
+  const Champ_Inc_base& inconnue() const override { throw; }
+  Champ_Inc_base& inconnue() override { throw; }
 
 protected :
   LIST(OWN_PTR(Equation_base)) list_eq;

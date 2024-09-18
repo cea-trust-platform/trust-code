@@ -230,7 +230,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
   /*
     Cerr << "*************************************************" << finl;
     Cerr << "mil = " << mil.masse_volumique().valeur()(0,0) << finl;
-    Cerr << "temps = " << equ.inconnue()->temps() << finl;
+    Cerr << "temps = " << equ.inconnue().temps() << finl;
     Cerr << "dt = " << equ.schema_temps().pas_de_temps() << finl;
     Cerr << "visco cinematique = " << ref_cast(Fluide_base,mil).viscosite_cinematique().valeur()(0,0) << finl;
     Cerr << "visco dynamique = " << ref_cast(Fluide_base,mil).viscosite_dynamique().valeur()(0,0) << finl;

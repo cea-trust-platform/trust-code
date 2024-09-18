@@ -37,7 +37,7 @@ class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base, public Op_Diff_Dift_VDF<O
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
 public:
   Op_Diff_VDF_Face();
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_Face>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) override { associer_diffusivite_impl<Eval_Diff_VDF_Face>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Diff_VDF_Face>(); }
   inline void mettre_a_jour(double ) override { mettre_a_jour_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_Face>(); }

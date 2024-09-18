@@ -239,7 +239,7 @@ void cl_timp::complement(Nom& ajout)
       if (rayo)
         ajout += Nrayo;
       Nom cl(" h_imp champ_front_uniforme ");
-      const int N = mon_equation->inconnue()->valeurs().dimension(1);
+      const int N = mon_equation->inconnue().valeurs().dimension(1);
       cl += N;
       for (int n = 0; n < N; n++) cl += " 1e10";
       cl += " t_ext";
@@ -275,7 +275,7 @@ void paroi_contact::complement(Nom& ajout)
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord + " ";
-      ajout += mon_equation->inconnue()->le_nom() + " 1.e10";
+      ajout += mon_equation->inconnue().le_nom() + " 1.e10";
     }
   else
     {
@@ -321,7 +321,7 @@ void paroi_contact_rayo::complement(Nom& ajout)
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord + " ";
-      ajout += mon_equation->inconnue()->le_nom() + " 1.e10";
+      ajout += mon_equation->inconnue().le_nom() + " 1.e10";
     }
   else
     {

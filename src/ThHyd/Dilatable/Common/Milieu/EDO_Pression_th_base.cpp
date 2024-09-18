@@ -43,7 +43,7 @@ void EDO_Pression_th_base::associer_domaines(const Domaine_dis_base& dds, const 
 
 void EDO_Pression_th_base::completer()
 {
-  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur()->valeurs();
+  const DoubleTab& tab_ICh = le_fluide_->inco_chaleur().valeurs();
   const double Pth = le_fluide_->pression_th();
 
   if (Pth > -1.)

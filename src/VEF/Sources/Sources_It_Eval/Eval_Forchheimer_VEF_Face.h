@@ -18,8 +18,8 @@
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Modele_Permeabilite_base.h>
+#include <Champ_Inc_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
 
 class Eval_Forchheimer_VEF_Face: public Evaluateur_Source_VEF_Face
 {
@@ -36,7 +36,7 @@ public:
   inline void calculer_terme_source_non_standard(const int num_face, Type_Double& source) const { calculer_terme_source(num_face, source, volumes_entrelaces_Cl); }
 
   inline void setCf(double c) { Cf_ = c; }
-  inline void associer(const Champ_Inc& v) { vitesse_ = v; }
+  inline void associer(const Champ_Inc_base& v) { vitesse_ = v; }
 
   inline void setPorosite(double p) { porosite_ = p; }
 
@@ -47,7 +47,7 @@ private:
   inline void calculer_terme_source(int , Type_Double& , const DoubleVect&) const;
 
   double Cf_, porosite_;
-  REF(Champ_Inc) vitesse_;
+  REF(Champ_Inc_base) vitesse_;
 };
 
 // Compute -Cf.psi.U.|U|/sqrt(K).dvol
@@ -57,7 +57,7 @@ inline void Eval_Forchheimer_VEF_Face::calculer_terme_source(int num_face, Type_
   int size = source.size_array();
   for (int i = 0; i < size; i++)
     {
-      double U = vitesse_->valeur().valeurs()(num_face, i);
+      double U = vitesse_->valeurs()(num_face, i);
       source[i] = -Cf_ / sqrt(modK_->getK(porosite_)) * volumes[num_face] * porosite_surf[num_face] * std::fabs(U) * U;
     }
 }

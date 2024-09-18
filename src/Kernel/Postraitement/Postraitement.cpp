@@ -1054,8 +1054,8 @@ int Postraitement::lire_champs_a_postraiter(Entree& s)
                   for (int i=0; i<nb_eq; i++)
                     {
                       int nb_morceaux = probleme().equation(i).nombre_d_operateurs_tot();
-                      const Champ_Inc& ch_inco = probleme().equation(i).inconnue();
-                      int nb_compo = ch_inco->nb_comp();
+                      const Champ_Inc_base& ch_inco = probleme().equation(i).inconnue();
+                      int nb_compo = ch_inco.nb_comp();
 
                       int compo;
                       for (int j=0; j<nb_morceaux; j++)
@@ -2213,8 +2213,8 @@ void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& opt
   Champ_Generique champ;
   Nom ajout("");
   Nom nom_champ, nom_champ_a_post;
-  const Champ_Inc& ch_inco = mon_probleme->equation(num_eq).inconnue();
-  const Motcle& nom_inco = ch_inco->le_nom();
+  const Champ_Inc_base& ch_inco = mon_probleme->equation(num_eq).inconnue();
+  const Motcle& nom_inco = ch_inco.le_nom();
   Nom nume(num_morceau);
 
   ajout = "Morceau_Equation { type ";

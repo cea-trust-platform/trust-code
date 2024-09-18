@@ -32,7 +32,7 @@
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Inc.h>
+
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_EF.h>
@@ -59,7 +59,7 @@ Sortie& EF_discretisation::printOn(Sortie& s) const { return s; }
  *
  */
 void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt, double temps,
-                                          Champ_Inc& champ, const Nom& sous_type) const
+                                          OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
 {
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 
@@ -335,7 +335,7 @@ void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la vorticite " << finl;
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
@@ -343,7 +343,7 @@ void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vites
   if (sub_type(Tri_EF,domaine_EF.type_elem()) || sub_type(Segment_EF, domaine_EF.type_elem()) || sub_type(Tetra_EF, domaine_EF.type_elem()))
     {
       ch.typer("Rotationnel_Champ_P1_EF");
-      const Champ_P1_EF& vit = ref_cast(Champ_P1_EF, ch_vitesse.valeur());
+      const Champ_P1_EF& vit = ref_cast(Champ_P1_EF, ch_vitesse);
       Rotationnel_Champ_P1_EF& ch_W = ref_cast(Rotationnel_Champ_P1_EF, ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_EF);
       ch_W.associer_champ(vit);
@@ -359,12 +359,12 @@ void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vites
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse->temps());
+      ch_W.changer_temps(ch_vitesse.temps());
     }
   else if (sub_type(Quadri_EF,domaine_EF.type_elem()) || sub_type(Hexa_EF, domaine_EF.type_elem()))
     {
       ch.typer("Rotationnel_Champ_Q1_EF");
-      const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse.valeur());
+      const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse);
       Rotationnel_Champ_Q1_EF& ch_W = ref_cast(Rotationnel_Champ_Q1_EF, ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_EF);
       ch_W.associer_champ(vit);
@@ -380,7 +380,7 @@ void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vites
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse->temps());
+      ch_W.changer_temps(ch_vitesse.temps());
     }
   else
     {
@@ -389,12 +389,12 @@ void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vites
     }
 }
 
-void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
-  if (sub_type(Champ_P1_EF, ch_vitesse.valeur()))
+  if (sub_type(Champ_P1_EF, ch_vitesse))
     {
       ch.typer("Rotationnel_Champ_P1_EF");
-      const Champ_P1_EF& vit = ref_cast(Champ_P1_EF, ch_vitesse.valeur());
+      const Champ_P1_EF& vit = ref_cast(Champ_P1_EF, ch_vitesse);
       const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, vit.domaine_dis_base());
       Rotationnel_Champ_P1_EF& ch_W = ref_cast(Rotationnel_Champ_P1_EF, ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_EF);
@@ -413,10 +413,10 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, cons
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
     }
-  else if (sub_type(Champ_Q1_EF, ch_vitesse.valeur()))
+  else if (sub_type(Champ_Q1_EF, ch_vitesse))
     {
       ch.typer("Rotationnel_Champ_Q1_EF");
-      const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse.valeur());
+      const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse);
       const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, vit.domaine_dis_base());
       Rotationnel_Champ_Q1_EF& ch_W = ref_cast(Rotationnel_Champ_Q1_EF, ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_EF);
@@ -446,17 +446,17 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, cons
  *
  * @param (Domaine_dis_base&) domaine a discretiser
  * @param (Fluide_Ostwald&) fluide a discretiser
- * @param (Champ_Inc&) ch_vitesse
- * @param (Champ_Inc&) temperature
+ * @param (Champ_Inc_base&) ch_vitesse
+ * @param (Champ_Inc_base&) temperature
  */
-void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper) const
+void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc_base& ch_temper) const
 {
 
 #ifdef dependance
   Cerr << "Discretisation EF du fluide_Ostwald" << finl;
   const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z);
-  const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
-  const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
+  const Champ_Inc_base& ch_vitesse = eqn_hydr.inconnue();
+  const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse);
 
 
 
@@ -483,13 +483,13 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_ba
 #endif
 }
 
-void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
   // mais on ne s'en sert pas!!!
   Cerr << "Discretisation du critere Q " << finl;
-  const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
+  const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse);
   const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z);
   ch.typer("Critere_Q_Champ_P1_EF");
   Critere_Q_Champ_P1_EF& ch_cQ=ref_cast(Critere_Q_Champ_P1_EF,ch.valeur());
@@ -499,14 +499,14 @@ void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_di
   ch_cQ.fixer_nb_comp(1);
   ch_cQ.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_cQ.fixer_unite("s-2");
-  ch_cQ.changer_temps(ch_vitesse->temps());
+  ch_cQ.changer_temps(ch_vitesse.temps());
 #endif
 }
 
-void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de y_plus" << finl;
-  const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse.valeur());
+  const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse);
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
   const Domaine_Cl_EF& domaine_cl_EF = ref_cast(Domaine_Cl_EF, zcl);
   ch.typer("Y_plus_Champ_Q1");
@@ -518,10 +518,10 @@ void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_b
   ch_yp.fixer_nb_comp(1);
   ch_yp.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_yp.fixer_unite("adimensionnel");
-  ch_yp.changer_temps(ch_vitesse->temps());
+  ch_yp.changer_temps(ch_vitesse.temps());
 }
 
-void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
@@ -541,7 +541,7 @@ void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_b
 #endif
 }
 
-void EF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void EF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;

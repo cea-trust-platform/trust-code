@@ -32,10 +32,10 @@ Entree& Masse_VDF_base::readOn(Entree& s) { return s ; }
 
 void Masse_VDF_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inc = equation().inconnue()->le_nom().getString();
+  const std::string& nom_inc = equation().inconnue().le_nom().getString();
   if (!matrices.count(nom_inc)) return; //rien a faire
   Matrice_Morse& mat = *matrices.at(nom_inc);
-  const DoubleTab& champ_inconnue = equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
   int size = champ_inconnue.dimension_tot(0) * champ_inconnue.line_size();
 
   IntTab indice(size, 2);
@@ -48,13 +48,13 @@ void Masse_VDF_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_
 
 void Masse_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  const std::string& nom_inco = equation().inconnue()->le_nom().getString();
-  const DoubleTab& passe = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue()->passe();
-  const DoubleTab& inco = equation().inconnue()->valeurs();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const DoubleTab& passe = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().passe();
+  const DoubleTab& inco = equation().inconnue().valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
   DoubleTrav diag(inco);
 
-  const int sz = equation().inconnue()->valeurs().dimension_tot(0) * diag.line_size();
+  const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
   diag = 1.;
   appliquer(diag); // M-1
   int prems = 0;

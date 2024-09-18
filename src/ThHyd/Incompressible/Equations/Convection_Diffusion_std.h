@@ -37,7 +37,7 @@ class Champ_Inc_base;
  *          certains termes de l'equation (le terme diffusif,
  *          le terme convectif,tel ou tel terme source).
  *
- * @sa Equation_base, Classe abstraite, Methodes abstraites:, Entree& lire(const Motcle&, Entree&), const Champ_Inc& inconnue() const, Champ_Inc& inconnue()
+ * @sa Equation_base, Classe abstraite, Methodes abstraites:, Entree& lire(const Motcle&, Entree&), const Champ_Inc_base& inconnue() const, Champ_Inc_base& inconnue()
  */
 class Convection_Diffusion_std : public Equation_base
 {
@@ -52,8 +52,8 @@ public :
   Operateur& operateur(int) override;
   inline void associer_vitesse(const Champ_base& );
   inline const Champ_Inc_base& vitesse_transportante() const;
-  const Champ_Inc& inconnue() const override =0;
-  Champ_Inc& inconnue() override =0;
+  const Champ_Inc_base& inconnue() const override =0;
+  Champ_Inc_base& inconnue() override =0;
   virtual const Champ_Don& diffusivite_pour_transport() const;
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
   virtual const Champ_base& vitesse_pour_transport() const;
@@ -71,7 +71,7 @@ protected :
 
 /*! @brief Renvoie une reference sur le champ representant la vitesse transportante.
  *
- * @return (Champ_Inc&) le champ representant la vitesse transportante
+ * @return (Champ_Inc_base&) le champ representant la vitesse transportante
  */
 inline const Champ_Inc_base& Convection_Diffusion_std::vitesse_transportante() const
 {
@@ -81,7 +81,7 @@ inline const Champ_Inc_base& Convection_Diffusion_std::vitesse_transportante() c
 
 /*! @brief Associe la vitesse transportante a l'equation.
  *
- * @param (Champ_Inc& vit) le champ a affecter a la vitesse transportante
+ * @param (Champ_Inc_base& vit) le champ a affecter a la vitesse transportante
  */
 inline void Convection_Diffusion_std::associer_vitesse(const Champ_base& vit)
 {

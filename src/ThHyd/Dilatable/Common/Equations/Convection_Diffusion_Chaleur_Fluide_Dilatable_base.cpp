@@ -54,7 +54,7 @@ const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_po
 {
   const Probleme_base& pb = probleme();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
-  const Champ_Inc& vitessetransportante = eqn_hydr.rho_la_vitesse(); // rho * u
+  const Champ_Inc_base& vitessetransportante = eqn_hydr.rho_la_vitesse(); // rho * u
   return vitessetransportante;
 }
 
@@ -87,7 +87,7 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler_blocs_avec_in
   schema_temps().ajouter_blocs(matrices, secmem, *this);
   if (!discretisation().is_polymac_family())
     {
-      const std::string& nom_inco = inconnue()->le_nom().getString();
+      const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
       modifier_pour_Cl(*mat,secmem);
     }
@@ -107,7 +107,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
     {
       Nom ident_Pth("pression_thermo");
       ident_Pth += probleme().domaine().le_nom();
-      double temps = inconnue()->temps();
+      double temps = inconnue().temps();
       ident_Pth += Nom(temps,"%e");
       os << ident_Pth<<finl;
       os << "constante"<<finl;

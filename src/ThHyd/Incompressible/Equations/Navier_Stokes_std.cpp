@@ -311,7 +311,7 @@ void Navier_Stokes_std::completer()
       Cerr << "Centrifuge force term creation for Axi case."<< finl;
       Nom type_so = "Force_Centrifuge_";
       Nom disc = discretisation().que_suis_je();
-      Nom champ = inconnue()->que_suis_je();
+      Nom champ = inconnue().que_suis_je();
       champ.suffix("Champ_");
       type_so+=disc;
       type_so+="_";
@@ -584,20 +584,20 @@ const Operateur_Grad& Navier_Stokes_std::operateur_gradient() const
 
 /*! @brief Renvoie la vitesse (champ inconnue de l'equation) (version const)
  *
- * @return (Champ_Inc&) le champ inconnue representant la vitesse
+ * @return (Champ_Inc_base&) le champ inconnue representant la vitesse
  */
-const Champ_Inc& Navier_Stokes_std::inconnue() const
+const Champ_Inc_base& Navier_Stokes_std::inconnue() const
 {
-  return la_vitesse;
+  return la_vitesse.valeur();
 }
 
 /*! @brief Renvoie la vitesse (champ inconnue de l'equation)
  *
- * @return (Champ_Inc&) le champ inconnue representant la vitesse
+ * @return (Champ_Inc_base&) le champ inconnue representant la vitesse
  */
-Champ_Inc& Navier_Stokes_std::inconnue()
+Champ_Inc_base& Navier_Stokes_std::inconnue()
 {
-  return la_vitesse;
+  return la_vitesse.valeur();
 }
 
 /*! @brief Renvoie le solveur en pression (version const)
@@ -658,14 +658,14 @@ Entree& Navier_Stokes_std::lire_cond_init(Entree& is)
           Champ_Don ch_init;
           is >> ch_init;
           verifie_ch_init_nb_comp(inconnue(),ch_init->nb_comp());
-          inconnue()->affecter(ch_init.valeur());
+          inconnue().affecter(ch_init.valeur());
         }
       else if (ind==2)
         {
           Champ_Don ch_init;
           is >> ch_init;
           verifie_ch_init_nb_comp(pression(),ch_init->nb_comp());
-          pression()->affecter(ch_init.valeur());
+          pression().affecter(ch_init.valeur());
         }
       else if (ind==-1)
         {
@@ -1119,8 +1119,8 @@ void Navier_Stokes_std::abortTimeStep()
   // On reprend la pression du debut du pas de temps
   // Utile si on reprend le pas de temps parce que la pression a diverge (sinon tres mauvaise precision)
   // et si on est en Piso (suppose pression juste au debut du pas de temps).
-  pression()->valeurs()=P_n;
-  //pression()->valeurs()=0;
+  pression().valeurs()=P_n;
+  //pression().valeurs()=0;
   Equation_base::abortTimeStep();
 }
 
@@ -1128,13 +1128,13 @@ void Navier_Stokes_std::abortTimeStep()
  */
 void Navier_Stokes_std::resetTime(double time)
 {
-  pression()->resetTime(time);
+  pression().resetTime(time);
   Equation_base::resetTime(time);
 }
 
 bool Navier_Stokes_std::initTimeStep(double dt)
 {
-  P_n=pression()->valeurs();
+  P_n=pression().valeurs();
 
   // needed by ALE method and we don't want domaine_ale object in TRUST
   update_pressure_matrix( );
@@ -1146,7 +1146,7 @@ bool Navier_Stokes_std::initTimeStep(double dt)
   const int diff_implicite = sch_tps.diffusion_implicite();
   if (diff_implicite)
     {
-      const DoubleTab& tab_vitesse = inconnue()->valeurs();
+      const DoubleTab& tab_vitesse = inconnue().valeurs();
       int size = tab_vitesse.nb_dim()==1?1:tab_vitesse.dimension(1);
       DoubleVect max_vit;
       max_vit.resize(size);
@@ -1182,14 +1182,14 @@ bool Navier_Stokes_std::initTimeStep(double dt)
   double ddt = Equation_base::initTimeStep(dt);
 
   for (int i=1; i<=sch_tps.nb_valeurs_futures(); i++)
-    if (i <= pression()->nb_valeurs_temporelles())
+    if (i <= pression().nb_valeurs_temporelles())
       {
         double tps=sch_tps.temps_futur(i);
         // Mise a jour du temps dans les champs de pression
-        pression()->changer_temps_futur(tps,i);
-        pression_pa()->changer_temps_futur(tps,i);
-        pression()->futur(i)=pression()->valeurs();
-        pression_pa()->futur(i)=pression_pa()->valeurs();
+        pression().changer_temps_futur(tps,i);
+        pression_pa().changer_temps_futur(tps,i);
+        pression().futur(i)=pression().valeurs();
+        pression_pa().futur(i)=pression_pa().valeurs();
       }
 
   if ( is_IBM() ) initTimeStep_IBM(ddt);
@@ -1221,7 +1221,7 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
   // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho))
     Pa *= rho.valeurs()(0,0);
-  la_pression_en_pa->mettre_a_jour(pression()->temps());
+  la_pression_en_pa->mettre_a_jour(pression().temps());
 }
 
 /*! @brief Appelle Equation_base::sauvegarder(Sortie&) et sauvegarde la pression sur un flot de sortie.
@@ -1721,7 +1721,7 @@ DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)
           Operateur_base& op=operateur(i).l_op_base();
           // If matrix not build or matrix time dependant:
           if(!op.get_matrice().non_nul() || !sys_invariant_)
-            construire_matrice_implicite(op, inconnue()->valeurs(), solv_masse(), dt);
+            construire_matrice_implicite(op, inconnue().valeurs(), solv_masse(), dt);
 
           if(op.get_decal_temps()==1)
             {
@@ -1877,7 +1877,7 @@ void Navier_Stokes_std::sauver() const
     le_traitement_particulier->sauver_stat();
 }
 
-const Champ_Inc& Navier_Stokes_std::rho_la_vitesse() const
+const Champ_Inc_base& Navier_Stokes_std::rho_la_vitesse() const
 {
   Cerr<<" Navier_Stokes_std::rho_la_vitesse() must be overloaded "<<finl;
   assert(0);

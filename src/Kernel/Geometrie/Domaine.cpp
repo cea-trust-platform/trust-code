@@ -36,6 +36,7 @@
 #include <Interprete_bloc.h>
 #include <Extraire_surface.h>
 #include <MD_Vector_std.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable_sans_constructeur_32_64( Domaine_32_64, "Domaine", Domaine_base );
 // XD domaine objet_u domaine -1 Keyword to create a domain.

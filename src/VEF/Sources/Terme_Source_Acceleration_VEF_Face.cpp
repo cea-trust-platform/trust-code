@@ -233,11 +233,9 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
  *
  * @param (v_faces_stockage) tableau ou stocker le resultat s'il y a des calculs a faire. En vef, on ne s'en sert pas
  */
-const DoubleTab& Terme_Source_Acceleration_VEF_Face::calculer_vitesse_faces(
-  DoubleTab& v_faces_stockage) const
+const DoubleTab& Terme_Source_Acceleration_VEF_Face::calculer_vitesse_faces(DoubleTab& v_faces_stockage) const
 {
-  const Champ_Inc& v_faces = get_eq_hydraulique().inconnue();
-  return v_faces->valeurs();
+  return get_eq_hydraulique().inconnue().valeurs();
 }
 
 /*! @brief Associe le champ de masse volumique=> Le terme source calcule sera alors homogene a d/dt(integrale(rho*v)).

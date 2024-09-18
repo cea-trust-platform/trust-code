@@ -41,7 +41,7 @@ const Domaine_VEF& Op_Grad_VEF_P1B_Face::domaine_vef() const
   return ref_cast(Domaine_VEF, le_dom_vef.valeur());
 }
 
-void Op_Grad_VEF_P1B_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
+void Op_Grad_VEF_P1B_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc_base&)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
@@ -684,7 +684,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   //const IntTab& som_elem=le_dom_vef->domaine().les_elems();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, equation());
-  const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression_pa().valeur());
+  const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression_pa());
   // Si on filtre:
   la_pression_P1B.filtrage(domaine_VEF, la_pression_P1B);
   const DoubleVect& pression_P1B = la_pression_P1B.champ_filtre();

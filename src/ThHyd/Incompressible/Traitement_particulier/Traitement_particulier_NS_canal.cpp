@@ -352,7 +352,7 @@ void Traitement_particulier_NS_canal::reprendre_stat_canal(DoubleTab& val, const
 
 void Traitement_particulier_NS_canal::sauver_stat() const
 {
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
 
   if (je_suis_maitre() && (tps>=temps_deb) && (tps<=temps_fin) )
     {
@@ -372,7 +372,7 @@ void Traitement_particulier_NS_canal::sauver_stat() const
 
 void Traitement_particulier_NS_canal::sauver_stat_canal(const DoubleTab& val, const Nom& fichier) const
 {
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   int NN,Nv,Np;
   NN=val.dimension(0);
   Nv=val.dimension(1);
@@ -468,7 +468,7 @@ void Traitement_particulier_NS_canal::post_traitement_particulier()
   // Calcul des Moyennes temporelles
   //////////////////////////////////////////////////////////////////
 
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
 
   if(je_suis_maitre())
     {
@@ -733,7 +733,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
   const Domaine_Cl_dis_base& domaine_Cl_dis_base = ref_cast(Domaine_Cl_dis_base,eqn.domaine_Cl_dis());
   const Conds_lim& les_cl                  = domaine_Cl_dis_base.les_conditions_limites();
   const Domaine_VF& domaine_VF                   = ref_cast(Domaine_VF,eqn.domaine_dis());
-  double tps                               = mon_equation->inconnue()->temps();
+  double tps                               = mon_equation->inconnue().temps();
 
   double nb_pas_dt=mon_equation->schema_temps().nb_pas_dt();
   int reprise = mon_equation->probleme().reprise_effectuee();
@@ -1155,7 +1155,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu(const
 {
   SFichier fic (fichier);
 
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   double u,v,wl,u2,v2,w2,uv,uw,vw,rho,mu;
 
   fic << "# Temps : " << tps << finl;
@@ -1209,7 +1209,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_nut(const DoubleTab&
 {
   SFichier fic (fichier);
 
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
 
   fic << "# Temps : " << tps << finl;
   fic << " " << finl;
@@ -1232,7 +1232,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp(const DoubleTab
 {
   SFichier fic (fichier);
 
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   double T,T2,uT,vT,wT;
 
   fic << "# Temps : " << tps << finl;
@@ -1278,7 +1278,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu_old(c
 {
   SFichier fic (fichier);
 
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   double u,v,wl,u2,v2,w2,uv,uw,vw,rho,mu;
 
   fic << "# Temps : " << tps << finl;
@@ -1336,7 +1336,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp_old(const Doubl
 {
   SFichier fic (fichier);
   fic.setf(ios::scientific);
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   double u,v,wl,T,T2,uT,vT,wT;
 
   fic << "# Temps : " << tps << finl;

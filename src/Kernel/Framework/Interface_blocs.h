@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,6 @@ typedef std::map<std::string, Matrice_Morse *> matrices_t;
 //dictionnaires de DoubleTabs
 typedef std::map<std::string, DoubleTab >  tabs_t;
 typedef std::map<std::string, DoubleTab*> ptabs_t;
-//calcul d'un Champ_Inc ainsi que de ses derivees et de ses valeurs aux bords
+//calcul d'un OWN_PTR(Champ_Inc_base) ainsi que de ses derivees et de ses valeurs aux bords
 typedef void (*fonc_calc_t)(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
 #endif

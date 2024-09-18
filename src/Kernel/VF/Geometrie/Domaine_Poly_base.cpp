@@ -18,6 +18,7 @@
 #include <MD_Vector_composite.h>
 #include <Domaine_Poly_base.h>
 #include <MD_Vector_tools.h>
+#include <Interface_blocs.h>
 #include <Comm_Group_MPI.h>
 #include <Quadrangle_VEF.h>
 #include <communications.h>

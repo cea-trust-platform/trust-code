@@ -37,7 +37,7 @@ Entree& Op_Evanescence_Homogene_PolyMAC_P0_Face::readOn(Entree& is) { return Op_
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs_aux(std::set<int>& idx, IntTrav& sten,  Matrice_Morse& mat ) const
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
   const int nf_tot = domaine.nb_faces_tot(), D = dimension, N = ch.valeurs().line_size() ;
   int i, j, l, e, d, n;
 
@@ -59,11 +59,11 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   const bool res_en_T = pbm.resolution_en_T();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const DoubleTab& inco = ch.valeurs(), &alpha = pbm.equation_masse().inconnue()->passe(),
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
+  const DoubleTab& inco = ch.valeurs(), &alpha = pbm.equation_masse().inconnue().passe(),
                    &rho = equation().milieu().masse_volumique()->passe(),
-                    &temp_ou_enth  = pbm.equation_energie().inconnue()->passe(),
-                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
+                    &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
+                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
                       &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique()->passe(),
                        *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
                         *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
@@ -188,7 +188,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_elem(DoubleTab& gr
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe();
+  const DoubleTab& alpha = pbm.equation_masse().inconnue().passe();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
@@ -196,7 +196,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_elem(DoubleTab& gr
   int N = alpha.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot(), ne_tot = domaine.nb_elem_tot();;
 
   /* calculaiton of the gradient of alpha at the face */
-  const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, pbm.equation_masse().inconnue().valeur());
+  const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, pbm.equation_masse().inconnue());
   DoubleTrav grad_f_a(nf_tot, N);
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyMAC_P0::fgrad pour le calcul du gradient
@@ -238,7 +238,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  const DoubleTab& alpha = pbm.equation_masse().inconnue()->passe();
+  const DoubleTab& alpha = pbm.equation_masse().inconnue().passe();
   const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleVect& vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
@@ -249,7 +249,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
   DoubleTrav gradAlphaElem(ne_tot, D, N);
 
   /* calculaiton of the gradient of alpha at the face */
-  const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, pbm.equation_masse().inconnue().valeur());
+  const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, pbm.equation_masse().inconnue());
   DoubleTrav grad_f_a(nf_tot, N);
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyMAC_P0::fgrad pour le calcul du gradient

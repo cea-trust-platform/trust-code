@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
   assert(le_dom_PolyMAC.non_nul());
   assert(le_dom_Cl_PolyMAC.non_nul());
   const Domaine_PolyMAC& domaine_PolyMAC = le_dom_PolyMAC.valeur();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   ch.fcl();
 
   assert(sm.nb_dim() <= 2); // sinon on ne fait pas ce qu'il faut
@@ -63,7 +63,7 @@ void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC;
   const IntTab& e_f = domaine.elem_faces();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   int i, j, k, e, a, f, fb, nf_tot = domaine.nb_faces_tot(), na_tot = dimension < 3 ? domaine.domaine().nb_som_tot() : domaine.domaine().nb_aretes_tot();
   const bool only_m2 = (matrix.nb_lignes() == nf_tot);
 
@@ -92,7 +92,7 @@ void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
 DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC;
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleTab& nf = domaine.face_normales();
@@ -130,7 +130,7 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
 Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC;
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
   DoubleVect coef(equation().milieu().porosite_face());

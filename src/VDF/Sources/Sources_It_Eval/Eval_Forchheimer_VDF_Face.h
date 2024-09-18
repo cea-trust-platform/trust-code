@@ -18,8 +18,8 @@
 
 #include <Modele_Permeabilite_base.h>
 #include <Evaluateur_Source_Face.h>
+#include <Champ_Inc_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
 
 class Eval_Forchheimer_VDF_Face: public Evaluateur_Source_Face
 {
@@ -30,13 +30,13 @@ public:
   template <typename Type_Double> void calculer_terme_source_bord(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour() override { /* Do nothing */}
   inline void setCf(double c) { Cf_ = c; }
-  inline void associer(const Champ_Inc& vit) { vitesse_ = vit;}
+  inline void associer(const Champ_Inc_base& vit) { vitesse_ = vit;}
   inline void setPorosite(double p) { porosite_ = p; }
 
   OWN_PTR(Modele_Permeabilite_base) modK_;
 
 protected:
-  REF(Champ_Inc) vitesse_;
+  REF(Champ_Inc_base) vitesse_;
   double Cf_, porosite_;
 };
 
@@ -46,7 +46,7 @@ void Eval_Forchheimer_VDF_Face::calculer_terme_source(const int num_face, Type_D
   const int size = source.size_array();
   for (int i = 0; i < size; i++)
     {
-      const double U = (vitesse_->valeur().valeurs())(num_face,i);
+      const double U = (vitesse_->valeurs())(num_face,i);
       source[i] = -Cf_/sqrt(modK_->getK(porosite_))*volumes_entrelaces(num_face)*porosite_surf(num_face)*std::fabs(U)*U;
     }
 }

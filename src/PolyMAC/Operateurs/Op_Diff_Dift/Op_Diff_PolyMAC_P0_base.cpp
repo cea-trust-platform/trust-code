@@ -60,7 +60,7 @@ void Op_Diff_PolyMAC_P0_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue()->valeurs().line_size(), N_mil = eq.milieu().masse_volumique().non_nul() ? eq.milieu().masse_volumique()->valeurs().line_size() : N;
+  int N = eq.inconnue().valeurs().line_size(), N_mil = eq.milieu().masse_volumique().non_nul() ? eq.milieu().masse_volumique()->valeurs().line_size() : N;
   int N_diff = diffusivite().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
 
   if ((N_nu == N_mil) | (N_nu == N))
@@ -212,7 +212,7 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
   return 1;
 }
 
-void Op_Diff_PolyMAC_P0_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl, const Champ_Inc&)
+void Op_Diff_PolyMAC_P0_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base&)
 {
   le_dom_poly_ = ref_cast(Domaine_PolyMAC_P0, domaine_dis);
   la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl);
@@ -229,7 +229,7 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
-  int N = equation().inconnue()->valeurs().line_size(),
+  int N = equation().inconnue().valeurs().line_size(),
       N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique()->valeurs().line_size() : N,
       N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
@@ -254,7 +254,7 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
     abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
-  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (n = 0, i = 0; n < N; n++)
       for (m = 0; m < mult; m++, i++)
@@ -270,7 +270,7 @@ void Op_Diff_PolyMAC_P0_base::update_phif(int full_stencil) const
 {
   if (!full_stencil && phif_a_jour_)
     return; //deja fait, sauf si on demande tout le stencil
-  const Champ_Inc_base& ch = equation().inconnue().valeur();
+  const Champ_Inc_base& ch = equation().inconnue();
   const IntTab& fcl = sub_type(Champ_Face_PolyMAC_P0, ch) ? ref_cast(Champ_Face_PolyMAC_P0, ch).fcl() : ref_cast(Champ_Elem_PolyMAC_P0, ch).fcl();
   le_dom_poly_->fgrad(ch.valeurs().line_size(), 0, la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &som_ext, sub_type(Champ_Face_PolyMAC_P0, ch), full_stencil, phif_d, phif_e, phif_c);
   phif_a_jour_ = 1;

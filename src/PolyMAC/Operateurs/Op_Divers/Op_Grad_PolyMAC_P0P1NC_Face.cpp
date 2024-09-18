@@ -45,11 +45,11 @@ void Op_Grad_PolyMAC_P0P1NC_Face::completer()
   Operateur_Grad_base::completer();
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, ref_domaine.valeur());
   /* initialisation des inconnues auxiliaires de la pression... */
-  ref_cast(Champ_Elem_PolyMAC_P0P1NC, ref_cast(Navier_Stokes_std, equation()).pression().valeur()).init_auxiliary_variables();
+  ref_cast(Champ_Elem_PolyMAC_P0P1NC, ref_cast(Navier_Stokes_std, equation()).pression()).init_auxiliary_variables();
   /* et de grad P si la vitesse en a */
-  if (equation().inconnue()->valeurs().get_md_vector() == domaine.mdv_faces_aretes)
-    if (ref_cast(Navier_Stokes_std, equation()).grad_P().non_nul())
-      ref_cast(Champ_Face_PolyMAC_P0P1NC, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur()).init_auxiliary_variables();
+  if (equation().inconnue().valeurs().get_md_vector() == domaine.mdv_faces_aretes)
+    if (ref_cast(Navier_Stokes_std, equation()).has_grad_P())
+      ref_cast(Champ_Face_PolyMAC_P0P1NC, ref_cast(Navier_Stokes_std, equation()).grad_P()).init_auxiliary_variables();
   /* besoin d'un joint de 1 */
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
@@ -63,9 +63,9 @@ void Op_Grad_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const 
   if (!matrices.count("pression")) return; //rien a faire
 
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, ref_domaine.valeur());
-  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
-  const DoubleTab& vit = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression()->valeurs();
+  const DoubleTab& vit = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
   int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = vit.line_size(), m, M = press.line_size();
   Matrice_Morse *mat = matrices["pression"], mat2;
   IntTrav sten(0, 2);
@@ -93,9 +93,9 @@ void Op_Grad_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& 
 {
   statistiques().begin_count(gradient_counter_);
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, ref_domaine.valeur());
-  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
-  const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression()->valeurs(), *alp =
-                                                                      sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue()).fcl();
+  const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
+                                                                      sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces(), &pe = equation().milieu().porosite_elem();
   int i, j, e, eb, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
 

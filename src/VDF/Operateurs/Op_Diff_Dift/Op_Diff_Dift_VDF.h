@@ -33,17 +33,17 @@ protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
-  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_diffuse)
+  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch_diffuse)
   {
-    const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
+    const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse);
     associer_<EVAL_TYPE>(domaine_dis,domaine_cl_dis).associer_inconnue(inco);
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
-  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_diffuse)
+  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch_diffuse)
   {
-    const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_diffuse.valeur());
+    const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_diffuse);
     associer_<EVAL_TYPE>(domaine_dis,domaine_cl_dis).associer_inconnue(inco);
   }
 

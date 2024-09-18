@@ -69,7 +69,7 @@ inline const Operateur_base& Operateur_Conv::l_op_base() const
 
 /*! @brief Associe la vitesse (en tant que vitesse transportante) a l'operateur de convection.
  *
- * @param (Champ_Inc& vit) le champ inconnue representant la vitesse
+ * @param (Champ_Inc_base& vit) le champ inconnue representant la vitesse
  * @return le champ inconnue representant la vitesse transportante
  */
 inline void Operateur_Conv::associer_vitesse(const Champ_base& vit)
@@ -79,7 +79,7 @@ inline void Operateur_Conv::associer_vitesse(const Champ_base& vit)
 
 /*! @brief Renvoie la vitesse transportante de l'operateur
  *
- * @return (Champ_Inc&) le champ inconnue representant la vitesse transportante
+ * @return (Champ_Inc_base&) le champ inconnue representant la vitesse transportante
  */
 inline const Champ_base& Operateur_Conv::vitesse() const
 {

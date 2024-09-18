@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,13 @@
 #define Navier_Stokes_Fluide_Dilatable_Proto_included
 
 #include <TRUSTTabs_forward.h>
+#include <Interface_blocs.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
 
 class Fluide_Dilatable_base;
 class Navier_Stokes_std;
+class Champ_Inc_base;
 class Matrice_Morse;
 class Sortie;
 
@@ -44,7 +46,7 @@ public :
   DoubleTab& rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const;
 
 protected:
-  Champ_Inc rho_la_vitesse_;
+  OWN_PTR(Champ_Inc_base) rho_la_vitesse_;
   IntVect orientation_VDF_;
   DoubleTab tab_W; // RHS of div(rho.U)
 

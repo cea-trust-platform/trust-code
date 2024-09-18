@@ -37,7 +37,7 @@ void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_ba
                                    Nature_du_champ nature,
                                    const Noms& nom, const Noms& unite,
                                    int nb_comp, int nb_pas_dt, double temps,
-                                   Champ_Inc& champ, const Nom& sous_type) const
+                                   OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
 {
   assert(0);
   throw;

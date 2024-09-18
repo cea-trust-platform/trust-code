@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
       ajouter_blocs({}, secmem);
       return secmem;
     }
-  return ajouter_(equation().inconnue()->valeurs(),secmem);
+  return ajouter_(equation().inconnue().valeurs(),secmem);
 }
 DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
 {

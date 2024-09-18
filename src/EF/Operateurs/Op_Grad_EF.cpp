@@ -62,7 +62,7 @@ void Op_Grad_EF::mettre_a_jour(double temps)
  */
 void Op_Grad_EF::associer(const Domaine_dis_base& domaine_dis,
                           const Domaine_Cl_dis_base& domaine_Cl_dis,
-                          const Champ_Inc& inc)
+                          const Champ_Inc_base& inc)
 {
   const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis);
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
@@ -333,7 +333,7 @@ void Op_Grad_EF::calculer_flux_bords() const
   const IntTab& face_voisins = domaine_EF.face_voisins();
   const DoubleTab& face_normales = domaine_EF.face_normales();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
-  const Champ_P0_EF& la_pression_P0 = ref_cast(Champ_P0_EF,eqn_hydr.pression_pa().valeur());
+  const Champ_P0_EF& la_pression_P0 = ref_cast(Champ_P0_EF,eqn_hydr.pression_pa());
   const DoubleTab& pression_P0 = la_pression_P0.valeurs();
   if (flux_bords_.size_array()==0) flux_bords_.resize(domaine_EF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;

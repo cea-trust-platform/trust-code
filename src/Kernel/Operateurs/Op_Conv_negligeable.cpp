@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ Entree& Op_Conv_negligeable::readOn(Entree& is) { return is; }
 
 /*! @brief Associe la vitesse a l'operateur.
  *
- * @param (Champ_Inc& ch) le champ inconnue representant la vitesse
+ * @param (Champ_Inc_base& ch) le champ inconnue representant la vitesse
  */
 void Op_Conv_negligeable::associer_vitesse(const Champ_base& ch)
 {
@@ -33,7 +33,7 @@ void Op_Conv_negligeable::associer_vitesse(const Champ_base& ch)
 
 /*! @brief Renvoie le champ inconnue representant la vitesse
  *
- * @return (Champ_Inc&) le champ inconnue representant la vitesse
+ * @return (Champ_Inc_base&) le champ inconnue representant la vitesse
  */
 const Champ_base& Op_Conv_negligeable::vitesse() const
 {

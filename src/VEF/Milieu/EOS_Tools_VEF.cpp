@@ -149,16 +149,16 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
  */
 void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
-  double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
+  double dt = le_fluide().vitesse().equation().schema_temps().pas_de_temps();
   const IntTab& face_sommets = le_dom->face_sommets();
   int nb_elem_tot = le_dom->nb_elem_tot();
   int nb_som_tot = le_dom->domaine().nb_som_tot();
   int nb_faces_tot = le_dom->nb_faces_tot();
-  const Equation_base& eq = le_fluide().vitesse()->equation();
+  const Equation_base& eq = le_fluide().vitesse().equation();
 
   // Dimensionnement de tab_dZ
   const Navier_Stokes_std& eqns = ref_cast(Navier_Stokes_std, eq);
-  const DoubleVect& pression = eqns.pression()->valeurs();
+  const DoubleVect& pression = eqns.pression().valeurs();
 
   DoubleTrav tab_dZ = pression;
   DoubleTrav tab_rhon_som(nb_som_tot);
@@ -270,12 +270,12 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
 
   // Ajout des termes sources speciaux de l'equation de masse:
-  const bool has_mass_flux = (sub_type(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation())) ?
-                             ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation()).has_source_masse() : false;
+  const bool has_mass_flux = (sub_type(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse().equation())) ?
+                             ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse().equation()).has_source_masse() : false;
 
   if (has_mass_flux)
     {
-      const Source_Masse_Fluide_Dilatable_base& src_mass = ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse()->equation()).source_masse();
+      const Source_Masse_Fluide_Dilatable_base& src_mass = ref_cast(Navier_Stokes_Fluide_Dilatable_base, le_fluide().vitesse().equation()).source_masse();
       src_mass.ajouter_projection(le_fluide(),tab_dZ); // attention : tab_dZ a taille comme pression
     }
 

@@ -61,7 +61,7 @@ void Loi_Etat_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
  */
 void Loi_Etat_GP_base::initialiser()
 {
-  const DoubleTab& tab_Temp = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   int ntot=tab_Temp.size_totale();
   tab_rho_n=tab_Temp;
@@ -77,7 +77,7 @@ void Loi_Etat_GP_base::initialiser()
  */
 void Loi_Etat_GP_base::remplir_T()
 {
-  const DoubleTab& tab_Temp = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
   temperature_->valeurs() = tab_Temp;
 }
 
@@ -158,7 +158,7 @@ void Loi_Etat_GP_base::calculer_alpha()
     }
   else
     {
-      const IntTab& tab_elem_faces = ref_cast(Domaine_VF,le_fluide->vitesse()->domaine_dis_base()).elem_faces();
+      const IntTab& tab_elem_faces = ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       int nfe = tab_elem_faces.line_size();
       double Cp = Cp_;
       CIntTabView elem_faces = tab_elem_faces.view_ro();

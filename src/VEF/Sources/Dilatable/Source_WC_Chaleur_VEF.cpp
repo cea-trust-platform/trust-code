@@ -54,7 +54,7 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
    */
 
   const Navier_Stokes_WC& eqHyd = ref_cast(Navier_Stokes_WC,mon_equation->probleme().equation(0));
-  const DoubleTab& la_vitesse = eqHyd.vitesse()->valeurs();
+  const DoubleTab& la_vitesse = eqHyd.vitesse().valeurs();
 
   // On sait que grad_Ptot est un champ elem => on pense a la conductivite (elem en vef !! )
   DoubleTab grad_Ptot;
@@ -67,7 +67,7 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
   const Operateur_Grad& Op_Grad = eq_chal.operateur_gradient_WC();
   Op_Grad.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
-  const Domaine_dis_base& domaine_dis = mon_equation->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& domaine_dis = mon_equation->inconnue().domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   assert (domaine_dis.que_suis_je() == "Domaine_VEF");
 

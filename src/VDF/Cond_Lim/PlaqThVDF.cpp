@@ -54,7 +54,7 @@ void PlaqThVDF::mettre_a_jour(double )
       const Modele_turbulence_scal_base& modele = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Turbulence_paroi_scal& loipar = modele.loi_paroi();
       Champ_front_calc& ch=ref_cast(Champ_front_calc, T_ext().valeur());
-      ch.creer(eqn.probleme().le_nom(),frontiere_dis().le_nom(),eqn.inconnue()->le_nom());
+      ch.creer(eqn.probleme().le_nom(),frontiere_dis().le_nom(),eqn.inconnue().le_nom());
       //const Milieu_base& le_milieu=eqn.probleme().milieu();
       h_imp_.typer("Champ_front_uniforme");
       DoubleTab& tab = h_imp_->valeurs();
@@ -85,7 +85,7 @@ void PlaqThVDF::mettre_a_jour(double )
     {
       Champ_front_calc& ch = ref_cast(Champ_front_calc,T_ext().valeur());
       ch.creer(eqn.probleme().le_nom(),frontiere_dis().le_nom(),
-               eqn.inconnue()->le_nom());
+               eqn.inconnue().le_nom());
       //const Milieu_base& le_milieu=eqn.probleme().milieu();
       h_imp_.typer("Champ_front_uniforme");
       DoubleTab& tab= h_imp_->valeurs();
@@ -98,7 +98,7 @@ void PlaqThVDF::mettre_a_jour(double )
     }
 
   //Calcul de T_ext :
-  const DoubleTab& Temp= eqn.inconnue()->valeurs();
+  const DoubleTab& Temp= eqn.inconnue().valeurs();
   DoubleTab& tab= T_ext()->valeurs();
   tab.resize(front.nb_faces(),1);
   int face, el1, el2;

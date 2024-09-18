@@ -40,7 +40,7 @@ DoubleTab& Solveur_Masse_Elem_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
   const Domaine_VF& domaine = le_dom_.valeur();
   const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem();
-  const DoubleTab& der = solv_mass_->equation().champ_conserve().derivees().at(solv_mass_->equation().inconnue()->le_nom().getString());
+  const DoubleTab& der = solv_mass_->equation().champ_conserve().derivees().at(solv_mass_->equation().inconnue().le_nom().getString());
 
   int e, ne_tot = domaine.nb_elem_tot(), n, N = sm.line_size();
   assert(sm.dimension_tot(0) >= ne_tot && N == der.line_size());
@@ -77,7 +77,7 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
         for (e = 0; e < ne; e++)
           for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * e + m);
         Matrice_Morse mat;
-        Matrix_tools::allocate_morse_matrix(N *  solv_mass_->equation().inconnue()->valeurs().dimension_tot(0), M * col.dimension_tot(0), stencil, mat);
+        Matrix_tools::allocate_morse_matrix(N *  solv_mass_->equation().inconnue().valeurs().dimension_tot(0), M * col.dimension_tot(0), stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
       }
 }
@@ -87,7 +87,7 @@ void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
   const Domaine_VF& domaine = le_dom_.valeur();
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
   const Conds_lim& cls = solv_mass_->equation().domaine_Cl_dis().les_conditions_limites();
-  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue().valeur()).fcl(), &f_e = domaine.face_voisins();
+  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue()).fcl(), &f_e = domaine.face_voisins();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
   const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem(), &fs = domaine.face_surfaces();
   int e, f, n, N = cc.valeurs().line_size(), ne = domaine.nb_elem();

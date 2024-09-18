@@ -52,7 +52,7 @@ void Dirichlet_loi_paroi::mettre_a_jour(double tps)
 
 int Dirichlet_loi_paroi::initialiser(double temps)
 {
-  d_.resize(0,domaine_Cl_dis().equation().inconnue()->valeurs().line_size());
+  d_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
   la_frontiere_dis->frontiere().creer_tableau_faces(d_);
   return 1;
 }

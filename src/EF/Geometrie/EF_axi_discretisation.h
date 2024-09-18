@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,23 +18,9 @@
 
 #include <EF_discretisation.h>
 
-/*! @brief : class EF_axi_discretisation
- *
- *  <Description of class EF_axi_discretisation>
- *
- *
- *
- */
-
-class EF_axi_discretisation : public EF_discretisation
+class EF_axi_discretisation: public EF_discretisation
 {
-
-  Declare_instanciable( EF_axi_discretisation ) ;
-
-public :
-
-protected :
-
+  Declare_instanciable( EF_axi_discretisation );
 };
 
 #endif /* EF_axi_discretisation_included */

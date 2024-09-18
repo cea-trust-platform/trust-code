@@ -658,7 +658,6 @@ void Champ_Inc_base::resize_val_bord()
 
 DoubleTab Champ_Inc_base::valeur_aux_bords() const
 {
-  //si Champ_Inc calcule (fonc_calc_ existe), alors les valeurs aux bords sont stockees dans val_bord_
   if (fonc_calc_ || bord_fluide_multiphase_)
     {
       DoubleTab result;

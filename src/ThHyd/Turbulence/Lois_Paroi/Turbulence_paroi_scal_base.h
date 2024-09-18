@@ -22,7 +22,7 @@
 
 #include <Champ_Fonc.h>
 #include <TRUSTVects.h>
-#include <Champ_Inc.h>
+
 #include <TRUST_Ref.h>
 
 class Modele_turbulence_scal_base;

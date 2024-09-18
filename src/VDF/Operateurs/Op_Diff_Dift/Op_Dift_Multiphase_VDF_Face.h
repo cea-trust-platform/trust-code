@@ -40,7 +40,7 @@ public:
   bool is_turb() const override { return true; }
   const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
 
-  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc& ch) override
+  inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override
   {
     associer_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(zd, zcd, ch);
   }

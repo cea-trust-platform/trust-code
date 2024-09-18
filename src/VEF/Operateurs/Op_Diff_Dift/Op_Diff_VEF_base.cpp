@@ -44,7 +44,7 @@ Entree& Op_Diff_VEF_base::readOn(Entree& s )
  */
 int Op_Diff_VEF_base::phi_psi_diffuse(const Equation_base& eq) const
 {
-  if (eq.inconnue()->le_nom()=="vitesse")
+  if (eq.inconnue().le_nom()=="vitesse")
     return 1;
   return 0;
 }
@@ -56,21 +56,21 @@ int Op_Diff_VEF_base::impr(Sortie& os) const
 
 void Op_Diff_VEF_base::associer(const Domaine_dis_base& domaine_dis,
                                 const Domaine_Cl_dis_base& domaine_cl_dis,
-                                const Champ_Inc& ch_transporte)
+                                const Champ_Inc_base& ch_transporte)
 {
 
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis);
 
-  if (sub_type(Champ_P1NC,ch_transporte.valeur()))
+  if (sub_type(Champ_P1NC,ch_transporte))
     {
-      const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_transporte.valeur());
+      const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_transporte);
       REF(Champ_P1NC) inconnue;
       inconnue = inco;
     }
-  if (sub_type(Champ_Q1NC,ch_transporte.valeur()))
+  if (sub_type(Champ_Q1NC,ch_transporte))
     {
-      const Champ_Q1NC& inco = ref_cast(Champ_Q1NC,ch_transporte.valeur());
+      const Champ_Q1NC& inco = ref_cast(Champ_Q1NC,ch_transporte);
       REF(Champ_Q1NC) inconnue;
       inconnue = inco;
     }
@@ -80,11 +80,11 @@ void Op_Diff_VEF_base::associer(const Domaine_dis_base& domaine_dis,
 
 
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  int nb_dim = ch_transporte->valeurs().nb_dim();
+  int nb_dim = ch_transporte.valeurs().nb_dim();
   int nb_comp = 1;
 
   if(nb_dim==2)
-    nb_comp = ch_transporte->valeurs().dimension(1);
+    nb_comp = ch_transporte.valeurs().dimension(1);
 
   flux_bords_.resize(domaine_VEF.nb_faces_bord(), nb_comp);
   flux_bords_ = 0.;

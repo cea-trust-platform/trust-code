@@ -21,7 +21,7 @@
 
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
+
 #include <Matrice.h>
 
 class Frontiere_dis_base;
@@ -50,8 +50,8 @@ class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_inte
 public:
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const;
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab&) const;
-  virtual void associer_champ(const Champ_Inc&, const std::string& nom_ch);
-  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc& inco) =0;
+  virtual void associer_champ(const Champ_Inc_base&, const std::string& nom_ch);
+  virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base& inco) =0;
   virtual void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
   virtual void dimensionner(Matrice_Morse&) const /* =0 */;
   virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;
@@ -90,7 +90,7 @@ public:
   inline Entree& lire_solveur(Entree&);
   virtual int systeme_invariant() const;
   virtual void ajouter_contribution_explicite_au_second_membre(const Champ_Inc_base& inconnue, DoubleTab& derivee) const;
-  const Champ_Inc& mon_inconnue() const { return le_champ_inco.valeur(); }
+  const Champ_Inc_base& mon_inconnue() const { return le_champ_inco.valeur(); }
   bool has_champ_inco() const { return le_champ_inco.non_nul(); }
   const std::string& nom_inconnue() const
   {
@@ -139,7 +139,7 @@ protected:
   mutable DoubleTab flux_bords_;         // Tableau contenant les flux sur les bords de l'operateur
 
   Champs_compris champs_compris_;
-  REF(Champ_Inc) le_champ_inco;
+  REF(Champ_Inc_base) le_champ_inco;
   std::string nom_inco_;
 };
 

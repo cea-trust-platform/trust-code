@@ -107,8 +107,8 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
       tab_coord_bary(3,3)=a;
     }
 
-  const Champ_Inc& le_scalaire = equation_scalaire().inconnue();
-  int nb_comp = le_scalaire->nb_comp(); // Vaut 1 si temperature, nb_constituents si concentration
+  const Champ_Inc_base& le_scalaire = equation_scalaire().inconnue();
+  int nb_comp = le_scalaire.nb_comp(); // Vaut 1 si temperature, nb_constituents si concentration
   int nb_elem_tot = domaine_VEF.nb_elem_tot();
   // XXXTrav to not reallocate on the host/device each time:
   IntTrav tab_les_polygones(nb_elem_tot * nbpts);
@@ -171,7 +171,7 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
   DoubleTrav tab_valeurs_beta(nb_elem_tot * nbpts, nb_comp);
 
   // Calcul du terme source aux points d'integration :
-  le_scalaire->valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_scalaire);
+  le_scalaire.valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_scalaire);
   beta()->valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_beta);
 
   // Extension possible des volumes de controle:

@@ -256,8 +256,8 @@ void Schema_Euler_Implicite::Initialiser_Champs(Probleme_base& pb)
   int i;
   for( i=0; i<pb.nombre_d_equations(); i++)
     {
-      DoubleTab& passe = pb.equation(i).inconnue()->passe();
-      DoubleTab& present = pb.equation(i).inconnue()->valeurs();
+      DoubleTab& passe = pb.equation(i).inconnue().passe();
+      DoubleTab& present = pb.equation(i).inconnue().valeurs();
       if ( (pb.equation(i).que_suis_je()!="Euler") || temps_courant_==0.)
         passe = present;
     }
@@ -286,8 +286,8 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
       else
         ii = i;
       Equation_base& eqn= pb.equation(ii);
-      DoubleTab& present = eqn.inconnue()->valeurs();
-      DoubleTab& futur = eqn.inconnue()->futur();
+      DoubleTab& present = eqn.inconnue().valeurs();
+      DoubleTab& futur = eqn.inconnue().futur();
       double temps=temps_courant_+dt_;
 
       // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
@@ -307,7 +307,7 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
       //   eqn.inconnue().mettre_a_jour(temps);
 
       //   eqn.inconnue().reculer();
-      eqn.inconnue()->Champ_base::changer_temps(temps);
+      eqn.inconnue().Champ_base::changer_temps(temps);
       Cout << finl;
     }
   return (convergence_pb==true);
@@ -318,9 +318,9 @@ void Schema_Euler_Implicite::test_stationnaire(Probleme_base& pb)
   for(int i=0; i<pb.nombre_d_equations(); i++)
     {
       // traitement de la convergence en temps
-      DoubleTab& passe = pb.equation(i).inconnue()->passe();
-      DoubleTab& present = pb.equation(i).inconnue()->valeurs();
-      DoubleTab& futur = pb.equation(i).inconnue()->futur();
+      DoubleTab& passe = pb.equation(i).inconnue().passe();
+      DoubleTab& present = pb.equation(i).inconnue().valeurs();
+      DoubleTab& futur = pb.equation(i).inconnue().futur();
       futur = present;
       pb.equation(i).domaine_Cl_dis().imposer_cond_lim(pb.equation(i).inconnue(),temps_courant()+pas_de_temps());
       present -= passe;
@@ -334,8 +334,8 @@ void recommencer_pb(Probleme_base& pb)
 {
   for(int i=0; i<pb.nombre_d_equations(); i++)
     {
-      DoubleTab& passe = pb.equation(i).inconnue()->passe();
-      DoubleTab& present = pb.equation(i).inconnue()->valeurs();
+      DoubleTab& passe = pb.equation(i).inconnue().passe();
+      DoubleTab& present = pb.equation(i).inconnue().valeurs();
       present=passe;
     }
 }
@@ -479,8 +479,8 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           Equation_base& eqn = eqs[k].valeur();
                           eqn.probleme().updateGivenFields();
 
-                          DoubleTab& present = eqn.inconnue()->valeurs();
-                          DoubleTab& futur = eqn.inconnue()->futur();
+                          DoubleTab& present = eqn.inconnue().valeurs();
+                          DoubleTab& futur = eqn.inconnue().futur();
                           double temps = temps_courant_ + dt_;
 
                           // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
@@ -494,7 +494,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
                           present = futur;
 
-                          eqn.inconnue()->Champ_base::changer_temps(temps);
+                          eqn.inconnue().Champ_base::changer_temps(temps);
                           Cout << finl;
                         }
                     }
@@ -537,9 +537,9 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
 int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
-  DoubleTab& passe = eqn.inconnue()->passe();
-  DoubleTab& present = eqn.inconnue()->valeurs();
-  DoubleTab& futur = eqn.inconnue()->futur();
+  DoubleTab& passe = eqn.inconnue().passe();
+  DoubleTab& present = eqn.inconnue().valeurs();
+  DoubleTab& futur = eqn.inconnue().futur();
   int compteur = 0, ok = 1;
   bool convergence_eqn = false;
   passe = present;

@@ -426,7 +426,7 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
         }
       else
         {
-          const DoubleTab& vitesse=equation().inconnue()->valeurs();
+          const DoubleTab& vitesse=equation().inconnue().valeurs();
           vitesse_elem=0;
           for (int s=0; s<nb_som_elem; s++)
             {
@@ -455,7 +455,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
   const DoubleTab& aire = champ_aire_->valeurs();
 
   int dim_esp = Objet_U::dimension ;
-  const DoubleTab& vitesse=equation().inconnue()->valeurs();
+  const DoubleTab& vitesse=equation().inconnue().valeurs();
   DoubleTab coeff(vitesse);
   IntTab contrib(nb_som_tot, dim_esp);
   contrib = 0;
@@ -701,7 +701,7 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
   const DoubleVect& volume_thilde=domaine_EF.volumes_thilde();
   int ncomp=dimension;
   ArrOfDouble tuvw(dimension);
-  // const DoubleTab& vitesse=equation().inconnue()->valeurs();
+  // const DoubleTab& vitesse=equation().inconnue().valeurs();
   const DoubleTab& rotation=champ_rotation_->valeurs();
   const DoubleTab& aire=champ_aire_->valeurs();
   //champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
@@ -798,7 +798,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
   DoubleTab& solid_points = interp.solid_points_->valeurs();
   DoubleTab& fluid_elems = interp.fluid_elems_->valeurs();
 
-  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue().valeur());
+  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
   DoubleTab& val_vitesse_inconnue = champ_vitesse_inconnue.valeurs();
 
   DoubleTab xf(1, nb_comp);
@@ -858,7 +858,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
   DoubleTab& solid_points = interp.solid_points_->valeurs();
   DoubleTab& is_dirichlet = interp.is_dirichlet_->valeurs();
   double eps = 1e-12;
-  DoubleTab& vitesse_inconnue = equation().inconnue()->valeurs();
+  DoubleTab& vitesse_inconnue = equation().inconnue().valeurs();
 
   vitesse_imposee_mod.echange_espace_virtuel();
 
@@ -942,7 +942,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
   DoubleTab& fluid_elems = interp.fluid_elems_->valeurs();
   DoubleTab& fluid_points = interp.fluid_points_->valeurs();
   double eps = 1e-12;
-  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue().valeur());
+  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
   DoubleTab& vitesse_inconnue = champ_vitesse_inconnue.valeurs();
 
   DoubleTab xf(1, nb_comp);
@@ -1053,7 +1053,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
   double B_pwl = interp.get_B_pwl();
   double y_c_p_pwl = interp.get_y_c_p_pwl();
   int impr_yplus = interp.get_impr() ;
-  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue().valeur());
+  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
   DoubleTab& val_vitesse_inconnue = champ_vitesse_inconnue.valeurs();
   double form_lin_pwl = interp.get_formulation_linear_pwl();
 
@@ -1327,7 +1327,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
   double B_pwl = interp.get_B_pwl();
   double y_c_p_pwl = interp.get_y_c_p_pwl();
   int impr_yplus = interp.get_impr() ;
-  DoubleTab& vitesse_inconnue = equation().inconnue()->valeurs();
+  DoubleTab& vitesse_inconnue = equation().inconnue().valeurs();
 
   ArrOfInt cells(1);
 
@@ -1768,7 +1768,7 @@ int Source_PDF_EF::impr(Sortie& os) const
           double temps=sch.temps_courant();
           double pdtps = sch.pas_de_temps();
           if (temps == pdtps) return 0;
-          const DoubleTab& vitesse=equation().inconnue()->valeurs();
+          const DoubleTab& vitesse=equation().inconnue().valeurs();
           int nb_som=le_dom_EF->domaine().nb_som();
           Nom espace=" \t";
 

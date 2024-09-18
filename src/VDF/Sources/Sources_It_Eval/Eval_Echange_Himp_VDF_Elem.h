@@ -17,7 +17,7 @@
 #define Eval_Echange_Himp_VDF_Elem_included
 
 #include <Evaluateur_Source_Elem.h>
-#include <Champ_Inc.h>
+
 #include <TRUST_Ref.h>
 
 class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_Elem
@@ -25,28 +25,28 @@ class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_Elem
 public:
   Eval_Echange_Himp_VDF_Elem() : h_(-1.) { }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
-  inline void associer_champs(const Champ_Inc& ,const Champ_Inc& ,const double );
+  inline void associer_champs(const Champ_Inc_base& ,const Champ_Inc_base& ,const double );
   inline void mettre_a_jour() override;
 
 protected:
-  REF(Champ_Inc) T, T_voisin;
+  REF(Champ_Inc_base) T, T_voisin;
   DoubleTab Tcourant, Tvois;
   double h_;
 };
 
-inline void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Inc& tc, const Champ_Inc& tv, const double dh)
+inline void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Inc_base& tc, const Champ_Inc_base& tv, const double dh)
 {
   this->h_ = dh;
   T = tc;
   T_voisin = tv;
-  Tcourant.ref(T->valeur().valeurs());
+  Tcourant.ref(T->valeurs());
   mettre_a_jour();
 }
 
 inline void Eval_Echange_Himp_VDF_Elem::mettre_a_jour()
 {
-  Tcourant.ref(T->valeur().valeurs());
-  Tvois.ref(T_voisin->valeur().valeurs());
+  Tcourant.ref(T->valeurs());
+  Tvois.ref(T_voisin->valeurs());
 }
 
 template <typename Type_Double>

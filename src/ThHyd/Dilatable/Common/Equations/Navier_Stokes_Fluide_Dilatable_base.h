@@ -20,7 +20,7 @@
 #include <Source_Masse_Fluide_Dilatable_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Navier_Stokes_std.h>
-#include <Champ_Inc.h>
+
 #include <Champ_Don.h>
 
 class Matrice_Morse;
@@ -74,7 +74,7 @@ public :
       source_masse_->mettre_a_jour(temps);
   }
 
-  inline const Champ_Inc& rho_la_vitesse() const override { return rho_la_vitesse_; }
+  inline const Champ_Inc_base& rho_la_vitesse() const override { return rho_la_vitesse_; }
 
   inline bool has_source_masse() const { return source_masse_.non_nul(); }
   inline const Source_Masse_Fluide_Dilatable_base& source_masse() const

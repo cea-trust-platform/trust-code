@@ -270,7 +270,7 @@ void Traitement_particulier_NS_Profils::init_calcul_stats(void)
 
 void Traitement_particulier_NS_Profils::reprendre_stat()
 {
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   int j,num_prof;
   double ti,ti2;
   Nom temps;
@@ -451,7 +451,7 @@ void Traitement_particulier_NS_Profils::reprendre_stat()
 
 void Traitement_particulier_NS_Profils::sauver_stat() const
 {
-  double tps = mon_equation->inconnue()->temps();
+  double tps = mon_equation->inconnue().temps();
   if (  (oui_stat == 1)&&(tps>=temps_deb)&&(tps<=temps_fin) )
     {
       Cerr << "Dans Traitement_particulier_NS_canal::sauver_stat!!" << finl;

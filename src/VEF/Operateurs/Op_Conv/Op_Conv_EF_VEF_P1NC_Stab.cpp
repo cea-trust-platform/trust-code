@@ -2177,8 +2177,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
   calculer_data_pour_dirichlet();
 
   //  int nb_comp=1;
-  //  if (equation().inconnue()->valeurs().nb_dim()>1)
-  //  nb_comp=equation().inconnue()->valeurs().dimension(1);
+  //  if (equation().inconnue().valeurs().nb_dim()>1)
+  //  nb_comp=equation().inconnue().valeurs().dimension(1);
 
   //  limiteurs_.resize(le_dom_vef->nb_faces_tot(),nb_comp);
   // limiteurs_=0.;
@@ -2914,7 +2914,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_implicite() const
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
-  const DoubleTab& unknown=equation().inconnue()->valeurs();
+  const DoubleTab& unknown=equation().inconnue().valeurs();
   const DoubleTab& tab_vitesse=vitesse_->valeurs();
 
   DoubleTab tab_test(unknown);

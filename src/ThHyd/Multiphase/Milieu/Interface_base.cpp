@@ -43,8 +43,8 @@ void Interface_base::mettre_a_jour(double temps)
 {
   DoubleTab& sigma_tab = ch_sigma_->valeurs();
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
-  const DoubleTab& press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->valeurs(),
-                   &temp = pbm.equation_energie().inconnue()->valeurs();
+  const DoubleTab& press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeurs(),
+                   &temp = pbm.equation_energie().inconnue().valeurs();
 
   // XXX Elie Saikali : Cas sans saturation !
   // pour le moment on simplifie le calcul et on prend la moyenne de T

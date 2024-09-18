@@ -92,8 +92,8 @@ void Operateur_base::completer()
   const Equation_base& eqn = equation();
   const Domaine_dis_base& zdis= eqn.domaine_dis();
 
-  const Domaine_Cl_dis_base& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->domaine_Cl_dis() : eqn.domaine_Cl_dis();
-  const Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
+  const Domaine_Cl_dis_base& zcl = le_champ_inco.non_nul() ? le_champ_inco->domaine_Cl_dis() : eqn.domaine_Cl_dis();
+  const Champ_Inc_base& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
   associer(zdis, zcl, inco);
   const Conds_lim& les_cl = zcl.les_conditions_limites();
   for (auto& itr : les_cl)
@@ -106,17 +106,17 @@ void Operateur_base::completer()
   // pour les champs a plusieurs composantes, le header des colonnes des fichiers .out prend la forme
   // Time cl1_compo1  cl1_compo2 ...
   // on prend en compte la longueur de compo1, compo2, etc...
-  Noms noms_compo_courts(inco->noms_compo());
+  Noms noms_compo_courts(inco.noms_compo());
   if (noms_compo_courts.size() > 1)
     for (int i = 0; i < noms_compo_courts.size(); ++i)
       {
-        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue()->le_nom());
+        noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
         w_suffix = std::max(w_suffix, noms_compo_courts[i].longueur());
       }
   col_width_ += w_suffix + 1;
 }
 
-void Operateur_base::associer_champ(const Champ_Inc& ch, const std::string& nom_ch)
+void Operateur_base::associer_champ(const Champ_Inc_base& ch, const std::string& nom_ch)
 {
   le_champ_inco = ch;
   nom_inco_ = nom_ch;
@@ -158,7 +158,7 @@ int Operateur_base::impr(Sortie& os) const
 void Operateur_base::dimensionner(Matrice_Morse& mat) const
 {
   /* on tente dimensionner_blocs() */
-  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue()->le_nom().getString(), &mat }});
+  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
   else Process::exit(que_suis_je() + " : dimensionner() not coded!");
 }
 
@@ -171,7 +171,7 @@ void Operateur_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
 void Operateur_base::dimensionner_termes_croises(Matrice_Morse& mat, const Probleme_base& autre_pb, int nl, int nc) const
 {
   if (!has_interface_blocs()) return;
-  std::string nom_inco = equation().inconnue()->le_nom().getString(),
+  std::string nom_inco = equation().inconnue().le_nom().getString(),
               nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
   dimensionner_blocs({{ nom, &mat }}, {});
 }
@@ -186,7 +186,7 @@ void Operateur_base::contribuer_termes_croises(const DoubleTab& inco, const Prob
 {
   if (!has_interface_blocs()) return;
   DoubleTrav secmem(inco); //on va le jeter
-  std::string nom_inco = equation().inconnue()->le_nom().getString(),
+  std::string nom_inco = equation().inconnue().le_nom().getString(),
               nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
   ajouter_blocs({{ nom, &matrice}}, secmem, {});
 }
@@ -226,7 +226,7 @@ DoubleTab&  Operateur_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) co
       if (equation().discretisation().is_polymac_family())
         ajouter_blocs({}, secmem);
       else
-        ajouter_blocs({}, secmem, {{ equation().inconnue()->le_nom().getString(),inco }} ); //pour prise en compte du parametre inco (qui est pas forcement l'inco de l'equation)
+        ajouter_blocs({}, secmem, {{ equation().inconnue().le_nom().getString(),inco }} ); //pour prise en compte du parametre inco (qui est pas forcement l'inco de l'equation)
     }
   else Process::exit(que_suis_je() + " : ajouter() not coded!");
   return secmem;
@@ -248,7 +248,7 @@ void Operateur_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
 {
   /* on tente ajouter_blocs() */
   DoubleTrav secmem(inco); //on va le jeter
-  if (has_interface_blocs()) ajouter_blocs({{ equation().inconnue()->le_nom().getString(), &matrice }}, secmem);
+  if (has_interface_blocs()) ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matrice }}, secmem);
   else Process::exit(que_suis_je() + " : contribuer_a_avec() not coded!");
 }
 
@@ -257,7 +257,7 @@ void Operateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Mors
   /* on tente ajouter_blocs() */
   if (has_interface_blocs())
     {
-      DoubleTrav secmem(equation().inconnue()->valeurs()); //on va le jeter
+      DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
       ajouter_blocs({{ "vitesse", &matrice }}, secmem);
     }
 }
@@ -335,7 +335,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       os.set_col_width(wcol - !gnuplot_header);
       os.add_col("Time");
       os.set_col_width(wcol);
-      const Conds_lim& les_cls=eqn.inconnue()->domaine_Cl_dis().les_conditions_limites();
+      const Conds_lim& les_cls=eqn.inconnue().domaine_Cl_dis().les_conditions_limites();
 
       if (flux_bords_.nb_dim()!=2)
         {
@@ -346,10 +346,10 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       // s'il y a plusieurs composantes par CL, on se sert des noms de composante de l'inconnue
       int nb_compo = flux_bords_.line_size();
       if (type=="moment" && dimension == 2) nb_compo=1;
-      Noms noms_compo_courts(eqn.inconnue()->noms_compo());
+      Noms noms_compo_courts(eqn.inconnue().noms_compo());
       if (nb_compo > 1)
         for (int i = 0; i < noms_compo_courts.size(); ++i)
-          noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue()->le_nom());
+          noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
 
       // ecriture de l'entete des colonnes de la forme
       // Time cl1  cl2  cl3  ...

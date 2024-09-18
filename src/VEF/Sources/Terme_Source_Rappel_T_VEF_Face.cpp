@@ -159,7 +159,7 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
   const int ndeb = domaine_VEF.premiere_face_int();
 
   const int nb_elem = domaine_VEF.nb_elem();
-  const DoubleTab& temperature = mon_equation->inconnue()->valeurs();
+  const DoubleTab& temperature = mon_equation->inconnue().valeurs();
   const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF->volumes_entrelaces_Cl();
   const DoubleTab& xv=domaine_VEF.xv() ;

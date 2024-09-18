@@ -51,7 +51,7 @@ public:
 
 protected:
   Champ_Fonc energie_cinetique_turb_;
-  mutable Champ_Inc K_eps_sortie_;
+  mutable OWN_PTR(Champ_Inc_base) K_eps_sortie_;
   Nom fichier_K_eps_sortie_;
 
   REF(Domaine_VF) le_dom_VF_;

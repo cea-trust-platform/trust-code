@@ -290,7 +290,7 @@ void Fluide_Dilatable_base::set_Cp(double Cp_)
 void Fluide_Dilatable_base::update_rho_cp(double temps)
 {
   // Si l'inconnue est sur le device, on copie les donnees aussi:
-  if (equation_.size() && (*(equation_.begin()->second)).inconnue()->valeurs().isDataOnDevice())
+  if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
       mapToDevice(rho->valeurs(), "rho");
@@ -425,7 +425,7 @@ int Fluide_Dilatable_base::initialiser(const double temps)
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
     initialiser_radiatives(temps);
 
-  if (equation_.size() && (*(equation_.begin()->second)).inconnue()->valeurs().isDataOnDevice())
+  if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
       mapToDevice(rho->valeurs(), "rho");
@@ -461,15 +461,15 @@ void Fluide_Dilatable_base::calculer_pression_tot()
   DoubleTab& tab_Ptot = pression_tot_->valeurs();
   const int n = tab_Ptot.dimension_tot(0);
   DoubleTrav tab_PHyd(n, 1);
-  if( n != pression_->valeur().valeurs().dimension_tot(0) )
+  if( n != pression_->valeurs().dimension_tot(0) )
     {
       // Interpolation de pression_ aux elements (ex: P1P0)
-      const Domaine_dis_base& domaine_dis= pression_->valeur().domaine_dis_base();
+      const Domaine_dis_base& domaine_dis= pression_->domaine_dis_base();
       const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
       const DoubleTab& centres_de_gravites=domaine.xp();
-      pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
+      pression_->valeur_aux(centres_de_gravites,tab_PHyd);
     }
-  else  tab_PHyd = pression_->valeur().valeurs();
+  else  tab_PHyd = pression_->valeurs();
   // impl dans les classes filles
   remplir_champ_pression_tot(n,tab_PHyd,tab_Ptot);
 }
@@ -632,7 +632,7 @@ void Fluide_Dilatable_base::write_header_edo()
 
 void Fluide_Dilatable_base::write_mean_edo(double temps)
 {
-  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeur().valeurs());
+  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
   const double rhom = eos_tools_->moyenne_vol(rho->valeurs());
 
   if (je_suis_maitre() && traitement_PTh != 2)

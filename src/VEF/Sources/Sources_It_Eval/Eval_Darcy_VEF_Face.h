@@ -22,7 +22,7 @@
 #include <Domaine_VEF.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
+
 
 class Champ_Don_base;
 
@@ -41,7 +41,7 @@ public:
   inline void calculer_terme_source_non_standard(const int num_face, Type_Double& source) const { calculer_terme_source(num_face, source, volumes_entrelaces_Cl); }
 
   inline void associer(const Champ_Don&);
-  inline void associer(const Champ_Inc& v) { vitesse_ = v; }
+  inline void associer(const Champ_Inc_base& v) { vitesse_ = v; }
   inline double& getPorosite() { return porosite_; }
 
   OWN_PTR(Modele_Permeabilite_base) modK_;
@@ -50,7 +50,7 @@ private:
   template <typename Type_Double>
   inline void calculer_terme_source(int , Type_Double& , const DoubleVect&) const;
 
-  REF(Champ_Inc) vitesse_;
+  REF(Champ_Inc_base) vitesse_;
   REF(Champ_Don_base) diffusivite_;
   DoubleTab db_diffusivite_;
   double porosite_;
@@ -103,7 +103,7 @@ inline void Eval_Darcy_VEF_Face::calculer_terme_source(int num_face, Type_Double
 {
   int size = source.size_array();
   for (int i = 0; i < size; i++)
-    source[i] = -db_diffusivite_(num_face) / modK_->getK(porosite_) * volumes[num_face] * porosite_surf[num_face] * (vitesse_->valeur().valeurs()(num_face, i));
+    source[i] = -db_diffusivite_(num_face) / modK_->getK(porosite_) * volumes[num_face] * porosite_surf[num_face] * (vitesse_->valeurs()(num_face, i));
 }
 
 #endif /* Eval_Darcy_VEF_Face_included */

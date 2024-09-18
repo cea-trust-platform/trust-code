@@ -37,19 +37,19 @@ protected:
   // pour les deux !
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>
-  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_transporte)
+  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch_transporte)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Elem>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Elem>::value;
-    const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_transporte.valeur());
+    const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_transporte);
     associer_<EVAL_TYPE,is_QUICK,is_CENTRE4>(domaine_dis,domaine_cl_dis).associer_inconnue(inco); // Cheerssssssssss !!!
   }
 
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>
-  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_vit)
+  associer_impl(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch_vit)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Face>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Face>::value;
-    const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vit.valeur());
+    const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vit);
     associer_<EVAL_TYPE,is_QUICK,is_CENTRE4>(domaine_dis,domaine_cl_dis).associer_inconnue(vit); // Cheerssssssssss !!!
   }
 
@@ -57,7 +57,7 @@ protected:
   inline void dimensionner_blocs_impl(matrices_t mats) const
   {
     constexpr bool is_FACE_OP = (_TYPE_ == Type_Operateur::Op_CONV_FACE);
-    const std::string& nom_inco = static_cast<const OP_TYPE *>(this)->equation().inconnue()->le_nom().getString();
+    const std::string& nom_inco = static_cast<const OP_TYPE *>(this)->equation().inconnue().le_nom().getString();
     Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : nullptr, mat2;
     is_FACE_OP ? dimensionner_face(mat2) : dimensionner_elem(mat2) /* elem */;
     mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;

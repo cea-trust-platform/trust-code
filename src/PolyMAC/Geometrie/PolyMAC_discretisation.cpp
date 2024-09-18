@@ -22,7 +22,7 @@
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
 #include <DescStructure.h>
-#include <Champ_Inc.h>
+
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
@@ -50,7 +50,7 @@ Sortie& PolyMAC_discretisation::printOn(Sortie& s) const { return s; }
  *
  */
 void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
-                                               double temps, Champ_Inc& champ, const Nom& sous_type) const
+                                               double temps, OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
 {
   const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
 
@@ -263,7 +263,7 @@ void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch, Domain
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de la vorticite " << finl;
@@ -272,7 +272,7 @@ void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_
   if (sub_type(Tri_poly,domaine_PolyMAC.type_elem().valeur()) || sub_type(Segment_poly,domaine_PolyMAC.type_elem().valeur()) || sub_type(Tetra_poly,domaine_PolyMAC.type_elem().valeur()))
     {
       ch.typer("Rotationnel_Champ_Som_PolyMAC");
-      const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
+      const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse);
       Rotationnel_Champ_Som_PolyMAC& ch_W=ref_cast(Rotationnel_Champ_Som_PolyMAC,ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_PolyMAC);
       ch_W.associer_champ(vit);
@@ -293,7 +293,7 @@ void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_
   else if (sub_type(Quadri_poly,domaine_PolyMAC.type_elem().valeur()) || sub_type(Hexa_poly,domaine_PolyMAC.type_elem().valeur()))
     {
       ch.typer("Rotationnel_Champ_Q1_PolyMAC");
-      const Champ_Q1_PolyMAC& vit = ref_cast(Champ_Q1_PolyMAC,ch_vitesse.valeur());
+      const Champ_Q1_PolyMAC& vit = ref_cast(Champ_Q1_PolyMAC,ch_vitesse);
       Rotationnel_Champ_Q1_PolyMAC& ch_W=ref_cast(Rotationnel_Champ_Q1_PolyMAC,ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_PolyMAC);
       ch_W.associer_champ(vit);
@@ -319,13 +319,13 @@ void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc& ch_
 #endif
 }
 
-void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
-  if (sub_type(Champ_Som_PolyMAC,ch_vitesse.valeur()))
+  if (sub_type(Champ_Som_PolyMAC,ch_vitesse))
     {
       ch.typer("Rotationnel_Champ_Som_PolyMAC");
-      const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
+      const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse);
       const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC,vit.domaine_dis_base());
       Rotationnel_Champ_Som_PolyMAC& ch_W = ref_cast(Rotationnel_Champ_Som_PolyMAC,ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_PolyMAC);
@@ -344,10 +344,10 @@ void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
     }
-  else if (sub_type(Champ_Q1_PolyMAC,ch_vitesse.valeur()))
+  else if (sub_type(Champ_Q1_PolyMAC,ch_vitesse))
     {
       ch.typer("Rotationnel_Champ_Q1_PolyMAC");
-      const Champ_Q1_PolyMAC& vit = ref_cast(Champ_Q1_PolyMAC,ch_vitesse.valeur());
+      const Champ_Q1_PolyMAC& vit = ref_cast(Champ_Q1_PolyMAC,ch_vitesse);
       const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC,vit.domaine_dis_base());
       Rotationnel_Champ_Q1_PolyMAC& ch_W = ref_cast(Rotationnel_Champ_Q1_PolyMAC,ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_PolyMAC);
@@ -380,16 +380,16 @@ void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
  *
  * @param (Domaine_dis_base&) domaine a discretiser
  * @param (Fluide_Ostwald&) fluide a discretiser
- * @param (Champ_Inc&) ch_vitesse
- * @param (Champ_Inc&) temperature
+ * @param (Champ_Inc_base&) ch_vitesse
+ * @param (Champ_Inc_base&) temperature
  */
-void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper) const
+void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc_base& ch_temper) const
 {
 #ifdef dependance
   Cerr << "Discretisation PolyMAC du fluide_Ostwald" << finl;
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z);
-  const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
-  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
+  const Champ_Inc_base& ch_vitesse = eqn_hydr.inconnue();
+  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse);
 
 
 
@@ -416,13 +416,13 @@ void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_d
 #endif
 }
 
-void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
   // mais on ne s'en sert pas!!!
   Cerr << "Discretisation du critere Q " << finl;
-  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
+  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse);
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z);
   ch.typer("Critere_Q_Champ_Som_PolyMAC");
   Critere_Q_Champ_Som_PolyMAC& ch_cQ=ref_cast(Critere_Q_Champ_Som_PolyMAC,ch.valeur());
@@ -436,11 +436,11 @@ void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_
 #endif
 }
 
-void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
-  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
+  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse);
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z);
   const Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("Y_plus_Champ_Som_PolyMAC");
@@ -456,7 +456,7 @@ void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_
 #endif
 }
 
-void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
@@ -476,9 +476,9 @@ void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_
 #endif
 }
 
-void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
 {
-  const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vitesse.valeur());
+  const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vitesse);
   const Domaine_PolyMAC& domaine_poly = ref_cast(Domaine_PolyMAC, z);
   const Domaine_Cl_PolyMAC& domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("grad_U_Champ_Face_PolyMAC");
@@ -511,10 +511,10 @@ void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_
   ch_grad_u.fixer_nature_du_champ(vectoriel);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_poly.nb_elem());
   ch_grad_u.fixer_unite("s-1");
-  ch_grad_u.changer_temps(ch_vitesse->temps());
+  ch_grad_u.changer_temps(ch_vitesse.temps());
 }
 
-void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
@@ -555,7 +555,7 @@ Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, con
   if (class_operateur == "Source")
     {
       type = type_operateur;
-      Nom champ = (eqn.inconnue()->que_suis_je());
+      Nom champ = (eqn.inconnue().que_suis_je());
       champ.suffix("Champ");
       type += champ;
       //type+="_PolyMAC";
@@ -564,7 +564,7 @@ Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, con
     }
   else if (class_operateur == "Solveur_Masse")
     {
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type_ch = "_Elem";
 
@@ -585,7 +585,7 @@ Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, con
 
   else if (class_operateur == "Operateur_Diff")
     {
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type_ch = "_Elem";
 
@@ -608,7 +608,7 @@ Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, con
       Nom tiret = "_";
       type += tiret;
       type += que_suis_je();
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type += "_Elem";
       if (type_ch.debute_par("Champ_Face"))

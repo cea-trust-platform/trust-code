@@ -123,7 +123,7 @@ void Champ_Q1NC::gradient(DoubleTab& gradient_elem)
 {
   // Calcul du gradient de la vitesse pour le calcul de la vorticite
   const Domaine_VEF& domaine_VEF = domaine_vef();
-  const DoubleTab& vitesse = equation().inconnue()->valeurs();
+  const DoubleTab& vitesse = equation().inconnue().valeurs();
 
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const int nb_faces = domaine_VEF.nb_faces();

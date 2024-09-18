@@ -25,13 +25,13 @@ public:
 
   using PolyMAC_discretisation::discretiser_champ;
 
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,
                          const Nom& sous_type = NOM_VIDE) const override;
 
-  void residu(const Domaine_dis_base& z, const Champ_Inc& ch_inco, Champ_Fonc& champ) const override;
+  void residu(const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, Champ_Fonc& champ) const override;
 
-  void y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base&, const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
-  void grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const override;
+  void y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base&, const Champ_Inc_base& vitesse, Champ_Fonc& ch) const override;
+  void grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const override;
 
   inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_AJOUTER; }
 

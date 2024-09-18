@@ -77,7 +77,7 @@ protected:
   Entree& lire_cond_init(Entree&) override; //pour lire la pression
   int preparer_calcul() override; //appelle la methode de Equation_base
 
-  std::vector<Champ_Inc> vit_phases_; //vitesses de chaque phase
+  std::vector<OWN_PTR(Champ_Inc_base)> vit_phases_; //vitesses de chaque phase
   Motcles noms_vit_phases_; //leurs noms
 
   std::vector<Champ_Fonc> grad_vit_phases_; //gradient des vitesses de chaque phase

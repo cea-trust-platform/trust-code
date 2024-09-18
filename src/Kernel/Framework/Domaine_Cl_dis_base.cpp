@@ -506,17 +506,17 @@ void Domaine_Cl_dis_base::nommer(const Nom& un_nom)
   nom_ = un_nom;
 }
 
-void Domaine_Cl_dis_base::associer_inconnue(const Champ_Inc& inco)
+void Domaine_Cl_dis_base::associer_inconnue(const Champ_Inc_base& inco)
 {
   mon_inconnue=inco;
 }
 
-const Champ_Inc& Domaine_Cl_dis_base::inconnue() const
+const Champ_Inc_base& Domaine_Cl_dis_base::inconnue() const
 {
   return mon_inconnue;
 }
 
-Champ_Inc& Domaine_Cl_dis_base::inconnue()
+Champ_Inc_base& Domaine_Cl_dis_base::inconnue()
 {
   return mon_inconnue;
 }

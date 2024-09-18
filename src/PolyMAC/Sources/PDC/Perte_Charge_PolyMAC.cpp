@@ -96,13 +96,13 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const Champ_Don& dh = diam_hydr;
 
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = la_vitesse->valeurs(), &pvit = la_vitesse->passe(),
                    &nu = le_fluide->viscosite_cinematique()->valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
                     &mu = le_fluide->viscosite_dynamique()->valeurs(), &rho = le_fluide->masse_volumique()->passe(),
-                     *alp = pbm ? &pbm->equation_masse().inconnue()->passe() : nullptr;
+                     *alp = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr;
 
   const DoubleVect& pe = le_fluide->porosite_elem(), &pf = le_fluide->porosite_face(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const Multiplicateur_diphasique_base *fmult = pbm && pbm->has_correlation("multiplicateur_diphasique") ?
@@ -222,7 +222,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
   if (has_interface_blocs()) return Source_base::ajouter(resu);
 
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = la_vitesse->valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces();
@@ -272,7 +272,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
     }
 
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = inco;
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces();
@@ -339,7 +339,7 @@ void Perte_Charge_PolyMAC::completer()
 
 void Perte_Charge_PolyMAC::associer_pb(const Probleme_base& pb)
 {
-  la_vitesse = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  la_vitesse = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   le_fluide = ref_cast(Fluide_base, equation().milieu());
 }
 

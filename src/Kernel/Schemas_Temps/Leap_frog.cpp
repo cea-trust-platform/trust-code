@@ -95,10 +95,10 @@ int Leap_frog::faire_un_pas_de_temps_eqn_base(Equation_base& eq)
   // EXEMPLE POUR UN SCHEMA EXPLICITE UTILISANT U(n) et U(n+1)
   // Un+1=Un+dt*F
   //  Un
-  DoubleTab& present = eq.inconnue()->valeurs();
+  DoubleTab& present = eq.inconnue().valeurs();
 
   // Un+1
-  DoubleTab& futur = eq.inconnue()->futur();
+  DoubleTab& futur = eq.inconnue().futur();
 
   // Un+1=F
   eq.derivee_en_temps_inco(futur);
@@ -112,9 +112,9 @@ int Leap_frog::faire_un_pas_de_temps_eqn_base(Equation_base& eq)
   // if (nb_pas_dt_>4) {
   if ((nb_pas_dt_>4) && ((nb_pas_dt_ % 10) != 0))
     {
-      DoubleTab& passe = eq.inconnue()->passe();
+      DoubleTab& passe = eq.inconnue().passe();
       double gamma=0.2;
-      DoubleTab& passe2 = eq.inconnue()->passe(2);
+      DoubleTab& passe2 = eq.inconnue().passe(2);
       DoubleTab& correcteur=passe;
       correcteur*=(1.-2.*gamma);
       correcteur.ajoute(gamma, present, VECT_REAL_ITEMS);

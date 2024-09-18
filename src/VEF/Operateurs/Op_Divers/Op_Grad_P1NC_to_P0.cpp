@@ -22,7 +22,7 @@ Sortie& Op_Grad_P1NC_to_P0::printOn(Sortie& s) const { return s << que_suis_je()
 
 Entree& Op_Grad_P1NC_to_P0::readOn(Entree& s) { return s; }
 
-void Op_Grad_P1NC_to_P0::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc&)
+void Op_Grad_P1NC_to_P0::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc_base&)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);

@@ -59,7 +59,7 @@ void Operateur_Grad_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse
 {
   if (has_interface_blocs())
     {
-      DoubleTrav secmem(equation().inconnue()->valeurs()); //on va le jeter
+      DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
       matrice.get_set_coeff() *= -1, ajouter_blocs({{ "pression", &matrice }}, secmem), matrice.get_set_coeff() *= -1; /* pour avoir le bon signe */
     }
   else Process::exit(que_suis_je() + " : contribuer_a_avec() not coded!");

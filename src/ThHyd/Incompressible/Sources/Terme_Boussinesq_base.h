@@ -99,7 +99,7 @@ inline void Terme_Boussinesq_base::check() const
 
   // Nouveau : on verifie que moyenne(T)==T0 au demarrage du calcul uniquement
   const double T0 = Scalaire0(0);
-  double moyenne_T = mp_moyenne_vect(equation_scalaire().inconnue()->valeurs());
+  double moyenne_T = mp_moyenne_vect(equation_scalaire().inconnue().valeurs());
   if (inf_ou_egal(moyenne_T,T0-10) || sup_ou_egal(moyenne_T,T0+10))
     {
       Cerr << "New criteria in TRUST for the Boussinesq source term definition:" << finl;

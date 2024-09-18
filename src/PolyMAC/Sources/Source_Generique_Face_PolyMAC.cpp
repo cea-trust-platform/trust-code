@@ -102,7 +102,7 @@ DoubleTab& Source_Generique_Face_PolyMAC_P0P1NC::ajouter(DoubleTab& resu) const
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
-  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
   for (int f = 0, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); f < domaine.nb_faces(); f++)
     if (calc_cl || fcl(f, 0) < 2)
       resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);

@@ -41,7 +41,7 @@
 #include <stat_counters.h>
 #include <Field_base.h>
 
-#include <Champ_Inc.h>
+
 #include <Equation_base.h>
 
 
@@ -625,11 +625,11 @@ ICoCo::MEDDoubleField ProblemTrio::getDirectAccessToUnknown(const std::string& u
       size_t nbTup = 0, nbCompo = 0;
       for (int i=0; i < pb_base.nombre_d_equations(); i++)
         {
-          Champ_Inc& ci = pb_base.equation(i).inconnue();
-          assert(ci->valeurs().nb_dim() == 2);
-          if (Motcle(ci->le_nom()) == Motcle(unk_name))
+          Champ_Inc_base& ci = pb_base.equation(i).inconnue();
+          assert(ci.valeurs().nb_dim() == 2);
+          if (Motcle(ci.le_nom()) == Motcle(unk_name))
             {
-              DoubleTab& t = isFuture ? ci->futur() : ci->valeurs() ;
+              DoubleTab& t = isFuture ? ci.futur() : ci.valeurs() ;
               ptr = t.addr();
               nbTup = t.dimension_tot(0);
               nbCompo = t.dimension_tot(1);

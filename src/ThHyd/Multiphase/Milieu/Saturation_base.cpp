@@ -43,7 +43,7 @@ void Saturation_base::mettre_a_jour(double temps)
 {
   DoubleTab& sigma_tab = ch_sigma_->valeurs(), &Tsat_tab = ch_Tsat_->valeurs();
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
-  const DoubleTab& press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->valeurs();
+  const DoubleTab& press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeurs();
 
   // on suppose pour le moment que le champ de pression a 1 comp.
   assert(press.line_size() == 1);

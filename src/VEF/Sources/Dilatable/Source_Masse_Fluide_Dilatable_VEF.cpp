@@ -84,7 +84,7 @@ Entree& Source_Masse_Fluide_Dilatable_VEF::readOn(Entree& is) { return Source_Ma
 void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffusion_Fluide_Dilatable_base& eqn, const Fluide_Dilatable_base& fluide, const bool is_expl, DoubleVect& resu) const
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
-  const DoubleTab& Y = eqn.inconnue()->valeurs(),
+  const DoubleTab& Y = eqn.inconnue().valeurs(),
                    &rho = fluide.masse_volumique()->valeurs(),
                     &val_flux0 = ch_front_source_->valeurs();
 
@@ -143,7 +143,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
 
   // pour post
   if (post_src_ch)
-    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur()->temps());
+    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur().temps());
 }
 
 void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
@@ -168,7 +168,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
    * Le flux est aux faces
    * Donc : passage aux elems et aux sommets
    */
-  DoubleTrav tab_flux_faces = fluide.inco_chaleur()->valeurs(); // pour initialiser avec la bonne taille
+  DoubleTrav tab_flux_faces = fluide.inco_chaleur().valeurs(); // pour initialiser avec la bonne taille
   tab_flux_faces = 0.;
 
   const int nb_elem_tot = zp1b.nb_elem_tot(), nb_som_tot = zp1b.domaine().nb_som_tot(), nb_faces_tot = zp1b.nb_faces_tot();
@@ -249,5 +249,5 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
 
   // pour post
   if (post_src_ch)
-    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur()->temps());
+    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur().temps());
 }

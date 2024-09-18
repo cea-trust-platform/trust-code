@@ -103,9 +103,9 @@ void  Chimie::completer(const Probleme_base& pb)
         {
           const Convection_Diffusion_Concentration& eq= ref_cast(Convection_Diffusion_Concentration,pb.equation(n));
           masses_molaires[nb]=eq.masse_molaire();
-          alias[nb]=eq.inconnue()->le_nom();
+          alias[nb]=eq.inconnue().le_nom();
           REF(Champ_Inc_base) inco;
-          inco = eq.inconnue().valeur();
+          inco = eq.inconnue();
           liste_C_.add(inco);
           nb++;
         }

@@ -18,7 +18,7 @@
 #include <Champ_Fonc_Tabule.h>
 
 #include <Milieu_base.h>
-#include <Champ_Inc.h>
+
 
 Implemente_base(Discret_Thermique, "Discret_Thermique", Discretisation_base);
 
@@ -26,19 +26,19 @@ Sortie& Discret_Thermique::printOn(Sortie& s) const { return s; }
 
 Entree& Discret_Thermique::readOn(Entree& s) { return s; }
 
-void Discret_Thermique::temperature(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Inc& ch, int nb_comp) const
+void Discret_Thermique::temperature(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_comp) const
 {
   Cerr << "Discretisation de la temperature" << finl;
   discretiser_champ("temperature", z, "temperature", "K", nb_comp, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);
 }
 
-void Discret_Thermique::enthalpie(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Inc& ch, int nb_comp) const
+void Discret_Thermique::enthalpie(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_comp) const
 {
   Cerr << "Discretisation de l'enthalpie" << finl;
   discretiser_champ("temperature" /* comme T */, z, "enthalpie", "J/kg", nb_comp, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);
 }
 
-void Discret_Thermique::Fluctu_Temperature(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Inc& ch) const
+void Discret_Thermique::Fluctu_Temperature(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch) const
 {
   Cerr << "Discretisation des fluctuations en temperature" << finl;
   Noms noms(2), unit(2);
@@ -49,13 +49,13 @@ void Discret_Thermique::Fluctu_Temperature(const Schema_Temps_base& sch, Domaine
   discretiser_champ("temperature", z, multi_scalaire, noms, unit, 2, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);
   ch->nommer("Fluctu_Temperature");
 }
-void Discret_Thermique::Flux_Chaleur_Turb(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Inc& ch) const
+void Discret_Thermique::Flux_Chaleur_Turb(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch) const
 {
   Cerr << "Discretisation du flux de chaleur turbulente" << finl;
   discretiser_champ("vitesse", z, "Flux_Chaleur_Turbulente", "truc1", dimension, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);
 }
 
-void Discret_Thermique::flux_neutronique(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Inc& ch, int nb_comp) const
+void Discret_Thermique::flux_neutronique(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_comp) const
 {
   Cerr << "Discretisation du flux neutronique" << finl;
   discretiser_champ("temperature", z, "flux_neutronique", "m-2.s-1", nb_comp, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);

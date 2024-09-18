@@ -23,7 +23,6 @@
 #include <Domaine_VDF.h>
 #include <Periodique.h>
 #include <Option_VDF.h>
-#include <Champ_Inc.h>
 #include <Navier.h>
 #include <Debog.h>
 
@@ -346,17 +345,16 @@ void Domaine_Cl_VDF::completer(const Domaine_dis_base& un_domaine_dis)
 /*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
  *
  */
-void Domaine_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
+void Domaine_Cl_VDF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
   static int init=0;
-  Champ_Inc_base& ch_base=ch.valeur();
-  DoubleTab& ch_tab = ch_base.valeurs(temps);
+  DoubleTab& ch_tab = ch.valeurs(temps);
   const int N = ch_tab.line_size();
-  if (sub_type(Champ_P0_VDF,ch_base)) { /* Do nothing */}
-  else if(ch_base.nature_du_champ()==scalaire) { /* Do nothing */}
-  else if (sub_type(Champ_Face_VDF,ch_base))
+  if (sub_type(Champ_P0_VDF,ch)) { /* Do nothing */}
+  else if(ch.nature_du_champ()==scalaire) { /* Do nothing */}
+  else if (sub_type(Champ_Face_VDF,ch))
     {
-      Champ_Face_VDF& ch_face = ref_cast(Champ_Face_VDF, ch_base);
+      Champ_Face_VDF& ch_face = ref_cast(Champ_Face_VDF, ch);
       const Domaine_VDF& mon_dom_VDF = ch_face.domaine_vdf();
       int ndeb,nfin, num_face;
 
@@ -437,7 +435,7 @@ void Domaine_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
     }
   else
     {
-      Cerr << "Le type de Champ_Inc " <<  ch->que_suis_je() << " n'est pas prevu en VDF\n";
+      Cerr << "Le type de OWN_PTR(Champ_Inc_base) " <<  ch.que_suis_je() << " n'est pas prevu en VDF\n";
       exit();
     }
   ch_tab.echange_espace_virtuel();

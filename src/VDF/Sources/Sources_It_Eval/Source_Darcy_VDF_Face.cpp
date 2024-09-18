@@ -73,7 +73,7 @@ void Source_Darcy_VDF_Face::associer_domaines(const Domaine_dis_base& domaine_di
 void Source_Darcy_VDF_Face::associer_pb(const Probleme_base& pb)
 {
   const Champ_Don& diffu = ref_cast(Fluide_base,pb.milieu()).viscosite_cinematique();
-  const Champ_Inc& vit = pb.equation(0).inconnue();
+  const Champ_Inc_base& vit = pb.equation(0).inconnue();
   eval().associer(diffu);
   eval().associer(vit);
 }

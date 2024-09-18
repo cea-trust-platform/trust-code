@@ -131,7 +131,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
     nb_inc = "_Multi_inco_";
   type += nb_inc;
 
-  Nom type_inco = inconnue()->que_suis_je();
+  Nom type_inco = inconnue().que_suis_je();
   if (type_inco == "Champ_Q1_EF") type += "Q1";
   else type += (type_inco.suffix("Champ_"));
 

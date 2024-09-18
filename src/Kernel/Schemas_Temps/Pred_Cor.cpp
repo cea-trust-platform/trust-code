@@ -88,8 +88,8 @@ double Pred_Cor::temps_defaut() const
 
 int Pred_Cor::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
-  DoubleTab& xi=eqn.inconnue()->valeurs();
-  DoubleTab& xipls1=eqn.inconnue()->futur();
+  DoubleTab& xi=eqn.inconnue().valeurs();
+  DoubleTab& xipls1=eqn.inconnue().futur();
 
   DoubleTab dudt(xi);
 
@@ -98,7 +98,7 @@ int Pred_Cor::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
 
   // On tourne la roue pour que les operateurs utilisent les champs au temps futur
-  eqn.inconnue()->avancer();
+  eqn.inconnue().avancer();
   eqn.derivee_en_temps_inco(dudt);
 
   // Xi+1=Xi+dt_*dX/dt(Xi)
@@ -111,7 +111,7 @@ int Pred_Cor::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   // Etape CORRECTOR
   DoubleTab dudtpls1(xipls1);
   eqn.derivee_en_temps_inco(dudtpls1);
-  eqn.inconnue()->reculer();
+  eqn.inconnue().reculer();
 
   dudtpls1 += dudt;
   dudtpls1 *= 0.5;

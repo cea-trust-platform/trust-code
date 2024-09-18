@@ -70,6 +70,6 @@ void Paroi_Knudsen_non_negligeable::completer()
   le_champ_front->fixer_nb_comp(dimension);
   // On associe l'inconnue:
   Champ_front_fonc_gradient& ch = ref_cast(Champ_front_fonc_gradient, le_champ_front.valeur());
-  ch.associer_ch_inc_base(domaine_Cl_dis().equation().inconnue().valeur());
+  ch.associer_ch_inc_base(domaine_Cl_dis().equation().inconnue());
   Cerr << "Paroi_Knudsen_non_negligeable::completer OK" << finl;
 }

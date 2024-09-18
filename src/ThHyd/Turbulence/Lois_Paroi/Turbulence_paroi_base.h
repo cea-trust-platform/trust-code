@@ -17,11 +17,9 @@
 #define Turbulence_paroi_base_included
 
 #include <Champs_compris_interface.h>
-
 #include <Champs_compris.h>
-
+#include <Champ_Inc_base.h>
 #include <Champ_Fonc.h>
-#include <Champ_Inc.h>
 #include <TRUST_Ref.h>
 
 class Modele_turbulence_hyd_base;
@@ -48,7 +46,7 @@ public:
   virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&)=0;
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
-  inline int calculer_hyd(Champ_Inc&);
+  inline int calculer_hyd(Champ_Inc_base&);
   inline int calculer_hyd(Champ_Fonc&, Champ_Fonc&);
   virtual int calculer_hyd(DoubleTab&) =0;
   virtual int calculer_hyd(DoubleTab&, DoubleTab&) =0;
@@ -103,18 +101,18 @@ inline void Turbulence_paroi_base::associer_modele(const Modele_turbulence_hyd_b
 
 /*! @brief Simple appel a int calculer_hyd(DoubleTab& ).
  *
- * @param (Champ_Inc& ch)
+ * @param (Champ_Inc_base& ch)
  * @return (int) code de retour propage
  */
-inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc& ch)
+inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc_base& ch)
 {
-  return calculer_hyd(ch->valeurs());
+  return calculer_hyd(ch.valeurs());
 }
 
 /*! @brief Simple appel a int calculer_hyd(DoubleTab&, DoubleTab&).
  *
- * @param (Champ_Inc& ch1)
- * @param (Champ_Inc& ch2)
+ * @param (Champ_Inc_base& ch1)
+ * @param (Champ_Inc_base& ch2)
  * @return (int) code de retour propage
  */
 inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc& ch1, Champ_Fonc& ch2)

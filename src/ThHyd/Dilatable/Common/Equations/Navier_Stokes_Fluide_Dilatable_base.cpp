@@ -129,9 +129,9 @@ void Navier_Stokes_Fluide_Dilatable_base::completer()
 
   Cerr << "Navier_Stokes_std::completer" << finl;
   Navier_Stokes_std::completer();
-  Cerr << "Unknown field type : " << inconnue()->que_suis_je() << finl;
-  Cerr << "Unknown field name : " << inconnue()->le_nom() << finl;
-  Cerr << "Equation type : " << inconnue()->equation().que_suis_je() << finl;
+  Cerr << "Unknown field type : " << inconnue().que_suis_je() << finl;
+  Cerr << "Unknown field name : " << inconnue().le_nom() << finl;
+  Cerr << "Equation type : " << inconnue().equation().que_suis_je() << finl;
 }
 
 const Champ_Don& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_transport() const
@@ -152,7 +152,7 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::vitesse_pour_transport() 
 const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& nom) const
 {
   if (nom=="rho_u")
-    return rho_la_vitesse().valeur();
+    return rho_la_vitesse();
   try
     {
       return Navier_Stokes_std::get_champ(nom);
@@ -173,7 +173,7 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
 
 bool Navier_Stokes_Fluide_Dilatable_base::initTimeStep(double dt)
 {
-  DoubleTab& tab_vitesse = inconnue()->valeurs();
+  DoubleTab& tab_vitesse = inconnue().valeurs();
   Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base, le_fluide.valeur());
   const DoubleTab& tab_rho = fluide_dil.rho_discvit();
   DoubleTab& rhovitesse = rho_la_vitesse_->valeurs(); // will be filled

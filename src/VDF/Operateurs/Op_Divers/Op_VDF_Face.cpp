@@ -29,7 +29,7 @@ void Op_VDF_Face::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& 
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
 
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   const int ndeb = 0, nfin = le_dom.nb_faces_tot(), dimension = Objet_U::dimension, nb_comp = champ_inconnue.line_size();
   const IntVect& orientation = le_dom.orientation();
 
@@ -151,7 +151,7 @@ void Op_VDF_Face::modifier_pour_Cl(const Domaine_VDF& le_dom, const Domaine_Cl_V
 {
   const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
   const IntVect& orientation = le_dom.orientation();
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   const int nb_comp = champ_inconnue.line_size();
 
   for (const auto& itr : les_cl)

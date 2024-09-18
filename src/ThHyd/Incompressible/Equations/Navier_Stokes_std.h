@@ -83,8 +83,8 @@ public :
   const Operateur_Grad& operateur_gradient() const;
   Operateur_Diff& operateur_diff();
   const Operateur_Diff& operateur_diff() const;
-  const Champ_Inc& inconnue() const override;
-  Champ_Inc& inconnue() override;
+  const Champ_Inc_base& inconnue() const override;
+  Champ_Inc_base& inconnue() override;
   SolveurSys& solveur_pression();
   void discretiser() override;
   virtual void discretiser_vitesse();
@@ -119,14 +119,16 @@ public :
 
   inline Matrice& matrice_pression() { return matrice_pression_; }
   inline OWN_PTR(Assembleur_base)& assembleur_pression() { return assembleur_pression_; }
-  inline Champ_Inc& pression() { return la_pression; }
-  inline Champ_Inc& grad_P() { return gradient_P; }
-  inline const Champ_Inc& grad_P() const { return gradient_P; }
-  inline Champ_Inc& pression_pa() { return la_pression_en_pa; }
-  inline Champ_Inc& div() { return divergence_U; }
-  inline const Champ_Inc& pression() const { return la_pression; }
-  inline const Champ_Inc& pression_pa() const { return la_pression_en_pa; }
-  inline const Champ_Inc& div() const { return divergence_U; }
+
+  inline bool has_grad_P() const { return gradient_P.non_nul(); }
+  inline Champ_Inc_base& grad_P() { return gradient_P.valeur(); }
+  inline const Champ_Inc_base& grad_P() const { return gradient_P.valeur(); }
+  inline Champ_Inc_base& pression() { return la_pression.valeur(); }
+  inline const Champ_Inc_base& pression() const { return la_pression.valeur(); }
+  inline Champ_Inc_base& pression_pa() { return la_pression_en_pa.valeur(); }
+  inline const Champ_Inc_base& pression_pa() const { return la_pression_en_pa.valeur(); }
+  inline Champ_Inc_base& div() { return divergence_U.valeur(); }
+  inline const Champ_Inc_base& div() const { return divergence_U.valeur(); }
 
   virtual const Champ_Don& diffusivite_pour_transport() const;
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
@@ -141,8 +143,8 @@ public :
 
   const Motcle& domaine_application() const override;
 
-  virtual inline const Champ_Inc& vitesse() const { return la_vitesse; }
-  virtual inline Champ_Inc& vitesse() { return la_vitesse; }
+  virtual inline const Champ_Inc_base& vitesse() const { return la_vitesse.valeur(); }
+  virtual inline Champ_Inc_base& vitesse() { return la_vitesse.valeur(); }
 
   virtual void projeter();
   virtual int projection_a_faire();
@@ -151,7 +153,7 @@ public :
   virtual void calculer_pression_hydrostatique(Champ_base& pression_hydro) const;
   int verif_Cl() const override;
 
-  virtual const Champ_Inc& rho_la_vitesse() const;
+  virtual const Champ_Inc_base& rho_la_vitesse() const;
   inline Operateur_Conv& get_terme_convectif() { return terme_convectif; }
 
   virtual void renewing_jacobians( DoubleTab& derivee );
@@ -163,7 +165,7 @@ protected:
   virtual void discretiser_assembleur_pression();
   REF(Fluide_base) le_fluide;
 
-  Champ_Inc la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;
+  OWN_PTR(Champ_Inc_base) la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;
   Champ_Fonc la_vorticite, grad_u, critere_Q, pression_hydrostatique_, porosite_volumique, combinaison_champ;
   Champ_Fonc distance_paroi_globale, y_plus, Reynolds_maille, Courant_maille, Taux_cisaillement;
 

@@ -28,7 +28,7 @@ class Op_Diff_PolyMAC_base: public Operateur_Diff_base, public Op_Diff_Turbulent
 {
   Declare_base(Op_Diff_PolyMAC_base);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&) override;
 
   double calculer_dt_stab() const override;
 

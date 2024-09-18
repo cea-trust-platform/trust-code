@@ -26,7 +26,7 @@ Entree& Frottement_interfacial_PolyMAC_P0::readOn(Entree& is) { return Source_Fr
 
 void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil) const
 {
-  const DoubleTab& inco = ref_cast(Champ_Face_base, equation().inconnue().valeur()).valeurs();
+  const DoubleTab& inco = ref_cast(Champ_Face_base, equation().inconnue()).valeurs();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = domaine.nb_faces_tot();
 
@@ -44,15 +44,15 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   const bool res_en_T = pbm.resolution_en_T();
   if (!res_en_T) Process::exit("Frottement_interfacial_PolyMAC_P0::ajouter_blocs NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
 
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &dh_e = equation().milieu().diametre_hydraulique_elem();
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(),
-                   &alpha = pbm.equation_masse().inconnue()->passe(),
-                    &press = ref_cast(QDM_Multiphase, equation()).pression()->passe(),
-                     &temp = pbm.equation_energie().inconnue()->passe(),
+                   &alpha = pbm.equation_masse().inconnue().passe(),
+                    &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),
+                     &temp = pbm.equation_energie().inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique()->passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique()->passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());

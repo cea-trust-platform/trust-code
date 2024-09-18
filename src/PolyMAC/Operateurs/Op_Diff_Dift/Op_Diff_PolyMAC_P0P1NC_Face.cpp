@@ -48,7 +48,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::completer()
   Op_Diff_PolyMAC_P0P1NC_base::completer();
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   Equation_base& eq = equation();
-  Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
+  Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue());
   ch.init_auxiliary_variables(); /* ajout des inconnues auxiliaires (vorticites aux aretes) */
   flux_bords_.resize(domaine.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
@@ -65,13 +65,13 @@ double Op_Diff_PolyMAC_P0P1NC_Face::calculer_dt_stab() const
 {
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces();
-  const DoubleTab& nf = domaine.face_normales(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr,
+  const DoubleTab& nf = domaine.face_normales(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
                    *a_r = sub_type(Pb_Multiphase, equation().probleme()) ?
                           &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr); /* produit alpha * rho */
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
-  int i, e, f, n, N = equation().inconnue()->valeurs().line_size();
+  int i, e, f, n, N = equation().inconnue().valeurs().line_size();
   double dt = 1e10;
   DoubleTrav flux(N), vol(N);
   for (e = 0; e < domaine.nb_elem(); e++)
@@ -88,7 +88,7 @@ double Op_Diff_PolyMAC_P0P1NC_Face::calculer_dt_stab() const
 
 void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue());
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces(), &f_s = domaine.face_sommets(), &e_a = domaine.domaine().elem_aretes(), &fcl = ch.fcl();
   const std::string& nom_inco = ch.le_nom().getString();
@@ -171,7 +171,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_
 void Op_Diff_PolyMAC_P0P1NC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   statistiques().begin_count(diffusion_counter_);
-  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue());
   const Conds_lim& cls = ch.domaine_Cl_dis().les_conditions_limites();
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces(), &f_s = domaine.face_sommets(), &e_a = domaine.domaine().elem_aretes(), &fcl = ch.fcl(), &f_e = domaine.face_voisins();

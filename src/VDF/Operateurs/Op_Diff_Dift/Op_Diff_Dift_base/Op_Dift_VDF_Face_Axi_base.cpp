@@ -21,11 +21,11 @@ Implemente_base(Op_Dift_VDF_Face_Axi_base,"Op_Dift_VDF_Face_Axi_base",Op_Dift_VD
 Sortie& Op_Dift_VDF_Face_Axi_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_VDF_Face_Axi_base::readOn(Entree& s ) { return s ; }
 
-void Op_Dift_VDF_Face_Axi_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_transporte)
+void Op_Dift_VDF_Face_Axi_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch_transporte)
 {
   const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis);
   const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis);
-  const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_transporte.valeur());
+  const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_transporte);
   le_dom_vdf = zvdf;
   la_zcl_vdf = zclvdf;
   inconnue = inco;
@@ -45,7 +45,7 @@ void Op_Dift_VDF_Face_Axi_base::completer()
 {
   Op_Dift_VDF_base::completer();
   Equation_base& eqn_hydr = equation();
-  Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF,eqn_hydr.inconnue().valeur());
+  Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF,eqn_hydr.inconnue());
   vitesse.dimensionner_tenseur_Grad();
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());

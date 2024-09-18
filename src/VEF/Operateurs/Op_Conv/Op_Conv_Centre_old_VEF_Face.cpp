@@ -41,11 +41,11 @@ Entree& Op_Conv_Centre_old_VEF_Face::readOn(Entree& s )
 //
 void Op_Conv_Centre_old_VEF_Face::associer(const Domaine_dis_base& domaine_dis,
                                            const Domaine_Cl_dis_base& domaine_cl_dis,
-                                           const Champ_Inc& ch_transporte)
+                                           const Champ_Inc_base& ch_transporte)
 {
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis);
-  const Champ_Inc_base& le_ch_transporte = ref_cast(Champ_Inc_base,ch_transporte.valeur());
+  const Champ_Inc_base& le_ch_transporte = ref_cast(Champ_Inc_base,ch_transporte);
 
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;

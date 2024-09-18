@@ -38,7 +38,7 @@ class Op_Div_EF : public Operateur_Div_base
 
 public:
 
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base&,const Champ_Inc&) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base&,const Champ_Inc_base&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;

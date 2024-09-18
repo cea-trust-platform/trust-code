@@ -373,7 +373,7 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
     }
     }*/
 
-  BilanQdmVEF::bilan_energie(resu, equation().inconnue()->valeurs(), domaine_Cl_VEF, tab_bilan);
+  BilanQdmVEF::bilan_energie(resu, equation().inconnue().valeurs(), domaine_Cl_VEF, tab_bilan);
   /*
     if (equation().schema_temps().limpr())
     {

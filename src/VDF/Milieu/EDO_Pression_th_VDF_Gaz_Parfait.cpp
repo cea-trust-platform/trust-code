@@ -38,7 +38,7 @@ Entree& EDO_Pression_th_VDF_Gaz_Parfait::readOn(Entree& is) { return is; }
 double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 {
   int traitPth = le_fluide_->getTraitementPth();
-  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs();       //actuel
+  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs();       //actuel
   if (traitPth == 0)
     {
       Cerr << "on choisit le traitement " << finl;
@@ -55,14 +55,14 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
         }
     }
 
-  double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+  double dt = le_fluide_->vitesse().equation().schema_temps().pas_de_temps();
   if (traitPth == 2)   //Cerr << "trait cst" << finl;
     {
       return Pth_n;
     }
   else if (traitPth == 1)
     {
-      const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();
+      const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();
       double cn1 = 0, cn = 0, v;
       int elem, nb_elem = le_dom->nb_elem();
       for (elem = 0; elem < nb_elem; elem++)
@@ -128,8 +128,8 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   Cerr << " Pour l'instant on bloque" << finl;
   assert(0);
   exit();
-  const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse()->valeurs();
-  const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();        //passe
+  const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse().equation()).vitesse().valeurs();
+  const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique()->valeurs();    //actuel
 
   Cerr << "---EDO : Tnp1=" << tempnp1(0) << " Tn=" << tempn(0) << finl;
@@ -145,7 +145,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 
   const IntTab& elem_faces = le_dom->elem_faces();
   DoubleTrav divU(tab_vit.dimension(0));
-  ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit, divU);
+  ref_cast(Navier_Stokes_std,le_fluide_->vitesse().equation()).operateur_divergence().calculer(tab_vit, divU);
   DoubleTrav gradT(tab_vit.dimension(0));
   DoubleTrav Tstar(tab_vit.dimension(0));
   for (elem = 0; elem < nb_elem; elem++)
@@ -230,9 +230,9 @@ void EDO_Pression_th_VDF_Gaz_Parfait::resoudre(DoubleTab& Pth_n)
     }
   else
     {
-      const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(); //actuel
-      const DoubleTab& tempn = le_fluide_->inco_chaleur()->passe();
-      const double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+      const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs(); //actuel
+      const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();
+      const double dt = le_fluide_->vitesse().equation().schema_temps().pas_de_temps();
 
       double cn1 = 0., cn = 0., v = -123.;
 

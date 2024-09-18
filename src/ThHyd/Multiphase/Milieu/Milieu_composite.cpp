@@ -215,7 +215,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
 {
   Cerr << "Composite medium discretization." << finl;
 
-  const int N = (int)fluides_.size(), nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
+  const int N = (int)fluides_.size(), nc = pb.equation(0).inconnue().nb_valeurs_temporelles();
   const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
   const double temps = pb.schema_temps().temps_courant();
 
@@ -224,7 +224,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   for (auto& itr : fluides_) itr->discretiser(pb, dis);
 
   /* masse volumique, energie interne, enthalpie : champ_inc */
-  Champ_Inc rho_inc, ei_inc, h_ou_T_inc;
+  OWN_PTR(Champ_Inc_base) rho_inc, ei_inc, h_ou_T_inc;
   dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique", "kg/m^3", N, nc, temps, rho_inc);
   dis.discretiser_champ("champ_elem", domaine_dis, "energie_interne", "J/m^3", N, nc, temps, ei_inc);
   if (res_en_T_)
@@ -394,8 +394,8 @@ void Milieu_composite::mettre_a_jour_tabs()
   DoubleTab& trm = rho_m_->valeurs(), &thm = h_m_->valeurs();
   trm = 0, thm = 0;
 
-  const DoubleTab& a = equation("alpha").inconnue()->valeurs(), &r = rho->valeurs(),
-                   &ent = res_en_T_ ? h_ou_T->valeurs() : equation("enthalpie").inconnue()->valeurs();
+  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = rho->valeurs(),
+                   &ent = res_en_T_ ? h_ou_T->valeurs() : equation("enthalpie").inconnue().valeurs();
 
   const int Nl = rho_m_->valeurs().dimension_tot(0);
 

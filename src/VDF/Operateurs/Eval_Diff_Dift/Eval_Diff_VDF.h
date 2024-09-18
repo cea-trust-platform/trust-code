@@ -47,7 +47,7 @@ public:
     // Pour Pb_multiphase, tab_diffusivite_ = alpha * Mu ou alpha * D
     if (sub_type(Pb_Multiphase, ref_probleme_.valeur()))
       {
-        tab_alpha_.ref(ref_cast(Pb_Multiphase, ref_probleme_.valeur()).equation_masse().inconnue()->passe());
+        tab_alpha_.ref(ref_cast(Pb_Multiphase, ref_probleme_.valeur()).equation_masse().inconnue().passe());
         tab_diffusivite_ = tab_alpha_;
         for (int e = 0; e < tab_diffusivite_.dimension(0); e++)
           for (int n = 0; n < tab_diffusivite_.dimension(1); n++)

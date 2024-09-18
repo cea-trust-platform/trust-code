@@ -110,7 +110,7 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
       else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
         {
           DoubleTab nodes;
-          equation().inconnue()->remplir_coord_noeuds(nodes);
+          equation().inconnue().remplir_coord_noeuds(nodes);
           ref_coeff->valeur_aux(nodes,values);
         }
 
@@ -129,13 +129,13 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
   if (has_interface_blocs())
     {
       penalisation_flag_ = penalisation;
-      DoubleTrav inco(equation().inconnue()->valeurs());
-      ajouter_blocs({{ equation().inconnue()->le_nom().getString(), &matmo }}, inco, dt, {}, 0); //on tente ajouter_blocs()
+      DoubleTrav inco(equation().inconnue().valeurs());
+      ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matmo }}, inco, dt, {}, 0); //on tente ajouter_blocs()
       return matrice;
     }
 
-  DoubleTrav diag(equation().inconnue()->valeurs());
-  const int sz = equation().inconnue()->valeurs().dimension_tot(0) * diag.line_size();
+  DoubleTrav diag(equation().inconnue().valeurs());
+  const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
   diag=1.;
   appliquer(diag); // M-1
   int prems=0;
@@ -176,14 +176,14 @@ DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const Doub
   if (has_interface_blocs())
     {
       penalisation_flag_ = penalisation;
-      const std::string& nom_inco = equation().inconnue()->le_nom().getString();
+      const std::string& nom_inco = equation().inconnue().le_nom().getString();
       ajouter_blocs({}, x, dt, {{nom_inco,y}}, 0); //on tente ajouter_blocs()
       return x;
     }
 
   int sz=y.size();
   DoubleTab diag;
-  diag.copy(equation().inconnue()->valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag); // M-1
   if (penalisation)
@@ -209,7 +209,7 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, 
 {
   Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
   int sz=matmo.nb_lignes();;
-  DoubleTrav diag(equation().inconnue()->valeurs());
+  DoubleTrav diag(equation().inconnue().valeurs());
   diag=1.;
   appliquer(diag); // M-1
   int prems=0;
@@ -249,7 +249,7 @@ DoubleTab& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, Dou
 {
   int sz=y.size();
   DoubleTrav diag;
-  diag.copy(equation().inconnue()->valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag);
   if (penalisation)
@@ -278,7 +278,7 @@ void Solveur_Masse_base::get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect&
 {
   int sz=dt_locaux.size();
   DoubleTab diag;
-  diag.copy(equation().inconnue()->valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag);
   if (penalisation)
@@ -306,7 +306,7 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 {
   int sz=dt_locaux.size();
   DoubleTab diag;
-  diag.copy(equation().inconnue()->valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
+  diag.copy(equation().inconnue().valeurs(), RESIZE_OPTIONS::NOCOPY_NOINIT);
   diag=1.;
   appliquer(diag);
   if (penalisation)
@@ -333,7 +333,7 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
   int sz = y.dimension_tot(0) * y.line_size();
-  DoubleTrav diag(equation().inconnue()->valeurs());
+  DoubleTrav diag(equation().inconnue().valeurs());
   diag=1.;
   appliquer(diag); // M-1
   // Si x et y sont sur le device, on deporte l'execution sur le device:
@@ -360,10 +360,10 @@ void Solveur_Masse_base::dimensionner(Matrice_Morse& matrix) const
 {
   if (has_interface_blocs())
     {
-      dimensionner_blocs({{ equation().inconnue()->le_nom().getString(), &matrix }}, {}); //on tente dimensionner_blocs
+      dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &matrix }}, {}); //on tente dimensionner_blocs
       return;
     }
-  const DoubleTab& champ_inconnue = equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
   int size = champ_inconnue.dimension_tot(0) * champ_inconnue.line_size();
 
   IntTab indice(size, 2);

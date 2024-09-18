@@ -27,15 +27,15 @@ Entree& Portance_interfaciale_PolyMAC_P0::readOn(Entree& is) {  return Source_Po
 void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& pvit = ch.passe(),
-                   &alpha = pbm.equation_masse().inconnue()->passe(),
-                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
-                     &temp = pbm.equation_energie().inconnue()->passe(),
+                   &alpha = pbm.equation_masse().inconnue().passe(),
+                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
+                     &temp = pbm.equation_energie().inconnue().passe(),
                       &rho = equation().milieu().masse_volumique()->passe(),
                        &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique()->passe(),
                         &grad_v = equation().probleme().get_champ("gradient_vitesse").passe(),
@@ -268,13 +268,13 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
   /* Wobble si besoin */
   if ( (temps>1.e-8) && (wobble.non_nul()) && (C_lift.non_nul()))
     {
-      const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-      const DoubleTab& pvit = equation().inconnue()->passe(),
-                       &alpha = pbm.equation_masse().inconnue()->passe(),
+      const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
+      const DoubleTab& pvit = equation().inconnue().passe(),
+                       &alpha = pbm.equation_masse().inconnue().passe(),
                         &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique()->passe(),
                          &rho = equation().milieu().masse_volumique()->passe(),
-                          &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->passe(),
-                           &temp = pbm.equation_energie().inconnue()->passe(),
+                          &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
+                           &temp = pbm.equation_energie().inconnue().passe(),
                             *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : nullptr,
                              *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
 

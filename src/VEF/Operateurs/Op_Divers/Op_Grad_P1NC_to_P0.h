@@ -33,7 +33,7 @@ class Op_Grad_P1NC_to_P0: public Operateur_Grad_base
 {
   Declare_instanciable(Op_Grad_P1NC_to_P0);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&) override;
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
 

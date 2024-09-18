@@ -28,8 +28,8 @@ Entree& Schema_Euler_explicite::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_
  */
 int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
-  DoubleTab& present = eqn.inconnue()->valeurs(); // Un
-  DoubleTab& futur = eqn.inconnue()->futur();   // Un+1
+  DoubleTab& present = eqn.inconnue().valeurs(); // Un
+  DoubleTab& futur = eqn.inconnue().futur();   // Un+1
   DoubleTrav dudt(futur); // just for initializing the array structure ... Trav is highly recommanded!! Otherwise we allocate at each time step!!
 
   // Boundary conditions applied on Un+1:
@@ -41,9 +41,9 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   //             of the unknown to the 'present' value).
   // So we turn the wheel to get an unmodified version of 'present' for the derivee_en_temps_inco() computation (full explicit scheme):
   // (commenting those lines will trigger failure for cases with variable BC)
-  eqn.inconnue()->avancer();
+  eqn.inconnue().avancer();
   eqn.derivee_en_temps_inco(dudt);
-  eqn.inconnue()->reculer();
+  eqn.inconnue().reculer();
 
   // Un+1=Un+dt_*dU/dt
   futur = dudt;

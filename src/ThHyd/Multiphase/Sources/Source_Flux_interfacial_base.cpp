@@ -53,7 +53,7 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
 
 void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
+  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
 
@@ -91,7 +91,7 @@ void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const
 void Source_Flux_interfacial_base::completer()
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
-  int N = equation().inconnue()->valeurs().line_size();
+  int N = equation().inconnue().valeurs().line_size();
   if (!sub_type(Source_Flux_interfacial_base, equation().sources().dernier().valeur()))
     Process::exit(que_suis_je() + " : Source_Flux_interfacial_base must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
 
@@ -138,15 +138,15 @@ void Source_Flux_interfacial_base::mettre_a_jour(double temps)
 void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
+  const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue());
   // Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleVect& pe = milc.porosite_elem(), &ve = domaine.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const Champ_base& ch_rho = milc.masse_volumique();
-  const Champ_Inc_base& ch_alpha = pbm.equation_masse().inconnue().valeur(), &ch_a_r = pbm.equation_masse().champ_conserve(),
-                        &ch_temp = pbm.equation_energie().inconnue().valeur(), &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeur(),
+  const Champ_Inc_base& ch_alpha = pbm.equation_masse().inconnue(), &ch_a_r = pbm.equation_masse().champ_conserve(),
+                        &ch_temp = pbm.equation_energie().inconnue(), &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression(),
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : nullptr;
 
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &temp_p  = ch_temp.passe(),
@@ -173,7 +173,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   if (is_turb_)
     {
       nut.resize(0, N);
-      MD_Vector_tools::creer_tableau_distribue(equation().inconnue()->valeurs().get_md_vector(), nut); //Necessary to compare size in eddy_viscosity()
+      MD_Vector_tools::creer_tableau_distribue(equation().inconnue().valeurs().get_md_vector(), nut); //Necessary to compare size in eddy_viscosity()
       const Viscosite_turbulente_base& corr_visc_turb = ref_cast(Viscosite_turbulente_base, ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).correlation_viscosite_turbulente()->valeur());
       corr_visc_turb.eddy_viscosity(nut);
     }
@@ -218,7 +218,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   // fill velocity at elem tab
   DoubleTab pvit_elem(0, N * D);
   domaine.domaine().creer_tableau_elements(pvit_elem);
-  const Champ_Face_base& ch_vit = ref_cast(Champ_Face_base,ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm().inconnue().valeur());
+  const Champ_Face_base& ch_vit = ref_cast(Champ_Face_base,ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm().inconnue());
   ch_vit.get_elem_vector_field(pvit_elem);
 
   // remplir les tabs ...

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <Champ_P1NC_implementation.h>
 #include <Domaine_Cl_VEF.h>
 #include <Domaine_VEF.h>
-#include <Champ_Inc.h>
+
 #include <Ok_Perio.h>
 
 /*! @brief class Champ_P1NC

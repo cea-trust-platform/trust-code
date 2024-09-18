@@ -605,7 +605,7 @@ DoubleTab& Op_Diff_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
   modif_par_porosite_si_flag(nu_,nu,!marq,porosite_elem);
   const DoubleTab& inconnue=modif_par_porosite_si_flag(inconnue_org,tab_inconnue,marq,porosite_face);
 
-  const Champ_base& inco = equation().inconnue().valeur();
+  const Champ_base& inco = equation().inconnue();
   const Nature_du_champ nature_champ = inco.nature_du_champ();
   if(nature_champ==scalaire)
     ajouter_cas_scalaire(inconnue, resu, flux_bords_, nu, domaine_Cl_VEF, domaine_VEF);
@@ -1202,7 +1202,7 @@ void Op_Diff_VEF_Face::verifier() const
   const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
 
   const DoubleTab& xv=domaine_VEF.xv();
-  DoubleTab vit(equation().inconnue()->valeurs());
+  DoubleTab vit(equation().inconnue().valeurs());
   DoubleTab resu(vit);
   int i, comp;
   if(dimension==2)

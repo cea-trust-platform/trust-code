@@ -39,8 +39,8 @@ public:
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override
   {
-    const std::string& nom_inco = equation().inconnue()->le_nom().getString();
-    const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue()->valeurs();
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
+    const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
     ajouter_(inco,secmem);
   }
   DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const override;

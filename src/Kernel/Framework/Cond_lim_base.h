@@ -17,7 +17,7 @@
 #define Cond_lim_base_included
 
 #include <Champ_front.h>
-#include <Champ_Inc.h>
+
 #include <TRUST_Ref.h>
 #include <Motcle.h>
 #include <vector>
@@ -60,7 +60,7 @@ public:
   virtual void champ_front(int, DoubleVect&) const;
   virtual int compatible_avec_eqn(const Equation_base&) const ;
   virtual int compatible_avec_discr(const Discretisation_base&) const;
-  virtual void injecter_dans_champ_inc(const Champ_Inc&) const;
+  virtual void injecter_dans_champ_inc(const Champ_Inc_base&) const;
 
   virtual int a_mettre_a_jour_ss_pas_dt();
 

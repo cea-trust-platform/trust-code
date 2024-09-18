@@ -98,7 +98,7 @@ void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
 {
   const Domaine_VF& domaine_VF = le_dom_VDF.valeur();
   const Domaine_Cl_dis_base& domaine_Cl_dis = le_dom_Cl_VDF.valeur();
-  const DoubleTab& vitesse = equation().inconnue()->valeurs();
+  const DoubleTab& vitesse = equation().inconnue().valeurs();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   int ndeb, nfin, num_face;
   int nb_bords = domaine_VF.nb_front_Cl();

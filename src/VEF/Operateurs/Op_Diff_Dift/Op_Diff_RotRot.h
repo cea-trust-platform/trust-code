@@ -31,7 +31,7 @@ class Op_Diff_RotRot: public Operateur_Diff_base
 {
   Declare_instanciable(Op_Diff_RotRot);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&) override;
   void associer_diffusivite(const Champ_base&) override;
   const Champ_base& diffusivite() const override;
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
@@ -94,7 +94,7 @@ public:
 
 protected:
 
-  mutable Champ_Inc vorticite_;
+  mutable OWN_PTR(Champ_Inc_base) vorticite_;
   Matrice matrice_vorticite_;
 
   Op_Rot_VEFP1B rot_;

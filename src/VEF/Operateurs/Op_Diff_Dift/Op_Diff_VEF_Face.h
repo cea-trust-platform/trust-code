@@ -20,7 +20,7 @@
 #include <Matrice_Morse.h>
 #include <Champ_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
+
 
 /*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
  *
@@ -102,7 +102,7 @@ inline void Op_Diff_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab
 inline void Op_Diff_VEF_Face::contribuer_a_avec(const DoubleTab& inco,
                                                 Matrice_Morse& matrice) const
 {
-  const Champ_base& inconnue = equation().inconnue().valeur();
+  const Champ_base& inconnue = equation().inconnue();
   const Nature_du_champ nature_champ = inconnue.nature_du_champ();
   if (nature_champ!=multi_scalaire)
     ajouter_contribution(inco, matrice);

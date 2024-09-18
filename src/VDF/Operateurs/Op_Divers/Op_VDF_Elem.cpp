@@ -31,7 +31,7 @@ void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& 
 
   const IntTab& face_voisins = le_dom.face_voisins();
   const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   const int n1 = le_dom.domaine().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
 
   la_matrice.dimensionner(n1*nb_comp, n1*nb_comp, 0);

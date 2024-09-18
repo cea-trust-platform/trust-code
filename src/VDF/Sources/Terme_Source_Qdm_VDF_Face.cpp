@@ -35,10 +35,10 @@ Sortie& Terme_Source_Qdm_VDF_Face::printOn(Sortie& s) const { return s << que_su
 Entree& Terme_Source_Qdm_VDF_Face::readOn(Entree& s)
 {
   s >> la_source;
-  if (la_source->nb_comp() != equation().inconnue()->nb_comp())
+  if (la_source->nb_comp() != equation().inconnue().nb_comp())
     {
       Cerr << "Erreur a la lecture du terme source de type " << que_suis_je() << finl;
-      Cerr << "le champ source doit avoir " << equation().inconnue()->nb_comp() << " composantes" << finl;
+      Cerr << "le champ source doit avoir " << equation().inconnue().nb_comp() << " composantes" << finl;
       exit();
     }
   return s;
@@ -60,10 +60,10 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
 
   // useful only if multiphase problem
-  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleTab* rho = alp ? &equation().milieu().masse_volumique()->passe() : nullptr;
 
-  const int cR = alp ? ((*rho).dimension_tot(0) == 1) : 0, nb_comp = equation().inconnue()->valeurs().line_size();
+  const int cR = alp ? ((*rho).dimension_tot(0) == 1) : 0, nb_comp = equation().inconnue().valeurs().line_size();
 
   double vol;
   int ndeb, nfin, ncomp, num_face, elem1, elem2;

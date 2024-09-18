@@ -74,7 +74,7 @@ public:
         Nom nom_inco = "concentration", nom_eq = eqn.que_suis_je();
         nom_inco += Nom(i), nom_eq += Nom(i);
         Cerr << "The unknown name of the " << eqn.que_suis_je() << " equation " << i << " is modified => " << nom_inco << finl;
-        eqn.inconnue()->nommer(nom_inco);
+        eqn.inconnue().nommer(nom_inco);
         Cerr << "The " << eqn.que_suis_je() << " equation name, of number " << i << ", is modified => " << nom_eq << finl;
         eqn.nommer(nom_eq);
 

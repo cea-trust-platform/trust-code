@@ -403,12 +403,12 @@ void Fluide_base::set_h0_T0(double h0, double T0)
 
 void Fluide_base::creer_e_int() const
 {
-  Champ_Inc e_int_inc;
+  OWN_PTR(Champ_Inc_base) e_int_inc;
   const Equation_base& eq = equation_.count("temperature") ? equation("temperature") : equation("enthalpie");
-  eq.discretisation().discretiser_champ("champ_elem", eq.domaine_dis(), "energie_interne", "J/kg", 1, eq.inconnue()->nb_valeurs_temporelles(), eq.inconnue()->temps(), e_int_inc);
+  eq.discretisation().discretiser_champ("champ_elem", eq.domaine_dis(), "energie_interne", "J/kg", 1, eq.inconnue().nb_valeurs_temporelles(), eq.inconnue().temps(), e_int_inc);
   e_int_inc->associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
   e_int = e_int_inc;
-  e_int->mettre_a_jour(eq.inconnue()->temps());
+  e_int->mettre_a_jour(eq.inconnue().temps());
   e_int_auto_ = 1;
 }
 
@@ -418,7 +418,7 @@ void Fluide_base::calculer_temperature_multiphase() const
   if (res_en_T) return; /* Do nothing */
 
   const Equation_base& eq = equation("enthalpie");
-  const Champ_base& ch_h = eq.inconnue().valeur(), &ch_Cp = capacite_calorifique();
+  const Champ_base& ch_h = eq.inconnue(), &ch_Cp = capacite_calorifique();
   Champ_Inc_base& ch_T = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());
   const DoubleTab& h = ch_h.valeurs(), &Cp_ = ch_Cp.valeurs();
   DoubleTab& T = ch_T.valeurs(), &bT = ch_T.val_bord();;
@@ -454,7 +454,7 @@ void Fluide_base::creer_temperature_multiphase() const
   if (e_int.est_nul()) creer_e_int();
   h_ou_T = e_int; // on initialise
   h_ou_T->nommer("temperature");
-  h_ou_T->mettre_a_jour(eq.inconnue()->temps());
+  h_ou_T->mettre_a_jour(eq.inconnue().temps());
 }
 
 void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
@@ -463,7 +463,7 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
   const bool res_en_T = fl.equation_.count("temperature") ? true : false;
 
   const Equation_base& eq = res_en_T ? fl.equation("temperature") : fl.equation("enthalpie");
-  const Champ_base& ch_T_ou_h = eq.inconnue().valeur(), &ch_Cp = fl.capacite_calorifique();
+  const Champ_base& ch_T_ou_h = eq.inconnue(), &ch_Cp = fl.capacite_calorifique();
   const DoubleTab& T_ou_h = ch_T_ou_h.valeurs(), &Cp = ch_Cp.valeurs();
   int i, zero = 0, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, n0 = std::max(fl.id_composite, zero), cCp = Cp.dimension_tot(0) == 1, N = fl.id_composite >= 0 ? 1 : Cp.dimension(1);
 

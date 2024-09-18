@@ -39,8 +39,8 @@ public :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const override;
-  inline Champ_Inc& inconnue() override;
+  inline const Champ_Inc_base& inconnue() const override;
+  inline Champ_Inc_base& inconnue() override;
   void discretiser() override;
   const Milieu_base& milieu() const override;
   const Fluide_base& fluide() const;
@@ -87,25 +87,25 @@ public :
 
 protected :
 
-  Champ_Inc l_inco_ch_;
+  OWN_PTR(Champ_Inc_base) l_inco_ch_;
   Operateur_Evanescence evanescence_;
   REF(Fluide_base) le_fluide_;
 };
 
 /*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H) (version const)
  *
- * @return (Champ_Inc&) le champ inconnue representant la temperature (GP) ou l'enthalpie (GR)
+ * @return (Champ_Inc_base&) le champ inconnue representant la temperature (GP) ou l'enthalpie (GR)
  */
-inline const Champ_Inc& Energie_Multiphase::inconnue() const
+inline const Champ_Inc_base& Energie_Multiphase::inconnue() const
 {
   return l_inco_ch_;
 }
 
 /*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H)
  *
- * @return (Champ_Inc&) le champ inconnue representant la temperature (GP) ou l'enthalpie (GR)
+ * @return (Champ_Inc_base&) le champ inconnue representant la temperature (GP) ou l'enthalpie (GR)
  */
-inline Champ_Inc& Energie_Multiphase::inconnue()
+inline Champ_Inc_base& Energie_Multiphase::inconnue()
 {
   return l_inco_ch_;
 }

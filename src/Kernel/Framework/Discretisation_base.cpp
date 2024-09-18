@@ -58,7 +58,7 @@ void Discretisation_base::associer_domaine(const Domaine& dom)
 // (exemple pour la vitesse : 1 composante en VDF, 3 en VEF)
 // Si on met nb_comp = -1, la discretisation choisit le nombre
 // approprie, sinon elle utilise la valeur fournie.
-void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,
                                             const Nom& sous_type) const
 {
   Noms noms;
@@ -119,7 +119,7 @@ void Discretisation_base::test_demande_description(const Motcle& directive, cons
  *
  */
 void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt, double temps,
-                                            Champ_Inc& champ, const Nom& sous_type) const
+                                            OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
 
 {
   test_demande_description(directive, champ.que_suis_je());
@@ -203,13 +203,13 @@ void Discretisation_base::champ_fixer_membres_communs(Champ_base& ch, const Doma
   ch.changer_temps(temps);
 }
 
-/*! @brief Methode statique qui cree un Champ_Inc du type specifie.
+/*! @brief Methode statique qui cree un OWN_PTR(Champ_Inc_base) du type specifie.
  *
  * Les parametres "directive" et "nom_discretisation" sont
  *  utilises pour l'affichage uniquement et sont optionnels
  *
  */
-void Discretisation_base::creer_champ(Champ_Inc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
+void Discretisation_base::creer_champ(OWN_PTR(Champ_Inc_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
                                       const Nom& directive, const Nom& nom_discretisation)
 {
   //Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
@@ -301,7 +301,7 @@ void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Dom
     }
 }
 
-void Discretisation_base::residu(const Domaine_dis_base&, const Champ_Inc&, Champ_Fonc&) const
+void Discretisation_base::residu(const Domaine_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const
 {
   Cerr << "Discret_Thyd::residu() does nothing ! " << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
@@ -362,7 +362,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
             disc = "VEF";
         }
 
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch == "Champ_Q1NC") type_ch = "Champ_P1NC";
 
       type_ch.suffix("Champ_");
@@ -381,7 +381,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
 
       type += discr;
 
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
 
       if (type_ch == "Champ_Q1NC") type_ch = "Champ_P1NC";
       if (type_ch.debute_par("Champ_P0_VDF")) type_ch = "Champ_P0_VDF";
@@ -406,17 +406,17 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
 
       type += discr;
       type += "_";
-      Nom type_inco = eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue().que_suis_je();
 
       if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
 
       type += (type_inco.suffix("Champ_"));
 
       //Test pour appliquer un gradient a un Champ_P1NC a une composante en VEF : Typage a revoir (revison des operateurs)
-      if ((eqn.inconnue()->le_nom() != "vitesse") && (eqn.inconnue()->que_suis_je() == "Champ_P1NC")) type = "Op_Grad_P1NC_to_P0";
+      if ((eqn.inconnue().le_nom() != "vitesse") && (eqn.inconnue().que_suis_je() == "Champ_P1NC")) type = "Op_Grad_P1NC_to_P0";
 
       //Test pour appliquer un gradient a un Champ_P0 a une composante en VDF : Typage a revoir (revison des operateurs)
-      if ((eqn.inconnue()->le_nom() != "vitesse") && (eqn.inconnue()->que_suis_je() == "Champ_P0_VDF")) type = "Op_Grad_P0_to_Face";
+      if ((eqn.inconnue().le_nom() != "vitesse") && (eqn.inconnue().que_suis_je() == "Champ_P0_VDF")) type = "Op_Grad_P0_to_Face";
 
       return type;
     }
@@ -425,7 +425,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
       type = "Op_Div_";
 
       Nom discr = eqn.discretisation().que_suis_je();
-      Nom type_inco = eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue().que_suis_je();
       type += discr;
 
       type += "_";
@@ -471,7 +471,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
       else // par contre, je modifie le cas general pour eviter de rajouter des cas particuliers
         type += "_";
 
-      Nom type_inco = eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue().que_suis_je();
 
       type += (type_inco.suffix("Champ_"));
       if (axi == 1) type += "_Axi";
@@ -507,7 +507,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
           if (type_operateur != "KEps_Comp")
             {
               type += tiret;
-              Nom type_inco = eqn.inconnue()->que_suis_je();
+              Nom type_inco = eqn.inconnue().que_suis_je();
               if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
               if (type_inco.debute_par("Champ_P0_VDF")) type_inco = "Champ_P0_VDF";
               if (type_inco.debute_par("Champ_Face")) type_inco = "Champ_Face";
@@ -522,7 +522,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
     }
   else if (class_operateur == "Operateur_Evanescence")
     {
-      Nom type_inco = eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue().que_suis_je();
       if (type_inco == "Champ_Q1NC") type_inco = "Champ_P1NC";
       if (type_inco.debute_par("Champ_P0_VDF")) type_inco = "Champ_P0_VDF";
       if (type_inco.debute_par("Champ_Face")) type_inco = "Champ_Face";

@@ -59,7 +59,7 @@ public:
   void dimensionner_blocs_elem(matrices_t , const tabs_t& ) const;
   void dimensionner_blocs_face(matrices_t , const tabs_t& ) const;
 
-  void associer_champ_temp(const Champ_Inc&, bool) const override;
+  void associer_champ_temp(const Champ_Inc_base&, bool) const override;
   void contribuer_au_second_membre(DoubleTab& resu) const override
   {
     Cerr << "Op_Conv_VDF_base::" << __func__ << " should not be called !" << finl;
@@ -73,11 +73,11 @@ protected:
 
 private:
   /* si operateur de convection de Masse_Multiphase */
-  std::vector<Champ_Inc> cc_phases_; //flux massiques (kg/m2/s)
+  std::vector<OWN_PTR(Champ_Inc_base)> cc_phases_; //flux massiques (kg/m2/s)
   Motcles noms_cc_phases_; //leurs noms
-  std::vector<Champ_Inc> vd_phases_; //vitesses debitantes
+  std::vector<OWN_PTR(Champ_Inc_base)> vd_phases_; //vitesses debitantes
   Motcles noms_vd_phases_; //leurs noms
-  std::vector<Champ_Inc> x_phases_; //titres par phase
+  std::vector<OWN_PTR(Champ_Inc_base)> x_phases_; //titres par phase
   Motcles noms_x_phases_; //leurs noms
   mutable DoubleTab fluent_;
 };

@@ -41,7 +41,7 @@ void Op_Div_PolyMAC_P0::dimensionner(Matrice_Morse& matrice) const
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const IntTab& f_e = domaine.face_voisins();
   int i, e, f, n, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(),
-                  N = equation().inconnue()->valeurs().line_size(), D = dimension;
+                  N = equation().inconnue().valeurs().line_size(), D = dimension;
 
   IntTab stencil(0, 2);
 
@@ -91,7 +91,7 @@ void Op_Div_PolyMAC_P0::contribuer_a_avec(const DoubleTab& incoo, Matrice_Morse&
     }
 
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   const IntTab& f_e = domaine.face_voisins();
   int i, e, f, n, N = ch.valeurs().line_size();

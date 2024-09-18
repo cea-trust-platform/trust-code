@@ -260,8 +260,6 @@ Entree& Test_solveur::interpreter(Entree& is)
 
   secmem.echange_espace_virtuel();
   solution.echange_espace_virtuel();
-  //Champ_Inc bidon;
-  //bidon.typer("Champ_P0_VDF");
   ArrOfDouble temps(nb_test);
   if (fichier_solveur==Nom())
     test_un_solveur(solveur,  matrice , secmem , solution , -10, temps,seuil_verification);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,8 +64,8 @@ void Terme_Source_Constituant::ouvrir_fichier(const Equation_base& eq, const Nom
       os.set_col_width(wcol - !gnuplot_header);
       fic.add_col("Time");
       os.set_col_width(wcol);
-      for (int i = 0; i < eq.inconnue()->nb_comp(); ++i)
-        fic.add_col(eq.inconnue()->noms_compo()[i].getChar());
+      for (int i = 0; i < eq.inconnue().nb_comp(); ++i)
+        fic.add_col(eq.inconnue().noms_compo()[i].getChar());
       fic << finl;
     }
   // Sinon on l'ouvre

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ class Champ_base;
  *
  *      un terme de convection dans une equation.
  *
- * @sa Operateur_base, Classe abstraite, Methode abstraite, void associer_vitesse(const Champ_Inc& vit )
+ * @sa Operateur_base, Classe abstraite, Methode abstraite, void associer_vitesse(const Champ_Inc_base& vit )
  */
 
 class Operateur_Conv_base  : public Operateur_base
@@ -40,7 +40,7 @@ public :
   virtual void associer_norme_vitesse(const Champ_base& norme_vitesse);
   virtual void associer_vitesse_pour_pas_de_temps(const Champ_base& vitesse);
   virtual void set_incompressible(const int);
-  virtual void associer_champ_temp(const Champ_Inc&, bool) const { }
+  virtual void associer_champ_temp(const Champ_Inc_base&, bool) const { }
 
 protected :
   REF(Champ_base) la_norme_vitesse;

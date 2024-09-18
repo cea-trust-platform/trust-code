@@ -22,7 +22,7 @@
 #include <Periodique.h>
 #include <TRUSTLists.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
+
 #include <TRUSTTrav.h>
 #include <EFichier.h>
 #include <Domaine.h>
@@ -33,13 +33,13 @@ Sortie& Op_Diff_P1NC_barprim::printOn(Sortie& s) const { return s << que_suis_je
 
 Entree& Op_Diff_P1NC_barprim::readOn(Entree& s) { return s; }
 
-void Op_Diff_P1NC_barprim::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch_diffuse)
+void Op_Diff_P1NC_barprim::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch_diffuse)
 {
   le_dom_vef = ref_cast(Domaine_VEF, domaine_dis);
   la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis);
-  if (sub_type(Champ_P1NC, ch_diffuse.valeur()))
+  if (sub_type(Champ_P1NC, ch_diffuse))
     {
-      const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_diffuse.valeur());
+      const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_diffuse);
       REF(Champ_P1NC) inconnue;
       inconnue = inco;
     }
@@ -160,7 +160,7 @@ DoubleTab& Op_Diff_P1NC_barprim::calculer(const DoubleTab& inconnue, DoubleTab& 
 
   resu = 0.;
 
-  const Champ_P1NC& ch = ref_cast(Champ_P1NC, (equation().inconnue().valeur()));
+  const Champ_P1NC& ch = ref_cast(Champ_P1NC, (equation().inconnue()));
   DoubleTab gradient_bar;
   DoubleTab ubar(ch.valeurs());
   ch.filtrer_L2(ubar);

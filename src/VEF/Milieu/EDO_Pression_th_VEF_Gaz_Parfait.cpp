@@ -43,11 +43,11 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
   if (traitPth == 2)  // Pth constant
     return Pth_n;
 
-  double present = le_fluide_->vitesse()->equation().schema_temps().temps_courant();
-  double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+  double present = le_fluide_->vitesse().equation().schema_temps().temps_courant();
+  double dt = le_fluide_->vitesse().equation().schema_temps().pas_de_temps();
   double futur = present + dt;
-  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(futur);    // T(n+1)
-  const DoubleTab& tempn = le_fluide_->inco_chaleur()->valeurs(present);    // T(n)
+  const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs(futur);    // T(n+1)
+  const DoubleTab& tempn = le_fluide_->inco_chaleur().valeurs(present);    // T(n)
   int nb_faces = le_dom->nb_faces();
   double Pth = 0;
 
@@ -167,11 +167,11 @@ void EDO_Pression_th_VEF_Gaz_Parfait::resoudre(DoubleTab& Pth_n)
     }
   else
     {
-      const double present = le_fluide_->vitesse()->equation().schema_temps().temps_courant();
-      const double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
+      const double present = le_fluide_->vitesse().equation().schema_temps().temps_courant();
+      const double dt = le_fluide_->vitesse().equation().schema_temps().pas_de_temps();
       const double futur = present + dt;
-      const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(futur);    // T(n+1)
-      const DoubleTab& tempn = le_fluide_->inco_chaleur()->valeurs(present);    // T(n)
+      const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs(futur);    // T(n+1)
+      const DoubleTab& tempn = le_fluide_->inco_chaleur().valeurs(present);    // T(n)
       const int nb_faces = le_dom->nb_faces();
       const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, le_dom.valeur());
 

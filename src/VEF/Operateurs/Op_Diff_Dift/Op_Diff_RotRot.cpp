@@ -33,7 +33,7 @@ Entree& Op_Diff_RotRot::readOn(Entree& s) { return s; }
 
 const Domaine_VEF& Op_Diff_RotRot::domaine_vef() const { return ref_cast(Domaine_VEF, le_dom_vef.valeur()); }
 
-void Op_Diff_RotRot::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc& inco)
+void Op_Diff_RotRot::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc_base& inco)
 {
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis);
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis);
@@ -86,7 +86,7 @@ DoubleTab& Op_Diff_RotRot::ajouter(const DoubleTab& vitesse, DoubleTab& diffusio
   Cerr << "je suis dans OpDiffRotRot" << finl;
   DoubleTab curl(matrice_vorticite_->ordre());
 
-  //Marche car Champ_Inc est mutable
+  //Marche car OWN_PTR(Champ_Inc_base) est mutable
   curl_.calculer(vitesse, curl);
   //curl=-1*curl;
   calculer_vorticite(vorticite_->valeurs(), curl);

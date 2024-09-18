@@ -73,7 +73,7 @@ void Op_EF_base::dimensionner(const Domaine_EF& le_dom,
   // essai
   nb_som=nfin;
 
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   int nb_comp = champ_inconnue.line_size();
 
   // on ne s'occupe pas dans un premier temps des composantes
@@ -261,7 +261,7 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
 
   // determination de la taille du champ inconnue.
   // Cerr << "dans modifier cl " << finl;
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue()->valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   int nb_comp = champ_inconnue.line_size();
 
   const IntTab& faces_sommets=le_dom.face_sommets();
@@ -338,7 +338,7 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
 
   // On modifie pour la symetrie
 
-  if (le_dom_cl.equation().inconnue()->nature_du_champ()==vectoriel)
+  if (le_dom_cl.equation().inconnue().nature_du_champ()==vectoriel)
     {
       le_dom_cl.imposer_symetrie_matrice_secmem(la_matrice,secmem);
     }
@@ -404,7 +404,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (le_dom_EF.domaine().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue()->le_nom()=="vitesse")
+  if (le_dom_EF.domaine().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
     impr_mom=1;
 
   const int impr_sum=(le_dom_EF.domaine().bords_a_imprimer_sum().est_vide() ? 0:1);

@@ -25,11 +25,9 @@
 #include <Interface_blocs.h>
 #include <Value_Input_Int.h>
 #include <TRUSTTab_parts.h>
-
+#include <Champ_Inc_base.h>
 #include <Matrice_Morse.h>
-
 #include <Champs_Fonc.h>
-#include <Champ_Inc.h>
 #include <TRUST_Ref.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
@@ -65,8 +63,8 @@ enum Type_modele { TURBULENCE };
  *        int nombre_d_operateurs() const
  *        const Operateur& operateur(int) const
  *        Operateur& operateur(int)
- *        const Champ_Inc& inconnue() const
- *        Champ_Inc& inconnue()
+ *        const Champ_Inc_base& inconnue() const
+ *        Champ_Inc_base& inconnue()
  *        void associer_milieu_base(const Milieu_base&)
  *        const Milieu_base& milieu() const
  *        Milieu_base& milieu()
@@ -91,8 +89,8 @@ public :
   virtual Operateur& operateur(int) =0;
   virtual const Operateur& operateur_fonctionnel(int) const;
   virtual Operateur& operateur_fonctionnel(int);
-  virtual const Champ_Inc& inconnue() const =0;
-  virtual Champ_Inc& inconnue() =0;
+  virtual const Champ_Inc_base& inconnue() const =0;
+  virtual Champ_Inc_base& inconnue() =0;
   virtual void associer_milieu_base(const Milieu_base&)=0;
   virtual const Milieu_base& milieu() const =0;
   virtual Milieu_base& milieu() =0;
@@ -162,7 +160,7 @@ public :
     interface {dimensionner/ajouter/assembler}_blocs
     specificites : - has_interface_blocs() renvoie 1 si tous les termes de l'equation supportent cette interface
                    - dimensionner_blocs() non memoize (a gerer par l'appelant) / appelable sur des matrices non vides
-                   - assembler_blocs() utilise les valeurs des inconnues/champs a l'instant present (genre inconnue()->valeurs())
+                   - assembler_blocs() utilise les valeurs des inconnues/champs a l'instant present (genre inconnue().valeurs())
                    - assembler_blocs_*() raisonne en increments : M.dInco = S -> attention aux seuils des solveurs
                    - certaines variables (ensemble semi_impl) peuvent etre traitees en "semi-implicite"
                      (on utilise des valeurs predites, pas de derivees renseignees)
@@ -187,7 +185,7 @@ public :
   /* renvoie le nom du champ conserve et la fonction pour le calculer -> a surcharger  */
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
   {
-    return { inconnue()->le_nom().getString(), calculer_champ_conserve};
+    return { inconnue().le_nom().getString(), calculer_champ_conserve};
   }
 
   //par defaut le champ conserve
@@ -230,8 +228,8 @@ public :
   int disable_equation_residual() const { return disable_equation_residual_; };
 
   //pour les schemas en temps a pas multiples
-  inline virtual const Champ_Inc& derivee_en_temps() const { return derivee_en_temps_; }
-  inline virtual Champ_Inc& derivee_en_temps() { return derivee_en_temps_; }
+  inline virtual const Champ_Inc_base& derivee_en_temps() const { return derivee_en_temps_; }
+  inline virtual Champ_Inc_base& derivee_en_temps() { return derivee_en_temps_; }
   void set_calculate_time_derivative(int i) { calculate_time_derivative_=i; }
   int calculate_time_derivative() const { return calculate_time_derivative_; }
 
@@ -275,8 +273,12 @@ protected :
   mutable int matrice_init;
 
   //pour l'interface assembler_blocs
-  mutable Champ_Inc champ_conserve_;
-  mutable Champ_Inc champ_convecte_;
+  mutable OWN_PTR(Champ_Inc_base) champ_conserve_;
+  mutable OWN_PTR(Champ_Inc_base) champ_convecte_;
+
+  // For multistep methods, store previous dI/dt(n), dI/dt(n-1),...
+  OWN_PTR(Champ_Inc_base) derivee_en_temps_;
+  int calculate_time_derivative_;
 
   // pour une positivation du terme en fin d'iteration si necessaire
   // renvoie 1 pour un champ positif, 0 pour un champ negatif
@@ -297,11 +299,6 @@ private :
   int disable_equation_residual_ = 0;
   mutable Parser_U equation_non_resolue_;
   Value_Input_Int eq_non_resolue_input_;
-
-  // For multistep methods, store previous dI/dt(n), dI/dt(n-1),...
-  Champ_Inc derivee_en_temps_;
-  int calculate_time_derivative_;
-
 };
 
 

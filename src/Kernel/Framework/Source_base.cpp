@@ -93,7 +93,7 @@ void Source_base::completer()
   associer_domaines(zdis, zcldis);
   associer_pb(eqn.probleme());
   // Initialize the bilan_ array:
-  bilan_.resize(eqn.inconnue()->nb_comp());
+  bilan_.resize(eqn.inconnue().nb_comp());
   bilan_=0;
 }
 
@@ -212,7 +212,7 @@ int Source_base::impr(Sortie& os) const
  */
 void Source_base::dimensionner(Matrice_Morse& mat) const
 {
-  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue()->le_nom().getString(), &mat }});
+  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
 }
 
 void Source_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
@@ -239,8 +239,8 @@ DoubleTab& Source_base::calculer(DoubleTab& secmem) const
 void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse& mat) const
 {
   if (!has_interface_blocs()) return;
-  DoubleTrav secmem(equation().inconnue()->valeurs()); //sera jete
-  ajouter_blocs({{ equation().inconnue()->le_nom().getString(), &mat}}, secmem, {});
+  DoubleTrav secmem(equation().inconnue().valeurs()); //sera jete
+  ajouter_blocs({{ equation().inconnue().le_nom().getString(), &mat}}, secmem, {});
 }
 
 /*! @brief contribution au second membres des termes sources en implicite par defaut erreur

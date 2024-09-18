@@ -41,7 +41,7 @@ Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
   if (terme_convectif.op_non_nul())
     {
       Nom nom="Convection_";
-      nom+=inconnue()->le_nom(); // On ajoute le nom de l'inconnue pour prevoir une equation de scalaires passifs
+      nom+=inconnue().le_nom(); // On ajoute le nom de l'inconnue pour prevoir une equation de scalaires passifs
       terme_convectif.set_fichier(nom);
       terme_convectif.set_description((Nom)"Convective mass transfer rate=Integral(-C*u*ndS)[m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
     }
@@ -53,7 +53,7 @@ Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
   if (terme_diffusif.op_non_nul())
     {
       Nom nom="Diffusion_";
-      nom+=inconnue()->le_nom();
+      nom+=inconnue().le_nom();
       terme_diffusif.set_fichier(nom);
       terme_diffusif.set_description((Nom)"Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
     }
@@ -87,9 +87,9 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
       Motcle nom; // Question: veut-on le mettre en majuscules ?
       is >> nom;
       Cerr << "The unknow of a Convection_Diffusion_Concentration equation is renamed"
-           << "\n Old name : " << inconnue()->le_nom()
+           << "\n Old name : " << inconnue().le_nom()
            << "\n New name : " << nom << finl;
-      inconnue()->nommer(nom);
+      inconnue().nommer(nom);
       champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }
@@ -98,9 +98,9 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
       Motcle nom; // Question: veut-on le mettre en majuscules ?
       is >> nom;
       Cerr << "nom_inconnue: On renomme l'equation et son inconnue"
-           << "\n Ancien nom : " << inconnue()->le_nom()
+           << "\n Ancien nom : " << inconnue().le_nom()
            << "\n Nouveau nom : " << nom << finl;
-      inconnue()->nommer(nom);
+      inconnue().nommer(nom);
       champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }

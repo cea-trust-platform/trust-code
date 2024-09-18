@@ -49,9 +49,9 @@ const Nom Loi_Etat_GR_base::type_fluide() const
  */
 void Loi_Etat_GR_base::initialiser()
 {
-  le_fluide->inco_chaleur()->nommer("enthalpie");
+  le_fluide->inco_chaleur().nommer("enthalpie");
 
-  const DoubleTab& tab_H = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_H = le_fluide->inco_chaleur().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   int i, n = tab_H.dimension(0);
   DoubleTab& tab_T = temperature_->valeurs();
@@ -80,13 +80,13 @@ void Loi_Etat_GR_base::initialiser_inco_ch()
    * on doit donc calculer l'enthalpie et la pression
    */
 
-  DoubleTab& tab_TH = le_fluide->inco_chaleur()->valeurs();
+  DoubleTab& tab_TH = le_fluide->inco_chaleur().valeurs();
   double Pth = le_fluide->pression_th();
   DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   tab_rho_n=tab_rho;
   tab_rho_np1=tab_rho;
   int som,n = tab_TH.dimension(0);
-  if (le_fluide->inco_chaleur()->le_nom() == "enthalpie")
+  if (le_fluide->inco_chaleur().le_nom() == "enthalpie")
     {
       for (som=0 ; som<n ; som++)
         tab_rho_np1(som) = tab_rho(som,0) = tab_rho_n(som) = calculer_masse_volumique(Pth,tab_TH(som,0));
@@ -109,7 +109,7 @@ void Loi_Etat_GR_base::initialiser_inco_ch()
  */
 void Loi_Etat_GR_base::remplir_T()
 {
-  const DoubleTab& tab_H = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_H = le_fluide->inco_chaleur().valeurs();
   int i, n = tab_TempC.dimension(0);
   DoubleTab& tab_T = temperature_->valeurs();
   double Pth = le_fluide->pression_th();
@@ -139,7 +139,7 @@ double Loi_Etat_GR_base::Cp_calc(double P, double h) const
 void Loi_Etat_GR_base::calculer_Cp()
 {
   double Pth = le_fluide->pression_th();
-  const DoubleTab& tab_h = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_h = le_fluide->inco_chaleur().valeurs();
   for (int i=0; i<tab_Cp.size(); i++) tab_Cp(i) = Cp_calc(Pth,tab_h(i,0));
 }
 

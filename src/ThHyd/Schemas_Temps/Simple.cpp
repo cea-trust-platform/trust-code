@@ -195,7 +195,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       // on calcule une fois la derivee pour avoir les flux bord
       if  (eqn.schema_temps().nb_pas_dt()==0)
         {
-          DoubleTab toto(eqn.inconnue()->valeurs());
+          DoubleTab toto(eqn.inconnue().valeurs());
           eqn.derivee_en_temps_inco(toto);
         }
       eqn.valider_iteration();
@@ -258,7 +258,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   if( sub_type(Navier_Stokes_std,eqn))
     {
       Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
-      DoubleTab& pression = eqnNS.pression()->valeurs();
+      DoubleTab& pression = eqnNS.pression().valeurs();
       DoubleTrav secmem(pression);
       pression.echange_espace_virtuel();
       iterer_NS(eqnNS,current,pression,dt,matrice,seuil_verification_solveur,secmem,nb_iter,converge, ok);
@@ -271,13 +271,13 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         {
           if (eqn.discretisation().is_polymac_family())
             {
-              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue()->le_nom().getString(), &matrice }}, resu_temp, { });
+              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
               resu = resu_temp;
               matrice.ajouter_multvect(current, resu);
             }
           else
             {
-              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue()->le_nom().getString(), &matrice }}, resu, { });
+              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu, { });
               resu_temp = 0;
               matrice.ajouter_multvect(current,resu_temp);
               resu_temp -= resu;
@@ -330,7 +330,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
                       con = 0;
                     }
                 }
-              else current = eqn.inconnue()->passe(); //si ok == 0, on restaure la valeur passee de inco
+              else current = eqn.inconnue().passe(); //si ok == 0, on restaure la valeur passee de inco
             }
           converge = 0;
         }
@@ -389,20 +389,20 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   for (i = 0; i < eqs.size(); i++)
     for (j = 0; j < eqs.size(); j++)
       {
-        Nom nom_i = eqs[j]->inconnue()->le_nom();
+        Nom nom_i = eqs[j]->inconnue().le_nom();
         // champ d'un autre probleme : on ajoute un suffixe
         if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString()) nom_i += Nom("/") + eqs[j]->probleme().le_nom();
         mats[i][nom_i.getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
       }
 
   //Les inconues/residus ont-ils la meme forme?
-  for (bs = eqs[0]->inconnue()->valeurs().line_size(), i = 1; i < eqs.size(); i++)
-    if (eqs[i]->inconnue()->valeurs().line_size() != bs) bs = 0;
+  for (bs = eqs[0]->inconnue().valeurs().line_size(), i = 1; i < eqs.size(); i++)
+    if (eqs[i]->inconnue().valeurs().line_size() != bs) bs = 0;
 
   //MD_Vector global
   MD_Vector_composite mdc; //version composite
   for (i = 0; i < eqs.size(); i++)
-    mdc.add_part(eqs[i]->inconnue()->valeurs().get_md_vector(), bs ? 0 : eqs[i]->inconnue()->valeurs().line_size());
+    mdc.add_part(eqs[i]->inconnue().valeurs().get_md_vector(), bs ? 0 : eqs[i]->inconnue().valeurs().line_size());
   MD_Vector mdv;
   mdv.copy(mdc);
 
@@ -415,7 +415,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
           for (j = 0; j < eqs.size(); j++)
             {
               Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
-              int nl = eqs[i]->inconnue()->valeurs().size_totale(), nc = eqs[j]->inconnue()->valeurs().size_totale();
+              int nl = eqs[i]->inconnue().valeurs().size_totale(), nc = eqs[j]->inconnue().valeurs().size_totale();
               if (i == j) eqs[i]->dimensionner_matrice(mat);
               eqs[i]->dimensionner_termes_croises(i == j ? mat2 : mat, eqs[j]->probleme(), nl, nc);
               if (i == j) mat += mat2;
@@ -437,7 +437,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   DoubleTab_parts residu_parts(residus), inconnues_parts(inconnues), dudt_parts(dudt);
 
   //remplissage des inconnues
-  for(i = 0; i < eqs.size(); i++) inconnues_parts[i] = eqs[i]->inconnue()->valeurs();
+  for(i = 0; i < eqs.size(); i++) inconnues_parts[i] = eqs[i]->inconnue().valeurs();
   dudt = inconnues;
 
   //remplissage des matrices
@@ -450,7 +450,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
             {
               for (j = 0; j < eqs.size(); j++)
                 {
-                  Nom nom_j = eqs[j]->inconnue()->le_nom();
+                  Nom nom_j = eqs[j]->inconnue().le_nom();
                   if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString())
                     {
                       nom_j += Nom("/") + eqs[j]->probleme().le_nom();
@@ -483,7 +483,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
     {
       dudt_parts[i] -= inconnues_parts[i];
       double dudt_norme = mp_norme_vect(dudt_parts[i]);
-      eqs[i]->inconnue()->valeurs() = inconnues_parts[i];
+      eqs[i]->inconnue().valeurs() = inconnues_parts[i];
 
       converge &= (dudt_norme < seuil_convg);
       if (!converge)
@@ -493,11 +493,11 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
         }
       else
         Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
-      eqs[i]->inconnue()->futur() = eqs[i]->inconnue()->valeurs();
+      eqs[i]->inconnue().futur() = eqs[i]->inconnue().valeurs();
       const double t = eqs[i]->schema_temps().temps_courant() + eqs[i]->schema_temps().pas_de_temps();
       eqs[i]->domaine_Cl_dis().imposer_cond_lim(eqs[i]->inconnue(), t);
-      eqs[i]->inconnue()->valeurs() = eqs[i]->inconnue()->futur();
-      eqs[i]->inconnue()->Champ_base::changer_temps(t);
+      eqs[i]->inconnue().valeurs() = eqs[i]->inconnue().futur();
+      eqs[i]->inconnue().Champ_base::changer_temps(t);
     }
   for(i = 0; i < eqs.size(); i++) eqs[i]->probleme().mettre_a_jour(eqs[i]->schema_temps().temps_courant());
 

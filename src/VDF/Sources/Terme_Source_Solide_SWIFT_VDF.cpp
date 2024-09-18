@@ -141,7 +141,7 @@ void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn
   int num_elem, j, indic, trouve;
   double y;
 
-  const Domaine_dis_base& zdisbase = my_eqn.inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase = my_eqn.inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF      = ref_cast(Domaine_VDF, zdisbase);
   const DoubleTab& xp           = domaine_VDF.xp();
 
@@ -215,9 +215,9 @@ void Terme_Source_Solide_SWIFT_VDF::correspondance_SWIFT_coarse()
 
 void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, DoubleVect& T_moy, const IntVect& corresp, const IntVect& compt) const
 {
-  const Domaine_dis_base& zdisbase = my_eqn.inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase = my_eqn.inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF      = ref_cast(Domaine_VDF, zdisbase);
-  const DoubleTab& Temp         = my_eqn.inconnue()->valeurs();
+  const DoubleTab& Temp         = my_eqn.inconnue().valeurs();
 
   int nb_elems   = domaine_VDF.domaine().nb_elem();
   int nb_faces_x = domaine_VDF.nb_faces_X();
@@ -240,7 +240,7 @@ void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, Dou
 void Terme_Source_Solide_SWIFT_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
 {
 
-  const Domaine_dis_base& zdisbase = eq_swift->inconnue()->domaine_dis_base();
+  const Domaine_dis_base& zdisbase = eq_swift->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF      = ref_cast(Domaine_VDF, zdisbase);
   int nb_elems                   = domaine_VDF.nb_elem();
   const DoubleVect& volume         = domaine_VDF.volumes();

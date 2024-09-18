@@ -57,10 +57,10 @@ DoubleTab& Op_Conv_ALE::calculer(const DoubleTab& inco, DoubleTab& resu) const
 }
 void Op_Conv_ALE::associer(const Domaine_dis_base& zdis,
                            const Domaine_Cl_dis_base& zcl_dis,
-                           const Champ_Inc& inco)
+                           const Champ_Inc_base& inco)
 {
   //Cerr << "Op_Conv_ALE::associer" << finl;
-  dom=inco->domaine();
+  dom=inco.domaine();
   op_conv.l_op_base().associer(zdis, zcl_dis, inco);//rendu public en checkout
 }
 

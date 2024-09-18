@@ -30,7 +30,7 @@ Entree& Op_Conv_kschemas_VEF::readOn(Entree& s )
   return s ;
 }
 
-void Op_Conv_kschemas_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc& ch)
+void Op_Conv_kschemas_VEF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch)
 {
   // CCa le 28/05/99 Le schema Kquick ne marche pas en paralle !!
   if (Process::is_parallel())

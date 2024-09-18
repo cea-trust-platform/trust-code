@@ -95,7 +95,7 @@ void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * m
 {
   return;
   /*
-  DoubleTab& present = eqn.inconnue()->futur();
+  DoubleTab& present = eqn.inconnue().futur();
   DoubleTab sauv(present);
   const Schema_Temps_base& sch = eqn.probleme().schema_temps();
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),sch.temps_courant()+sch.pas_de_temps());

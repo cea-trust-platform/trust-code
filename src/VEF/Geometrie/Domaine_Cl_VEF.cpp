@@ -359,15 +359,15 @@ void Domaine_Cl_VEF::remplir_type_elem_Cl(const Domaine_VEF& le_dom_VEF)
 /*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
  *
  */
-void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
+void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
-  DoubleTab& ch_tab = ch->valeurs(temps);
-  int nb_comp = ch->nb_comp();
-  copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
+  DoubleTab& ch_tab = ch.valeurs(temps);
+  int nb_comp = ch.nb_comp();
+  copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "OWN_PTR(Champ_Inc_base) on boundary");
   //ToDo_Kokkos("copyPartial"); Really not costly
   start_gpu_timer();
-  if (sub_type(Champ_P0_VEF, ch.valeur())) { /* Do nothing */ }
-  else if (sub_type(Champ_P1NC,ch.valeur()) || sub_type(Champ_Q1NC, ch.valeur()))
+  if (sub_type(Champ_P0_VEF, ch)) { /* Do nothing */ }
+  else if (sub_type(Champ_P1NC,ch) || sub_type(Champ_Q1NC, ch))
     {
       for (int i = 0; i < nb_cond_lim(); i++)
         {
@@ -404,7 +404,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                     }
                 }
             }
-          else if ((sub_type(Symetrie, la_cl)) && (ch->nature_du_champ() == vectoriel))
+          else if ((sub_type(Symetrie, la_cl)) && (ch.nature_du_champ() == vectoriel))
             {
               const Domaine_VEF& zvef = domaine_vef();
               const DoubleTab& face_normales = zvef.face_normales();
@@ -453,7 +453,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                       ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
                 }
             }
-          else if ((sub_type(Dirichlet_paroi_fixe, la_cl)) && (ch->nature_du_champ() == multi_scalaire))
+          else if ((sub_type(Dirichlet_paroi_fixe, la_cl)) && (ch.nature_du_champ() == multi_scalaire))
             {
               if (nb_comp == 1)
                 for (int num_face = ndeb; num_face < nfin; num_face++)
@@ -513,16 +513,16 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
     }
   else
     {
-      Cerr << "Le type de Champ_Inc " << ch->que_suis_je() << " n'est pas prevu en VEF\n" << finl;
+      Cerr << "Le type de OWN_PTR(Champ_Inc_base) " << ch.que_suis_je() << " n'est pas prevu en VEF\n" << finl;
       exit();
     }
-  end_gpu_timer(0, "Boundary condition on Champ_Inc in Domaine_Cl_VEF::imposer_cond_lim");
-  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
+  end_gpu_timer(0, "Boundary condition on OWN_PTR(Champ_Inc_base) in Domaine_Cl_VEF::imposer_cond_lim");
+  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "OWN_PTR(Champ_Inc_base) on boundary");
   ch_tab.echange_espace_virtuel();
 
   // PARTIE PRESSION
   // dans le cas Navier stokes et si la condition est forte en pression aux sommets on impose la valeur aux sommets
-  if (sub_type(Navier_Stokes_std, ch->equation()))
+  if (sub_type(Navier_Stokes_std, ch.equation()))
     {
       const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, equation().domaine_dis());
       if ((domaine_vef.get_cl_pression_sommet_faible() == 0) && (domaine_vef.get_alphaS()))
@@ -531,7 +531,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
           int nbsom_tot = domaine_vef.nb_som_tot();
           DoubleTrav tab_surf_loc(nbsom_tot);
           tab_surf_loc = 0;
-          DoubleTab& tab_pression = ref_cast(Navier_Stokes_std,ch->equation()).pression()->valeurs();
+          DoubleTab& tab_pression = ref_cast(Navier_Stokes_std,ch.equation()).pression().valeurs();
           int nb_cond_lims = nb_cond_lim();
           // On boucle une premiere fois pour mettre a zero la pression aux sommets
           for (int i = 0; i < nb_cond_lims; i++)

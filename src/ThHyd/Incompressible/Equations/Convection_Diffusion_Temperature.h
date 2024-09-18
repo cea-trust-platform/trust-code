@@ -40,8 +40,8 @@ public :
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const override;
-  inline Champ_Inc& inconnue() override;
+  inline const Champ_Inc_base& inconnue() const override;
+  inline Champ_Inc_base& inconnue() override;
   void discretiser() override;
   int preparer_calcul() override;
   const Fluide_base& fluide() const;
@@ -73,7 +73,7 @@ public :
 
 protected :
 
-  Champ_Inc la_temperature;
+  OWN_PTR(Champ_Inc_base) la_temperature;
   REF(Fluide_base) le_fluide;
 
   Champ_Fonc gradient_temperature;
@@ -105,7 +105,7 @@ protected :
 
 
 inline void Convection_Diffusion_Temperature::associer_fluide(const Fluide_base& un_fluide) { le_fluide = un_fluide; }
-inline const Champ_Inc& Convection_Diffusion_Temperature::inconnue() const { return la_temperature; }
-inline Champ_Inc& Convection_Diffusion_Temperature::inconnue() { return la_temperature; }
+inline const Champ_Inc_base& Convection_Diffusion_Temperature::inconnue() const { return la_temperature; }
+inline Champ_Inc_base& Convection_Diffusion_Temperature::inconnue() { return la_temperature; }
 
 #endif

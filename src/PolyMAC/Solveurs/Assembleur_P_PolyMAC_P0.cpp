@@ -121,7 +121,7 @@ void Assembleur_P_PolyMAC_P0::dimensionner_continuite(matrices_t matrices, int a
 void Assembleur_P_PolyMAC_P0::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
   if (aux_only) return;
-  const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->valeurs();
+  const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
   const DoubleVect& ve = le_dom_PolyMAC->volumes(), &pe = equation().milieu().porosite_elem();
   int e, n, N = alpha.line_size();

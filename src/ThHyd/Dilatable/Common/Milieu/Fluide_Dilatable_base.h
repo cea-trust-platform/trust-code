@@ -23,7 +23,7 @@
 #include <Fluide_base.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
-#include <Champ_Inc.h>
+
 
 class Probleme_base;
 
@@ -78,9 +78,9 @@ public :
   inline const Nom type_fluide() const { return loi_etat_->type_fluide(); }
   inline const OWN_PTR(Loi_Etat_base)& loi_etat() const { return loi_etat_; }
   inline OWN_PTR(Loi_Etat_base)&  loi_etat() { return loi_etat_; }
-  inline const Champ_Inc& inco_chaleur() const { return inco_chaleur_.valeur(); }
-  inline Champ_Inc& inco_chaleur() { return inco_chaleur_.valeur(); }
-  inline const Champ_Inc& vitesse() const { return vitesse_.valeur(); }
+  inline const Champ_Inc_base& inco_chaleur() const { return inco_chaleur_.valeur(); }
+  inline Champ_Inc_base& inco_chaleur() { return inco_chaleur_.valeur(); }
+  inline const Champ_Inc_base& vitesse() const { return vitesse_.valeur(); }
   inline const Champ_Don& pression_tot() const { return pression_tot_; }
   inline Champ_Don& pression_tot() { return pression_tot_; }
   inline const Champ_Don& mu_sur_Schmidt() const { return mu_sur_Sc; }
@@ -129,7 +129,7 @@ protected :
 
   int traitement_PTh = 0; // flag pour le traitement de la pression thermo
   double Pth_ = -1., Pth_n = -1., Pth1 = -1.;
-  REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
+  REF(Champ_Inc_base) inco_chaleur_, vitesse_, pression_;
   REF(Probleme_base) le_probleme_;
   Champ_Don pression_tot_, mu_sur_Sc, nu_sur_Sc, rho_gaz, rho_comme_v;
   Champ_Don source_masse_esp_, source_masse_proj_; /* si besoin */

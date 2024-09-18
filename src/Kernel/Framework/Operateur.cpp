@@ -119,9 +119,9 @@ Entree& Operateur::lire(Entree& is)
 
 /*! @brief Renvoie le champ representant l'inconnue de l'equation dont l'operateur fait partie.
  *
- * @return (Champ_Inc&) le champ inconuu de l'equation associee
+ * @return (Champ_Inc_base&) le champ inconuu de l'equation associee
  */
-const Champ_Inc& Operateur::mon_inconnue() const
+const Champ_Inc_base& Operateur::mon_inconnue() const
 {
   return le_champ_inco.valeur();
 }
@@ -149,7 +149,7 @@ void Operateur::completer()
   l_op_base().completer();
 }
 
-void Operateur::associer_champ(const Champ_Inc& ch, const std::string& nom_ch)
+void Operateur::associer_champ(const Champ_Inc_base& ch, const std::string& nom_ch)
 {
   le_champ_inco = ch;
   nom_inco_ = nom_ch;
@@ -224,21 +224,21 @@ int Operateur::impr(Sortie& os) const
  *
  *     Appelle Operateur::ajouter(const DoubleTab&, DoubleTab& )
  *
- * @param (Champ_Inc& ch) le champ inconnu sur lequel l'operateur agit
+ * @param (Champ_Inc_base& ch) le champ inconnu sur lequel l'operateur agit
  * @param[in,out] (DoubleTab& resu) le tableau stockant les valeurs du second membre auquel on ajoute la contribution de l'operateur
  * @return (DoubleTab&) le second membre auquel on a ajoute la contribution de l'operateur
  */
-DoubleTab& Operateur::ajouter(const Champ_Inc& ch, DoubleTab& resu) const
+DoubleTab& Operateur::ajouter(const Champ_Inc_base& ch, DoubleTab& resu) const
 {
   int i ;
   int nstep=l_op_base().get_nb_ss_pas_de_temps();
   double dt=equation().schema_temps().pas_de_temps();
   dt/=nstep;
   if(nstep==1)
-    return ajouter(ch->valeurs(), resu);
+    return ajouter(ch.valeurs(), resu);
   DoubleTrav derivee(resu);
-  DoubleTrav inco(ch->valeurs());
-  inco=ch->valeurs();
+  DoubleTrav inco(ch.valeurs());
+  inco=ch.valeurs();
   const Solveur_Masse& solveur_masse=equation().solv_masse();
   double dt_inv=1./(double(nstep));
   for (i=0; i<nstep; i++)
@@ -264,30 +264,30 @@ const Nom& Operateur::type() const
 
 /*! @brief Calcule la contribution de l'operateur, et renvoie le tableau des valeurs.
  *
- * @param (Champ_Inc& ch) le champ inconnu sur lequel l'operateur agit
+ * @param (Champ_Inc_base& ch) le champ inconnu sur lequel l'operateur agit
  * @param (DoubleTab& resu) le tableau stockant les valeurs resultant de l'application de l'operateur sur le champ inconnu.
  * @return (DoubleTab&) le resultat de l'application de l'operateur sur le champ inconnu
  */
-DoubleTab& Operateur::calculer(const Champ_Inc& ch,DoubleTab& resu) const
+DoubleTab& Operateur::calculer(const Champ_Inc_base& ch,DoubleTab& resu) const
 {
-  return calculer(ch->valeurs(), resu);
+  return calculer(ch.valeurs(), resu);
 }
 
 /*! @brief Ajoute la contribution de l'operateur au tableau passe en parametre.
  *
- *     Appelle Operateur::ajouter(const Champ_Inc&, DoubleTab& )
+ *     Appelle Operateur::ajouter(const Champ_Inc_base&, DoubleTab& )
  *
  * @param (DoubleTab& resu) le tableau stockant les valeurs du second membre auquel on ajoute la contribution de l'operateur
  * @return (DoubleTab&) le second membre auquel on a ajoute la contribution de l'operateur
  */
 DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 {
-  return ajouter(le_champ_inco->valeur().valeurs(), resu);
+  return ajouter(le_champ_inco->valeurs(), resu);
 }
 
 /*! @brief Applique l'operateur au champ inconnu et renvoie le resultat.
  *
- * Appelle Operateur::calculer(const Champ_Inc&, DoubleTab& );
+ * Appelle Operateur::calculer(const Champ_Inc_base&, DoubleTab& );
  *
  * @param (DoubleTab& resu) le tableau stockant les valeurs resultant de l'application de l'operateur sur le champ inconnu.
  * @return (DoubleTab&) le resultat de l'application de l'operateur sur le champ inconnu
@@ -295,7 +295,7 @@ DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 DoubleTab& Operateur::calculer(DoubleTab& resu) const
 {
   resu=0.;
-  return ajouter(le_champ_inco->valeur().valeurs(), resu);
+  return ajouter(le_champ_inco->valeurs(), resu);
 }
 
 void Operateur::set_fichier(const Nom& nom)

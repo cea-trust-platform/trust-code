@@ -60,7 +60,7 @@ double Loi_Etat_GP_WC::inverser_Pth(double T, double rho)
  */
 void Loi_Etat_GP_WC::calculer_masse_volumique()
 {
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   const DoubleTab& pres = FWC.pression_th_tab();

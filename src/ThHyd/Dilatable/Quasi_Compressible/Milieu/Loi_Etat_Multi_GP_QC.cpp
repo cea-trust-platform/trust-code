@@ -165,7 +165,7 @@ void Loi_Etat_Multi_GP_QC::rabot(int futur)
  */
 void Loi_Etat_Multi_GP_QC::calculer_masse_volumique()
 {
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
 
   if (correction_fraction_) rabot(0);

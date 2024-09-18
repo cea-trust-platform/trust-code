@@ -36,7 +36,7 @@ void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
       const Equation_base& eqn = pb.equation(i);
       if (sub_type(Navier_Stokes_std, eqn))
         {
-          la_vitesse = ref_cast(Champ_Face_PolyMAC, eqn.inconnue().valeur());
+          la_vitesse = ref_cast(Champ_Face_PolyMAC, eqn.inconnue());
           le_fluide = ref_cast(Fluide_base, eqn.milieu());
           associer_domaines(eqn.domaine_dis(), eqn.domaine_Cl_dis());
           i = nb_eqn;

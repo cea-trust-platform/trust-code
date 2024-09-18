@@ -34,7 +34,7 @@ void Loi_Etat_TPPI_QC_base::preparer_calcul()
 void Loi_Etat_TPPI_QC_base::init_vec_press()
 {
   const double Pth = le_fluide->pression_th();
-  vec_press_.resize(le_fluide->inco_chaleur()->valeurs().dimension(0));
+  vec_press_.resize(le_fluide->inco_chaleur().valeurs().dimension(0));
   for (auto &itr : vec_press_) itr = Pth;
   vec_press_filled_ = true;
 }
@@ -51,7 +51,7 @@ void Loi_Etat_TPPI_QC_base::init_vec_press()
 void Loi_Etat_TPPI_QC_base::calculer_Cp()
 {
   if (!vec_press_filled_) init_vec_press();
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   SpanD temp_span = tab_ICh.get_span(), p_span = SpanD(vec_press_);
 
   /* Step 2 : Mu */
@@ -79,7 +79,7 @@ void Loi_Etat_TPPI_QC_base::calculer_Cp()
       tab_alpha(i, 0) = tab_lambda(i, 0) / (tab_rho(i, 0) * Cp_);
   else
     {
-      const IntTab& elem_faces = ref_cast(Domaine_VF, le_fluide->vitesse()->domaine_dis_base()).elem_faces();
+      const IntTab& elem_faces = ref_cast(Domaine_VF, le_fluide->vitesse().domaine_dis_base()).elem_faces();
       const int nfe = elem_faces.line_size();
       for (int i = 0; i < tab_alpha.dimension(0); i++)
         {
@@ -96,7 +96,7 @@ void Loi_Etat_TPPI_QC_base::calculer_Cp()
 void Loi_Etat_TPPI_QC_base::calculer_masse_volumique()
 {
   if (!vec_press_filled_) init_vec_press();
-  const DoubleTab& tab_ICh = le_fluide->inco_chaleur()->valeurs();
+  const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
   SpanD temp_span = tab_ICh.get_span(),  p_span = SpanD(vec_press_), rho_span = tab_rho_np1.get_span();
   TPPI_->tppi_get_rho_pT(p_span, temp_span, rho_span);

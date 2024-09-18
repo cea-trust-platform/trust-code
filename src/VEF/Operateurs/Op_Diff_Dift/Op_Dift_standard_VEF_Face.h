@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ private:
   void calcul_divergence(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab& ) const;
   void ajouter_cas_vectoriel(const DoubleTab&, DoubleTab&, const DoubleTab&, const DoubleTab& ) const;
 
-  REF(Champ_Inc) divergence_U;
+  REF(Champ_Inc_base) divergence_U;
   int grad_Ubar = 1, nu_lu = 1, nut_lu = 1;
   int nu_transp_lu = 1, nut_transp_lu = 1, filtrer_resu = 1;
   DoubleTab grad_;

@@ -96,9 +96,9 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnNS(int i,bool& converged)
   double dt_intermediaire=temps_intermediaire-temps_courant();
   double dt_final=temps_final-temps_courant();
 
-  DoubleTab& present = eqn.inconnue()->valeurs();
-  DoubleTab& intermediaire = eqn.inconnue()->valeurs(temps_intermediaire);
-  DoubleTab& final = eqn.inconnue()->valeurs(temps_final);
+  DoubleTab& present = eqn.inconnue().valeurs();
+  DoubleTab& intermediaire = eqn.inconnue().valeurs(temps_intermediaire);
+  DoubleTab& final = eqn.inconnue().valeurs(temps_final);
 
   DoubleTab dudt(present);
 
@@ -118,9 +118,9 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnNS(int i,bool& converged)
   // Bidouille : Comme les operateurs prennent par defaut le present,
   // on avance temporairement l'inconnue.
 
-  eqn.inconnue()->avancer();
+  eqn.inconnue().avancer();
   eqn.derivee_en_temps_inco(dudt);
-  eqn.inconnue()->reculer();
+  eqn.inconnue().reculer();
 
   // Mise a jour des valeurs de l'inconnue aux temps intermediaire et final
   // intermediaire = present + dt_intermediaire * dudt;
@@ -185,9 +185,9 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnOther(int i,bool& converged)
   double dt_1=temps_intermediaire-temps_courant();
   double dt_2=temps_final-temps_intermediaire;
 
-  DoubleTab& present = eqn.inconnue()->valeurs();
-  DoubleTab& intermediaire = eqn.inconnue()->valeurs(temps_intermediaire);
-  DoubleTab& final = eqn.inconnue()->valeurs(temps_final);
+  DoubleTab& present = eqn.inconnue().valeurs();
+  DoubleTab& intermediaire = eqn.inconnue().valeurs(temps_intermediaire);
+  DoubleTab& final = eqn.inconnue().valeurs(temps_final);
 
   DoubleTab dIdt(present); // Pour dimensionner.
 
@@ -207,9 +207,9 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnOther(int i,bool& converged)
       // Calcul de la derivee dIdt sur la valeur intermediaire de l'inconnue.
       // Bidouille : Comme les operateurs prennent par defaut le present,
       // on avance temporairement l'inconnue.
-      eqn.inconnue()->avancer();
+      eqn.inconnue().avancer();
       eqn.derivee_en_temps_inco(dIdt);
-      eqn.inconnue()->reculer();
+      eqn.inconnue().reculer();
 
       // intermediaire = intermediaire + dt_eq_1 * dIdt
       dIdt*=dt_eq_1;
@@ -228,11 +228,11 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnOther(int i,bool& converged)
     {
 
       // Calcul de la derivee dIdt sur la valeur finale de l'inconnue.
-      eqn.inconnue()->avancer();
-      eqn.inconnue()->avancer();
+      eqn.inconnue().avancer();
+      eqn.inconnue().avancer();
       eqn.derivee_en_temps_inco(dIdt);
-      eqn.inconnue()->reculer();
-      eqn.inconnue()->reculer();
+      eqn.inconnue().reculer();
+      eqn.inconnue().reculer();
 
       // intermediaire = intermediaire + dt_eq_2 * dIdt
       dIdt*=dt_eq_2;

@@ -47,9 +47,9 @@ void Op_Grad_PolyMAC_P0_Face::completer()
       Cerr << "Op_Grad_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
-  if (sub_type(Navier_Stokes_std, equation()) && ref_cast(Navier_Stokes_std, equation()).grad_P().non_nul())
+  if (sub_type(Navier_Stokes_std, equation()) && ref_cast(Navier_Stokes_std, equation()).has_grad_P())
     {
-      Champ_Face_PolyMAC_P0& gradp = ref_cast(Champ_Face_PolyMAC_P0, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur());
+      Champ_Face_PolyMAC_P0& gradp = ref_cast(Champ_Face_PolyMAC_P0, ref_cast(Navier_Stokes_std, equation()).grad_P());
       gradp.init_auxiliary_variables();
     }
 }
@@ -57,11 +57,11 @@ void Op_Grad_PolyMAC_P0_Face::completer()
 void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
 {
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, ref_domaine.valeur());
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeur().valeurs() : ref_cast(Navier_Stokes_std, equation()).pression()->valeurs(), *alp =
-                             sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
+  const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
+                             sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const int M = press.line_size();
-  double t_past = equation().inconnue()->recuperer_temps_passe();
+  double t_past = equation().inconnue().recuperer_temps_passe();
   if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX)))
     return; //deja calcule a ce temps -> rien a faire
 
@@ -73,12 +73,12 @@ void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
 void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, ref_domaine.valeur());
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales(), &xp = domaine.xp(), &xv = domaine.xv();
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
   int i, j, e, eb, f, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size(), m, M = (
-                                                                                                                  le_champ_inco.non_nul() ? le_champ_inco->valeur().valeurs() : ref_cast(Navier_Stokes_std, equation()).pression()->valeurs()).line_size();
+                                                                                                                  le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
   update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
   IntTrav sten_p(0, 2), sten_v(0, 2); //stencils (NS, pression), (NS, vitesse)
@@ -155,12 +155,12 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 {
   statistiques().begin_count(gradient_counter_);
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, ref_domaine.valeur());
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
   const Conds_lim& cls = ref_zcl->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales(), &xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(), &press =
-                                                                                                  semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeur().valeurs() : ref_cast(Navier_Stokes_std, equation()).pression()->valeurs()), *alp =
-                                                                                                    sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->passe() : nullptr;
+                                                                                                  semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()), *alp =
+                                                                                                    sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face();
   int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
   update_grad();

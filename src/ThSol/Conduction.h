@@ -53,8 +53,8 @@ public:
   int nombre_d_operateurs() const override;
   const Operateur& operateur(int) const override;
   Operateur& operateur(int) override;
-  inline const Champ_Inc& inconnue() const override;
-  inline Champ_Inc& inconnue() override;
+  inline const Champ_Inc_base& inconnue() const override;
+  inline Champ_Inc_base& inconnue() override;
   void discretiser() override;
   int impr(Sortie& os) const override;
 
@@ -73,7 +73,7 @@ public:
 
 private :
   REF(Solide) le_solide;
-  Champ_Inc la_temperature;
+  OWN_PTR(Champ_Inc_base) la_temperature;
   Operateur_Diff terme_diffusif;
 
 protected :
@@ -84,9 +84,9 @@ protected :
  *
  * e. la temperature.
  *
- * @return (Champ_Inc&) le champ inconnue de l'equation: la temperature
+ * @return (Champ_Inc_base&) le champ inconnue de l'equation: la temperature
  */
-inline Champ_Inc& Conduction::inconnue()
+inline Champ_Inc_base& Conduction::inconnue()
 {
   return la_temperature;
 }
@@ -96,9 +96,9 @@ inline Champ_Inc& Conduction::inconnue()
  * e. la temperature.
  *     (version const)
  *
- * @return (Champ_Inc&) le champ inconnue de l'equation: la temperature
+ * @return (Champ_Inc_base&) le champ inconnue de l'equation: la temperature
  */
-inline const Champ_Inc& Conduction::inconnue() const
+inline const Champ_Inc_base& Conduction::inconnue() const
 {
   return la_temperature;
 }

@@ -50,7 +50,7 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
-  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur());
+  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   int i, j, e, f, fb, ne = domaine.nb_elem(), ne_tot = domaine.nb_elem_tot(), nf = domaine.nb_faces(), nf_tot = domaine.nb_faces_tot();
@@ -124,9 +124,9 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
 void Assembleur_P_PolyMAC_P0P1NC::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
-  int i, j, e, f, fb, n, N = equation().inconnue()->valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
+  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
                          ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
-  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur()).fcl(), &e_f = domaine.elem_faces();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue()).fcl(), &e_f = domaine.elem_faces();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
   DoubleTrav w2;
 
@@ -152,7 +152,7 @@ void Assembleur_P_PolyMAC_P0P1NC::dimensionner_continuite(matrices_t matrices, i
   tableau_trier_retirer_doublons(sten_v), tableau_trier_retirer_doublons(sten_p);
   if (!aux_only) Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, N * ne_tot, sten_a, *matrices.at("alpha"));
   Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nf_tot), M * (ne_tot + nf_tot), sten_p, *matrices.at("pression"));
-  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nf_tot), equation().inconnue()->valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
+  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nf_tot), equation().inconnue().valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
 }
 
 void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
@@ -160,9 +160,9 @@ void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, Doub
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
-  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue()->valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
-                   &vit = equation().inconnue()->valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &nf = domaine.face_normales();
-  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur()).fcl(), &e_f = domaine.elem_faces();
+  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &nf = domaine.face_normales();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue()).fcl(), &e_f = domaine.elem_faces();
   const DoubleVect& ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = domaine.nb_elem_tot(), d, D = dimension;
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
@@ -222,7 +222,7 @@ void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, Doub
 void Assembleur_P_PolyMAC_P0P1NC::modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& secmem) const
 {
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
-  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur());
+  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue());
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ch.fcl();
   int f, ne_tot = domaine.nb_elem_tot(), m, M = equation().probleme().get_champ("pression").valeurs().line_size();

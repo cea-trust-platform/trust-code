@@ -37,7 +37,7 @@ Entree& Terme_Source_Constituant_VDF_Elem::readOn(Entree& s)
 void Terme_Source_Constituant_VDF_Elem::completer()
 {
   Terme_Source_VDF_base::completer();
-  col_width_ = Terme_Source_Constituant::completer(equation().inconnue().valeur());
+  col_width_ = Terme_Source_Constituant::completer(equation().inconnue());
 }
 
 void Terme_Source_Constituant_VDF_Elem::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)

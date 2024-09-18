@@ -65,10 +65,10 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
   //  const Equation_base& eqn = pb.equation(0);
   equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(),"Puissance_volumique","W/m3",la_source_,pb);
   champs_compris_.ajoute_champ(la_source_);
-  if (la_source_->nb_comp() != equation().inconnue()->nb_comp())
+  if (la_source_->nb_comp() != equation().inconnue().nb_comp())
     {
       Cerr << "Erreur a la lecture du terme source de type " << que_suis_je() << finl;
-      Cerr << "le champ source doit avoir " << equation().inconnue()->nb_comp() << " composantes" << finl;
+      Cerr << "le champ source doit avoir " << equation().inconnue().nb_comp() << " composantes" << finl;
       exit();
     }
 
@@ -86,7 +86,7 @@ void Source_Scalaire_EF::associer_domaines(const Domaine_dis_base& domaine_dis,
 DoubleTab& Source_Scalaire_EF::ajouter(DoubleTab& resu) const
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  int ncomp=equation().inconnue()->nb_comp();
+  int ncomp=equation().inconnue().nb_comp();
   const IntTab& elems= domaine_EF.domaine().les_elems() ;
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
