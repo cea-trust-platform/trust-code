@@ -265,6 +265,7 @@ echo " "
 echo -e "\033[1m\033[4mCompilation options/flags\033[0m"
 echo " "
 echo "   -force_even_unsupported           Force the configure even the compiler/OS is not supported."
+echo "   -std=c++14                        Force the use of C++14 (else dynamically guessed: C++14 or 17)."
 echo "   -c++=<prog>                       Force the use of a specified C++ compiler."
 echo "   -cc=<prog>                        Force the use of a specified C compiler."
 echo "   -fc=<prog>                        Force the use of a specified Fortran compiler."
@@ -426,6 +427,7 @@ export TRUST_WITHOUT_CONDA=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_WITHOUT_HOST=0
 export TRUST_ENABLE_DOC_DOXYGEN=0
+export TRUST_STDCPP=c++17
 unset CUDA_NVCC
 unset TRUST_CUDA_CC
 unset TRUST_USE_EXTERNAL_HDF
@@ -457,6 +459,10 @@ do
    if [ "${1%-help}" != "$1" ]
    then
       exit
+
+   elif [ "${1#-std=}" != "$1" ]
+   then
+      export TRUST_STDCPP=${1#-std=}
 
    elif [ "${1#-c++=}" != "$1" ]
    then

@@ -101,8 +101,9 @@ configure_compilateur_ccache()
          eval $e
          if [ "$TRUST_CC_BASE" = "" ]
          then
-            [ "$STDCPP" = c++11 ] && echo "Error! No C++11 compiler found. For a GNU compiler, you would need a version>=4.8.5" && exit -1
-            [ "$STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && exit -1
+            [ "$TRUST_STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && exit -1
+            [ "$TRUST_STDCPP" = c++17 ] && echo "Error! No C++17 compiler found. For a GNU compiler, you would need a version>=7.0 or configure for a C++14 compiler with: ./configure -std=c++14" && exit -1
+            echo "Error! -std=$TRUST_STDCPP is not supported." && exit -1
          fi
       elif [ "${chemin%nvc++}" != "$chemin" ]
       then
@@ -288,15 +289,18 @@ xxx()
 	   then
 	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
 	   else
-	      # Ajout du test du support obligatoire de C++11 a partir de TRUST 1.7.9
-	      if [ "$STDCPP" = c++11 ]
-	      then
-	         echo $ECHO_OPTS "#include <iostream>\n#include <vector>\nint main() {std::vector<int> v = {0,1};for (auto i : v) std::cout << i << ' ';return 0;}" > main.cpp;$f -std=c++11 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
 	      # Ajout du test du support obligatoire de C++14
-	      elif [ "$STDCPP" = c++14 ]
+	      if [ "$TRUST_STDCPP" = c++14 ]
 	      then
-	         echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
+	         echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp
+	      # Ajout du test du support de C++17
+	      elif [ "$TRUST_STDCPP" = c++17 ]
+	      then
+	         echo $ECHO_OPTS "#include <iostream>\n#include <tuple>\nstd::tuple<int, std::string> vals() {return {1,\"one\"};}\nint main() { auto [a, b] = vals(); std::cout << a << b << std::endl; return 0; }" > main.cpp
+	      else
+	         echo "Option -std=$TRUST_STDCPP not supported." && exit -1
 	      fi
+	      $f -std=$TRUST_STDCPP -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then
@@ -638,8 +642,13 @@ fi
 #######################
 # Quelle norme C++ ?
 #######################
-STDCPP=c++14
-[ "$TRUST_USE_KOKKOS_SIMD" = 1 ] && STDCPP=c++17
+if [ "$TRUST_STDCPP" = c++14 ]
+then
+   if [ "$TRUST_USE_KOKKOS_SIMD" = 1 ] || [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ] || [ "$TRUST_USE_CUDA" = 1 ] || [ "$TRUST_USE_ROCM" = 1 ]
+   then
+      echo "You need a C++17 compiler to use Kokkos SIMD or OpenMP or CUDA or ROCM/HIP." && exit -1
+   fi
+fi
 
 #######################
 # Quelle architecture ?
@@ -1034,7 +1043,7 @@ TRUST_VERSION_GNU=`print_GNU_VERSION`
 # Verification que les compilateurs ont ete trouves.
 ####################################################
 compiler_found=1
-[ "$TRUST_CC_BASE" = "" ] && [ "$STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && compiler_found=0
+[ "$TRUST_CC_BASE" = "" ] && echo "Error! No $TRUST_STDCPP compiler found." && compiler_found=0
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
 if [ "$compiler_found" = 0 ] ; then
@@ -1820,8 +1829,7 @@ OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
   linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc_wrapper*) TRUST_SUPPORTED=1
-  [ "$STDCPP" = c++11 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=485 && ver<=1311) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
-	[ "$STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1411) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	[ "$TRUST_STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1411) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
@@ -1836,7 +1844,7 @@ case $TRUST_ARCH_CC in
 #	    # Kokkos already adds '-std=c++14' - do not doit twice since nvcc_wrapper will complain
 #	    std_tmp_=""
 #	else
-	    std_tmp_="-std=$STDCPP"
+	    std_tmp_="-std=$TRUST_STDCPP"
 #	fi
 	CppFlags="-O3 $FPIC $PTHREAD $std_tmp_ -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
 	[ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>4)}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wshadow -Werror" # Uniquement si gcc>=5
@@ -1858,7 +1866,7 @@ case $TRUST_ARCH_CC in
         [ "`$TRUST_CC_BASE -version 2>&1 | grep aocc`" != "" ] && AoccFlags="-march=znver1 -mfma -fvectorize -mfma -mavx2 -m3dnow -floop-unswitch-aggressive -fuse-ld=lld"
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=$TRUST_STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-cpp -Wno-undefined-var-template " #  -Wno-infinite-recursion"
 	TRUST_VERSION_CLANG=`print_CLANG_VERSION`
 	# sur clang v > 10 ou 11, ajouter -ffp-model=strict -ffp-exception-behavior=strict pour eviter fausses FPE
@@ -1882,11 +1890,11 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_CLANG"
         if [ "$TRUST_USE_KOKKOS" = 1 ] && [ "$TRUST_USE_ROCM" = 1 ]
         then
-           STDCPP="c++17"   # For Kokkos 4.x
+           TRUST_STDCPP="c++17"   # For Kokkos 4.x
            CppFlags="-Wno-openmp-mapping"
            #CppFlags=$CppFlags" -xhip" # Mode de compilation Hip incompatible avec OpenMP: https://github.com/ROCm/ROCm/discussions/2137 & https://github.com/burlen/cuda_plus_offload
         fi   
-        CppFlags=$CppFlags" -O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Wno-undefined-var-template -Werror"
+        CppFlags=$CppFlags" -O3 -fPIC -std=$TRUST_STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Wno-undefined-var-template -Werror"
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
         #[ "$TRUST_CC_BASE_EXTP" != "" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
 	[ "$TRUST_ARCH_CC" = "linux_crayCC" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
@@ -1914,14 +1922,14 @@ case $TRUST_ARCH_CC in
            CppFlags="-cuda" # nvc++ compile cuda code to avoid use of "nvcc -ccbin=nvc++"
            #TRUST_USE_UVM=1 # Provisoire
            [ "$TRUST_USE_UVM" = 1 ]  && CppFlags=$CppFlags" -gpu=managed" && Defines=$Defines" -DTRUST_USE_UVM"
-	   # Si CUDA_VERSION est specifie explicitement dans le HOST:
-	   [ "$CUDA_VERSION" != "" ] && CppFlags=$CppFlags" -gpu=cuda$CUDA_VERSION"
+           # Si CUDA_VERSION est specifie explicitement dans le HOST:
+           [ "$CUDA_VERSION" != "" ] && CppFlags=$CppFlags" -gpu=cuda$CUDA_VERSION"
            # Attention -mp=gpu -gpu=nordc ne marche pas sur le GPU !!! Voir: https://forums.developer.nvidia.com/t/openmp-offload-w-cuda-interop-undefined-reference-to-fatbinwrap-nv-module-id/253051
            # Donc on active Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON au niveau de Kokkos
-           STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
+           TRUST_STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
         fi
         CppFlags=$CppFlags" -O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
-        CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
+        CppFlags=$CppFlags" -std=$TRUST_STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
         CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte tous les objets C++ non utilises
         #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
@@ -1935,7 +1943,7 @@ case $TRUST_ARCH_CC in
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
 	flag_optim="-O3 -fp-model=strict" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
-	CppFlags="$flag_optim -std=$STDCPP -fPIC -unroll -Wno-unknown-pragmas"
+	CppFlags="$flag_optim -std=$TRUST_STDCPP -fPIC -unroll -Wno-unknown-pragmas"
 	LIB_INTEL=`dirname $TRUST_F77_BASE`
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib
