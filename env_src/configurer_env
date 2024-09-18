@@ -807,7 +807,7 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 # we add ncurses and libffi to overcome an issue with vi on Ub20 if env_for_python.sh loaded
-pkgs="ncurses libffi pyqt nomkl numpy matplotlib swig cmake scipy sympy libstdcxx-ng libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
+pkgs="pyqt nomkl numpy matplotlib swig cmake scipy sympy libstdcxx-ng libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
 [ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 [ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" # internet OK sous Mac
@@ -821,7 +821,7 @@ then
        INSTALL_CONDA=0
    else
        # check of python version
-       PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*100+a[3];print (v==3716||v==3706?1:0)}'`
+       PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*10+a[3];print (v==3125?1:0)}'`
        PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
        INSTALL_OK=1
 

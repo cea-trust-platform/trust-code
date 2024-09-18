@@ -106,7 +106,7 @@ do
       echo "----------------------------------------------------------------------"
       echo "Launching SampleFormJupyter in your web browser... hit Ctrl-C when you're done."
       echo "  >  jupyter-notebook $prm"
-      echo "-----------------------------------------------------$curr_dir/build/rapport.pdf-----------------"
+      echo "----------------------------------------------------------------------"
       jupyter-notebook $prm 2>/dev/null
       exit 0
    elif [ "$1" = -doc_prm ]
