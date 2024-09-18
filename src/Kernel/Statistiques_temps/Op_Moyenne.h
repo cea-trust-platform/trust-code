@@ -38,6 +38,7 @@ public:
   inline void associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2) override;
   inline void fixer_tstat_deb(double, double) override;
   inline void fixer_tstat_fin(double tps) override;
+  inline void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
   void completer(const Probleme_base&) override;
@@ -87,6 +88,16 @@ inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_G
   integrale_champ_.typer_champ(type);
   integrale_champ_.le_champ_calcule().associer_domaine_dis_base(une_zdis);
   integrale_champ_.associer(le_champ, 1, t1, t2);
+}
+
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
+ *
+ */
+inline void Op_Moyenne::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+{
+  std::string name = integrale_champ_.le_champ_calcule().le_nom().getString();
+  int nb_dim = integrale_champ_.le_champ_calcule().valeurs().nb_dim();
+  ch[name] = std::make_pair("double",nb_dim);
 }
 
 inline int Op_Moyenne::sauvegarder(Sortie& os) const

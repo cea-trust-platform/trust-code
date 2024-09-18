@@ -25,6 +25,7 @@
 #include <Postraitement.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <TRUST_2_PDI.h>
 #include <Operateur.h>
 #include <Domaine.h>
 #include <Param.h>
@@ -406,7 +407,7 @@ int Modele_turbulence_hyd_base::sauvegarder(Sortie& os) const
     {
       loipar_->sauvegarder(os);
     }
-  else  // OC: pour le bas Re, on ecrit negligeable => pas de pb a faire ceci ?
+  else if(!TRUST_2_PDI::PDI_checkpoint_)  // OC: pour le bas Re, on ecrit negligeable => pas de pb a faire ceci ?
     {
       const Discretisation_base& discr = mon_equation_->discretisation();
       Nom nom_discr = discr.que_suis_je();

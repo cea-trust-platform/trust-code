@@ -66,6 +66,8 @@ public:
   void postraiter(int forcer) override;
   void mettre_a_jour(double temps) override;
   void finir() override;
+  void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
+  void scal_a_sauvegarder(std::map<std::string, std::string>& scal) const override;
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   void completer() override;
@@ -170,7 +172,6 @@ public:
   inline const double& tstat_deb() const;
   inline const double& tstat_fin() const;
   int cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, Motcle nom);
-  int get_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, REF(Champ_base)& source) const;
 
   /*! Calls by postraiter_champs() and allows a derived class to write extra meshes if needed
    * @return -1 if nothing more was written, 1 otherwise.

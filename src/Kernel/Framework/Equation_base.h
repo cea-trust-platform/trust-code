@@ -95,8 +95,8 @@ public :
   virtual const Milieu_base& milieu() const =0;
   virtual Milieu_base& milieu() =0;
 
-  virtual const Champ_Inc& champ_a_sauvegarder(int i) const;
-  virtual int nb_champs_a_sauvegarder() const { return 1; }
+  virtual void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const;
+  virtual void scal_a_sauvegarder(std::map<std::string, std::string>& scal) const { }
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
 

@@ -185,6 +185,7 @@ public :
   inline double temps_init() const ;
   inline double temps_max() const ;
   inline double temps_sauv() const ;
+  inline int nb_sauv_max() const;
   inline double temps_impr() const ;
   inline int precision_impr() const
   {
@@ -302,6 +303,7 @@ protected :
   Nom norm_residu_;
   double dt_sauv_;
   mutable int nb_sauv_;                 // how many checkpoints have we performed so far?
+  int nb_sauv_max_;                     // max number of checkpoints that will be performed (useful for PDI backup file)
   double limite_cpu_sans_sauvegarde_;
   double periode_cpu_sans_sauvegarde_;
   double temps_cpu_ecoule_;
@@ -387,6 +389,15 @@ inline double Schema_Temps_base::temps_impr() const
 inline double Schema_Temps_base::temps_sauv() const
 {
   return dt_sauv_;
+}
+
+/*! @brief Renvoie le nb maximum de sauvegarde (estimation)
+ *
+ * @return (int)
+ */
+inline int Schema_Temps_base::nb_sauv_max() const
+{
+  return nb_sauv_max_;
 }
 
 /*! @brief Renvoie une reference sur le temps maximum

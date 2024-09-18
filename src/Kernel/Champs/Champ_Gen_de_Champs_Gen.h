@@ -44,6 +44,7 @@ public:
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void   reset() override;
+  void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   void completer(const Postraitement_base& post) override;

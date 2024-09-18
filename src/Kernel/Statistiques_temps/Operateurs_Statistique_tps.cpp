@@ -17,7 +17,7 @@
 #include <Operateurs_Statistique_tps.h>
 #include <EcritureLectureSpecial.h>
 #include <Postraitement.h>
-
+#include <TRUST_2_PDI.h>
 
 Implemente_instanciable(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(OWN_PTR(Operateur_Statistique_tps_base)));
 
@@ -56,6 +56,8 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
       os << Nom(this->dernier()->tstat_deb(), "%e") << finl;
       os << Nom(this->dernier()->tstat_dernier_calcul(), "%e") << finl;
     }
+  else if(TRUST_2_PDI::PDI_checkpoint_)
+    Cerr << "WARNING! Backup for Operateurs_Statistique_tps not handled with PDI..." << finl;
 
   int bytes = 0;
   for (const auto &itr : *this)
@@ -71,6 +73,11 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
   //Cerr << "Operateurs_Statistique_tps::reprendre" << finl;
   if (mon_post_.non_nul())
     {
+      if(TRUST_2_PDI::PDI_restart_)
+        {
+          Cerr << "WARNING! Restart for Operateurs_Statistique_tps not handled with PDI..." << finl;
+          Process::exit();
+        }
       Nom bidon;
       is >> bidon;
       if (bidon=="fin")

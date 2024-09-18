@@ -348,9 +348,6 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   // en mode ecriture special seul le maitre ecrit l'entete
   int a_faire, special;
   EcritureLectureSpecial::is_ecriture_special(special, a_faire);
-  int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
-  a_faire = a_faire && !pdi_format;
-  special = special && !pdi_format;
 
   if (a_faire)
     {
@@ -365,7 +362,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   int bytes = 0;
   if (special)
     bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
-  else if (pdi_format)
+  else if (TRUST_2_PDI::PDI_checkpoint_)
     {
       bytes = 8 * valeurs().size_array();
 
@@ -417,7 +414,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
         {
           TRUST_2_PDI pdi_interface;
           pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 0 /*read mode*/);
-          pdi_interface.PDI_start_sharing(nom_.getChar(), valeurs().addr());
+          pdi_interface.read(nom_.getChar(), valeurs().addr());
         }
       else
         {

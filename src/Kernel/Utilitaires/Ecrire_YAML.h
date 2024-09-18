@@ -24,7 +24,7 @@ class Ecrire_YAML
 {
 public:
   Ecrire_YAML() : indent_(2) { }
-  void write_checkpoint_file(Nom fname, int simple_save);
+  void write_checkpoint_file(Nom fname);
   void write_restart_file(Nom fname);
 
   void associer_pb_base(const Probleme_base& pb)
@@ -52,24 +52,30 @@ private:
     text = text + line;
   }
 
-  void declare_datasets_dimensions_(std::string prefix, std::string& text);
-  void set_datasets_selection_(std::string prefix, std::string suffix, std::string& text);
+  void set_data_();
 
+  void write_checkpoint_restart_file_(int save, Nom fname);
   void declare_metadata_(int save, std::string& text);
   void declare_data_(int save, std::string& text);
 
-  void write_data_(Nom fname, int simple_checkpoint, std::string& text);
-  void restore_data_(Nom fname, int simple_checkpoint, std::string& text);
+  void write_data_for_checkpoint_(Nom fname, std::string& text);
+  void write_data_for_restart_(Nom fname, std::string& text);
+  void write_metadata_(int save, Nom fname, std::string& text);
+  void write_time_data_(int save, Nom fname, std::string& text);
 
-  void restore_small_data_(Nom fname, Nom data, Nom dataset, std::string& text);
-  void write_time_scheme_(Nom fname, std::string& text);
-  void write_format_(Nom fname, std::string& text);
-
-  void set_fields_();
+  void declare_array_(std::string name, std::string type, std::string size, std::string& text);
+  void declare_dtab_(std::string name, std::string type, int nb_dim, std::string& text);
+  void declare_dataset_(std::string name, std::string type, int nb_dim, std::string& text);
+  void write_attribute_(std::string dname, std::string fname, std::string& text);
+  void write_scalar_(std::string dname, std::string fname, std::string& text);
+  void write_scalar_selection_(std::string& text);
+  void write_dtab_(std::string name, int nb_dim, std::string& text);
+  void write_dtab_selection_(std::string name, int nb_dim, std::string& text);
 
   int indent_;
   REF(Probleme_base) pb_;
-  LIST(REF(Champ_base)) fields_; //fields to save/restore
+  std::map<std::string, std::pair<std::string, int>> fields_; //fields to save/restore : fields["name_of_field"] = (type_of_the_field, dimensions_of_field)
+  std::map<std::string, std::string> scalars_; //additional scalars to save/restore : scalars_["name_of_scalar"] = type of the scalar
 
 };
 

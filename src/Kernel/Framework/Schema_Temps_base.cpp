@@ -355,9 +355,17 @@ Entree& Schema_Temps_base::readOn(Entree& is)
   temps_precedent_=tinit_;
   lu_=1;
   if (dt_sauv_ <= 0.)
-    Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
+    {
+      Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
+      nb_sauv_max_ = 0;
+    }
   else
-    Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+    {
+      Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+      double tmp = (tmax_-tinit_) / dt_sauv_; //only an estimation, as it does not take into account the cpu limit without backup!!
+      nb_sauv_max_ = (int)std::ceil(tmp);
+    }
+
   if (dt_max_str_ != Nom())
     {
       dt_max_fn_.setNbVar(1);
@@ -728,11 +736,20 @@ int Schema_Temps_base::sauvegarder(Sortie& os) const
   if(TRUST_2_PDI::PDI_checkpoint_)
     {
       int simple_checkpoint = ref_cast_non_const(Probleme_base, mon_probleme.valeur()).is_sauvegarde_simple();
-      int i = simple_checkpoint ? 0 : nb_sauv_;
+      int i = 0;
+      int i_max = 1;
+      if(!simple_checkpoint)
+        {
+          if(nb_sauv_ > nb_sauv_max_)
+            Cerr << "WARNING ! Overwriting the first " << nb_sauv_ << " backups..." << finl;
+          i =  nb_sauv_ % nb_sauv_max_;
+          i_max = nb_sauv_max_;
+        }
       double t = temps_courant_;
 
       std::map<std::string,void*> time_infos;
       time_infos["iter"] =  &i;
+      time_infos["nb_iter_max"] =  &i_max;
       time_infos["temps"] = &t;
       TRUST_2_PDI pdi_interface;
       pdi_interface.multiple_writes("time_scheme", time_infos);

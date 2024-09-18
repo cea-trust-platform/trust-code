@@ -45,6 +45,7 @@ class Champ_Generique_base : public Objet_U
 public:
 
   /* XXX Elie Saikali : re-mets ici et pas dans Objet_U */
+  virtual void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const { };
   int sauvegarder(Sortie& os) const override { return 0; }
   int reprendre(Entree& is) override { return 1; }
 

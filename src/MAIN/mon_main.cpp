@@ -135,10 +135,18 @@ static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 #endif
 }
 
+static void instantiate_node_mpi(OWN_PTR(Comm_Group) & ngrp, int with_mpi)
+{
+  if (with_mpi)
+    ngrp.typer("Comm_Group_MPI");
+  else
+    ngrp.typer("Comm_Group_NoParallel");
+}
+
 static void init_node_mpi(OWN_PTR(Comm_Group) & ngrp)
 {
 #ifdef MPI_
-  ngrp.typer("Comm_Group_MPI");
+  assert(ngrp.non_nul());
   Comm_Group_MPI& mpi_on_node = ref_cast(Comm_Group_MPI, ngrp.valeur());
   mpi_on_node.init_comm_on_numa_node();
 #endif
@@ -200,10 +208,7 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
         }
     }
   else
-    {
-      groupe_trio_.typer("Comm_Group_NoParallel");
-      node_group_.typer("Comm_Group_NoParallel");
-    }
+    groupe_trio_.typer("Comm_Group_NoParallel");
 
   // Initialisation des groupes de communication.
   PE_Groups::initialize(groupe_trio_);
@@ -215,6 +220,10 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
 
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
+
+  // the node group is instantiated here, so that it's done only once (necessary with ICoCo)
+  // however, it is initialized later, as it involves communication operations, which require statistics to be initialized first...
+  instantiate_node_mpi(node_group_, with_mpi);
 
   if (!init_kokkos_before_mpi)
     {
@@ -365,6 +374,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       Cerr<<"Fin chargement des modules "<<finl;
     }
 
+  // initializing communicator on node
   if (Process::is_parallel())
     init_node_mpi(node_group_);
   PE_Groups::initialize_node(node_group_);

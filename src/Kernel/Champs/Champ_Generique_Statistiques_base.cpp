@@ -80,6 +80,15 @@ void Champ_Generique_Statistiques_base::fixer_tdeb_tfin(const double t_deb,const
   tstat_fin_ = t_fin;
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
+ *
+ */
+void Champ_Generique_Statistiques_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+{
+  Champ_Gen_de_Champs_Gen::champ_a_sauvegarder(ch);
+  Operateur_Statistique().champ_a_sauvegarder(ch);
+}
+
 int Champ_Generique_Statistiques_base::sauvegarder(Sortie& os) const
 {
   int bytes=0;

@@ -23,6 +23,7 @@
 #include <MD_Vector_composite.h>
 #include <MD_Vector_seq.h>
 #include <TRUSTTab_parts.h>
+#include <TRUST_2_PDI.h>
 
 int EcritureLectureSpecial::mode_ecr=-1;
 int EcritureLectureSpecial::mode_lec=0;
@@ -118,13 +119,23 @@ int EcritureLectureSpecial::is_lecture_special()
  */
 int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
 {
-  special=0;
-  a_faire=1;
-  assert(mode_ecr>=0); // mode_ecr n'est pas positionne
-  if (mode_ecr)
+  int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
+  // with PDI, no one is writing, the library handles the IO
+  if(pdi_format)
     {
-      special=1;
-      a_faire=Process::je_suis_maitre();
+      a_faire = 0;
+      special = 0;
+    }
+  else
+    {
+      special=0;
+      a_faire=1;
+      assert(mode_ecr>=0); // mode_ecr n'est pas positionne
+      if (mode_ecr)
+        {
+          special=1;
+          a_faire=Process::je_suis_maitre();
+        }
     }
   return mode_ecr;
 }

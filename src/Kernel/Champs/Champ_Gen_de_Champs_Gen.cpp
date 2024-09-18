@@ -190,6 +190,16 @@ int Champ_Gen_de_Champs_Gen::get_nb_sources() const
   return sources_reference_.size()+sources_.size();
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
+ *
+ */
+void Champ_Gen_de_Champs_Gen::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+{
+  const int n = sources_.size();
+  for (int i = 0; i < n; i++)
+    sources_[i]->champ_a_sauvegarder(ch);
+}
+
 /*! @brief sauvegarde des differentes sources
  *
  */

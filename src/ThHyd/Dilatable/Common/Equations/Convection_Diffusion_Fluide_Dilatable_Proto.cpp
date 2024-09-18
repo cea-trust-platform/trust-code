@@ -20,12 +20,13 @@
 #include <Convection_Diffusion_std.h>
 #include <EcritureLectureSpecial.h>
 #include <Op_Conv_negligeable.h>
-#include <Schema_Temps_base.h>
 #include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Matrice_Morse.h>
 #include <Statistiques.h>
+#include <TRUST_2_PDI.h>
 #include <TRUSTTrav.h>
 #include <Operateur.h>
 #include <Domaine.h>
@@ -411,7 +412,6 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
   if(mat) mat->ajouter_multvect(eqn.inconnue().valeurs(),secmem);
 }
 
-
 /*
  * Methodes statiques
  */
@@ -423,7 +423,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
   bytes += eq.sauvegarder_base(os); // XXX : voir Convection_Diffusion_std
   EcritureLectureSpecial::is_ecriture_special(special,a_faire);
 
-  if (a_faire)
+  if (a_faire || TRUST_2_PDI::PDI_checkpoint_)
     {
       Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
       OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
@@ -456,11 +456,6 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
   OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
 
   p_tab->nommer("Pression_EOS");
-  Nom field_tag(p_tab->le_nom());
-  field_tag += p_tab->que_suis_je();
-  field_tag += pb.domaine().le_nom();
-  field_tag += Nom(temps,pb.reprise_format_temps());
-
   if (EcritureLectureSpecial::is_lecture_special() && Process::is_parallel())
     {
       Cerr << "Error in Convection_Diffusion_Espece_Binaire_WC::reprendre !" << finl;
@@ -469,7 +464,14 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
     }
   else
     {
-      avancer_fichier(is, field_tag);
+      if(!TRUST_2_PDI::PDI_restart_)
+        {
+          Nom field_tag(p_tab->le_nom());
+          field_tag += p_tab->que_suis_je();
+          field_tag += pb.domaine().le_nom();
+          field_tag += Nom(temps,pb.reprise_format_temps());
+          avancer_fichier(is, field_tag);
+        }
       p_tab->reprendre(is);
     }
 

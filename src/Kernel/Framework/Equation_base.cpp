@@ -434,10 +434,14 @@ int Equation_base::sauvegarder(Sortie& os) const
   return inconnue().sauvegarder(os);
 }
 
-const Champ_Inc& Equation_base::champ_a_sauvegarder(int i) const
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
+ *
+ */
+void Equation_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
 {
-  assert (i==0);
-  return inconnue();
+  std::string name = inconnue()->le_nom().getString();
+  int nb_dim = inconnue()->valeurs().nb_dim();
+  ch[name] = std::make_pair("double",nb_dim);
 }
 
 /*! @brief On reprend l'inconnue a partir d'un flot d'entree.

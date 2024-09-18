@@ -838,6 +838,32 @@ Postraitement::Postraitement():
 {
 }
 
+/*! @brief for PDI IO: retrieve name and type and dimensions of the scalars to save/restore
+ *
+ */
+void Postraitement::scal_a_sauvegarder(std::map<std::string, std::string>& scal) const
+{
+  if(stat_demande_ || stat_demande_definition_champs_)
+    {
+      scal["stat_nb_champs"] = "int";
+      scal["stat_tdeb"] = "double";
+      scal["stat_tend"] = "double";
+    }
+}
+
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+void Postraitement::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+{
+  if(stat_demande_ || stat_demande_definition_champs_)
+    {
+      for (const auto& ch_post : champs_post_complet_)
+        ch_post->champ_a_sauvegarder(ch);
+
+    }
+}
+
 int Postraitement::sauvegarder(Sortie& os) const
 {
   int bytes = 0;
@@ -851,9 +877,6 @@ int Postraitement::sauvegarder(Sortie& os) const
           // en mode ecriture special seul le maitre ecrit l'entete
           int a_faire,special;
           EcritureLectureSpecial::is_ecriture_special(special,a_faire);
-          int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
-          a_faire = a_faire && !pdi_format;
-          special = special && !pdi_format;
           if (a_faire)
             {
               //On veut retrouver le nom precedent pour relecture des statistiques (format xyz)
@@ -868,7 +891,7 @@ int Postraitement::sauvegarder(Sortie& os) const
               os << tstat_deb_ << finl;
               os << tstat_dernier_calcul_ << finl ;
             }
-          else if (pdi_format)
+          else if (TRUST_2_PDI::PDI_checkpoint_)
             {
               TRUST_2_PDI pdi_interface;
               int nb_champs = nb_champs_stat_;
@@ -1237,29 +1260,6 @@ int Postraitement::lire_champs_stat_a_postraiter(Entree& s)
   return 1;
 }
 
-
-/*! @brief returns a statistical source if ch contains one
- *
- */
-int Postraitement::get_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, REF(Champ_base)& source) const
-{
-  if (sub_type(Champ_Generique_Statistiques_base,ch))
-    {
-      const Champ_Generique_Statistiques_base& ch_source = ref_cast(Champ_Generique_Statistiques_base, ch);
-      source = ch_source.integrale().le_champ_calcule();
-      return 1;
-    }
-  for (int i=0; i<ch.get_nb_sources(); i++)
-    {
-      const Champ_Generique_base& source_i = ch.get_source(i);
-      if (sub_type(Champ_Gen_de_Champs_Gen,source_i))
-        {
-          const Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,source_i);
-          return get_stat_dans_les_sources(champ_post, source);
-        }
-    }
-  return 0;
-}
 
 /*! @brief On recherche les champs statistiques dans les sources du champ courant
  *

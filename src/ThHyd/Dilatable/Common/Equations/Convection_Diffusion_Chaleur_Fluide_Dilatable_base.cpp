@@ -20,6 +20,7 @@
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
+#include <TRUST_2_PDI.h>
 #include <Domaine.h>
 #include <Avanc.h>
 #include <Statistiques.h>
@@ -94,6 +95,15 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler_blocs_avec_in
   statistiques().end_count(assemblage_sys_counter_);
 }
 
+/*! @brief for PDI IO: retrieve name and type and dimensions of the thermo pressure
+ *
+ */
+void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::scal_a_sauvegarder(std::map<std::string, std::string>& terms) const
+{
+  Nom pth("pression_thermo");
+  pth += probleme().domaine().le_nom();
+  terms[pth.getString()] = "double";
+}
 
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) const
 {
@@ -103,10 +113,10 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
   int a_faire,special;
   EcritureLectureSpecial::is_ecriture_special(special,a_faire);
 
+  Nom ident_Pth("pression_thermo");
+  ident_Pth += probleme().domaine().le_nom();
   if (a_faire)
     {
-      Nom ident_Pth("pression_thermo");
-      ident_Pth += probleme().domaine().le_nom();
       double temps = inconnue().temps();
       ident_Pth += Nom(temps,"%e");
       os << ident_Pth<<finl;
@@ -114,6 +124,13 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
       os << le_fluide->pression_th();
       os << flush ;
       Cerr << "Saving thermodynamic pressure at time : " <<  Nom(temps,"%e") << finl;
+    }
+  else if(TRUST_2_PDI::PDI_checkpoint_)
+    {
+      bytes += 8;
+      TRUST_2_PDI pdi_interface;
+      double pth = le_fluide->pression_th();
+      pdi_interface.TRUST_start_sharing(ident_Pth.getString(), &pth);
     }
   return bytes;
 }
@@ -131,13 +148,21 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::reprendre(Entree& is)
 {
   if (le_fluide->type_fluide() != "Gaz_Parfait") l_inco_ch->nommer("enthalpie");
   Equation_base::reprendre(is);
-  double temps = schema_temps().temps_courant();
   Nom ident_Pth("pression_thermo");
   ident_Pth += probleme().domaine().le_nom();
-  ident_Pth += Nom(temps,probleme().reprise_format_temps());
-  avancer_fichier(is, ident_Pth);
   double pth;
-  is>>pth;
+  if(TRUST_2_PDI::PDI_restart_)
+    {
+      TRUST_2_PDI pdi_interface;
+      pdi_interface.read(ident_Pth.getString(), &pth);
+    }
+  else
+    {
+      double temps = schema_temps().temps_courant();
+      ident_Pth += Nom(temps,probleme().reprise_format_temps());
+      avancer_fichier(is, ident_Pth);
+      is>>pth;
+    }
   le_fluide->set_pression_th(pth);
   return 1;
 }

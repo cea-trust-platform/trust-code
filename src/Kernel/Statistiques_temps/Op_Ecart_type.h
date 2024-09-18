@@ -45,6 +45,7 @@ public:
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
   void completer(const Probleme_base&) override;
   DoubleTab calculer_valeurs() const override;
+  inline void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
 
@@ -92,6 +93,16 @@ inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis, const Cham
   integrale_carre_champ_.typer_champ(type);
   integrale_carre_champ_.le_champ_calcule().associer_domaine_dis_base(une_zdis);
   integrale_carre_champ_.associer(le_champ, 2, t1, t2);
+}
+
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
+ *
+ */
+inline void Op_Ecart_type::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+{
+  std::string name = integrale_carre_champ_.le_champ_calcule().le_nom().getString();
+  int nb_dim = integrale_carre_champ_.le_champ_calcule().valeurs().nb_dim();
+  ch[name] = std::make_pair("double",nb_dim);
 }
 
 inline int Op_Ecart_type::sauvegarder(Sortie& os) const

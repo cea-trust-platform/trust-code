@@ -18,221 +18,173 @@
 #include <Postraitement.h>
 #include <Champ_Generique_Statistiques_base.h>
 
-void Ecrire_YAML::write_checkpoint_file(Nom fname, int simple_save)
+void Ecrire_YAML::write_checkpoint_file(Nom fname)
 {
   if (Process::je_suis_maitre())
-    {
-      set_fields_();
-
-      std::string text = "pdi:";
-
-      declare_metadata_(1 /*save*/, text);
-      declare_data_(1 /*save*/, text);
-
-      // declare plugins
-      begin_bloc_("plugins:", text);
-      add_line_("trace:", text);
-      if(Process::is_parallel())
-        add_line_("mpi:", text);
-      add_line_("decl_hdf5:", text);
-
-      write_data_(fname, simple_save, text);
-
-      write_time_scheme_(fname, text);
-      write_format_(fname, text);
-
-      SFichier fic("save.yml");
-      fic << text;
-    }
+    write_checkpoint_restart_file_(1 /*save*/, fname);
   Process::barrier();
 }
 
 void Ecrire_YAML::write_restart_file(Nom fname)
 {
   if (Process::je_suis_maitre())
-    {
-      set_fields_();
-
-      std::string text = "pdi:";
-
-      declare_metadata_(0 /*restart*/, text);
-      declare_data_(0 /*restart*/, text);
-
-      // declare plugins
-      begin_bloc_("plugins:", text);
-      add_line_("trace:", text);
-      if(Process::is_parallel())
-        add_line_("mpi:", text);
-      add_line_("decl_hdf5:", text);
-
-      restore_small_data_(fname, "last_iteration", "time/last_iteration", text);
-      restore_small_data_(fname, "temps", "time/t", text);
-      restore_small_data_(fname, "version", "format_sauvegarde/version", text);
-      restore_small_data_(fname, "simple_sauvegarde", "format_sauvegarde/simple_sauvegarde", text);
-      for (const auto& post_base : pb_->postraitements())
-        {
-          if (sub_type(Postraitement, post_base.valeur()))
-            {
-              const Postraitement& post = ref_cast(Postraitement, post_base.valeur());
-              if(post.stat_demande() || post.stat_demande_definition_champs())
-                {
-                  restore_small_data_(fname, "stat_nb_champs", "statistiques/nb_champs", text);
-                  restore_small_data_(fname, "stat_tdeb", "statistiques/tdeb", text);
-                  restore_small_data_(fname, "stat_tend", "statistiques/tend", text);
-                }
-            }
-        }
-
-      restore_data_(fname, 1 /*in case of backup file with simple checkpoint*/, text);
-      restore_data_(fname, 0 /*in case of backup file with complete checkpoint*/, text);
-
-      SFichier fic("restart.yml");
-      fic << text;
-    }
+    write_checkpoint_restart_file_(0 /*restart*/, fname);
   Process::barrier();
 }
 
-void Ecrire_YAML::restore_data_(Nom fname, int simple_checkpoint, std::string& text)
+void Ecrire_YAML::write_checkpoint_restart_file_(int save, Nom fname)
 {
-  std::string restart = "- file: " + fname.getString();
-  begin_bloc_(restart, text);
+  set_data_();
 
-  std::string checkpoint_type = simple_checkpoint ? "restart_from_simple_checkpoint" : "restart_from_complete_checkpoint";
-  std::string event_name = "on_event: " + checkpoint_type;
-  add_line_(event_name, text);
+  std::string text = "pdi:";
+
+  declare_metadata_(save, text);
+  declare_data_(save, text);
+
+  // declare plugins
+  begin_bloc_("plugins:", text);
+  add_line_("trace:", text);
   if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
+    add_line_("mpi:", text);
+  add_line_("decl_hdf5:", text);
 
-  begin_bloc_("read:", text);
-  std::string prefix = simple_checkpoint ? "" : "\'iter_$last_iteration/";
-  std::string suffix = simple_checkpoint ? "" : "\'";
-  set_datasets_selection_(prefix, suffix, text);
-  end_bloc_();
-
-  end_bloc_();
-}
-
-
-void Ecrire_YAML::write_data_(Nom fname, int simple_checkpoint, std::string& text)
-{
-  std::string checkpoint = "- file: " + fname.getString();
-  begin_bloc_(checkpoint, text);
-  std::string checkpoint_type = simple_checkpoint ? "simple_checkpoint" : "complete_checkpoint";
-  std::string event = "on_event: " + checkpoint_type;
-  add_line_(event, text);
-  if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
-
-  begin_bloc_("datasets:", text);
-  if(simple_checkpoint)
-    {
-      std::string no_prefix = "";
-      declare_datasets_dimensions_(no_prefix,text);
-    }
+  if(save)
+    write_data_for_checkpoint_(fname, text);
   else
-    {
-      int nb_iter = 4;  //ToDo::let the user chose the number of iterations he wants to save
-      for(int iter=0; iter<nb_iter; iter++)
-        {
-          std::string iteration = "iter_" + std::to_string(iter) + "/";
-          declare_datasets_dimensions_(iteration, text);
-        }
-    }
-  end_bloc_();
+    write_data_for_restart_(fname, text);
+  write_metadata_(save, fname, text);
 
-  begin_bloc_("write:", text);
-  std::string prefix = simple_checkpoint ? "" : "\'iter_${iter}/";
-  std::string suffix = simple_checkpoint ? "" : "\'";
-  set_datasets_selection_(prefix, suffix, text);
-
-  // writing statistics data
-  auto add_stats_var = [&](const std::string& varname)
-  {
-    std::string bloc = "stat_" + varname + ":";
-    begin_bloc_(bloc, text);
-    std::string dataset_name = "dataset: statistiques/" + varname;
-    add_line_(dataset_name, text);
-    end_bloc_();
-  };
-  for (const auto& post_base : pb_->postraitements())
-    {
-      if (sub_type(Postraitement, post_base.valeur()))
-        {
-          const Postraitement& post = ref_cast(Postraitement, post_base.valeur());
-          if(post.stat_demande() || post.stat_demande_definition_champs())
-            {
-              add_stats_var("nb_champs");
-              add_stats_var("tdeb");
-              add_stats_var("tend");
-            }
-        }
-    }
-  end_bloc_();
-
-  end_bloc_();
+  std::string yaml_fname = save ? "save.yml" : "restart.yml";
+  SFichier fic(yaml_fname.c_str());
+  fic << text;
 }
 
-void Ecrire_YAML::restore_small_data_(Nom fname, Nom data, Nom dataset, std::string& text)
-{
-  std::string headline = "- file: " + fname.getString();
-  begin_bloc_(headline, text);
-  if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
-
-  begin_bloc_("read:", text);
-  std::string data_name = data.getString() + ":";
-  begin_bloc_(data_name, text);
-  std::string dataset_name = "dataset: " + dataset.getString();
-  add_line_(dataset_name, text);
-  end_bloc_();
-  end_bloc_();
-  end_bloc_();
-}
-
-void Ecrire_YAML::write_time_scheme_(Nom fname, std::string& text)
+void Ecrire_YAML::write_metadata_(int save, Nom fname, std::string& text)
 {
   std::string format_sauvegarde = "- file: " + fname.getString();
   begin_bloc_(format_sauvegarde, text);
   if(Process::is_parallel())
     add_line_("communicator: $nodeComm", text);
-  begin_bloc_("write:", text);
-  begin_bloc_("version:", text);
-  add_line_("dataset: format_sauvegarde/version", text);
-  end_bloc_();
-  begin_bloc_("simple_sauvegarde:", text);
-  add_line_("dataset: format_sauvegarde/simple_sauvegarde", text);
-  end_bloc_();
+  std::string IO = save ? "write:" : "read:";
+  begin_bloc_(IO, text);
+  write_attribute_("format_sauvegarde/version", "version", text);
+  write_attribute_("format_sauvegarde/simple_sauvegarde", "simple_sauvegarde", text);
   end_bloc_();
   end_bloc_();
 }
 
-void Ecrire_YAML::write_format_(Nom fname, std::string& text)
+void Ecrire_YAML::write_time_data_(int save, Nom fname, std::string& text)
 {
-  int nb_iter = 4;  //ToDo::let the user chose the number of iterations he wants to save
   std::string time_scheme = "- file: " + fname.getString();
   begin_bloc_(time_scheme, text);
-  add_line_("on_event: time_scheme", text);
+  if(save) add_line_("on_event: time_scheme", text);
   if(Process::is_parallel())
     add_line_("communicator: $nodeComm", text);
-  begin_bloc_("datasets:", text);
-  std::string time = "time/t: { type: array, subtype: double, size: " + std::to_string(nb_iter) + " }";
-  add_line_(time, text);
-  end_bloc_();
-  begin_bloc_("write:", text);
-  begin_bloc_("temps:", text);
-  add_line_("dataset: time/t", text);
-  begin_bloc_("dataset_selection:", text);
-  add_line_("size: [1]", text);
-  add_line_("start: [\'$iter\']", text);
-  end_bloc_();
-  end_bloc_();
-  begin_bloc_("iter:", text);
-  add_line_("dataset: time/last_iteration", text);
-  end_bloc_();
+
+  if(save)
+    {
+      begin_bloc_("datasets:", text);
+      std::string size = "\'$nb_iter_max\'";
+      declare_array_("time/t", "double", size, text);
+      end_bloc_();
+    }
+
+  std::string IO = save ? "write:" : "read:";
+  begin_bloc_(IO, text);
+  if(save)
+    write_scalar_("time/t", "temps", text);
+  else
+    write_attribute_("time/t", "temps", text);
+  write_attribute_("time/last_iteration", "iter", text);
   end_bloc_();
   end_bloc_();
 }
 
+void Ecrire_YAML::write_data_for_checkpoint_(Nom fname, std::string& text)
+{
+  std::string checkpoint = "- file: " + fname.getString();
+  begin_bloc_(checkpoint, text);
+  std::string event = "on_event: backup";
+  add_line_(event, text);
+  if(Process::is_parallel())
+    add_line_("communicator: $nodeComm", text);
+
+  // declaring datasets
+  begin_bloc_("datasets:", text);
+  for(const auto& f: fields_)
+    {
+      std::string name = f.first;
+      std::string type = f.second.first;
+      int nb_dim = f.second.second;
+      declare_dataset_(name, type, nb_dim, text);
+    }
+  for (auto const& scal : scalars_)
+    {
+      const std::string& name = scal.first;
+      const std::string& type = scal.second;
+      declare_array_(name, type, "\'$nb_iter_max\'", text);
+    }
+  end_bloc_();
+
+
+  begin_bloc_("write:", text);
+  // writing fields
+  for(const auto& f: fields_)
+    {
+      std::string name = f.first;
+      int nb_dim = f.second.second;
+      write_dtab_(name, nb_dim, text);
+    }
+  // writing scalars
+  for(const auto& scal: scalars_)
+    {
+      const std::string& name = scal.first;
+      write_scalar_(name, name, text);
+    }
+  end_bloc_();
+  end_bloc_();
+
+  // writing time
+  write_time_data_(1, fname, text);
+
+}
+
+void Ecrire_YAML::write_data_for_restart_(Nom fname, std::string& text)
+{
+  // writing fields
+  for(const auto& f: fields_)
+    {
+      std::string checkpoint = "- file: " + fname.getString();
+      begin_bloc_(checkpoint, text);
+      if(Process::is_parallel())
+        add_line_("communicator: $nodeComm", text);
+
+      begin_bloc_("read:", text);
+      std::string name = f.first;
+      int nb_dim = f.second.second;
+      write_dtab_(name, nb_dim, text);
+      end_bloc_();
+      end_bloc_();
+    }
+  // writing scalars
+  for(const auto& scal: scalars_)
+    {
+      std::string checkpoint = "- file: " + fname.getString();
+      begin_bloc_(checkpoint, text);
+      if(Process::is_parallel())
+        add_line_("communicator: $nodeComm", text);
+
+      begin_bloc_("read:", text);
+      const std::string& name = scal.first;
+      write_scalar_(name, name, text);
+      end_bloc_();
+      end_bloc_();
+    }
+
+  // writing time
+  write_time_data_(0, fname, text);
+
+}
 
 void Ecrire_YAML::declare_metadata_(int save, std::string& text)
 {
@@ -240,9 +192,12 @@ void Ecrire_YAML::declare_metadata_(int save, std::string& text)
 
   add_line_("# scheme information", text);
   if(save)
-    add_line_("iter: int       # Number of checkpoints performed until now (WARNING: does not correspond to the current iteration in my time loop)", text);
+    {
+      add_line_("iter: int         # Number of checkpoints performed until now (WARNING: does not correspond to the current iteration in my time loop)", text);
+      add_line_("nb_iter_max: int  # Maximum number of checkpoints (WARNING: if this number is too small, we overwrite the first checkpoints)", text);
+    }
   else
-    add_line_("last_iteration : int # last saved iteration", text);
+    add_line_("iter : int # last saved iteration", text);
 
   add_line_("# information on format", text);
   add_line_("version : int", text);
@@ -250,13 +205,13 @@ void Ecrire_YAML::declare_metadata_(int save, std::string& text)
 
   for(const auto& f: fields_)
     {
-      std::string name = f->le_nom().getString();
-      int nb_dim = f->valeurs().nb_dim();
+      std::string fname = f.first;
+      int nb_dim = f.second.second;
+      std::string asize = std::to_string(nb_dim);
+      std::string aname = "dim_" + fname;
+      declare_array_(aname, "int", asize, text);
 
-      std::string dim = "dim_" + name + " : { type: array, subtype: int, size: " + std::to_string(nb_dim) + " }";
-      add_line_(dim, text);
-
-      std::string glob_dim = "glob_dim_" + name + " : int";
+      std::string glob_dim = "glob_dim_" + fname + " : int";
       add_line_(glob_dim, text);
     }
 
@@ -279,132 +234,130 @@ void Ecrire_YAML::declare_data_(int save, std::string& text)
   begin_bloc_("data:  # data we want to save (essentially fields of unknown)", text);
   for(const auto& f: fields_)
     {
-      std::string name = f->le_nom().getString();
-      int nb_dim = f->valeurs().nb_dim();
-      std::string data_i = name + " : { type: array, subtype: double, size: [ \'$dim_" + name + "[0]\'";
-      for(int d=1; d<nb_dim; d++)
-        data_i = data_i + "," + "\'$dim_" + name + "[" + std::to_string(d) + "]\'";
-      data_i = data_i + " ] }";
-      add_line_(data_i, text);
+      std::string name = f.first;
+      std::string type = f.second.first;
+      int nb_dim = f.second.second;
+      declare_dtab_(name, type, nb_dim, text);
     }
-
-  // declaring statistics data
-  for (const auto& post_base : pb_->postraitements())
+  // additional scalar data:
+  for(const auto& s: scalars_)
     {
-      if (sub_type(Postraitement, post_base.valeur()))
-        {
-          const Postraitement& post = ref_cast(Postraitement, post_base.valeur());
-          if(post.stat_demande() || post.stat_demande_definition_champs())
-            {
-              std::string name = "stat_";
-              std::string post_nb_champs = name + "nb_champs : int";
-              add_line_(post_nb_champs, text);
-              std::string post_tdeb = name + "tdeb : double";
-              add_line_(post_tdeb, text);
-              std::string post_tend = name + "tend : double";
-              add_line_(post_tend, text);
-            }
-        }
+      std::string scal = s.first + " : " + s.second;
+      add_line_(scal, text);
     }
-
   if(save)
     add_line_("temps : double  # current physical time", text);
   else
-    add_line_("temps : { type: array, subtype: double, size: [ \'$last_iteration + 1' ]  }", text);
+    add_line_("temps : { type: array, subtype: double, size: [ \'$iter + 1' ]  }", text);
 
   end_bloc_();
 }
 
-void Ecrire_YAML::declare_datasets_dimensions_(std::string prefix, std::string& text)
-{
-  for(const auto& f: fields_)
-    {
-      std::string name = f->le_nom().getString();
-      int nb_dim = f->valeurs().nb_dim();
-
-      std::string dataset_dim = prefix + name + ": { type: array, subtype: double, size: [";
-      if(Process::is_parallel())
-        dataset_dim = dataset_dim + "\'$nodeSize\',";
-      dataset_dim = dataset_dim + "\'$glob_dim_" + name + "\'";
-      for(int d=1; d<nb_dim; d++)
-        dataset_dim = dataset_dim + ", \'$dim_" + name + "[" + std::to_string(d) + "]\'";
-      dataset_dim = dataset_dim + " ] }";
-      add_line_(dataset_dim, text);
-    }
-
-}
-
-void Ecrire_YAML::set_datasets_selection_(std::string prefix, std::string suffix, std::string& text)
-{
-  for(const auto& f: fields_)
-    {
-      std::string name = f->le_nom().getString();
-      int nb_dim = f->valeurs().nb_dim();
-
-      std::string write_inc = name + ":";
-      begin_bloc_(write_inc, text);
-      std::string dataset_name = "dataset: " + prefix + name + suffix;
-      add_line_(dataset_name, text);
-
-      begin_bloc_("dataset_selection:", text);
-      std::string size =  "size: [";
-      if(Process::is_parallel()) size = size + "1, ";
-      size = size + "\'$dim_" + name + "[0]\'";
-      for(int d=1; d<nb_dim; d++)
-        size = size + "," + "\'$dim_" + name + "[" + std::to_string(d) + "]\'";
-      size = size + " ]";
-      add_line_(size, text);
-      std::string start = "start: [";
-      if(Process::is_parallel()) start = start + "\'$nodeRk\',";
-      start = start + "0,0]";
-      add_line_(start, text);
-      end_bloc_();
-      end_bloc_();
-    }
-
-}
-
-
-void Ecrire_YAML::set_fields_()
+void Ecrire_YAML::set_data_()
 {
   assert(pb_.non_nul());
 
   // equations unknowns
   for(int i=0; i<pb_->nombre_d_equations(); i++)
     {
-      for(int ch=0; ch<pb_->equation(i).nb_champs_a_sauvegarder(); ch++)
-        {
-          const REF(Champ_base)& inc = pb_->equation(i).champ_a_sauvegarder(ch).valeur();
-          fields_.add(inc);
-        }
+      pb_->equation(i).champ_a_sauvegarder(fields_);
+      pb_->equation(i).scal_a_sauvegarder(scalars_);
     }
 
   // statistical post-processing fields
   for (const auto& post_base : pb_->postraitements())
     {
-      if (sub_type(Postraitement, post_base.valeur()))
-        {
-          const Postraitement& post = ref_cast(Postraitement, post_base.valeur());
-          if(post.stat_demande() || post.stat_demande_definition_champs())
-            {
-              for (const auto& ch_post : post.champs_post_complet())
-                {
-                  if (sub_type(Champ_Gen_de_Champs_Gen,ch_post.valeur()))
-                    {
-                      const Champ_Gen_de_Champs_Gen& ch_gen = ref_cast(Champ_Gen_de_Champs_Gen,ch_post.valeur());
-                      REF(Champ_base) stat;
-                      int has_source = post.get_stat_dans_les_sources(ch_gen, stat);
-                      if(has_source)
-                        {
-                          assert(stat.non_nul());
-                          fields_.add(stat);
-                        }
-                    }
-                }
-            }
-        }
+      post_base->champ_a_sauvegarder(fields_);
+      post_base->scal_a_sauvegarder(scalars_);
     }
 }
 
+void Ecrire_YAML::declare_array_(std::string name, std::string type, std::string size, std::string& text)
+{
+  std::string decl = name + " : { type: array, subtype: " + type + ", size: " + size + " }";
+  add_line_(decl, text);
+}
 
+void Ecrire_YAML::declare_dtab_(std::string name, std::string type, int nb_dim, std::string& text)
+{
+  std::string data = name + " : { type: array, subtype: " + type + ", size: [ \'$dim_" + name + "[0]\'";
+  for(int d=1; d<nb_dim; d++)
+    data = data + "," + "\'$dim_" + name + "[" + std::to_string(d) + "]\'";
+  data = data + " ] }";
+  add_line_(data, text);
+}
+
+void Ecrire_YAML::declare_dataset_(std::string fname, std::string type, int nb_dim, std::string& text)
+{
+  std::string dataset_dim = fname + ": { type: array, subtype: " + type + ", size: [";
+  if(Process::is_parallel())
+    dataset_dim = dataset_dim + "\'$nodeSize\', ";
+  dataset_dim = dataset_dim + "\'$nb_iter_max\', ";
+  dataset_dim = dataset_dim + "\'$glob_dim_" + fname + "\'";
+  for(int d=1; d<nb_dim; d++)
+    dataset_dim = dataset_dim + ", \'$dim_" + fname + "[" + std::to_string(d) + "]\'";
+  dataset_dim = dataset_dim + " ] }";
+  add_line_(dataset_dim, text);
+}
+
+void Ecrire_YAML::write_attribute_(std::string dname, std::string fname, std::string& text)
+{
+  std::string header = fname + ":";
+  begin_bloc_(header, text);
+  std::string dataset_name = "dataset: " + dname;
+  add_line_(dataset_name, text);
+  end_bloc_();
+}
+
+void Ecrire_YAML::write_scalar_(std::string dname, std::string fname, std::string& text)
+{
+  std::string header = fname + ":";
+  begin_bloc_(header, text);
+  std::string dataset_name = "dataset: " + dname;
+  add_line_(dataset_name, text);
+  write_scalar_selection_(text);
+  end_bloc_();
+}
+
+void Ecrire_YAML::write_scalar_selection_(std::string& text)
+{
+  begin_bloc_("dataset_selection:", text);
+  add_line_("size: [1]", text);
+  std::string start = "start: [\'$iter\']";
+  add_line_(start, text);
+  end_bloc_();
+}
+
+void Ecrire_YAML::write_dtab_(std::string fname, int nb_dim, std::string& text)
+{
+  std::string header = fname + ":";
+  begin_bloc_(header, text);
+  std::string dataset_name = "dataset: " + fname;
+  add_line_(dataset_name, text);
+  write_dtab_selection_(fname, nb_dim, text);
+  end_bloc_();
+}
+
+void Ecrire_YAML::write_dtab_selection_(std::string fname, int nb_dim, std::string& text)
+{
+  begin_bloc_("dataset_selection:", text);
+  std::string size =  "size: [";
+  if(Process::is_parallel()) size = size + "1, ";
+  size = size + "1, ";
+  size = size + "\'$dim_" + fname + "[0]\'";
+  for(int d=1; d<nb_dim; d++)
+    size = size + "," + "\'$dim_" + fname + "[" + std::to_string(d) + "]\'";
+  size = size + "]";
+  add_line_(size, text);
+
+  std::string start = "start: [";
+  if(Process::is_parallel()) start = start + "\'$nodeRk\',";
+  start = start + "\'$iter\',";
+  start = start + "0";
+  for(int d=1; d<nb_dim; d++)
+    start = start + "," + "0";
+  start = start + "]";
+  add_line_(start, text);
+  end_bloc_();
+}
 
