@@ -1,34 +1,36 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+""" Take a look at doc/README_dev.md
+
+Module to handle parsing, loading and writing of
+    - the XD tags found in the code
+    - the TRAD2.org file
+    - the loading/writing of the TRAD2 file
+
+Classes TRAD2Attr and TRAD2Block represent pieces of the TRAD2 file.
+Class TRAD2Content is the central piece.
+
+Authors: A Bruneton, C Van Wambeke
+"""
 import os
-from trustify import logger
+from trustify.misc_utilities import logger
 
-BLUE    = "\033[0;34m"
-RED     = "\033[0;31m"
-END     = "\033[0m"
-
-################################################################
+_XD_TAG = " XD "
+_XD_PARAM_TAG = " XD_ADD_P "
 
 def pretty_error(fname, lineno, msg):
     """ Small handy function for error message generation """
     return f"\n{RED}{fname}{END}:{BLUE}{lineno+1}\n{END}{msg}"
 
-################################################################
-
-def convert_type(typ):
-    """ Types declared in XD tags of cpp files might differ from what is officially supported in TRAD_2 """
-    map = {
-        "int"       : "entier",
-        "double"    : "floattant",
-        "flag"      : "rien",
-        "dico"      : "chaine(into=[])"
-    }
-    return map.get(typ, typ)
-
-################################################################
-
-def change_class_name(s):
-    return s.capitalize()
-
-################################################################
+def convertTyp(typ):
+    """ Types declared in XD tags of cpp files might differ from what is officially supported in TRAD_2, so convert:
+    """
+    mp = {"int": "entier",
+          "double": "floattant",
+          "flag": "rien",
+          "dico": "chaine(into=[])"}
+    return mp.get(typ, typ)
 
 class TRAD2Attr:
     """ An attribute of a block in the TRAD2 logic """
@@ -64,7 +66,7 @@ class TRAD2Attr:
 
         # Types are different if coming from TRAD2 of from C++ ...
         if convert:
-            a.typ = convert_type(a.typ)
+            a.typ = convertTyp(a.typ)
 
         a.desc = ' '.join(tab[4:])
         if opt not in ["0", "1"]:
@@ -88,13 +90,13 @@ class TRAD2Attr:
 class TRAD2Block:
     """ A block describing a keyword in the TRAD2 file. """
     def __init__(self):
-        self.nam = ""           # Keyword main name
-        self.name_base = ""     # Parent class for the keyword
-        self.synos = []         # List of synonyms
-        self.mode = -123        # Mode of the keyword (with braces, etc... see doc/README.md
-        self.desc = ""          # Description
-        self.info = ["", -1]    # Filename / Lineno where the keyword was defined
-        self.attrs = []         # A list of TRAD2Attr = the attributes expected for the keyword
+        self.nam = ""        # Keyword main name
+        self.name_base = ""  # Parent class for the keyword
+        self.synos = []      # List of synonyms
+        self.mode = -123     # Mode of the keyword (with braces, etc... see doc/README.md
+        self.desc = ""       # Description
+        self.info = ["", -1]  # Filename / Lineno where the keyword was defined
+        self.attrs = []  # A list of TRAD2Attr = the attributes expected for the keyword
 
     @classmethod
     def BuildFromTab(cls, tab, fname, lineno):
@@ -140,7 +142,7 @@ class TRAD2BlockList(TRAD2Block):
         self.classtype = tab[0].lower()
         if tab[1] not in ["-1", "0", "1"]:
             raise Exception(pretty_error(self.info[0], self.info[1],
-                                            f"option for comma (for a list) should be -1, 0 or 1, not '{tab[1]}'!!")) from None
+                            f"option for comma (for a list) should be -1, 0 or 1, not '{tab[1]}'!!")) from None
         self.comma = int(tab[1])
         self.desc = ' '.join(tab[2:])
 
@@ -166,6 +168,7 @@ class TRAD2Content:
         @param trad2: path to the TRAD2 file
         @param trad2_nfo: path to the auxiliary file containing debug info (declaration locations in the C++ code)
         """
+        trad2 = str(trad2)
         res = TRAD2Content()
         with open(trad2) as f:
             lines = f.readlines()
@@ -207,10 +210,10 @@ class TRAD2Content:
         """ Build content from TRAD2.org file and from a set of C++ source directories
         """
         if not os.path.exists(trad2_org):
-                raise Exception(f"File '{trad2_org}' not found!")
+            raise Exception(f"File '{trad2_org}' not found!")
         for d in src_dirs:
-                if not os.path.exists(d):
-                        raise Exception(f"Directory '{d}' not found!")
+            if not os.path.exists(d):
+                raise Exception(f"Directory '{d}' not found!")
         ret = TRAD2Content()
         ret.data = []   # A list of TRAD2Blocks
         ret.synos = {}  # Synonyms, what a pain ...
@@ -265,12 +268,12 @@ class TRAD2Content:
             return blk
 
     def _parseXD_ADD_something(self, tag="XD_ADD_P", expected_num_args=2, f_nam="", cpp_meth="ajouter",
-                                                         lin_n=-1, tab=[]):
+                               lin_n=-1, tab=[]):
         """ Parse a line with XD_ADD_P or XD_ADD_DICO -> this implies extracting some
-                information from the C++ call: param.ajouter(...).
-                Only used when parsing C++ stuff.
-                @param tag: XD tag that is expected on this line
-                @param expected_num_args: number of args expected after the XD tag (not by tha 'ajouter..' method!!)
+            information from the C++ call: param.ajouter(...).
+            Only used when parsing C++ stuff.
+            @param tag: XD tag that is expected on this line
+            @param expected_num_args: number of args expected after the XD tag (not by tha 'ajouter..' method!!)
         """
         #  Example
         #   "param.ajouter_flag("P0", &alphaE_); // XD_ADD_P rien Pressure nodes"
@@ -304,14 +307,14 @@ class TRAD2Content:
         """
         tag = f"{lvl_s}XD_ADD_P"
         return self._parseXD_ADD_something(tag=tag, expected_num_args=2, cpp_meth="ajouter",
-                                                                             f_nam=f_nam, lin_n=lin_n, tab=tab)
+                                           f_nam=f_nam, lin_n=lin_n, tab=tab)
 
     def _parseXD_ADD_DICO(self, lvl_s, f_nam, lin_n, tab):
         """ Parse a line containing a "XD_ADD_DICO" tag
         """
         tag = f"{lvl_s}XD_ADD_DICO"
         return self._parseXD_ADD_something(tag=tag, expected_num_args=1, cpp_meth="dictionnaire",
-                                                                             f_nam=f_nam, lin_n=lin_n, tab=tab)
+                                           f_nam=f_nam, lin_n=lin_n, tab=tab)
 
     def scanOneCppLine(self, lvl, lin, curr_obj, res, f_name, lin_n):
         """ Scan a single line of a C++ file
@@ -470,32 +473,25 @@ class TRAD2Content:
                 except: pass
                 d.synos = list(syn)
 
-
-
-##################################################################
-## Class factory to register and get back all generated classes
-##################################################################
-class ClassFactory:
-    _ALL_CLASSES = {}
-
-    @classmethod
-    def RegisterClass(cls, cls_nam, cls_obj):
-        if cls_nam not in cls._ALL_CLASSES:
-            cls._ALL_CLASSES[cls_nam] = cls_obj
-
-    @classmethod
-    def GetClassFromName(cls, cls_nam):
-        """ Factory method. From a string (cls_nam) return the Python class object
-        corresponding to the class found in the current module.
-        """
-        n = change_class_name(cls_nam)
-        cls = cls._ALL_CLASSES.get(n)
-        if cls is None:
-            raise Exception(f"Class '{cls_nam}' not found!")
-        return cls
-
-    @classmethod
-    def Exist(cls, cls_nam):
-        """ True if class with nam 'cls_nam' is registered """
-        n = change_class_name(cls_nam)
-        return (n in cls._ALL_CLASSES)
+###########################################################################
+if __name__ == "__main__":
+    import sys
+    # mutil._log_level = 4   # Turn this to 4 to debug!
+    if len(sys.argv) > 1:
+        outfile = sys.argv[1]
+    else:
+        outfile = "trustpy/test/myTRAD2"
+    tr = os.environ.get("TRUST_ROOT", None)
+    pd = os.environ.get("project_directory", None)
+    trustpy_from_trust = os.environ.get("TRUSTPY_FROM_TRUST", None)
+    if tr is None:
+        raise Exception("TRUST_ROOT environment variable is not defined!")
+    srcs = [os.path.join(tr, "src")]
+    if not pd is None and trustpy_from_trust is None:  # called from a BALTIK
+        trad2org = os.path.join(pd, "build", "trustpy", "generated", "agg_TRAD_2.org")
+        # Append baltik sources:
+        srcs.append(os.path.join(pd, "build", "src"))
+    else:   # called from TRUST
+        trad2org = os.path.join(tr, "Outils", "TRIOXDATA", "XTriou", "TRAD_2.org")
+    tg = TRAD2Content.BuildFromOrgAndSources(trad2org, srcs)
+    tg.toTRAD2(outfile)

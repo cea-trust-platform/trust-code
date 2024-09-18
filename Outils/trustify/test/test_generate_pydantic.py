@@ -35,7 +35,7 @@ def test_generate_pydantic(file):
     # try to instantiate each class
     for cls in all_classes[1:]:
         instance = cls()
-        assert cls._braces in [-3, -2, -1, 0, 1]
+        assert cls._braces in [24]
         assert isinstance(cls._synonyms, dict) and None in cls._synonyms
         assert isinstance(cls._traces, dict) and None in cls._traces
 
