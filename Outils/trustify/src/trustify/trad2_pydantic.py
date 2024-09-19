@@ -1,3 +1,8 @@
+""" From a TRAD2 file, generates:
+ - the Pydantic schema (as a generated Python file containing one Pydantic class per TRUST keyword) 
+ - the parsing classes (as a generated Python file, containing one Python class per TRUST keyword)
+"""
+
 import pathlib
 import textwrap
 import datetime
@@ -41,8 +46,6 @@ def write_pyd_block(block, pyd_file, all_blocks):
     assert isinstance(block, tu.TRAD2Block)
 
     if block.pyd_written: return
-
-    logger.debug(block.nam)
 
     # dependencies must be written before self
     dependencies = [block.name_base] + [a.typ for a in block.attrs]
@@ -148,8 +151,6 @@ def write_pars_block(block, pars_file, all_blocks):
     assert isinstance(block, tu.TRAD2Block)
     if block.pars_written: return
 
-    logger.debug(block.nam)
-
     # dependencies must be written before self
     dependencies = [block.name_base] + [a.typ for a in block.attrs]
     for dependency in dependencies:
@@ -158,7 +159,7 @@ def write_pars_block(block, pars_file, all_blocks):
             write_pars_block(dependency, pars_file, all_blocks)
 
     # Get base class name. If void (like for Objet_U), inherit from base.Base_common_Parser:
-    base_cls_n = change_class_name(block.name_base) or "Base_common"
+    base_cls_n = change_class_name(block.name_base) or "base.BaseCommon"
     base_cls_n += tb.PARS_SUFFIX
     cls_nam = change_class_name(block.nam) + tb.PARS_SUFFIX
     # If the class is already defined in base.py, skip it:
@@ -189,8 +190,6 @@ def write_pars_block(block, pars_file, all_blocks):
     block.pars_written = True
 
 def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, testing=False):
-
-    trad2_filename = pathlib.Path(trad2_filename)
 
     all_blocks = tu.TRAD2Content.BuildContentFromTRAD2(trad2_filename).data
 
@@ -229,11 +228,18 @@ def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, t
             model_config = ConfigDict(validate_assignment=True)
     '''
     header_pars = header_com + f'''
+        import trustify.base as base
         from trustify.base import *
+        # Import all the Pydantic generated classes:
+        from {out_pyd_filename.stem} import *
     '''
 
     out_pyd_filename = out_pyd_filename or trad2_filename.name + "_pyd.py"
     out_pars_filename = out_pars_filename or trad2_filename.name + "_pars.py"
+
+    # Generate output dirs if needed:
+    out_pyd_filename.parents[0].mkdir(parents=True, exist_ok=True)
+    out_pars_filename.parents[0].mkdir(parents=True, exist_ok=True)
 
     # Writing Pydantic schema:
     with open(out_pyd_filename, "w", encoding="utf-8") as pyd_file:
@@ -249,6 +255,10 @@ def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, t
         for block in all_blocks.values():
             write_pars_block(block, pars_file, all_blocks)
 
+    return all_blocks
+
+
+def test_loading(out_pyd_filename, all_blocks):
     if testing:
         test_filename = str(out_pyd_filename).replace(".py", "_test.py")
         with open(test_filename, "w", encoding="utf-8") as file:
@@ -261,8 +271,10 @@ def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, t
 if __name__ == '__main__':
     import os, logging
     logger.setLevel(logging.DEBUG)
-    root_dir = os.getenv("TRUST_ROOT") + "/Outils/trustify/test"
-    trad2_filename = pathlib.Path(root_dir + "/trad2/TRAD_2_adr_simple")
-    out_pyd_filename = pathlib.Path(root_dir + "/generated/" + trad2_filename.name + "_pyd.py")
-    out_pars_filename = pathlib.Path(root_dir + "/generated/" + trad2_filename.name + "_pars.py")
-    generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, testing=True)
+    root_dir = pathlib.Path(os.getenv("TRUST_ROOT")) / "Outils" / "trustify" / "test"
+    trad2_filename = root_dir / "trad2" / "TRAD_2_adr_simple"
+    out_pyd_filename = root_dir / "generated" / (trad2_filename.name + "_pyd.py")
+    out_pars_filename = root_dir / "generated" / (trad2_filename.name + "_pars.py")
+    all_blocks = generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename)
+    # test_loading(out_pyd_filename, all_blocks)
+

@@ -5,23 +5,28 @@ Various utilities.
 ################################################################
 # Logger
 ################################################################
+BLACK = "\033[0;30m"
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+BROWN = "\033[0;33m"
+BLUE = "\033[0;34m"
+PURPLE = "\033[0;35m"
+CYAN = "\033[0;36m"
+YELLOW = "\033[1;33m"
+BOLD = "\033[1m"
+NEGATIVE = "\033[7m"
+END = "\033[0m"
+
 import logging
 class CustomFormatter(logging.Formatter):
-    grey = "\x1b[38;20m"
-    yellow = "\x1b[33;20m"
-    red = "\x1b[31;20m"
-    blue = "\x1b[0;36m"
-    green = "\x1b[0;32m"
-    bold_red = "\x1b[31;1m"
-    reset = "\x1b[0m"
     format = "%(levelname)s - [%(filename)s:%(lineno)d] -- %(message)s"
 
     FORMATS = {
-        logging.DEBUG: blue + format + reset,
-        logging.INFO: green + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.DEBUG: BLUE + format + END,
+        logging.INFO: GREEN + format + END,
+        logging.WARNING: YELLOW + format + END,
+        logging.ERROR: RED + format + END,
+        logging.CRITICAL: RED + format + END
     }
 
     def format(self, record):
@@ -30,8 +35,12 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 def init_logger():
+    import os
     logger = logging.getLogger("trustify")
-    logger.setLevel(logging.INFO)
+    if os.getenv("TRUSTIFY_DEBUG"):
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
     handler.setFormatter(CustomFormatter())
     logger.addHandler(handler)
@@ -50,10 +59,10 @@ def import_generated_module(mod_path):
     import os, sys
 
     # Import generated module:
-    ze_dir, f = os.path.split(os.path.abspath(mod_path))
+    ze_dir, mod_nam = mod_path.parents[0], mod_path.stem
     prevPath = sys.path[:]
-    sys.path.append(ze_dir)
-    mod_nam = os.path.splitext(f)[0]
+    logger.debug(f"Importing module '{mod_nam}' from path '{ze_dir}' ...")
+    sys.path.append(str(ze_dir))
     res = {'res_import': None}
     cmd = "import %s as res_import" % mod_nam
     exec(cmd, res)  # need '.' as currentdir in PYTHONPATH to get import OK
@@ -120,7 +129,7 @@ def check_str_equality(s1, s2, print_on_diff=True):
         why = "Diff between the two strings:\n%s" % res
         if print_on_diff:
             print("")
-            log_error(why)
+            logger.error(why)
         return BoolWithMsg(False, why)
     return BoolWithMsg(True, "Strings are equal")
 
@@ -164,18 +173,13 @@ class UnitUtils:
     """
     Useful stuff for unit tests.
     """
-    _stdout_stream = []
-    _TRUG = [None] * 3     # The list of generated modules, as Python module objects
-    _TRAD2 = ["TRAD_2_adr_simple",
-            # "TRAD_2_v192"]
-            "TRAD2_full",    # Generated with trustpy TRAD2 utilities from TRUST sources
-            "TRAD_2_GENEPI_V17"]
+    _TRUG = { }     # The list of generated modules, as Python module objects
+    _TRAD2 = {"simple": "TRAD_2_adr_simple",   # a very reduced version of a complete TRAD_2 file
+              "full"  : "TRAD2_full",          # Generated with trustpy TRAD2 utilities from TRUST sources
+              "genepi": "TRAD_2_GENEPI_V17"    # From GENEPI
+              }
 
-    _name = ["trustpy_generated_simple",
-             "trustpy_generated_v192_beta",
-             "trustpy_generated_GENEPI_V16"]
-
-    _do_not_regenerate = False   # useful for debugging - avoid regenerating each time (this is a bit long with full TRAD2)
+    _NO_REGENERATE = False   # useful for debugging - avoid regenerating each time (this is a bit long with full TRAD2)
 
     def caller_method_name(self):
         import inspect
@@ -184,41 +188,26 @@ class UnitUtils:
         name = frame.f_code.co_name
         return name
 
-    def _generate_python_and_import(self, slot):
-        """ Generates 'name.py' in the current test directory and stores
+    def generate_python_and_import(self, slot):
+        """ Generates Python files (Pydantic and parsing) from TRAD2 in the current test directory and stores
         imported module in self._TRUG slot.
         """
         import os
-        if not self._TRUG[slot] is None:
+        import pathlib
+        if not self._TRUG.get(slot) is None:
             return
 
-        from .trad2_pydantic import generate_pydantic
+        from trustify.trad2_pydantic import generate_pyd_and_pars
 
-        srcdir, currentdir = self._test_dir, os.getcwd()
-        file_in = os.path.abspath(srcdir + "/" + self._TRAD2[slot])
-        file_out = os.path.abspath(srcdir + '/generated/' + self._name[slot] + '.py')  # generated file with path in current dir
-        if not self._do_not_regenerate:
-            generate_pydantic(file_in, file_out)
+        tstdir = pathlib.Path(self._test_dir)
+        file_in = tstdir / "trad2" / self._TRAD2[slot]
+        file_pars = tstdir / "generated" /  (file_in.stem + '_pyd.py')
+        if not self._NO_REGENERATE:
+            file_pyd = tstdir / "generated" /  (file_in.stem + '_pyd.py')
+            generate_pyd_and_pars(file_in, file_pyd, file_pars)
 
         # Import generated module (IMPORTANT: set it at class level, not instance!!)
-        self.__class__._TRUG[slot] = import_generated_module(file_out)
+        self.__class__._TRUG[slot] = import_generated_module(file_pars)
 
         self.assertIsNotNone(self._TRUG[slot])
-        self.assertEqual(self._TRUG[slot].__file__, file_out)
-
-    def generate_python_and_import_simple(self):
-        """ Generate and import automatically generated PY package from file TRAD_2_adr_simple
-        which is a very reduced version of a complete TRAD_2 file
-        """
-        self._generate_python_and_import(0)
-
-    def generate_python_and_import_full(self):
-        """ Generate and import automatically generated PY package from the complete file of TRUST
-        """
-        self._generate_python_and_import(1)
-
-    def generate_python_and_import_GENEPI(self):
-        """ Generate and import automatically generated PY package from the complete file
-        from GENEPI: TRAD_2_GENEPI_V16.
-        """
-        self._generate_python_and_import(2)
+        self.assertEqual(self._TRUG[slot].__file__, str(file_pars))

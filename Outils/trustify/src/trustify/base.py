@@ -3,7 +3,7 @@
 
 """ Main module for the set of classes representing the TRUST data model.
 This module is a bit long, but its logic can be well understood by reading first
-  - class Base_common
+  - class BaseCommon_Parser
   - and then its most important child Dataset, representing a full TRUST dataset
 
 Authors: A Bruneton, C Van Wambeke, G Sutra
@@ -22,6 +22,9 @@ PARS_SUFFIX = "_Parser"
 
 class Abstract_Parser:
     """ Root class for all parsers """
+
+    _infoMain = []   # a tuple giving the source file and the line # where the type was defined
+
     def __init__(self):
         self._tokens = {}     # a dictionnary giving for the current instance the tokens corresponding to each bit - see override
                               # in ConstrainBase for a more comprehensive explanation.
@@ -44,7 +47,6 @@ class Abstract_Parser:
         ctx += "   Dataset: line %d  in file  '%s'\n" % (stream.currentLine(), stream.fileName())
 
         s = ""
-        # TODO - remettre:
         if len(cls._infoMain) > 0:  # automatic classes (like base types int, float...) do not have debug info
             s =  "   Model:   line %d  in file  '%s'\n" % (cls._infoMain[1], cls._infoMain[0])
         if not attr is None:
@@ -53,9 +55,81 @@ class Abstract_Parser:
         ctx += s + mutil.END
         return err + ctx
 
+    def toDatasetTokens(self):
+        """ Produce a list of tokens representing the object in the format expected in a TRUST dataset.
+        Note: this tries as much as possible to reproduce what was initially loaded, if the
+        initial parsing (via ReadFromTokens()) was successful.
+        In any case, it is the responsibility of this method to check that output data
+        is coherent with the real value stored in the object.
+        See also _checkToken() in the same class.
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def GetAllTrustNames(cls):
+        """ Returns all possible names (incl. synonyms) for a keyword as a nicely formatted string. 
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def ConsumeBrace(cls, stream, brace):
+        """ Consume the tokens in stream until a opening or closing brace is found. 'brace' is either '{' or '}' 
+        This is put this high in the class hierarchy because even Chaine_parser needs it ...
+        """
+        nams = cls.GetAllTrustNames()
+        brac_nam = {'{':"opening", '}': "closing"}[brace]
+        tok = stream.probeNextLow()
+        if tok != brace:
+            err = cls.GenErr(stream, f"Keyword '{nams}' expected a {brac_nam} brace '{brace}' (but we read: '{tok}')")
+            raise ValueError(err)
+        stream.validateNext()
+
+    @classmethod
+    def _Dbg(cls, msg):
+        """ Handy debug printing """
+        from trustify.misc_utilities import logger
+        import logging
+        # The 'inspect' module is very costly - so skip if not in highest logging level:
+        if logger.getEffectiveLevel() > logging.DEBUG:
+            return
+        import inspect
+        curframe = inspect.currentframe()
+        calframe = inspect.getouterframes(curframe, 2)
+        cal_nam = calframe[1][3]
+        def pad(s):
+            return s + " "*(max(55-len(s), 0))
+        s = f"[{cls.__name__}.{cal_nam}] --"
+        m = msg.replace("@FUNC@", s)
+        logger.debug(m)
+
+class Builtin_Parser(Abstract_Parser):
+    """ Base class for all the parsers handling builtin Python types: str, int, float, etc. """
+    def __init__(self):
+        Abstract_Parser.__init__(self)
+        self._builtin_value = None    # The actual builtin value associated with the parser.
+
+    @classmethod
+    def ReadFromTokensBuiltin(cls, stream):
+        """
+        Consumes a given number of tokens in 'stream' (a trust_parser.TRUSTStream object) and fills the various class members from it.
+        Should be overriden in derived class. At the end of the read, the current position of the stream is advanced up to the last
+        reading point.
+        @return a new instance of the same class correctly initialized with the values parsed
+        @return parser instance too
+        @sa BaseCommon_Parser.ReadFromTokens
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def DispatchFromBuiltin(cls, builtin_cls, stream):
+        """ From a builtin Python class, return the proper parser object: """
+        if builtin_cls is str: return Chaine_Parser
+        if buitdin_cls is int: return Base_entier_Parser
+        raise ValueError(f"Builtin type '{builtin_cls.__name__}' not supported!")
+
     def _checkToken(self, key, expec, typ=str):
-        """ Used in toDatasetTokens() method: consider the following:
-          - a dataset has been loaded in Python: while doing so the original tokens are stored in self.tokens
+        """ Used in toDatasetTokensBuiltin() method: consider the following:
+          - a dataset has been loaded in Python: while doing so, the original tokens are stored in self._tokens
           - a value is modified in the data (for ex: "ds.get("sch").tmax = 23") -> at this point the underyling value in self.token
           still contains what was initially read!
          So this method checks whether the value stored in the token (as a string) is consistent with the actual value of the attribute.
@@ -69,63 +143,38 @@ class Abstract_Parser:
         return ret
 
     def toDatasetTokens(self):
-        """ Produce a list of tokens representing the object in the format expected in a TRUST dataset.
-        Note: this tries as much as possible to reproduce what was initially loaded, if the
-        initial parsing (via ReadFromTokens()) was successful.
-        In any case, it is the responsibility of this method to check that output data
-        is coherent with the real value stored in the object.
-        See also _checkToken() in the same class.
-        """
+        """ This method should not be overriden further in children classes.
+        Only toDatasetTokensBuiltin() should be overriden. """
+        assert self._builtin_value is not None
+        return self.toDatasetTokensBuiltin()
+
+    def toDatasetTokensBuiltin(self):
         raise NotImplementedError
 
     @classmethod
-    def _Dbg(cls, msg):
-        """ Handy debug printing """
-        # The 'inspect' module is very costly - so skip if not in highest logging level:
-        if mutil._log_level <= 3:
-            return
-        import inspect
-        curframe = inspect.currentframe()
-        calframe = inspect.getouterframes(curframe, 2)
-        cal_nam = calframe[1][3]
-        def pad(s):
-            return s + " "*(max(55-len(s), 0))
-        s = f"[{cls.__name__}.{cal_nam}] --"
-        m = msg.replace("@FUNC@", s)
-        mutil.log_debug(m)
-
-class Plain_type_Parser(Abstract_Parser):
-    """ Base class for all the parsers handling builtin Python types: str, int, float, etc. """
-    def __init__(self):
-        Abstract_Parser.__init__(self)
-
-    @classmethod
-    def ReadFromTokensPlain(cls, stream):
+    def GetAllTrustNames(cls):
+        """ Override. 
+        Returns all possible names (incl. synonyms) for a keyword as a nicely formatted string. 
+        For builtin types, no synonyms.
         """
-        Consumes a given number of tokens in 'stream' (a trust_parser.TRUSTStream object) and fills the various class members from it.
-        Should be overriden in derived class. At the end of the read, the current position of the stream is advanced up to the last
-        reading point.
-        @return a new instance of the same class correctly initialized with the values parsed
-        @return parser instance too
-        @sa Base_common_Parser.ReadFromTokens
-        """
-        raise NotImplementedError
+        return [cls.__name__]
 
-class Base_common_Parser(Abstract_Parser):
+class BaseCommon_Parser(Abstract_Parser):
     """ Abstract base class containing all the methods relevant to TRUST data model parsing
     logic for high level types (keywords, not base types such as strings, int, etc.)
     By far the two most important methods are:
       ReadFromTokens() - which instanciate a class from a stream of tokens (i.e. from the .data file)
       toDatasetTokens() - inherited from parent class, which does the inverse operation and serializes the content of the instance as a stream of tokens
     """
-    _braces = 1         # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
-    _read_type = False  # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
-                        # In the Python code generation this attribute is overloaded when hitting _base or _deriv.
-    _synonyms = []   # a list of synonyms for the name of implemented class
-    _infoMain = []   # a tuple giving the source file and the line # where the type was defined
-    _infoAttr = {}   # same thing for class attributes (dictionnary indexed by main attr name)
+    _braces = 1           # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
+    _read_type = False    # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
+                          # In the Python code generation this attribute is overloaded when hitting _base or _deriv.
+    _synonyms = []        # a list of synonyms for the name of implemented class
     _attributesSynonyms = {}   # synonyms for the current class (read_med -> lire_med)
     _optionals = set([])  # set of optional attibutes for a keyword
+    _leafsAttr = {}       # Dictionnary holding leaf attributes (which are always builtin Python types) - key: attr name, value: (value, parser)
+    _infoAttr = {}        # same thing for class attributes (dictionnary indexed by main attr name)
+
 
     def __init__(self):
         Abstract_Parser.__init__(self)
@@ -152,6 +201,15 @@ class Base_common_Parser(Abstract_Parser):
             raise Exception(f"Internal error -  unexpected parameter: '{brace}'")
 
     @classmethod
+    def GetPydanticClass(cls):
+        """ From a parser class, return the equivalent Pydantic schema class.
+        For example from Interprete_Parser, returns 'Interprete' """
+        assert cls.__name__.endswith(PARS_SUFFIX)
+        pyd_nam = cls.__name__[:len(PARS_SUFFIX)]
+        cls = ClassFactory.GetClassFromName(pyd_nam)
+        return cls
+
+    @classmethod
     def GetAllTrustNames(cls):
         """ Returns all possible names (incl. synonyms) for a keyword as a nicely formatted string """
         res = [cls.__name__]
@@ -168,17 +226,6 @@ class Base_common_Parser(Abstract_Parser):
     def IsOptional(cls, attr_nam):
         """ Returns True if an attribute is optional """
         return attr_nam in cls._optionals
-
-    @classmethod
-    def ConsumeBrace(cls, stream, brace):
-        """ Consume the tokens in stream until a opening or closing brace is found. 'brace' is either '{' or '}' """
-        nams = cls.GetAllTrustNames()
-        brac_nam = {'{':"opening", '}': "closing"}[brace]
-        tok = stream.probeNextLow()
-        if tok != brace:
-            err = cls.GenErr(stream, f"Keyword '{nams}' expected a {brac_nam} brace '{brace}' (but we read: '{tok}')")
-            raise ValueError(err)
-        stream.validateNext()
 
     @classmethod
     def ReadFromTokens(cls, stream):
@@ -214,7 +261,7 @@ class Base_common_Parser(Abstract_Parser):
 
 
 ###########################
-class ConstrainBase_Parser(Base_common_Parser):
+class ConstrainBase_Parser(BaseCommon_Parser):
     """
     Class representing any type/keyword for which the attribute types are to be checked.
     """
@@ -222,7 +269,7 @@ class ConstrainBase_Parser(Base_common_Parser):
     _attrInOrder = []        # Just to save the order in which the attributes were read ...
 
     def __init__(self):
-        Base_common.__init__(self)
+        BaseCommon_Parser.__init__(self)
         opbr  = TRUSTTokens(low=["{"], orig=[" {\n"])
         clobr = TRUSTTokens(low=["}"], orig=[" \n}\n"])
         clsnam = TRUSTTokens(low=[], orig=[" " + self.__class__.__name__])
@@ -233,9 +280,15 @@ class ConstrainBase_Parser(Base_common_Parser):
 
     @classmethod
     def _AttributesList(cls):
+        """ Return all the attributes of a keyword. 
+        @return a list of tuples (str, type)
+        """
+        import pydantic
         ret = []
-        for k, fld_nfo in cls.model_fields.items():
-            ret.append((k, fld_nfo.annotation.__name__))  # annotation should be a class or a plain type
+        pyd_cls = cls.GetPydanticClass()
+        assert issubclass(pyd_cls, pydantic.BaseModel)
+        for k, fld_nfo in pyd_cls.model_fields.items():
+            ret.append((k, fld_nfo.annotation))  # annotation should be a class or a plain type
         return ret
 
     # def __setattr__(self, name, value):
@@ -255,27 +308,14 @@ class ConstrainBase_Parser(Base_common_Parser):
             return False
 
     @classmethod
-    def _GetBaseClassName(cls, cls_nam):
-        """ Strip '<inherited>' from class name """
-        # TODO to put in baseXyz??
-        tag = '<inherited>'
-        if cls_nam.startswith(tag):
-            return cls_nam[len(tag):]
-        return cls_nam
-
-    @classmethod
     def _InvertSyno(cls):
         """
-        Invert all attributes synonyms - returns a dict giving for each synonym (incl the attribute itself)
+        Invert all attributes synonyms - returns a dict giving for each synonym (incl the original attribute name itself)
         the real underlying attribute name and the corresponding class name
         """
         invert_syno = {}
         for nam, attr_cls in cls._AttributesList():
             invert_syno[nam] = (nam, attr_cls)
-            # 'Lambda' is the only attribute which won't be full lower case (because 'lambda' is not
-            # allowed as a Python attribute in a class). So register "lambda" as a syno for "Lambda".
-            if nam == "Lambda":
-                invert_syno["lambda"] = (nam, attr_cls)
             # if nam in cls._attributesSynonyms:
             #   for syno in cls._attributesSynonyms[nam]:
             #     if syno.strip() != "":
@@ -287,7 +327,7 @@ class ConstrainBase_Parser(Base_common_Parser):
         """ Read from a stream of tokens using the key/value syntax of TRUST keyword, i.e. keywords
         using opening and closing braces.
         """
-        ret = cls()
+        pars_ret = cls()
         nams = cls.GetAllTrustNames()
         invert_syno = cls._InvertSyno()
 
@@ -304,25 +344,26 @@ class ConstrainBase_Parser(Base_common_Parser):
         while tok != "}":
             stream.validateNext()
             if tok in invert_syno:
-                attr_nam, attr_cls_nam = invert_syno[tok]
+                attr_nam, attr_cls = invert_syno[tok]
                 ret._tokens[attr_nam] = stream.lastReadTokens()
                 ret._attrInOrder.append(attr_nam)
-                cls._Dbg(f"@FUNC@ attr_nam '{attr_nam}' attr_cls_nam '{attr_cls_nam}'")
-                # Retrieve attribute's class (as given by the data file), and instanciate it
-                nam = cls._GetBaseClassName(attr_cls_nam)
-                attr_cls = ClassFactory.GetClassFromName(nam)
-                assert not attr_cls is None  # Should never happen...
-                # Temporarily load debug instruction from current class on the child attribute type.
-                # This is useful for base types which are actually not defined anywhere in the
-                # TRAD2 (like ints, floats, strings, etc...) and thus we can for example display an error message
-                # saying that '3.5' is not an int, and provide the actual TRAD2 entry for the attribute itself, not for float ....
-                # TODO remettre ca:
-                # if attr_cls._plainType: attr_cls._infoMain = cls._infoAttr[attr_nam]
-                # Parse child attribute:
-                val = attr_cls.ReadFromTokens(stream)
-                # Potentially reset debug info:
-                if attr_cls._TODOplainType: attr_cls._infoMain = []
-                cls._Dbg(f"@FUNC@ setting attribute '{attr_nam}' with val '%s'" % str(val))
+                cls._Dbg(f"@FUNC@ attr_nam '{attr_nam}' attr_cls: '{attr_cls.__name__}'")
+                if Builtin_Parser.IsPlain(cls):
+                    pars_cls = Builtin_Parser.DispatchFromBuiltin(cls, stream)
+                    val, pars = pars_cls.ReadFromTokensBuiltin(stream)
+                    ret._leafsAttr[attr_nam] = (val, pars)
+                else:
+                    # Temporarily load debug instruction from current class on the child attribute type.
+                    # This is useful for base types which are actually not defined anywhere in the
+                    # TRAD2 (like ints, floats, strings, etc...) and thus we can for example display an error message
+                    # saying that '3.5' is not an int, and provide the actual TRAD2 entry for the attribute itself, not for float ....
+                    # TODO remettre ca:
+                    # if attr_cls._plainType: attr_cls._infoMain = cls._infoAttr[attr_nam]
+                    # Parse child attribute:
+                    val = attr_cls.ReadFromTokens(stream)
+                    # Potentially reset debug info:
+                    # if attr_cls._TODOplainType: attr_cls._infoMain = []
+                cls._Dbg(f"@FUNC@ setting attribute '{attr_nam}' with val '{str(val)}'")
                 ret.__setattr__(attr_nam, val)
                 if attr_nam in attr_ok:
                     attr_ok[attr_nam] = True
@@ -434,7 +475,7 @@ class ConstrainBase_Parser(Base_common_Parser):
 
     @classmethod
     def ReadFromTokens(cls, stream):
-        """ Override. See Base_common.  """
+        """ Override. See BaseCommon_Parser.  """
         if cls._read_type:
             cls_nam = cls._ReadClassName(stream)
             cls._Dbg(f"@FUNC@ parsed type: '{cls_nam}'")
@@ -521,7 +562,7 @@ class ConstrainBase_Parser(Base_common_Parser):
 ######################################################
 ## List-like types
 ######################################################
-class ListOfBase_Parser(Base_common_Parser):
+class ListOfBase_Parser(BaseCommon_Parser):
     _allowedClasses = []
     _comma = 1   #  1: with comma to separate items, 0: without, -1: like parent
 
@@ -532,7 +573,7 @@ class ListOfBase_Parser(Base_common_Parser):
 
     def __init__(self, values=[]):
         list.__init__(self)
-        Base_common.__init__(self)
+        BaseCommon_Parser.__init__(self)
         self._tokens = {}  # Expected keys: "nb_items"
         self._ze_cls = None  # Single authorized class (only mono-type lists are supported)
         cls = self.__class__
@@ -694,93 +735,93 @@ class ListOfBase_Parser(Base_common_Parser):
             ret.extend(br)
         return ret
 
-class AbstractSizeIsDim(object):
-    """ Shared methods for all ListOfXXXDim classes - implements the necessary stuff to force
-    the size of the list to be the dimension read at the top of the dataset.
-    """
-    _DIMENSION = -1  # Set when the keyword 'dimension' is encountered
-
-    @classmethod
-    def _ReadListSize(cls, stream):
-        """ Size is fixed and does not need to be provided """
-        if cls._DIMENSION not in [2, 3]:
-            raise ValueError("Invalid dataset: It seems the dimension has not been defined")
-        return cls._DIMENSION
-
-    def _extendWithSize(self, ret):
-        """ Override. Do nothing. Here the size is the dimension and does not need to be output """
-        pass
-
-class List_chaine_Parser(ListOfBase_Parser):
-    """
-    List of strings (with no blanks), in the form 'N val1 val2 ...'
-    """
-    _allowedClasses = ["Base_chaine_Parser"]
-    _braces = 0  # No braces for this simple list
-    _comma = 0
-
-    def __init__(self, values=[]):
-        ListOfBase_Parser.__init__(self, values)
-
-class List_chaine_dim_Parser(List_chaine_Parser, AbstractSizeIsDim):
-    """
-    List of strings, in the form 'val1 val2 ...'
-    The number of expected strings is given by the dimension of the problem.
-    """
-    def __init__(self, values=[]):
-        List_chaine.__init__(self, values)
-
-    _ReadListSize = AbstractSizeIsDim._ReadListSize
-    _extendWithSize = AbstractSizeIsDim._extendWithSize
-
-class List_float_Parser(ListOfBase_Parser):
-    """
-    List of floats, in the form 'N val1 val2 ...'
-    """
-    _allowedClasses = ["Base_float"]
-    _braces = 0  # No braces for this simple list
-    _comma = 0
-
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
-        """ Pydantic validation schema - the same as 'list' for now """
-        return core_schema.no_info_after_validator_function(cls._Cast, core_schema.list_schema(core_schema.float_schema()))
-
-    def __init__(self, values=[]):
-        ListOfBase.__init__(self, values)
-
-class List_float_dim_Parser(List_float_Parser, AbstractSizeIsDim):
-    """
-    List of floats, in the form 'val1 val2 ...'
-    The number of expected floats is given by the dimension of the problem.
-    """
-    def __init__(self, values=[]):
-        List_float.__init__(self, values)
-
-    _ReadListSize = AbstractSizeIsDim._ReadListSize
-    _extendWithSize = AbstractSizeIsDim._extendWithSize
-
-class List_int_Parser(ListOfBase_Parser):
-    """
-    List of ints, in the form 'N val1 val2 ...'
-    """
-    _allowedClasses = ["Base_Entier"]
-    _braces = 0  # No braces for this simple list
-    _comma = 0
-
-    def __init__(self, values=[]):
-        ListOfBase.__init__(self, values)
-
-class List_int_dim_Parser(List_int_Parser, AbstractSizeIsDim):
-    """
-    List of ints, in the form 'N val1 val2 ...'
-    The number of expected ints is given by the dimension of the problem.
-    """
-    def __init__(self, values=[]):
-        List_int.__init__(self, values)
-
-    _ReadListSize = AbstractSizeIsDim._ReadListSize
-    _extendWithSize = AbstractSizeIsDim._extendWithSize
+# class AbstractSizeIsDim_Parser(object):
+#     """ Shared methods for all ListOfXXXDim classes - implements the necessary stuff to force
+#     the size of the list to be the dimension read at the top of the dataset.
+#     """
+#     _DIMENSION = -1  # Set when the keyword 'dimension' is encountered
+#
+#     @classmethod
+#     def _ReadListSize(cls, stream):
+#         """ Size is fixed and does not need to be provided """
+#         if cls._DIMENSION not in [2, 3]:
+#             raise ValueError("Invalid dataset: It seems the dimension has not been defined")
+#         return cls._DIMENSION
+#
+#     def _extendWithSize(self, ret):
+#         """ Override. Do nothing. Here the size is the dimension and does not need to be output """
+#         pass
+#
+# class List_chaine_Parser(ListOfBase_Parser):
+#     """
+#     List of strings (with no blanks), in the form 'N val1 val2 ...'
+#     """
+#     _allowedClasses = ["Base_chaine_Parser"]
+#     _braces = 0  # No braces for this simple list
+#     _comma = 0
+#
+#     def __init__(self, values=[]):
+#         ListOfBase_Parser.__init__(self, values)
+#
+# class List_chaine_dim_Parser(List_chaine_Parser, AbstractSizeIsDim):
+#     """
+#     List of strings, in the form 'val1 val2 ...'
+#     The number of expected strings is given by the dimension of the problem.
+#     """
+#     def __init__(self, values=[]):
+#         List_chaine.__init__(self, values)
+#
+#     _ReadListSize = AbstractSizeIsDim._ReadListSize
+#     _extendWithSize = AbstractSizeIsDim._extendWithSize
+#
+# class List_float_Parser(ListOfBase_Parser):
+#     """
+#     List of floats, in the form 'N val1 val2 ...'
+#     """
+#     _allowedClasses = ["Base_float"]
+#     _braces = 0  # No braces for this simple list
+#     _comma = 0
+#
+#     @classmethod
+#     def __get_pydantic_core_schema__(cls, source, handler):
+#         """ Pydantic validation schema - the same as 'list' for now """
+#         return core_schema.no_info_after_validator_function(cls._Cast, core_schema.list_schema(core_schema.float_schema()))
+#
+#     def __init__(self, values=[]):
+#         ListOfBase.__init__(self, values)
+#
+# class List_float_dim_Parser(List_float_Parser, AbstractSizeIsDim):
+#     """
+#     List of floats, in the form 'val1 val2 ...'
+#     The number of expected floats is given by the dimension of the problem.
+#     """
+#     def __init__(self, values=[]):
+#         List_float.__init__(self, values)
+#
+#     _ReadListSize = AbstractSizeIsDim._ReadListSize
+#     _extendWithSize = AbstractSizeIsDim._extendWithSize
+#
+# class List_int_Parser(ListOfBase_Parser):
+#     """
+#     List of ints, in the form 'N val1 val2 ...'
+#     """
+#     _allowedClasses = ["Base_Entier"]
+#     _braces = 0  # No braces for this simple list
+#     _comma = 0
+#
+#     def __init__(self, values=[]):
+#         ListOfBase.__init__(self, values)
+#
+# class List_int_dim_Parser(List_int_Parser, AbstractSizeIsDim):
+#     """
+#     List of ints, in the form 'N val1 val2 ...'
+#     The number of expected ints is given by the dimension of the problem.
+#     """
+#     def __init__(self, values=[]):
+#         List_int.__init__(self, values)
+#
+#     _ReadListSize = AbstractSizeIsDim._ReadListSize
+#     _extendWithSize = AbstractSizeIsDim._extendWithSize
 
 
 ######################################################
@@ -838,7 +879,7 @@ class Declaration_Parser(ConstrainBase_Parser):
         return ret
 
     def toDatasetTokens(self):
-        """ Override - see Base_common """
+        """ Override - see BaseCommon_Parser """
         s = []
         if self._checkToken("cls_nam", self.cls_nam):
             cn = self._tokens["cls_nam"].orig()
@@ -855,7 +896,7 @@ class Declaration_Parser(ConstrainBase_Parser):
 ######################################################
 class DataSet_Parser(ListOfBase_Parser):
     """ Class representing a complete TRUST dataset.
-    A TRUST dataset is a list of Base_common, with allowed classes
+    A TRUST dataset is a list of BaseCommon_Parser, with allowed classes
       - Declaration, representing forward declarations like 'Pb_conduction pb'
       - or any child of ConstrainBase, representing all TRUST interprets like 'lire_med { file ... }'
     """
@@ -951,7 +992,7 @@ class DataSet_Parser(ListOfBase_Parser):
 
     @classmethod
     def ReadFromTokens(cls, stream):
-        """ Override. See Base_common.
+        """ Override. See BaseCommon_Parser.
         Read a complete TRUST dataset
         """
         ret = cls()
@@ -1001,30 +1042,30 @@ class DataSet_Parser(ListOfBase_Parser):
 ######################################################
 # Simple leaf types (string, int, floats, ...)
 ######################################################
-class AbstractChaine_Parser(Plain_type_Parser):
+class AbstractChaine_Parser(Builtin_Parser):
     """ Base class for all (constrained or not) strings """
     def __init__(self):
-        Base_common_Parser.__init__(self)
+        BaseCommon_Parser.__init__(self)
 
     @classmethod
     def _ValidateValue(cls, value, stream):
         """ To be overriden in derived class. Should raise if value is not allowed. """
         pass
 
-    @classmethod
-    def ReadFromTokensPlain(cls, stream):
-        """ Override. See Base_common.
-        In this override simply return the next token which is a valid (non blank) string.
-        """
-        s = stream.nextLow()
-        cls._ValidateValue(s, stream)
-        ret = cls(s)  # Build the actual string
-        ret._tokens["val"] = stream.lastReadTokens()
-        return ret
+    # @classmethod
+    # def ReadFromTokensBuiltin(cls, stream):
+    #     """ Override. See BaseCommon_Parser.
+    #     In this override simply return the next token which is a valid (non blank) string.
+    #     """
+    #     s = stream.nextLow()
+    #     cls._ValidateValue(s, stream)
+    #     ret = cls(s)  # Build the actual string
+    #     ret._tokens["val"] = stream.lastReadTokens()
+    #     return ret
 
-    def toDatasetTokens(self):
+    def toDatasetTokensBuiltin(self):
         """ Override. """
-        if self._checkToken("val", str(self)):
+        if self._checkToken("val", self._builtin_value):
             return self._tokens["val"].orig()
         else:
             ret = [" " + str(self)]
@@ -1046,17 +1087,20 @@ class AbstractChaine_Parser(Plain_type_Parser):
 ##############################################
 class Chaine_Parser(AbstractChaine_Parser):
     """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
-    See ReadFromTokens below ..
+    See ReadFromTokensBuiltin below ..
     """
     def __init__(self, value=""):
         AbstractChaine_Parser.__init__(self)
         self._withBraces = False     # Whether this chain is a full bloc with '{ }' - not to be confused with self.__class__._braces!!
 
     @classmethod
-    def ReadFromTokens(cls, stream):
+    def ReadFromTokensBuiltin(cls, stream):
         """ Read a 'chaine' : this can be:
         - either a single token 'toto' (in which case, just take one token)
         - or a full block, like '{ toto { tata } }' (in which case take all tokens until closed brace)
+        WARNING: in this last case, the original version (not lower case) of the tokens are kept even
+        to build the string value of the Chaine. This is because in bloc_lecture (like for PETSc), we
+        need to preserve case-sensitivity.
         """
         pars_inst = cls()
         tok = stream.probeNextLow()
@@ -1069,9 +1113,9 @@ class Chaine_Parser(AbstractChaine_Parser):
             if s.strip().startswith("{") or s.strip().startswith("}"):
                 err = cls.GenErr(stream, f"Misformatted string or block within braces -> '{s}'")
                 raise ValueError(err)
-            pyd_inst = s
             pars_inst._withBraces, pars_inst._tokens["val"] = False, lst_rd
-            return pyd_inst, pars_inst
+            pars_inst._builtin_value = s
+            return s, pars_inst
         # With braces:
         l = []
         cls.ConsumeBrace(stream, "{")
@@ -1085,43 +1129,47 @@ class Chaine_Parser(AbstractChaine_Parser):
                 cnt_brace -= 1
                 if cnt_brace == 0: break  # without validating token so that it is consumed by ConsumeBrace()
             stream.validateNext()
-            # When reading a full block, keep the upper case version
+            # !!!!!!
+            # !!When reading a full block, keep the upper case version!!
+            # !!!!!!
             l.append(stream.lastReadTokens())
+        # Read closing brace:
         cls.ConsumeBrace(stream, "}")
         l.append(stream.lastReadTokens())
         l2 = TRUSTTokens.Join(l)
-        pyd_inst = ''.join(l2.orig())
-        pars_inst._withBraces, pars_inst._tokens["val"] = True, l2
-        return pyd_inst, pars_inst
+        pars_inst._builtin_value = ''.join(l2.orig())  # orig(), not low() see comment above!
+        pars_inst._withBraces = True
+        pars_inst._tokens["val"] = l2
+        return pars_inst._builtin_value, pars_inst
 
-    def toDatasetTokens(self):
+    def toDatasetTokensBuiltin(self):
         if self._withBraces:
-            return [str(self)]
+            return [self._builtin_value]
         else:
-            return AbstractChaine.toDatasetTokens(self)
+            return AbstractChaine_Parser.toDatasetTokensBuiltin(self)
 
 # class BaseChaine(StrNoBlankXyz, AbstractChaine):
-class Base_chaine_Parser(AbstractChaine):
-    """A string with no blank in it."""
-    _defaultValue = "??"
-
-    def __init__(self, value=None):
-        AbstractChaine.__init__(self)
+# class Base_chaine_Parser(AbstractChaine):
+#     """A string with no blank in it."""
+#     _defaultValue = "??"
+#
+#     def __init__(self, value=None):
+#         AbstractChaine.__init__(self)
 
 # class BaseChaineInList(StrInListXyz, AbstractChaine):
-class Base_chaine_in_list_Parser(AbstractChaine):
-    """ Same as BaseChaine, but with constrained string values """
-    _allowedList = ["??"]
-
-    def __init__(self, value=None):
-        # StrInListXyz.__init__(self, value)
-        AbstractChaine.__init__(self)
-
-    @classmethod
-    def _ValidateValue(cls, val, stream):
-        if val not in cls._allowedList:
-            err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
-            raise ValueError(err)
+# class Base_chaine_in_list_Parser(AbstractChaine):
+#     """ Same as BaseChaine, but with constrained string values """
+#     _allowedList = ["??"]
+#
+#     def __init__(self, value=None):
+#         # StrInListXyz.__init__(self, value)
+#         AbstractChaine.__init__(self)
+#
+#     @classmethod
+#     def _ValidateValue(cls, val, stream):
+#         if val not in cls._allowedList:
+#             err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(cls._allowedList))
+#             raise ValueError(err)
 
 class Fin_Parser(Interprete_Parser):
     """ The 'end' keyword at the end of the dataset. It is an 'interprete'.
@@ -1131,10 +1179,10 @@ class Fin_Parser(Interprete_Parser):
     _read_type = False
     _synonyms = ["end"]
 
-class AbstractEntier(Plain_type_Parser):
+class AbstractEntier(Builtin_Parser):
     """ Base class for all (constrained or not) integers """
     def __init__(self):
-        Base_common.__init__(self)
+        BaseCommon_Parser.__init__(self)
 
     @classmethod
     def _ValidateValue(cls, val, stream):
@@ -1208,9 +1256,9 @@ class Base_entier_in_list_Parser(AbstractEntier):
 #       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed range [%d, %d]" % (ar[0], ar[1]))
 #       raise ValueError(err)
 
-class Base_float_Parser(Plain_type_Parser):
+class Base_float_Parser(Builtin_Parser):
     def __init__(self, value=None):
-        Base_common.__init__(self)
+        BaseCommon_Parser.__init__(self)
 
     @classmethod
     def ReadFromTokens(cls, stream):
@@ -1254,6 +1302,6 @@ class Rien_Parser(Base_entier_Parser):
         """ Override. """
         return ['']
 
-class Todo_Parser(Base_common_Parser):
+class Todo_Parser(BaseCommon_Parser):
     _defaultValue = "TODO (class not implemented yet from TRUST)"
     pass
