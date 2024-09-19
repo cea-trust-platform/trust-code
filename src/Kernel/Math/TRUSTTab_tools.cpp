@@ -55,10 +55,10 @@ void local_max_abs_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE
   bool kernelOnDevice = vect.checkDataOnDevice();
   const _T_* vect_addr = mapToDevice(vect, "", kernelOnDevice);
   _T_* max_colonne_addr = computeOnTheDevice(max_colonne, "", kernelOnDevice);
-  start_gpu_timer();
   for (_SIZE_ ibloc = 0; ibloc < nblocs; ibloc++)
     {
       const _SIZE_ begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
+      start_gpu_timer();
       // Necessaire de faire un test sur lsize le compilateur crayCC OpenMP ne supporte pas la reduction sur tableau avec taille dynamique...
       if (lsize==1)
         {
@@ -154,9 +154,9 @@ void local_max_abs_tab(const TRUSTTab<_T_,_SIZE_>& tableau, TRUSTArray<_T_,_SIZE
                 max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
               }
           }
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
       copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
     }
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
 template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);

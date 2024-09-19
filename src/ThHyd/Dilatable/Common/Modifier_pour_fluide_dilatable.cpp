@@ -78,7 +78,7 @@ void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_flu
       CDoubleArrView tab_rho = static_cast<const DoubleVect&>(le_fluide.masse_volumique().valeurs()).view_ro();
       CIntTabView elem_faces = zvf.elem_faces().view_ro();
       DoubleArrView rho_elem = static_cast<DoubleVect&>(tab_rho_elem).view_wo();
-      Kokkos::parallel_for(__KERNEL_NAME__, nb_elem_tot, KOKKOS_LAMBDA(const int elem)
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(const int elem)
       {
         double x = 0.;
         for (int face = 0; face < nfe; face++)

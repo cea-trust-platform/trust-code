@@ -738,7 +738,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
   bool kernelOnDevice = const_cast<TRUSTVect<_TYPE_,_SIZE_>&>(vx).checkDataOnDevice(vy);
   const _TYPE_ *vx_ptr = mapToDevice(vx, "", kernelOnDevice);
   const _TYPE_ *vy_ptr = mapToDevice(vy, "", kernelOnDevice);
-  start_gpu_timer();
+  if (timer) start_gpu_timer(__KERNEL_NAME__);
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -753,7 +753,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
         for (_SIZE_ i=begin_bloc; i<end_bloc; i++)
           sum += vx_ptr[i] * vy_ptr[i];
     }
-  if (timer) end_gpu_timer(kernelOnDevice, "local_prodscal(vx,vy)");
+  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
   return sum;
 }
 // Explicit instanciation for templates:

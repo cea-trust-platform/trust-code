@@ -793,7 +793,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
         {
           const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
           CDoubleTabView val_ext = la_sortie_libre.tab_ext().view_ro();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          Kokkos::parallel_for(__KERNEL_NAME__, num2, KOKKOS_LAMBDA(const int ind_face)
           {
             int facei = le_bord_num_face(ind_face);
 
@@ -816,7 +816,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
                 || sub_type(Echange_impose_base,la_cl.valeur())
               )
         {
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          Kokkos::parallel_for(__KERNEL_NAME__, num2, KOKKOS_LAMBDA(const int ind_face)
           {
             int facei = le_bord_num_face(ind_face);
 
@@ -833,7 +833,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          Kokkos::parallel_for(__KERNEL_NAME__, num2, KOKKOS_LAMBDA(const int ind_face)
           {
             int facei            = le_bord_num_face(ind_face);
             int ind_face_voisine = face_associee(ind_face);

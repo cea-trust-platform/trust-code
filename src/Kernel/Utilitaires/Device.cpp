@@ -31,6 +31,7 @@ bool init_openmp_ = false;
 bool clock_on = false;
 bool timer_on = true;
 double clock_start;
+int timer_counter=0;
 
 std::string ptrToString(const void* adr)
 {
