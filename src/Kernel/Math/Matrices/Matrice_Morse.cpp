@@ -2085,8 +2085,7 @@ int Matrice_Morse_test()
 
 void Matrice_Morse::clean()
 {
-  for (int i=0; i<nb_coeff(); i++)
-    coeff_[i]=0.;
+  coeff_ = 0;
 }
 
 /*! @brief Calcule la largeur de bande d'une matrice morse
