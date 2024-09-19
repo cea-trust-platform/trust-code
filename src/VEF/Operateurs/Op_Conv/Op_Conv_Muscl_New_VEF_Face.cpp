@@ -593,8 +593,9 @@ void Op_Conv_Muscl_New_VEF_Face::remplir_fluent() const
 DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter(const DoubleTab& transporte_2,
                                                DoubleTab& resu) const
 {
-  DoubleTab sauv(resu);
-  resu=0;
+  DoubleTrav sauv(resu);
+  sauv = resu;
+  resu = 0;
 
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
@@ -613,19 +614,18 @@ DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter(const DoubleTab& transporte_2,
   if(resu.nb_dim()!=1)
     nb_comp=resu.dimension(1);
 
-  DoubleTab transporte_;
-  DoubleTab vitesse_face_;
+  DoubleTrav transporte_;
+  DoubleTrav vitesse_face_;
   // soit on a transporte=phi*transporte_ et vitesse=vitesse_
   // soit transporte=transporte_ et vitesse=phi*vitesse_
   // cela depend si on transporte avec phi u ou avec u.
   const DoubleTab& velocity=modif_par_porosite_si_flag(vitesse_2,vitesse_face_,marq,porosite_face);
 
-  // ToDo Kokkos (voir allocation):
-  DoubleTab Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
-  DoubleTab Fij(nb_elem_tot,nb_faces_elem,nb_faces_elem,nb_comp);
-  DoubleTab Cij(nb_elem_tot,nfa7);
-  DoubleTab Sij(nb_elem_tot,nfa7);
-  DoubleTab Sij2(nb_elem_tot,nfa7);
+  DoubleTrav Kij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
+  DoubleTrav Fij(nb_elem_tot,nb_faces_elem,nb_faces_elem,nb_comp);
+  DoubleTrav Cij(nb_elem_tot,nfa7);
+  DoubleTrav Sij(nb_elem_tot,nfa7);
+  DoubleTrav Sij2(nb_elem_tot,nfa7);
 
   //Pour tenir compte des conditions de Neumann sortie libre
 
@@ -688,6 +688,7 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
       // soit on a transporte=phi*transporte_ et vitesse=vitesse_
       // soit transporte=transporte_ et vitesse=phi*vitesse_
       // cela depend si on transporte avec phi u ou avec u.
+      ToDo_Kokkos("critical DoubleTab -> DoubleTrav");
       DoubleTab vitesse_face_;
       const DoubleTab& velocity=modif_par_porosite_si_flag(vitesse_2,vitesse_face_,marq,porosite_face);
 
