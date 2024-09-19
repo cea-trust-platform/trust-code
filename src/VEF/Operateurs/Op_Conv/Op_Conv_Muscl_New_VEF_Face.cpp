@@ -763,20 +763,16 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
     }
 }
 
-void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const DoubleTab& velocity, const DoubleTab& transporte) const
+void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const DoubleTab& tab_velocity, const DoubleTab& tab_transporte) const
 {
-
   const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-
-
-  const DoubleVect& transporteV = transporte;
-  const DoubleTab& face_normales=domaine_VEF.face_normales();
-
   const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
-  ToDo_Kokkos("critical cause called each timestep");
+
   int nb_comp=1;
-  if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
+  if (tab_transporte.nb_dim()!=1) nb_comp=tab_transporte.dimension(1);
+  int nb_dim = Objet_U::dimension;
+  flux_bords_ = 0;
 
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
@@ -788,109 +784,84 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
         {
           //On ne calcule pas le flux aux bords de Dirichlet_homogene
         }//fin du if sur "Dirichlet"
-      else if ( sub_type(Dirichlet,la_cl.valeur() ))
+      else if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
-          for (int ind_face=0; ind_face<num2; ind_face++)
-            {
-              int  facei = le_bord.num_face(ind_face);
+          const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
+          CDoubleTabView val_ext = la_sortie_libre.tab_ext().view_ro();
+          CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
+          CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+          CDoubleTabView velocity = tab_velocity.view_ro();
+          CDoubleArrView transporte = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+          DoubleTabView flux_bords = flux_bords_.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          {
+            int facei = le_bord_num_face(ind_face);
 
-              double psc=0.;
-              for (int dim=0; dim<dimension; dim++)
-                psc-=velocity(facei,dim)*face_normales(facei,dim);
+            double psc=0.;
+            for (int dim=0; dim<nb_dim; dim++)
+              psc-=velocity(facei,dim)*face_normales(facei,dim);
 
-              for (int dim=0; dim<nb_comp; dim++)
-                flux_bords_(facei,dim)=psc*transporteV[facei*nb_comp+dim];
-            }
+            for (int dim=0; dim<nb_comp; dim++)
+              {
+                double val = psc < 0. ? transporte[facei*nb_comp+dim] : (nb_comp==1 ? val_ext(ind_face,0) : val_ext(ind_face,dim));
+                flux_bords(facei,dim) = psc*val;
+              }
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
-      else if ( ( sub_type(Neumann,la_cl.valeur()) &&
-                  !( sub_type(Neumann_sortie_libre,la_cl.valeur())) )
+      else if ( sub_type(Dirichlet,la_cl.valeur())
+                || sub_type(Neumann,la_cl.valeur())
                 || sub_type(Neumann_homogene,la_cl.valeur())
                 || sub_type(Symetrie,la_cl.valeur())
                 || sub_type(Echange_impose_base,la_cl.valeur())
               )
         {
-          for (int ind_face=0; ind_face<num2; ind_face++)
-            {
-              int   facei = le_bord.num_face(ind_face);
+          CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
+          CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+          CDoubleTabView velocity = tab_velocity.view_ro();
+          CDoubleArrView transporte = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+          DoubleTabView flux_bords = flux_bords_.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          {
+            int facei = le_bord_num_face(ind_face);
 
-              double psc=0.;
-              for (int dim=0; dim<dimension; dim++)
-                psc-=velocity(facei,dim)*face_normales(facei,dim);
+            double psc=0.;
+            for (int dim=0; dim<nb_dim; dim++)
+              psc-=velocity(facei,dim)*face_normales(facei,dim);
 
-              for (int dim=0; dim<nb_comp; dim++)
-                flux_bords_(facei,dim)=psc*transporteV[facei*nb_comp+dim];
-            }
-
+            for (int dim=0; dim<nb_comp; dim++)
+              flux_bords(facei,dim)=psc*transporte[facei*nb_comp+dim];
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }//fin du if sur "Neumann", "Neumann_homogene", "Symetrie", "Echange_impose_base"
-      else if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
-        {
-          const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
-
-          for (int ind_face=0; ind_face<num2; ind_face++)
-            {
-              int facei = le_bord.num_face(ind_face);
-
-              double psc=0.;
-              for (int dim=0; dim<dimension; dim++)
-                psc-=velocity(facei,dim)*face_normales(facei,dim);
-
-              if (psc<0.)
-                {
-                  for (int dim=0; dim<nb_comp; dim++)
-                    {
-                      flux_bords_(facei,dim) = psc*transporteV[facei*nb_comp+dim];
-                    }
-                }
-              else
-                {
-                  if (nb_comp == 1)
-                    {
-                      flux_bords_(facei,0) = psc*la_sortie_libre.val_ext(ind_face);
-                    }
-                  else
-                    {
-                      for (int dim=0; dim<nb_comp; dim++)
-                        {
-                          flux_bords_(facei,dim) = psc*la_sortie_libre.val_ext(ind_face,dim);
-                        }
-                    }
-                }
-            }
-        }
       else if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
 
-          ArrOfInt fait(num2);
-          fait = 0;
+          CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
+          CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          CDoubleArrView transporte = static_cast<const DoubleVect&>(tab_transporte).view_ro();
+          CDoubleTabView velocity = tab_velocity.view_ro();
+          DoubleTabView flux_bords = flux_bords_.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          {
+            int facei            = le_bord_num_face(ind_face);
+            int ind_face_voisine = face_associee(ind_face);
+            int facei_voisine    = le_bord_num_face(ind_face_voisine);
 
-          int ind_face_voisine = -1;
-          int facei_voisine    = -1;
-          double flux             = 0.;
+            double psc=0.;
+            for (int dim=0; dim<nb_dim; dim++)
+              psc-=velocity(facei,dim)*face_normales(facei,dim);
 
-          for (int ind_face=0; ind_face<num2; ind_face++)
-            {
-              if (fait[ind_face] == 0)
-                {
-                  int facei            = le_bord.num_face(ind_face);
-                  ind_face_voisine = la_cl_perio.face_associee(ind_face);
-                  facei_voisine    = le_bord.num_face(ind_face_voisine);
-
-                  double psc=0.;
-                  for (int dim=0; dim<dimension; dim++)
-                    psc-=velocity(facei,dim)*face_normales(facei,dim);
-
-                  for (int dim=0; dim<nb_comp; dim++)
-                    {
-                      flux                           = psc*transporteV[facei*nb_comp+dim];
-                      flux_bords_(facei,dim)         =  flux;
-                      flux_bords_(facei_voisine,dim) = -flux;
-                    }
-
-                  fait[ind_face]         = 1;
-                  fait[ind_face_voisine] = 1;
-                }
-            }
+            for (int dim=0; dim<nb_comp; dim++)
+              {
+                double flux = psc*transporte[facei*nb_comp+dim];
+                Kokkos::atomic_add(&flux_bords(facei,dim), 0.5 * flux);
+                Kokkos::atomic_add(&flux_bords(facei_voisine,dim), -0.5 * flux);
+              }
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         {
