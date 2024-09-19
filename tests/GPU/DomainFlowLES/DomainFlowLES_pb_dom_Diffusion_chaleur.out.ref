@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Convection_Diffusion_Chaleur_Turbulent_QC of the problem pb_dom
+# Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used
+#            Time            Inlet           Outlet              Top           Bottom           Perioz           Perioz            Total
+   5.40000000e-03  -5.42935585e+00   0.00000000e+00   0.00000000e+00   5.50381141e+06   0.00000000e+00   0.00000000e+00   5.50380598e+06
+   5.40000000e-02  -4.82370814e+04   0.00000000e+00   0.00000000e+00   1.69213610e+08   0.00000000e+00   0.00000000e+00   1.69165372e+08

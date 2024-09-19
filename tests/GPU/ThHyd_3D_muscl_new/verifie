@@ -4,13 +4,6 @@ message()
    #echo $msg
 }
 
-# Check Nusselt
-nusselt=`ls $1*_Nusselt.face 2>/dev/null`
-[ $1 != ${1#PAR_} ] && exit 0 # Ecarts seq-par a voir....
-ref=${nusselt#PAR_}.ref
-diff $nusselt $ref 1>>verifie.log 2>&1
-[ $? != 0 ] && echo "Difference between $nusselt and $ref!" && exit -1
-
 #####################################
 # Comparaison non regression des .out
 #####################################

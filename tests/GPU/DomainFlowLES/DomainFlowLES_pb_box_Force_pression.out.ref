@@ -1,0 +1,5 @@
+# Printing on the boundaries of the equation Navier_Stokes_Turbulent of the problem pb_box
+# Pressure drag exerted by the fluid=Integral(P*ndS) [N] if SI units used
+#            Time          perio_X          perio_Y          perio_Z            Top_X            Top_Y            Top_Z         Bottom_X         Bottom_Y         Bottom_Z         Perioz_X         Perioz_Y         Perioz_Z
+   5.40000000e-03   9.09526050e+01   0.00000000e+00   0.00000000e+00   0.00000000e+00   7.18309257e+01   0.00000000e+00   0.00000000e+00  -7.18308987e+01   0.00000000e+00   0.00000000e+00   0.00000000e+00   9.64732053e+01
+   5.40000000e-02   5.01582925e+01   0.00000000e+00   0.00000000e+00   0.00000000e+00  -8.75677069e+01   0.00000000e+00   0.00000000e+00   8.75677499e+01   0.00000000e+00   0.00000000e+00   0.00000000e+00  -5.42954537e+02
