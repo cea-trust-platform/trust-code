@@ -888,7 +888,7 @@ then
    export NVCOMPILER_ACC_TIME=1 # Tres utile pour sortie bilan des copies sur device
    #export NVCOMPILER_ACC_NOTIFY=3
    # Detect nsys location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
-   nsys=`ls /opt/nvidia/nsight-systems/*/bin/nsys $CUDA_ROOT/*/bin/nsys $CUDA_ROOT/bin/nsys 2>/dev/null | tail -1`
+   nsys=`ls /opt/nvidia/nsight-systems/*/bin/nsys $CUDA_ROOT/../../profilers/*/bin/nsys $CUDA_ROOT/*/bin/nsys $CUDA_ROOT/bin/nsys 2>/dev/null | tail -1`
    export PATH=`dirname $nsys`:$PATH
    trace="--stats=true "
    trace=$trace"--trace=cuda,nvtx" && [ $NB_PROCS -gt 1 ] && trace=$trace",mpi --mpi-impl=`basename $MPI_ROOT`"

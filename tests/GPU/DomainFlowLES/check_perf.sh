@@ -1,6 +1,7 @@
 #!/bin/bash
 check()
 {
+   [ "$2" = -nsys ] && exit
    if [ ! -f $1.TU ]
    then
       echo "==================================================="
@@ -26,18 +27,18 @@ check()
 }
 run()
 {
-   gpu=$1
+   gpu=$1 && [ $gpu = -nsys ] && nsys=$gpu
    np=$2
    [ "$3" != "" ] && jdd=$3
    if [ "$np" = "" ] || [ "$np" = 1 ]
    then
       rm -f $jdd.TU
-      trust $jdd 1>$jdd.out_err 2>&1
+      trust $nsys $jdd 1>$jdd.out_err 2>&1
       check $jdd $gpu
    else  
       make_PAR.data $jdd $np 1>/dev/null 2>&1
       rm -f PAR_$jdd.TU
-      trust PAR_$jdd $np 1>$PAR_jdd.out_err 2>&1
+      trust $nsys PAR_$jdd $np 1>$PAR_jdd.out_err 2>&1
       check PAR_$jdd $gpu
    fi
 }
@@ -53,4 +54,5 @@ do
 done
 
 # Liste des machines:
+[ "$1" = -nsys ] && run -nsys
 [ $HOST = is157091 ] && run a6000
