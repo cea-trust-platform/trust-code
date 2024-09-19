@@ -758,13 +758,14 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
           CDoubleTabView vitesse = tab_vitesse.view_ro();
           CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
           DoubleTabView flux_bords = flux_bords_.view_wo();
+          const int nb_dim=Objet_U::dimension;
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
                                  const int ind_face)
           {
             int facei = num_face(ind_face);
             double psc=0.;
-            for (int dim=0; dim<Objet_U::dimension; dim++)
+            for (int dim=0; dim<nb_dim; dim++) //tempo fix to compile
               psc-=vitesse(facei,dim)*face_normales(facei,dim);
 
             for (int dim=0; dim<nb_comp; dim++)
