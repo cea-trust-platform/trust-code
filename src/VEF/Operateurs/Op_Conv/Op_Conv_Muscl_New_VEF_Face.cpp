@@ -774,7 +774,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
   const DoubleTab& face_normales=domaine_VEF.face_normales();
 
   const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
-
+  ToDo_Kokkos("critical cause called each timestep");
   int nb_comp=1;
   if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
 
@@ -1399,19 +1399,12 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur(CDoubleTabView3 Kij, CDoubleTabView
     }//fin du for sur "elem_voisin"
 }
 
-void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
+void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& tab_resu) const
 {
-  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
-  const int nb_comp = (resu.nb_dim()==1) ? 1 : resu.dimension(1);
-
-  const DoubleVect& transporteV = transporte;
-  DoubleVect& resuV = resu;
-
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
+  const int nb_comp = (tab_resu.nb_dim()==1) ? 1 : tab_resu.dimension(1);
 
   //Faces de bord
   int old_centered = old_centered_;
@@ -1424,52 +1417,58 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
+          if (old_centered) Process::exit("Not available for periodicity."); // See code below commented, cause not tested and no datafile option to test it !
+          //const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
+          //const DoubleVect& transporteV = transporte;
+          //const IntTab& face_voisins=domaine_VEF.face_voisins();
+          //const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
+          CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          DoubleArrView resu = static_cast<DoubleVect&>(tab_resu).view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), num2, KOKKOS_LAMBDA(const int ind_face)
+          {
+            int facei=le_bord_num_face(ind_face);
+            int ind_face_associee=face_associee(ind_face);
+            int faceiAss=le_bord_num_face(ind_face_associee);
 
-          for (int ind_face=0; ind_face<num2; ind_face++)
-            {
-              int facei=le_bord.num_face(ind_face);
-              int ind_face_associee=la_cl_perio.face_associee(ind_face);
-              int faceiAss=le_bord.num_face(ind_face_associee);
-
-              if (facei<faceiAss)
-                for (int dim=0; dim<nb_comp; dim++)
-                  {
-                    int ligne=facei*nb_comp+dim;
-                    int ligneAss=faceiAss*nb_comp+dim;
-
-                    resuV[ligneAss]+=resuV[ligne];
-                    resuV[ligne]=resuV[ligneAss];
-                  }
-
-              if (old_centered)
+            if (facei<faceiAss)
+              for (int dim=0; dim<nb_comp; dim++)
                 {
-                  //Pour le 1er element voisin
-                  int elem=face_voisins(facei,0);
-                  //facei_loc=-1;
-                  int facei_loc=num_fac_loc(facei,0);
-                  assert(facei_loc!=-1);
-                  double kii=Kij(elem,facei_loc,facei_loc);
-
-                  //Pour le 2eme element voisin
-                  elem=face_voisins(facei,1);
-                  //facei_loc=-1;
-                  facei_loc=num_fac_loc(facei,1);
-                  assert(facei_loc!=-1);
-                  kii+=Kij(elem,facei_loc,facei_loc);
-
-                  for (int dim=0; dim<nb_comp; dim++)
-                    {
-                      int ligne=facei*nb_comp+dim;
-                      int ligneAss=faceiAss*nb_comp+dim;
-
-                      double tmp=kii*transporteV[ligneAss];
-                      resuV[ligneAss]-=tmp;
-                      resuV[ligne]-=tmp;
-                    }
+                  int ligne=facei*nb_comp+dim;
+                  int ligneAss=faceiAss*nb_comp+dim;
+                  Kokkos::atomic_add(&resu[ligneAss], resu[ligne]);
+                  Kokkos::atomic_assign(&resu[ligne], resu[ligneAss]);
                 }
+            /*
+                          if (old_centered)
+                            {
+                              //Pour le 1er element voisin
+                              int elem=face_voisins(facei,0);
+                              //facei_loc=-1;
+                              int facei_loc=num_fac_loc(facei,0);
+                              assert(facei_loc!=-1);
+                              double kii=Kij(elem,facei_loc,facei_loc);
 
-            }//fin du for sur "face_i"
+                              //Pour le 2eme element voisin
+                              elem=face_voisins(facei,1);
+                              //facei_loc=-1;
+                              facei_loc=num_fac_loc(facei,1);
+                              assert(facei_loc!=-1);
+                              kii+=Kij(elem,facei_loc,facei_loc);
 
+                              for (int dim=0; dim<nb_comp; dim++)
+                                {
+                                  int ligne=facei*nb_comp+dim;
+                                  int ligneAss=faceiAss*nb_comp+dim;
+
+                                  double tmp=kii*transporteV[ligneAss];
+                                  resuV[ligneAss]-=tmp;
+                                  resuV[ligne]-=tmp;
+                                }
+                            } */
+
+          });//fin du for sur "face_i"
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }//fin du if sur "Periodique"
 
     }//fin du for sur "n_bord"
