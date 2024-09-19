@@ -11,7 +11,7 @@ f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 6ee1cfff98728e5160c6e78bdb1986ca  MPI/mpich-3.4.2.tar.gz
 e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
-dee7ceff0403f7b0c7ab81cf2fc27e35  Miniconda/Miniconda3-py38_23.1.0-1-MacOSX-arm64.sh
+b6f9a8d4ddc1f4dd16ae3bb2e74abe36  Miniconda/Miniforge3-24.7.1-0-MacOSX-arm64.sh
 0d10090d28c5d484e4374519028d2887  Miniconda/Miniforge3-24.7.1-1-Linux-x86_64.sh
 7e88440c1848299f3bc443fc01e7a2eb  Miniconda/Miniforge3-Linux-aarch64.sh
 7ed427f0871fd41cb1d9c17727c17589  Miniconda/local_channel/linux-64/alsa-lib-1.2.12-h4ab18f5_0.conda
@@ -257,7 +257,6 @@ daf5160ff9cde3a468556965329085b9  Miniconda/local_channel/noarch/webencodings-0.
 f372c576b8774922da83cda2b12f9d29  Miniconda/local_channel/noarch/websocket-client-1.8.0-pyhd8ed1ab_0.conda
 6372cd99502721bd7499f8d16b56268d  Miniconda/local_channel/noarch/widgetsnbextension-4.0.13-pyhd8ed1ab_0.conda
 4daaed111c05672ae669f7036ee5bba3  Miniconda/local_channel/noarch/zipp-3.20.2-pyhd8ed1ab_0.conda
-db0b4d4b9d769b7b92e1a68a6f123ffb  Miniconda/local_channel/urls.txt
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
 ef6907f6b30ec24caa5a164b506aa4f9  SALOME/configuration-9.13.0.tar.gz
 b80212f0ed575193dab7fc4ad30afb3e  SALOME/medcoupling-9.13.0.tar.gz
