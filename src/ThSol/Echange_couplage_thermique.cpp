@@ -201,9 +201,7 @@ int Echange_couplage_thermique::initialiser(double temps)
       Echange_global_impose::initialiser(temps);
       if (reprise_)
         {
-          OWN_PTR(Champ_Inc_base) ch;
-          ch.typer(domaine_Cl_dis().equation().inconnue().que_suis_je());
-          ch.valeur() = domaine_Cl_dis().equation().inconnue();
+          OWN_PTR(Champ_Inc_base) ch = domaine_Cl_dis().equation().inconnue();
 
           ch->affecter(lec_champs.champ_lu("temperature_paroi"));
           DoubleTab& vals1 =le_champ_front->valeurs();

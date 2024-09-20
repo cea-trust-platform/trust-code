@@ -426,9 +426,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
   if (a_faire)
     {
       Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
-      OWN_PTR(Champ_Inc_base) p_tab;
-      p_tab.typer(FWC.inco_chaleur().que_suis_je()); // Initialize with same discretization
-      p_tab.valeur() = FWC.inco_chaleur();
+      OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
 
       p_tab->nommer("Pression_EOS");
       p_tab->valeurs() = FWC.pression_th_tab(); // Use good values
@@ -455,9 +453,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,fld);
   FWC.set_resume_flag();
   // resume EOS pressure field
-  OWN_PTR(Champ_Inc_base) p_tab;
-  p_tab.typer(inco.que_suis_je()); // Same discretization normally
-  p_tab.valeur() = inco;
+  OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
 
   p_tab->nommer("Pression_EOS");
   Nom field_tag(p_tab->le_nom());

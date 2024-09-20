@@ -135,8 +135,8 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i;
   int nb_face = zvdf.nb_faces();
-  OWN_PTR(Champ_Inc_base) gradient_P;
-  throw; // ca passe jamais avec l'implementation ...
+  OWN_PTR(Champ_Inc_base) gradient_P = mon_equation->grad_P();
+
   Operateur_Div divergence = mon_equation->operateur_divergence();
   Operateur_Grad gradient = mon_equation->operateur_gradient();
   SolveurSys solveur_pression_ = mon_equation->solveur_pression();

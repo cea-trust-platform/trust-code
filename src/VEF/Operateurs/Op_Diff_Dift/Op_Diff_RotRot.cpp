@@ -86,7 +86,6 @@ DoubleTab& Op_Diff_RotRot::ajouter(const DoubleTab& vitesse, DoubleTab& diffusio
   Cerr << "je suis dans OpDiffRotRot" << finl;
   DoubleTab curl(matrice_vorticite_->ordre());
 
-  //Marche car OWN_PTR(Champ_Inc_base) est mutable
   curl_.calculer(vitesse, curl);
   //curl=-1*curl;
   calculer_vorticite(vorticite_->valeurs(), curl);

@@ -98,9 +98,14 @@ private:
 public:
   ~TRUST_Deriv() { detach(); }
   TRUST_Deriv() :  Objet_U_ptr(), pointeur_(nullptr) { }
-  TRUST_Deriv(const TRUST_Deriv& t) : Objet_U_ptr(), pointeur_(nullptr)
+  TRUST_Deriv(const TRUST_Deriv& t) : TRUST_Deriv()
   {
     if (t.non_nul()) recopie(t.valeur());
+  }
+
+  TRUST_Deriv(const _CLASSE_& t) : TRUST_Deriv()
+  {
+    recopie(t);
   }
 
   inline const _CLASSE_& valeur() const
