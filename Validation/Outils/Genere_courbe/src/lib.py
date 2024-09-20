@@ -418,10 +418,11 @@ def chaine2Tex(chaine):
         morekeywords = filter(lambda x : not x.lstrip().startswith('lstset:'), mots)
         extra_lstset = filter(lambda x : x.lstrip().startswith('lstset:'), mots)
         lstset=[r'basicstyle=\small', 'numbers=none', 'tabsize=2', 'extendedchars=true', 'linewidth=16cm', 'emptylines=0', 'breaklines=true', 'language=perso']
-        res+=r"\n\lstdefinelanguage{perso}{morekeywords={"
+        res+=r"\lstdefinelanguage{perso}{morekeywords={"
         res+=",".join(morekeywords).replace('"','')
-        res+="}, sensitive=false}"
-        res+=r"\n\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso"
+        res+=r"""}, sensitive=false}
+\lstset{
+ basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso"""
         if extra_lstset:
             res+= "," + ",".join(extra_lstset).replace('lstset:','').replace('"','')
         res+="}\n"
@@ -431,7 +432,7 @@ def chaine2Tex(chaine):
             print("in prm, incluce_text_file can't read data file :",ff)
         FileAccumulator.Append(ff)
 
-        res+=r"\lstinputlisting{\orig/%s}\n"%fname
+        res+=r"\lstinputlisting{\orig/%s}"%fname
         res+=chaine2Tex(suite[fin+len(separateur_fin):])
         return res
     res = chaine.replace('"','')
@@ -439,7 +440,7 @@ def chaine2Tex(chaine):
     res = res.replace('}',r'\}')
     res = res.replace('à',r'\`{a}')
     res = res.replace('â',r'\^{a}')
-    res = res.replace('é',r'\\\'{e}')
+    res = res.replace('é',r'\'{e}')
     res = res.replace('è',r'\`{e}')
     res = res.replace('ê',r'\^{e}')
     res = res.replace('ë',r'\"{e}')
