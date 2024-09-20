@@ -363,6 +363,68 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::resize_tab(_SIZE_ n, RESIZE_OPTIONS opt)
   assert(verifie_LINE_SIZE());
 }
 
+// redimensionne les dimensions d'un tableau tout en gardant le meme espace memoire.
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::reshape(_SIZE_ n1, int n2)
+{
+  assert( (!TRUSTVect<_TYPE_,_SIZE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_,_SIZE_>::size_reelle() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
+  assert(n1 >= 0 && n2 >= 0);
+  assert( (TRUSTVect<_TYPE_,_SIZE_>::size_array() == n1*n2) );
+
+  TRUSTVect<_TYPE_,_SIZE_>::set_line_size_(n2);
+
+  init_dimensions(dimensions_);
+
+  dimensions_[0] = dimension_tot_0_ = n1;
+  dimensions_[1] = n2;
+
+  this->nb_dim_ = 2;
+
+  assert(verifie_LINE_SIZE());
+}
+
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::reshape(_SIZE_ n1, int n2, int n3)
+{
+  assert( (!TRUSTVect<_TYPE_,_SIZE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_,_SIZE_>::size_reelle() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
+  assert(n1 >= 0 && n2 >= 0 && n3 >= 0);
+  assert( (TRUSTVect<_TYPE_,_SIZE_>::size_array() == n1*n2*n3) );
+
+  TRUSTVect<_TYPE_,_SIZE_>::set_line_size_(n2*n3);
+
+  init_dimensions(dimensions_);
+
+  dimensions_[0] = dimension_tot_0_ = n1;
+  dimensions_[1] = n2;
+  dimensions_[2] = n3;
+
+  this->nb_dim_ = 3;
+
+  assert(verifie_LINE_SIZE());
+}
+
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::reshape(_SIZE_ n1, int n2, int n3, int n4)
+{
+  assert( (!TRUSTVect<_TYPE_,_SIZE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_,_SIZE_>::size_reelle() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
+  assert(n1 >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0);
+  assert( (TRUSTVect<_TYPE_,_SIZE_>::size_array() == n1*n2*n3*n4) );
+
+  TRUSTVect<_TYPE_,_SIZE_>::set_line_size_(n2*n3*n4);
+
+  init_dimensions(dimensions_);
+
+  dimensions_[0] = dimension_tot_0_ = n1;
+  dimensions_[1] = n2;
+  dimensions_[2] = n3;
+  dimensions_[3] = n4;
+
+  this->nb_dim_ = 4;
+
+  assert(verifie_LINE_SIZE());
+}
+
+
 //  change la dimension[0] du tableau en conservant les autres.
 // Precondition: le tableau ne doit pas avoir de structure parallele
 template<typename _TYPE_, typename _SIZE_>

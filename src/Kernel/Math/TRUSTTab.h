@@ -199,6 +199,8 @@ public:
 
   inline int nb_dim() const { return this->nb_dim_; }
 
+
+
   // See same method in TRUSTArray - CAREFUL, this is not an override because arg types are different (tab vs arr)
   inline void from_tid_to_int(TRUSTTab<int, int>& out) const;
 
@@ -244,6 +246,10 @@ public:
   inline void ref_array(TRUSTArray<_TYPE_,_SIZE_>&, _SIZE_ start=0, _SIZE_ sz=-1) override;
   inline void reset() override;
   inline void resize_tab(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) override;
+
+  inline void reshape(_SIZE_ n1, int n2);
+  inline void reshape(_SIZE_ n1, int n2, int n3);
+  inline void reshape(_SIZE_ n1, int n2, int n3, int n4);
 
 #ifdef KOKKOS
 
