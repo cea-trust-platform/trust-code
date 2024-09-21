@@ -44,7 +44,7 @@ public :
 
   void init_calcul_moyenne_spat();
   void init();
-  DoubleTab norme_vit(void) const;
+  DoubleTab norme_vit() const;
   void mettre_a_jour(double) override;
 
   void moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&);

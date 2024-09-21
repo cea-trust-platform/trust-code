@@ -386,9 +386,9 @@ void Solveur_Masse_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 
 // Ajout d'une methode completer
 // Ne fait rien par defaut
-void Solveur_Masse_base::completer(void) { }
+void Solveur_Masse_base::completer() { }
 
 // Ajout d'une methode preparer_calcul
 // Ne fait rien par defaut
-void Solveur_Masse_base::preparer_calcul(void) { }
+void Solveur_Masse_base::preparer_calcul() { }
 

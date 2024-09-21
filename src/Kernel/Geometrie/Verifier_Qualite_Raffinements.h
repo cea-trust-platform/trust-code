@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public :
   Entree& interpreter_(Entree& is) override;
 
 protected :
-  void verifier_qualite_raffinements(void);
+  void verifier_qualite_raffinements();
 
 };
 

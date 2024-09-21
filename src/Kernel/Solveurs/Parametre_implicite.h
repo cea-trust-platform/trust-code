@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,16 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Parametre_implicite_included
 #define Parametre_implicite_included
 
-
-
 #include <Parametre_equation_base.h>
+#include <Equation_base.h>
 #include <SolveurSys.h>
 #include <Parser_U.h>
-#include <Equation_base.h>
 
 /*! @brief classe Parametre_implicite Un objet Parametre_implicite est un objet regroupant les differentes
  *
@@ -38,51 +35,51 @@ public:
   inline SolveurSys& solveur()
   {
     return le_solveur_ ;
-  };
+  }
   inline const SolveurSys& solveur() const
   {
     return le_solveur_ ;
-  };
+  }
   inline double& seuil_generation_solveur()
   {
     return  seuil_generation_solveur_ ;
-  };
+  }
   inline double& seuil_verification_solveur()
   {
     return  seuil_verification_solveur_ ;
-  } ;
+  }
   inline double& seuil_test_preliminaire_solveur()
   {
     return  seuil_test_preliminaire_solveur_ ;
-  };
+  }
 
   inline  double& seuil_convergence_implicite()
   {
     return  seuil_convergence_implicite_ ;
-  };
+  }
   inline  double& seuil_diffusion_implicite()
   {
     return  seuil_diffusion_implicite_ ;
-  };
+  }
   inline  int& nb_it_max()
   {
     return  nb_it_max_ ;
-  };
+  }
   inline int& calcul_explicite()
   {
     return calcul_explicite_ ;
-  };
+  }
   inline int equation_frequence_resolue(double t)
   {
     equation_frequence_resolue_.setVar("t",t);
     return (int)equation_frequence_resolue_.eval() ;
-  };
+  }
 
   void set_seuil_solveur_avec_seuil_convergence_solveur(double );
   int seuil_test_preliminaire_lu() const
   {
     return seuil_test_preliminaire_lu_;
-  };
+  }
 protected:
   SolveurSys le_solveur_;
   double seuil_generation_solveur_,seuil_test_preliminaire_solveur_,seuil_verification_solveur_;
@@ -92,5 +89,6 @@ protected:
   double seuil_diffusion_implicite_;
   Parser_U equation_frequence_resolue_;
 };
+
 #endif
 

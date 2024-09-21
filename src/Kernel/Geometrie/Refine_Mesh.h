@@ -32,13 +32,13 @@ public :
   Entree& interpreter_(Entree& is) override;
 
 protected :
-  void apply(void);
+  void apply();
 
-  void check_dimension(void) const;
-  void check_cell_type(void) const;
+  void check_dimension() const;
+  void check_cell_type() const;
 
-  void apply_2D(void);
-  void apply_3D(void);
+  void apply_2D();
+  void apply_3D();
 
   void build_edges_2D(IntTab& nodes_of_edges, IntTab& edges_of_cells) const;
   void build_edges_3D(IntTab& nodes_of_edges, IntTab& edges_of_cells) const;

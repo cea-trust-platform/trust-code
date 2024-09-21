@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,11 +37,11 @@ public :
   inline ~Traitement_particulier_NS_chmoy_faceperio() override;
   inline Traitement_particulier_NS_chmoy_faceperio();
   Entree& lire(Entree& ) override;
-  void preparer_calcul_particulier(void) override ;
-  void post_traitement_particulier(void) override ;
+  void preparer_calcul_particulier() override ;
+  void post_traitement_particulier() override ;
   inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
-  inline void sauver_stat(void)  const override ;
-  inline void reprendre_stat(void) override  ;
+  inline void sauver_stat()  const override ;
+  inline void reprendre_stat() override  ;
 
 protected :
 
@@ -59,11 +59,11 @@ inline void Traitement_particulier_NS_chmoy_faceperio::en_cours_de_resolution(in
 {
 }
 
-inline void Traitement_particulier_NS_chmoy_faceperio::sauver_stat(void)  const
+inline void Traitement_particulier_NS_chmoy_faceperio::sauver_stat()  const
 {
 }
 
-inline void Traitement_particulier_NS_chmoy_faceperio::reprendre_stat(void)
+inline void Traitement_particulier_NS_chmoy_faceperio::reprendre_stat()
 {
 }
 

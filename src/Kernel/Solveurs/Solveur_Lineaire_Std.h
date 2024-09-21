@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,8 @@ public :
   bool iterer_eqn(Equation_base& equation,const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) override;
 
 public :
-  inline SolveurSys& solveur_sys(void);
-  inline const  SolveurSys& solveur_sys(void)const;
+  inline SolveurSys& solveur_sys();
+  inline const  SolveurSys& solveur_sys()const;
 
 protected :
   void set_param(Param& param);

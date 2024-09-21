@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,11 +38,11 @@ public :
   ~Traitement_particulier_NS_temperature() override  { }
   Traitement_particulier_NS_temperature() : le_fichier(0)  { }
   Entree& lire(Entree& ) override;
-  void preparer_calcul_particulier(void) override ;
-  void post_traitement_particulier(void) override ;
+  void preparer_calcul_particulier() override ;
+  void post_traitement_particulier() override ;
   void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override { }
-  void sauver_stat(void)  const override  { }
-  void reprendre_stat(void) override   { }
+  void sauver_stat()  const override  { }
+  void reprendre_stat() override   { }
 
 protected :
 

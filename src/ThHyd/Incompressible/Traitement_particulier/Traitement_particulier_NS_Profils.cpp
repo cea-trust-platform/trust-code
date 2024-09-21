@@ -228,7 +228,7 @@ void Traitement_particulier_NS_Profils::preparer_calcul_particulier()
     init_calcul_stats();
 }
 
-void Traitement_particulier_NS_Profils::init_calcul_stats(void)
+void Traitement_particulier_NS_Profils::init_calcul_stats()
 {
   if (oui_repr!=1) // ce n'est pas une reprise des stats specifiques = pas de lecture dans un fichier
     {

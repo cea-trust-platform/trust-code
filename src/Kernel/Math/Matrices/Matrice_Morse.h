@@ -96,21 +96,21 @@ public :
   void set_symmetric( const int );
   int get_symmetric( ) const { return symetrique_; }
 
-  IntVect& get_set_tab1( void )
+  IntVect& get_set_tab1()
   {
     is_stencil_up_to_date_ = false ;
     return tab1_ ;
   }
-  IntVect& get_set_tab2( void )
+  IntVect& get_set_tab2()
   {
     is_stencil_up_to_date_ = false ;
     return tab2_ ;
   }
-  DoubleVect& get_set_coeff( void ) { return coeff_ ; }
+  DoubleVect& get_set_coeff() { return coeff_ ; }
 
-  const IntVect& get_tab1( void ) const { return tab1_ ; }
-  const IntVect& get_tab2( void ) const { return tab2_ ; }
-  const DoubleVect& get_coeff( void ) const { return coeff_ ; }
+  const IntVect& get_tab1() const { return tab1_ ; }
+  const IntVect& get_tab2() const { return tab2_ ; }
+  const DoubleVect& get_coeff() const { return coeff_ ; }
 
   int nb_vois(int i) const
   {
@@ -181,10 +181,10 @@ public :
   void formeF() ;
 
   bool has_same_morse_matrix_structure(const Matrice_Morse&) const;
-  bool check_morse_matrix_structure( void ) const;
-  bool check_sorted_morse_matrix_structure( void ) const;
-  void assert_check_morse_matrix_structure( void ) const;
-  void assert_check_sorted_morse_matrix_structure( void ) const;
+  bool check_morse_matrix_structure() const;
+  bool check_sorted_morse_matrix_structure() const;
+  void assert_check_morse_matrix_structure() const;
+  void assert_check_sorted_morse_matrix_structure() const;
   void sort_stencil();
   bool is_sorted_stencil() const;
   bool is_diagonal();

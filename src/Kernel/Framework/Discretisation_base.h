@@ -56,7 +56,7 @@ public :
   // La valeur retournee par defaut est VIA_AJOUTER, pour ne pas perturber le comportement normal des classes de Trio-U en dehors du noyau.
   //
   enum type_calcul_du_residu { VIA_CONTRIBUER_AU_SECOND_MEMBRE = 0, VIA_AJOUTER = 1 };
-  inline virtual type_calcul_du_residu codage_du_calcul_du_residu(void) const { return VIA_AJOUTER; }
+  inline virtual type_calcul_du_residu codage_du_calcul_du_residu() const { return VIA_AJOUTER; }
 
   void associer_domaine(const Domaine& dom);
 

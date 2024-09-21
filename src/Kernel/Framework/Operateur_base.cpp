@@ -547,7 +547,7 @@ void Operateur_base::calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) c
 // que la diffusivite varie ou non.
 //
 // Par defaut : ne fait rien
-void Operateur_base::preparer_calcul(void) { }
+void Operateur_base::preparer_calcul() { }
 
 // Methode pour tester la methode contribuer_a_avec
 // Test active par une variable d'environnement

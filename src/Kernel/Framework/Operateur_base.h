@@ -125,7 +125,7 @@ public:
   // Ca me permet de coder plus facilement les operateurs de diffusion selon
   // que la diffusivite varie ou non.
   // L'implementation par defaut dans Operateur_base.cpp ne fait rien
-  virtual void preparer_calcul(void);
+  virtual void preparer_calcul();
   int col_width_; // minimal size of a column for .out files (based on cl name length)
   bool has_impr_file() const { return out_ != "??"; }
 

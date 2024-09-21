@@ -52,9 +52,9 @@ class Matrice_Bloc : public Matrice_Base
   Declare_instanciable_sans_constructeur(Matrice_Bloc);
 
 public :
-  int ordre( void ) const override;
-  int nb_lignes( void ) const override;
-  int nb_colonnes( void ) const override;
+  int ordre() const override;
+  int nb_lignes() const override;
+  int nb_colonnes() const override;
 
   // Methodes pour le calcul de r+=Ax codees dans les classes filles
   DoubleVect& ajouter_multvect_( const DoubleVect& x, DoubleVect& r ) const override;
@@ -64,7 +64,7 @@ public :
   // multiplication par un scalaire
   void scale( const double x ) override;
   // mise a zero des valeurs de la matrice
-  void clean( void ) override;
+  void clean() override;
 
   void get_stencil( IntTab& stencil ) const override;
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
@@ -82,7 +82,7 @@ public :
   virtual const Matrice& get_bloc( int i, int j ) const;
   virtual Matrice& get_bloc( int i, int j );
 
-  void build_stencil( void ) override;
+  void build_stencil() override;
 
 public :
   // Constructeurs :
@@ -90,7 +90,7 @@ public :
 
   // Acces aux caracteristiques du vecteur blocs_
   int dim( int d ) const;                // si d=0 => N_   si d=1 => M_
-  int nb_bloc_lignes( void ) const;            // retourne N_
+  int nb_bloc_lignes() const;            // retourne N_
   int nb_bloc_colonnes(void ) const;           // retourne M_
 
   // Remplissage par une matrice morse symetrique
@@ -111,9 +111,9 @@ public :
 
   Matrice_Bloc& operator *=( double x);
 
-  bool check_block_matrix_structure( void ) const;
+  bool check_block_matrix_structure() const;
 
-  void assert_check_block_matrix_structure( void ) const;
+  void assert_check_block_matrix_structure() const;
 
 protected :
   VECT(Matrice) blocs_;           // les blocs de la matrices source A

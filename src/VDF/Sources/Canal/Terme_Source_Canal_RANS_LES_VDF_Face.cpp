@@ -423,7 +423,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
 
 }
 
-DoubleTab Terme_Source_Canal_RANS_LES_VDF_Face::norme_vit(void) const
+DoubleTab Terme_Source_Canal_RANS_LES_VDF_Face::norme_vit() const
 {
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   int nb_elems = domaine_VDF.nb_elem();

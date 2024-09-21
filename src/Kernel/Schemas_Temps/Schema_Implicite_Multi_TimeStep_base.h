@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ public :
   int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
   int mettre_a_jour() override;
   int reprendre(Entree& ) override;
-  inline void completer(void) override { } ;
+  inline void completer() override { }
 
   void   Initialiser_Champs(Probleme_base&);
   void   test_stationnaire(Probleme_base&);

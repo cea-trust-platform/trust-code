@@ -639,7 +639,7 @@ void Convection_Diffusion_Temperature::transport_ibc(DoubleTrav& secmem_conv_vr,
                   if (indic_pena_global_fat(voisin) != 0)
                     {
                       ++coeff;
-                    } ;
+                    }
                 }
             }
           if (coeff > 1) indic_pena_global_fat(i_elem) = 1;

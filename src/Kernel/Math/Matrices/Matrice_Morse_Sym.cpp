@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -890,7 +890,7 @@ void Matrice_Morse_Sym::renumerote() const
   morse_matrix_structure_has_changed_=1;
 }
 
-bool Matrice_Morse_Sym::check_symmetric_morse_matrix_structure( void ) const
+bool Matrice_Morse_Sym::check_symmetric_morse_matrix_structure() const
 {
   if ( ! ( check_morse_matrix_structure( ) ) )
     {
@@ -917,7 +917,7 @@ bool Matrice_Morse_Sym::check_symmetric_morse_matrix_structure( void ) const
   return true;
 }
 
-bool Matrice_Morse_Sym::check_sorted_symmetric_morse_matrix_structure( void ) const
+bool Matrice_Morse_Sym::check_sorted_symmetric_morse_matrix_structure() const
 {
   if ( ! ( check_sorted_morse_matrix_structure( ) ) )
     {
@@ -944,7 +944,7 @@ bool Matrice_Morse_Sym::check_sorted_symmetric_morse_matrix_structure( void ) co
 }
 
 
-void Matrice_Morse_Sym::assert_check_symmetric_morse_matrix_structure( void ) const
+void Matrice_Morse_Sym::assert_check_symmetric_morse_matrix_structure() const
 {
   if (!morse_matrix_structure_has_changed_) return;
 #ifndef NDEBUG
@@ -959,7 +959,7 @@ void Matrice_Morse_Sym::assert_check_symmetric_morse_matrix_structure( void ) co
 #endif
 }
 
-void Matrice_Morse_Sym::assert_check_sorted_symmetric_morse_matrix_structure( void ) const
+void Matrice_Morse_Sym::assert_check_sorted_symmetric_morse_matrix_structure() const
 {
   if (!morse_matrix_structure_has_changed_) return;
 #ifndef NDEBUG

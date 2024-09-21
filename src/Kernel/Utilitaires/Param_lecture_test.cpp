@@ -29,7 +29,7 @@ public:
   inline int lire_motcle_non_standard_public(const Motcle& mot, Entree& is)
   {
     return lire_motcle_non_standard(mot,is);
-  };
+  }
 private:
   int lire_motcle_non_standard(const Motcle& mot , Entree& is) override;
 };
@@ -69,12 +69,12 @@ public:
   void setUp() override
   {
     // init2();
-  };
+  }
   ParamTest():CPPUNIT_NS::TestFixture::TestFixture()
   {
     Cerr<<"builder "<<finl;
     //init2();
-  };
+  }
   int int1;
   double double1;
   int flag1;
@@ -87,11 +87,11 @@ public:
     param.ajouter("double",&double1);
     param.ajouter_flag("flag",&flag1);
 
-  };
+  }
   void tearDown() override
   {
     //Cerr<<"ICI" <<finl;;
-  } ;
+  }
   void testConstructor()
   {
     Param param("test_param");
@@ -100,7 +100,7 @@ public:
     //CPPUNIT_ASSERT_EQUAL(,param.verifier_avant_ajout("INT"));
 
     // CPPUNIT_ASSERT_EQUAL(1,param.verifier_avant_ajout("INT2"));
-  };
+  }
   void test_lecture_sans_accolade()
   {
     Param param("test_param");
@@ -204,7 +204,7 @@ public:
       CPPUNIT_ASSERT_EQUAL_MESSAGE(" pb avec la lecture des ArrofInt",3,arrdouble[1]);
       CPPUNIT_ASSERT_EQUAL_MESSAGE(" pb avec la lecture des ArrofInt",2,arrdouble[0]);
     }
-  };
+  }
 
   void testdoublelecture()
   {
@@ -252,7 +252,7 @@ public:
       param.supprimer("int");
       CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas plus de int ",param.supprimer("int"),TRUST_Error);
     }
-  };
+  }
   void testDictionnaire()
   {
     int val,val2;
@@ -312,7 +312,7 @@ public:
 
     }
 
-  };
+  }
   void testLecture_objets()
   {
     Nom objet_test;
@@ -348,7 +348,7 @@ public:
       CPPUNIT_ASSERT_THROW_MESSAGE("test lecture_non_standard erreur",param.lire_avec_accolades_depuis(is),TRUST_Error);
 
     }
-  };
+  }
   void testConditions()
   {
     {
@@ -435,8 +435,7 @@ public:
       //int status=param.check();
       CPPUNIT_ASSERT_THROW_MESSAGE("variable non defini",param.get_value("value_of_objet"),TRUST_Error);
     }
-
-  };
+  }
   void testajouterderiv()
   {
     Param param("deriv");
@@ -481,6 +480,5 @@ public:
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( ParamTest );
-
 
 #endif

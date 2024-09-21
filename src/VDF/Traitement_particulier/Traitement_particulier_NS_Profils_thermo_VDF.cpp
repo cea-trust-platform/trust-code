@@ -728,13 +728,13 @@ void Traitement_particulier_NS_Profils_thermo_VDF::reprendre_stat()
 
 
 
-void  Traitement_particulier_NS_Profils_thermo_VDF::init_calcul_moyenne(void)
+void  Traitement_particulier_NS_Profils_thermo_VDF::init_calcul_moyenne()
 {
   Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne();
 }
 
 
-void  Traitement_particulier_NS_Profils_thermo_VDF::preparer_calcul_particulier(void)
+void  Traitement_particulier_NS_Profils_thermo_VDF::preparer_calcul_particulier()
 {
   if ((oui_u_inst != 0)||(oui_profil_nu_t != 0))
     // On fait appel uniquement a la methode dans NS_Profils_VDF pour initialiser
@@ -754,7 +754,7 @@ void  Traitement_particulier_NS_Profils_thermo_VDF::preparer_calcul_particulier(
 
 
 
-void Traitement_particulier_NS_Profils_thermo_VDF::init_calcul_stats(void)
+void Traitement_particulier_NS_Profils_thermo_VDF::init_calcul_stats()
 {
   Traitement_particulier_NS_Profils::init_calcul_stats();
 

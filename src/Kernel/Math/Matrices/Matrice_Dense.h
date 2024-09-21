@@ -27,7 +27,7 @@ class Matrice_Dense : public Matrice_Base
   Declare_instanciable_sans_constructeur( Matrice_Dense );
 
 public :
-  Matrice_Dense( void );
+  Matrice_Dense();
   Matrice_Dense( const int nb_lines , const int nb_cols );
   void dimensionner( const int nb_lines , const int nb_cols );
   void read_from_file( const Nom& filename );
@@ -50,7 +50,7 @@ public :
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
   void scale( const double x ) override ;
-  void clean( void ) override;
+  void clean() override;
   void get_stencil( IntTab& stencil ) const override;
 
   // Perform the matrix inversion

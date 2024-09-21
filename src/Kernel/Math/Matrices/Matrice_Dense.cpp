@@ -61,7 +61,7 @@ Sortie& Matrice_Dense::imprimer_formatte( Sortie& s ) const
 }
 
 
-Matrice_Dense::Matrice_Dense( void )
+Matrice_Dense::Matrice_Dense()
 {
   dimensionner( 0 , 0 );
 }
@@ -336,7 +336,7 @@ void Matrice_Dense::scale( const double x )
 }
 
 
-void Matrice_Dense::clean( void )
+void Matrice_Dense::clean()
 {
   const int nb_lines = nb_lignes( );
   const int nb_cols  = nb_colonnes( );

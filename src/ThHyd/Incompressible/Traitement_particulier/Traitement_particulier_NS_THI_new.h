@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,19 +38,19 @@ class Traitement_particulier_NS_THI_new : public Traitement_particulier_NS_base
 public :
 
   Entree& lire(Entree& ) override;
-  void preparer_calcul_particulier(void) override ;
-  void post_traitement_particulier(void) override ;
+  void preparer_calcul_particulier() override ;
+  void post_traitement_particulier() override ;
   void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
-  inline void sauver_stat(void)  const override ;
-  inline void reprendre_stat(void) override  ;
+  inline void sauver_stat()  const override ;
+  inline void reprendre_stat() override  ;
   inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
   inline int comprend_champ(const Motcle& mot) const  ;
 
 protected :
 
-  virtual void renorm_Ec(void) =0;
-  virtual void init_calc_spectre(void)=0;
-  virtual void calcul_spectre(void)=0;
+  virtual void renorm_Ec() =0;
+  virtual void init_calc_spectre()=0;
+  virtual void calcul_spectre()=0;
   int& calcul_nb_som_dir(const Domaine&);
   void msg_erreur_maillage(const char*);
 
@@ -62,12 +62,12 @@ protected :
 
 #endif
 
-inline void Traitement_particulier_NS_THI_new::sauver_stat(void)  const
+inline void Traitement_particulier_NS_THI_new::sauver_stat()  const
 {
   ;
 }
 
-inline void Traitement_particulier_NS_THI_new::reprendre_stat(void)
+inline void Traitement_particulier_NS_THI_new::reprendre_stat()
 {
   ;
 }

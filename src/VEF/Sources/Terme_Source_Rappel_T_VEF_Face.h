@@ -37,7 +37,7 @@ public :
   DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& calculer(DoubleTab& ) const override;
   void completer() override;
-  void mettre_a_jour(double temps) override {  } ;
+  void mettre_a_jour(double temps) override {  }
 
 protected :
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;

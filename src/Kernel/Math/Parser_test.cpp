@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,11 +48,11 @@ public:
   ParserTest():CPPUNIT_NS::TestFixture::TestFixture()
   {
     Cerr<<"builder "<<finl;
-  };
+  }
   void tearDown() override
   {
     //Cerr<<"ICI" <<finl;
-  } ;
+  }
   void test_expr_sol( Nom* expr_sol,int  nb_expr)
   {
     Parser_U p;
@@ -70,9 +70,7 @@ public:
         else
           CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(pb.getChar(),resu,p.eval(),1e-8);
       }
-
-
-  } ;
+  }
   void testSimpleOperation()
   {
     int nb_expr=19;
@@ -97,7 +95,7 @@ public:
                        , "1", "0"
                      };
     test_expr_sol(expr_sol,nb_expr);
-  };
+  }
 
   void testComparaison()
   {
@@ -157,7 +155,7 @@ public:
                        , "1", "0"
                      };
     test_expr_sol(expr_sol,nb_expr);
-  };
+  }
 
   void testStdFunction()
   {
@@ -175,9 +173,7 @@ public:
                        , "1", "0"
                      };
     test_expr_sol(expr_sol,nb_expr);
-  };
-
-
+  }
 
   void testLogic()
   {
@@ -201,7 +197,7 @@ public:
                        , "1", "0"
                      };
     test_expr_sol(expr_sol,nb_expr);
-  };
+  }
   void testFunction()
   {
     Parser_U p;
@@ -227,7 +223,7 @@ public:
 
         CPPUNIT_ASSERT_EQUAL_MESSAGE(pb.getChar(),f_test(i),p.eval());
       }
-  };
+  }
 
   void testVar()
   {
@@ -265,7 +261,7 @@ public:
     p3.addVar("y");
 // pour le moment on ne bloque pas
 //   CPPUNIT_ASSERT_THROW_MESSAGE("verification que ajouter x  ne marche pas si on a deja x", p3.addVar("x"),TRUST_Error);
-  };
+  }
   void testSyntaxe()
   {
     Parser_U p;
@@ -282,11 +278,9 @@ public:
     expr="(1234e+1,4)";
     p.setString(expr);
     CPPUNIT_ASSERT_THROW_MESSAGE("verification que 1234e1,4 ne marche pas", p.parseString(),TRUST_Error);
-
-  };
-
+  }
 };
-CPPUNIT_TEST_SUITE_REGISTRATION( ParserTest );
 
+CPPUNIT_TEST_SUITE_REGISTRATION( ParserTest );
 
 #endif

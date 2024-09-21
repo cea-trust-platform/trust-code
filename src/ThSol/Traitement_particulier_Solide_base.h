@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,8 +37,8 @@ class Traitement_particulier_Solide_base : public Objet_U, public Champs_compris
 public :
 
   virtual void associer_eqn(const Equation_base& );
-  virtual void preparer_calcul_particulier(void) =0;
-  virtual void post_traitement_particulier(void) =0;
+  virtual void preparer_calcul_particulier() =0;
+  virtual void post_traitement_particulier() =0;
   virtual Entree& lire(Entree& is) = 0;
   virtual void en_cours_de_resolution(int , DoubleTab& , DoubleTab& ,double)  = 0;
 

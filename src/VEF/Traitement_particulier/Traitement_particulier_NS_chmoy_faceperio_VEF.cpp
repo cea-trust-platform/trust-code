@@ -47,7 +47,7 @@ Entree& Traitement_particulier_NS_chmoy_faceperio_VEF::readOn(Entree& is)
   return is;
 }
 
-void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats(void)
+void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats()
 {
   const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);

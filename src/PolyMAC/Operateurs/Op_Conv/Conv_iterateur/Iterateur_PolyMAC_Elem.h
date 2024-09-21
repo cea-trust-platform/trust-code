@@ -41,7 +41,7 @@ class Iterateur_PolyMAC_Elem : public Iterateur_PolyMAC_base
   inline unsigned taille_memoire() const override { throw; }
 
 public:
-  inline Iterateur_PolyMAC_Elem() { } ;
+  inline Iterateur_PolyMAC_Elem() { }
   inline Iterateur_PolyMAC_Elem(const Iterateur_PolyMAC_Elem<_TYPE_>& );
   inline Evaluateur_PolyMAC& evaluateur() override;
   inline const Evaluateur_PolyMAC& evaluateur() const override;

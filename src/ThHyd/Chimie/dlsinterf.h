@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,13 +96,13 @@ inline int F77DECLARE(SETMARQUEUR)(integer *ir)
 #endif
 extern "C" {
 #ifdef F77_Majuscule
-  int F77DECLARE(PRINTCOMMON)(void);
+  int F77DECLARE(PRINTCOMMON)();
 #else
-  int F77DECLARE(printcommon)(void);
+  int F77DECLARE(printcommon)();
 #endif
 }
 #ifndef F77_Majuscule
-inline int F77DECLARE(PRINTCOMMON)(void)
+inline int F77DECLARE(PRINTCOMMON)()
 {
   return F77NAME(printcommon)();
 }

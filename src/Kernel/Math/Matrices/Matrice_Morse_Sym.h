@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,10 +85,10 @@ public :
   inline ArrOfInt& permutation() const { return permutation_; }
   inline ArrOfInt& permutation_inverse() const { return permutation_inverse_; }
 
-  bool check_symmetric_morse_matrix_structure( void ) const;
-  bool check_sorted_symmetric_morse_matrix_structure( void ) const;
-  void assert_check_symmetric_morse_matrix_structure( void ) const;
-  void assert_check_sorted_symmetric_morse_matrix_structure( void ) const;
+  bool check_symmetric_morse_matrix_structure() const;
+  bool check_sorted_symmetric_morse_matrix_structure() const;
+  void assert_check_symmetric_morse_matrix_structure() const;
+  void assert_check_sorted_symmetric_morse_matrix_structure() const;
 
 private :
   int isLU() const { return 0; }

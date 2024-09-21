@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,12 +41,11 @@ public:
   void setUp() override
   {
     // init2();
-  };
+  }
   VectTest():CPPUNIT_NS::TestFixture::TestFixture()
   {
-
     //init2();
-  };
+  }
   int int1;
   double double1;
   int flag1;
@@ -54,7 +53,7 @@ public:
   void tearDown() override
   {
     //Cerr<<"ICI" <<finl;;
-  } ;
+  }
   void testConstructor()
   {
     VECT(Bord) titi;
@@ -65,7 +64,7 @@ public:
     CPPUNIT_ASSERT_EQUAL_MESSAGE("VECT(vect), size nulle",0,titi.size());
     VECT(Bord) titi3bis(titi3);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("VECT(vect3), size 3",3,titi3bis.size());
-  };
+  }
   void testCopy()
   {
     VECT(Bord) a;

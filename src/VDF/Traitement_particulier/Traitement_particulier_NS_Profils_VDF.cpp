@@ -224,7 +224,7 @@ void Traitement_particulier_NS_Profils_VDF::post_traitement_particulier()
 
 
 
-void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
+void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne()
 {
   // On va initialiser les differents parametres membres de la classe
   // utiles au calcul des differentes moyennes

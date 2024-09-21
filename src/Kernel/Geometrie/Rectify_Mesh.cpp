@@ -43,7 +43,7 @@ Entree& Rectify_Mesh::interpreter_(Entree& is)
   return is;
 }
 
-void Rectify_Mesh::apply(void)
+void Rectify_Mesh::apply()
 {
   Cerr << "Rectifying domain " << domaine().le_nom() << finl;
 
@@ -62,7 +62,7 @@ void Rectify_Mesh::apply(void)
   Cerr << "Rectification... OK" << finl;
 }
 
-void Rectify_Mesh::check_dimension(void) const
+void Rectify_Mesh::check_dimension() const
 {
   if ( ! ( (Objet_U::dimension == 2) || (Objet_U::dimension == 3) ) )
     {
@@ -73,7 +73,7 @@ void Rectify_Mesh::check_dimension(void) const
     }
 }
 
-void Rectify_Mesh::check_cell_type(void) const
+void Rectify_Mesh::check_cell_type() const
 {
   const Nom& cell_type = domaine().type_elem()->que_suis_je();
 
@@ -86,7 +86,7 @@ void Rectify_Mesh::check_cell_type(void) const
     }
 }
 
-void Rectify_Mesh::apply_2D(void)
+void Rectify_Mesh::apply_2D()
 {
   Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
@@ -99,7 +99,7 @@ void Rectify_Mesh::apply_2D(void)
 }
 
 
-void Rectify_Mesh::apply_3D(void)
+void Rectify_Mesh::apply_3D()
 {
   Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
@@ -112,7 +112,7 @@ void Rectify_Mesh::apply_3D(void)
   Scatter::init_sequential_domain(domain);
 }
 
-void Rectify_Mesh::check_cell_orientation_2D(void)
+void Rectify_Mesh::check_cell_orientation_2D()
 {
   const DoubleTab& nodes = domaine().les_sommets();
   IntTab&          cells = domaine().les_elems();
@@ -149,7 +149,7 @@ void Rectify_Mesh::check_cell_orientation_2D(void)
   Cerr << "************************************************" << finl;
 }
 
-void Rectify_Mesh::check_cell_orientation_3D(void)
+void Rectify_Mesh::check_cell_orientation_3D()
 {
   const DoubleTab& nodes = domaine().les_sommets();
   IntTab&          cells = domaine().les_elems();
@@ -200,7 +200,7 @@ void Rectify_Mesh::check_cell_orientation_3D(void)
 
 }
 
-void Rectify_Mesh::check_cell_enumeration_3D(void)
+void Rectify_Mesh::check_cell_enumeration_3D()
 {
   const DoubleTab& nodes = domaine().les_sommets();
   IntTab&          cells = domaine().les_elems();

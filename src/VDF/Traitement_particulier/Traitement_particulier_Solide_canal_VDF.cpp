@@ -254,7 +254,7 @@ void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_temp_thermo(c
 
 
 
-void Traitement_particulier_Solide_canal_VDF::init_calcul_stats(void)
+void Traitement_particulier_Solide_canal_VDF::init_calcul_stats()
 {
   Tmoy_temp.resize(N);
   Tmoy_temp=0;
@@ -264,7 +264,7 @@ void Traitement_particulier_Solide_canal_VDF::init_calcul_stats(void)
 
 
 
-void Traitement_particulier_Solide_canal_VDF::init_calcul_moyenne(void)
+void Traitement_particulier_Solide_canal_VDF::init_calcul_moyenne()
 {
   const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);

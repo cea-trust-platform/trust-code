@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,12 +36,12 @@ class Traitement_particulier_NS_Profils_VDF : public Traitement_particulier_NS_P
 
 public :
 
-  void post_traitement_particulier(void) override ;
+  void post_traitement_particulier() override ;
   Entree& lire(const Motcle& , Entree& ) override;
   Entree& lire(Entree& ) override;
 
 protected :
-  void init_calcul_moyenne(void) override;
+  void init_calcul_moyenne() override;
   void calculer_moyenne_spatiale_vitesse(DoubleTab& , DoubleTab& ,DoubleTab& , DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const int , const DoubleTab& );
   void calculer_moyenne_spatiale_uv(DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const DoubleTab& );
   void ecriture_fichiers_moy_spat(const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& ,const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& , const IntVect& , const DoubleTab& , const int );

@@ -54,7 +54,7 @@ Entree& Matrice_Bloc::readOn( Entree& is )
   return is;
 }
 
-int Matrice_Bloc::ordre( void ) const
+int Matrice_Bloc::ordre() const
 {
   if ( M_ == N_)
     {
@@ -63,7 +63,7 @@ int Matrice_Bloc::ordre( void ) const
   return 0;
 }
 
-int Matrice_Bloc::nb_lignes( void ) const
+int Matrice_Bloc::nb_lignes() const
 {
   int sum=0;
   for( int i=0; i<N_; ++i )
@@ -74,7 +74,7 @@ int Matrice_Bloc::nb_lignes( void ) const
   return sum;
 }
 
-int Matrice_Bloc::nb_colonnes( void ) const
+int Matrice_Bloc::nb_colonnes() const
 {
   int sum=0;
   for( int i=0; i<M_; ++i )
@@ -175,7 +175,7 @@ void Matrice_Bloc::scale( const double x )
     }
 }
 
-void Matrice_Bloc::clean( void )
+void Matrice_Bloc::clean()
 {
 
   if ( is_stencil_up_to_date_ )
@@ -291,7 +291,7 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 }
 
 
-void Matrice_Bloc::build_stencil( void )
+void Matrice_Bloc::build_stencil()
 {
   std::fill(line_offsets_.begin( ),line_offsets_.end( ), 0.);
   std::fill(column_offsets_.begin( ),line_offsets_.end( ), 0.);
@@ -654,12 +654,12 @@ int Matrice_Bloc::dim( int d ) const
     }
 }
 
-int Matrice_Bloc::nb_bloc_lignes( void ) const
+int Matrice_Bloc::nb_bloc_lignes() const
 {
   return N_;
 }
 
-int Matrice_Bloc::nb_bloc_colonnes( void ) const
+int Matrice_Bloc::nb_bloc_colonnes() const
 {
   return M_;
 }
@@ -917,7 +917,7 @@ Matrice_Bloc& Matrice_Bloc::operator *=( double x )
   return *this;
 }
 
-bool Matrice_Bloc::check_block_matrix_structure( void ) const
+bool Matrice_Bloc::check_block_matrix_structure() const
 {
   const int nb_line_blocks   = nb_bloc_lignes( );
   const int nb_column_blocks = nb_bloc_colonnes( );
@@ -954,7 +954,7 @@ bool Matrice_Bloc::check_block_matrix_structure( void ) const
   return true;
 }
 
-void Matrice_Bloc::assert_check_block_matrix_structure( void ) const
+void Matrice_Bloc::assert_check_block_matrix_structure() const
 {
 #ifndef NDEBUG
   if ( ! ( check_block_matrix_structure( ) ) )

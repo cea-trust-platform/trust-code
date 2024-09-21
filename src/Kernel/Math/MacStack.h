@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,8 +21,8 @@
     STACK(_TYPE_)(const int t=10);                \
     ~STACK(_TYPE_)();                                \
     int push(const _TYPE_&);                        \
-    _TYPE_& pop(void);                                \
-    _TYPE_& peek(void);                                \
+    _TYPE_& pop();                                \
+    _TYPE_& peek();                                \
     int isEmpty() const;                        \
     _TYPE_* getBase() { return base; }                \
   private:                                        \
@@ -37,8 +37,8 @@
     PSTACK(_TYPE_)(const int t=10);                \
     ~PSTACK(_TYPE_)();                                \
     int push(_TYPE_*&);                                \
-    _TYPE_*& pop(void);                                \
-    _TYPE_*& peek(void);                        \
+    _TYPE_*& pop();                                \
+    _TYPE_*& peek();                        \
     int isEmpty() const;                        \
     _TYPE_** getBase() { return base; }                \
   private:                                        \
@@ -56,12 +56,12 @@
   STACK(_TYPE_)::~STACK(_TYPE_)() {                                        \
     delete[] base ;                                                        \
   }                                                                        \
-  _TYPE_& STACK(_TYPE_)::pop(void)                                        \
+  _TYPE_& STACK(_TYPE_)::pop()                                        \
   {                                                                        \
     if (top!=base) return *(--top) ;                                        \
     return *base;                                                        \
   }                                                                        \
-  _TYPE_& STACK(_TYPE_)::peek(void)                                        \
+  _TYPE_& STACK(_TYPE_)::peek()                                        \
   {                                                                        \
     return *(top-1) ;                                                        \
   }                                                                        \
@@ -92,12 +92,12 @@
   PSTACK(_TYPE_)::~PSTACK(_TYPE_)() {                                        \
     delete[] base ;                                                        \
   }                                                                        \
-  _TYPE_*& PSTACK(_TYPE_)::pop(void)                                        \
+  _TYPE_*& PSTACK(_TYPE_)::pop()                                        \
   {                                                                        \
     if (top!=base) return *(--top) ;                                        \
     return *base;                                                        \
   }                                                                        \
-  _TYPE_*& PSTACK(_TYPE_)::peek(void)                                        \
+  _TYPE_*& PSTACK(_TYPE_)::peek()                                        \
   {                                                                        \
     return *(top-1) ;                                                        \
   }                                                                        \

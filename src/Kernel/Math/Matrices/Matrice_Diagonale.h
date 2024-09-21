@@ -28,27 +28,27 @@ class Matrice_Diagonale : public Matrice_Base
 {
   Declare_instanciable_sans_constructeur(Matrice_Diagonale);
 public :
-  int ordre( void ) const override;
-  int nb_lignes( void ) const override;
-  int nb_colonnes( void ) const override;
+  int ordre() const override;
+  int nb_lignes() const override;
+  int nb_colonnes() const override;
 
   DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override;
   DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override;
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
   void scale(const double x) override;
-  void clean( void ) override;
+  void clean() override;
   void get_stencil(IntTab& stencil) const override;
   void get_symmetric_stencil(IntTab& stencil) const override;
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
   void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
-  Matrice_Diagonale(void);
+  Matrice_Diagonale();
   Matrice_Diagonale(int size);
   Matrice_Diagonale(const DoubleVect& coefficients);
 
-  DoubleVect& get_coefficients(void);
-  const DoubleVect& get_coefficients(void) const;
+  DoubleVect& get_coefficients();
+  const DoubleVect& get_coefficients() const;
 
   void dimensionner(int size);
 

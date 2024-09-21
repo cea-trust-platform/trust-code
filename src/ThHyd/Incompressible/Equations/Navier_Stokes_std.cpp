@@ -1895,7 +1895,7 @@ void Navier_Stokes_std::div_ale_derivative( DoubleTrav& deriveeALE, double times
   // nothing to do
 }
 
-void Navier_Stokes_std::update_pressure_matrix( void )
+void Navier_Stokes_std::update_pressure_matrix()
 {
   // nothing to do
 }

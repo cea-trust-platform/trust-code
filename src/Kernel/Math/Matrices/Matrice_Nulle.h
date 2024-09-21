@@ -31,7 +31,7 @@ public :
   DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override;
   DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
-  void clean( void ) override;
+  void clean() override;
 
   void scale(const double x) override;
   void get_stencil(IntTab& stencil) const override;
@@ -40,7 +40,7 @@ public :
   void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
 public:
-  Matrice_Nulle(void);
+  Matrice_Nulle();
   Matrice_Nulle(int order);
   Matrice_Nulle(int nb_lines, int nb_columns);
 

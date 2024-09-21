@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ public :
   Traitement_particulier_NS_Pression_VDF();
   int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
   int comprend_champ(const Motcle& mot) const ;
-  void post_traitement_particulier(void) override ;
+  void post_traitement_particulier() override ;
   Entree& lire(Entree& ) override;
   /////////////////////////////////////////////////////
 

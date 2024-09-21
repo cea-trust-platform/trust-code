@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ DoubleVect operator * (const Matrice_Base& A, const DoubleVect& vect)
   return A.multvect(vect, r);
 }
 
-void Matrice_Base::build_stencil( void )
+void Matrice_Base::build_stencil()
 {
   Cerr << "Error in 'Matrice_Base::build_stencil( )"<<finl;
   Cerr << "  This method should be implemented in derived class." << finl;
@@ -55,7 +55,7 @@ void Matrice_Base::build_stencil( void )
   Process::exit( );
 }
 
-int Matrice_Base::get_stencil_size( void ) const
+int Matrice_Base::get_stencil_size() const
 {
   return stencil_.dimension( 0 );
 }
@@ -112,7 +112,7 @@ void Matrice_Base::set_stencil( const IntTab& stencil )
   is_stencil_up_to_date_ = false ;
 }
 
-bool Matrice_Base::is_stencil_up_to_date( void ) const
+bool Matrice_Base::is_stencil_up_to_date() const
 {
   return is_stencil_up_to_date_;
 }

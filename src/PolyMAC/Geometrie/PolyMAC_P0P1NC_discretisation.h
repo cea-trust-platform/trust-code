@@ -33,7 +33,7 @@ public:
   void y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base&, const Champ_Inc_base& vitesse, Champ_Fonc& ch) const override;
   void grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const override;
 
-  inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_AJOUTER; }
+  inline type_calcul_du_residu codage_du_calcul_du_residu() const override { return VIA_AJOUTER; }
 
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const override;
 

@@ -36,7 +36,7 @@ Entree& Refine_Mesh::interpreter_(Entree& is)
   return is;
 }
 
-void Refine_Mesh::apply(void)
+void Refine_Mesh::apply()
 {
   Cerr << "Refining domain " << domaine().le_nom() << finl;
 
@@ -55,7 +55,7 @@ void Refine_Mesh::apply(void)
   Cerr << "Refinement... OK" << finl;
 }
 
-void Refine_Mesh::check_dimension(void) const
+void Refine_Mesh::check_dimension() const
 {
   if (!((Objet_U::dimension == 2) || (Objet_U::dimension == 3)))
     {
@@ -66,7 +66,7 @@ void Refine_Mesh::check_dimension(void) const
     }
 }
 
-void Refine_Mesh::check_cell_type(void) const
+void Refine_Mesh::check_cell_type() const
 {
   const Nom& cell_type = domaine().type_elem()->que_suis_je();
 
@@ -79,7 +79,7 @@ void Refine_Mesh::check_cell_type(void) const
     }
 }
 
-void Refine_Mesh::apply_2D(void)
+void Refine_Mesh::apply_2D()
 {
   Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
@@ -120,7 +120,7 @@ void Refine_Mesh::apply_2D(void)
   Scatter::init_sequential_domain(domain);
 }
 
-void Refine_Mesh::apply_3D(void)
+void Refine_Mesh::apply_3D()
 {
   Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);

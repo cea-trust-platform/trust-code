@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,14 +29,14 @@ class NomTest: public CPPUNIT_NS::TestFixture
 public:
   void setUp() override
   {
-  };
+  }
   NomTest():CPPUNIT_NS::TestFixture::TestFixture()
   {
-  };
+  }
   void tearDown() override
   {
     //Cerr<<"ICI" <<finl;;
-  } ;
+  }
   void testConstructor()
   {
     {
@@ -53,12 +53,9 @@ public:
 
       CPPUNIT_ASSERT_EQUAL_MESSAGE("\"test.es\".me(999)",ref,nom_me);
     }
-
-
-  };
+  }
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( NomTest );
-
 
 #endif

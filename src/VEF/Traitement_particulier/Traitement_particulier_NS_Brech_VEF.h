@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ class Traitement_particulier_NS_Brech_VEF : public Traitement_particulier_NS_VEF
 public :
 
   Traitement_particulier_NS_Brech_VEF();
-  inline void post_traitement_particulier(void) override ;
+  inline void post_traitement_particulier() override ;
   Entree& lire(Entree& ) override;
 
 protected :

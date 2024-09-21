@@ -82,7 +82,7 @@ Param& Objet_a_lire::create_param(const char *aname)
   return param_interne.valeur();
 }
 
-bool Objet_a_lire::is_optional(void) const
+bool Objet_a_lire::is_optional() const
 {
   return (nature == OPTIONAL);
 }
@@ -109,7 +109,7 @@ int Objet_a_lire::comprend_name(Motcle& mot) const
   return 0;
 }
 
-Nom Objet_a_lire::get_names_message(void) const
+Nom Objet_a_lire::get_names_message() const
 {
   Nom titi(name);
   int size = names.size();
@@ -121,7 +121,7 @@ Nom Objet_a_lire::get_names_message(void) const
   return titi;
 }
 
-const Nom& Objet_a_lire::get_name(void) const
+const Nom& Objet_a_lire::get_name() const
 {
   return name;
 }

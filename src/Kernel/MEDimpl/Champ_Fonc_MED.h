@@ -67,7 +67,7 @@ public :
   inline int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const override;
   inline virtual const Champ_Fonc_base& le_champ() const;
   inline virtual Champ_Fonc_base& le_champ();
-  const ArrOfDouble& get_saved_times(void) const;
+  const ArrOfDouble& get_saved_times() const;
 
 protected:
   // Parameters read in the dataset:

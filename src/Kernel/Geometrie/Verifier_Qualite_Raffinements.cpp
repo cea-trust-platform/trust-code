@@ -225,7 +225,7 @@ static void compute_cell_qualities(const Domaine& domain, ArrOfDouble& quality)
     }
 }
 
-void Verifier_Qualite_Raffinements::verifier_qualite_raffinements(void)
+void Verifier_Qualite_Raffinements::verifier_qualite_raffinements()
 {
   const int nb_domains = domaines().size() ;
   assert( nb_domains > 1 );

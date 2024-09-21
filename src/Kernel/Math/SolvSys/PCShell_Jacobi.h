@@ -53,7 +53,7 @@ protected :
 #ifdef PETSCKSP_H
   Vec diag_;
 #endif
-} ;
+};
 
 
 #endif /* PCShell_Jacobi_included */

@@ -532,7 +532,7 @@ void Matrice_Bloc_Sym::get_symmetric_stencil_and_coefficients( IntTab&      sten
     }
 }
 
-bool Matrice_Bloc_Sym::check_symmetric_block_matrix_structure( void ) const
+bool Matrice_Bloc_Sym::check_symmetric_block_matrix_structure() const
 {
   const int nb_line_blocks   = nb_bloc_lignes( );
   const int nb_column_blocks = nb_bloc_colonnes( );
@@ -570,7 +570,7 @@ bool Matrice_Bloc_Sym::check_symmetric_block_matrix_structure( void ) const
   return true;
 }
 
-void Matrice_Bloc_Sym::assert_check_symmetric_block_matrix_structure( void ) const
+void Matrice_Bloc_Sym::assert_check_symmetric_block_matrix_structure() const
 {
 #ifndef NDEBUG
   if ( ! ( check_symmetric_block_matrix_structure( ) ) )

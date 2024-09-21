@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ private :
   int Ci0_ok=0;
   double dt_impr = 1e10;
   double temps_courant= -100.;
-  void (Source_Neutronique::*faire_un_pas_de_temps)(void) = nullptr;
+  void (Source_Neutronique::*faire_un_pas_de_temps)() = nullptr;
   double Tmoy= -100.; // temperature moyenne
 
   Parser_U fct_tT;

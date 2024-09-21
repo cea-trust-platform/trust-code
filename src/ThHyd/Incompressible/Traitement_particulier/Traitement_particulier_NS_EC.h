@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,11 +36,11 @@ public :
   inline ~Traitement_particulier_NS_EC() override;
   inline Traitement_particulier_NS_EC();
   Entree& lire(Entree& ) override;
-  void preparer_calcul_particulier(void) override ;
-  void post_traitement_particulier(void) override ;
+  void preparer_calcul_particulier() override ;
+  void post_traitement_particulier() override ;
   inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
-  inline void sauver_stat(void)  const override ;
-  inline void reprendre_stat(void) override  ;
+  inline void sauver_stat()  const override ;
+  inline void reprendre_stat() override  ;
   inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
   inline int comprend_champ(const Motcle& mot) const  ;
 
@@ -57,12 +57,12 @@ inline void Traitement_particulier_NS_EC::en_cours_de_resolution(int , DoubleTab
 {
 }
 
-inline void Traitement_particulier_NS_EC::sauver_stat(void)  const
+inline void Traitement_particulier_NS_EC::sauver_stat()  const
 {
   ;
 }
 
-inline void Traitement_particulier_NS_EC::reprendre_stat(void)
+inline void Traitement_particulier_NS_EC::reprendre_stat()
 {
   ;
 }

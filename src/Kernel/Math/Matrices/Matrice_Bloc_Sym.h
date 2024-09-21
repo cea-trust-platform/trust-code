@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,8 +94,8 @@ public:
 
   void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
-  bool check_symmetric_block_matrix_structure(void) const;
-  void assert_check_symmetric_block_matrix_structure(void) const;
+  bool check_symmetric_block_matrix_structure() const;
+  void assert_check_symmetric_block_matrix_structure() const;
 };
 
 #endif

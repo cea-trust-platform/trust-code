@@ -207,7 +207,7 @@ class Stat_Counter_Id
 {
 public:
   Stat_Counter_Id() : id_(-1), level_(-1) {};
-  int initialized(void) const
+  int initialized() const
   {
     return id_ >= 0;
   };

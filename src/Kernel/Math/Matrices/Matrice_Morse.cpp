@@ -2111,7 +2111,7 @@ int Matrice_Morse::largeur_de_bande() const
   return min;
 }
 
-bool Matrice_Morse::check_morse_matrix_structure( void ) const
+bool Matrice_Morse::check_morse_matrix_structure() const
 {
   const int nb_lines   = nb_lignes( );
   const int nb_columns = nb_colonnes( );
@@ -2167,7 +2167,7 @@ bool Matrice_Morse::check_morse_matrix_structure( void ) const
   return true;
 }
 
-bool Matrice_Morse::check_sorted_morse_matrix_structure( void ) const
+bool Matrice_Morse::check_sorted_morse_matrix_structure() const
 {
   const int nb_lines   = nb_lignes( );
   const int nb_columns = nb_colonnes( );
@@ -2233,7 +2233,7 @@ bool Matrice_Morse::check_sorted_morse_matrix_structure( void ) const
 }
 
 
-void Matrice_Morse::assert_check_morse_matrix_structure( void ) const
+void Matrice_Morse::assert_check_morse_matrix_structure() const
 {
   if (!morse_matrix_structure_has_changed_) return;
 #ifndef NDEBUG
@@ -2248,7 +2248,7 @@ void Matrice_Morse::assert_check_morse_matrix_structure( void ) const
 #endif
 }
 
-void Matrice_Morse::assert_check_sorted_morse_matrix_structure( void ) const
+void Matrice_Morse::assert_check_sorted_morse_matrix_structure() const
 {
   if (!morse_matrix_structure_has_changed_) return;
 #ifndef NDEBUG

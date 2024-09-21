@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,13 +32,13 @@ public :
   const double& coeff(int i) const { return coeff_[i]; } // i de 0 a nnz-1
   double& coeff(int i) { return coeff_[i]; }
 
-  ArrOfInt& get_set_tab1( void ) { return tab1_ ; }
-  ArrOfInt& get_set_tab2( void ) { return tab2_ ; }
-  ArrOfDouble& get_set_coeff( void ) { return coeff_ ; }
+  ArrOfInt& get_set_tab1() { return tab1_ ; }
+  ArrOfInt& get_set_tab2() { return tab2_ ; }
+  ArrOfDouble& get_set_coeff() { return coeff_ ; }
 
-  const ArrOfInt& get_tab1( void ) const { return tab1_ ; }
-  const ArrOfInt& get_tab2( void ) const { return tab2_ ; }
-  const ArrOfDouble& get_coeff( void ) const { return coeff_ ; }
+  const ArrOfInt& get_tab1() const { return tab1_ ; }
+  const ArrOfInt& get_tab2() const { return tab2_ ; }
+  const ArrOfDouble& get_coeff() const { return coeff_ ; }
 
   double ajouter_mult_vect_et_prodscal(const DoubleVect& x, DoubleVect& resu) const;
   // Tableau contenant les indices des lignes non vides (indices fortran)

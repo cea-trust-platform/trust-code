@@ -115,7 +115,7 @@ int StringTokenizer::check_GRP()
 }
 
 
-int StringTokenizer::nextToken(void)
+int StringTokenizer::nextToken()
 {
   char *tmp;
   int type_sep, length;

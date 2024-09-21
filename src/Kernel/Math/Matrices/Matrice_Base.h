@@ -66,7 +66,7 @@ public :
   virtual void scale(const double x) =0;
 
   // Mise a zero des valeurs de la matrice
-  virtual void clean( void ) { Process::exit("Matrice_base::clean() not implemented.");};
+  virtual void clean() { Process::exit("Matrice_base::clean() not implemented.");};
 
   virtual void get_stencil(IntTab& stencil) const;
 
@@ -77,12 +77,12 @@ public :
 
   virtual void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const;
 
-  int get_stencil_size( void ) const ;
-  virtual void build_stencil( void );
+  int get_stencil_size() const ;
+  virtual void build_stencil();
 
   void set_stencil( const IntTab& stencil );
 
-  bool is_stencil_up_to_date( void ) const ;
+  bool is_stencil_up_to_date() const ;
 
 protected:
   bool is_stencil_up_to_date_ = false;

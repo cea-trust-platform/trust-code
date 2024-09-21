@@ -467,7 +467,7 @@ bool Probleme_U::runUntil(double time)
 /*! @brief pour recodage eventuel et appel unifie en python
  *
  */
-bool Probleme_U::solveTimeStep(void)
+bool Probleme_U::solveTimeStep()
 {
   bool converged = false;
   bool ok        = true;

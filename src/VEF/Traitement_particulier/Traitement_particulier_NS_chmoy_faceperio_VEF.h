@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ class Traitement_particulier_NS_chmoy_faceperio_VEF : public Traitement_particul
 {
   Declare_instanciable(Traitement_particulier_NS_chmoy_faceperio_VEF);
 protected :
-  void init_calcul_stats(void) override;
+  void init_calcul_stats() override;
   void calcul_chmoy_faceperio(double , double , double ) override;
 };
 

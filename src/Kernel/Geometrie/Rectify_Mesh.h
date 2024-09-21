@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,18 +35,18 @@ public :
   Entree& interpreter_(Entree& is) override;
 
 protected :
-  void apply(void);
+  void apply();
 
-  void check_dimension(void) const;
-  void check_cell_type(void) const;
+  void check_dimension() const;
+  void check_cell_type() const;
 
-  void apply_2D(void);
-  void apply_3D(void);
+  void apply_2D();
+  void apply_3D();
 
-  void check_cell_orientation_2D(void);
-  void check_cell_orientation_3D(void);
+  void check_cell_orientation_2D();
+  void check_cell_orientation_3D();
 
-  void check_cell_enumeration_3D(void);
+  void check_cell_enumeration_3D();
 
   void swap_nodes(IntTab& cells, int cell, int node0, int node1);
 

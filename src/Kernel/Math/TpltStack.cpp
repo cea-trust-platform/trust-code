@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,14 +30,14 @@ inline Stack<T>::~Stack()
 }
 
 template<class T>
-T& Stack<T>::pop(void)
+T& Stack<T>::pop()
 {
   if (top!=base) return *(--top) ;
   return *base;
 }
 
 template<class T>
-T& Stack<T>::peek(void)
+T& Stack<T>::peek()
 {
   return *(top-1) ;
 }

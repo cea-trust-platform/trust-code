@@ -67,7 +67,7 @@ public :
   };
   int mettre_a_jour() override;
   int reprendre(Entree& ) override;
-  inline void completer(void) override { } ;
+  inline void completer() override { }
   int resolution_monolithique(const Nom& nom) const;
   Entree& lire_facsec(Entree&) override;
   void lire_facsec_func(Nom&);

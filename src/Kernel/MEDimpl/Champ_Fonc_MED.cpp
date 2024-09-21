@@ -617,7 +617,7 @@ const Domaine_dis_base& Champ_Fonc_MED::domaine_dis_base() const
   return domainebidon_inst;
 }
 
-const ArrOfDouble& Champ_Fonc_MED::get_saved_times(void) const
+const ArrOfDouble& Champ_Fonc_MED::get_saved_times() const
 {
   return temps_sauv_;
 }

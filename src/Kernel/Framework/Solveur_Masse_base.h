@@ -86,12 +86,12 @@ public :
   // j'ajoute une methode completer()
   // qui est appelee par la methode completer() des equations.
   // L'implementation par defaut ne fait rien.
-  virtual void completer(void);
+  virtual void completer();
 
   // j'ajoute une methode preparer_calcul()
   // qui est appelee par la methode preparer_calcul des equations
   // L'implementation par defaut ne fait rien
-  virtual void preparer_calcul(void);
+  virtual void preparer_calcul();
 
   inline void set_penalisation_flag(int pen) { penalisation_flag_ = pen;  }
 

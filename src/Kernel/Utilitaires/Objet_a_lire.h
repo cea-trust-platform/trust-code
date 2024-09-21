@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,11 +55,11 @@ public:
   void set_nature(Objet_a_lire::Nature n);
   void read(const Motcle& keyword,Entree& is);
   void print(Sortie& s) const;
-  const Nom& get_name(void) const;
+  const Nom& get_name() const;
   int comprend_name(Motcle& mot) const;
-  Nom get_names_message(void) const;
+  Nom get_names_message() const;
   void set_name(const LIST(Nom)& n);
-  bool is_optional(void) const;
+  bool is_optional() const;
   bool is_type_simple() const ;
   double get_value() const;
 
