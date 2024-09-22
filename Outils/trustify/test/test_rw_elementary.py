@@ -10,6 +10,7 @@ import trustify.base as base
 import trustify.misc_utilities as mutil
 from trustify.misc_utilities import ClassFactory, logger
 from trustify.trust_parser import TRUSTParser, TRUSTStream, TRUSTEndOfStreamException
+import typing
 
 ########################################################################################
 class TestCase(unittest.TestCase, mutil.UnitUtils):
@@ -43,6 +44,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     def builtin_test(self, builtin_cls , simple_str, simplify=True):
         """ Generic test method taking a builtin Python type, a string representing an extract of a data set
         and returning the corresponding stream, the value, and the parser object.
+        @parm builtin_cls a type as defined in 'typing' module, e.g. 'str', or 'List[float]'
         """
         stream = self._import_and_gen_stream(simple_str, simplify)
         pars_cls = base.Builtin_Parser.DispatchFromBuiltin(builtin_cls, stream)
@@ -122,77 +124,70 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # self.builtin_test(str, data_ex, simplify=False)
         self.assertRaises(ValueError, self.builtin_test, str, data_ex)
 
-    def test_float_lst(self):
+    def test_float_list(self):
         """ Test parsing simple float list """
-        mod = self._TRUG[0]
-
         # Simple float first
         data_ex = """# comment #
     35.6"""
-        stream, inst = self.string_test("base_float", data_ex, simplify=False)
-        BF = self.mod.Base_float
-        expec = BF(35.6)
-        self.assertTrue(expec == inst)
+        stream, val, pars = self.builtin_test(float, data_ex, simplify=False)
+        expec = 35.6
+        self.assertTrue(expec == val)
         self.assertTrue(stream.eof())
         # Test writing out:
-        res = ''.join(inst.toDatasetTokens())
+        res = ''.join(pars.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
 
         # List of floats now:
         data_ex = "3 48.5 89.2 18"
-        stream, inst = self.string_test("list_float", data_ex)
-        LT, BF = self.mod.List_float, self.mod.Base_float
-        expec = LT()
-        expec.extend([BF(48.5), BF(89.2), BF(18.0)])
+        stream, val, pars = self.builtin_test(typing.List[float], data_ex)
+        expec = [48.5, 89.2, 18.0]
         self.assertTrue(expec == inst)
         self.assertTrue(stream.eof())
 
         # Test writing out:
-        res = ''.join(inst.toDatasetTokens())
+        res = ''.join(pars.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
 
         # Changing value on the model side should change output, and not reproduce initial tokens!!
-        inst[1] = BF(39.3)
+        val[1] = 39.3
         new_s = "3 48.5 39.3 18"
-        res = ''.join(inst.toDatasetTokens())
+        res = ''.join(pars.toDatasetTokens())
         self.assertEqual(res, new_s)
-        inst.pop()
-        new_s = " 2 48.5 39.3"  # yes a space to start with ...
-        res = ''.join(inst.toDatasetTokens())
+        val.pop()
+        new_s = " 2 48.5 39.3"  # yes a space to start with, this is the default token when generated from scratch ...
+        res = ''.join(pars.toDatasetTokens())
         self.assertEqual(res, new_s)
 
         # Same thing stressing parser:
         data_ex = """3   48.5
          89.2 # comment inside #  18"""
-        stream, inst = self.string_test("list_float", data_ex, simplify=False)  # warning: no simplification here
-        LT, BF = self.mod.List_float, self.mod.Base_float
-        expec = LT()
-        expec.extend([BF(48.5), BF(89.2), BF(18.0)])
+        stream, val, pars = self.builtin_test(typing.List[float], data_ex, simplify=False)  # warning: no simplification here
+        expec = [48.5, 89.2, 18.0]
 
         self.assertTrue(expec == inst)
         self.assertTrue(stream.eof())
-        s = ''.join(inst.toDatasetTokens())
+        s = ''.join(pars.toDatasetTokens())
         self.assertEqual(s, data_ex)
 
         # Changing value on the model side should change output, and not reproduce initial tokens!!
-        inst[0] = BF(39.3)
+        val[0] = 39.3
         new_s = """3 39.3
          89.2 # comment inside #  18"""
-        res = ''.join(inst.toDatasetTokens())
+        res = ''.join(pars.toDatasetTokens())
         self.assertEqual(res, new_s)
-        inst.pop()
+        pars.pop()
         new_s = """ 2 39.3
          89.2""" # yes a space to start with ...
-        res = ''.join(inst.toDatasetTokens())
+        res = ''.join(pars.toDatasetTokens())
         self.assertEqual(res, new_s)
 
         # Ill formed lists
         data_ex = "3 48.5 89.2"
-        #offset, inst = self.string_test("list", data_ex)
-        self.assertRaises(TRUSTEndOfStreamException, self.string_test, "list_float", data_ex)
+        #offset, inst = self.builtin_test(typing.List[float], data_ex)
+        self.assertRaises(TRUSTEndOfStreamException, self.builtin_test, typing.List[float], data_ex)
         data_ex = "3 48.5 89.2 sfsf"
-        #offset, inst = self.string_test("list", data_ex)
-        self.assertRaises(ValueError, self.string_test, "list_float", data_ex)
+        #offset, inst = self.builtin_test(typing.List[float], data_ex)
+        self.assertRaises(ValueError, self.builtin_test, typing.List[float], data_ex)
 
     def test_curly_br(self):
         """ Test parsing and loading of a minimal TRUST dataset using curly braces """

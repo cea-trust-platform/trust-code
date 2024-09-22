@@ -201,7 +201,7 @@ class UnitUtils:
 
         tstdir = pathlib.Path(self._test_dir)
         file_in = tstdir / "trad2" / self._TRAD2[slot]
-        file_pars = tstdir / "generated" /  (file_in.stem + '_pyd.py')
+        file_pars = tstdir / "generated" /  (file_in.stem + '_pars.py')
         if not self._NO_REGENERATE:
             file_pyd = tstdir / "generated" /  (file_in.stem + '_pyd.py')
             generate_pyd_and_pars(file_in, file_pyd, file_pars)

@@ -122,10 +122,19 @@ class Builtin_Parser(Abstract_Parser):
 
     @classmethod
     def DispatchFromBuiltin(cls, builtin_cls, stream):
-        """ From a builtin Python class, return the proper parser object: """
-        if builtin_cls is str: return Chaine_Parser
-        if buitdin_cls is int: return Base_entier_Parser
-        raise ValueError(f"Builtin type '{builtin_cls.__name__}' not supported!")
+        """ From a builtin Python class, return the proper parser object.
+        @param builtin_cls a type as defined in 'typing' module, e.g. 'str', or 'List[float]'
+        """
+        import typing
+        typ_map = {str :                Chaine_Parser,
+                   int:                 Entier_Parser,
+                   float:               Float_Parser,
+                   typing.List[float] : ListFloat_Parser
+                   }
+        pars = typ_map.get(builtin_cls)
+        if pars is None:
+            raise ValueError(f"Builtin type '{builtin_cls.__name__}' not supported!")
+        return pars
 
     def _checkToken(self, key, expec, typ=str):
         """ Used in toDatasetTokensBuiltin() method: consider the following:
@@ -562,31 +571,25 @@ class ConstrainBase_Parser(BaseCommon_Parser):
 ######################################################
 ## List-like types
 ######################################################
-class ListOfBase_Parser(BaseCommon_Parser):
-    _allowedClasses = []
-    _comma = 1   #  1: with comma to separate items, 0: without, -1: like parent
+class ListOfBase_Parser(Builtin_Parser):
+    _typeClass = None   # The (single) type of the items in the list
+    _comma = 1          #  1: with comma to separate items, 0: without, -1: like parent
 
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
-        """ Pydantic validation schema - the same as 'list' for now """
-        return core_schema.no_info_after_validator_function(cls._Cast, core_schema.list_schema())
-
-    def __init__(self, values=[]):
-        list.__init__(self)
-        BaseCommon_Parser.__init__(self)
-        self._tokens = {}  # Expected keys: "nb_items"
-        self._ze_cls = None  # Single authorized class (only mono-type lists are supported)
-        cls = self.__class__
-        if len(cls._allowedClasses) == 1:
-            # Try auto-cast - this helps for example to initialize ListOfFloat without having to write
-            # l = ListOfFloat([BaseFloattant(35), BaseFloattant(48.2)])
-            # One can do: l = ListOfFloat([35, 48.2])
-            self._ze_cls = ClassFactory.GetClassFromName(cls._allowedClasses[0])
-            newv = list(map(self._ze_cls, values))
-        else:
-            raise Exception("Implementation error: multi-type list can not be parsed yet ...")
-        for val in newv:
-            self.append(val)
+    def __init__(self):
+        Builtin_Parser.__init__(self)
+        # self._tokens = {}  # Expected keys: "nb_items"
+        # self._ze_cls = None  # Single authorized class (only mono-type lists are supported)
+        # cls = self.__class__
+        # if len(cls._allowedClasses) == 1:
+        #     # Try auto-cast - this helps for example to initialize ListOfFloat without having to write
+        #     # l = ListOfFloat([BaseFloattant(35), BaseFloattant(48.2)])
+        #     # One can do: l = ListOfFloat([35, 48.2])
+        #     self._ze_cls = ClassFactory.GetClassFromName(cls._allowedClasses[0])
+        #     newv = list(map(self._ze_cls, values))
+        # else:
+        #     raise Exception("Implementation error: multi-type list can not be parsed yet ...")
+        # for val in newv:
+        #     self.append(val)
 
     # def __setitem__(self, idx, val):
     #   """ Override. Helps doing things like:
@@ -652,7 +655,7 @@ class ListOfBase_Parser(BaseCommon_Parser):
         return n
 
     @classmethod
-    def ReadFromTokens(cls, stream):
+    def ReadFromTokensBuiltin(cls, stream):
         """
         Override. Read N objects from the input. N (an integer) must be the first token found.
         This override only works for single-type list.
@@ -735,22 +738,23 @@ class ListOfBase_Parser(BaseCommon_Parser):
             ret.extend(br)
         return ret
 
-# class AbstractSizeIsDim_Parser(object):
-#     """ Shared methods for all ListOfXXXDim classes - implements the necessary stuff to force
-#     the size of the list to be the dimension read at the top of the dataset.
-#     """
-#     _DIMENSION = -1  # Set when the keyword 'dimension' is encountered
-#
-#     @classmethod
-#     def _ReadListSize(cls, stream):
-#         """ Size is fixed and does not need to be provided """
-#         if cls._DIMENSION not in [2, 3]:
-#             raise ValueError("Invalid dataset: It seems the dimension has not been defined")
-#         return cls._DIMENSION
-#
-#     def _extendWithSize(self, ret):
-#         """ Override. Do nothing. Here the size is the dimension and does not need to be output """
-#         pass
+class AbstractSizeIsDim(object):
+    """ Shared methods for all ListOfXXXDim_Parser classes - implements the necessary stuff to force
+    the size of the list to be the dimension read at the top level of the dataset when reading the
+    'dimension' keyword
+    """
+    _DIMENSION = -1  # Set when the keyword 'dimension' is encountered
+
+    @classmethod
+    def _ReadListSize(cls, stream):
+        """ Size is fixed and does not need to be provided """
+        if cls._DIMENSION not in [2, 3]:
+            raise ValueError("Invalid dataset: It seems the dimension has not been defined")
+        return cls._DIMENSION
+
+    def _extendWithSize(self, ret):
+        """ Override. Do nothing. Here the size is the dimension and does not need to be output """
+        pass
 #
 # class List_chaine_Parser(ListOfBase_Parser):
 #     """
@@ -773,34 +777,30 @@ class ListOfBase_Parser(BaseCommon_Parser):
 #
 #     _ReadListSize = AbstractSizeIsDim._ReadListSize
 #     _extendWithSize = AbstractSizeIsDim._extendWithSize
-#
-# class List_float_Parser(ListOfBase_Parser):
-#     """
-#     List of floats, in the form 'N val1 val2 ...'
-#     """
-#     _allowedClasses = ["Base_float"]
-#     _braces = 0  # No braces for this simple list
-#     _comma = 0
-#
-#     @classmethod
-#     def __get_pydantic_core_schema__(cls, source, handler):
-#         """ Pydantic validation schema - the same as 'list' for now """
-#         return core_schema.no_info_after_validator_function(cls._Cast, core_schema.list_schema(core_schema.float_schema()))
-#
-#     def __init__(self, values=[]):
-#         ListOfBase.__init__(self, values)
-#
-# class List_float_dim_Parser(List_float_Parser, AbstractSizeIsDim):
-#     """
-#     List of floats, in the form 'val1 val2 ...'
-#     The number of expected floats is given by the dimension of the problem.
-#     """
-#     def __init__(self, values=[]):
-#         List_float.__init__(self, values)
-#
-#     _ReadListSize = AbstractSizeIsDim._ReadListSize
-#     _extendWithSize = AbstractSizeIsDim._extendWithSize
-#
+
+class ListFloat_Parser(ListOfBase_Parser):
+    """
+    List of floats, in the form 'N val1 val2 ...'
+    """
+    _typeClass = float
+    _braces = 0  # No braces for this simple list
+    _comma = 0
+
+    def __init__(self):
+        ListOfBase_Parser.__init__(self)
+
+class ListFloatDim_Parser(ListFloat_Parser, AbstractSizeIsDim):
+    """
+    List of floats, in the form 'val1 val2 ...'
+    The number of expected floats is given by the dimension of the problem.
+    """
+    def __init__(self):
+        ListFloat_Parser.__init__(self)
+        AbstractSizeIsDim.__init__(self)
+
+    _ReadListSize = AbstractSizeIsDim._ReadListSize
+    _extendWithSize = AbstractSizeIsDim._extendWithSize
+
 # class List_int_Parser(ListOfBase_Parser):
 #     """
 #     List of ints, in the form 'N val1 val2 ...'
@@ -1179,10 +1179,10 @@ class Fin_Parser(Interprete_Parser):
     _read_type = False
     _synonyms = ["end"]
 
-class AbstractEntier(Builtin_Parser):
+class AbstractEntier_Parser(Builtin_Parser):
     """ Base class for all (constrained or not) integers """
     def __init__(self):
-        BaseCommon_Parser.__init__(self)
+        Builtin_Parser.__init__(self)
 
     @classmethod
     def _ValidateValue(cls, val, stream):
@@ -1214,16 +1214,16 @@ class AbstractEntier(Builtin_Parser):
             ret = [" " + self_as_str]
         return ret
 
-class Base_entier_Parser(AbstractEntier):
+class Entier_Parser(AbstractEntier_Parser):
     def __init__(self, value=None):
-        AbstractEntier.__init__(self)
+        AbstractEntier_Parser.__init__(self)
 
-class Base_entier_in_list_Parser(AbstractEntier):
+class Base_entier_in_list_Parser(AbstractEntier_Parser):
     """ Integer in a constrained list """
     _allowedList = [0]
 
     def __init__(self, value=None):
-        AbstractEntier.__init__(self)
+        AbstractEntier_Parser.__init__(self)
 
     @classmethod
     def _ValidateValue(cls, val, stream):
@@ -1256,12 +1256,13 @@ class Base_entier_in_list_Parser(AbstractEntier):
 #       err = cls.GenErr(stream, f"Invalid value: '{val}', not in allowed range [%d, %d]" % (ar[0], ar[1]))
 #       raise ValueError(err)
 
-class Base_float_Parser(Builtin_Parser):
+class Float_Parser(Builtin_Parser):
     def __init__(self, value=None):
-        BaseCommon_Parser.__init__(self)
+        Builtin_Parser.__init__(self)
 
     @classmethod
-    def ReadFromTokens(cls, stream):
+    def ReadFromTokensBuiltin(cls, stream):
+        TOOD
         """ Parse a single float """
         s = stream.nextLow()
         try:
@@ -1287,14 +1288,16 @@ class Base_float_Parser(Builtin_Parser):
 #
 # TODO bool is not inheritable in Python ...! Pour l'instant je fais un int pour avancer ... a revoir.
 #
-class Rien_Parser(Base_entier_Parser):
+class Rien_Parser(object):
     """ Boolean flags are of type 'rien' in the TRAD_2 file."""
 
     def __init__(self, value=None):
+        1/0
         Base_entier.__init__(self, value)
 
     @classmethod
     def ReadFromTokens(cls, stream):
+        1/0
         """Override. If we call this method it means the flag has been read, so it is always successful, not token read."""
         return True
 

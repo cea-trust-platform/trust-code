@@ -1,0 +1,3 @@
+* difference listentier, listentierf
+* more tests on invalid values
+*  
