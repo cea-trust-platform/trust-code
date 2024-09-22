@@ -1279,7 +1279,7 @@ void Domaine_32_64<_SZ_>::init_renum_perio()
 /*! @brief Build the MEDCoupling mesh corresponding to the TRUST mesh.
  */
 template<typename _SZ_>
-void Domaine_32_64<_SZ_>::build_mc_mesh() const
+void Domaine_32_64<_SZ_>::build_mc_mesh(bool virt) const
 {
 #ifdef MEDCOUPLING_
   Cerr << "   Domaine: Creating a MEDCouplingUMesh object for the domain '" << le_nom() << "'" << finl;
@@ -1291,7 +1291,8 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
   Nom type_ele = elem_->que_suis_je();
   int mesh_dim;
   INTERP_KERNEL::NormalizedCellType cell_type = type_geo_trio_to_type_medcoupling(type_ele, mesh_dim);
-  mc_mesh_ = MEDCouplingUMesh::New(nom_.getChar(), mesh_dim);
+  MCAuto<MEDCouplingUMesh>& mc_mesh = virt ? mc_mesh_virt_ : mc_mesh_;
+  mc_mesh = MEDCouplingUMesh::New(nom_.getChar(), mesh_dim);
 
   //
   // Nodes
@@ -1306,19 +1307,19 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
   coord->setInfoOnComponent(0, "x");
   coord->setInfoOnComponent(1, "y");
   if (Objet_U::dimension == 3) coord->setInfoOnComponent(2, "z");
-  mc_mesh_->setCoords(coord);
+  mc_mesh->setCoords(coord);
 
   //
   // Connectivity
   //
-  int_t ncells = mes_elems_.dimension(0);
+  int_t ncells = virt ? mes_elems_.dimension_tot(0) : mes_elems_.dimension(0);
   int nverts = (int)mes_elems_.dimension(1);
 
   // Connectivite TRUST -> MED
   IntTab_t les_elems2(mes_elems_);
   conn_trust_to_med(les_elems2, type_ele, true);
 
-  mc_mesh_->allocateCells(ncells);
+  mc_mesh->allocateCells(ncells);
   if (cell_type == INTERP_KERNEL::NORM_POLYHED)
     {
       // Polyedron is special, see page 10:
@@ -1346,7 +1347,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
                 // Add -1 to mark the end of a face:
                 cell_def[size++] = -1;
             }
-          mc_mesh_->insertNextCell(cell_type, cell_def.size_array(), cell_def.addr());
+          mc_mesh->insertNextCell(cell_type, cell_def.size_array(), cell_def.addr());
         }
     }
   else
@@ -1361,7 +1362,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
               // Polygons don't have a constant number of vertices - need to discard -1 values:
               for (int j = nverts-1; j >= 0 && les_elems2(i, j) < 0; j--) nvertices--;
               // Brutal pointer cast below, just so that the compiler does not complain when instanciating for _SZ_ = int:
-              mc_mesh_->insertNextCell(cell_type, nvertices, (trustIdType *)(les_elems2.addr() + i * nverts));
+              mc_mesh->insertNextCell(cell_type, nvertices, (trustIdType *)(les_elems2.addr() + i * nverts));
             }
         }
       else
@@ -1373,11 +1374,11 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
               int j = 0;
               for (; j<nverts && les_elems2(i, j) >= 0; j++)
                 cell_def[j] = (trustIdType)les_elems2[i*nverts + j];
-              mc_mesh_->insertNextCell(cell_type, j, cell_def.addr());  // j is the final numb of vertices
+              mc_mesh->insertNextCell(cell_type, j, cell_def.addr());  // j is the final numb of vertices
             }
         }
     }
-  mc_mesh_ready_ = true;
+  *(virt ? &mc_mesh_virt_ready_ : &mc_mesh_ready_) = true;
 
 #endif
 }
@@ -1390,11 +1391,11 @@ void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain)
 
   // Retrieve mesh upfront to possibly build them if they were not already:
   get_mc_mesh();
-  const MEDCouplingUMesh* oth_msh = other_domain.get_mc_mesh();
+  const MEDCouplingUMesh* oth_msh = other_domain.get_mc_mesh(true);
 
   Cerr << "Building remapper between " << le_nom() << " (" << (int)mc_mesh_->getSpaceDimension() << "D) mesh with " << (int)mc_mesh_->getNumberOfCells()
-       << " cells and " << other_domain.le_nom() << " (" << (int)other_domain.get_mc_mesh()->getSpaceDimension() << "D) mesh with "
-       << (int)other_domain.get_mc_mesh()->getNumberOfCells() << " cells" << finl;
+       << " cells and " << other_domain.le_nom() << " (" << (int)oth_msh->getSpaceDimension() << "D) mesh with "
+       << (int)oth_msh->getNumberOfCells() << " cells" << finl;
   rmps[&other_domain].prepare(oth_msh, mc_mesh_, "P0P0");
   Cerr << "remapper prepared with " << rmps.at(&other_domain).getNumberOfColsOfMatrix() << " columns in matrix, with max value = " << rmps.at(&other_domain).getMaxValueInCrudeMatrix() << finl;
 #else
