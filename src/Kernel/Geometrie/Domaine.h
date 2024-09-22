@@ -333,7 +333,7 @@ public:
   /// MEDCoupling:
   ///
 #ifdef MEDCOUPLING_
-  inline const MEDCouplingUMesh* get_mc_mesh() const;
+  inline const MEDCouplingUMesh* get_mc_mesh(bool virt = false) const;
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  { mc_mesh_ = m;    }
   inline const MEDCouplingUMesh* get_mc_face_mesh() const    { return mc_face_mesh_; }
   // remapper with other domains
@@ -343,7 +343,7 @@ public:
   OverlapDEC* get_dec(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc);
 #endif
 #endif
-  void build_mc_mesh() const;
+  void build_mc_mesh(bool virt = false) const;
   void build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const;
   bool is_mc_mesh_ready() const { return mc_mesh_ready_; }
   // Used in Interprete_geometrique_base for example - method is const, because mc_mesh_ready_ is mutable:
@@ -428,7 +428,7 @@ protected:
 
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the domain:
-  mutable MCAuto<MEDCouplingUMesh> mc_mesh_;
+  mutable MCAuto<MEDCouplingUMesh> mc_mesh_, mc_mesh_virt_;
   ///! MEDCoupling version of the face domain:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
   // One remapper per distant domain...
@@ -437,7 +437,7 @@ protected:
   // ... but one DEC per (distant domain, field nature)
   std::map<std::pair<const Domaine_32_64*, MEDCoupling::NatureOfField>, OverlapDEC> decs;
 #endif
-  mutable bool mc_mesh_ready_ = false;
+  mutable bool mc_mesh_ready_ = false, mc_mesh_virt_ready_ = false;
 #endif
 
 private:
@@ -609,11 +609,11 @@ inline typename Domaine_32_64<_SIZE_>::Joint_t& Domaine_32_64<_SIZE_>::joint_of_
 
 #ifdef MEDCOUPLING_
 template<typename _SIZE_>
-inline const MEDCouplingUMesh* Domaine_32_64<_SIZE_>::get_mc_mesh() const
+inline const MEDCouplingUMesh* Domaine_32_64<_SIZE_>::get_mc_mesh(bool virt) const
 {
-  if (!mc_mesh_ready_)
-    build_mc_mesh();
-  return mc_mesh_;
+  if (virt ? !mc_mesh_virt_ready_ : !mc_mesh_ready_)
+    build_mc_mesh(virt);
+  return virt ? mc_mesh_virt_ : mc_mesh_;
 }
 
 #endif  // MEDCOUPLING_
