@@ -155,7 +155,7 @@ template void ajoute_produit_scalaire<float, int>(TRUSTVect<float, int>& resu, f
 //It is templated as a function of the in/out view location and execution spaces (Device/Host)
 template<typename ExecSpace, typename ResuViewType, typename VxViewType, typename _TYPE_, typename _SIZE_>
 void process_blocks(ResuViewType resu_view, VxViewType vx_view, int nblocs_left,
-                    Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL)
+                    Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
 {
   for (; nblocs_left; nblocs_left--)
     {
@@ -171,7 +171,7 @@ void process_blocks(ResuViewType resu_view, VxViewType vx_view, int nblocs_left,
       const int x_start_idx = begin_bloc;
 
       Kokkos::RangePolicy<ExecSpace> policy(0, count);
-      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(const int i)
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
       {
         const _TYPE_ x = vx_view(x_start_idx + i);
 
@@ -189,6 +189,7 @@ void process_blocks(ResuViewType resu_view, VxViewType vx_view, int nblocs_left,
               }
           }
       });
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
 
@@ -227,7 +228,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
       using ExecSpace = Kokkos::DefaultExecutionSpace; //Compute on the Device
 
       //Lauch computation with the execution space and view types as (template) parameters
-      process_blocks<ExecSpace, decltype(resu_view), decltype(vx_view), _TYPE_, _SIZE_>(resu_view, vx_view, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL);
+      process_blocks<ExecSpace, decltype(resu_view), decltype(vx_view), _TYPE_, _SIZE_>(resu_view, vx_view, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
     }
   else
     {
@@ -237,7 +238,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
       using ExecSpace = Kokkos::DefaultHostExecutionSpace; //Compute on the Host
 
       //Lauch computation with the execution space and view types as (template) parameters
-      process_blocks<ExecSpace, decltype(resu_view), decltype(vx_view), _TYPE_, _SIZE_>(resu_view, vx_view, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL);
+      process_blocks<ExecSpace, decltype(resu_view), decltype(vx_view), _TYPE_, _SIZE_>(resu_view, vx_view, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
     }
   // In debug mode, put invalid values where data has not been computed
 
