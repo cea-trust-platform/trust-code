@@ -34,7 +34,7 @@ protected:
 
   int n_l = -1; //liquid phase
   double K1_ = 3.64, K2_ = 0.864 ;
-  Correlation frottement_bulle_seule_ ;
+  OWN_PTR(Correlation_base) frottement_bulle_seule_ ;
 };
 
 #endif /* Frottement_interfacial_Rusche_included */

@@ -41,7 +41,7 @@ public:
   void reynolds_stress_BIF(DoubleTab& R_ij) const;
 
 private:
-  std::map<std::string, Correlation> viscs_turbs;
+  std::map<std::string, OWN_PTR(Correlation_base)> viscs_turbs;
 };
 
 #endif /* Viscosite_turbulente_multiple_included */

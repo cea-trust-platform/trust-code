@@ -24,10 +24,6 @@
 
 class Probleme_base;
 
-// plus fort que les compilos :)
-class Correlation_base;
-using Correlation = OWN_PTR(Correlation_base);
-
 class Correlation_base : public Objet_U, public Champs_compris_interface
 {
   Declare_base(Correlation_base);
@@ -36,10 +32,10 @@ public:
   virtual void completer() { }
   void associer_pb(const Probleme_base&);
 
-  static void typer_lire_correlation(Correlation&, const Probleme_base&, const Nom&, Entree&);
+  static void typer_lire_correlation(OWN_PTR(Correlation_base)&, const Probleme_base&, const Nom&, Entree&);
 
   //Methodes de l interface des champs postraitables
-  void creer_champ(const Motcle& motlu) override {};
+  void creer_champ(const Motcle& motlu) override { }
   const Champ_base& get_champ(const Motcle& nom) const override { throw Champs_compris_erreur(); }
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override { }
 

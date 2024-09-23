@@ -39,7 +39,7 @@ private:
 public:
   void associer_proto(const Probleme_base&, Champs_compris& );
 
-  inline const Correlation& correlation() const { return corr_ ; }
+  inline const Correlation_base& correlation() const { return corr_ ; }
 
   void ajout_champs_proto_face() { ajout_champs_(true); }
   void ajout_champs_proto_elem() { ajout_champs_(false); }
@@ -73,7 +73,7 @@ public:
 protected:
   bool is_pbm_ = true;
   DoubleTab nu_ou_lambda_turb_; // comme le nom dit
-  Correlation corr_; // correlation de viscosite/transport turbulente
+  OWN_PTR(Correlation_base) corr_; // correlation de viscosite/transport turbulente
   std::vector<Champ_Fonc> nu_ou_lambda_turb_post_, mu_ou_alpha_turb_post_; // champ de postraitement
   Motcles noms_nu_ou_lambda_turb_post_, noms_mu_ou_alpha_turb_post_; //leurs noms
   REF(Probleme_base) pbm_;

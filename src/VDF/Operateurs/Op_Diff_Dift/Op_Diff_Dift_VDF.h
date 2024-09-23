@@ -63,7 +63,7 @@ protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
-  associer_corr_impl(const Correlation& corr)
+  associer_corr_impl(const Correlation_base& corr)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer_corr(corr);

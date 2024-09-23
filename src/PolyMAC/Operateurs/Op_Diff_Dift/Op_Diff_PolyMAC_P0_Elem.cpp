@@ -74,7 +74,7 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
 
   if (sub_type(Energie_Multiphase, eq) || sub_type(Convection_Diffusion_Temperature, eq))
     if (eq.probleme().has_correlation("Flux_parietal"))
-      if (ref_cast(Flux_parietal_base, eq.probleme().get_correlation("Flux_parietal").valeur()).calculates_bubble_nucleation_diameter())
+      if (ref_cast(Flux_parietal_base, eq.probleme().get_correlation("Flux_parietal")).calculates_bubble_nucleation_diameter())
         d_nuc_.resize(0, ch.valeurs().line_size()), domaine.domaine().creer_tableau_elements(d_nuc_);
 }
 
@@ -640,7 +640,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                               B(0, t_e, i_eq) += sgn * Tefs(0, i_efs(i, j, M)), A(0, i_efs(i, j, M), i_eq) -= sgn;
                             //equations sur les correlations
                             const Probleme_base& pbp = op_ext[p]->equation().probleme();
-                            const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbp.get_correlation("Flux_parietal").valeur());
+                            const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbp.get_correlation("Flux_parietal"));
                             const DoubleTab* alpha = sub_type(Pb_Multiphase, pbp) ? &ref_cast(Pb_Multiphase, pbp).equation_masse().inconnue().passe() : nullptr,
                                              &dh = pbp.milieu().diametre_hydraulique_elem(), &press = ref_cast(Navier_Stokes_std, pbp.equation(0)).pression().passe(),
                                               &vit = ref_cast(Navier_Stokes_std, pbp.equation(0)).inconnue().passe(),

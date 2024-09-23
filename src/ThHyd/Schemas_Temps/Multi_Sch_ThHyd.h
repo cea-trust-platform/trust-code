@@ -62,8 +62,8 @@ public :
 
 private :
   int nb_ss_pas_dt_=0;
-  Schema_Temps sch_ns_;
-  Schema_Temps sch_scalaires_;
+  OWN_PTR(Schema_Temps_base) sch_ns_;
+  OWN_PTR(Schema_Temps_base) sch_scalaires_;
 };
 
 

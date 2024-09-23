@@ -35,10 +35,13 @@ Entree& Source_Dispersion_bulles_base::readOn(Entree& is)
 
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
 
-  if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
+  if (!pbm || pbm->nb_phases() == 1)
+    Process::exit(que_suis_je() + " : not needed for single-phase flow!");
 
-  if (pbm->has_correlation("Dispersion_bulles")) correlation_ = pbm->get_correlation("Dispersion_bulles"); //correlation fournie par le bloc correlation
-  else Process::exit(que_suis_je() + " : the turbulent dispersion correlation must be defined in the correlation bloc.");
+  if (pbm->has_correlation("Dispersion_bulles"))
+    correlation_ = pbm->get_correlation("Dispersion_bulles"); //correlation fournie par le bloc correlation
+  else
+    Process::exit(que_suis_je() + " : the turbulent dispersion correlation must be defined in the correlation bloc.");
 
   return is;
 }

@@ -71,7 +71,7 @@ class Pbc_MED : public Probleme_Couple
 {
   Declare_instanciable(Pbc_MED);
 private:
-  Schema_Temps sch_;
+  OWN_PTR(Schema_Temps_base) sch_;
 };
 
 #endif

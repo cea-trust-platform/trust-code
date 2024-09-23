@@ -23,7 +23,7 @@
 class Eval_Dift_Multiphase_VDF : public Eval_Dift_VDF
 {
 public:
-  void associer_corr(const Correlation& c ) { corr_ = c; is_multi_ = 1; /* XXX */ }
+  void associer_corr(const Correlation_base& c ) { corr_ = c; is_multi_ = 1; /* XXX */ }
 
   inline void mettre_a_jour() override
   {
@@ -66,10 +66,10 @@ public:
   void associer_loipar(const Turbulence_paroi_scal_base& loi_paroi) override { throw; }
 
   // pour CRTP : TODO : appel depuis eval mere
-  inline const Correlation& get_corr() const { return corr_; }
+  inline const Correlation_base& get_corr() const { return corr_; }
 
 protected:
-  REF(Correlation) corr_; //attention REF + OWN_PTR => 2 valeur() deso
+  REF(Correlation_base) corr_;
   REF(DoubleTab) nu_t_;
   bool need_alpha_rho_ = true, tab_diff_turb_first_update_ = true;
 };

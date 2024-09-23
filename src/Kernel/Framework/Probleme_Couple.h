@@ -93,7 +93,7 @@ protected:
   ArrOfInt groupes;
 
   // Liste des schemas clones
-  VECT(Schema_Temps) sch_clones;
+  VECT(OWN_PTR(Schema_Temps_base)) sch_clones;
 };
 
 inline void Probleme_Couple::mettre_a_jour_modele_rayo(double temps)

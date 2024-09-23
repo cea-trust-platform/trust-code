@@ -38,8 +38,8 @@ public:
   bool is_turb() const override { return true; }
   double calculer_dt_stab() const override;
   double alpha_(const int i) const override { throw; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
-  inline const Correlation& correlation() const { return corr_ ;};
+  const Correlation_base* correlation_viscosite_turbulente() const override { return &(corr_.valeur()); }
+  inline const Correlation_base& correlation() const { return corr_.valeur(); }
   inline const DoubleTab& alpha_() const { return tab_alpha_impl<Eval_Dift_Multiphase_VDF_Elem>(); }
 
   inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override

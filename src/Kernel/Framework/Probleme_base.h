@@ -194,7 +194,7 @@ public:
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
-  const Correlation& get_correlation(std::string nom_correlation) const
+  const Correlation_base& get_correlation(std::string nom_correlation) const
   {
     Motcle mot(nom_correlation);
     return correlations_.at(mot.getString());
@@ -242,7 +242,7 @@ protected :
   LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
   LIST(REF(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
   LIST(OWN_PTR(Equation_base)) eq_opt_; //autres equations (turbulence, aire interfaciale...)
-  std::map<std::string, Correlation> correlations_;
+  std::map<std::string, OWN_PTR(Correlation_base)> correlations_;
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

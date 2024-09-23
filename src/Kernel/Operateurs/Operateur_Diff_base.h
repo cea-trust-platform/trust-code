@@ -47,7 +47,7 @@ public:
   virtual void init_op_ext() const { op_ext = { this }; }    //remplissage de op_ext (ne peut pas etre fait dans completer(), trop tot)
 
   virtual bool is_turb() const { return false; }
-  virtual const Correlation* correlation_viscosite_turbulente() const { return nullptr; }
+  virtual const Correlation_base* correlation_viscosite_turbulente() const { return nullptr; }
 
 protected:
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;

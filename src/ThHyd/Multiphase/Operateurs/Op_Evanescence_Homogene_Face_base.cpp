@@ -39,7 +39,7 @@ Entree& Op_Evanescence_Homogene_Face_base::readOn(Entree& is)
 
   Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   if (pbm.has_correlation("Vitesse_relative") && !pbm.has_correlation("gravite")) Process::exit(que_suis_je() + " : you must define a multiphase gravity field if you want a drift flux!!");
-  if (pbm.has_correlation("Vitesse_relative") && ref_cast(Vitesse_relative_base, pbm.get_correlation("Vitesse_relative").valeur()).needs_vort()) pbm.creer_champ("vorticite");
+  if (pbm.has_correlation("Vitesse_relative") && ref_cast(Vitesse_relative_base, pbm.get_correlation("Vitesse_relative")).needs_vort()) pbm.creer_champ("vorticite");
 
   return is;
 }
@@ -121,7 +121,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   Vitesse_relative_base::input_t in;
   Vitesse_relative_base::output_t out;
   out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
-  const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur()) : nullptr;
+  const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative")) : nullptr;
   DoubleTab gradAlpha, vort, nut;
   const int is_turb = ref_cast(Operateur_Diff_base, ref_cast(QDM_Multiphase, pbm.equation_qdm()).operateur_diff().l_op_base()).is_turb();
   if (correlation_vd)
@@ -142,7 +142,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
       if (is_turb)
         {
           nut.resize(domaine.nb_elem_tot(), N);
-          ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation
+          ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente())).eddy_viscosity(nut); //remplissage par la correlation
         }
     }
 

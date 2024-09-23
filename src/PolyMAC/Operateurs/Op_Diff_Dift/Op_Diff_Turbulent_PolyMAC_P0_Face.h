@@ -38,7 +38,7 @@ public:
   void completer() override;
   void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
   bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
+  const Correlation_base* correlation_viscosite_turbulente() const override { return &(corr_.valeur()); }
 };
 
 #endif /* Op_Diff_PolyMAC_P0_Face_included */

@@ -66,8 +66,8 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
       Process::exit();
     }
 
-  const Correlation& corr_visc_qdm = ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation();
-  if (corr_.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc_qdm.valeur()))
+  const Correlation_base& corr_visc_qdm = ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation();
+  if (corr_.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc_qdm))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent viscosity correlation found!" << finl;
       Process::exit();
@@ -84,7 +84,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
 
   // remplissage par la correlation : ICI c'est LAMBDA_T ET PAS ALPHA_T => W/mK et pas m2/s
   ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()),
-                                                                 ref_cast(Viscosite_turbulente_base, corr_visc_qdm.valeur()),
+                                                                 ref_cast(Viscosite_turbulente_base, corr_visc_qdm),
                                                                  mu);
 
   mu.echange_espace_virtuel();

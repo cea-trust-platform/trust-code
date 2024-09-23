@@ -36,10 +36,10 @@ class Source_Dispersion_bulles_base: public Sources_Multiphase_base
 public :
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const {return correlation_;};
+  const Correlation_base& correlation() const { return correlation_.valeur(); }
 
 protected:
-  REF(Correlation) correlation_; //correlation donnant le coeff de dispersion turbulente
+  REF(Correlation_base) correlation_; //correlation donnant le coeff de dispersion turbulente
   int is_turb = 0;
   double beta_ = 1.; // To adjust the force in .data
 

@@ -41,8 +41,10 @@ Entree& Viscosite_turbulente_multiple::readOn(Entree& is)
     }
 
   for (is >> mot; mot != "}"; is >> mot)
-    if (viscs_turbs.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
-    else Correlation_base::typer_lire_correlation(viscs_turbs[mot.getString()], pb_.valeur(), "viscosite_turbulente", is);
+    if (viscs_turbs.count(mot.getString()))
+      Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
+    else
+      Correlation_base::typer_lire_correlation(viscs_turbs[mot.getString()], pb_.valeur(), "viscosite_turbulente", is);
   return is;
 }
 
@@ -96,7 +98,6 @@ void Viscosite_turbulente_multiple::reynolds_stress_BIF(DoubleTab& R_ij) const /
       }
 }
 
-
 void Viscosite_turbulente_multiple::k_over_eps(DoubleTab& k_sur_eps) const
 {
   k_sur_eps = 0;
@@ -124,5 +125,4 @@ void Viscosite_turbulente_multiple::eps(DoubleTab& eps_) const
         for (int n = 0; n < eps_.dimension(1); n++)
           eps_(i, n) += eps_loc(i,n);
     }
-
 }

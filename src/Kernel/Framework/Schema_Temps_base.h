@@ -578,6 +578,4 @@ inline int Schema_Temps_base::diffusion_implicite() const
   return ind_diff_impl_;
 }
 
-using Schema_Temps = OWN_PTR(Schema_Temps_base);
-
 #endif /* Schema_Temps_base_included */

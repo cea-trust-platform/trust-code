@@ -31,7 +31,7 @@ class Postraitement_base;
 
 //// Syntaxe a respecter pour jdd
 //
-// "nom_champ" Correlation { t_deb "val_tdeb" t_fin "val_tfin"
+// "nom_champ" correlation { t_deb "val_tdeb" t_fin "val_tfin"
 //                source "type_champ_gen" { ...source ref_Champ { Pb_champ "nom_pb" "nom_champ_discret1" } }
 //                source "type_champ_gen" { ...source ref_Champ { Pb_champ "nom_pb" "nom_champ_discret2" } }
 //               }

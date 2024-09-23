@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   double dv0 = 0.2, epsilon = 1.e-4; // Initialize dv at random
   int step = 1, iter_max = 20;
   DoubleTab p, T, dv(N, N), coeff(N, N, 2), alpha_l(N);
-  const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, pbm.get_correlation("frottement_interfacial").valeur());
+  const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, pbm.get_correlation("frottement_interfacial"));
   double sum_alpha = 0;
   for (int n=0; n<N ; n++) alpha_l(n)= std::max(in.alpha(n), alpha_lim_), sum_alpha+=alpha_l(n);
   for (int n=0; n<N ; n++) alpha_l(n)/=sum_alpha;
@@ -74,7 +74,7 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   DoubleTrav forces(D);
   if (pbm.has_correlation("dispersion_bulles"))
     {
-      const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, pbm.get_correlation("dispersion_bulles").valeur());
+      const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, pbm.get_correlation("dispersion_bulles"));
       Dispersion_bulles_base::input_t in_td;
       Dispersion_bulles_base::output_t out_td;
       out_td.Ctd.resize(N,N);
@@ -87,7 +87,7 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
 
   if (pbm.has_correlation("portance_interfaciale"))
     {
-      const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, pbm.get_correlation("portance_interfaciale").valeur());
+      const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, pbm.get_correlation("portance_interfaciale"));
       Portance_interfaciale_base::input_t in_pi;
       Portance_interfaciale_base::output_t out_pi;
       out_pi.Cl.resize(N,N);

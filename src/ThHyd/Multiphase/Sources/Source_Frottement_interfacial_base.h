@@ -37,7 +37,7 @@ public :
   void completer() override;
 
 protected:
-  Correlation correlation_; //correlation donnant le coeff de frottement interfacial
+  OWN_PTR(Correlation_base) correlation_; //correlation donnant le coeff de frottement interfacial
   double a_res_ = -1., dv_min = 0.01, beta_ = 1.;
   int exp_res = 2 ;
 

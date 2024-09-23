@@ -1791,7 +1791,7 @@ Nom Postraitement::set_expression_champ(const Motcle& motlu1,const Motcle& motlu
       else if (motlu3=="Ecart_type")
         ajout += " source Ecart_Type { ";
       else if (motlu3=="Correlation")
-        ajout += " source Correlation { ";
+        ajout += " source correlation { ";
 
       if (trouve==1)
         {
@@ -2141,7 +2141,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
       Champ_Generique& champ_a_completer = champs_post_complet_.add_if_not(champ);
       champ_a_completer->completer(*this);
 
-      //On fixe l attribut compo_ pour le Champ_Generique_Interpolation d une Correlation cree par cette macro
+      //On fixe l attribut compo_ pour le Champ_Generique_Interpolation d une correlation cree par cette macro
       /////////////////////////////////////////////////////////////
       if (motlu3=="Correlation")
         {

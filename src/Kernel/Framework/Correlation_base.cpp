@@ -21,7 +21,7 @@ Sortie& Correlation_base::printOn(Sortie& os) const { return os; }
 
 Entree& Correlation_base::readOn(Entree& is) { return is; }
 
-void Correlation_base::typer_lire_correlation(Correlation& cor, const Probleme_base& pb, const Nom& type, Entree& is)
+void Correlation_base::typer_lire_correlation(OWN_PTR(Correlation_base)& cor, const Probleme_base& pb, const Nom& type, Entree& is)
 {
   /* on lit le nom de la correlation : si "type" est renseigne, alors */
   Nom nom;

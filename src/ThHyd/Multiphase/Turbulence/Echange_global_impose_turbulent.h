@@ -85,7 +85,7 @@ public:
 protected :
   virtual void me_calculer()=0;
 
-  REF(Correlation) correlation_loi_paroi_;
+  REF(Correlation_base) correlation_loi_paroi_;
   REF(Frontiere_dis_base) la_frontiere_dis;
 
   double mon_temps = -1.e8;

@@ -34,7 +34,7 @@ protected:
 
   int n_l = -1; //liquid phase
   double m_ = 25. ; // exponent in the Simonnet formulation
-  Correlation frottement_bulle_seule_ ;
+  OWN_PTR(Correlation_base) frottement_bulle_seule_ ;
 };
 
 #endif /* Frottement_interfacial_Simonnet_included */

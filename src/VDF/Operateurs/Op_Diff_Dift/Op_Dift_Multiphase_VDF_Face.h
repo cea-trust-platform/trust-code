@@ -38,7 +38,7 @@ public:
 
   double calculer_dt_stab() const override;
   bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
+  const Correlation_base* correlation_viscosite_turbulente() const override { return &(corr_.valeur()); }
 
   inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override
   {

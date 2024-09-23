@@ -40,7 +40,7 @@ public:
   virtual int avancer(double temps) override {return 1;} // Avancer ne fait rien car le champ est modifie dans mettre_a_jour
   void mettre_a_jour(double tps) override;
 
-  virtual void associer_correlation(const Correlation& corr) { correlation_loi_paroi_ = corr; }
+  virtual void associer_correlation(const Correlation_base& corr) { correlation_loi_paroi_ = corr; }
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override { la_frontiere_dis = fr; }
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl) override { mon_dom_cl_dis = zcl; }
 
@@ -70,7 +70,7 @@ public:
 protected:
   virtual void me_calculer()=0;
 
-  REF(Correlation) correlation_loi_paroi_;
+  REF(Correlation_base) correlation_loi_paroi_;
   REF(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1.e8;
   DoubleTab d_;

@@ -260,7 +260,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(
         sub_type(Energie_Multiphase, op_ext[i]->equation()) && op_ext[i]->equation().probleme().has_correlation("flux_parietal") ?
-        &ref_cast(Flux_parietal_base, op_ext[i]->equation().probleme().get_correlation("flux_parietal").valeur()) : nullptr);
+        &ref_cast(Flux_parietal_base, op_ext[i]->equation().probleme().get_correlation("flux_parietal")) : nullptr);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(domaine[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 

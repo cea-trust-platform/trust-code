@@ -33,7 +33,7 @@ public:
 protected:
 
   int n_l = -1; //liquid phase
-  Correlation frottement_bulle_seule_ ;
+  OWN_PTR(Correlation_base) frottement_bulle_seule_ ;
 };
 
 #endif /* Frottement_interfacial_Zenit_included */

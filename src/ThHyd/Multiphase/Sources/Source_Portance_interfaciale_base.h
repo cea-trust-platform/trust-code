@@ -36,12 +36,12 @@ class Source_Portance_interfaciale_base : public Sources_Multiphase_base
 public :
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { /* Do nothing : 100% explicit */ }
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
-  const Correlation& correlation() const { return correlation_; }
+  const Correlation_base& correlation() const { return correlation_; }
   void creer_champ(const Motcle& motlu) override;
   void completer() override;
 
 protected:
-  Correlation correlation_; //correlation donnant le coeff de portance interfaciale
+  OWN_PTR(Correlation_base) correlation_; //correlation donnant le coeff de portance interfaciale
   int n_l = -1; //phase liquide
   double beta_ = 1. ; // To adjust the force in .data
   double g_ = 9.81;

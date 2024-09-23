@@ -46,7 +46,7 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
 
   correlation_ = pbm.get_correlation("flux_interfacial");
 
-  dv_min = ref_cast(Flux_interfacial_base, correlation_->valeur()).dv_min();
+  dv_min = ref_cast(Flux_interfacial_base, correlation_.valeur()).dv_min();
 
   return is;
 }
@@ -164,8 +164,8 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   int i, j, col, e, d, D = dimension, k, l, n, N = inco.line_size(), is_therm;
   const int cL = (lambda.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), cCp = (Cp.dimension_tot(0) == 1);
 
-  const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_->valeur());
-  const Changement_phase_base *correlation_G = pbm.has_correlation("changement_phase") ? &ref_cast(Changement_phase_base, pbm.get_correlation("changement_phase").valeur()) : nullptr;
+  const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur());
+  const Changement_phase_base *correlation_G = pbm.has_correlation("changement_phase") ? &ref_cast(Changement_phase_base, pbm.get_correlation("changement_phase")) : nullptr;
   double dt = equation().schema_temps().pas_de_temps(), alpha_min = 1.e-6;
 
   // Viscosite turbulente pour les correlations qui en ont besoin
@@ -174,7 +174,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
     {
       nut.resize(0, N);
       MD_Vector_tools::creer_tableau_distribue(equation().inconnue().valeurs().get_md_vector(), nut); //Necessary to compare size in eddy_viscosity()
-      const Viscosite_turbulente_base& corr_visc_turb = ref_cast(Viscosite_turbulente_base, ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).correlation_viscosite_turbulente()->valeur());
+      const Viscosite_turbulente_base& corr_visc_turb = ref_cast(Viscosite_turbulente_base, *ref_cast(Operateur_Diff_base, equation().probleme().equation(0).operateur(0).l_op_base()).correlation_viscosite_turbulente());
       corr_visc_turb.eddy_viscosity(nut);
     }
 

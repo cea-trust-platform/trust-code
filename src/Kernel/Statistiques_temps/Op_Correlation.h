@@ -85,13 +85,13 @@ inline void Op_Correlation::initialiser(double val_init)
 
 inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_base& le_champ, double t1, double t2)
 {
-  Cerr << "Exactly two fields must be associated to Correlation operator." << finl;
+  Cerr << "Exactly two fields must be associated to correlation operator." << finl;
   exit();
 }
 
 inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2)
 {
-  Cerr << "Exactly two fields must be associated to Correlation operator." << finl;
+  Cerr << "Exactly two fields must be associated to correlation operator." << finl;
   exit();
 }
 

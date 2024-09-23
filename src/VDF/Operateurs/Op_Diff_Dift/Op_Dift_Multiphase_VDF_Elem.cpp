@@ -62,8 +62,8 @@ void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
       Process::exit();
     }
 
-  const Correlation& corr_visc_qdm = ref_cast(Op_Dift_Multiphase_VDF_Face, op_qdm).correlation();
-  if (!sub_type(Viscosite_turbulente_base, corr_visc_qdm.valeur()))
+  const Correlation_base& corr_visc_qdm = ref_cast(Op_Dift_Multiphase_VDF_Face, op_qdm).correlation();
+  if (!sub_type(Viscosite_turbulente_base, corr_visc_qdm))
     {
       Cerr << "Error in " << que_suis_je() << ": no turbulent viscosity correlation found!" << finl;
       Process::exit();
@@ -71,7 +71,7 @@ void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
 
   // on calcule d_t_
   nu_ou_lambda_turb_ = 0.; // XXX : pour n'avoir pas la partie laminaire
-  call_compute_diff_turb(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc_qdm.valeur()));
+  call_compute_diff_turb(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc_qdm));
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(nu_ou_lambda_turb_);
   mettre_a_jour_proto_elem(temps);
 }
