@@ -83,7 +83,7 @@ void Assembleur_P_VEF::calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, co
       DoubleTab tmp;
       tmp=(inv_volumes_entrelaces);
       tmp=1;
-      domaine_Cl_VEF.equation().solv_masse()->appliquer(tmp);
+      domaine_Cl_VEF.equation().solv_masse().appliquer(tmp);
       int sz=inv_volumes_entrelaces.size_totale();
       for (int i=0; i<sz; i++)
         {

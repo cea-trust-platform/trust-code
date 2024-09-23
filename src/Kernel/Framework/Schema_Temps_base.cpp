@@ -877,13 +877,13 @@ void Schema_Temps_base::ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secme
   // On ne penalise pas les matrices et les secmems meme dans les cas
   // dirichlet , symetrie
   int pen=0;
-  eqn.solv_masse()->ajouter_masse(dt,mat_morse,pen); //ordre important pour PolyMAC_P0
-  eqn.solv_masse()->ajouter_masse(dt,secmem,eqn.inconnue().passe(),pen);
+  eqn.solv_masse().ajouter_masse(dt,mat_morse,pen); //ordre important pour PolyMAC_P0
+  eqn.solv_masse().ajouter_masse(dt,secmem,eqn.inconnue().passe(),pen);
 }
 
 void Schema_Temps_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const Equation_base& eqn, const tabs_t& semi_impl) const
 {
-  eqn.solv_masse()->ajouter_blocs(matrices, secmem, pas_de_temps(), semi_impl, 1);
+  eqn.solv_masse().ajouter_blocs(matrices, secmem, pas_de_temps(), semi_impl, 1);
 }
 
 /*! @brief //Actualisation de stationnaire_atteint_ et residu_ (critere residu_<seuil_statio_)

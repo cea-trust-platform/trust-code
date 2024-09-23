@@ -218,9 +218,9 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
     else if ((numero_masse_!=-1) && ref_eq_->has_interface_blocs())
       es=0, ref_eq_->schema_temps().ajouter_blocs({},es,ref_eq_.valeur());
     if (!sans_solveur_masse_)
-      ref_eq_->solv_masse()->appliquer_impl(es); //On divise par le volume
+      ref_eq_->solv_masse().appliquer_impl(es); //On divise par le volume
     // Hack: car Masse_PolyMAC_Face::appliquer_impl ne divise pas par le volume (matrice de masse)....
-    if (ref_eq_->solv_masse()->que_suis_je()=="Masse_PolyMAC_Face")
+    if (ref_eq_->solv_masse().que_suis_je()=="Masse_PolyMAC_Face")
       {
         //Cerr << "Volumic source terms on faces with PolyMAC can't be post-processed yet." << finl;
         Cerr << "Warning, source terms on faces with PolyMAC are post-processed as S*dV not as volumic source terms S." << finl;

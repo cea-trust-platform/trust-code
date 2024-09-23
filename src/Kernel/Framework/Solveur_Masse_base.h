@@ -104,6 +104,4 @@ private:
   mutable double penalisation_;
 };
 
-using Solveur_Masse = OWN_PTR(Solveur_Masse_base);
-
 #endif /* Solveur_Masse_base_included */

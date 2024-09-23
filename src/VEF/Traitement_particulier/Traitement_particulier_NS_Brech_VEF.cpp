@@ -453,7 +453,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pre
   //gradient.calculer(la_pression,gradP);
   // Cerr << "gradP " << gradP << finl;
   //on veut BM-1Bt(psi*Pression)
-  mon_equation->solv_masse()->appliquer(gradP);
+  mon_equation->solv_masse().appliquer(gradP);
 
   DoubleTab grad_temp(vitesse);
   for(i=0; i<nb_face; i++)

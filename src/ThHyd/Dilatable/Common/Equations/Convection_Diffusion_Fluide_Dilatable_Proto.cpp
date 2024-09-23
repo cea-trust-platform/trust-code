@@ -187,24 +187,24 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
       const DoubleTab& Tfutur=eqn.inconnue().futur();
       DoubleTrav secmem(derivee);
       secmem=derivee; // sans contribution terme source
-      eqn.solv_masse()->appliquer(secmem);
+      eqn.solv_masse().appliquer(secmem);
 
       if (has_mass_flux)
         secmem += mass_source_term ; // ajoute contribution terme source (deja divise par V)
 
       derivee = Tfutur;
 
-      is_thermal() ? eqn.solv_masse()->set_name_of_coefficient_temporel("rho_cp_comme_T") :
-      eqn.solv_masse()->set_name_of_coefficient_temporel("masse_volumique");
+      is_thermal() ? eqn.solv_masse().set_name_of_coefficient_temporel("rho_cp_comme_T") :
+      eqn.solv_masse().set_name_of_coefficient_temporel("masse_volumique");
 
       eqn.Gradient_conjugue_diff_impl(secmem,derivee);
-      eqn.solv_masse()->set_name_of_coefficient_temporel("no_coeff");
+      eqn.solv_masse().set_name_of_coefficient_temporel("no_coeff");
     }
 
   // 100% explicite
   if (!sch.diffusion_implicite() && is_expl)
     {
-      eqn.solv_masse()->appliquer(derivee);
+      eqn.solv_masse().appliquer(derivee);
 
       if (has_mass_flux)
         derivee += mass_source_term; // ajoute contribution terme source (deja divise par V)
@@ -321,7 +321,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
           double rapport=1./(tab_rho(som)*Cp);
           diff(som)=resu(som)-conv(som)*inv_rho-diff(som)*rapport;
         }
-      eqn.solv_masse()->appliquer(diff);
+      eqn.solv_masse().appliquer(diff);
       double err=mp_max_abs_vect(diff);
       Cerr << eqn.que_suis_je() <<" : Erreur assemblage = " << err << finl;;
 

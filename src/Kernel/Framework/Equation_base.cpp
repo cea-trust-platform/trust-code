@@ -187,8 +187,8 @@ void Equation_base::completer()
   for(int i=0; i<nb_op; i++)
     operateur(i).completer();
 
-  if (solv_masse().non_nul())  // [ABN]: In case of Front-Tracking, mass solver mass might be uninitialized ...
-    solv_masse()->completer();
+  if (solveur_masse.non_nul())  // [ABN]: In case of Front-Tracking, mass solver mass might be uninitialized ...
+    solv_masse().completer();
 
   les_sources.completer();
   schema_temps().completer();
@@ -603,7 +603,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
                 {
                   Matrice_Morse& matrice=ref_cast(Matrice_Morse, op.set_matrice().valeur());
                   op.contribuer_a_avec(inconnue().valeurs(), matrice);
-                  solv_masse()->ajouter_masse(dt, op.set_matrice().valeur());
+                  solv_masse().ajouter_masse(dt, op.set_matrice().valeur());
 
                   if(
                     (op.get_solveur()->que_suis_je()=="Solv_Cholesky")
@@ -627,13 +627,13 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
           Matrice_Base& matrice=op.set_matrice().valeur();
           // DoubleTrav secmem(derivee);
           secmem=derivee;
-          solv_masse()->ajouter_masse(dt, secmem, inconnue().valeurs());
+          solv_masse().ajouter_masse(dt, secmem, inconnue().valeurs());
           op.contribuer_au_second_membre(secmem );
           op.set_solveur().resoudre_systeme(matrice,
                                             secmem,
                                             derivee
                                            );
-          solv_masse()->corriger_solution(derivee,inconnue().valeurs());
+          solv_masse().corriger_solution(derivee,inconnue().valeurs());
 
           derivee-=inconnue().valeurs();
           derivee/=dt;
@@ -1470,7 +1470,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             if (marq[i])
               sources()(i).ajouter(toto);
           statistiques().begin_count(diffusion_implicite_counter_);
-          solv_masse()->appliquer(toto);
+          solv_masse().appliquer(toto);
           secmem.ajoute(-1., toto); // ,VECT_REAL_ITEMS);
         }
       int n = secmem.size_totale();
@@ -1868,11 +1868,11 @@ void Equation_base::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 
   //  ... then the mass solver ...
   if (!isInit)
-    solv_masse()->dimensionner(matrice);
+    solv_masse().dimensionner(matrice);
   else
     {
       Matrice_Morse mat2;
-      solv_masse()->dimensionner(mat2);
+      solv_masse().dimensionner(mat2);
       matrice += mat2; // this only works if the matrix has been given its overall size first
     }
 
@@ -1983,7 +1983,7 @@ int Equation_base::has_interface_blocs() const
   int ok = 1;
   /* operateurs, masse, sources */
   for (int op = 0; op < nombre_d_operateurs(); op++) ok &= operateur(op).l_op_base().has_interface_blocs();
-  ok &= solv_masse()->has_interface_blocs();
+  ok &= solv_masse().has_interface_blocs();
   for (int i = 0; i < les_sources.size(); i++) ok &= les_sources(i)->has_interface_blocs();
   return ok;
 }
@@ -1994,7 +1994,7 @@ void Equation_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_i
   /* operateurs, masse, sources */
   int nb = nombre_d_operateurs();
   for (int op = 0; op < nb; op++) operateur(op).l_op_base().dimensionner_blocs(matrices, semi_impl);
-  solv_masse()->dimensionner_blocs(matrices);
+  solv_masse().dimensionner_blocs(matrices);
   for (int i = 0; i < les_sources.size(); i++) les_sources(i)->dimensionner_blocs(matrices, semi_impl);
 }
 
@@ -2028,7 +2028,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
 {
   statistiques().begin_count(assemblage_sys_counter_);
   assembler_blocs(matrices, secmem, semi_impl);
-  solv_masse()->set_penalisation_flag(0);
+  solv_masse().set_penalisation_flag(0);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
 
   if (!discretisation().is_polymac_family())
@@ -2057,7 +2057,7 @@ void Equation_base::init_champ_conserve() const
 void Equation_base::calculer_champ_conserve(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Equation_base& eqn = ref_cast(Equation_base, obj);
-  const Champ_base *coeff = eqn.solv_masse()->has_coefficient_temporel() ? &eqn.get_champ(eqn.solv_masse()->get_name_of_coefficient_temporel()) : nullptr; //coeff temporel
+  const Champ_base *coeff = eqn.solv_masse().has_coefficient_temporel() ? &eqn.get_champ(eqn.solv_masse().get_name_of_coefficient_temporel()) : nullptr; //coeff temporel
   const Champ_Inc_base& inco = eqn.inconnue();
   ConstDoubleTab_parts part(inco.valeurs());
   //valeur du champ lui-meme

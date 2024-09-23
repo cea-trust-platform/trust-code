@@ -154,7 +154,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
   gradient.calculer(mon_equation->pression().valeurs(),gradP);
 
   //on veut BM-1Bt(psi*Pression)
-  mon_equation->solv_masse()->appliquer(gradP);
+  mon_equation->solv_masse().appliquer(gradP);
 
   for(i=0; i<nb_face; i++)
     {

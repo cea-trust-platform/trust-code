@@ -116,7 +116,7 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
   const Op_Grad_VEF_P1B_Face& grad=ref_cast(Op_Grad_VEF_P1B_Face,
                                             opgrad.valeur());
   //grad.verifier();
-  const Solveur_Masse& solvm=eqn.solv_masse();
+  const Solveur_Masse_base& solvm=eqn.solv_masse();
   const DoubleTab& pression=eqn.pression().valeurs();
   DoubleTab tab(pression);
   DoubleTab resu(tab), resu2(tab);
@@ -126,7 +126,7 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
 
   DoubleTab gradP(eqn.inconnue().valeurs());
   grad.calculer(tab, gradP);
-  solvm->appliquer(gradP);
+  solvm.appliquer(gradP);
   div.calculer(gradP, resu);
   matrice.multvect(tab, resu2);
   return 0;
@@ -150,7 +150,7 @@ int verifier( const Assembleur_P_VEFPreP1B& ass,
   const Op_Grad_VEF_P1B_Face& grad=ref_cast(Op_Grad_VEF_P1B_Face,
                                             opgrad.valeur());
   //grad.verifier();
-  //  const Solveur_Masse& solvm=eqn.solv_masse();
+  //  const Solveur_Masse_base& solvm=eqn.solv_masse();
   const DoubleTab& pression=eqn.pression().valeurs();
   int ko=0;
   ko=verifier_complet(ass, matrice, domaine_VEF);

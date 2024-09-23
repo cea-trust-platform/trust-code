@@ -1637,7 +1637,7 @@ const Motcle& Navier_Stokes_std::domaine_application() const
 
 static void construire_matrice_implicite(Operateur_base& op,
                                          const DoubleTab& valeurs_inconnue,
-                                         const Solveur_Masse& solv_masse,
+                                         const Solveur_Masse_base& solv_masse,
                                          const double dt)
 {
   Matrice& mat = op.set_matrice();
@@ -1649,7 +1649,7 @@ static void construire_matrice_implicite(Operateur_base& op,
       Matrice_Morse& matrice = ref_cast(Matrice_Morse, mat.valeur());
       op.dimensionner(matrice);
       op.contribuer_a_avec(valeurs_inconnue, matrice);
-      solv_masse->ajouter_masse(dt, matrice);
+      solv_masse.ajouter_masse(dt, matrice);
       matrice *= dt;
 
       // Si le solveur est cholesky ou gcp, on attend une matrice de type
@@ -1732,8 +1732,8 @@ DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)
                   // Mise a jour simplifiee de la matrice
                   Matrice_Morse& matrice=ref_cast(Matrice_Morse, op.set_matrice().valeur());
                   matrice/=dt_old;
-                  solv_masse()->ajouter_masse(-dt_old, op.set_matrice().valeur());
-                  solv_masse()->ajouter_masse(dt, op.set_matrice().valeur());
+                  solv_masse().ajouter_masse(-dt_old, op.set_matrice().valeur());
+                  solv_masse().ajouter_masse(dt, op.set_matrice().valeur());
                   matrice*=dt;
                   ref_cast_non_const(SolveurSys_base,op.get_solveur().valeur()).reinit();
                 }
@@ -1792,7 +1792,7 @@ void Navier_Stokes_std::uzawa(const DoubleTab& secmem, const Matrice_Base& A, So
   gradient->multvect(P, grad0);
   solveur.nommer("uzawa_solver");
   solveur.resoudre_systeme(A, secmem, U);
-  solv_masse()->corriger_solution(U,Cu); // pour les C.L. de Dirichlet!
+  solv_masse().corriger_solution(U,Cu); // pour les C.L. de Dirichlet!
 
   // residu=BCu
   divergence->multvect(U, resu);
@@ -1821,7 +1821,7 @@ void Navier_Stokes_std::uzawa(const DoubleTab& secmem, const Matrice_Base& A, So
       grad-=grad0;
       grad*=-1;
       solveur.resoudre_systeme(A, grad, Cu);
-      solv_masse()->corriger_solution(Cu,U); // pour les C.L. de Dirichlet!
+      solv_masse().corriger_solution(Cu,U); // pour les C.L. de Dirichlet!
       divergence->multvect(Cu, resu);
       resu*=-1;
 

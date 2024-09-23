@@ -103,8 +103,7 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
   gradient.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
   // XXX : very important : sinon we have values * V !
-  const Solveur_Masse& solv_mass = eqHyd.solv_masse();
-  solv_mass->appliquer(grad_Ptot);
+  eqHyd.solv_masse().appliquer(grad_Ptot);
 
   /*
    * XXX XXX XXX

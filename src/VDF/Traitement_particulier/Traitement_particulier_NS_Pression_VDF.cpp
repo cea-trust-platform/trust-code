@@ -148,7 +148,7 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_
 
   //on veut BM-1Bt(spi*Pression)
   DoubleTab& grad=gradient_P->valeurs();
-  mon_equation->solv_masse()->appliquer(grad);
+  mon_equation->solv_masse().appliquer(grad);
   DoubleTab& grad_temp = grad;
   for(i=0; i<nb_face; i++)
     {

@@ -239,14 +239,14 @@ DoubleTab& Operateur::ajouter(const Champ_Inc_base& ch, DoubleTab& resu) const
   DoubleTrav derivee(resu);
   DoubleTrav inco(ch.valeurs());
   inco=ch.valeurs();
-  const Solveur_Masse& solveur_masse=equation().solv_masse();
+  const Solveur_Masse_base& solveur_masse=equation().solv_masse();
   double dt_inv=1./(double(nstep));
   for (i=0; i<nstep; i++)
     {
       calculer(inco, derivee);
       derivee.echange_espace_virtuel();
       resu.ajoute(dt_inv, derivee) ;
-      solveur_masse->appliquer(derivee);
+      solveur_masse.appliquer(derivee);
       inco.ajoute_sans_ech_esp_virt(dt, derivee, VECT_ALL_ITEMS) ;
     }
   return resu;

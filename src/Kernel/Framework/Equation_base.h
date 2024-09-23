@@ -119,8 +119,8 @@ public :
   void calculer_pas_de_temps_locaux(DoubleTab&) const;  //Computation of local time: Vect of size number of faces of the domain
   Sources& sources();
   const Sources& sources() const;
-  inline Solveur_Masse& solv_masse();
-  inline const Solveur_Masse& solv_masse() const;
+  inline Solveur_Masse_base& solv_masse();
+  inline const Solveur_Masse_base& solv_masse() const;
   Probleme_base& probleme();
   const Probleme_base& probleme() const;
   Schema_Temps_base& schema_temps();
@@ -241,7 +241,7 @@ public :
 protected :
 
   Nom nom_;
-  Solveur_Masse solveur_masse;
+  OWN_PTR(Solveur_Masse_base) solveur_masse;
   Sources les_sources;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Domaine_dis_base) le_dom_dis;
@@ -335,9 +335,9 @@ inline const Domaine_Cl_dis_base& Equation_base::domaine_Cl_dis() const
 
 /*! @brief Renvoie le solveur de masse associe a l'equation.
  *
- * @return (Solveur_Masse&) le solveur de masse associe a l'equation
+ * @return (Solveur_Masse_base&) le solveur de masse associe a l'equation
  */
-inline Solveur_Masse& Equation_base::solv_masse()
+inline Solveur_Masse_base& Equation_base::solv_masse()
 {
   return solveur_masse;
 }
@@ -346,9 +346,9 @@ inline Solveur_Masse& Equation_base::solv_masse()
  *
  * (version const)
  *
- * @return (Solveur_Masse&) le solveur de masse associe a l'equation
+ * @return (Solveur_Masse_base&) le solveur de masse associe a l'equation
  */
-inline const Solveur_Masse& Equation_base::solv_masse() const
+inline const Solveur_Masse_base& Equation_base::solv_masse() const
 {
   return solveur_masse;
 }

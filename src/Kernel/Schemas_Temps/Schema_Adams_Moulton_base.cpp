@@ -115,8 +115,8 @@ void Schema_Adams_Moulton_base::add_multi_timestep_data(const Equation_base& eqn
       dudt   += tmp;
     }
 
-  eqn.solv_masse()->ajouter_masse(effective_time_step,secmem,dudt,pen);
-  eqn.solv_masse()->ajouter_masse(effective_time_step,mat_morse,pen);
+  eqn.solv_masse().ajouter_masse(effective_time_step,secmem,dudt,pen);
+  eqn.solv_masse().ajouter_masse(effective_time_step,mat_morse,pen);
 }
 
 //To get du/dt table without pressure gradient and influences of past and present times
@@ -127,7 +127,7 @@ void Schema_Adams_Moulton_base::modifier_second_membre_full_impl(const Equation_
   DoubleTab correction(secmem);
   correction=0.;
   eqn_bis.corriger_derivee_expl(correction);
-  eqn.solv_masse()->appliquer(correction);
+  eqn.solv_masse().appliquer(correction);
   secmem-=correction; //on enleve le gradient de pression
 
   if (nb_pas_dt()>nb_pas_dt_seuil())

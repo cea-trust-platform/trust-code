@@ -202,7 +202,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
     {
       gradient_P->valeurs() = 0;
       gradient->ajouter(la_pression->valeurs(), gradient_P->valeurs());
-      solv_masse()->appliquer_impl(gradient_P->valeurs());
+      solv_masse().appliquer_impl(gradient_P->valeurs());
     }
 }
 
