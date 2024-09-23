@@ -21,22 +21,22 @@
 // Methodes de verification que le tableau est a jour sur le host:
 // ToDo OpenMP :Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?
 template<typename _TYPE_, typename _SIZE_>
-inline void TRUSTArray<_TYPE_,_SIZE_>::checkDataOnHost() const
+inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost() const
 {
 #if defined(_OPENMP) && !defined(TRUST_USE_UVM)
   if (get_data_location()==DataLocation::Device)
-    copyFromDevice(*this, "const detected with checkDataOnHost()");
+    copyFromDevice(*this, "const detected with ensureDataOnHost()");
 #endif
 }
 
 template<typename _TYPE_, typename _SIZE_>
-inline void TRUSTArray<_TYPE_,_SIZE_>::checkDataOnHost()
+inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost()
 {
 #if defined(_OPENMP) && !defined(TRUST_USE_UVM)
   const DataLocation& loc = get_data_location();
   if (loc==DataLocation::Host || loc==DataLocation::HostOnly || loc==DataLocation::PartialHostDevice) return;
   else if (loc==DataLocation::Device)
-    copyFromDevice(*this, "non-const detected with checkDataOnHost()");
+    copyFromDevice(*this, "non-const detected with ensureDataOnHost()");
   // On va modifier le tableau (non const) sur le host:
   set_data_location(DataLocation::Host);
 #endif
@@ -64,14 +64,14 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::printKernel(bool flag, const TRUSTArray& 
 
 // Fonctions checkDataOnDevice pour lancement conditionnel de kernels sur le device:
 // -Si les tableaux passes en parametre sont sur a jour sur le device
-// -Si ce n'est pas le cas, les tableaux sont copies sur le host via checkDataOnHost
+// -Si ce n'est pas le cas, les tableaux sont copies sur le host via ensureDataOnHost
 template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice(std::string kernel_name) const
 {
 #ifdef _OPENMP
   bool flag = isDataOnDevice() && computeOnDevice;
   if (!flag)
-    checkDataOnHost();
+    ensureDataOnHost();
   //else
   //  set_data_location(Device); // non const array will be computed on device
   printKernel(flag, *this, kernel_name);
@@ -87,7 +87,7 @@ inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice(std::string kernel_name
 #ifdef _OPENMP
   bool flag = isDataOnDevice() && computeOnDevice;
   if (!flag)
-    checkDataOnHost();
+    ensureDataOnHost();
   else
     set_data_location(DataLocation::Device); // non const array will be computed on device
   printKernel(flag, *this, kernel_name);
@@ -105,8 +105,8 @@ inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice(const TRUSTArray& tab_c
   // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
   if (!flag)
     {
-      this->checkDataOnHost();
-      tab_const.checkDataOnHost();
+      this->ensureDataOnHost();
+      tab_const.ensureDataOnHost();
     }
   else
     set_data_location(DataLocation::Device); // non const array will be computed on device

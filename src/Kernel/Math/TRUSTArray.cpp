@@ -30,7 +30,7 @@ template <typename _TYPE_, typename _SIZE_>
 Sortie& TRUSTArray<_TYPE_, _SIZE_>::printOn(Sortie& os) const
 {
 #ifndef LATATOOLS
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
   _SIZE_ sz = size_array();
   os << sz << finl;
   if (sz > 0)
@@ -141,7 +141,7 @@ void TRUSTArray<_TYPE_, _SIZE_>::resize_array_(_SIZE_ new_size, RESIZE_OPTIONS o
                   // Possibly set to 0 extended part:
                   if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT)
                     {
-                      checkDataOnHost();
+                      ensureDataOnHost();
                       std::fill(span_.begin() + sz_arr, span_.end(), (_TYPE_) 0);
                     }
                 }
@@ -152,7 +152,7 @@ void TRUSTArray<_TYPE_, _SIZE_>::resize_array_(_SIZE_ new_size, RESIZE_OPTIONS o
                   span_ = Span_(*mem_);
                   if (opt == RESIZE_OPTIONS::COPY_INIT)
                     {
-                      checkDataOnHost();
+                      ensureDataOnHost();
                       std::fill(span_.begin() + sz_arr, span_.end(), (_TYPE_) 0);
                     }
                 }
@@ -176,7 +176,7 @@ void TRUSTArray<_TYPE_, _SIZE_>::resize_array_(_SIZE_ new_size, RESIZE_OPTIONS o
                       if (prev_ad != span_.begin())
                         {
                           // Delete former block before allocating a new one !
-                          checkDataOnHost(); // Force copie sur le host
+                          ensureDataOnHost(); // Force copie sur le host
                           deleteOnDevice(prev_ad, sz_arr);
                           set_data_location(DataLocation::HostOnly);
                           // Allocate new (bigger) block on device:

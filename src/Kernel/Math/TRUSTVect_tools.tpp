@@ -26,8 +26,8 @@
 template<typename _TYPE_, typename _SIZE_>
 inline int operator==(const TRUSTVect<_TYPE_,_SIZE_>& x, const TRUSTVect<_TYPE_,_SIZE_>& y)
 {
-  x.checkDataOnHost();
-  y.checkDataOnHost();
+  x.ensureDataOnHost();
+  y.ensureDataOnHost();
   if (!(x.get_md_vector() == y.get_md_vector())) return 0;
   const TRUSTArray<_TYPE_,_SIZE_>& ax = x;
   const TRUSTArray<_TYPE_,_SIZE_>& ay = y;

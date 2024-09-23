@@ -176,7 +176,7 @@ void TRUSTTab<_TYPE_,_SIZE_>::from_tid_to_int(TRUSTTab<int, int>& out) const
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a)
 {
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
   assert( (TRUSTVect<_TYPE_,_SIZE_>::line_size() == 1) );
   assert( (dimension_tot_0_ * TRUSTVect<_TYPE_,_SIZE_>::line_size() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
   const _SIZE_ n = dimension_tot_0_;
@@ -191,7 +191,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a)
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a, _TYPE_ b)
 {
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
   assert( (TRUSTVect<_TYPE_,_SIZE_>::line_size() == 2) );
   assert( (dimension_tot_0_ * TRUSTVect<_TYPE_,_SIZE_>::line_size() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
   const _SIZE_ n = dimension_tot_0_ * 2;
@@ -206,7 +206,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a, _TYPE_ b)
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
 {
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
   assert( (TRUSTVect<_TYPE_,_SIZE_>::line_size() == 3) );
   assert( (dimension_tot_0_  * TRUSTVect<_TYPE_,_SIZE_>::line_size() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
   const _SIZE_ n = dimension_tot_0_ * 3;
@@ -222,7 +222,7 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
 template<typename _TYPE_, typename _SIZE_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c, _TYPE_ d)
 {
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
   assert( (TRUSTVect<_TYPE_,_SIZE_>::line_size() == 4) );
   assert( (dimension_tot_0_  * TRUSTVect<_TYPE_,_SIZE_>::line_size() == TRUSTVect<_TYPE_,_SIZE_>::size_array()) );
   const _SIZE_ n = dimension_tot_0_ * 4;
@@ -648,9 +648,9 @@ template<typename _TYPE_, typename _SIZE_>
 template <typename _T_>
 inline void TRUSTTab<_TYPE_,_SIZE_>::ajoute_produit_tensoriel(_T_ alpha, const TRUSTTab<_T_,_SIZE_>& x, const TRUSTTab<_T_,_SIZE_>& y)
 {
-  this->checkDataOnHost();
-  x.checkDataOnHost();
-  y.checkDataOnHost();
+  this->ensureDataOnHost();
+  x.ensureDataOnHost();
+  y.ensureDataOnHost();
   // Tableaux vus comme des tableaux unidimensionnels (pour ne pas avoir a gerer nb_dim)
   const TRUSTVect<_T_,_SIZE_>& vx = x, &vy = y;
   TRUSTVect<_T_,_SIZE_>& v = *this;
@@ -697,8 +697,8 @@ template<typename _TYPE_, typename _SIZE_>
 template <typename _T_>
 inline bool TRUSTTab<_TYPE_,_SIZE_>::inverse_LU(const TRUSTArray<_T_,_SIZE_>& b, TRUSTArray<_T_,_SIZE_>& solution)
 {
-  b.checkDataOnHost();
-  solution.checkDataOnHost();
+  b.ensureDataOnHost();
+  solution.ensureDataOnHost();
   _SIZE_ n = b.size_array();
   TRUSTArray<int,_SIZE_> index(n);
   TRUSTTab<_T_,_SIZE_> lu_dec(n,n);
@@ -811,7 +811,7 @@ template<typename _TYPE_, typename _SIZE_>
 template <typename _T_>
 inline _T_ TRUSTTab<_TYPE_,_SIZE_>::max_du_u(const TRUSTTab<_T_,_SIZE_>& u)
 {
-  u.checkDataOnHost();
+  u.ensureDataOnHost();
   assert( (TRUSTVect<_TYPE_,_SIZE_>::size_array() == u.size_array()) );
   const _T_ *du_ptr = TRUSTVect<_TYPE_,_SIZE_>::addr();
   const _T_ *u_ptr = u.addr();

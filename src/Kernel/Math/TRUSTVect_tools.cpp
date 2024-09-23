@@ -99,9 +99,9 @@ void ajoute_produit_scalaire(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const
 {
 #ifndef LATATOOLS
   ToDo_Kokkos("critical"); // Ne semble pas utilise...
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
-  vy.checkDataOnHost();
+  resu.ensureDataOnHost();
+  vx.ensureDataOnHost();
+  vy.ensureDataOnHost();
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
   const TRUSTVect<_TYPE_,_SIZE_>& master_vect = resu;
   const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();

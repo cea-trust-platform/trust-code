@@ -219,8 +219,8 @@ public:
   inline void set_data_location(DataLocation flag) const { if (data_location_ != nullptr) *data_location_ = flag; }
   inline int size_mem() { return mem_ == nullptr ? 0 : (int)mem_->size(); };
 
-  inline void checkDataOnHost();
-  inline void checkDataOnHost() const;
+  inline void ensureDataOnHost();
+  inline void ensureDataOnHost() const;
   inline bool isDataOnDevice() const;
   inline bool checkDataOnDevice(std::string kernel_name="??");
   inline bool checkDataOnDevice(std::string kernel_name="??") const;

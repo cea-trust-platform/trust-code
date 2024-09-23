@@ -32,7 +32,7 @@ inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& 
     }
   else
     {
-      vect.checkDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU. Voir le cas 3DPimp0X par ex en commentant la ligne...
+      vect.ensureDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU. Voir le cas 3DPimp0X par ex en commentant la ligne...
       ArrOfInt shape;
       const int line_size = vect.line_size();
       if (tab_ptr)

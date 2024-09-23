@@ -241,7 +241,7 @@ int tri_lexicographique_tableau(IntTab& tab)
 
   if (nb_lignes != 0)
     {
-      tab.checkDataOnHost();
+      tab.ensureDataOnHost();
       if (nb_colonnes == 1)
         tab.ordonne_array();
       else if (nb_colonnes == 2)

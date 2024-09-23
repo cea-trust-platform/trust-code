@@ -533,8 +533,8 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   bool keepDataOnDevice = gpu && solutionOnDevice;
   if (!keepDataOnDevice)
     {
-      b.checkDataOnHost();
-      x.checkDataOnHost();
+      b.ensureDataOnHost();
+      x.ensureDataOnHost();
     }
 #ifdef MPI_
   MPI_Comm comm;

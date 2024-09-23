@@ -2105,8 +2105,8 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
   else
     {
       // ToDo OpenMP afficher un warning pour dire d'utiliser un solveur GPU si solution est sur le GPU
-      secmem.checkDataOnHost();
-      solution.checkDataOnHost();
+      secmem.ensureDataOnHost();
+      solution.ensureDataOnHost();
       PetscInt size=ix.size_array();
       if (gpu_) statistiques().begin_count(gpu_copytodevice_counter_);
       VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);

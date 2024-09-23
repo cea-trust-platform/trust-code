@@ -131,7 +131,7 @@ template<typename _TYPE_, typename _SIZE_>
 inline _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i)
 {
 #ifdef _OPENMP
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
 #endif
   assert(i >= 0 && i < size_array());
   return span_[i];
@@ -141,7 +141,7 @@ template<typename _TYPE_, typename _SIZE_>
 inline const _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i) const
 {
 #ifdef _OPENMP
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
 #endif
   assert(i >= 0 && i < size_array());
   // [ABN] We can not perform this check here, since we might be *setting* the value from an un-initialized state.
@@ -156,14 +156,14 @@ inline const _TYPE_& TRUSTArray<_TYPE_, _SIZE_>::operator[](_SIZE_ i) const
 template <typename _TYPE_, typename _SIZE_>
 inline _TYPE_* TRUSTArray<_TYPE_, _SIZE_>::addr()
 {
-  checkDataOnHost();
+  ensureDataOnHost();
   return span_.data();
 }
 
 template <typename _TYPE_, typename _SIZE_>
 inline const _TYPE_* TRUSTArray<_TYPE_, _SIZE_>::addr() const
 {
-  checkDataOnHost();
+  ensureDataOnHost();
   return span_.data();
 }
 
@@ -205,7 +205,7 @@ inline int TRUSTArray<_TYPE_, _SIZE_>::ref_count() const
 template <typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_, _SIZE_>::append_array(_TYPE_ valeur)
 {
-  this->checkDataOnHost();
+  this->ensureDataOnHost();
   // Call the official resize, with all its checks and management of Trav:
   const _SIZE_ sz = size_array();
   resize_array_(sz+1, RESIZE_OPTIONS::NOCOPY_NOINIT);
@@ -217,7 +217,7 @@ inline void TRUSTArray<_TYPE_, _SIZE_>::append_array(_TYPE_ valeur)
 template <typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::ordonne_array()
 {
-  checkDataOnHost();
+  ensureDataOnHost();
   std::sort(span_.begin(), span_.end());
 }
 
@@ -226,7 +226,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::ordonne_array()
 template <typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_, _SIZE_>::array_trier_retirer_doublons()
 {
-  checkDataOnHost();
+  ensureDataOnHost();
   const _SIZE_ size_ = size_array();
   if (size_ <= 0) return;
 

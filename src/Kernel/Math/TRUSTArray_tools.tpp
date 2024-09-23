@@ -29,8 +29,8 @@ bool operator==(const TRUSTArray<_TYPE_,_SIZE_>& v, const TRUSTArray<_TYPE_,_SIZ
 
   if (n != na) return false;
 
-  v.checkDataOnHost();
-  a.checkDataOnHost();
+  v.ensureDataOnHost();
+  a.ensureDataOnHost();
   const _TYPE_ * vv = v.addr();
   const _TYPE_ * av = a.addr();
   for (_SIZE_ i = 0; i < n; i++)
@@ -178,8 +178,8 @@ _TYPE_ dotproduct_array(const TRUSTArray<_TYPE_,_SIZE_>& dx, const TRUSTArray<_T
     {
       integer n = size;
       integer incx = 1;
-      dx.checkDataOnHost();
-      dy.checkDataOnHost();
+      dx.ensureDataOnHost();
+      dy.ensureDataOnHost();
       resultat = F77NAME(DDOT)(&n, dx.addr(), &incx, dy.addr(), &incx);
     }
   return resultat;
@@ -197,7 +197,7 @@ _TYPE_ norme_array(const TRUSTArray<_TYPE_,_SIZE_>& dx)
   if (n > 0)
     {
       integer incx = 1;
-      dx.checkDataOnHost();
+      dx.ensureDataOnHost();
       resultat = F77NAME(DNRM2)(&n, &dx[0], &incx);
     }
   return resultat;
