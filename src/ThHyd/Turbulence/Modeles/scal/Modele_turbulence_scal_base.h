@@ -16,7 +16,8 @@
 #ifndef Modele_turbulence_scal_base_included
 #define Modele_turbulence_scal_base_included
 
-#include <Turbulence_paroi_scal.h>
+#include <Turbulence_paroi_scal_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 
 class Convection_Diffusion_std;
@@ -44,9 +45,9 @@ public:
   virtual void mettre_a_jour(double) =0;
   inline const Champ_Fonc& conductivite_turbulente() const { return conductivite_turbulente_; }
   inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_; }
-  inline const Turbulence_paroi_scal& loi_paroi() const;
+  inline const Turbulence_paroi_scal_base& loi_paroi() const;
   inline int loi_paroi_non_nulle() const;
-  inline Turbulence_paroi_scal& loi_paroi();
+  inline Turbulence_paroi_scal_base& loi_paroi();
   virtual void discretiser();
   //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
   void associer_eqn(const Equation_base&);
@@ -71,7 +72,7 @@ public:
 protected:
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
   REF(Convection_Diffusion_std) mon_equation_;
-  Turbulence_paroi_scal loipar_;
+  OWN_PTR(Turbulence_paroi_scal_base) loipar_;
   double dt_impr_nusselt_ = DMAXFLOAT;
 
 protected:
@@ -80,11 +81,11 @@ protected:
 
 /*! @brief Renvoie la loi de turbulence sur la paroi (version const)
  *
- * @return (Turbulence_paroi_scal&) la loi de turbulence sur la paroi
+ * @return (Turbulence_paroi_scal_base&) la loi de turbulence sur la paroi
  */
-inline const Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi() const
+inline const Turbulence_paroi_scal_base& Modele_turbulence_scal_base::loi_paroi() const
 {
-  return loipar_;
+  return loipar_.valeur();
 }
 
 /*! @brief Renvoie si oui ou non loi de paroi (version const)
@@ -98,11 +99,11 @@ inline int Modele_turbulence_scal_base::loi_paroi_non_nulle() const
 
 /*! @brief Renvoie la loi de turbulence sur la paroi
  *
- * @return (Turbulence_paroi_scal&) la loi de turbulence sur la paroi
+ * @return (Turbulence_paroi_scal_base&) la loi de turbulence sur la paroi
  */
-inline Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi()
+inline Turbulence_paroi_scal_base& Modele_turbulence_scal_base::loi_paroi()
 {
-  return loipar_;
+  return loipar_.valeur();
 }
 
 inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()

@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
-#include <Op_Dift_EF_base.h>
-#include <Modele_turbulence_scal.h>
+#include <Modele_turbulence_scal_base.h>
 #include <Navier_Stokes_std.h>
+#include <Op_Dift_EF_base.h>
 
 Implemente_base_sans_constructeur(Op_Dift_EF_base,"Op_Dift_EF_base",Op_Diff_EF_base);
 
@@ -44,15 +44,14 @@ void Op_Dift_EF_base::mettre_a_jour(double )
 {
   if (sub_type(Navier_Stokes_std,equation())) // on traite l'hydraulique
     {
-      if ( le_modele_turbulence->loi_paroi().non_nul())
-        if (le_modele_turbulence->loi_paroi()->use_shear())
-          {
-            // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque
-            // l'initialisation
-            const DoubleTab& tab = le_modele_turbulence->loi_paroi()->Cisaillement_paroi();
-            if (tab.size_array() > 0)
-              tau_tan_.ref(tab);
-          }
+      if ( le_modele_turbulence->utiliser_loi_paroi())
+        {
+          // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque
+          // l'initialisation
+          const DoubleTab& tab = le_modele_turbulence->loi_paroi().Cisaillement_paroi();
+          if (tab.size_array() > 0)
+            tau_tan_.ref(tab);
+        }
     }
 }
 

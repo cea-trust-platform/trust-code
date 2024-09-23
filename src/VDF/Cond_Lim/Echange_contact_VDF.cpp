@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_scal_base.h>
+#include <Turbulence_paroi_scal_base.h>
 #include <Schema_Euler_Implicite.h>
-#include <Turbulence_paroi_scal.h>
 #include <Echange_contact_VDF.h>
 #include <Domaine_Cl_dis_base.h>
 #include <Champ_front_calc.h>
@@ -109,8 +109,8 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
   if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) && opt!=1 )
     {
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-      const Turbulence_paroi_scal& loi_par = mod_turb_scal.loi_paroi();
-      if( loi_par->use_equivalent_distance() )
+      const Turbulence_paroi_scal_base& loi_par = mod_turb_scal.loi_paroi();
+      if( loi_par.use_equivalent_distance() )
         {
           int boundary_index=-1;
           dequiv=true;
@@ -123,7 +123,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
             }
           for (int ind_face=0; ind_face<nb_faces; ind_face++)
             {
-              e(ind_face)=loi_par->equivalent_distance(boundary_index,ind_face);
+              e(ind_face)=loi_par.equivalent_distance(boundary_index,ind_face);
             }
         }
     }
@@ -187,12 +187,12 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
     {
 
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-      const Turbulence_paroi_scal& loi_par = mod_turb_scal.loi_paroi();
-      if( loi_par->use_equivalent_distance() )
+      const Turbulence_paroi_scal_base& loi_par = mod_turb_scal.loi_paroi();
+      if( loi_par.use_equivalent_distance() )
         {
           dequiv=true;
           DoubleVect d_equiv_tmp;
-          front_vf.frontiere().trace_face_distant( loi_par->equivalent_distance_name(d_equiv_tmp,nom_racc2),e);
+          front_vf.frontiere().trace_face_distant( loi_par.equivalent_distance_name(d_equiv_tmp,nom_racc2),e);
           // const Paroi_scal_hyd_base_VDF& loip = ref_cast(Paroi_scal_hyd_base_VDF,loi_par.valeur());
           // front_vf.frontiere().trace_face(loip.d_equiv_nom(d_equiv_tmp,nom_racc2),e);
         }

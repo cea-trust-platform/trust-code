@@ -17,9 +17,7 @@
 #define Modele_turbulence_hyd_base_included
 
 #include <Support_Champ_Masse_Volumique.h>
-#include <Turbulence_paroi.h>
-
-
+#include <Turbulence_paroi_base.h>
 
 class Schema_Temps_base;
 class Equation_base;
@@ -49,9 +47,10 @@ public:
   inline Champ_Fonc& viscosite_turbulente() { return la_viscosite_turbulente_; }
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
-  inline const Turbulence_paroi& loi_paroi() const { return loipar_; }
-  inline Turbulence_paroi& loi_paroi() { return loipar_; }
-  bool utiliser_loi_paroi() const { return loi_paroi().non_nul() ? loipar_->use_shear() : false; }
+  inline const Turbulence_paroi_base& loi_paroi() const { return loipar_.valeur(); }
+  inline Turbulence_paroi_base& loi_paroi() { return loipar_.valeur(); }
+  bool utiliser_loi_paroi() const { return loipar_.non_nul() ? loipar_->use_shear() : false; }
+  bool has_loi_paroi_hyd() const { return loipar_.non_nul(); }
   virtual bool calcul_tenseur_Re(const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& Re) const { return false; }
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -87,7 +86,7 @@ protected:
   double LeCmu_ = CMU;
   Champ_Fonc la_viscosite_turbulente_, wall_length_;
   REF(Equation_base) mon_equation_;
-  Turbulence_paroi loipar_;
+  OWN_PTR(Turbulence_paroi_base)loipar_;
   double dt_impr_ustar_  = 1.e20, dt_impr_ustar_mean_only_  = 1.e20;
   int boundaries_ = 0;
   LIST(Nom) boundaries_list_;

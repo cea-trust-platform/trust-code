@@ -955,12 +955,12 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
           if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base,modele_turbulence.valeur()))
             {
               const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
-              const Turbulence_paroi& loipar = mod_turb.loi_paroi();
+              const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
               DoubleTab tau_tan;
 
-              if (loipar.non_nul() && loipar->use_shear() )
+              if (mod_turb.utiliser_loi_paroi())
                 {
-                  tau_tan.ref(loipar->Cisaillement_paroi());
+                  tau_tan.ref(loipar.Cisaillement_paroi());
 
                   //  Interpolation des vitesses a la paroi
 

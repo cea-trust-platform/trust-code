@@ -237,11 +237,11 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base,mod.valeur());
       coeff_turb = mod_turb_scal.conductivite_turbulente()->valeurs();
 
-      const Turbulence_paroi_scal& loipar = mod_turb_scal.loi_paroi();
+      const Turbulence_paroi_scal_base& loipar = mod_turb_scal.loi_paroi();
 
-      if (loipar.non_nul())
+      if (mod_turb_scal.loi_paroi_non_nulle())
         {
-          if( loipar->use_equivalent_distance() )
+          if( loipar.use_equivalent_distance() )
             {
               ind_loi_paroi=1;
               // const Paroi_scal_hyd_base_VEF& paroi_vef = ref_cast(Paroi_scal_hyd_base_VEF,loipar.valeur());
@@ -255,7 +255,7 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
               for (int ind_face=0; ind_face<nb_faces; ind_face++)
                 {
                   // d_equiv(ind_face) = paroi_vef.equivalent_distance(i_bord,ind_face);
-                  d_equiv(ind_face) = loipar->equivalent_distance(i_bord,ind_face);
+                  d_equiv(ind_face) = loipar.equivalent_distance(i_bord,ind_face);
                 }
             }
         }

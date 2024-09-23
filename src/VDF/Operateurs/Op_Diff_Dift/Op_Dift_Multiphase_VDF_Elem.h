@@ -32,7 +32,7 @@ public:
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   void completer() override;
   void mettre_a_jour(double ) override;
-  void associer_loipar(const Turbulence_paroi_scal& ) { throw; }
+  void associer_loipar(const Turbulence_paroi_scal_base& ) { throw; }
   void associer_diffusivite_turbulente(const Champ_Fonc& ch) { throw; }
 
   bool is_turb() const override { return true; }

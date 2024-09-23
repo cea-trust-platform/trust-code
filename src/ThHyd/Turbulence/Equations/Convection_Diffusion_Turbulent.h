@@ -16,8 +16,9 @@
 #ifndef Convection_Diffusion_Turbulent_included
 #define Convection_Diffusion_Turbulent_included
 
-#include <Modele_turbulence_scal.h>
+#include <Modele_turbulence_scal_base.h>
 #include <Equation_base.h>
+#include <TRUST_Deriv.h>
 
 class Operateur_Diff;
 
@@ -48,7 +49,7 @@ public :
 
 protected:
   Entree& lire_op_diff_turbulent(Entree&, const Equation_base&, Operateur_Diff&);
-  Modele_turbulence_scal le_modele_turbulence;
+  OWN_PTR(Modele_turbulence_scal_base) le_modele_turbulence;
 };
 
 #endif /* Convection_Diffusion_Turbulent_included */

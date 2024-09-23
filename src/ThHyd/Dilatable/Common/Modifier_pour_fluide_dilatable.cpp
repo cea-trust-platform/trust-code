@@ -140,7 +140,7 @@ void correction_nut_et_cisaillement_paroi_si_qc(Modele_turbulence_hyd_base& mod)
       multiplier_diviser_rho(nut, le_fluide, 0 /* multiplier */);
 
       // 2  On modifie le ciasaillement paroi
-      const DoubleTab& cisaillement_paroi = mod.loi_paroi()->Cisaillement_paroi();
+      const DoubleTab& cisaillement_paroi = mod.loi_paroi().Cisaillement_paroi();
       DoubleTab& cisaillement = ref_cast_non_const(DoubleTab, cisaillement_paroi);
       multiplier_diviser_rho(cisaillement, le_fluide, 0 /* multiplier */);
       cisaillement.echange_espace_virtuel();

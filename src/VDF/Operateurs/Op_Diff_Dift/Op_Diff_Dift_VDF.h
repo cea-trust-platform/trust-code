@@ -137,7 +137,7 @@ protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
-  associer_loipar_impl(const Turbulence_paroi_scal& loi_paroi)
+  associer_loipar_impl(const Turbulence_paroi_scal_base& loi_paroi)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
     eval_diff_turb.associer_loipar(loi_paroi);
@@ -154,8 +154,8 @@ protected:
         const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
         associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(lambda_t); // YES !
 
-        const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
-        if (loipar.non_nul()) associer_loipar_impl<_TYPE_,EVAL_TYPE>(loipar); // Et YES !
+        const Turbulence_paroi_scal_base& loipar = mod_turb.loi_paroi();
+        if (mod_turb.loi_paroi_non_nulle()) associer_loipar_impl<_TYPE_,EVAL_TYPE>(loipar); // Et YES !
 
         EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur());
         eval_diff_turb.init_ind_fluctu_term(); // utile juste pour Const/Var Elem... sinon on fait rien

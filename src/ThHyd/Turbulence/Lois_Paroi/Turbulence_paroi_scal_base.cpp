@@ -61,13 +61,13 @@ void Turbulence_paroi_scal_base::typer_lire_turbulence_paroi_scal(OWN_PTR(Turbul
   const Equation_base& eqn = mod_turb_scal.equation().probleme().equation(0); // equation hydraulique
   const RefObjU& modele_turbulence = eqn.get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
-  const Turbulence_paroi& loi = mod_turb_hydr.loi_paroi();
+  const Turbulence_paroi_base& loi = mod_turb_hydr.loi_paroi();
 
   if (typ != "negligeable_scalaire")
-    if ((loi->que_suis_je() == "negligeable_VDF") || (loi->que_suis_je() == "negligeable_VEF"))
+    if ((loi.que_suis_je() == "negligeable_VDF") || (loi.que_suis_je() == "negligeable_VEF"))
       {
         Cerr << "La loi de paroi de type " << typ << " choisie pour le scalaire n'est pas compatible avec" << finl;
-        Cerr << "la loi de type " << loi->que_suis_je() << " choisie pour l'hydraulique" << finl;
+        Cerr << "la loi de type " << loi.que_suis_je() << " choisie pour l'hydraulique" << finl;
         Cerr << "Utiliser le type 'negligeable_scalaire' pour le scalaire ou utiliser une loi de paroi" << finl;
         Cerr << "non negligeable pour l hydraulique" << finl;
         exit();

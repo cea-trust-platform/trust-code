@@ -72,8 +72,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
 {
   calculer_diffusivite_turbulente();
   const Milieu_base& mil = equation().probleme().milieu();
-  const Turbulence_paroi_scal& lp = loi_paroi();
-  if (lp.non_nul())
+  if (loi_paroi_non_nulle())
     loipar_->calculer_scal(diffusivite_turbulente_);
 
   const Probleme_base& mon_pb = mon_equation_->probleme();

@@ -52,7 +52,7 @@ void PlaqThVDF::mettre_a_jour(double )
   if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
     {
       const Modele_turbulence_scal_base& modele = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-      const Turbulence_paroi_scal& loipar = modele.loi_paroi();
+      const Turbulence_paroi_scal_base& loipar = modele.loi_paroi();
       Champ_front_calc& ch=ref_cast(Champ_front_calc, T_ext().valeur());
       ch.creer(eqn.probleme().le_nom(),frontiere_dis().le_nom(),eqn.inconnue().le_nom());
       //const Milieu_base& le_milieu=eqn.probleme().milieu();
@@ -74,8 +74,8 @@ void PlaqThVDF::mettre_a_jour(double )
           // double e2 = loipar.d_equiv(nbfs2+face);
           int local_face=le_dom_VDF.front_VF(boundary_index).num_local_face(face);
           int local_face2=le_dom_VDF.front_VF(boundary_index).num_local_face(nbfs2+face);
-          double e1 = loipar->equivalent_distance(boundary_index,local_face);
-          double e2 = loipar->equivalent_distance(boundary_index,local_face2);
+          double e1 = loipar.equivalent_distance(boundary_index,local_face);
+          double e2 = loipar.equivalent_distance(boundary_index,local_face2);
           tab(face,0) = tab(nbfs2+face,0) =
                           2./(1./h+e1/le_milieu.diffusivite()->valeurs()(0,0)
                               +e2/le_milieu.diffusivite()->valeurs()(0,0));

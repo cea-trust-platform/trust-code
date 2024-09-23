@@ -54,7 +54,7 @@ public:
   static constexpr bool IS_MODIF_DEQ = true;
   inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
   void init_ind_fluctu_term() override;
-  void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override;
+  void associer_loipar(const Turbulence_paroi_scal_base& loi_paroi) override;
 
 private:
   int ind_Fluctu_Term = 1;

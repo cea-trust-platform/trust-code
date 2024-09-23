@@ -59,7 +59,7 @@ double Op_Dift_VDF_Face_Axi_base::calculer_dt_stab() const
 
 void Op_Dift_VDF_Face_Axi_base::mettre_a_jour(double )
 {
-  if (le_modele_turbulence->loi_paroi().non_nul()) tau_tan.ref(le_modele_turbulence->loi_paroi()->Cisaillement_paroi());
+  if (le_modele_turbulence->has_loi_paroi_hyd()) tau_tan.ref(le_modele_turbulence->loi_paroi().Cisaillement_paroi());
 }
 
 // XXX E Saikali : j'ai fait comme ca sinon nu_t est pas initialiser dans le cas var

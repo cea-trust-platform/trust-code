@@ -224,7 +224,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 
 /*! @brief Prepare le calcul.
  *
- * Simple appe a Modele_turbulence_hyd->preparer_caclul() sur
+ * Simple appe a Modele_turbulence_hyd_base->preparer_caclul() sur
  *     le membre reprresentant la turbulence.
  *
  * @return (int) renvoie toujours 1
@@ -232,9 +232,9 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 int Navier_Stokes_Turbulent::preparer_calcul()
 {
 
-  Turbulence_paroi& loipar = le_modele_turbulence->loi_paroi();
-  if (loipar.non_nul())
-    loipar->init_lois_paroi();
+  Turbulence_paroi_base& loipar = le_modele_turbulence->loi_paroi();
+  if (le_modele_turbulence->has_loi_paroi_hyd())
+    loipar.init_lois_paroi();
 
   Navier_Stokes_std::preparer_calcul();
   le_modele_turbulence->preparer_calcul();
@@ -292,7 +292,7 @@ void Navier_Stokes_Turbulent::completer()
 {
   Navier_Stokes_std::completer();
   le_modele_turbulence->completer();
-  le_modele_turbulence->loi_paroi()->completer();
+  le_modele_turbulence->loi_paroi().completer();
 }
 
 /*! @brief Effecttue une mise a jour en temps de l'equation.

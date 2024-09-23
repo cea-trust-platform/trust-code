@@ -63,7 +63,7 @@ public:
 
   void associer_diff_turb(const Champ_Fonc& diff_turb) { throw; }
 
-  void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override { throw; }
+  void associer_loipar(const Turbulence_paroi_scal_base& loi_paroi) override { throw; }
 
   // pour CRTP : TODO : appel depuis eval mere
   inline const Correlation& get_corr() const { return corr_; }

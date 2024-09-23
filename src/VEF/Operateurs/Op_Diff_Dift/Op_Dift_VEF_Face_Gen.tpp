@@ -510,8 +510,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
   if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
     {
       const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
-      const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
-      if (loiparth->use_equivalent_distance())
+      const Turbulence_paroi_scal_base& loiparth = mod_turb_scal.loi_paroi();
+      if (loiparth.use_equivalent_distance())
         {
           // Les lois de parois ne s'appliquent qu'aux cas ou la CL est de type temperature imposee, car dans les autres cas
           // (flux impose et adiabatique) le flux a la paroi est connu et fixe.
@@ -519,7 +519,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
           int ldp_appli = 0;
           if (sub_type(Scalaire_impose_paroi, cl_base))
             ldp_appli = 1;
-          else if (loiparth->get_flag_calcul_ldp_en_flux_impose())
+          else if (loiparth.get_flag_calcul_ldp_en_flux_impose())
             if ((sub_type(Neumann_paroi, cl_base)) || (sub_type(Neumann_homogene, cl_base)))
               ldp_appli = 1;
 
@@ -533,7 +533,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
               // d_equiv contient la distance equivalente pour le bord
               // Dans d_equiv, pour les faces qui ne sont pas paroi_fixe (eg periodique, symetrie, etc...)
               // il y a la distance geometrique grace a l'initialisation du tableau dans la loi de paroi.
-              CDoubleArrView d_equiv = loiparth->equivalent_distance(n_bord).view_ro();
+              CDoubleArrView d_equiv = loiparth.equivalent_distance(n_bord).view_ro();
               CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
               CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
               CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();

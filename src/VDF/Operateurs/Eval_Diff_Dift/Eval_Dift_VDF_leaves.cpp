@@ -21,7 +21,7 @@ void Eval_Dift_VDF_Elem::init_ind_fluctu_term()
   if (loipar.est_nul()) ind_Fluctu_Term = 1;
 }
 
-void Eval_Dift_VDF_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+void Eval_Dift_VDF_Elem::associer_loipar(const Turbulence_paroi_scal_base& loi_paroi)
 {
   Eval_Dift_VDF::associer_loipar(loi_paroi);
   ind_Fluctu_Term = 0;
@@ -30,10 +30,10 @@ void Eval_Dift_VDF_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 void Eval_Dift_VDF_Face::mettre_a_jour()
 {
   Eval_Dift_VDF::mettre_a_jour();
-  if (le_modele_turbulence->loi_paroi().non_nul())
+  if (le_modele_turbulence->has_loi_paroi_hyd())
     {
       // Modif E. Saikali : on fait le ref seulement si le tableau a ete initialise, sinon pointeur nulle
-      const DoubleTab& tab = le_modele_turbulence->loi_paroi()->Cisaillement_paroi();
+      const DoubleTab& tab = le_modele_turbulence->loi_paroi().Cisaillement_paroi();
       if (tab.size_array() > 0) tau_tan_.ref(tab);
     }
 }

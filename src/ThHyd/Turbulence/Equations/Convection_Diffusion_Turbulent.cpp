@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Convection_Diffusion_Turbulent.h>
+#include <Modele_turbulence_scal_base.h>
 #include <Operateur_Diff_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
@@ -142,7 +143,7 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
 void Convection_Diffusion_Turbulent::completer()
 {
   le_modele_turbulence->completer();
-  le_modele_turbulence->loi_paroi()->completer();
+  le_modele_turbulence->loi_paroi().completer();
 }
 
 bool Convection_Diffusion_Turbulent::initTimeStep(double dt)
@@ -160,7 +161,7 @@ int Convection_Diffusion_Turbulent::preparer_calcul()
   return 1;
 }
 
-/*! @brief Simple appel a Modele_turbulence_scal::sauvegarder(Sortie&) sur le membre concerne.
+/*! @brief Simple appel a Modele_turbulence_scal_base::sauvegarder(Sortie&) sur le membre concerne.
  *
  *     Sauvegarde le modele de turbulence sur un flot
  *     de sortie.

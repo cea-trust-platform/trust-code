@@ -16,7 +16,7 @@
 #ifndef Eval_Dift_VDF_included
 #define Eval_Dift_VDF_included
 
-#include <Turbulence_paroi_scal.h>
+#include <Turbulence_paroi_scal_base.h>
 #include <Eval_Diff_VDF.h>
 #include <Champ_Fonc.h>
 #include <TRUSTVects.h>
@@ -82,9 +82,9 @@ public:
   {
     if (loipar.non_nul())
       {
-        int s = loipar->valeur().tab_equivalent_distance_size();
+        int s = loipar->tab_equivalent_distance_size();
         equivalent_distance.dimensionner(s);
-        for (int i = 0; i < s; i++) equivalent_distance[i].ref(loipar->valeur().tab_equivalent_distance(i));
+        for (int i = 0; i < s; i++) equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
       }
   }
 
@@ -97,13 +97,13 @@ public:
     is_multi_ = (diff_turb->valeurs().dimension(1) > 1) ? 1 : 0;
   }
 
-  inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi) { loipar = loi_paroi; }
+  inline virtual void associer_loipar(const Turbulence_paroi_scal_base& loi_paroi) { loipar = loi_paroi; }
   inline virtual void init_ind_fluctu_term() { /* do nothing */}
 
 protected:
   int is_multi_ = 0;
   REF(Champ_Fonc) ref_diffusivite_turbulente_;
-  REF(Turbulence_paroi_scal) loipar;
+  REF(Turbulence_paroi_scal_base) loipar;
   DoubleVects equivalent_distance;
   DoubleTab tab_diffusivite_turbulente;
 };

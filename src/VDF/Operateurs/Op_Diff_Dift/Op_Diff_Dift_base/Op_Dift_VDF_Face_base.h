@@ -18,10 +18,10 @@
 
 #include <Iterateur_VDF_Face.h>
 #include <Op_Dift_VDF_base.h>
-#include <Turbulence_paroi.h>
 #include <Op_VDF_Face.h>
 
 class Modele_turbulence_hyd_base;
+class Turbulence_paroi_base;
 class Eval_VDF_Face;
 
 class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
@@ -35,7 +35,7 @@ public:
 
   const Champ_base& diffusivite() const override = 0; // XXX : E Saikali : juste pour securite ...
 
-  inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */ }
+  inline void associer_loipar(const Turbulence_paroi_base& ) { /* do nothing */ }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl(iter_->domaine(), iter_->domaine_Cl(), matrice, secmem); }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
 

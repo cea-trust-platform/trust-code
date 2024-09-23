@@ -23,9 +23,9 @@
  *
  *      visqueux verifiant la condition d'incompressibilite div U = 0 avec
  *      modelisation de la turbulence.
- *      Un membre de type Modele_turbulence_hyd representera le modele de turbulence.
+ *      Un membre de type OWN_PTR(Modele_turbulence_hyd_base)  representera le modele de turbulence.
  *
- * @sa Navier_Stokes_Turbulent Modele_turbulence_hyd Pb_Thermohydraulique_Turbulent_QC
+ * @sa Navier_Stokes_Turbulent OWN_PTR(Modele_turbulence_hyd_base)  Pb_Thermohydraulique_Turbulent_QC
  */
 class Navier_Stokes_Turbulent_QC: public Navier_Stokes_Turbulent, public Navier_Stokes_Fluide_Dilatable_Proto
 {

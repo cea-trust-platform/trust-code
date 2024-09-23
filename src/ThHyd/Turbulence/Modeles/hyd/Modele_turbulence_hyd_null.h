@@ -16,7 +16,7 @@
 #ifndef Modele_turbulence_hyd_null_included
 #define Modele_turbulence_hyd_null_included
 
-#include <Modele_turbulence_hyd.h>
+#include <Modele_turbulence_hyd_base.h>
 
 class Modele_turbulence_hyd_null: public Modele_turbulence_hyd_base
 {
