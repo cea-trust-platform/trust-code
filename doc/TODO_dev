@@ -1,0 +1,6 @@
+@@ Elie/Adrien
+
+- OWN_PTR : les classes Discretisation_XXX => champ_inc/don/fonc => on type dedans
+- OWN_PTR : dans Equation_base, parametre_equation() return un OWN_PTR ...
+- OWN_PTR : grep dans cpp ... faut limiter l'utilisation si possible
+- Operateur!!
