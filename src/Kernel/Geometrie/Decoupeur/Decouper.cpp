@@ -193,7 +193,7 @@ static void postraiter_decoupage(const Nom& nom_fichier,
   else if (nom_fichier.finit_par(".med"))
     {
       Cerr << "Postprocessing of the splitting at the MED format: " << nom_fichier << finl;
-      Format_Post post;
+      OWN_PTR(Format_Post_base) post;
       post.typer("Format_Post_Med");
       Nom filename(nom_fichier.getPrefix(".med"));
       post->initialize(filename, 1, "SIMPLE");

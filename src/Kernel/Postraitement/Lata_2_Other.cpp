@@ -212,7 +212,7 @@ Entree& Lata_2_Other::interpreter(Entree& is)
 
       Nom type("Format_Post_");
       type += format_post_;
-      Format_Post post_typer;
+      OWN_PTR(Format_Post_base) post_typer;
       post_typer.typer(type.getChar());
       Format_Post_base& post = ref_cast(Format_Post_base, post_typer.valeur());
       Nom nom_2(nom_pdb);

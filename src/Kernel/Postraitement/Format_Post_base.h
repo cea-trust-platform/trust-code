@@ -142,6 +142,4 @@ public:
 
 };
 
-using Format_Post = OWN_PTR(Format_Post_base);
-
 #endif /* Format_Post_base_included */

@@ -62,7 +62,7 @@ Entree& Ecrire_Champ_MED::interpreter(Entree& is)
 
   Objet_U& obj_dom=objet(nom_domaine);
   const Domaine& dom = ref_cast(Domaine,obj_dom);
-  Format_Post post_typer;
+  OWN_PTR(Format_Post_base) post_typer;
   post_typer.typer("format_post_med");
   Format_Post_base& post=ref_cast(Format_Post_base,post_typer.valeur());
   Nom nom_fic2(nom_fic);

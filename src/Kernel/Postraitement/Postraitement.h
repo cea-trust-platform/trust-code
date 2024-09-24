@@ -207,7 +207,7 @@ protected:
   LIST(REF(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
   LIST(Nom) noms_tableaux_;
 
-  Format_Post format_post;
+  OWN_PTR(Format_Post_base) format_post;
 
   static LIST(Nom) noms_fichiers_sondes_;
   int sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_;

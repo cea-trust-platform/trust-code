@@ -323,7 +323,6 @@ Entree& Postraitement::readOn(Entree& s)
   // lu le bloc statistiques ET le bloc sondes)
   les_sondes_.completer();
 
-  //On type l objet Format_Post
   Nom type_format = "Format_Post_";
   type_format += format;
   format_post.typer(type_format.getChar());
