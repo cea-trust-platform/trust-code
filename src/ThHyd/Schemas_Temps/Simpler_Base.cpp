@@ -173,9 +173,9 @@ Entree& Simpler_Base::readOn(Entree& is )
  * .. si les params sont vides on copie ceux du simpler
  *
  */
-Parametre_equation& Simpler_Base::get_and_set_parametre_equation(Equation_base& eqn)
+OWN_PTR(Parametre_equation_base)& Simpler_Base::get_and_set_parametre_equation(Equation_base& eqn)
 {
-  Parametre_equation& param = eqn.parametre_equation();
+  OWN_PTR(Parametre_equation_base)& param = eqn.parametre_equation();
   if (param.est_nul())
     {
       param.typer("Parametre_implicite");

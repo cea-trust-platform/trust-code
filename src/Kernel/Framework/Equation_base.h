@@ -221,8 +221,8 @@ public :
   {
     return Gradient_conjugue_diff_impl(secmem,solution,terme_mul.dimension_tot(0),terme_mul);
   }
-  inline Parametre_equation& parametre_equation() { return parametre_equation_ ; }
-  inline const Parametre_equation& parametre_equation() const { return parametre_equation_ ; }
+  inline OWN_PTR(Parametre_equation_base)& parametre_equation() { return parametre_equation_ ; }
+  inline const OWN_PTR(Parametre_equation_base)& parametre_equation() const { return parametre_equation_ ; }
   virtual const RefObjU& get_modele(Type_modele type) const;
   virtual int equation_non_resolue() const;
   int disable_equation_residual() const { return disable_equation_residual_; };
@@ -262,7 +262,7 @@ protected :
   int sys_invariant_;
   int implicite_;
   bool has_time_factor_; // Parameter set to 1 if convection has a prefactor (eg rhoCp in energy)
-  Parametre_equation parametre_equation_;
+  OWN_PTR(Parametre_equation_base) parametre_equation_;
 
   LIST(RefObjU) liste_modeles_; //Le premier element de la liste est le modele nul
   Champs_compris champs_compris_;

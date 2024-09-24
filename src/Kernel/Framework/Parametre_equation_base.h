@@ -28,6 +28,4 @@ class Parametre_equation_base : public Objet_U
   Declare_base(Parametre_equation_base);
 };
 
-using Parametre_equation = OWN_PTR(Parametre_equation_base);
-
 #endif /* Parametre_equation_base_included */
