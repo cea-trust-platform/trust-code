@@ -34,7 +34,7 @@ public:
   void mettre_a_jour(double ) override;
   void preparer_calcul() override;
   void modifier_mu(DoubleTab& ) const { throw; }
-  void associer_diffusivite_turbulente(const Champ_Fonc& ch) = delete;
+  void associer_diffusivite_turbulente(const Champ_Fonc_base& ch) = delete;
 
   double calculer_dt_stab() const override;
   bool is_turb() const override { return true; }

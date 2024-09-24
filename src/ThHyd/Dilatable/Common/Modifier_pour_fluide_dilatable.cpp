@@ -136,7 +136,7 @@ void correction_nut_et_cisaillement_paroi_si_qc(Modele_turbulence_hyd_base& mod)
       const Fluide_Dilatable_base& le_fluide = ref_cast(Fluide_Dilatable_base, mod.equation().probleme().milieu());
       // 1 on multiplie nu_t par rho
 
-      DoubleTab& nut = ref_cast_non_const(DoubleTab, mod.viscosite_turbulente()->valeurs());
+      DoubleTab& nut = ref_cast_non_const(DoubleTab, mod.viscosite_turbulente().valeurs());
       multiplier_diviser_rho(nut, le_fluide, 0 /* multiplier */);
 
       // 2  On modifie le ciasaillement paroi

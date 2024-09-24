@@ -64,7 +64,7 @@ const Champ_base& Champ_Generique_Divergence::get_champ_without_evaluation(Champ
 
   if (Op_Div_.non_nul())
     {
-      Champ_Fonc es_tmp;
+      OWN_PTR(Champ_Fonc_base)  es_tmp;
       espace_stockage = creer_espace_stockage(scalaire,1,es_tmp);
     }
   else
@@ -83,7 +83,7 @@ const Champ_base& Champ_Generique_Divergence::get_champ(Champ& espace_stockage) 
 
   if (Op_Div_.non_nul())
     {
-      Champ_Fonc es_tmp;
+      OWN_PTR(Champ_Fonc_base)  es_tmp;
       espace_stockage = creer_espace_stockage(scalaire,1,es_tmp);
       Op_Div_.calculer(source.valeurs(),espace_stockage->valeurs());
     }

@@ -19,11 +19,11 @@
 #include <Viscosite_turbulente_base.h>
 #include <Transport_turbulent_base.h>
 #include <Correlation_base.h>
-#include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
 #include <vector>
 
 class Operateur_Diff_base;
+class Champ_Fonc_base;
 class Champs_compris;
 class Probleme_base;
 class Equation_base;
@@ -74,7 +74,7 @@ protected:
   bool is_pbm_ = true;
   DoubleTab nu_ou_lambda_turb_; // comme le nom dit
   OWN_PTR(Correlation_base) corr_; // correlation de viscosite/transport turbulente
-  std::vector<Champ_Fonc> nu_ou_lambda_turb_post_, mu_ou_alpha_turb_post_; // champ de postraitement
+  std::vector<OWN_PTR(Champ_Fonc_base)> nu_ou_lambda_turb_post_, mu_ou_alpha_turb_post_; // champ de postraitement
   Motcles noms_nu_ou_lambda_turb_post_, noms_mu_ou_alpha_turb_post_; //leurs noms
   REF(Probleme_base) pbm_;
   REF(Champs_compris) le_chmp_compris_;

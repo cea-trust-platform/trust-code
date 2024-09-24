@@ -31,7 +31,7 @@ public:
   void set_param(Param& param) override;
 
 protected:
-  Champ_Fonc& calculer_viscosite_turbulente() override;
+  Champ_Fonc_base& calculer_viscosite_turbulente() override;
   virtual void calculer_S_barre();
 
   double cs_ = 0.18;

@@ -69,7 +69,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Domai
   discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, nb_pas_dt, temps, champ, sous_type);
 }
 
-void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Fonc& champ) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, OWN_PTR(Champ_Fonc_base)& champ) const
 {
   Noms noms;
   Noms unites;
@@ -136,7 +136,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Domai
  *
  */
 void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                            Champ_Fonc& champ) const
+                                            OWN_PTR(Champ_Fonc_base)& champ) const
 
 {
   test_demande_description(directive, champ.que_suis_je());
@@ -219,13 +219,13 @@ void Discretisation_base::creer_champ(OWN_PTR(Champ_Inc_base)& ch, const Domaine
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
 }
 
-/*! @brief Methode statique qui cree un Champ_Fonc du type specifie.
+/*! @brief Methode statique qui cree un OWN_PTR(Champ_Fonc_base)  du type specifie.
  *
  * Les parametres "directive" et "nom_discretisation" sont
  *  utilises pour l'affichage uniquement et sont optionnels
  *
  */
-void Discretisation_base::creer_champ(Champ_Fonc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
+void Discretisation_base::creer_champ(OWN_PTR(Champ_Fonc_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
                                       const Nom& nom_discretisation)
 {
   //Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
@@ -258,7 +258,7 @@ Domaine_dis_base& Discretisation_base::discretiser() const
   return Domaine_dis_cache::Build_or_get(type, dom);
 }
 
-void Discretisation_base::volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const
+void Discretisation_base::volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Discretization of the field 'volume of meshes'" << finl;
   const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z);
@@ -268,7 +268,7 @@ void Discretisation_base::volume_maille(const Schema_Temps_base& sch, const Doma
   tab = domaine_VF.volumes();
 }
 
-void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const
+void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Discretization of the field mesh numbering" << finl;
   const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z);
@@ -301,7 +301,7 @@ void Discretisation_base::mesh_numbering(const Schema_Temps_base& sch, const Dom
     }
 }
 
-void Discretisation_base::residu(const Domaine_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const
+void Discretisation_base::residu(const Domaine_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const
 {
   Cerr << "Discret_Thyd::residu() does nothing ! " << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();

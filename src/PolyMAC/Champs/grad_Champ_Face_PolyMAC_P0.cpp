@@ -18,7 +18,7 @@
 #include <Frottement_impose_base.h>
 #include <Champ_Face_PolyMAC_P0.h>
 
-#include <Champ_Fonc.h>
+
 #include <Dirichlet.h>
 #include <EChaine.h>
 

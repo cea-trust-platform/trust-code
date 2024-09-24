@@ -17,7 +17,7 @@
 #define Source_PDF_EF_included
 
 #include <Source_PDF_base.h>
-#include <Champ_Fonc.h>
+
 #include <TRUST_Ref.h>
 #include <Matrice.h>
 
@@ -79,8 +79,8 @@ protected:
 
   DoubleVect tab_u_star_ibm_;                //!< valeurs des u* IBM calculees localement
   DoubleVect tab_y_plus_ibm_;                //!< valeurs des d+ IBM calculees localement
-  mutable Champ_Fonc champ_u_star_ibm_;          //!< Champ pour postraitement
-  mutable Champ_Fonc champ_y_plus_ibm_;          //!< Champ pour postraitement
+  mutable OWN_PTR(Champ_Fonc_base)  champ_u_star_ibm_;          //!< Champ pour postraitement
+  mutable OWN_PTR(Champ_Fonc_base)  champ_y_plus_ibm_;          //!< Champ pour postraitement
 };
 
 #endif

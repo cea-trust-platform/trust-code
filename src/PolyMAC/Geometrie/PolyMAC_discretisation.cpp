@@ -22,11 +22,9 @@
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
 #include <DescStructure.h>
-
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
-
 #include <grad_U_Champ_Face_PolyMAC.h>
 
 Implemente_instanciable(PolyMAC_discretisation, "PolyMAC", Discret_Thyd);
@@ -131,7 +129,7 @@ void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Do
  *
  */
 void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                               Champ_Fonc& champ) const
+                                               OWN_PTR(Champ_Fonc_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -158,7 +156,7 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(const Motcle& directive,
                                                         Objet_U& champ) const
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
+  OWN_PTR(Champ_Fonc_base)  * champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
   Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
@@ -249,7 +247,7 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(const Motcle& directive,
     }
 }
 
-void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Discretisation de la distance paroi" << finl;
   Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
@@ -263,7 +261,7 @@ void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch, Domain
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de la vorticite " << finl;
@@ -319,7 +317,7 @@ void PolyMAC_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base
 #endif
 }
 
-void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
 #ifdef dependance
   if (sub_type(Champ_Som_PolyMAC,ch_vitesse))
@@ -416,7 +414,7 @@ void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_d
 #endif
 }
 
-void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
@@ -436,7 +434,7 @@ void PolyMAC_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_
 #endif
 }
 
-void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
@@ -456,7 +454,7 @@ void PolyMAC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_
 #endif
 }
 
-void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, OWN_PTR(Champ_Fonc_base)& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
@@ -476,7 +474,7 @@ void PolyMAC_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_
 #endif
 }
 
-void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vitesse);
   const Domaine_PolyMAC& domaine_poly = ref_cast(Domaine_PolyMAC, z);
@@ -514,7 +512,7 @@ void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_
   ch_grad_u.changer_temps(ch_vitesse.temps());
 }
 
-void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, OWN_PTR(Champ_Fonc_base)& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
@@ -537,9 +535,9 @@ void PolyMAC_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_
 }
 void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &champs_param) const
 {
-  Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
-  lambda_tab_dis.typer("Champ_Fonc_Tabule_Elem_PolyMAC");
-  Champ_Fonc_Tabule_Elem_PolyMAC& ch_tab_lambda_dis = ref_cast(Champ_Fonc_Tabule_Elem_PolyMAC, lambda_tab_dis.valeur());
+  lambda_tab.typer_champ_tabule_discretise("Champ_Fonc_Tabule_Elem_PolyMAC");
+  Champ_Fonc_base& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
+  Champ_Fonc_Tabule_Elem_PolyMAC& ch_tab_lambda_dis = ref_cast(Champ_Fonc_Tabule_Elem_PolyMAC, lambda_tab_dis);
   //ch_tab_lambda_dis.nommer(nom_champ);
   ch_tab_lambda_dis.associer_domaine_dis_base(domaine_poly);
   ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());
@@ -622,7 +620,7 @@ Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, con
   return type;
 }
 
-void PolyMAC_discretisation::distance_paroi_globale(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void PolyMAC_discretisation::distance_paroi_globale(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Discretisation de distance paroi globale" << finl;
   Noms noms(1), unites(1);

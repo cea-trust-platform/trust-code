@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <Navier_Stokes_std.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Champ_Fonc.h>
+
 
 Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC, "Champ_Fonc_Elem_PolyMAC_P0_TC", Champ_Fonc_Elem_PolyMAC);
 

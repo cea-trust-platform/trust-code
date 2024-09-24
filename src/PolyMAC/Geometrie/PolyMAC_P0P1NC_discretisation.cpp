@@ -21,17 +21,14 @@
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
 #include <DescStructure.h>
-
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
-
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_P0P1NC_base.h>
 
 Implemente_instanciable(PolyMAC_P0P1NC_discretisation, "PolyMAC_P0P1NC", PolyMAC_discretisation);
 // XD polymac_P0P1NC discretisation_base polymac_P0P1NC -1 polymac_P0P1NC discretization (previously polymac discretization compatible with pb_multi).
-
 
 Entree& PolyMAC_P0P1NC_discretisation::readOn(Entree& s) { return s; }
 
@@ -50,7 +47,7 @@ Sortie& PolyMAC_P0P1NC_discretisation::printOn(Sortie& s) const { return s; }
  *
  */
 void PolyMAC_P0P1NC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
-                                                      double temps, OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
+                                                      double temps, OWN_PTR(Champ_Inc_base) &champ, const Nom& sous_type) const
 {
   const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC, z);
 
@@ -65,9 +62,8 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ(const Motcle& directive, c
 
   // Le type de champ de vitesse depend du type d'element :
   int zp1 = false, default_nb_comp = 0, rang = motcles.search(directive);
-  Nom type_elem = Nom("Champ_Elem_") + que_suis_je(), type_som = "Champ_Som_PolyMAC_P0P1NC",
-      type_champ_scal = zp1 ? type_som : type_elem,
-      type_champ_vitesse = zp1 ? "Champ_Arete_PolyMAC_P0P1NC" : Nom("Champ_Face_") + que_suis_je(), type;
+  Nom type_elem = Nom("Champ_Elem_") + que_suis_je(), type_som = "Champ_Som_PolyMAC_P0P1NC", type_champ_scal = zp1 ? type_som : type_elem, type_champ_vitesse =
+                                                                                                                 zp1 ? "Champ_Arete_PolyMAC_P0P1NC" : Nom("Champ_Face_") + que_suis_je(), type;
   switch(rang)
     {
     case 0:
@@ -142,8 +138,8 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(const Motcle& dir
                                                                double temps, Objet_U& champ) const
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
-  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
+  Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC, z);
 
@@ -238,7 +234,7 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(const Motcle& dir
     }
 }
 
-void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale
   Noms noms(1), unites(1);
@@ -251,7 +247,7 @@ void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis_base& z, const Doma
       tab_y_p(i, n) = -1.;
 }
 
-void PolyMAC_P0P1NC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0P1NC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   abort();
 }
@@ -289,7 +285,7 @@ Nom PolyMAC_P0P1NC_discretisation::get_name_of_type_for(const Nom& class_operate
   return type;
 }
 
-void PolyMAC_P0P1NC_discretisation::residu(const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, Champ_Fonc& champ) const
+void PolyMAC_P0P1NC_discretisation::residu(const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, OWN_PTR(Champ_Fonc_base) &champ) const
 {
   Nom ch_name(ch_inco.le_nom());
   ch_name += "_residu";

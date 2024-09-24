@@ -39,7 +39,7 @@ public:
 
 protected:
   double LeScturb_ = 0.7;
-  Champ_Fonc& calculer_diffusion_turbulente();
+  Champ_Fonc_base& calculer_diffusion_turbulente();
 };
 
 #endif /* Modele_turbulence_scal_Schmidt_included */

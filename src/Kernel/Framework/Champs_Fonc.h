@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,15 @@
 #ifndef Champs_Fonc_included
 #define Champs_Fonc_included
 
-#include <Champ_Fonc.h>
+#include <Champ_Fonc_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 
-/*! @brief classe Champs_Fonc Liste de Champ_Fonc declaree grace a la macro LIST(X)
+/*! @brief classe Champs_Fonc Liste de OWN_PTR(Champ_Fonc_base)  declaree grace a la macro LIST(X)
  *
- * @sa Champ_Fonc
+ * @sa Champ_Fonc_base
  */
-class Champs_Fonc : public LIST(Champ_Fonc)
+class Champs_Fonc : public LIST(OWN_PTR(Champ_Fonc_base))
 {
   Declare_instanciable(Champs_Fonc);
 public :

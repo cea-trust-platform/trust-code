@@ -246,7 +246,7 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif, const DoubleTa
 
 DoubleTab& Op_Dift_standard_VEF_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleTab& nu_turb = diffusivite_turbulente().valeurs();
   DoubleTab nu(nu_turb);
   remplir_nu(nu);
   ajouter_cas_vectoriel(inconnue, resu, nu, nu_turb);

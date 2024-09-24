@@ -112,9 +112,9 @@ void Champ_Generique_Morceau_Equation::completer(const Postraitement_base& post)
   Champ_Gen_de_Champs_Gen::completer(post);
 }
 
-Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature_du_champ& nature,
-                                                                    const int nb_comp,
-                                                                    Champ_Fonc& es_tmp) const
+OWN_PTR(Champ_Fonc_base)& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature_du_champ& nature,
+                                                                                  const int nb_comp,
+                                                                                  OWN_PTR(Champ_Fonc_base)& es_tmp) const
 {
   Noms noms;
   Noms unites;
@@ -152,7 +152,7 @@ Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature
  */
 const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stockage) const
 {
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   Nature_du_champ nature;
   int nb_comp = -1;
 
@@ -176,7 +176,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
 
 const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation(Champ& espace_stockage) const
 {
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   Nature_du_champ nature;
   int nb_comp = -1;
 

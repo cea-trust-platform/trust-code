@@ -80,7 +80,7 @@ protected:
   std::vector<OWN_PTR(Champ_Inc_base)> vit_phases_; //vitesses de chaque phase
   Motcles noms_vit_phases_; //leurs noms
 
-  std::vector<Champ_Fonc> grad_vit_phases_; //gradient des vitesses de chaque phase
+  std::vector<OWN_PTR(Champ_Fonc_base)> grad_vit_phases_; //gradient des vitesses de chaque phase
   Motcles noms_grad_vit_phases_; //leurs noms
 
   Operateur_Evanescence evanescence_;

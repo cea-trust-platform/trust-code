@@ -129,7 +129,7 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
   const Champ_Don& conductivite = le_fluide.conductivite();
   const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
 
-  const DoubleTab& conductivite_turbulente = mon_modele_turb_scal->conductivite_turbulente()->valeurs();
+  const DoubleTab& conductivite_turbulente = mon_modele_turb_scal->conductivite_turbulente().valeurs();
 
   const IntTab& elems = domaine_EF.domaine().les_elems();
   int nsom = domaine_EF.nb_som_face();

@@ -16,7 +16,8 @@
 #ifndef Champ_Fonc_Tabule_included
 #define Champ_Fonc_Tabule_included
 
-#include <Champ_Fonc.h>
+#include <Champ_Fonc_base.h>
+#include <TRUST_Deriv.h>
 #include <Table.h>
 
 class Domaine_dis_base;
@@ -24,7 +25,7 @@ class Domaine_dis_base;
 /*! @brief Classe Champ_Fonc_Tabule Classe derivee de Champ_Fonc_base qui represente les
  *
  *      champs fonctions d'un autre champ par tabulation
- *      L'objet porte un membre de type Champ_Fonc qui stocke
+ *      L'objet porte un membre de type OWN_PTR(Champ_Fonc_base)  qui stocke
  *      les valeurs du champ tabule.
  *
  * @sa Champ_Fonc_base
@@ -37,51 +38,52 @@ public:
   using Champ_Fonc_base::valeurs;
   Champ_base& affecter_(const Champ_base& ) override ;
 
-  inline const Champ_Fonc& le_champ_tabule_discretise() const;
+  inline const Champ_Fonc_base& le_champ_tabule_discretise() const;
 
-  inline const DoubleTab& valeurs() const override { return le_champ_tabule_discretise()->valeurs(); }
-  inline const Domaine_dis_base& domaine_dis_base() const override { return le_champ_tabule_discretise()->domaine_dis_base(); }
-  inline const Domaine_VF& domaine_vf() const override { return le_champ_tabule_discretise()->domaine_vf(); }
-  inline Champ_Fonc& le_champ_tabule_discretise() { return le_champ_tabule_dis; }
+  inline const DoubleTab& valeurs() const override { return le_champ_tabule_discretise().valeurs(); }
+  inline const Domaine_dis_base& domaine_dis_base() const override { return le_champ_tabule_discretise().domaine_dis_base(); }
+  inline const Domaine_VF& domaine_vf() const override { return le_champ_tabule_discretise().domaine_vf(); }
+  inline Champ_Fonc_base& le_champ_tabule_discretise() { return le_champ_tabule_dis.valeur(); }
+  void typer_champ_tabule_discretise(const Nom& typ) { le_champ_tabule_dis.typer(typ); }
   inline const Table& table() const { return la_table; }
   inline Table& table() { return la_table; }
-  inline DoubleTab& valeurs() override { return le_champ_tabule_discretise()->valeurs(); }
+  inline DoubleTab& valeurs() override { return le_champ_tabule_discretise().valeurs(); }
 
   inline int initialiser(const double un_temps) override
   {
-    le_champ_tabule_discretise()->initialiser(un_temps);
+    le_champ_tabule_discretise().initialiser(un_temps);
     return 1;
   }
 
   inline void mettre_a_jour(double un_temps) override
   {
-    le_champ_tabule_discretise()->mettre_a_jour(un_temps);
+    le_champ_tabule_discretise().mettre_a_jour(un_temps);
     Champ_Fonc_base::mettre_a_jour(un_temps);
   }
 
   inline void associer_domaine_dis_base(const Domaine_dis_base& domaine_dis) override
   {
-    le_champ_tabule_discretise()->associer_domaine_dis_base(domaine_dis);
+    le_champ_tabule_discretise().associer_domaine_dis_base(domaine_dis);
   }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const override
   {
-    return le_champ_tabule_discretise()->valeur_a_elem(position, les_valeurs, le_poly);
+    return le_champ_tabule_discretise().valeur_a_elem(position, les_valeurs, le_poly);
   }
 
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const override
   {
-    return le_champ_tabule_discretise()->valeur_aux_sommets_compo(dom, les_valeurs, compo);
+    return le_champ_tabule_discretise().valeur_aux_sommets_compo(dom, les_valeurs, compo);
   }
 
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const override
   {
-    return le_champ_tabule_discretise()->valeur_aux_elems(positions, les_polys, les_valeurs);
+    return le_champ_tabule_discretise().valeur_aux_elems(positions, les_polys, les_valeurs);
   }
 
   inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& les_valeurs) const override
   {
-    return le_champ_tabule_discretise()->valeur_aux_sommets(dom, les_valeurs);
+    return le_champ_tabule_discretise().valeur_aux_sommets(dom, les_valeurs);
   }
 
   inline Noms& noms_champs_parametre() { return noms_champs_parametre_; };
@@ -89,7 +91,7 @@ public:
 
   inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly,int ncomp) const override
   {
-    return le_champ_tabule_discretise()->valeur_a_elem_compo(position, le_poly, ncomp);
+    return le_champ_tabule_discretise().valeur_a_elem_compo(position, le_poly, ncomp);
   }
 
   // Methodes utiles pour notifier l'utilisateur suite au changement du syntaxe
@@ -100,16 +102,16 @@ protected:
   Noms noms_champs_parametre_, noms_pbs_;
   Nom nom_domaine;
   Table la_table;
-  Champ_Fonc le_champ_tabule_dis;
+  OWN_PTR(Champ_Fonc_base)  le_champ_tabule_dis;
 };
 
 /*! @brief Renvoie le champ tabule calcule.
  *
  * (version const)
  *
- * @return (Champ_Fonc&) le champ tabule calcule
+ * @return (Champ_Fonc_base&) le champ tabule calcule
  */
-inline const Champ_Fonc& Champ_Fonc_Tabule::le_champ_tabule_discretise() const
+inline const Champ_Fonc_base& Champ_Fonc_Tabule::le_champ_tabule_discretise() const
 {
   if (!le_champ_tabule_dis.non_nul())
     {

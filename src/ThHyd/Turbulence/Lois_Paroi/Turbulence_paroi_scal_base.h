@@ -17,15 +17,14 @@
 #define Turbulence_paroi_scal_base_included
 
 #include <Champs_compris_interface.h>
+#include <Champ_Fonc_base.h>
 #include <Champs_compris.h>
-
-
-#include <Champ_Fonc.h>
 #include <TRUSTVects.h>
-
 #include <TRUST_Ref.h>
 
 class Modele_turbulence_scal_base;
+class Domaine_Cl_dis_base;
+class Domaine_dis_base;
 class Probleme_base;
 class EcrFicPartage;
 class Domaine_VF;
@@ -55,7 +54,6 @@ public:
   virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&)=0;
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
-  inline int calculer_scal(Champ_Fonc&);
   virtual int calculer_scal(Champ_Fonc_base&) =0;
   virtual void imprimer_nusselt(Sortie&) const
   {
@@ -141,16 +139,6 @@ inline double Turbulence_paroi_scal_base::T_plus(double y_plus, double Pr)
 inline void Turbulence_paroi_scal_base::associer_modele(const Modele_turbulence_scal_base& le_modele)
 {
   mon_modele_turb_scal = le_modele;
-}
-
-/*! @brief Simple appel a int calculer_scal(Champ_Fonc_base& ).
- *
- * @param (Champ_Fonc& ch)
- * @return (int) code de retour propage
- */
-inline int Turbulence_paroi_scal_base::calculer_scal(Champ_Fonc& ch)
-{
-  return calculer_scal(ch.valeur());
 }
 
 #endif

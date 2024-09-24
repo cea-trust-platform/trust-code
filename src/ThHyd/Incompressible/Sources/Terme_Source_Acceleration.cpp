@@ -233,7 +233,7 @@ void Terme_Source_Acceleration::lire_data(Entree& s)
     dis.discretiser_champ("vitesse", domaine, "acceleration_terme_source", "kg/ms^2",
                           Objet_U::dimension, /* composantes */
                           temps,
-                          get_set_terme_source_post());
+                          terme_source_post_);
     champs_compris_.ajoute_champ(terme_source_post_);
   }
 }
@@ -247,10 +247,10 @@ const Champ_Fonc_base& Terme_Source_Acceleration::get_terme_source_post() const
   return terme_source_post_.valeur();
 }
 
-Champ_Fonc& Terme_Source_Acceleration::get_set_terme_source_post() const
+Champ_Fonc_base& Terme_Source_Acceleration::get_set_terme_source_post() const
 {
   // terme_source_post_ est mutable, on peut donc le renvoyer "non const"
-  return terme_source_post_;
+  return terme_source_post_.valeur();
 }
 
 /*! @brief Calcul de la valeur du champ la_source aux faces en fonction de - calculer_vitesse_faces()
@@ -394,7 +394,7 @@ void Terme_Source_Acceleration::mettre_a_jour(double temps)
       domegadt_->mettre_a_jour(temps);
       centre_rotation_->mettre_a_jour(temps);
     }
-  get_set_terme_source_post()->mettre_a_jour(temps);
+  get_set_terme_source_post().mettre_a_jour(temps);
 }
 
 /*! @brief Methode surchargee de Source_base.

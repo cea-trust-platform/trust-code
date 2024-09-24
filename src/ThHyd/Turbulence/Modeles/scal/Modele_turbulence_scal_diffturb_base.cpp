@@ -25,9 +25,9 @@ Entree& Modele_turbulence_scal_diffturb_base::readOn(Entree& is) { return Modele
 
 /*! @brief Associe une viscosite turbulente au modele de turbulence.
  *
- * @param (Champ_Fonc& visc_turb) le champ fonction representant la viscosite turbulente a associer.
+ * @param (Champ_Fonc_base& visc_turb) le champ fonction representant la viscosite turbulente a associer.
  */
-void Modele_turbulence_scal_diffturb_base::associer_viscosite_turbulente(const Champ_Fonc& visc_turb)
+void Modele_turbulence_scal_diffturb_base::associer_viscosite_turbulente(const Champ_Fonc_base& visc_turb)
 {
   la_viscosite_turbulente_ = visc_turb;
 }
@@ -44,7 +44,7 @@ void Modele_turbulence_scal_diffturb_base::completer()
   const Probleme_base& mon_pb = equation().probleme();
   const RefObjU& modele_turbulence = mon_pb.equation(0).get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
-  const Champ_Fonc& visc_turb = mod_turb_hydr.viscosite_turbulente();
+  const Champ_Fonc_base& visc_turb = mod_turb_hydr.viscosite_turbulente();
   associer_viscosite_turbulente(visc_turb);
 }
 

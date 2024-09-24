@@ -31,7 +31,7 @@ public:
   void set_param(Param& param) override;
 protected:
   double cw_ = 0.5;
-  Champ_Fonc& calculer_viscosite_turbulente() override;
+  Champ_Fonc_base& calculer_viscosite_turbulente() override;
 };
 
 #endif /* Modele_turbulence_hyd_LES_Wale_VEF_included */

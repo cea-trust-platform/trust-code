@@ -40,7 +40,7 @@ void Modele_turbulence_hyd_LES_Wale_VEF::set_param(Param& param)
   param.ajouter_condition("value_of_cw_ge_0", "sous_maille_Wale model constant must be positive.");
 }
 
-Champ_Fonc& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
+Champ_Fonc_base& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulente()
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VF_.valeur());
   double temps = mon_equation_->inconnue().temps();

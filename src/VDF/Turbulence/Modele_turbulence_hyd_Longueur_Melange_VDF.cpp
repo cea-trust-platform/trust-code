@@ -51,7 +51,7 @@ int Modele_turbulence_hyd_Longueur_Melange_VDF::preparer_calcul()
   return 1;
 }
 
-Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbulente()
+Champ_Fonc_base& Modele_turbulence_hyd_Longueur_Melange_VDF::calculer_viscosite_turbulente()
 {
   double hauteur = std::fabs(alt_max_ - alt_min_); // test alt_max>alt_min a faire, plutot que de prendre fabs ??
   //Attention, ici "hauteur" est la hauteur reelle du canal (pas la demi-hauteur)

@@ -238,7 +238,7 @@ void Modele_turbulence_hyd_base::discretiser()
   champs_compris_.ajoute_champ(wall_length_);
 }
 
-void Modele_turbulence_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void Modele_turbulence_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   int is_dilat = equation().probleme().is_dilatable();
   if (!is_dilat)
@@ -251,14 +251,14 @@ void Modele_turbulence_hyd_base::discretiser_visc_turb(const Schema_Temps_base& 
   dis.discretiser_champ("champ_elem", z, nom, unite, 1, sch.temps_courant(), ch);
 }
 
-void Modele_turbulence_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void Modele_turbulence_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Turbulent viscosity correction field discretization" << finl;
   const Discretisation_base& dis = mon_equation_->discretisation();
   dis.discretiser_champ("champ_elem", z, "corr_visco_turb", "adimensionnel", 1, sch.temps_courant(), ch);
 }
 
-void Modele_turbulence_hyd_base::discretiser_K(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void Modele_turbulence_hyd_base::discretiser_K(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Kinetic turbulent energy field discretisation" << finl;
   const Discretisation_base& dis = mon_equation_->discretisation();
@@ -442,7 +442,7 @@ void Modele_turbulence_hyd_base::a_faire(Sortie& os) const
 void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
 {
   // On initial
-  int size = viscosite_turbulente()->valeurs().size();
+  int size = viscosite_turbulente().valeurs().size();
   if (borne_visco_turb_.size() == 0)
     borne_visco_turb_ = la_viscosite_turbulente_->valeurs();
   borne_visco_turb_ = XNUTM_;

@@ -227,8 +227,8 @@ void Pb_MED::creer_champ(const Motcle& motlu)
   Cerr<<"Pb_MED::creer_champ "<< motlu<<finl;
   Noms liste_noms;
   get_noms_champs_postraitables(liste_noms);
-  Champ_Fonc toto; // on ajoute toto et on le type apres pour eviter des copies qui ne marchent pas ...
-  Champ_Fonc& le_ch_fonc= champs_fonc_post.add(toto);
+  OWN_PTR(Champ_Fonc_base)  toto; // on ajoute toto et on le type apres pour eviter des copies qui ne marchent pas ...
+  auto& le_ch_fonc= champs_fonc_post.add(toto);
   le_ch_fonc.typer("Champ_Fonc_MED");
   int nbchampmed=nomschampmed.size();
 

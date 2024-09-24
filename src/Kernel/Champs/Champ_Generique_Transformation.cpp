@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <Domaine_VF.h>
 #include <TRUSTTabs.h>
-#include <Champ_Fonc.h>
+
 
 #include <Discretisation_base.h>
 #include <Interprete.h>
@@ -500,7 +500,7 @@ void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domain
 
 const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(Champ& espace_stockage) const
 {
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
 
   espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
   return espace_stockage.valeur();
@@ -509,7 +509,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
 {
   ToDo_Kokkos("critical");
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
 
   espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
   DoubleTab& valeurs_espace = espace_stockage->valeurs();

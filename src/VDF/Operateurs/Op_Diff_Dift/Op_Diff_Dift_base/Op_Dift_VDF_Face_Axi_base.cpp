@@ -304,7 +304,7 @@ DoubleTab& Op_Dift_VDF_Face_Axi_base::ajouter(const DoubleTab& inco, DoubleTab& 
   mettre_a_jour_var(temps); // seulement pour var_axi !
 
   const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
-  const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
+  const DoubleVect& visco_turb = diffusivite_turbulente().valeurs();
   const DoubleTab& tau_diag = inconnue->tau_diag(), &tau_croises = inconnue->tau_croises();
   ref_cast_non_const(Champ_Face_VDF,inconnue.valeur()).calculer_dercov_axi(zclvdf);
 
@@ -562,7 +562,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution(const DoubleTab& inco, Matr
   mettre_a_jour_var(temps); // seulement pour var_axi !
 
   const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
-  const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
+  const DoubleVect& visco_turb = diffusivite_turbulente().valeurs();
   const DoubleTab& tau_diag = inconnue->tau_diag();
   ref_cast_non_const(Champ_Face_VDF,inconnue.valeur()).calculer_dercov_axi(zclvdf);
 

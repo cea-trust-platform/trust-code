@@ -43,14 +43,14 @@ public:
   void completer() override;
   void mettre_a_jour(double) override;
   void discretiser() override;
-  virtual Champ_Fonc& calculer_viscosite_turbulente()=0;
+  virtual Champ_Fonc_base& calculer_viscosite_turbulente()=0;
   virtual void calculer_energie_cinetique_turb()=0;
   void imprimer(Sortie&) const override;
-  inline virtual Champ_Fonc& energie_cinetique_turbulente() { return energie_cinetique_turb_; }
-  inline virtual const Champ_Fonc& energie_cinetique_turbulente() const { return energie_cinetique_turb_; }
+  inline virtual Champ_Fonc_base& energie_cinetique_turbulente() { return energie_cinetique_turb_; }
+  inline virtual const Champ_Fonc_base& energie_cinetique_turbulente() const { return energie_cinetique_turb_; }
 
 protected:
-  Champ_Fonc energie_cinetique_turb_;
+  OWN_PTR(Champ_Fonc_base)  energie_cinetique_turb_;
   mutable OWN_PTR(Champ_Inc_base) K_eps_sortie_;
   Nom fichier_K_eps_sortie_;
 

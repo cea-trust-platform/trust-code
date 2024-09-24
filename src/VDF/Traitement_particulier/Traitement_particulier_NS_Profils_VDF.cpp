@@ -827,7 +827,7 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(Double
 
   const RefObjU& modele_turbulence = mon_equation->get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
-  const DoubleTab& nu_t = mod_turb.viscosite_turbulente()->valeurs();
+  const DoubleTab& nu_t = mod_turb.viscosite_turbulente().valeurs();
 
   int nb_elems = domaine_VDF.domaine().nb_elem();
   int num_elem;

@@ -18,7 +18,7 @@
 
 #include <Domaine_VF_inst.h>
 #include <TRUSTArray.h>
-#include <Champ_Fonc.h>
+
 #include <Param.h>
 #include <med++.h>
 #include <medcoupling++.h>
@@ -93,7 +93,7 @@ protected:
   std::vector< std::pair<int,int> > time_steps_;
 #endif
 #endif
-  Champ_Fonc vrai_champ_;
+  OWN_PTR(Champ_Fonc_base)  vrai_champ_;
   Nom nom_champ_dans_fichier_med_;
   std::vector<trustIdType> filter;
   ArrOfDouble temps_sauv_;

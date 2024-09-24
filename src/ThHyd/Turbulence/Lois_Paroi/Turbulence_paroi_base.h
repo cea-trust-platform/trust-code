@@ -19,7 +19,6 @@
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
 #include <Champ_Inc_base.h>
-#include <Champ_Fonc.h>
 #include <TRUST_Ref.h>
 
 class Modele_turbulence_hyd_base;
@@ -47,7 +46,7 @@ public:
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
   inline int calculer_hyd(Champ_Inc_base&);
-  inline int calculer_hyd(Champ_Fonc&, Champ_Fonc&);
+  inline int calculer_hyd(Champ_Fonc_base&, Champ_Fonc_base&);
   virtual int calculer_hyd(DoubleTab&) =0;
   virtual int calculer_hyd(DoubleTab&, DoubleTab&) =0;
   virtual int calculer_hyd_BiK(DoubleTab&, DoubleTab&) =0;
@@ -83,7 +82,7 @@ protected:
   // parois calculees localement a partir de u*
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement
   DoubleVect tab_d_plus_;                // valeurs des d+ calculees localement
-  mutable Champ_Fonc champ_u_star_;                                // Champ pour postraitement
+  mutable OWN_PTR(Champ_Fonc_base)  champ_u_star_;                                // Champ pour postraitement
   mutable int nb_impr_ = 0, nb_impr0_ = 0;                        // Compteur d'impression
 
 protected:
@@ -115,9 +114,9 @@ inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc_base& ch)
  * @param (Champ_Inc_base& ch2)
  * @return (int) code de retour propage
  */
-inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc& ch1, Champ_Fonc& ch2)
+inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc_base& ch1, Champ_Fonc_base& ch2)
 {
-  return calculer_hyd(ch1->valeurs(), ch2->valeurs());
+  return calculer_hyd(ch1.valeurs(), ch2.valeurs());
 }
 
 inline const DoubleTab& Turbulence_paroi_base::Cisaillement_paroi() const

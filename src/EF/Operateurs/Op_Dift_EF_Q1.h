@@ -112,7 +112,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_scalaire_template(const DoubleTab& tab_inconnu
   const IntTab& elems = domaine_ef.domaine().les_elems();
 
   remplir_nu(nu_);
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
 
   const double *bij_ptr = bij.addr();
@@ -183,7 +183,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_vectoriel_template(const DoubleTab& tab_inconn
   const IntTab& elems = domaine_ef.domaine().les_elems();
 
   remplir_nu(nu_);
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
 
   const double *bij_ptr = bij.addr();

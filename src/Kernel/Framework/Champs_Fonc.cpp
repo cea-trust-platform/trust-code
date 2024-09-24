@@ -15,7 +15,7 @@
 
 #include <Champs_Fonc.h>
 
-Implemente_instanciable(Champs_Fonc, "Champs_Fonc", LIST(Champ_Fonc));
+Implemente_instanciable(Champs_Fonc, "Champs_Fonc", LIST(OWN_PTR(Champ_Fonc_base)));
 
 Entree& Champs_Fonc::readOn(Entree& s) { return s; }
 

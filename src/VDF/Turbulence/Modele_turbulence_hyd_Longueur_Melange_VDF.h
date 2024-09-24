@@ -31,7 +31,7 @@ class Modele_turbulence_hyd_Longueur_Melange_VDF: public Modele_turbulence_hyd_L
   Declare_instanciable(Modele_turbulence_hyd_Longueur_Melange_VDF);
 public:
   void set_param(Param& param) override;
-  Champ_Fonc& calculer_viscosite_turbulente() override;
+  Champ_Fonc_base& calculer_viscosite_turbulente() override;
   void calculer_Sij2();
   int preparer_calcul() override;
 

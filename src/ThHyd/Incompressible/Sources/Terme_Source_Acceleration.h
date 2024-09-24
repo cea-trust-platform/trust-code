@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef Terme_Source_Acceleration_included
 #define Terme_Source_Acceleration_included
 
+#include <Champ_Fonc_base.h>
 #include <Source_base.h>
-#include <Champ_Fonc.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
 #include <Motcle.h>
@@ -42,7 +42,7 @@ public:
 protected:
   virtual void lire_data(Entree& s);
   virtual const Champ_Fonc_base& get_terme_source_post() const;
-  virtual Champ_Fonc& get_set_terme_source_post() const;
+  virtual Champ_Fonc_base& get_set_terme_source_post() const;
   virtual const DoubleTab& calculer_vitesse_faces(DoubleTab& stockage) const = 0;
   const DoubleTab& calculer_la_source(DoubleTab& src_faces) const;
   virtual const Navier_Stokes_std& get_eq_hydraulique() const;
@@ -53,7 +53,7 @@ private:
 // Le terme source, homogene a d/dt(rho*v) et discretise comme la vitesse,
 // stocke pour pouvoir etre postraite.
 // Il est calcule par ajouter() (voir commentaires dans a_pour_champ_fonc)
-  mutable Champ_Fonc terme_source_post_;
+  mutable OWN_PTR(Champ_Fonc_base)  terme_source_post_;
 
   // **********************************************************************
   // champ de vitesse impose au repere mobile (lu optionnellement

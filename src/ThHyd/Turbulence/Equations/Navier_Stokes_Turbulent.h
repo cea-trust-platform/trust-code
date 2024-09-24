@@ -18,7 +18,7 @@
 
 #include <Modele_turbulence_hyd_base.h>
 #include <Navier_Stokes_std.h>
-#include <Champ_Fonc.h>
+
 
 /*! @brief classe Navier_Stokes_Turbulent Cette classe represente l'equation de la dynamique pour un fluide
  *
@@ -35,7 +35,7 @@ class Navier_Stokes_Turbulent: public Navier_Stokes_std
 public:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Champ_Fonc& viscosite_turbulente() const { return le_modele_turbulence->viscosite_turbulente(); }
+  inline const Champ_Fonc_base& viscosite_turbulente() const { return le_modele_turbulence->viscosite_turbulente(); }
   inline const Modele_turbulence_hyd_base& modele_turbulence() const { return le_modele_turbulence.valeur(); }
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;

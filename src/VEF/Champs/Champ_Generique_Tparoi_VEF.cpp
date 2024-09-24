@@ -60,7 +60,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ
   double temps;
   temps=0.;
 
-  Champ_Fonc espace_stockage_fonc;
+  OWN_PTR(Champ_Fonc_base)  espace_stockage_fonc;
   const Discretisation_base&  discr = get_discretisation();
   Motcle directive = get_directive_pour_discr();
   discr.discretiser_champ(directive,domaine_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);
@@ -85,7 +85,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
   double temps;
   temps=0.;
 
-  Champ_Fonc espace_stockage_fonc;
+  OWN_PTR(Champ_Fonc_base)  espace_stockage_fonc;
   const Discretisation_base&  discr = get_discretisation();
   Motcle directive = get_directive_pour_discr();
   discr.discretiser_champ(directive,domaine_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);

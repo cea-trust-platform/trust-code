@@ -21,7 +21,7 @@
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
 #include <Champs_compris.h>
-#include <Champ_Fonc.h>
+
 #include <TRUST_Ref.h>
 #include <Champ_Don.h>
 #include <Champ.h>
@@ -127,7 +127,7 @@ protected:
   REF(Domaine_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
   Champ_Don g, alpha, lambda, alpha_fois_rho, Cp, beta_th, porosites_champ, diametre_hyd_champ;
-  Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
+  OWN_PTR(Champ_Fonc_base)  rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;
   DoubleVect porosite_face_, section_passage_face_ /* pour F5 */, diametre_hydraulique_face_;
   Nom nom_;

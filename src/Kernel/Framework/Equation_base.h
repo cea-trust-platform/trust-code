@@ -293,7 +293,7 @@ private :
   DoubleVect residu_;
   DoubleVect residu_initial_;
   // retourne le CHAMP (et non la norme) des residus de chaque inconnu du probleme
-  Champ_Fonc field_residu_;
+  OWN_PTR(Champ_Fonc_base)  field_residu_;
 
   mutable DoubleTab NULL_;
   int disable_equation_residual_ = 0;

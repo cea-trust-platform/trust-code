@@ -94,7 +94,7 @@ int Modele_turbulence_hyd_Longueur_Melange_VEF::lire_motcle_non_standard(const M
     return Modele_turbulence_hyd_Longueur_Melange_base::lire_motcle_non_standard(mot, is);
 }
 
-Champ_Fonc& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbulente()
+Champ_Fonc_base& Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_viscosite_turbulente()
 {
   const double Kappa = 0.415;
   double Cmu = CMU;

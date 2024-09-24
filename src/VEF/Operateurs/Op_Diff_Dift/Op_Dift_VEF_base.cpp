@@ -18,7 +18,7 @@
 #include <Navier_Stokes_std.h>
 #include <Op_Dift_VEF_base.h>
 #include <Domaine_Cl_VEF.h>
-#include <Champ_Fonc.h>
+
 
 Implemente_base(Op_Dift_VEF_base, "Op_Dift_VEF_base", Op_Diff_VEF_base);
 
@@ -59,14 +59,14 @@ void Op_Dift_VEF_base::completer()
   if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base, modele_turbulence.valeur()))
     {
       const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
-      const Champ_Fonc& viscosite_turbulente = mod_turb.viscosite_turbulente();
+      const Champ_Fonc_base& viscosite_turbulente = mod_turb.viscosite_turbulente();
       associer_diffusivite_turbulente(viscosite_turbulente);
       associer_modele_turbulence(mod_turb);
     }
   else if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
     {
       const Modele_turbulence_scal_base& modele_turbulence_scalaire = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
-      const Champ_Fonc& conductivite_turbulente = modele_turbulence_scalaire.conductivite_turbulente();
+      const Champ_Fonc_base& conductivite_turbulente = modele_turbulence_scalaire.conductivite_turbulente();
       associer_diffusivite_turbulente(conductivite_turbulente);
     }
   else
@@ -107,9 +107,9 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 {
   remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem
 
-  //DoubleVect tab_diffu_turb(diffusivite_turbulente()->valeurs());
+  //DoubleVect tab_diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTrav tab_diffu_turb;
-  tab_diffu_turb = diffusivite_turbulente()->valeurs();
+  tab_diffu_turb = diffusivite_turbulente().valeurs();
   DoubleTrav tab_diffu;
   tab_diffu = nu_; // XXX : Elie Saikali : Attention pas pareil que DoubleTrav diffu(nu_) !!!!!!!!!
 
@@ -179,7 +179,7 @@ void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& opt
 
           const Domaine_VEF& le_dom_VEF = domaine_vef();
           const Domaine& le_dom = le_dom_VEF.domaine();
-          const DoubleVect& diffu_turb = diffusivite_turbulente()->valeurs();
+          const DoubleVect& diffu_turb = diffusivite_turbulente().valeurs();
           double alpha = -123., coef = -123.;
           ToDo_Kokkos("critical");
 
@@ -225,7 +225,7 @@ double Op_Dift_VEF_base::calculer_dt_stab_P1NCP1B() const
   const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleVect& volumes = domaine_VEF.volumes(), &diffu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleVect& volumes = domaine_VEF.volumes(), &diffu_turb = diffusivite_turbulente().valeurs();
   const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), le_dom_nb_elem = domaine_VEF.domaine().nb_elem();
 
   const double diffu = diffusivite(0);

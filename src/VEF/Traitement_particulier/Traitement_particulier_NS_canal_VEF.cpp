@@ -190,7 +190,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_nut(DoubleTa
   const Equation_base& N_S_Turb  = mon_equation.valeur();
   const RefObjU& modele_turbulence_hydr = N_S_Turb.get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& le_modele = ref_cast(Modele_turbulence_hyd_base,modele_turbulence_hydr.valeur());
-  const DoubleTab& nu_t = le_modele.viscosite_turbulente()->valeurs();
+  const DoubleTab& nu_t = le_modele.viscosite_turbulente().valeurs();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   double y;
   int nb_faces = domaine_VEF.nb_faces();

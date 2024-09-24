@@ -1069,9 +1069,9 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     {
       for (const auto& itr : list_champ_combi)
         {
-          const Champ_Fonc& ch = itr;
-          if (ch->le_nom()==nom && ch->temps()!=inconnue().temps())
-            ref_cast_non_const( Champ_Fonc,ch)->mettre_a_jour(inconnue().temps());
+          const Champ_Fonc_base& ch = itr;
+          if (ch.le_nom()==nom && ch.temps()!=inconnue().temps())
+            ref_cast_non_const( Champ_Fonc_base,ch).mettre_a_jour(inconnue().temps());
         }
     }
   try

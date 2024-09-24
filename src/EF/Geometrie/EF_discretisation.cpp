@@ -32,12 +32,10 @@
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
 #include <Champ_Uniforme.h>
-
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_EF.h>
 #include <Domaine_Cl_dis_base.h>
-
 
 Implemente_instanciable(EF_discretisation, "EF", Discret_Thyd);
 // XD ef discretisation_base ef -1 Element Finite discretization.
@@ -59,7 +57,7 @@ Sortie& EF_discretisation::printOn(Sortie& s) const { return s; }
  *
  */
 void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt, double temps,
-                                          OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
+                                          OWN_PTR(Champ_Inc_base) &champ, const Nom& sous_type) const
 {
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 
@@ -170,7 +168,7 @@ void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine
  *
  */
 void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                          Champ_Fonc& champ) const
+                                          OWN_PTR(Champ_Fonc_base) &champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -197,7 +195,7 @@ void EF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
                                                    Objet_U& champ) const
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
-  Champ_Fonc *champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
+  OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
   Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
@@ -321,7 +319,7 @@ void EF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
 
 }
 
-void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Discretisation de la distance paroi" << finl;
   Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
@@ -335,7 +333,7 @@ void EF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Discretisation de la vorticite " << finl;
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
@@ -389,7 +387,7 @@ void EF_discretisation::vorticite(Domaine_dis_base& z, const Champ_Inc_base& ch_
     }
 }
 
-void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   if (sub_type(Champ_P1_EF, ch_vitesse))
     {
@@ -483,7 +481,7 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_ba
 #endif
 }
 
-void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
@@ -503,7 +501,7 @@ void EF_discretisation::critere_Q(const Domaine_dis_base& z, const Domaine_Cl_di
 #endif
 }
 
-void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Discretisation de y_plus" << finl;
   const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF, ch_vitesse);
@@ -521,7 +519,7 @@ void EF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_b
   ch_yp.changer_temps(ch_vitesse.temps());
 }
 
-void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch) const
+void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, OWN_PTR(Champ_Fonc_base) &ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
@@ -541,7 +539,7 @@ void EF_discretisation::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_b
 #endif
 }
 
-void EF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void EF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temperature, OWN_PTR(Champ_Fonc_base) &ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
@@ -564,9 +562,9 @@ void EF_discretisation::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_b
 }
 void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &champs_param) const
 {
-  Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
-  lambda_tab_dis.typer("Champ_Fonc_Tabule_P0_EF");
-  Champ_Fonc_Tabule_P0_EF& ch_tab_lambda_dis = ref_cast(Champ_Fonc_Tabule_P0_EF, lambda_tab_dis.valeur());
+  lambda_tab.typer_champ_tabule_discretise("Champ_Fonc_Tabule_P0_EF");
+  Champ_Fonc_base& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
+  Champ_Fonc_Tabule_P0_EF& ch_tab_lambda_dis = ref_cast(Champ_Fonc_Tabule_P0_EF, lambda_tab_dis);
   //ch_tab_lambda_dis.nommer(nom_champ);
   ch_tab_lambda_dis.associer_domaine_dis_base(domaine_vdf);
   ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());

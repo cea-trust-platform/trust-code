@@ -45,8 +45,8 @@ protected:
   int n_l = -1; //phase liquide
   double beta_ = 1. ; // To adjust the force in .data
   double g_ = 9.81;
-  Champ_Fonc wobble; // postreatment
-  Champ_Fonc C_lift; // postreatment
+  OWN_PTR(Champ_Fonc_base)  wobble; // postreatment
+  OWN_PTR(Champ_Fonc_base)  C_lift; // postreatment
 };
 
 #endif /* Source_Portance_interfaciale_base_included */

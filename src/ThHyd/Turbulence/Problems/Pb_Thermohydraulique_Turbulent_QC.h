@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ public:
   const Equation_base& equation(int) const override;
   Equation_base& equation(int) override;
   int expression_predefini(const Motcle& motlu, Nom& expression) override;
-  inline const Champ_Fonc& viscosite_turbulente() const { return eq_hydraulique.viscosite_turbulente(); }
+  inline const Champ_Fonc_base& viscosite_turbulente() const { return eq_hydraulique.viscosite_turbulente(); }
 
 protected:
   Navier_Stokes_Turbulent_QC eq_hydraulique;

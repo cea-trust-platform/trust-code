@@ -54,7 +54,7 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const int n1 = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resu.line_size();
   const double mu = diffusivite(0);
-  const DoubleTab& mu_turb = diffusivite_turbulente()->valeurs(), &face_normale = domaine_VEF.face_normales();
+  const DoubleTab& mu_turb = diffusivite_turbulente().valeurs(), &face_normale = domaine_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension, dimension);
 
@@ -372,7 +372,7 @@ void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& transporte, Matrice
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
   const int nb_comp = transporte.line_size(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), n1 = domaine_VEF.nb_faces();
-  const DoubleTab& mu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleTab& mu_turb = diffusivite_turbulente().valeurs();
   const double mu = diffusivite(0);
 
   //DoubleVect n(dimension);

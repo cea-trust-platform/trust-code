@@ -674,7 +674,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, con
 
 DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& resu) const
 {
-  const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleTab& nu_turb = diffusivite_turbulente().valeurs();
   const DoubleVect& porosite_face = equation().milieu().porosite_face(), &porosite_elem = equation().milieu().porosite_elem();
   const int nb_comp = resu.line_size();
 
@@ -720,7 +720,7 @@ void Op_Dift_Stab_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mor
   modifier_matrice_pour_periodique_avant_contribuer(matrice, equation());
   remplir_nu(nu_); // On remplit le tableau nu car l'assemblage d'une matrice avec ajouter_contribution peut se faire avant le premier pas de temps
 
-  const DoubleTab& nu_turb_ = diffusivite_turbulente()->valeurs();
+  const DoubleTab& nu_turb_ = diffusivite_turbulente().valeurs();
   DoubleTab nu, nu_turb;
 
   int marq = phi_psi_diffuse(equation());

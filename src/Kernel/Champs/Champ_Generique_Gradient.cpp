@@ -97,7 +97,7 @@ const Champ_base& Champ_Generique_Gradient::get_champ_without_evaluation(Champ& 
 
   if (Op_Grad_.non_nul())
     {
-      Champ_Fonc es_tmp;
+      OWN_PTR(Champ_Fonc_base)  es_tmp;
       espace_stockage = creer_espace_stockage(vectoriel,dimension,es_tmp);
 
     }
@@ -117,7 +117,7 @@ const Champ_base& Champ_Generique_Gradient::get_champ(Champ& espace_stockage) co
 
   if (Op_Grad_.non_nul())
     {
-      Champ_Fonc es_tmp;
+      OWN_PTR(Champ_Fonc_base)  es_tmp;
       espace_stockage = creer_espace_stockage(vectoriel,dimension,es_tmp);
 
       Op_Grad_.calculer(source.valeurs(),espace_stockage->valeurs());

@@ -44,22 +44,22 @@ class VEF_discretisation : public Discret_Thyd
 public :
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,
                          const Nom& sous_type = NOM_VIDE) const override;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, OWN_PTR(Champ_Fonc_base)& champ) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
-  void distance_paroi(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
-  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const override; // Distance paroi definie sur tout le domaine
+  void distance_paroi(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const;
+  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const override; // Distance paroi definie sur tout le domaine
   void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc_base&) const override;
   Nom domaine_cl_dis_type() const override { return "Domaine_Cl_VEF"; }
 
-  void vorticite(Domaine_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, Champ_Fonc& ) const override;
-  void critere_Q(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& vitesse, Champ_Fonc& ch) const override;
-  void y_plus(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& vitesse, Champ_Fonc& ch) const override;
-  void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, Champ_Fonc& ch) const override;
-  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, Champ_Fonc& ch) const override;
-  void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc&) const override;
-  void residu(const Domaine_dis_base& , const Champ_Inc_base&, Champ_Fonc& ) const override;
+  void vorticite(Domaine_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const;
+  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
+  void critere_Q(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& vitesse, OWN_PTR(Champ_Fonc_base)& ch) const override;
+  void y_plus(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& vitesse, OWN_PTR(Champ_Fonc_base)& ch) const override;
+  void grad_T(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, OWN_PTR(Champ_Fonc_base)& ch) const override;
+  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, OWN_PTR(Champ_Fonc_base)& ch) const override;
+  void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, OWN_PTR(Champ_Fonc_base)& ch, Motcle& nom, int temp_ref) const override;
+  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void residu(const Domaine_dis_base& , const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
 
   bool is_vef() const override { return true; }
 

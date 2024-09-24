@@ -37,7 +37,7 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab() const
 double Op_Dift_VDF_Face_base::calculer_dt_stab(const Domaine_VDF& domaine_VDF) const
 {
   double dt_stab, coef = -1.e10;
-  const DoubleTab& diffu = diffusivite().valeurs(), &diffu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleTab& diffu = diffusivite().valeurs(), &diffu_turb = diffusivite_turbulente().valeurs();
 
   // B.Mat. 9/3/2005: pour traiter monophasique/qc/front-tracking de facon generique. Mettre a jour le qc et l'ancien ft pour utiliser ce mecanisme
   const int nb_elem = domaine_VDF.nb_elem(), dim = Objet_U::dimension;

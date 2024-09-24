@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Gravite_Multiphase_included
 
 #include <Correlation_base.h>
-#include <Champ_Fonc.h>
+#include <Champ_Fonc_base.h>
 
 /*! @brief classe Gravite_Multiphase Contient un champ de gravite defini par l'utilisateur
  *
@@ -34,7 +34,7 @@ public:
   const Champ_base& get_champ(const Motcle& nom) const override;
 
 protected:
-  Champ_Fonc gravite_;
+  OWN_PTR(Champ_Fonc_base)  gravite_;
 };
 
 #endif

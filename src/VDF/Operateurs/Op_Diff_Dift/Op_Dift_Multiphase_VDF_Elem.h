@@ -33,7 +33,7 @@ public:
   void completer() override;
   void mettre_a_jour(double ) override;
   void associer_loipar(const Turbulence_paroi_scal_base& ) { throw; }
-  void associer_diffusivite_turbulente(const Champ_Fonc& ch) { throw; }
+  void associer_diffusivite_turbulente(const Champ_Fonc_base& ch) { throw; }
 
   bool is_turb() const override { return true; }
   double calculer_dt_stab() const override;

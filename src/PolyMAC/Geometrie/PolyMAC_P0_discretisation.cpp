@@ -24,11 +24,9 @@
 #include <Champ_Fonc_Tabule.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
-
 #include <Equation_base.h>
 #include <DescStructure.h>
 #include <Milieu_base.h>
-
 #include <Motcle.h>
 
 Implemente_instanciable(PolyMAC_P0_discretisation, "PolyMAC_P0", PolyMAC_P0P1NC_discretisation);
@@ -38,7 +36,7 @@ Entree& PolyMAC_P0_discretisation::readOn(Entree& s) { return s; }
 
 Sortie& PolyMAC_P0_discretisation::printOn(Sortie& s) const { return s; }
 
-void PolyMAC_P0_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, ch_vitesse);
   const Domaine_PolyMAC_P0& domaine_poly = ref_cast(Domaine_PolyMAC_P0, z);
@@ -75,7 +73,7 @@ void PolyMAC_P0_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
 
-void PolyMAC_P0_discretisation::taux_cisaillement(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0_discretisation::taux_cisaillement(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, ch_vitesse);
 //  const Domaine_PolyMAC_P0&          domaine_poly = ref_cast(Domaine_PolyMAC_P0, z);
@@ -100,7 +98,7 @@ void PolyMAC_P0_discretisation::taux_cisaillement(const Domaine_dis_base& z, con
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
 
-void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, ch_vitesse);
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, vit.domaine_dis_base());
@@ -123,17 +121,17 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
       ch_rot_u.fixer_nature_du_champ(vectoriel);
       ch_rot_u.fixer_nb_comp(dimension * N);
       std::string nom_compo = "vorticite";
-      if(N==1)
+      if (N == 1)
         {
-          std::vector<std::string> dir = {"x","y","z"};
-          for(int d=0; d<dimension; d++)
+          std::vector<std::string> dir = { "x", "y", "z" };
+          for (int d = 0; d < dimension; d++)
             ch_rot_u.fixer_nom_compo(d, nom_compo + dir[d]);
         }
       else
         {
-          for(int n=0; n<N; n++)
+          for (int n = 0; n < N; n++)
             {
-              for(int d=0; d<dimension; d++)
+              for (int d = 0; d < dimension; d++)
                 {
                   int offset = dimension * n + d;
                   ch_rot_u.fixer_nom_compo(offset, nom_compo + "_" + std::to_string(offset));
@@ -149,7 +147,7 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
   ch_rot_u.changer_temps(-1); // so it is calculated at time 0
 }
 
-void PolyMAC_P0_discretisation::residu( const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, Champ_Fonc& champ ) const
+void PolyMAC_P0_discretisation::residu(const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, OWN_PTR(Champ_Fonc_base) &champ) const
 {
   Nom ch_name(ch_inco.le_nom());
   ch_name += "_residu";
@@ -162,14 +160,14 @@ void PolyMAC_P0_discretisation::residu( const Domaine_dis_base& z, const Champ_I
       Noms nom(1), unites(1);
       nom[0] = ch_name;
       unites[0] = "units_not_defined";
-      int nb_comp = ch_inco.valeurs().line_size()*dimension;
+      int nb_comp = ch_inco.valeurs().line_size() * dimension;
 
-      discretiser_champ(loc,z, vectoriel, nom ,unites,nb_comp,ch_inco.temps(),champ);
+      discretiser_champ(loc, z, vectoriel, nom, unites, nb_comp, ch_inco.temps(), champ);
 
-      Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
-      DoubleTab& tab=ch_fonc.valeurs();
-      tab = -10000.0 ;
-      Cerr << "[Information] Discretisation_base::residu : the residue is set to -10000.0 at initial time" <<finl;
+      Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, champ.valeur());
+      DoubleTab& tab = ch_fonc.valeurs();
+      tab = -10000.0;
+      Cerr << "[Information] Discretisation_base::residu : the residue is set to -10000.0 at initial time" << finl;
     }
 
   else

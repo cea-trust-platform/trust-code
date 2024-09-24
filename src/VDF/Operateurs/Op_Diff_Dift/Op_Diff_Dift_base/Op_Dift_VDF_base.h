@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ public:
   }
 
   // Methodes utiles pour l'heritage V
-  inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
+  inline void associer_diffusivite_turbulente_base(const Champ_Fonc_base& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
   inline void completer_Op_Dift_VDF_base() { Op_Diff_VDF_base::completer(); }
 
 protected:

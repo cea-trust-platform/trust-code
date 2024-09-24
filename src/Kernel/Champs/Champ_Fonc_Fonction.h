@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 /*! @brief Classe Champ_Fonc_Fonction Classe derivee de Champ_Fonc_Tabule qui represente les
  *
  *      champs fonctions d'un autre champ par une fonction
- *      L'objet porte un membre de type Champ_Fonc qui stocke
+ *      L'objet porte un membre de type OWN_PTR(Champ_Fonc_base)  qui stocke
  *      les valeurs du champ tabule.
  *
  * @sa Champ_Fonc_base

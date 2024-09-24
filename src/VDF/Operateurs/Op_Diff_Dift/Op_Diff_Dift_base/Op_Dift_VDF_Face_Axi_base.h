@@ -37,7 +37,7 @@ public:
   inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { ajouter_contribution(inco, matrice); }
   inline void contribuer_au_second_membre(DoubleTab& resu) const override { contribue_au_second_membre(resu); }
   inline void associer_loipar(const Turbulence_paroi_base& ) { /* do nothing */}
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& visc_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);}
+  inline void associer_diffusivite_turbulente(const Champ_Fonc_base& visc_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);}
   inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 

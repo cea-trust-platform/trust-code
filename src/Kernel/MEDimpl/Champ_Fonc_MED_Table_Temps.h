@@ -41,7 +41,7 @@ protected :
   inline virtual Champ_Fonc_base& le_champ0() { return vrai_champ0_.valeur(); }
 
   Table la_table;
-  Champ_Fonc vrai_champ0_;
+  OWN_PTR(Champ_Fonc_base)  vrai_champ0_;
   bool table_lue_ = false;
 };
 

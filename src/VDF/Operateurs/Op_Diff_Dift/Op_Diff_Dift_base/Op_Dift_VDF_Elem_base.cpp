@@ -33,7 +33,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
   double dt_stab, coef = -1.e10;
   const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
+  const DoubleVect& alpha_t = diffusivite_turbulente().valeurs();
   bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_Espece"));
 
   ArrOfInt numfa(2*dimension);
@@ -82,7 +82,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
   double dt_stab, coef = -1.e10;
   const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
+  const DoubleVect& alpha_t = diffusivite_turbulente().valeurs();
   double alpha_local,h_x,h_y,h_z;
 
   if (dimension == 2)
@@ -120,7 +120,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_var_axi() const
   double dt_stab, coef = -1.e10;
   const Domaine_VDF& domaine_VDF = iter_->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
+  const DoubleVect& alpha_t = diffusivite_turbulente().valeurs();
   const int D = dimension;
 
   IntVect numfa(2 * D);

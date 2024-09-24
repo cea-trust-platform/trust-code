@@ -168,7 +168,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_without_evaluation(Champ& 
 const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(Champ& espace_stockage) const
 {
 
-  Champ_Fonc espace_stockage_fonc;
+  OWN_PTR(Champ_Fonc_base)  espace_stockage_fonc;
   //Champ source_espace_stockage;
 
   double temps=0.;

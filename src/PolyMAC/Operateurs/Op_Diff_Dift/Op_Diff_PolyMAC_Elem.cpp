@@ -71,7 +71,7 @@ void Op_Diff_PolyMAC_Elem::completer()
     return;
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
-  const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
+  const Champ_Fonc_base& lambda_t = mod_turb.conductivite_turbulente();
   associer_diffusivite_turbulente(lambda_t);
 }
 

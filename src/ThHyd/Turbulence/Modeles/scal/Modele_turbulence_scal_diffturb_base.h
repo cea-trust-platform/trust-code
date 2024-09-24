@@ -19,7 +19,7 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Champ_Fonc.h>
+
 #include <TRUST_Ref.h>
 
 /*! @brief Classe Mod_Turb_scal_diffuturb_base Cette classe represente la classe de base pour le modele de calcul suivant
@@ -33,12 +33,12 @@ class Modele_turbulence_scal_diffturb_base: public Modele_turbulence_scal_base
 {
   Declare_base(Modele_turbulence_scal_diffturb_base);
 public:
-  void associer_viscosite_turbulente(const Champ_Fonc&);
+  void associer_viscosite_turbulente(const Champ_Fonc_base&);
   void completer() override;
   int reprendre(Entree&) override;
 
 protected:
-  REF(Champ_Fonc) la_viscosite_turbulente_;
+  REF(Champ_Fonc_base) la_viscosite_turbulente_;
 };
 
 #endif /* Modele_turbulence_scal_diffturb_base_included */

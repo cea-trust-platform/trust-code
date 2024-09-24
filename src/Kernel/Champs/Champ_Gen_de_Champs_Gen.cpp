@@ -15,8 +15,9 @@
 
 #include <Champ_Gen_de_Champs_Gen.h>
 #include <Champ_Generique_refChamp.h>
-#include <Champs_compris.h>
 #include <Discretisation_base.h>
+#include <Champ_Fonc_base.h>
+#include <Champs_compris.h>
 #include <Param.h>
 
 Implemente_base(Champ_Gen_de_Champs_Gen,"Champ_Gen_de_Champs_Gen",Champ_Generique_base);
@@ -134,9 +135,9 @@ void Champ_Gen_de_Champs_Gen::mettre_a_jour(double temps)
     sources_[i]->mettre_a_jour(temps);
 }
 
-Champ_Fonc& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ& nature,
-                                                           const int nb_comp,
-                                                           Champ_Fonc& es_tmp) const
+OWN_PTR(Champ_Fonc_base)& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ& nature,
+                                                                         const int nb_comp,
+                                                                         OWN_PTR(Champ_Fonc_base)& es_tmp) const
 {
 
   Noms noms;

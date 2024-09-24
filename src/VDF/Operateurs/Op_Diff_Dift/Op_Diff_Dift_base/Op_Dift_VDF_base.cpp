@@ -18,7 +18,7 @@
 #include <Op_Dift_VDF_base.h>
 #include <Eval_Dift_VDF.h>
 #include <Statistiques.h>
-#include <Champ_Fonc.h>
+
 #include <TRUSTTrav.h>
 #include <Motcle.h>
 
@@ -83,10 +83,11 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
           else if (sub_type(Modele_turbulence_hyd_base, modele_turbulence.valeur()))
             {
               const Eval_Dift_VDF& eval_dift = static_cast<const Eval_Dift_VDF&>(eval);
-              const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
-              const DoubleVect& diffusivite_turb = ch_diff_turb->valeurs();
+              const Champ_Fonc_base& ch_diff_turb = eval_dift.diffusivite_turbulente();
+              const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
 
-              for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[!cM*i] + diffusivite_turb[i];
+              for (int i = 0; i < size; i++)
+                diffu_tot[i] = tab_diffusivite[!cM*i] + diffusivite_turb[i];
             }
           else
             {

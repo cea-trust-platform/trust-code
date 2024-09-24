@@ -183,26 +183,26 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
 
 void Domaine_dis_base::creer_champ(const Motcle& motlu, const Probleme_base& pb)
 {
-  if (motlu == "VOLUME_MAILLE" && volume_maille().est_nul())
+  if (motlu == "VOLUME_MAILLE" && volume_maille_.est_nul())
     {
-      pb.discretisation().volume_maille(pb.schema_temps(), pb.domaine_dis(), const_cast<Champ_Fonc&>(volume_maille()));
-      champs_compris_.ajoute_champ(volume_maille().valeur());
+      pb.discretisation().volume_maille(pb.schema_temps(), pb.domaine_dis(), volume_maille_);
+      champs_compris_.ajoute_champ(volume_maille_);
     }
-  else if (motlu == "MESH_NUMBERING" && mesh_numbering().est_nul())
+  else if (motlu == "MESH_NUMBERING" && mesh_numbering_.est_nul())
     {
-      pb.discretisation().mesh_numbering(pb.schema_temps(), pb.domaine_dis(), const_cast<Champ_Fonc&>(mesh_numbering()));
-      champs_compris_.ajoute_champ(mesh_numbering().valeur());
+      pb.discretisation().mesh_numbering(pb.schema_temps(), pb.domaine_dis(), mesh_numbering_);
+      champs_compris_.ajoute_champ(mesh_numbering_);
     }
 }
 const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom) const
 {
   if (un_nom=="VOLUME_MAILLE")
     {
-      return volume_maille().valeur();
+      return volume_maille();
     }
   else if (un_nom=="MESH_NUMBERING")
     {
-      return mesh_numbering().valeur();
+      return mesh_numbering();
     }
   throw Champs_compris_erreur();
 }

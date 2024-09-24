@@ -97,7 +97,7 @@ const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage)
   //Pas completement exact car il y a le cas de la correlation vecteur-vecteur et dans
   //ce cas c est un tenseur qui est manipule (la nature n est pas scalaire ou vectorielle)
   Nature_du_champ nature_source = (nb_comp==1)?scalaire:vectoriel;
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   DoubleTab& tab_correlation = espace_stockage->valeurs();

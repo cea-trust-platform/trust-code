@@ -64,14 +64,14 @@ void Op_Dift_EF_base::completer()
   if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base,modele_turbulence.valeur()))
     {
       const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
-      const Champ_Fonc& viscosite_turbulente = mod_turb.viscosite_turbulente();
+      const Champ_Fonc_base& viscosite_turbulente = mod_turb.viscosite_turbulente();
       associer_diffusivite_turbulente(viscosite_turbulente);
       associer_modele_turbulence(mod_turb);
     }
   else if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
     {
       const Modele_turbulence_scal_base& modele_turbulence_scalaire = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-      const Champ_Fonc& conductivite_turbulente = modele_turbulence_scalaire.conductivite_turbulente();
+      const Champ_Fonc_base& conductivite_turbulente = modele_turbulence_scalaire.conductivite_turbulente();
       associer_diffusivite_turbulente(conductivite_turbulente);
     }
   else

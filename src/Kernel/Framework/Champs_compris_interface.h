@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ public :
 
   // la methode creer_champ()
   /////////////////////////////////////////////////////////////////////////////////
-  //Cette methode permet de creer un "champ calcule". Ce champ de type Champ_Fonc
+  //Cette methode permet de creer un "champ calcule". Ce champ de type Champ_Fonc_base
   //(ex : vorticite) est estime uniquement pour etre postraite et ne sert pas a
   //la resolution du probleme.
   //Le probleme delegue a son milieu et ses equations la creation du champ.

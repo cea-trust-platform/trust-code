@@ -41,7 +41,7 @@ class Schema_Temps_base;
 class Fluide_Ostwald;
 class Fluide_base;
 
-class VDF_discretisation : public Discret_Thyd
+class VDF_discretisation: public Discret_Thyd
 {
   Declare_instanciable(VDF_discretisation);
 
@@ -49,46 +49,33 @@ public:
   //
   // Methodes surchargees de Discretisation_base
   //
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, int nb_pas_dt, double temps,
-                         OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type = NOM_VIDE) const override;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, double temps,
-                         Champ_Fonc& champ) const override;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, double temps,
-                         Champ_Don& champ) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
+                         OWN_PTR(Champ_Inc_base) &champ,
+                         const Nom& sous_type = NOM_VIDE) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps,
+                         OWN_PTR(Champ_Fonc_base) &champ) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
 
   Nom domaine_cl_dis_type() const override { return "Domaine_Cl_VDF"; }
 
-  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const override;
+  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const override;
 
-  void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base& ,Fluide_Ostwald& ,
-                                           const Navier_Stokes_std& ,
-                                           const Champ_Inc_base& ) const override;
-  void vorticite(Domaine_dis_base& ,const Champ_Inc_base& , Champ_Fonc& ) const;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, Champ_Fonc& ) const override;
-  void grad_u(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ,const Champ_Inc_base& , Champ_Fonc& ) const override;
-  void critere_Q(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc& ) const override;
-  void reynolds_maille(const Domaine_dis_base&, const Fluide_base&, const Champ_Inc_base&, Champ_Fonc&) const override;
-  void courant_maille(const Domaine_dis_base&, const Schema_Temps_base&, const Champ_Inc_base&, Champ_Fonc&) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc&) const override;
-  void y_plus(const Domaine_dis_base& ,const Domaine_Cl_dis_base&,const Champ_Inc_base&, Champ_Fonc& ) const override;
-//  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
-  void residu( const Domaine_dis_base& ,const Champ_Inc_base& , Champ_Fonc& ) const override;
+  void proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc_base&) const override;
+  void vorticite(Domaine_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const;
+  void creer_champ_vorticite(const Schema_Temps_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void grad_u(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void critere_Q(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void reynolds_maille(const Domaine_dis_base&, const Fluide_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void courant_maille(const Domaine_dis_base&, const Schema_Temps_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+  void y_plus(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
+//  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Equation_base& eqn,OWN_PTR(Champ_Fonc_base)& ch) const;
+  void residu(const Domaine_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
   bool is_vdf() const override { return true; }
 
 private:
-  void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z,
-                                  Nature_du_champ nature, const Noms& noms, const Noms& unites,
-                                  int nb_comp, double temps, Objet_U& champ) const;
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const override;
+  void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps, Objet_U& champ) const;
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& ch_tab, const VECT(REF(Champ_base)) &ch_inc) const override;
 };
 
 #endif

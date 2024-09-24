@@ -89,7 +89,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ_without_evaluation(Champ
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
   return espace_stockage.valeur();
 }

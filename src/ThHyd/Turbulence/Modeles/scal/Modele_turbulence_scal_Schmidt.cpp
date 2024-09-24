@@ -91,15 +91,15 @@ void Modele_turbulence_scal_Schmidt::mettre_a_jour(double)
  *
  * diffusion_turbulente = viscosite_turbulente / Sc_turbulent
  *
- * @return (Champ_Fonc&) la diffusion turbulente nouvellement calculee
+ * @return (Champ_Fonc_base&) la diffusion turbulente nouvellement calculee
  * @throws les champs diffusivite_turbulente et viscosite_turbulente
  * doivent avoir le meme nombre de valeurs nodales
  */
-Champ_Fonc& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
+Champ_Fonc_base& Modele_turbulence_scal_Schmidt::calculer_diffusion_turbulente()
 {
   DoubleTab& alpha_t = diffusivite_turbulente_->valeurs();
-  const DoubleTab& nu_t = la_viscosite_turbulente_->valeur().valeurs();
-  double temps = la_viscosite_turbulente_->valeur().temps();
+  const DoubleTab& nu_t = la_viscosite_turbulente_->valeurs();
+  double temps = la_viscosite_turbulente_->temps();
   int n = alpha_t.size();
   if (nu_t.size() != n)
     {

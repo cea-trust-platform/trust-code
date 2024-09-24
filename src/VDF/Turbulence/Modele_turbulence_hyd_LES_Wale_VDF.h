@@ -37,7 +37,7 @@ protected:
   double cw_ = 0.5;
   DoubleVect OP1_, OP2_;
 
-  Champ_Fonc& calculer_viscosite_turbulente() override;
+  Champ_Fonc_base& calculer_viscosite_turbulente() override;
   void calculer_OP1_OP2();
 };
 

@@ -55,9 +55,9 @@ public:
   const Champ_base&  get_champ(Champ& espace_stockage) const override;
   const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
 
-  Champ_Fonc& creer_espace_stockage(const Nature_du_champ& nature,
-                                    const int nb_comp,
-                                    Champ_Fonc& es_tmp) const override;
+  OWN_PTR(Champ_Fonc_base)& creer_espace_stockage(const Nature_du_champ& nature,
+                                                  const int nb_comp,
+                                                  OWN_PTR(Champ_Fonc_base)& es_tmp) const override;
   const MorEqn& morceau() const;
   MorEqn& morceau();
   void completer(const Postraitement_base& post) override;

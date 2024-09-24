@@ -58,10 +58,10 @@ public:
     return tab_diffusivite_turbulente;
   }
 
-  const Champ_Fonc& diffusivite_turbulente() const { throw; }
+  const Champ_Fonc_base& diffusivite_turbulente() const { throw; }
   const DoubleTab& tab_nu_t() const { return nu_t_.valeur(); }
 
-  void associer_diff_turb(const Champ_Fonc& diff_turb) { throw; }
+  void associer_diff_turb(const Champ_Fonc_base& diff_turb) { throw; }
 
   void associer_loipar(const Turbulence_paroi_scal_base& loi_paroi) override { throw; }
 

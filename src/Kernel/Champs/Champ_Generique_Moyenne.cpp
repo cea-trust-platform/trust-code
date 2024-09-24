@@ -74,7 +74,7 @@ const Champ_base& Champ_Generique_Moyenne::get_champ(Champ& espace_stockage) con
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   DoubleTab& tab_moy = espace_stockage->valeurs();

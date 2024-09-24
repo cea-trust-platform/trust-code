@@ -43,13 +43,13 @@ public:
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double) =0;
-  inline const Champ_Fonc& conductivite_turbulente() const { return conductivite_turbulente_; }
-  inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_; }
+  inline const Champ_Fonc_base& conductivite_turbulente() const { return conductivite_turbulente_; }
+  inline const Champ_Fonc_base& diffusivite_turbulente() const { return diffusivite_turbulente_; }
   inline const Turbulence_paroi_scal_base& loi_paroi() const;
   inline int loi_paroi_non_nulle() const;
   inline Turbulence_paroi_scal_base& loi_paroi();
   virtual void discretiser();
-  //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
+  //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc_base&) const;
   void associer_eqn(const Equation_base&);
   virtual void completer();
   virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&);
@@ -70,7 +70,7 @@ public:
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
 protected:
-  Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
+  OWN_PTR(Champ_Fonc_base)  conductivite_turbulente_, diffusivite_turbulente_;
   REF(Convection_Diffusion_std) mon_equation_;
   OWN_PTR(Turbulence_paroi_scal_base) loipar_;
   double dt_impr_nusselt_ = DMAXFLOAT;

@@ -18,8 +18,8 @@
 
 #include <Champs_compris_interface.h>
 #include <Sous_domaine_dis_base.h>
+#include <Champ_Fonc_base.h>
 #include <Champs_compris.h>
-#include <Champ_Fonc.h>
 #include <Domaine.h>
 
 class Domaine_Cl_dis_base;
@@ -100,8 +100,8 @@ public :
   }
 
   // Post processing de champs:
-  const Champ_Fonc& volume_maille() const { return volume_maille_; }
-  const Champ_Fonc& mesh_numbering() const { return mesh_numbering_; }
+  const Champ_Fonc_base& volume_maille() const { return volume_maille_; }
+  const Champ_Fonc_base& mesh_numbering() const { return mesh_numbering_; }
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   void creer_champ(const Motcle& motlu) override { Process::exit("No, call creer_champ(const Motcle&, const Probleme_base&)"); };
   void creer_champ(const Motcle&, const Probleme_base&);
@@ -114,8 +114,8 @@ protected :
   int dist_paroi_initialisee_ = 0;
   DoubleTab y_elem_, y_faces_;
   Champs_compris champs_compris_;
-  Champ_Fonc volume_maille_;
-  Champ_Fonc mesh_numbering_;
+  OWN_PTR(Champ_Fonc_base)  volume_maille_;
+  OWN_PTR(Champ_Fonc_base)  mesh_numbering_;
 };
 
 #endif /* Domaine_dis_base_included */

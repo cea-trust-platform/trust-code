@@ -105,15 +105,15 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
  *
  * diffusivite_turbulente = viscosite_turbulente / Prdt_turbulent
  *
- * @return (Champ_Fonc&) la diffusivite turbulente nouvellement calculee
+ * @return (Champ_Fonc_base&) la diffusivite turbulente nouvellement calculee
  * @throws les champs diffusivite_turbulente et viscosite_turbulente
  * doivent avoir le meme nombre de valeurs nodales
  */
-Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
+Champ_Fonc_base& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
 {
   DoubleTab& tab_alpha_t = diffusivite_turbulente_->valeurs();
-  const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeur().valeurs();
-  double temps = la_viscosite_turbulente_->valeur().temps();
+  const DoubleTab& tab_nu_t = la_viscosite_turbulente_->valeurs();
+  double temps = la_viscosite_turbulente_->temps();
   const DoubleTab& xp = ref_cast(Domaine_VF,mon_equation_->domaine_dis()).xp();
 
   int n = tab_alpha_t.size();
@@ -198,6 +198,6 @@ Champ_Fonc& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente()
 
   if (equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(diffusivite_turbulente_->valeurs(), equation().probleme().milieu());
-  return diffusivite_turbulente_;
+  return diffusivite_turbulente_.valeur();
 }
 

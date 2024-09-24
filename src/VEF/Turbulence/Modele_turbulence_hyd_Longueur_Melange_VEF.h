@@ -35,7 +35,7 @@ public:
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void lire_distance_paroi();
   int preparer_calcul() override;
-  Champ_Fonc& calculer_viscosite_turbulente() override;
+  Champ_Fonc_base& calculer_viscosite_turbulente() override;
   void calculer_Sij2();
   void calculer_f_amortissement();
 

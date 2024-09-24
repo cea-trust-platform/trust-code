@@ -209,7 +209,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& 
   //  const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
   //const Domaine_EF& domaine_EF = le_dom_EF.valeur();
 
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
 
   const int N = resu.line_size();
@@ -307,7 +307,7 @@ void Op_Dift_EF_Q1::ajouter_contribution(const DoubleTab& transporte, Matrice_Mo
   // avant le premier pas de temps
   remplir_nu(nu_);
 
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
 
   const int N = transporte.line_size();
@@ -366,7 +366,7 @@ void Op_Dift_EF_Q1::ajouter_contribution_new(const DoubleTab& transporte, Matric
   // avant le premier pas de temps
   remplir_nu(nu_);
 
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
 
   const int N = transporte.line_size();
@@ -451,7 +451,7 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
 
   const int N = resu.line_size();
 
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
 
   if (N > 1)
@@ -957,7 +957,7 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
 
   const Domaine& mon_dom= mon_dom_EF.domaine();
 
-  DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
+  DoubleVect diffu_turb(diffusivite_turbulente().valeurs());
   DoubleTab diffu(nu_);
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {

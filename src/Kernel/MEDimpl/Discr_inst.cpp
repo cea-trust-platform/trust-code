@@ -15,29 +15,26 @@
 
 #include <Discr_inst.h>
 #include <Champ_Don.h>
-#include <Champ_Fonc.h>
+
 #include <Motcle.h>
 #include <Domaine_dis_base.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Discr_inst,"VF_inst",Discretisation_base);
+Implemente_instanciable(Discr_inst, "VF_inst", Discretisation_base);
 
 Entree& Discr_inst::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
 
 Sortie& Discr_inst::printOn(Sortie& s) const
 {
-  return s ;
+  return s;
 }
 
-
-void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                                   Nature_du_champ nature,
-                                   const Noms& nom, const Noms& unite,
-                                   int nb_comp, int nb_pas_dt, double temps,
-                                   OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
+void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
+                                   OWN_PTR(Champ_Inc_base) &champ,
+                                   const Nom& sous_type) const
 {
   assert(0);
   throw;
@@ -47,16 +44,10 @@ void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_ba
  * .. , Champ_Inc) pour un Champ_Fonc.
  *
  */
-void Discr_inst::discretiser_champ(
-  const Motcle& directive, const Domaine_dis_base& z,
-  Nature_du_champ nature,
-  const Noms& noms, const Noms& unites,
-  int nb_comp, double temps,
-  Champ_Fonc& champ) const
+void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
+                                   OWN_PTR(Champ_Fonc_base)& champ) const
 {
-  discretiser_champ_fonc_don(directive, z,
-                             nature, noms, unites,
-                             nb_comp, temps, champ);
+  discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 /*! @brief Idem que Discr_inst::discretiser_champ(.
@@ -64,16 +55,9 @@ void Discr_inst::discretiser_champ(
  * .. , Champ_Inc) pour un Champ_Don.
  *
  */
-void Discr_inst::discretiser_champ(
-  const Motcle& directive, const Domaine_dis_base& z,
-  Nature_du_champ nature,
-  const Noms& noms, const Noms& unites,
-  int nb_comp, double temps,
-  Champ_Don& champ) const
+void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps, Champ_Don& champ) const
 {
-  discretiser_champ_fonc_don(directive, z,
-                             nature, noms, unites,
-                             nb_comp, temps, champ);
+  discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 /*! @brief Idem que VEF_discretisation::discretiser_champ(.
@@ -83,16 +67,12 @@ void Discr_inst::discretiser_champ(
  *  de l'exterieur ...)
  *
  */
-void Discr_inst::discretiser_champ_fonc_don(
-  const Motcle& directive, const Domaine_dis_base& z,
-  Nature_du_champ nature,
-  const Noms& noms, const Noms& unites,
-  int nb_comp, double temps,
-  Objet_U& champ) const
+void Discr_inst::discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
+                                            Objet_U& champ) const
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
-  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
+  Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
 
   Motcles motcles(2);
   motcles[0] = "champ_elem";  // Creer un champ aux elements (de type P0)
@@ -101,9 +81,9 @@ void Discr_inst::discretiser_champ_fonc_don(
   Nom type;
   int rang = motcles.search(directive);
   //int default_nb_comp = 1;
-  const Domaine& domaine=z.domaine();
+  const Domaine& domaine = z.domaine();
   int nb_som_elem = domaine.nb_som_elem();
-  int nb_ddl=-1;
+  int nb_ddl = -1;
   switch(rang)
     {
     case 0:
@@ -113,7 +93,7 @@ void Discr_inst::discretiser_champ_fonc_don(
     case 1:
       type = "Champ_Fonc_P1_MED";
       nb_ddl = domaine.nb_som();
-      if (((dimension==2) && (nb_som_elem==4)) || ((dimension==3) && (nb_som_elem==8)))
+      if (((dimension == 2) && (nb_som_elem == 4)) || ((dimension == 3) && (nb_som_elem == 8)))
         {
           type = "Champ_Fonc_Q1_MED";
         }
@@ -133,21 +113,16 @@ void Discr_inst::discretiser_champ_fonc_don(
   if (rang < 0)
     {
       if (champ_fonc)
-        Discretisation_base::discretiser_champ(directive, z, nature, noms, unites,
-                                               nb_comp, temps, *champ_fonc);
+        Discretisation_base::discretiser_champ(directive, z, nature, noms, unites, nb_comp, temps, *champ_fonc);
       else
-        Discretisation_base::discretiser_champ(directive, z, nature, noms, unites,
-                                               nb_comp, temps, *champ_don);
-
+        Discretisation_base::discretiser_champ(directive, z, nature, noms, unites, nb_comp, temps, *champ_don);
 
       return;
     }
 
-
-
   if (champ_fonc)
     {
-      Champ_Fonc& ch=*champ_fonc;
+      OWN_PTR(Champ_Fonc_base) &ch = *champ_fonc;
       ch.typer(type);
       ch->associer_domaine_dis_base(z);
       ch->fixer_nb_comp(nb_comp);
@@ -159,6 +134,5 @@ void Discr_inst::discretiser_champ_fonc_don(
       assert(0);
       throw;
     }
-
 
 }

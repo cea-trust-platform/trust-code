@@ -19,7 +19,7 @@
 #include <communications.h>
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
-#include <Champ_Fonc.h>
+
 #include <Domaine_VF.h>
 #include <Param.h>
 
@@ -186,7 +186,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ_without_evaluation(Cha
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
   return espace_stockage.valeur();
 }
@@ -209,7 +209,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
   if (source.que_suis_je()=="Champ_Face_PolyMAC_P0P1NC" || source.que_suis_je()=="Champ_Face_PolyMAC_P0")
     Process::exit("PolyMAC_P0P1NC/PolyMAC_P0 face field not supported yet for Reduction_0D");
 
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   int nb_dim = source.valeurs().nb_dim();

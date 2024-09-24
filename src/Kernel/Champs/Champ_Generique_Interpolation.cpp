@@ -222,7 +222,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Ch
   nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
   return espace_stockage.valeur();
 }
@@ -267,7 +267,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   ToDo_Kokkos("critical: copie d'un champ et de son tableau de valeurss");
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 

@@ -414,7 +414,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
-  const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleTab& nu_turb = diffusivite_turbulente().valeurs();
   const double nu = diffusivite(0);
   const int nb_elem_tot = domaine_VEF.domaine().nb_elem_tot(), nb_som_tot = domaine_VEF.domaine().nb_som_tot();
 

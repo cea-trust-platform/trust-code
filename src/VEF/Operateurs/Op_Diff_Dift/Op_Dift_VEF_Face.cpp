@@ -34,7 +34,7 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
 {
   remplir_nu(nu_); // On remplit le tableau nu car ajouter peut se faire avant le premier pas de temps
 
-  const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
+  const DoubleTab& nu_turb = diffusivite_turbulente().valeurs();
   DoubleTrav nu, nu_turb_m, tab_inconnue;
   const int nb_comp = resu.line_size();
 
@@ -81,7 +81,7 @@ void Op_Dift_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   modifier_matrice_pour_periodique_avant_contribuer(matrice, equation());
   remplir_nu(nu_); // On remplit le tableau nu car l'assemblage d'une matrice avec ajouter_contribution peut se faire avant le premier pas de temps
 
-  const DoubleTab& nu_turb_ = diffusivite_turbulente()->valeurs();
+  const DoubleTab& nu_turb_ = diffusivite_turbulente().valeurs();
   DoubleTab nu, nu_turb;
 
   int marq = phi_psi_diffuse(equation());
@@ -120,7 +120,7 @@ void Op_Dift_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
   // On traite les faces bord
   if (equation().inconnue().nature_du_champ() == vectoriel)
     {
-      const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs(), &inconnue_org = equation().inconnue().valeurs();
+      const DoubleTab& nu_turb = diffusivite_turbulente().valeurs(), &inconnue_org = equation().inconnue().valeurs();
       DoubleTab nu, nu_turb_m, tab_inconnue;
 
       int marq = phi_psi_diffuse(equation());

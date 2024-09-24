@@ -31,46 +31,31 @@ class Discr_inst : public Discretisation_base
   Declare_instanciable(Discr_inst);
 
 public:
-  //
-  // Methodes surchargees de Discretisation_base
-  //
-  void volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z,Champ_Fonc& ch) const
+  void volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base) &ch) const
   {
-    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
+    Cerr << __FILE__ << (int) __LINE__ << " not coded" << finl;
     exit();
   }
   Nom domaine_cl_dis_type() const override
   {
-    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
-    exit();
-    return "";
+    Cerr << __FILE__ << (int) __LINE__ << " not coded" << finl;
+    throw;
   }
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &ch_temper) const override
   {
-    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
+    Cerr << __FILE__ << (int) __LINE__ << " not coded" << finl;
     Process::exit();
-  };
+  }
 
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, int nb_pas_dt, double temps,
-                         OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type = NOM_VIDE) const override;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, double temps,
-                         Champ_Fonc& champ) const override;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, double temps,
-                         Champ_Don& champ) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
+                         OWN_PTR(Champ_Inc_base) &champ,
+                         const Nom& sous_type = NOM_VIDE) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps,
+                         OWN_PTR(Champ_Fonc_base) &champ) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
+
 private:
-  void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z,
-                                  Nature_du_champ nature, const Noms& noms, const Noms& unites,
-                                  int nb_comp, double temps, Objet_U& champ) const;
-
+  void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps, Objet_U& champ) const;
 };
 
 #endif

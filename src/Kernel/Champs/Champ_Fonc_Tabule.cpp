@@ -155,7 +155,7 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 
 Champ_base& Champ_Fonc_Tabule::affecter_(const Champ_base& ch)
 {
-  if (!le_champ_tabule_discretise().non_nul())
+  if (le_champ_tabule_dis.est_nul())
     Cerr << le_nom() << "type : " << que_suis_je() << " can not be assigned to " << ch.le_nom() << " because " << le_nom() << " is incomplete " << finl;
   else
     {

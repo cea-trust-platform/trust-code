@@ -18,7 +18,7 @@
 
 #include <Domaine_forward.h>
 #include <Champ_base.h> // Pour Nature_du_champ
-#include <Champ_Fonc.h>
+
 #include <TRUST_Ref.h>
 
 #include <Champ_Don.h>
@@ -68,7 +68,7 @@ public :
   // Creation de champs scalaires ou vectoriels (essentiellement appel a la methode generale, ne pas surcharger ces methodes, elles ne sont la que par commodite)
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,
                          const Nom& sous_type=NOM_VIDE) const;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Fonc& champ) const;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, OWN_PTR(Champ_Fonc_base)& champ) const;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Don& champ) const;
 
   // Creation de champs generaux (eventuellement multiscalaires) :
@@ -77,19 +77,19 @@ public :
   // * Si champ scalaire ou vectoriel, le premier nom et la premiere unite sont utilises
   virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
                                  OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type=NOM_VIDE) const;
-  virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const;
+  virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, OWN_PTR(Champ_Fonc_base)& champ) const;
   virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const;
 
   void nommer_completer_champ_physique(const Domaine_dis_base& domaine_vdf, const Nom& nom_champ, const Nom& unite, Champ_base& champ, const Probleme_base& pbi) const;
   int verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const;
 
-  void volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const;
-  void mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis_base& z, Champ_Fonc& ch) const;
-  virtual void residu(const Domaine_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const;
+  void volume_maille(const Schema_Temps_base& sch, const Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const;
+  void mesh_numbering(const Schema_Temps_base& sch, const Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const;
+  virtual void residu(const Domaine_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const;
 
   static void creer_champ(OWN_PTR(Champ_Inc_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
                           const Nom& directive=NOM_VIDE, const Nom& nom_discretisation=NOM_VIDE);
-  static void creer_champ(Champ_Fonc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
+  static void creer_champ(OWN_PTR(Champ_Fonc_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
                           const Nom& nom_discretisation=NOM_VIDE);
   static void creer_champ(Champ_Don& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
                           const Nom& nom_discretisation=NOM_VIDE);

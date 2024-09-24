@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 
 #include <Op_Diff_Turbulent_base.h>
 
-void Op_Diff_Turbulent_base::associer_diffusivite_turbulente(const Champ_Fonc& diff_turb)
+void Op_Diff_Turbulent_base::associer_diffusivite_turbulente(const Champ_Fonc_base& diff_turb)
 {
   la_diffusivite_turbulente = diff_turb;
 }

@@ -16,7 +16,7 @@
 #ifndef Op_Diff_Turbulent_base_included
 #define Op_Diff_Turbulent_base_included
 
-#include <Champ_Fonc.h>
+#include <Champ_Fonc_base.h>
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
@@ -28,12 +28,12 @@ class Op_Diff_Turbulent_base
 {
 public :
   virtual ~Op_Diff_Turbulent_base() { }
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
+  void associer_diffusivite_turbulente(const Champ_Fonc_base& );
+  inline const Champ_Fonc_base& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
   inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
 
 private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+  REF(Champ_Fonc_base) la_diffusivite_turbulente;
 };
 
 #endif /* Op_Diff_Turbulent_base_included */

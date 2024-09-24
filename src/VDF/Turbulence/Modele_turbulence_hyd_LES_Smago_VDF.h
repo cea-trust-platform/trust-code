@@ -33,7 +33,7 @@ protected:
   double cs_ = 0.18;
   DoubleVect SMA_barre_;
 
-  Champ_Fonc& calculer_viscosite_turbulente() override;
+  Champ_Fonc_base& calculer_viscosite_turbulente() override;
   void calculer_S_barre();
 };
 

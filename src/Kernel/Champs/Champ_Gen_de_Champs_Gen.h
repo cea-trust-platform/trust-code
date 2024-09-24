@@ -17,9 +17,10 @@
 #define Champ_Gen_de_Champs_Gen_included
 
 #include <Liste_Champ_Generique.h>
-#include <Champ_Fonc.h>
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
+
+class Champ_Fonc_base;
 
 /*! @brief Classe de base des champs generiques ayant comme source d'autres champs generiques L'utilisation des methodes de la classe repose sur un principe de recursivite
  *
@@ -51,9 +52,9 @@ public:
   void completer(const Postraitement_base& post) override;
   void   mettre_a_jour(double temps) override;
 
-  virtual Champ_Fonc& creer_espace_stockage(const Nature_du_champ& nature,
-                                            const int nb_comp,
-                                            Champ_Fonc& es_tmp) const;
+  virtual OWN_PTR(Champ_Fonc_base)& creer_espace_stockage(const Nature_du_champ& nature,
+                                                          const int nb_comp,
+                                                          OWN_PTR(Champ_Fonc_base)& es_tmp) const;
 
   virtual const Champ_Generique_base&      get_source(int i) const;
   virtual Champ_Generique_base&      set_source(int i) ;

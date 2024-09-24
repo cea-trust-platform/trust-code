@@ -19,7 +19,7 @@
 #include <Convection_Diffusion_std.h>
 #include <TRUST_Vector.h>
 #include <Fluide_base.h>
-#include <Champ_Fonc.h>
+
 #include <TRUSTTabs.h>
 #include <TRUST_Ref.h>
 
@@ -76,8 +76,8 @@ protected :
   OWN_PTR(Champ_Inc_base) la_temperature;
   REF(Fluide_base) le_fluide;
 
-  Champ_Fonc gradient_temperature;
-  Champ_Fonc h_echange;
+  OWN_PTR(Champ_Fonc_base)  gradient_temperature;
+  OWN_PTR(Champ_Fonc_base)  h_echange;
 
   // Parametres penalisation IBC
   int is_penalized;

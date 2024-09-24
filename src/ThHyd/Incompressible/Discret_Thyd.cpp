@@ -18,82 +18,66 @@
 #include <Schema_Temps_base.h>
 #include <Discret_Thyd.h>
 #include <Milieu_base.h>
-#include <Champ_Fonc.h>
-
-
 #include <Domaine_VF.h>
 
-Implemente_base(Discret_Thyd,"Discret_Thyd",Discret_Thermique);
+Implemente_base(Discret_Thyd, "Discret_Thyd", Discret_Thermique);
 
 Sortie& Discret_Thyd::printOn(Sortie& s) const { return s; }
 
-Entree& Discret_Thyd::readOn(Entree& s) { return s ; }
+Entree& Discret_Thyd::readOn(Entree& s) { return s; }
 
-void Discret_Thyd::vitesse(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_comp) const
+void Discret_Thyd::vitesse(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base) &ch, int nb_comp) const
 {
   Cerr << "Velocity discretization" << finl;
   discretiser_champ("vitesse", z, "vitesse", "m/s", dimension * nb_comp, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);
 }
 
-void Discret_Thyd::translation(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void Discret_Thyd::translation(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Translation discretization" << finl;
   discretiser_champ("vitesse", z, "translation", "m/s", dimension, sch.temps_courant(), ch);
 }
 
-void Discret_Thyd::entcor(const Schema_Temps_base& sch, Domaine_dis_base& z, Champ_Fonc& ch) const
+void Discret_Thyd::entcor(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Entcor discretization" << finl;
   discretiser_champ("vitesse", z, "entcor", "m/s", dimension, sch.temps_courant(), ch);
-
 }
 
-void Discret_Thyd::pression(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch) const
+void Discret_Thyd::pression(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base) &ch) const
 {
   Cerr << "Pressure discretization" << finl;
   discretiser_champ("pression", z, "pression", "Pa.m3/kg", 1,
                     sub_type(Schema_Implicite_base, sch) ? ref_cast(Schema_Implicite_base, sch).solveur()->nb_valeurs_temporelles_pression() : 1, sch.temps_courant(), ch);
 }
 
-void Discret_Thyd::pression_en_pa(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch) const
+void Discret_Thyd::pression_en_pa(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base) &ch) const
 {
   Cerr << "Pressure pa discretization" << finl;
   discretiser_champ("pression", z, "pression_pa", "Pa", 1,
                     sub_type(Schema_Implicite_base, sch) ? ref_cast(Schema_Implicite_base, sch).solveur()->nb_valeurs_temporelles_pression() : 1, sch.temps_courant(), ch);
 }
 
-void Discret_Thyd::divergence_U(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch) const
+void Discret_Thyd::divergence_U(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base) &ch) const
 {
   Cerr << "Velocity divergence discretization" << finl;
   discretiser_champ("divergence_vitesse", z, "divergence_U", "m3/s", 1, 1, sch.temps_courant(), ch);
 }
 
-void Discret_Thyd::gradient_P(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_comp) const
+void Discret_Thyd::gradient_P(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base) &ch, int nb_comp) const
 {
   Cerr << "Pressure gradient discretization" << finl;
   discretiser_champ("gradient_pression", z, "gradient_pression", "m/s2", dimension * nb_comp, 1, sch.temps_courant(), ch);
 }
 
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (Schema_Temps_base&)
- * @param (Champ_Inc_base&)
- * @param (Champ_Fonc&)
- */
-void Discret_Thyd::creer_champ_vorticite(const Schema_Temps_base&, const Champ_Inc_base&, Champ_Fonc&) const
+void Discret_Thyd::creer_champ_vorticite(const Schema_Temps_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const
 {
   Cerr << "Discret_Thyd::creer_champ_vorticite() does nothing" << finl;
   Cerr << que_suis_je() << "needs to overload it !" << finl;
   Process::exit();
 }
 
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (Schema_Temps_base&)
- * @param (Champ_Inc_base&)
- * @param (Champ_Fonc&)
- */
-void Discret_Thyd::critere_Q(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const
+void Discret_Thyd::critere_Q(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const
 {
   // pour le VDF, on a besoin du OWN_PTR(Domaine_Cl_dis_base), mais pas pour le VEF
   // -->> on passe quand meme l argument mais on n en fait rien!!!
@@ -102,14 +86,7 @@ void Discret_Thyd::critere_Q(const Domaine_dis_base&, const Domaine_Cl_dis_base&
   Process::exit();
 }
 
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (Schema_Temps_base&)
- * @param (Champ_Inc_base&)
- * @param (Champ_Fonc&)
- */
-
-void Discret_Thyd::diametre_hydraulique_face(const Domaine_dis_base& z,const DoubleVect& diam_face, const Schema_Temps_base& sch, Champ_Fonc& ch) const
+void Discret_Thyd::diametre_hydraulique_face(const Domaine_dis_base& z, const DoubleVect& diam_face, const Schema_Temps_base& sch, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Hydraulic diameter face field discretization" << finl;
   const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z);
@@ -118,7 +95,7 @@ void Discret_Thyd::diametre_hydraulique_face(const Domaine_dis_base& z,const Dou
   ch_fonc.valeurs().ref(diam_face);
 }
 
-void Discret_Thyd::section_passage(const Domaine_dis_base& z, const DoubleVect& section_passage_face, const Schema_Temps_base& sch, Champ_Fonc& ch) const
+void Discret_Thyd::section_passage(const Domaine_dis_base& z, const DoubleVect& section_passage_face, const Schema_Temps_base& sch, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Section passage field discretization" << finl;
   const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, z);
@@ -128,7 +105,7 @@ void Discret_Thyd::section_passage(const Domaine_dis_base& z, const DoubleVect& 
   tab.inject_array(section_passage_face);
 }
 
-void Discret_Thyd::y_plus(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const
+void Discret_Thyd::y_plus(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const
 {
   // pour le VDF, on a besoin du OWN_PTR(Domaine_Cl_dis_base), mais pas pour le VEF
   // -->> on passe quand meme l argument mais on n en fait rien!!!
@@ -137,34 +114,27 @@ void Discret_Thyd::y_plus(const Domaine_dis_base&, const Domaine_Cl_dis_base&, c
   Process::exit();
 }
 
-void Discret_Thyd::distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const
+void Discret_Thyd::distance_paroi_globale(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const
 {
   Cerr << "Discret_Thyd::distance_paroi_globale() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
 }
 
-void Discret_Thyd::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& eqn, Champ_Fonc& ch) const
+void Discret_Thyd::grad_T(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& eqn, OWN_PTR(Champ_Fonc_base) &ch) const
 {
   Cerr << "Discret_Thyd::grad_T() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
 }
 
-void Discret_Thyd::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& eqn, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void Discret_Thyd::h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& eqn, OWN_PTR(Champ_Fonc_base) &ch, Motcle& nom, int temp_ref) const
 {
   Cerr << "Discret_Thyd::h_conv() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
 }
 
-/*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.
- *
- * @param (Domaine_dis_base&)
- * @param (Fluide_Ostwald&)
- * @param (Champ_Inc_base&)
- * @param (Champ_Inc_base&)
- */
 void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc_base&) const
 {
   Cerr << "Discret_Thyd::proprietes_physiques_fluide_Ostwald() does nothing" << finl;
@@ -172,14 +142,14 @@ void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Domaine_dis_base&, 
   Process::exit();
 }
 
-void Discret_Thyd::grad_u(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, Champ_Fonc&) const
+void Discret_Thyd::grad_u(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const
 {
   Cerr << "\nDiscret_Thyd::grad_u() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
 }
 
-void Discret_Thyd::concentration(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_constituants, const Nom nom_champ) const
+void Discret_Thyd::concentration(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base) &ch, int nb_constituants, const Nom nom_champ) const
 {
   Cerr << "Concentration discretization " << finl;
   discretiser_champ("temperature", z, nom_champ, "%", nb_constituants, sch.nb_valeurs_temporelles(), sch.temps_courant(), ch);

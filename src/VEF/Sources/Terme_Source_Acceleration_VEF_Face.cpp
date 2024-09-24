@@ -142,7 +142,7 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
 
-  DoubleTab& s_face = get_set_terme_source_post()->valeurs();
+  DoubleTab& s_face = get_set_terme_source_post().valeurs();
   s_face = 0.;
 
   // Calcul de la_source_ en fonction des champs d'acceleration et de la

@@ -18,7 +18,6 @@
 
 #include <Turbulence_paroi_scal_base.h>
 #include <Eval_Diff_VDF.h>
-#include <Champ_Fonc.h>
 #include <TRUSTVects.h>
 #include <TRUST_Ref.h>
 
@@ -88,13 +87,13 @@ public:
       }
   }
 
-  inline const Champ_Fonc& diffusivite_turbulente() const { return ref_diffusivite_turbulente_.valeur(); }
+  inline const Champ_Fonc_base& diffusivite_turbulente() const { return ref_diffusivite_turbulente_.valeur(); }
 
-  inline void associer_diff_turb(const Champ_Fonc& diff_turb)
+  inline void associer_diff_turb(const Champ_Fonc_base& diff_turb)
   {
     ref_diffusivite_turbulente_ = diff_turb;
-    tab_diffusivite_turbulente.ref(diff_turb->valeurs());
-    is_multi_ = (diff_turb->valeurs().dimension(1) > 1) ? 1 : 0;
+    tab_diffusivite_turbulente.ref(diff_turb.valeurs());
+    is_multi_ = (diff_turb.valeurs().dimension(1) > 1) ? 1 : 0;
   }
 
   inline virtual void associer_loipar(const Turbulence_paroi_scal_base& loi_paroi) { loipar = loi_paroi; }
@@ -102,7 +101,7 @@ public:
 
 protected:
   int is_multi_ = 0;
-  REF(Champ_Fonc) ref_diffusivite_turbulente_;
+  REF(Champ_Fonc_base) ref_diffusivite_turbulente_;
   REF(Turbulence_paroi_scal_base) loipar;
   DoubleVects equivalent_distance;
   DoubleTab tab_diffusivite_turbulente;

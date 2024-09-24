@@ -130,7 +130,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
 
-  DoubleTab& s_face = get_set_terme_source_post()->valeurs();
+  DoubleTab& s_face = get_set_terme_source_post().valeurs();
   s_face = 0.;
 
   // Calcul de la_source_ en fonction des champs d'acceleration et de la

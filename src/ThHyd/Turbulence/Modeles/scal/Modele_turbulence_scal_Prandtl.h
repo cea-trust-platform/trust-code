@@ -39,7 +39,7 @@ protected:
   Nom definition_fonction_; // stockage de la chaine du jdd
   Parser_U fonction_; // fonction de calcul de alpha_t
   Parser_U fonction1_; // fonction de calcul de Prandtl variant en espace
-  virtual Champ_Fonc& calculer_diffusivite_turbulente();
+  virtual Champ_Fonc_base& calculer_diffusivite_turbulente();
 };
 
 #endif /* Modele_turbulence_scal_Prandtl_included */

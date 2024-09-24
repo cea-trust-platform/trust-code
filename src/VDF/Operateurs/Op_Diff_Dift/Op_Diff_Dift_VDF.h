@@ -128,7 +128,7 @@ protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>
-  associer_diffusivite_turbulente_impl(const Champ_Fonc& visc_ou_diff_turb)
+  associer_diffusivite_turbulente_impl(const Champ_Fonc_base& visc_ou_diff_turb)
   {
     static_cast<OP_TYPE *>(this)->associer_diffusivite_turbulente_base(visc_ou_diff_turb); // hohohoho
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_vdf()->evaluateur());
@@ -151,7 +151,7 @@ protected:
     if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
       {
         const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-        const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
+        const Champ_Fonc_base& lambda_t = mod_turb.conductivite_turbulente();
         associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(lambda_t); // YES !
 
         const Turbulence_paroi_scal_base& loipar = mod_turb.loi_paroi();
@@ -163,7 +163,7 @@ protected:
     else // bizarre mais V2 (on fait comme le cas de l'Op_FACE mais sans assoscier un modele ...)
       {
         const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
-        const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
+        const Champ_Fonc_base& alpha_t = mod_turb.viscosite_turbulente();
         associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(alpha_t);
       }
   }
@@ -174,7 +174,7 @@ protected:
     static_cast<OP_TYPE *>(this)->completer_Op_Dift_VDF_base();
     const RefObjU& modele_turbulence = static_cast<OP_TYPE *>(this)->equation().get_modele(TURBULENCE);
     const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
-    const Champ_Fonc& visc_turb = mod_turb.viscosite_turbulente();
+    const Champ_Fonc_base& visc_turb = mod_turb.viscosite_turbulente();
     associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(visc_turb);
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_vdf()->evaluateur());
     eval_diff_turb.associer_modele_turbulence(mod_turb);

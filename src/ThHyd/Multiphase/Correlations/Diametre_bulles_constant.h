@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,8 +15,9 @@
 
 #ifndef Diametre_bulles_constant_included
 #define Diametre_bulles_constant_included
+
 #include <Correlation_base.h>
-#include <Champ_Fonc.h>
+#include <Champ_Fonc_base.h>
 
 /*! @brief classe Diametre_bulles_constant Contient un champ de bulles de diametre constant
  *
@@ -34,7 +35,7 @@ public:
 
 protected:
   double d_bulle_ = -100.;
-  Champ_Fonc diametres_;
+  OWN_PTR(Champ_Fonc_base)  diametres_;
   int n_l = -1 ; // liquid phase
 };
 

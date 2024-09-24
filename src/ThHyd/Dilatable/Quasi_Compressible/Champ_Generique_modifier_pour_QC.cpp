@@ -57,7 +57,7 @@ const Champ_base& Champ_Generique_modifier_pour_QC::get_champ_without_evaluation
   const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
   return espace_stockage.valeur();
 }
@@ -67,7 +67,7 @@ const Champ_base& Champ_Generique_modifier_pour_QC::get_champ(Champ& espace_stoc
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
-  Champ_Fonc es_tmp;
+  OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   DoubleTab& val = espace_stockage->valeurs();

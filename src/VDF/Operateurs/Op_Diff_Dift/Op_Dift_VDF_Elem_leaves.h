@@ -19,7 +19,7 @@
 #include <Op_Dift_VDF_Elem_base.h>
 #include <Eval_Dift_VDF_leaves.h>
 #include <Op_Diff_Dift_VDF.h>
-#include <Champ_Fonc.h>
+
 
 /// \cond DO_NOT_DOCUMENT
 class Op_Dift_VDF_Elem_leaves
@@ -37,7 +37,7 @@ public:
   inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_VDF_Elem>(i); }
   inline void associer_loipar(const Turbulence_paroi_scal_base& lp ) { associer_loipar_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem>(lp); }
   inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem>(zd,zcd,ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem>(ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc_base& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem>(ch); }
   inline void associer_diffusivite(const Champ_base& ch ) override { associer_diffusivite_impl<Eval_Dift_VDF_Elem>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_Elem>(); }
   inline void completer() override
@@ -58,7 +58,7 @@ public:
   inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_VDF_Elem_Axi>(i); }
   inline void associer_loipar(const Turbulence_paroi_scal_base& lp ) { associer_loipar_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem_Axi>(lp); }
   inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem_Axi>(zd,zcd,ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem_Axi>(ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc_base& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Elem_Axi>(ch); }
   inline void associer_diffusivite(const Champ_base& ch ) override { associer_diffusivite_impl<Eval_Dift_VDF_Elem_Axi>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_Elem_Axi>(); }
   inline void completer() override
@@ -86,7 +86,7 @@ public:
   }
   inline void associer_loipar(const Turbulence_paroi_scal_base& lp ) { associer_loipar_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem>(lp); }
   inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem>(zd,zcd,ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem>(ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc_base& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem>(ch); }
   inline void associer_diffusivite(const Champ_base& ch ) override { associer_diffusivite_impl<Eval_Dift_VDF_Multi_inco_Elem>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_Multi_inco_Elem>(); }
   inline void completer() override
@@ -115,7 +115,7 @@ public:
 
   inline void associer_loipar(const Turbulence_paroi_scal_base& lp ) { associer_loipar_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem_Axi>(lp); }
   inline void associer(const Domaine_dis_base& zd, const Domaine_Cl_dis_base& zcd, const Champ_Inc_base& ch) override { associer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem_Axi>(zd,zcd,ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem_Axi>(ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc_base& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_Elem_Axi>(ch); }
   inline void associer_diffusivite(const Champ_base& ch ) override { associer_diffusivite_impl<Eval_Dift_VDF_Multi_inco_Elem_Axi>(ch); }
   inline const Champ_base& diffusivite() const override { return diffusivite_impl<Eval_Dift_VDF_Multi_inco_Elem_Axi>(); }
   inline void completer() override

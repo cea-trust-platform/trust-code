@@ -43,8 +43,8 @@ class Modele_turbulence_hyd_base: public Objet_U, public Support_Champ_Masse_Vol
 {
   Declare_base(Modele_turbulence_hyd_base);
 public:
-  inline const Champ_Fonc& viscosite_turbulente() const { return la_viscosite_turbulente_; }
-  inline Champ_Fonc& viscosite_turbulente() { return la_viscosite_turbulente_; }
+  inline const Champ_Fonc_base& viscosite_turbulente() const { return la_viscosite_turbulente_; }
+  inline Champ_Fonc_base& viscosite_turbulente() { return la_viscosite_turbulente_; }
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
   inline const Turbulence_paroi_base& loi_paroi() const { return loipar_.valeur(); }
@@ -58,9 +58,9 @@ public:
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double) =0;
   virtual void discretiser();
-  void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
-  void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const;
-  void discretiser_K(const Schema_Temps_base&, Domaine_dis_base&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
+  void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const;
+  void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const;
+  void discretiser_K(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Fonc_base)&) const; // Utilise par les modeles de tubulence dans TrioCFD
   virtual void completer() { /* Do nothing */ }
   void associer_eqn(const Equation_base&);
   virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) { /* Do nothing */ }
@@ -84,7 +84,7 @@ public:
 
 protected:
   double LeCmu_ = CMU;
-  Champ_Fonc la_viscosite_turbulente_, wall_length_;
+  OWN_PTR(Champ_Fonc_base)  la_viscosite_turbulente_, wall_length_;
   REF(Equation_base) mon_equation_;
   OWN_PTR(Turbulence_paroi_base)loipar_;
   double dt_impr_ustar_  = 1.e20, dt_impr_ustar_mean_only_  = 1.e20;
@@ -96,7 +96,7 @@ protected:
 private:
   double XNUTM_ = 1.E8, dt_diff_sur_dt_conv_ = -1;
   int calcul_borne_locale_visco_turb_ = 0;
-  Champ_Fonc corr_visco_turb_;
+  OWN_PTR(Champ_Fonc_base)  corr_visco_turb_;
   DoubleVect borne_visco_turb_;
 };
 
