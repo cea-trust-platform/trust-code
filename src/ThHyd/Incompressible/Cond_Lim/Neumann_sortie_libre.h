@@ -24,7 +24,7 @@
  *     Pour traiter l'hydraulique, on derive donc de la classe Neumann_sortie_libre la classe Sortie_libre_pression_imposee
  *     Les conditions aux limites de type Neumann_sortie_libre ou des types derives se traduisent par des flux diffusifs nuls.
  *     En revanche, le traitement des flux convectifs impose de connaitre le champ convecte a l'exterieur de la frontiere en cas de re-entree
- *     de fluide. C'est pourquoi la classe porte un Champ_front (membre le_champ_ext).
+ *     de fluide. C'est pourquoi la classe porte un OWN_PTR(Champ_front_base) (membre le_champ_ext).
  *
  *     Dans les operateurs de calcul, les conditions aux limites de type Neumann_sortie_libre et des types derives seront traites de maniere identique
  *
@@ -52,7 +52,7 @@ public:
   int reculer(double temps) override;
 
 protected:
-  Champ_front le_champ_ext;
+  OWN_PTR(Champ_front_base) le_champ_ext;
   mutable DoubleTab val_ext_; // Stocke toutes les valeurs de la CL sur toutes les faces de la frontiere (pas d'hypothese sur un champ uniforme). Utile pour le GPU.
 };
 

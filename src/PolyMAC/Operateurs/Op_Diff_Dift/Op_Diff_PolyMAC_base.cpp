@@ -66,7 +66,7 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
           if (sub_type(Echange_externe_impose, la_cl))
             {
               const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose, la_cl);
-              const Champ_front_base& le_ch_front = ref_cast(Champ_front_base, la_cl_int.h_imp().valeur());
+              const Champ_front_base& le_ch_front = ref_cast(Champ_front_base, la_cl_int.h_imp());
               const DoubleVect& tab = le_ch_front.valeurs();
               if (tab.size() != 0)
                 {

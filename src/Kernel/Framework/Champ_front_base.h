@@ -54,7 +54,7 @@ class Cond_lim_base;
  *      toutes par la methode initialiser.
  *      Dans le cas de champs instationnaires, il y a plusieurs valeurs en temps
  *      et chacune peut etre mise a jour.
- *      Les Champ_front sont divises en :
+ *      Les Champ_front_base sont divises en :
  *       * Champ_front_uniforme, constant dans le temps et l'espace
  *       * Champ_front_instationnaire_base, uniformes en espace mais variables en temps
  *       * Champ_front_var, variables en espace.

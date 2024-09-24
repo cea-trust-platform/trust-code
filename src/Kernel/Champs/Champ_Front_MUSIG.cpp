@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,11 +46,11 @@ Entree& Champ_Front_MUSIG::readOn( Entree& is )
         }
       int nbSubPhases;
       is >> nbSubPhases;
-      Champ_front tmp;
+      OWN_PTR(Champ_front_base) tmp;
       is >> tmp;
       for(int j=0; j<nbSubPhases; j++)
         {
-          Champ_front tmp2(tmp);
+          OWN_PTR(Champ_front_base) tmp2(tmp);
           z_fld_.push_back(tmp2);
         }
       dim_ += nbSubPhases;

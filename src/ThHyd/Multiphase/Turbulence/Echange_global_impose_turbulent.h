@@ -49,25 +49,25 @@ public:
   void calculer_coeffs_echange(double temps) override { }
   void verifie_ch_init_nb_comp() const override { }
 
-  Champ_front& T_ext() override
+  Champ_front_base& T_ext() override
   {
     Process::exit(que_suis_je() + " : You shouldn't go through T_ext ! ");
     return Echange_impose_base::T_ext();
   }
 
-  const Champ_front& T_ext() const override
+  const Champ_front_base& T_ext() const override
   {
     Process::exit(que_suis_je() + " : You shouldn't go through T_ext ! ");
     return Echange_impose_base::T_ext();
   }
 
-  inline virtual Champ_front& h_imp() override
+  inline virtual Champ_front_base& h_imp() override
   {
     Process::exit(que_suis_je() + " : You shouldn't go through h_imp ! ");
     return Echange_impose_base::h_imp();
   }
 
-  inline virtual const Champ_front& h_imp() const override
+  inline virtual const Champ_front_base& h_imp() const override
   {
     Process::exit(que_suis_je() + " : You shouldn't go through h_imp ! ");
     return Echange_impose_base::h_imp();

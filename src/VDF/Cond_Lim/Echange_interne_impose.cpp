@@ -122,7 +122,7 @@ void Echange_interne_impose::completer()
 
   lambda_ref_ = domaine_Cl_dis().equation().probleme().milieu().conductivite();
 
-  Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext().valeur());
+  Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext());
   t_ext.creer(nom_pb, nom_bord, "temperature");
 
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
@@ -176,7 +176,7 @@ void Echange_interne_impose::mettre_a_jour(double tps)
   // If VDF, fix h_imp to take into account half cell on the other side of the wall:
   if (isVDF)
     {
-      const Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext().valeur());
+      const Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext());
       const IntTab& face_map = t_ext.face_map();
       const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
 

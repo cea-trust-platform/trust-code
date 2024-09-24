@@ -588,7 +588,7 @@ int Assembleur_P_VEF::modifier_secmem(DoubleTab& secmem)
     {
       const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(i).valeur();
       const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());
-      const Champ_front_base& champ_front = la_cl_base.champ_front().valeur();
+      const Champ_front_base& champ_front = la_cl_base.champ_front();
       int ndeb = la_front_dis.num_premiere_face();
       int nfin = ndeb + la_front_dis.nb_faces();
 

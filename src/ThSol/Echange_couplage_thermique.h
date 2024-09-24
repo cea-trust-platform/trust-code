@@ -34,51 +34,51 @@ public :
   void mettre_a_jour(double temps) override;
   int initialiser(double temps) override;
 
-  double champ_exterieur(int i,int j, const Champ_front& champ_ext) const override;
-  inline double champ_exterieur(int i, const Champ_front& champ_ext) const override { return champ_exterieur(i, 0, champ_ext); };
+  double champ_exterieur(int i,int j, const Champ_front_base& champ_ext) const override;
+  inline double champ_exterieur(int i, const Champ_front_base& champ_ext) const override { return champ_exterieur(i, 0, champ_ext); };
 
   inline double flux_exterieur_impose(int i) const override { return couplage_*champ_exterieur(i,phi_ext()); }
   inline double flux_exterieur_impose(int i,int j) const override { return couplage_*champ_exterieur(i,j,phi_ext()); };
 
-  inline Champ_front& T_p() { return T_ext(); }
-  inline const Champ_front& T_p() const { return T_ext(); }
+  inline Champ_front_base& T_p() { return T_ext(); }
+  inline const Champ_front_base& T_p() const { return T_ext(); }
 
   bool reprise() const { return reprise_; }
-  inline Champ_front& a_p() { return coeff_ap; }
-  inline const Champ_front& a_p() const { return coeff_ap; }
+  inline Champ_front_base& a_p() { return coeff_ap; }
+  inline const Champ_front_base& a_p() const { return coeff_ap; }
 
-  inline Champ_front& s_p() { return coeff_sp; }
-  inline const Champ_front& s_p() const { return coeff_sp; }
+  inline Champ_front_base& s_p() { return coeff_sp; }
+  inline const Champ_front_base& s_p() const { return coeff_sp; }
 
   // Coefficient d'echange effectif
-  inline Champ_front& h_eff() { return coeff_heff; }
-  inline const Champ_front& h_eff() const { return coeff_heff; }
+  inline Champ_front_base& h_eff() { return coeff_heff; }
+  inline const Champ_front_base& h_eff() const { return coeff_heff; }
 
   // Type echange effectif
-  inline Champ_front& tep_eff() { return type_echange_eff; }
-  inline const Champ_front& tep_eff() const { return type_echange_eff; }
+  inline Champ_front_base& tep_eff() { return type_echange_eff; }
+  inline const Champ_front_base& tep_eff() const { return type_echange_eff; }
 
   // Temperature effective
-  inline Champ_front& T_eff() { return temperature_Teff; }
-  inline const Champ_front& T_eff() const { return temperature_Teff; }
+  inline Champ_front_base& T_eff() { return temperature_Teff; }
+  inline const Champ_front_base& T_eff() const { return temperature_Teff; }
 
   // Rapport Echauffement Critique a la paroi
-  inline Champ_front& rec_paroi() { return rftc_paroi; }
-  inline const Champ_front& rec_paroi() const { return rftc_paroi; }
+  inline Champ_front_base& rec_paroi() { return rftc_paroi; }
+  inline const Champ_front_base& rec_paroi() const { return rftc_paroi; }
 
   // Flux critique a la paroi
-  inline Champ_front& phic_paroi() { return flux_critique_paroi; }
-  inline const Champ_front&  phic_paroi() const { return flux_critique_paroi; }
+  inline Champ_front_base& phic_paroi() { return flux_critique_paroi; }
+  inline const Champ_front_base&  phic_paroi() const { return flux_critique_paroi; }
 
 protected :
   double couplage_ = -1.;
-  Champ_front coeff_ap;
-  Champ_front coeff_sp;
-  Champ_front coeff_heff;
-  Champ_front type_echange_eff;
-  Champ_front temperature_Teff;
-  Champ_front rftc_paroi;
-  Champ_front flux_critique_paroi;
+  OWN_PTR(Champ_front_base) coeff_ap;
+  OWN_PTR(Champ_front_base) coeff_sp;
+  OWN_PTR(Champ_front_base) coeff_heff;
+  OWN_PTR(Champ_front_base) type_echange_eff;
+  OWN_PTR(Champ_front_base) temperature_Teff;
+  OWN_PTR(Champ_front_base) rftc_paroi;
+  OWN_PTR(Champ_front_base) flux_critique_paroi;
   Lecture_Champ lec_champs;
   bool reprise_ = false, divise_par_rho_cp_ = true;
 };

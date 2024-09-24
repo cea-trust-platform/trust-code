@@ -856,7 +856,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
 //        {
 //          const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
 //          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-//          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+//          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext());
 //          const IntTab& fmap = Text.face_map();
 //          int ndeb = le_bord.num_premiere_face();
 //          int nfin = ndeb + le_bord.nb_faces();

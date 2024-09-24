@@ -16,8 +16,7 @@
 #ifndef Cond_lim_base_included
 #define Cond_lim_base_included
 
-#include <Champ_front.h>
-
+#include <Champ_front_base.h>
 #include <TRUST_Ref.h>
 #include <Motcle.h>
 #include <vector>
@@ -30,7 +29,7 @@ class Equation_base;
  *
  *      Un objet condition aux limite sert a definir, pour une equation donnee, les conditions aux limites a appliquer sur une frontiere d'un domaine.
  *      Chaque objet Cond_lim_base contient une reference vers l'objet Domaine_Cl_dis_base dont il fait partie.
- *      Chaque objet contient egalement un objet Champ_front contenant les valeurs a imposer sur la frontiere.
+ *      Chaque objet contient egalement un objet OWN_PTR(Champ_front_base) contenant les valeurs a imposer sur la frontiere.
  *
  * @sa Cond_lim Domaine_Cl_dis_base Frontiere_dis_base, Classe abstraite dont toutes les objets representant des conditions, aux limites doivent deriver.,
  *     Methode abstraite:, int compatible_avec_eqn(const Equation_base&) const
@@ -51,8 +50,8 @@ public:
   inline Domaine_Cl_dis_base& domaine_Cl_dis();
   inline const Domaine_Cl_dis_base& domaine_Cl_dis() const;
   virtual void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base&);
-  inline Champ_front& champ_front();
-  inline const Champ_front& champ_front() const;
+  inline Champ_front_base& champ_front();
+  inline const Champ_front_base& champ_front() const;
 
   virtual void set_temps_defaut(double temps);
   virtual void fixer_nb_valeurs_temporelles(int nb_cases);
@@ -75,7 +74,7 @@ public:
 protected:
   std::vector<Motcle> app_domains;
   std::vector<Nom> supp_discs;
-  Champ_front le_champ_front;
+  OWN_PTR(Champ_front_base) le_champ_front;
   REF(Domaine_Cl_dis_base) mon_dom_cl_dis;
   void err_pas_compatible(const Equation_base&) const;
   void err_pas_compatible(const Discretisation_base&) const;
@@ -124,12 +123,12 @@ inline const Domaine_Cl_dis_base& Cond_lim_base::domaine_Cl_dis() const
   return mon_dom_cl_dis.valeur();
 }
 
-inline Champ_front& Cond_lim_base::champ_front()
+inline Champ_front_base& Cond_lim_base::champ_front()
 {
   return le_champ_front;
 }
 
-inline const Champ_front& Cond_lim_base::champ_front() const
+inline const Champ_front_base& Cond_lim_base::champ_front() const
 {
   return le_champ_front;
 }

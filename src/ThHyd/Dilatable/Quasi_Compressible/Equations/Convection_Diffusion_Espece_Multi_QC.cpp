@@ -111,7 +111,7 @@ void Convection_Diffusion_Espece_Multi_QC::completer()
           toto >> condlims[i].valeur();
           condlims[i]->associer_fr_dis_base(frdis);
         }
-      DoubleTab& T = condlims[i]->champ_front()->valeurs();
+      DoubleTab& T = condlims[i]->champ_front().valeurs();
       T = 1.;
     }
 }

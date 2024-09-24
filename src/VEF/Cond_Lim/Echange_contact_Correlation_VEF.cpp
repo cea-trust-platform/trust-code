@@ -45,8 +45,8 @@ Entree& Echange_contact_Correlation_VEF::readOn(Entree& is )
   set_param(param);
   param.lire_avec_accolades_depuis(is);
 
-  champ_front().typer("Champ_front_fonc");
-  champ_front()->fixer_nb_comp(1);
+  le_champ_front.typer("Champ_front_fonc");
+  champ_front().fixer_nb_comp(1);
   return is;
 }
 
@@ -236,7 +236,7 @@ void Echange_contact_Correlation_VEF::completer()
 
 
 
-  DoubleTab& Tparoi =champ_front()->valeurs();
+  DoubleTab& Tparoi =champ_front().valeurs();
   Tparoi.resize(nb_faces_bord,nb_comp);
   const DoubleTab& Ts = mon_eqn.inconnue().valeurs();
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis());
@@ -378,7 +378,7 @@ void Echange_contact_Correlation_VEF::calculer_Q()
   const int nb_faces_bord = ma_front_vf.nb_faces();
   const IntTab& face_voisins = ma_zvef.face_voisins();
 
-  DoubleTab& Tp= champ_front()->valeurs();
+  DoubleTab& Tp= champ_front().valeurs();
 
 
   Qvol=0.;
@@ -733,7 +733,7 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
   calculer_h_solide(h_solide);
 
   const int taille = h_solide.dimension(0);
-  DoubleTab& Tparoi = champ_front()->valeurs();
+  DoubleTab& Tparoi = champ_front().valeurs();
   const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const DoubleTab& Ts = mon_eqn.inconnue().valeurs();
   Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis());

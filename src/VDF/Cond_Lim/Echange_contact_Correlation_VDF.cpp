@@ -41,8 +41,8 @@ Entree& Echange_contact_Correlation_VDF::readOn(Entree& is )
   set_param(param);
   param.lire_avec_accolades_depuis(is);
 
-  T_ext().typer("Champ_front_fonc");
-  T_ext()->fixer_nb_comp(1);
+  le_champ_front.typer("Champ_front_fonc");
+  T_ext().fixer_nb_comp(1);
   h_imp_.typer("Champ_front_fonc");
   h_imp_->fixer_nb_comp(1);
   return is;
@@ -161,7 +161,7 @@ void Echange_contact_Correlation_VDF::completer()
 
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const int nb_faces_bord = ma_front_vf.nb_faces();
-  DoubleTab& Text_valeurs = T_ext()->valeurs();
+  DoubleTab& Text_valeurs = T_ext().valeurs();
   Text_valeurs.resize(nb_faces_bord,1);
 
   mon_h.resize(nb_faces_bord,1);
@@ -611,7 +611,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
   DoubleTab& mon_h= h_imp_->valeurs();
   calculer_h_mon_pb(mon_h);
   const int taille=mon_h.dimension(0);
-  DoubleTab& Text_valeurs = T_ext()->valeurs();
+  DoubleTab& Text_valeurs = T_ext().valeurs();
 
   for (int ii=0; ii<taille; ii++)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,7 +130,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
       // In this case, T_ext might change within the timestep (e.g. Newton's algorithm used for the
       // variable gap model). Make sure we get the most up-to-date value.
       const Echange_interne_impose& cl = ref_cast(Echange_interne_impose, la_cl);
-      const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, cl.T_ext().valeur());
+      const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, cl.T_ext());
       const IntTab& fmap = Text.face_map();
       int opp_face = fmap[face-num1]+num1;  // num1 is the index of the first face
       int elem1 = le_dom->face_voisins(opp_face, 0);

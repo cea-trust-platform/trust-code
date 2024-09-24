@@ -552,10 +552,10 @@ calculer_gradient_som(const DoubleVect& inconnue) const
 
           const DoubleTab& coord_sommets = dom.coord_sommets();
 
-          if (sub_type(Champ_front_txyz,dirichlet.champ_front().valeur()))
+          if (sub_type(Champ_front_txyz,dirichlet.champ_front()))
             {
               const Champ_front_txyz& champ_front =
-                ref_cast(Champ_front_txyz,dirichlet.champ_front().valeur());
+                ref_cast(Champ_front_txyz,dirichlet.champ_front());
 
               for (ind_face=num1; ind_face<num2; ind_face++)
                 {

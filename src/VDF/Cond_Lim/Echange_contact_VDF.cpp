@@ -46,9 +46,9 @@ Entree& Echange_contact_VDF::readOn(Entree& s)
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
 
   s >> nom_autre_pb_ >> nom_bord >> nom_champ >> h_paroi;
-  T_autre_pb().typer("Champ_front_calc");
-  T_ext().typer("Ch_front_var_instationnaire_dep");
-  T_ext()->fixer_nb_comp(1);
+  T_autre_pb_.typer("Champ_front_calc");
+  le_champ_front.typer("Ch_front_var_instationnaire_dep");
+  T_ext().fixer_nb_comp(1);
   return s;
 }
 
@@ -56,9 +56,9 @@ void Echange_contact_VDF::completer()
 {
   Echange_global_impose::completer();
   int nb_cases=domaine_Cl_dis().equation().schema_temps().nb_valeurs_temporelles();
-  T_autre_pb()->associer_fr_dis_base(T_ext()->frontiere_dis());
-  T_autre_pb()->completer();
-  T_autre_pb()->fixer_nb_valeurs_temporelles(nb_cases);
+  T_autre_pb().associer_fr_dis_base(T_ext().frontiere_dis());
+  T_autre_pb().completer();
+  T_autre_pb().fixer_nb_valeurs_temporelles(nb_cases);
 }
 
 /*! @brief Change le i-eme temps futur de la CL.
@@ -67,7 +67,7 @@ void Echange_contact_VDF::completer()
 void Echange_contact_VDF::changer_temps_futur(double temps,int i)
 {
   Cond_lim_base::changer_temps_futur(temps,i);
-  T_autre_pb()->changer_temps_futur(temps,i);
+  T_autre_pb().changer_temps_futur(temps,i);
 }
 
 /*! @brief Tourne la roue de la CL
@@ -76,7 +76,7 @@ void Echange_contact_VDF::changer_temps_futur(double temps,int i)
 int Echange_contact_VDF::avancer(double temps)
 {
   int ok=Cond_lim_base::avancer(temps);
-  ok = ok && T_autre_pb()->avancer(temps);
+  ok = ok && T_autre_pb().avancer(temps);
   return ok;
 }
 
@@ -86,7 +86,7 @@ int Echange_contact_VDF::avancer(double temps)
 int Echange_contact_VDF::reculer(double temps)
 {
   int ok=Cond_lim_base::reculer(temps);
-  ok = ok && T_autre_pb()->reculer(temps);
+  ok = ok && T_autre_pb().reculer(temps);
   return ok;
 }
 
@@ -241,7 +241,7 @@ void Echange_contact_VDF::calculer_h_mon_pb(DoubleTab& tab,double invhparoi,int 
 
 void Echange_contact_VDF::calculer_h_autre_pb(DoubleTab& tab,double invhparoi,int opt)
 {
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Milieu_base& le_milieu=ch.milieu();
   const Domaine_VDF& zvdf_2=ref_cast(Domaine_VDF, ch.domaine_dis());
   const Front_VF& front_vf=ref_cast(Front_VF, ch.front_dis());
@@ -277,7 +277,7 @@ int Echange_contact_VDF::initialiser(double temps)
     return 0;
 
   // XXX : On rempli les valeurs ici et pas dans le readOn car le milieu de pb2 ets pas encore lu !!!
-  Champ_front_calc& ch = ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  Champ_front_calc& ch = ref_cast(Champ_front_calc, T_autre_pb());
   ch.creer(nom_autre_pb_, nom_bord, nom_champ);
 
   const Equation_base& o_eqn = ch.equation();
@@ -346,12 +346,12 @@ int Echange_contact_VDF::initialiser(double temps)
 
 void Echange_contact_VDF::mettre_a_jour(double temps)
 {
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Milieu_base& le_milieu=ch.milieu();
   int nb_comp = le_milieu.conductivite()->nb_comp();
   assert(nb_comp==1);
 
-  T_autre_pb()->mettre_a_jour(temps);
+  T_autre_pb().mettre_a_jour(temps);
 
   int is_pb_fluide=0;
 
@@ -364,7 +364,7 @@ void Echange_contact_VDF::mettre_a_jour(double temps)
   calculer_h_mon_pb(mon_h,0.,opt);
 
   calculer_Teta_paroi(T_wall_,mon_h,autre_h,is_pb_fluide,temps);
-  calculer_Teta_equiv(T_ext()->valeurs_au_temps(temps),mon_h,autre_h,is_pb_fluide,temps);
+  calculer_Teta_equiv(T_ext().valeurs_au_temps(temps),mon_h,autre_h,is_pb_fluide,temps);
   // on a calculer Teta paroi, on peut calculer htot dans himp (= mon_h)
   int taille=mon_h.dimension(0);
   for (int ii=0; ii<taille; ii++)
@@ -385,7 +385,7 @@ void Echange_contact_VDF::calculer_Teta_equiv(DoubleTab& Teta_eq,const DoubleTab
   int nb_faces_bord = ma_front_vf.nb_faces();
   assert(Teta_eq.dimension(0)==nb_faces_bord);
   assert(Teta_eq.dimension(1)==1);
-  DoubleTab& t_autre=T_autre_pb()->valeurs_au_temps(temps);
+  DoubleTab& t_autre=T_autre_pb().valeurs_au_temps(temps);
   for (int numfa=0; numfa<nb_faces_bord; numfa++)
     {
       Teta_eq(numfa,0) = t_autre(numfa,0);
@@ -406,7 +406,7 @@ void Echange_contact_VDF::calculer_Teta_paroi(DoubleTab& Teta_p,const DoubleTab&
   int nb_faces_bord = ma_front_vf.nb_faces();
   int ind_fac,elem;
   Teta_p.resize(nb_faces_bord,1);
-  DoubleTab& t_autre=T_autre_pb()->valeurs_au_temps(temps);
+  DoubleTab& t_autre=T_autre_pb().valeurs_au_temps(temps);
   for (int numfa=0; numfa<nb_faces_bord; numfa++)
     {
       ind_fac = numfa+ndeb;
@@ -422,7 +422,7 @@ void Echange_contact_VDF::calculer_Teta_paroi(DoubleTab& Teta_p,const DoubleTab&
 // En VDF, les faces de deux raccords doivent etre numerotes de la meme facon
 int Echange_contact_VDF::verifier_correspondance() const
 {
-  const Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  const Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const Domaine_VDF& zvdf_2=ref_cast(Domaine_VDF, ch.domaine_dis());

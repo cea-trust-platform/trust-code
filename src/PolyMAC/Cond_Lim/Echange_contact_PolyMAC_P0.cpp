@@ -43,8 +43,8 @@ Entree& Echange_contact_PolyMAC_P0::readOn(Entree& s )
   //Motcle nom_champ;
   s >> nom_autre_pb_ >> nom_bord_ >> nom_champ_ >> invh_paroi;
   invh_paroi = invh_paroi > 1e8 ? 0 : 1. / invh_paroi;
-  T_ext().typer("Ch_front_var_instationnaire_dep");
-  T_ext()->fixer_nb_comp(1);
+  le_champ_front.typer("Ch_front_var_instationnaire_dep");
+  T_ext().fixer_nb_comp(1);
   return s;
 }
 

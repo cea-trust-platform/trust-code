@@ -34,7 +34,7 @@ Entree& PlaqThVDF::readOn(Entree& s )
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
 
   s >> h;
-  T_ext().typer("Champ_front_calc");
+  le_champ_front.typer("Champ_front_calc");
   return s;
 }
 
@@ -53,7 +53,7 @@ void PlaqThVDF::mettre_a_jour(double )
     {
       const Modele_turbulence_scal_base& modele = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Turbulence_paroi_scal_base& loipar = modele.loi_paroi();
-      Champ_front_calc& ch=ref_cast(Champ_front_calc, T_ext().valeur());
+      Champ_front_calc& ch=ref_cast(Champ_front_calc, T_ext());
       ch.creer(eqn.probleme().le_nom(),frontiere_dis().le_nom(),eqn.inconnue().le_nom());
       //const Milieu_base& le_milieu=eqn.probleme().milieu();
       h_imp_.typer("Champ_front_uniforme");
@@ -83,7 +83,7 @@ void PlaqThVDF::mettre_a_jour(double )
     }
   else if (sub_type(Convection_Diffusion_Temperature,eqn))
     {
-      Champ_front_calc& ch = ref_cast(Champ_front_calc,T_ext().valeur());
+      Champ_front_calc& ch = ref_cast(Champ_front_calc,T_ext());
       ch.creer(eqn.probleme().le_nom(),frontiere_dis().le_nom(),
                eqn.inconnue().le_nom());
       //const Milieu_base& le_milieu=eqn.probleme().milieu();
@@ -99,7 +99,7 @@ void PlaqThVDF::mettre_a_jour(double )
 
   //Calcul de T_ext :
   const DoubleTab& Temp= eqn.inconnue().valeurs();
-  DoubleTab& tab= T_ext()->valeurs();
+  DoubleTab& tab= T_ext().valeurs();
   tab.resize(front.nb_faces(),1);
   int face, el1, el2;
   int premiere = front.num_premiere_face();

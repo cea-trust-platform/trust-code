@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #define Champ_front_debit_included
 
 #include <Champ_front_xyz_debit.h>
-#include <Champ_front.h>
+
 /*! @brief class Champ_front_debit
  *
  *  Classe derivee de Champ_front_base qui represente les

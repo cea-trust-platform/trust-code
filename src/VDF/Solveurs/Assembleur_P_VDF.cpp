@@ -547,7 +547,7 @@ void Assembleur_P_VDF::modifier_secmem_pression_imposee(const Neumann_sortie_lib
   if (get_resoudre_increment_pression())
     {
       /*
-        const Champ_front_base & champ_front = cond_lim.champ_front().valeur();
+        const Champ_front_base & champ_front = cond_lim.champ_front();
         if (sub_type(Champ_front_instationnaire_base, champ_front)
         || sub_type(Champ_front_var_instationnaire, champ_front)) {
         Cerr << "Erreur dans Assembleur_P_VDF::modifier_secmem_pression_imposee\n ";
@@ -586,7 +586,7 @@ void Assembleur_P_VDF::modifier_secmem_vitesse_imposee(const Entree_fluide_vites
                                                        const Front_VF& frontiere_vf,
                                                        DoubleTab& secmem)
 {
-  const Champ_front_base& champ_front = cond_lim.champ_front().valeur();
+  const Champ_front_base& champ_front = cond_lim.champ_front();
   const Domaine_VDF& le_dom = le_dom_VDF.valeur();
   const DoubleVect& face_surfaces = le_dom.face_surfaces();
   const IntTab& face_voisins = le_dom.face_voisins();

@@ -43,7 +43,7 @@ int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
     {
       // pour chaque condlim on recupere le champ_front et on met 1
       // meme si la cond lim est un flux (dans ce cas la convection restera nullle.)
-      DoubleTab& T=condlims[i]->champ_front()->valeurs();
+      DoubleTab& T=condlims[i]->champ_front().valeurs();
       T=1.;
       if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
         ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;

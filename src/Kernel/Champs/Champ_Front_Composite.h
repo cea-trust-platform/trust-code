@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,8 @@
 #ifndef Champ_Front_Composite_included
 #define Champ_Front_Composite_included
 
-#include <Champ_front.h>
+#include <Champ_front_base.h>
+#include <TRUST_Deriv.h>
 
 class Champ_Front_Composite : public Champ_front_base
 {
@@ -34,7 +35,7 @@ public:
 
 protected:
   void fill_valeurs_composite();
-  std::vector<Champ_front> z_fld_;
+  std::vector<OWN_PTR(Champ_front_base)> z_fld_;
   int dim_ = -1;
 };
 

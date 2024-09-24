@@ -392,7 +392,7 @@ void Domaine_Cl_dis_base::calculer_derivee_en_temps(double t1, double t2)
 {
   for (int i=0; i<nb_cond_lim(); i++)
     {
-      Champ_front_base& champ=les_conditions_limites(i)->champ_front().valeur();
+      Champ_front_base& champ=les_conditions_limites(i)->champ_front();
       if (champ.instationnaire()) champ.calculer_derivee_en_temps(t1,t2);
     }
 }

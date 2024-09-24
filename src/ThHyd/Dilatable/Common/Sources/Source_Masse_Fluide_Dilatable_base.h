@@ -16,8 +16,8 @@
 #ifndef Source_Masse_Fluide_Dilatable_base_included
 #define Source_Masse_Fluide_Dilatable_base_included
 
-
-#include <Champ_front.h>
+#include <Champ_front_base.h>
+#include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 
 class Convection_Diffusion_Fluide_Dilatable_base;
@@ -52,7 +52,7 @@ public :
 protected :
   int ncomp_ = -1;
   Nom nom_bord_;
-  Champ_front ch_front_source_;
+  OWN_PTR(Champ_front_base) ch_front_source_;
   REF(Domaine_Cl_dis_base) domaine_cl_dis_;
 };
 

@@ -182,16 +182,16 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     {
       int num_bord =  domaine_dis_source.rang_frontiere(nom_fr_);
       const Champ_Inc_base& source_inconnue = ref_cast(Champ_Inc_base,source_stockage);
-      const Champ_front& champ_fr =  source_inconnue.equation().domaine_Cl_dis().les_conditions_limites(num_bord)->champ_front();
+      const Champ_front_base& champ_fr =  source_inconnue.equation().domaine_Cl_dis().les_conditions_limites(num_bord)->champ_front();
 
-      if (sub_type(Champ_front_uniforme,champ_fr.valeur()))
+      if (sub_type(Champ_front_uniforme,champ_fr))
         {
           for (int j = 0; j < N; j++)
             for (int i=0; i<nb_ddl; i++)
-              espace_valeurs(i,j) = champ_fr->valeurs()(0,j);
+              espace_valeurs(i,j) = champ_fr.valeurs()(0,j);
         }
       else
-        espace_valeurs = champ_fr->valeurs();
+        espace_valeurs = champ_fr.valeurs();
     }
 
   //L espace de stockage n a pas actuellement d espace virtuel

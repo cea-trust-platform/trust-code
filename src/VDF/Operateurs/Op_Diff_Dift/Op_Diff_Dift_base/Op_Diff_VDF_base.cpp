@@ -69,7 +69,7 @@ void Op_Diff_VDF_base::init_op_ext() const
       if (sub_type(Echange_contact_VDF, la_cl.valeur()))
         {
           const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, la_cl.valeur());
-          const Champ_front_calc& ch = ref_cast(Champ_front_calc, cl.T_autre_pb().valeur());
+          const Champ_front_calc& ch = ref_cast(Champ_front_calc, cl.T_autre_pb());
           const Equation_base& o_eqn = ch.equation();
           const Op_Diff_VDF_base *o_diff = &ref_cast(Op_Diff_VDF_base, o_eqn.operateur(0).l_op_base());
 

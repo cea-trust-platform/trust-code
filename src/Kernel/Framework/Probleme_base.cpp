@@ -1730,9 +1730,9 @@ std::string Probleme_base::newCompute()
       for (auto const &condLim : condsLim)
         {
           const Cond_lim_base& la_cl_base = condLim.valeur();
-          if (sub_type(Champ_front_Parametrique, la_cl_base.champ_front().valeur()))
+          if (sub_type(Champ_front_Parametrique, la_cl_base.champ_front()))
             {
-              const Champ_front_Parametrique& champ_front = ref_cast(Champ_front_Parametrique, la_cl_base.champ_front().valeur());
+              const Champ_front_Parametrique& champ_front = ref_cast(Champ_front_Parametrique, la_cl_base.champ_front());
               dirname = champ_front.newCompute();
             }
         }

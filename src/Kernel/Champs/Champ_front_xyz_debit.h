@@ -17,7 +17,7 @@
 #define Champ_front_xyz_debit_included
 
 #include <Champ_front_normal.h>
-#include <Champ_front.h>
+
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Domaine_VF.h>
@@ -43,8 +43,8 @@ public:
 
 protected:
   REF(Champ_Inc_base) ch_inco_;
-  Champ_front velocity_profil_;
-  Champ_front flow_rate_;
+  OWN_PTR(Champ_front_base) velocity_profil_;
+  OWN_PTR(Champ_front_base) flow_rate_;
   // in TRUST the normal vector to a surface is stocked weighted by the area of the surface via "face_normales"
   // here we want normal vectors only, formely known as normales_divisees_par_aire_
   // We need the normal vector (only) because the velocity field will be perpendicular the surface

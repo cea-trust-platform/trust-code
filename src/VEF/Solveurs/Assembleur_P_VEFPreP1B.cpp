@@ -473,7 +473,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
           const Cond_lim_base& cl_base = domaine_Cl.les_conditions_limites(cond_lim).valeur();
 
           const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
-          const Champ_front_base& champ_front = cl_base.champ_front().valeur();
+          const Champ_front_base& champ_front = cl_base.champ_front();
 
           const int ndeb = front_VF.num_premiere_face();
           const int nfin = ndeb+front_VF.nb_faces();
@@ -531,7 +531,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
       const Cond_lim_base& cl_base = domaine_Cl.les_conditions_limites(cond_lim).valeur();
 
       const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
-      const Champ_front_base& champ_front = cl_base.champ_front().valeur();
+      const Champ_front_base& champ_front = cl_base.champ_front();
 
       /* Test sur la nature du champ au bord du domaine */
       if (sub_type(Entree_fluide_vitesse_imposee, cl_base)  && champ_front.instationnaire() )
@@ -579,7 +579,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
       const Cond_lim_base& cl_base = domaine_Cl.les_conditions_limites(cond_lim).valeur();
 
       const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
-      const Champ_front_base& champ_front = cl_base.champ_front().valeur();
+      const Champ_front_base& champ_front = cl_base.champ_front();
 
       /* Test sur la nature du champ au bord du domaine */
       if (sub_type(Entree_fluide_vitesse_imposee, cl_base)  && champ_front.instationnaire())
@@ -841,7 +841,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
         if (domaine_VEF.get_alphaA())
           {
             // On en profite pour verifier si la pression est bien nulle si support Pa
-            const DoubleTab& val=ref_cast(Neumann_sortie_libre,les_cl[i].valeur()).champ_front()->valeurs();
+            const DoubleTab& val=ref_cast(Neumann_sortie_libre,les_cl[i].valeur()).champ_front().valeurs();
             int nbval=val.dimension(0);
             for (int n=0; n<nbval; n++)
               if (val(n,0)!=0)

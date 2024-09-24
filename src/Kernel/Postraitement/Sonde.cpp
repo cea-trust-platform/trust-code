@@ -1539,7 +1539,7 @@ void Sonde::mettre_a_jour_bords()
           const Front_VF& le_bord = ref_cast(Front_VF,cl->frontiere_dis());
           const int ndeb = le_bord.num_premiere_face();
           DoubleVect valcl;
-          cl->champ_front()->valeurs_face(face-ndeb,valcl);
+          cl->champ_front().valeurs_face(face-ndeb,valcl);
 
           if (valcl.size() == 0)
             {

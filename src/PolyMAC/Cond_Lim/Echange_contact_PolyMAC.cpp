@@ -36,19 +36,19 @@ Entree& Echange_contact_PolyMAC::readOn(Entree& s )
   Nom nom_bord;
   Motcle nom_champ;
   s >> nom_autre_pb_ >> nom_bord >> nom_champ >> h_paroi;
-  T_autre_pb().typer("Champ_front_calc");
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  T_autre_pb_.typer("Champ_front_calc");
+  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   ch.creer(nom_autre_pb_, nom_bord, nom_champ);
-  T_ext().typer("Ch_front_var_instationnaire_dep");
-  T_ext()->fixer_nb_comp(1);
+  le_champ_front.typer("Ch_front_var_instationnaire_dep");
+  T_ext().fixer_nb_comp(1);
   return s ;
 }
 
 void Echange_contact_PolyMAC::completer()
 {
   Echange_externe_impose::completer();
-  T_autre_pb()->associer_fr_dis_base(T_ext()->frontiere_dis());
-  T_autre_pb()->completer();
+  T_autre_pb().associer_fr_dis_base(T_ext().frontiere_dis());
+  T_autre_pb().completer();
 }
 
 int Echange_contact_PolyMAC::initialiser(double temps)
@@ -56,7 +56,7 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   if (!Echange_externe_impose::initialiser(temps))
     return 0;
 
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Equation_base&    o_eqn  = ch.equation();
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis());
   const Domaine_PolyMAC& o_domaine = ref_cast(Domaine_PolyMAC, ch.domaine_dis());
@@ -140,7 +140,7 @@ void Echange_contact_PolyMAC::update_coeffs()
 {
   if (coeffs_a_jour_) return;
   //objets de l'autre cote : equation, domaine, inconnue (prefix o_), frontiere (pour faire trace_face_distant)
-  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Domaine_PolyMAC& o_domaine = ref_cast(Domaine_PolyMAC, ch.domaine_dis());
   const Equation_base&    o_eqn  = ch.equation();
   const Op_Diff_PolyMAC_Elem& o_op_diff = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base());
@@ -199,18 +199,18 @@ void Echange_contact_PolyMAC::update_coeffs()
   if (o_fvf.frontiere().que_suis_je() == "Raccord_distant_homogene")
     {
       if (monolithic) o_fvf.frontiere().trace_face_distant(o_coeff, coeff);
-      else o_fvf.frontiere().trace_face_distant(o_Text, T_ext()->valeurs()), o_fvf.frontiere().trace_face_distant(o_Himp, h_imp_->valeurs());
+      else o_fvf.frontiere().trace_face_distant(o_Text, T_ext().valeurs()), o_fvf.frontiere().trace_face_distant(o_Himp, h_imp_->valeurs());
       if (monolithic && stab_) o_fvf.frontiere().trace_face_distant(o_delta_int, delta_int);
     }
   else
     {
       if (monolithic) o_fvf.frontiere().trace_face_local(o_coeff, coeff);
-      else o_fvf.frontiere().trace_face_local(o_Text, T_ext()->valeurs()), o_fvf.frontiere().trace_face_local(o_Himp, h_imp_->valeurs());
+      else o_fvf.frontiere().trace_face_local(o_Text, T_ext().valeurs()), o_fvf.frontiere().trace_face_local(o_Himp, h_imp_->valeurs());
       if (monolithic && stab_) o_fvf.frontiere().trace_face_local(o_delta_int, delta_int);
     }
 
   if (monolithic) coeff.echange_espace_virtuel();
-  else T_ext()->valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();
+  else T_ext().valeurs().echange_espace_virtuel(), h_imp_->valeurs().echange_espace_virtuel();
   if (monolithic && stab_) delta_int.echange_espace_virtuel();
   coeffs_a_jour_ = 1;
 }
@@ -218,7 +218,7 @@ void Echange_contact_PolyMAC::update_coeffs()
 void Echange_contact_PolyMAC::update_delta() const
 {
   if (!monolithic || delta_a_jour_) return; //deja fait
-  const Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb().valeur());
+  const Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Front_VF& o_fvf = ref_cast(Front_VF, ch.front_dis());
   const Domaine_PolyMAC& o_domaine = ref_cast(Domaine_PolyMAC, ch.domaine_dis());
   const Equation_base&    o_eqn  = ch.equation();

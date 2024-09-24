@@ -35,7 +35,7 @@ public:
   void completer() override;
 
 protected:
-  Champ_front vitesse_paroi_, k_;
+  OWN_PTR(Champ_front_base) vitesse_paroi_, k_;
 };
 
 #endif /* Paroi_Knudsen_non_negligeable_included */

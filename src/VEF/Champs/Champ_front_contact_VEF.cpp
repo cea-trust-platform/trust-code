@@ -550,9 +550,9 @@ void Champ_front_contact_VEF::associer_front_vf_et_ch_front_autre_pb()
       const Nom& le_nom_cl = la_cl.frontiere_dis().le_nom();
       if (le_nom_cl == nom_bord2)
         {
-          if (sub_type(Champ_front_contact_VEF,la_cl.champ_front().valeur()))
+          if (sub_type(Champ_front_contact_VEF,la_cl.champ_front()))
             {
-              ch_fr_autre_pb = ref_cast(Champ_front_contact_VEF,la_cl.champ_front().valeur());
+              ch_fr_autre_pb = ref_cast(Champ_front_contact_VEF,la_cl.champ_front());
               // Test de securite pour verifier que l'on a bien saisit le champ
               // front_contact_VEF.
               if (ch_fr_autre_pb->nom_pb1 == nom_pb1)
@@ -850,10 +850,10 @@ void Champ_front_contact_VEF::remplir_faces_coin()
 
   for (int num_cl=0; num_cl<size_cl; num_cl++)
     {
-      const Champ_front& ch_front = conds_lim[num_cl]->champ_front();
-      if (sub_type(Champ_front_contact_VEF,ch_front.valeur()))
+      const Champ_front_base& ch_front = conds_lim[num_cl]->champ_front();
+      if (sub_type(Champ_front_contact_VEF,ch_front))
         {
-          const Champ_front_contact_VEF& ch_front_contact = ref_cast(Champ_front_contact_VEF,ch_front.valeur());
+          const Champ_front_contact_VEF& ch_front_contact = ref_cast(Champ_front_contact_VEF,ch_front);
           const Nom& nom_bord_autre_fr = ch_front_contact.get_nom_bord1();
 
           if (nom_bord1!=nom_bord_autre_fr)
@@ -915,10 +915,10 @@ void Champ_front_contact_VEF::test_faces_coin()
   int erreur = 0;
   for (int num_cl=0; num_cl<size_cl; num_cl++)
     {
-      const Champ_front& ch_front = conds_lim[num_cl]->champ_front();
-      if (sub_type(Champ_front_contact_VEF,ch_front.valeur()))
+      const Champ_front_base& ch_front = conds_lim[num_cl]->champ_front();
+      if (sub_type(Champ_front_contact_VEF,ch_front))
         {
-          const Champ_front_contact_VEF& ch_front_contact = ref_cast(Champ_front_contact_VEF,ch_front.valeur());
+          const Champ_front_contact_VEF& ch_front_contact = ref_cast(Champ_front_contact_VEF,ch_front);
           const Nom& nom_bord_fr = ch_front_contact.get_nom_bord1();
           int rang_front_fr = le_dom_dis1.rang_frontiere(nom_bord_fr);
           const Front_VF& la_front_vf_fr = ref_cast(Front_VF, le_dom_dis1.frontiere_dis(rang_front_fr));

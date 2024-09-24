@@ -647,21 +647,21 @@ void Domaine_Cl_EF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
       if (sub_type(Dirichlet,la_cl))
         {
           const Dirichlet& la_cl_diri = ref_cast(Dirichlet,la_cl);
-          if (sub_type(Champ_front_softanalytique,la_cl_diri.champ_front().valeur()))
+          if (sub_type(Champ_front_softanalytique,la_cl_diri.champ_front()))
             {
-              Cerr<<" Il faut utiliser Champ_front_fonc_txyz et non "<<la_cl_diri.champ_front()->que_suis_je()<<finl;
+              Cerr<<" Il faut utiliser Champ_front_fonc_txyz et non "<<la_cl_diri.champ_front().que_suis_je()<<finl;
               exit();
             }
           int avec_valeur_aux_sommets=0;
-          if (sub_type(Champ_front_var_instationnaire,la_cl_diri.champ_front().valeur()))
+          if (sub_type(Champ_front_var_instationnaire,la_cl_diri.champ_front()))
             {
-              const Champ_front_var_instationnaire& ch_txyz=ref_cast(Champ_front_var_instationnaire,la_cl_diri.champ_front().valeur());
+              const Champ_front_var_instationnaire& ch_txyz=ref_cast(Champ_front_var_instationnaire,la_cl_diri.champ_front());
               avec_valeur_aux_sommets=ch_txyz.valeur_au_temps_et_au_point_disponible();
             }
           // Pour les faces de Dirichlet on impose l'inconnue au sommet
           if (avec_valeur_aux_sommets)
             {
-              const Champ_front_var_instationnaire& ch_txyz=ref_cast(Champ_front_var_instationnaire,la_cl_diri.champ_front().valeur());
+              const Champ_front_var_instationnaire& ch_txyz=ref_cast(Champ_front_var_instationnaire,la_cl_diri.champ_front());
               for (int ind_face=0; ind_face<num2; ind_face++)
                 {
                   int face=le_bord.num_face(ind_face);

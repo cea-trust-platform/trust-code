@@ -514,7 +514,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
           if (contrib_interne)
             {
               const Echange_interne_global_parfait& la_cl_paroi = ref_cast(Echange_interne_global_parfait, la_cl.valeur());
-              const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+              const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext());
               const IntTab& fmap = Text.face_map();
               std::vector<bool> hit(nfin-ndeb);
               std::fill(hit.begin(), hit.end(), false);
@@ -575,7 +575,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
           for (int face=ndeb; face<nfin; face++)
             {
               double h=la_cl_paroi.h_imp(face-ndeb);
-              const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+              const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext());
               const IntTab& fmap = Text.face_map();
               int opp_face = fmap(face-ndeb)+ndeb;
 
@@ -709,7 +709,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
       else if (sub_type(Echange_interne_global_parfait, la_cl.valeur()))
         {
           const Echange_interne_global_parfait& la_cl_paroi = ref_cast(Echange_interne_global_parfait, la_cl.valeur());
-          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext());
           const IntTab& fmap = Text.face_map();
           std::vector<bool> hit(nfin-ndeb);
           std::fill(hit.begin(), hit.end(), false);
@@ -759,7 +759,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
       else if (sub_type(Echange_interne_global_impose, la_cl.valeur()))
         {
           const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
-          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext());
           const IntTab& fmap = Text.face_map();
           const DoubleVect& surface_gap = la_cl_paroi.surface_gap();
           for (int face=ndeb; face<nfin; face++)

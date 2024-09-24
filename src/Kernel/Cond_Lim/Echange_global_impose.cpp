@@ -121,7 +121,7 @@ int Echange_global_impose::initialiser(double temps)
 }
 
 
-double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ext) const
+double Echange_global_impose::champ_exterieur(int i, const Champ_front_base& champ_ext) const
 {
   if (mon_dom_cl_dis->equation().que_suis_je()!="Convection_Diffusion_Concentration")
     {
@@ -152,10 +152,10 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ex
             d_Cp= Cp->valeurs()(i);
         }
 
-      if (champ_ext->valeurs().size()==1)
-        return champ_ext->valeurs()(0,0)/(d_rho*d_Cp);
-      else if (champ_ext->valeurs().dimension(1)==1)
-        return champ_ext->valeurs()(i,0)/(d_rho*d_Cp);
+      if (champ_ext.valeurs().size()==1)
+        return champ_ext.valeurs()(0,0)/(d_rho*d_Cp);
+      else if (champ_ext.valeurs().dimension(1)==1)
+        return champ_ext.valeurs()(i,0)/(d_rho*d_Cp);
       else
         Cerr << "Echange_global_impose::flux_impose erreur" << finl;
       exit();
@@ -163,10 +163,10 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ex
     }
   else
     {
-      if (champ_ext->valeurs().size()==1)
-        return champ_ext->valeurs()(0,0);
-      else if (champ_ext->valeurs().dimension(1)==1)
-        return champ_ext->valeurs()(i,0);
+      if (champ_ext.valeurs().size()==1)
+        return champ_ext.valeurs()(0,0);
+      else if (champ_ext.valeurs().dimension(1)==1)
+        return champ_ext.valeurs()(i,0);
       else
         Cerr << "Echange_global_impose::flux_impose erreur" << finl;
       exit();
@@ -175,7 +175,7 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ex
     }
 }
 
-double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front& champ_ext) const
+double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front_base& champ_ext) const
 {
   if (mon_dom_cl_dis->equation().que_suis_je()!="Convection_Diffusion_Concentration")
     {
@@ -205,17 +205,17 @@ double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front& ch
           else
             d_Cp= Cp->valeurs()(i);
         }
-      if (champ_ext->valeurs().dimension(0)==1)
-        return champ_ext->valeurs()(0,j)/(d_rho*d_Cp);
+      if (champ_ext.valeurs().dimension(0)==1)
+        return champ_ext.valeurs()(0,j)/(d_rho*d_Cp);
       else
-        return champ_ext->valeurs()(i,j)/(d_rho*d_Cp);
+        return champ_ext.valeurs()(i,j)/(d_rho*d_Cp);
     }
   else
     {
-      if (champ_ext->valeurs().dimension(0)==1)
-        return champ_ext->valeurs()(0,j);
+      if (champ_ext.valeurs().dimension(0)==1)
+        return champ_ext.valeurs()(0,j);
       else
-        return champ_ext->valeurs()(i,j);
+        return champ_ext.valeurs()(i,j);
     }
 }
 

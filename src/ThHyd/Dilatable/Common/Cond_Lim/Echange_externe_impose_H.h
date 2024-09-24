@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,8 @@ public:
   double T_ext(int num) const override;
   double T_ext(int num, int k) const override;
 
-  inline Champ_front& T_ext() override { return le_champ_front; }
-  inline const Champ_front& T_ext() const override { return le_champ_front; }
+  inline Champ_front_base& T_ext() override { return le_champ_front; }
+  inline const Champ_front_base& T_ext() const override { return le_champ_front; }
 
 protected:
   REF(Fluide_Dilatable_base) le_fluide;

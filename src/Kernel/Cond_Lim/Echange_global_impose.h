@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,13 +48,13 @@ public:
   void mettre_a_jour(double temps) override;
   int initialiser(double temps) override;
 
-  inline Champ_front& derivee_phi_ext() { return derivee_phi_ext_; }
-  inline const Champ_front& derivee_phi_ext() const { return derivee_phi_ext_; }
-  inline Champ_front& phi_ext() { return phi_ext_; }
-  inline const Champ_front& phi_ext() const { return phi_ext_; }
+  inline Champ_front_base& derivee_phi_ext() { return derivee_phi_ext_; }
+  inline const Champ_front_base& derivee_phi_ext() const { return derivee_phi_ext_; }
+  inline Champ_front_base& phi_ext() { return phi_ext_; }
+  inline const Champ_front_base& phi_ext() const { return phi_ext_; }
 
-  virtual double champ_exterieur(int i, int j, const Champ_front& champ_ext) const;
-  virtual double champ_exterieur(int i, const Champ_front& champ_ext) const;
+  virtual double champ_exterieur(int i, int j, const Champ_front_base& champ_ext) const;
+  virtual double champ_exterieur(int i, const Champ_front_base& champ_ext) const;
 
   virtual double flux_exterieur_impose(int i) const;
   virtual double flux_exterieur_impose(int i, int j) const;
@@ -66,7 +66,7 @@ public:
 
 protected:
   bool phi_ext_lu_;
-  Champ_front derivee_phi_ext_, phi_ext_;
+  OWN_PTR(Champ_front_base) derivee_phi_ext_, phi_ext_;
 };
 
 #endif

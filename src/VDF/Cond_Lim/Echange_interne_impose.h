@@ -47,7 +47,7 @@ public:
 
   const DoubleTab& inv_lambda() const { return inv_lambda_; }
 
-  // re-implemented to account for the second Champ_front in the class (h_gap_):
+  // re-implemented to account for the second OWN_PTR(Champ_front_base) in the class (h_gap_):
   void set_temps_defaut(double temps) override;
   void fixer_nb_valeurs_temporelles(int nb_cases) override;
   void changer_temps_futur(double temps, int i) override;
@@ -58,7 +58,7 @@ public:
 protected:
   virtual void update_inv_lambda();
 
-  Champ_front h_gap_;
+  OWN_PTR(Champ_front_base) h_gap_;
   REF(Champ_Don) lambda_ref_;   // reference to the field of thermic conductivity
   DoubleTab inv_lambda_;        // = e/lambda on the internal boundary
 };

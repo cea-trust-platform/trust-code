@@ -1369,7 +1369,7 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
         }
     }
 
-  const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
+  const DoubleTab& vals = cl.champ_front().valeurs_au_temps(temp);
   int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
 
   if (sub_type(Dirichlet_entree_fluide, cl))
@@ -1407,7 +1407,7 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
         }
     }
 
-  const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
+  const DoubleTab& vals = cl.champ_front().valeurs_au_temps(temp);
   int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
 
   if (sub_type(Dirichlet_entree_fluide, cl))

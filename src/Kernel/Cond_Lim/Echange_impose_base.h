@@ -62,24 +62,24 @@ public:
   int reculer(double temps) override;
   void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
 
-  inline virtual Champ_front& T_ext();
-  inline virtual const Champ_front& T_ext() const;
-  inline virtual Champ_front& h_imp();
-  inline virtual const Champ_front& h_imp() const;
+  inline virtual Champ_front_base& T_ext();
+  inline virtual const Champ_front_base& T_ext() const;
+  inline virtual Champ_front_base& h_imp();
+  inline virtual const Champ_front_base& h_imp() const;
 
   // Utilise dans les CAL de calcul des flux pour les lois de paroi
   virtual void liste_faces_loi_paroi(IntTab&) {};
 
 protected :
-  Champ_front h_imp_;
+  OWN_PTR(Champ_front_base) h_imp_;
 };
 
 
 /*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
  *
- * @return (Champ_front&) le champ T_ext de temperature imposee a la frontiere
+ * @return (Champ_front_base&) le champ T_ext de temperature imposee a la frontiere
  */
-inline Champ_front& Echange_impose_base::T_ext()
+inline Champ_front_base& Echange_impose_base::T_ext()
 {
   return le_champ_front;
 }
@@ -88,9 +88,9 @@ inline Champ_front& Echange_impose_base::T_ext()
  *
  * (version const)
  *
- * @return (Champ_front&) le champ T_ext de temperature imposee a la frontiere
+ * @return (Champ_front_base&) le champ T_ext de temperature imposee a la frontiere
  */
-inline const Champ_front& Echange_impose_base::T_ext() const
+inline const Champ_front_base& Echange_impose_base::T_ext() const
 {
   return le_champ_front;
 }
@@ -101,12 +101,12 @@ inline const Champ_front& Echange_impose_base::T_ext() const
  *
  */
 
-inline Champ_front& Echange_impose_base::h_imp()
+inline Champ_front_base& Echange_impose_base::h_imp()
 {
   return h_imp_;
 }
 
-inline const Champ_front& Echange_impose_base::h_imp() const
+inline const Champ_front_base& Echange_impose_base::h_imp() const
 {
   return h_imp_;
 }

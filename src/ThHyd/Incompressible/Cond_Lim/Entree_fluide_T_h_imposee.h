@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public:
   inline void bascule_cond_lim_en_temperature() { type_cond_lim = 0; }
 
 protected:
-  Champ_front le_champ_Text, le_champ_hext;
+  OWN_PTR(Champ_front_base) le_champ_Text, le_champ_hext;
   int type_cond_lim = -1;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ class Champ_P1_isoP1Bulle;
  *  Cette classe derive de la classe Neumann_sortie_libre
  *
  *     Elle represente une frontiere ouverte avec condition de gradient de pression impose.
- *     L'objet de type Champ_front le_champ_front contient le gradient impose. La fonction flux_impose() renvoie une valeur de pression
+ *     L'objet de type OWN_PTR(Champ_front_base) le_champ_front contient le gradient impose. La fonction flux_impose() renvoie une valeur de pression
  *     a l'exterieur calculee a partir du gradient de pression impose et de la pression a l'interieur du domaine.
  *
  * @sa Milieu_base

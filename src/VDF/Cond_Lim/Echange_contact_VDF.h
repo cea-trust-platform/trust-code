@@ -45,8 +45,8 @@ public:
   void mettre_a_jour(double) override;
   void calculer_h_autre_pb(DoubleTab& tab, double invhparoi, int opt);
   void calculer_h_mon_pb(DoubleTab&, double, int);
-  inline virtual Champ_front& T_autre_pb() { return T_autre_pb_; }
-  inline virtual const Champ_front& T_autre_pb() const { return T_autre_pb_; }
+  inline virtual Champ_front_base& T_autre_pb() { return T_autre_pb_; }
+  inline virtual const Champ_front_base& T_autre_pb() const { return T_autre_pb_; }
   virtual void calculer_Teta_paroi(DoubleTab& tab_p, const DoubleTab& mon_h, const DoubleTab& autre_h, int is_pb_fluide, double temps);
   virtual void calculer_Teta_equiv(DoubleTab& Teta_equiv, const DoubleTab& mon_h, const DoubleTab& autre_h, int is_pb_fluide, double temps);
   inline const DoubleTab& T_wall() const { return T_wall_; }
@@ -68,7 +68,7 @@ public:
 protected:
   double h_paroi = -100.;
   DoubleTab autre_h;
-  Champ_front T_autre_pb_;
+  OWN_PTR(Champ_front_base) T_autre_pb_;
   DoubleTab T_wall_;
   Nom nom_autre_pb_, nom_bord;
   Motcle nom_champ;

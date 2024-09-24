@@ -50,7 +50,7 @@ Entree& Echange_impose_base::readOn(Entree& s)
           }
         case 1:
           {
-            s >> T_ext();
+            s >> le_champ_front;
             break;
           }
         default:
@@ -75,10 +75,10 @@ Entree& Echange_impose_base::readOn(Entree& s)
  */
 double Echange_impose_base::T_ext(int i) const
 {
-  if (T_ext()->valeurs().size() == 1)
-    return T_ext()->valeurs()(0, 0);
-  else if (T_ext()->valeurs().dimension(1) == 1)
-    return T_ext()->valeurs()(i, 0);
+  if (T_ext().valeurs().size() == 1)
+    return T_ext().valeurs()(0, 0);
+  else if (T_ext().valeurs().dimension(1) == 1)
+    return T_ext().valeurs()(i, 0);
   else
     {
       Cerr << "Echange_impose_base::T_ext erreur" << finl;
@@ -96,10 +96,10 @@ double Echange_impose_base::T_ext(int i) const
  */
 double Echange_impose_base::T_ext(int i, int j) const
 {
-  if (T_ext()->valeurs().dimension(0) == 1)
-    return T_ext()->valeurs()(0, j);
+  if (T_ext().valeurs().dimension(0) == 1)
+    return T_ext().valeurs()(0, j);
   else
-    return T_ext()->valeurs()(i, j);
+    return T_ext().valeurs()(i, j);
 }
 
 /*! @brief Renvoie la valeur du coefficient d'echange de chaleur impose sur la i-eme composante

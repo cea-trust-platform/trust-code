@@ -41,7 +41,7 @@ Entree& Champ_front_Parametrique::readOn(Entree& is)
   if (motlu!="{") Process::exit("Waiting { !");
   while (motlu!="}")
     {
-      Champ_front ch;
+      OWN_PTR(Champ_front_base) ch;
       fic >> ch;
       champs_.add(ch);
       //Cerr << "[Parameter] Reading: " << ch->que_suis_je() << finl; //" " << ch.valeur() << finl;
@@ -62,10 +62,10 @@ std::string Champ_front_Parametrique::newCompute() const
       if (index_)
         {
           previous_field = " from ";
-          previous_field += champ()->que_suis_je();
+          previous_field += champ().que_suis_je();
         }
       index_++;
-      Nom next_field = champ()->que_suis_je();
+      Nom next_field = champ().que_suis_je();
       Cerr << "[Parameter] Updating boundary field" << previous_field << " to " << next_field << finl;
       return Champ_Parametrique::dirnameCompute(index_);
     }
@@ -104,8 +104,8 @@ void Champ_front_Parametrique::calculer_derivee_en_temps(double t1, double t2)
     }
   else
     {
-      champ()->calculer_derivee_en_temps(t1, t2);
-      Gpoint_ = champ()->derivee_en_temps();
+      champ().calculer_derivee_en_temps(t1, t2);
+      Gpoint_ = champ().derivee_en_temps();
     }
   last_t2_ = t2;
 }

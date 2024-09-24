@@ -48,8 +48,8 @@ Entree& Echange_couplage_thermique::readOn( Entree& is )
   EChaine ech1("Ch_front_var_instationnaire_dep 1");
   EChaine ech2("Ch_front_var_instationnaire_dep 1");
 
-  ech1 >>  h_imp_;
-  ech2 >>  T_ext();
+  ech1 >> h_imp_;
+  ech2 >> le_champ_front;
 
   LIST(Nom) noms;
   noms.add("temperature_paroi");
@@ -110,7 +110,7 @@ void Echange_couplage_thermique::completer()
     }
 }
 
-double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_front& champ_ext) const
+double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_front_base& champ_ext) const
 {
   if (divise_par_rho_cp_)
     {
@@ -119,17 +119,17 @@ double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_fron
       const Champ_Don& Cp=mil.capacite_calorifique();
       double d_rho = sub_type(Champ_Uniforme,rho) ? rho.valeurs()(0,0) : rho.valeurs()(i);
       double d_Cp = sub_type(Champ_Uniforme,Cp.valeur()) ? Cp->valeurs()(0,0) : Cp->valeurs()(i);
-      if (champ_ext->valeurs().dimension(0)==1)
-        return champ_ext->valeurs()(0,j)/(d_rho*d_Cp);
+      if (champ_ext.valeurs().dimension(0)==1)
+        return champ_ext.valeurs()(0,j)/(d_rho*d_Cp);
       else
-        return champ_ext->valeurs()(i,j)/(d_rho*d_Cp);
+        return champ_ext.valeurs()(i,j)/(d_rho*d_Cp);
     }
   else
     {
-      if (champ_ext->valeurs().dimension(0)==1)
-        return champ_ext->valeurs()(0,j);
+      if (champ_ext.valeurs().dimension(0)==1)
+        return champ_ext.valeurs()(0,j);
       else
-        return champ_ext->valeurs()(i,j);
+        return champ_ext.valeurs()(i,j);
     }
 }
 
