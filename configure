@@ -335,7 +335,7 @@ echo "   -disable-plot2d                   Disable PLOT2D installation and build
 echo "   -disable-checks                   Disable checks for external packages, sources, disk space and speed."
 echo "   -disable-check_sources            Disable check sources before compiling."
 echo " "
-echo "   -without-conda                    Do not use Miniconda for Python packages, CMake, swig and other crucial system tools for TRUST."
+echo "   -without-conda                    Do not use Miniforge for Python packages, CMake, swig and other crucial system tools for TRUST."
 echo "                                       !!WARNING!! Use at your own risks, no support will be provided."
 echo "   -without-host_file                Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "   -without-doc                      Do not build the documentation."

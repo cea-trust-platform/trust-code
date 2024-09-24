@@ -807,8 +807,8 @@ unset PYTHONPATH # We get a warning from conda if we do not unset this variable
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 # we add ncurses and libffi to overcome an issue with vi on Ub20 if env_for_python.sh loaded
-pkgs="pyqt nomkl numpy matplotlib swig cmake scipy sympy libstdcxx-ng libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
-local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
+pkgs="pyqt nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
+local_channel="-c file://$TRUST_ROOT/externalpackages/Miniforge/local_channel --override-channels"
 [ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 
 # Pour Mac, on force numpy version a 1
@@ -834,9 +834,9 @@ then
           # Strict check of conda packages
           if [ "$TRUST_DISABLE_JUPYTER" != 1 ]
           then
-             cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | cut -f1 -d',' > conda_list.ref
+             cat $TRUST_ROOT/externalpackages/Miniforge/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | cut -f1 -d',' > conda_list.ref
           else
-             cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | grep -v jupyter > conda_list.ref
+             cat $TRUST_ROOT/externalpackages/Miniforge/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | grep -v jupyter > conda_list.ref
           fi
 
           if [ `diff conda_list.ref conda_list.check 1>/dev/null 2>&1; echo $?` != 0 ]
@@ -893,10 +893,10 @@ then
     fi
 
     # Then we install conda and the different packages
-    conda_installer=`cd $TRUST_ROOT/externalpackages/Miniconda;ls Mini*3*-$system"-"$model.sh`
+    conda_installer=`cd $TRUST_ROOT/externalpackages/Miniforge;ls Mini*3*-$system"-"$model.sh`
     echo "Trying to install $conda_installer"
     # PL: Change le TMPDIR car par defaut sur /tmp et pb si mis a noexec
-    TMPDIR=$TRUST_TMP $TRUST_ROOT/externalpackages/Miniconda/$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+    TMPDIR=$TRUST_TMP $TRUST_ROOT/externalpackages/Miniforge/$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
     [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED && exit -1
 
     # Installing packages from local channel
@@ -906,7 +906,6 @@ then
     FASTER_CONDA_INSTALL=1
     if [ "$FASTER_CONDA_INSTALL" = 1 ]
     then
-       #time ./conda install $local_channel mamba conda=4.9.2 libstdcxx-ng=9.1.0 openssl=1.1.1h || exit -1
        for pkg in $pkgs
        do
           echo "Installing $pkg..."
@@ -924,7 +923,7 @@ then
     [ `uname -s` = Darwin ] && ln -s python3-config python-config #on MacOS, we need python-config to point to the Conda install
     cd - 1>/dev/null 2>&1
     # If a package has not been correctly installed, we exit with an error
-    [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
+    [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniforge $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
     # clean of the install folder
     rm -rf $TRUST_ROOT/exec/python/pkgs
     mkdir -p $TRUST_ROOT/exec/python/pkgs

@@ -120,7 +120,8 @@ cd ..
 
 if [ $ok_only -ne 1 ]
 then
-    conda install coverage
+
+    conda install -c conda-forge coverage
     coverage report
     coverage html
 fi

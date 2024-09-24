@@ -8,7 +8,6 @@ default_version=3.2
 # latest_version=3.4.2 # Blocages MUMPS sur Fedora 34
 # 3.4.2 : 4mn pour installer, 4.0.2 : 31mn pour installer. Donc uniquement Darwin pour cette derniere !
 # PL NB1: Pour tous, changer de version de MPI n'est pas anodin: portabilite, temps de build, temps de run, valgrind error free, tout cela doit etre soupese pour remplacement MPICH 3.2
-# PL NB2: Evaluer conda install mpich (3.3?)
 latest_version=3.4.2
 [ `uname -s` = Darwin ] && latest_version=4.0.2
 

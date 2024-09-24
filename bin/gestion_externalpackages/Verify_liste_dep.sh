@@ -1,4 +1,7 @@
 #!/bin/bash
+echo "bin/gestion_externalpackages/Verify_liste_dep.sh should not be run"
+exit
+
 [ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the directory of TRUST installation and run: source ./env_TRUST.sh" && exit
 
 Build=$TRUST_ROOT/build/bin/gestion_externalpackages/Test

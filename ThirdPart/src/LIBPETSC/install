@@ -521,10 +521,10 @@ then
       # On ajoute Scotch sur certaines machines
       add_package ptscotch
 
-      # flex et bison necessaires pour scotch desormais installes dans miniconda.
+      # flex et bison necessaires pour scotch desormais installes dans conda.
       if [ "`flex --version 1>/dev/null 2>&1;echo $?`" != 0 ] || [ "`bison --version 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
-	 echo "Fatal error: flex and bison not found even though installed in miniconda!"
+	 echo "Fatal error: flex and bison not found even though installed in conda!"
 	 echo "Contact TRUST support team at trust@cea.fr"
 	 exit -1
       fi
