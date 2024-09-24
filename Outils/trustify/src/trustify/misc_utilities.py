@@ -134,14 +134,23 @@ def check_str_equality(s1, s2, print_on_diff=True):
     return BoolWithMsg(True, "Strings are equal")
 
 
-def change_class_name(s):
+def class_name(s):
     return s.capitalize()
 
 ##################################################################
 ## Class factory to register and get back all generated classes
 ##################################################################
 class ClassFactory:
+    _PARSER_SUFFIX = "_Parser"
     _ALL_CLASSES = {}
+
+    @classmethod
+    def ToPydName(cls, nam):
+        return nam.lower().capitalize()
+    
+    @classmethod
+    def ToParserName(cls, nam):
+        return cls.ToPydName(nam) + cls._PARSER_SUFFIX
 
     @classmethod
     def RegisterClass(cls, cls_nam, cls_obj):
@@ -149,21 +158,44 @@ class ClassFactory:
             cls._ALL_CLASSES[cls_nam] = cls_obj
 
     @classmethod
-    def GetClassFromName(cls, cls_nam):
+    def GetPydClassFromName(cls, cls_nam):
         """ Factory method. From a string (cls_nam) return the Python class object
         corresponding to the class found in the current module.
         """
-        n = change_class_name(cls_nam)
+        n = cls.ToPydName(cls_nam)
         cls = cls._ALL_CLASSES.get(n)
         if cls is None:
-            raise Exception(f"Class '{cls_nam}' not found!")
+            raise Exception(f"ClassFactory - class '{cls_nam}' not found!")
         return cls
+
+    @classmethod
+    def GetParserClassFromName(cls, cls_nam):
+        """ Factory method. From a string (cls_nam) return the Python class object
+        corresponding to the class found in the current module.
+        """
+        from trustify.base import Abstract_Parser
+        n = cls.ToParserName(cls_nam)
+        cls = cls._ALL_CLASSES.get(n)
+        if cls is None:
+            raise Exception(f"ClassFactory - class '{n}' not found!")
+        assert issubclass(cls, Abstract_Parser) 
+        return cls
+
+    @classmethod
+    def GetPydFromParser(cls, pars_cls):
+        """ From a parser class, return the equivalent Pydantic schema class.
+        For example from 'Interprete_Parser', returns 'Interprete' """
+        import pydantic
+        n = pars_cls.__name__
+        assert n.endswith(cls._PARSER_SUFFIX), f"Class name not ending with {cls._PARSER_SUFFIX}"
+        ret = ClassFactory.GetPydClassFromName(n[:-len(cls._PARSER_SUFFIX)])
+        assert issubclass(ret, pydantic.BaseModel), f"class '{ret.__class__.__name_}' is not a child of pydantic.BaseModel"
+        return ret
 
     @classmethod
     def Exist(cls, cls_nam):
         """ True if class with nam 'cls_nam' is registered """
-        n = change_class_name(cls_nam)
-        return (n in cls._ALL_CLASSES)
+        return (cls_nam in cls._ALL_CLASSES)
 
 ##################################################################
 ## Various unit tests utils
@@ -211,3 +243,29 @@ class UnitUtils:
 
         self.assertIsNotNone(self._TRUG[slot])
         self.assertEqual(self._TRUG[slot].__file__, str(file_pars))
+
+#####################################
+# Typing related helper methods
+#####################################
+
+def get_optional(typ):
+    """ For a type like 'Optional[toto]' extract the inner type 'toto', or returns
+    None if typ is not an Optional """
+    # TODO port to py 3.8+:
+    import typing as tp
+    import typing_extensions as tpe
+
+    o = tpe.get_origin(typ)
+    # Handle 'Optional[toto]' which is actually an alias for 'Union[toto, None]':
+    if o is not None and o is tp.Union and type(None) in tpe.get_args(typ):
+        # Extract root type from Optional
+        for t in tpe.get_args(typ):
+            if t is not type(None):
+                return t
+    return None
+
+#####################################
+# Other
+#####################################
+def toDatasetTokens(pydantic_value):
+    return pydantic_value._parser.toDatasetTokens()

@@ -7,7 +7,7 @@ import pathlib
 import textwrap
 import datetime
 import trustify.trad2_utilities as tu
-from trustify.misc_utilities import logger, change_class_name
+from trustify.misc_utilities import logger, ClassFactory
 
 ################################################################
 
@@ -36,9 +36,7 @@ def format_docstring(description):
     return docstring
 
 def is_base_or_deriv(cls_nam):
-    if cls_nam.endswith("_deriv") or cls_nam.endswith("_base") or cls_nam == "class_generic":
-        return True
-    return False
+    return cls_nam.endswith("_deriv") or cls_nam.endswith("_base") or cls_nam == "class_generic"
 
 def write_pyd_block(block, pyd_file, all_blocks):
     """ Write a TRAD2Block as a pydantic class, in the pyd_file
@@ -55,11 +53,11 @@ def write_pyd_block(block, pyd_file, all_blocks):
             write_pyd_block(dependency, pyd_file, all_blocks)
 
     # Get base class name. If void (like for Objet_U), inherit from pydantic.BaseModel:
-    base_cls_n = change_class_name(block.name_base) or "pydantic.BaseModel"
+    base_cls_n = ClassFactory.ToPydName(block.name_base) or "pydantic.BaseModel"
     lines = [
         f'#' * 64,
         f'',
-        f'class {change_class_name(block.nam)}({base_cls_n}):',
+        f'class {ClassFactory.ToPydName(block.nam)}({base_cls_n}):',
     ]
     lines += format_docstring(block.desc)
 
@@ -73,16 +71,16 @@ def write_pyd_block(block, pyd_file, all_blocks):
         attr_desc = attribute.desc
         synonyms[attr_name] = attribute.synos
         attr_name = valid_variable_name(attr_name)
-        args = f'default_factory=lambda: eval("{change_class_name(attr_type)}()")'
+        args = f'default_factory=lambda: eval("{ClassFactory.ToPydName(attr_type)}()")'
 
         if attr_type in all_blocks:
             cls = all_blocks[attr_type]
             if isinstance(cls, tu.TRAD2BlockList):
-                attr_type = f'Annotated[List["{change_class_name(cls.classtype)}"], {cls.comma}]'
+                attr_type = f'Annotated[List["{ClassFactory.ToPydName(cls.classtype)}"], {cls.comma}]'
                 attr_desc = cls.desc
                 args = f'default_factory=list'
             else:
-                attr_type = change_class_name(attr_type)
+                attr_type = ClassFactory.ToPydName(attr_type)
         elif attr_type == "entier":
             attr_type = "int"
             args = f'default=0'
@@ -134,6 +132,10 @@ def write_pyd_block(block, pyd_file, all_blocks):
             logger.error(message)
             raise NotImplementedError(message)
 
+        # Is the attribute optional?
+        if attr_mode and not attr_desc =="suppress_param":
+            attr_type = f"Optional[{attr_type}]"
+
         lines.append(f'    {attr_name}: {attr_type} = Field(description=r"{attr_desc}", {args})')
 
     lines += [
@@ -158,10 +160,12 @@ def write_pars_block(block, pars_file, all_blocks):
         if dependency:
             write_pars_block(dependency, pars_file, all_blocks)
 
-    # Get base class name. If void (like for Objet_U), inherit from base.Base_common_Parser:
-    base_cls_n = change_class_name(block.name_base) or "base.BaseCommon"
-    base_cls_n += tb.PARS_SUFFIX
-    cls_nam = change_class_name(block.nam) + tb.PARS_SUFFIX
+    # Get base class name. If void (like for Objet_U), inherit from base.ConstrainBase_Parser:
+    if block.name_base != "":
+        base_cls_n = ClassFactory.ToParserName(block.name_base)
+    else:
+        base_cls_n = "base.ConstrainBase_Parser"
+    cls_nam = ClassFactory.ToParserName(block.nam)
     # If the class is already defined in base.py, skip it:
     if cls_nam in tb.__dict__:
         logger.debug(f"Class {cls_nam} already found in 'base' module - not generated.")
@@ -173,14 +177,17 @@ def write_pars_block(block, pars_file, all_blocks):
         f'class {cls_nam}({base_cls_n}):',
     ]
 
-    read_type = is_base_or_deriv(block.nam)
     info_attr = {}
     for attr in block.attrs:
         info_attr[attr.nam] = tuple(attr.info)
 
+    lines += [f'    _braces: int = {block.mode}']
+    
+    # The XXX_base class (and similar) will need to read their type directly in the dataset, so need this:
+    if is_base_or_deriv(block.nam):
+        lines += [f'    _read_type: bool = True']
+
     lines += [
-        f'    _braces: int = {block.mode}',
-        f'    _read_type: bool = {read_type}',
         f'    _infoMain: dict = {block.info}',
         f'    _infoAttr: dict = {info_attr}',
     ]
@@ -226,13 +233,29 @@ def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, t
 
         class BaseModel(pydantic.BaseModel):
             model_config = ConfigDict(validate_assignment=True)
+                
     '''
     header_pars = header_com + f'''
         import trustify.base as base
         from trustify.base import *
+        from trustify.misc_utilities import toDatasetTokens
         # Import all the Pydantic generated classes:
         from {out_pyd_filename.stem} import *
     '''
+    
+    footer_pars = f'''
+        ################################################################
+        # Register all classes declared so far:
+        ################################################################
+
+        from trustify.misc_utilities import ClassFactory
+        g = globals()
+        for nam in list(g):
+            val = g[nam]
+            if isinstance(val, type) and (issubclass(val, Abstract_Parser) or issubclass(val, Objet_u)):
+                ClassFactory.RegisterClass(nam, val)
+    '''
+
 
     out_pyd_filename = out_pyd_filename or trad2_filename.name + "_pyd.py"
     out_pars_filename = out_pars_filename or trad2_filename.name + "_pars.py"
@@ -254,7 +277,10 @@ def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, t
         pars_file.write("\n" * 3)
         for block in all_blocks.values():
             write_pars_block(block, pars_file, all_blocks)
-
+        # Register all classes in factory:
+        pars_file.write(textwrap.dedent(footer_pars).strip())
+        pars_file.write("\n")
+        
     return all_blocks
 
 

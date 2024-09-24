@@ -1,3 +1,10 @@
 * difference listentier, listentierf
 * more tests on invalid values
-*  
+* builtin_value a sync avec la valeur pydantic -> override __setattr__() ?
+* relire toDSTokens dans Float_Parser
+* check TODO pour info de debug
+* merge class BaseCommon_Parser ConstrainBase_Parser
+* validate on assignment
+* doc TRUSTIFY_DEBUG env var
+* remove commented code
+* attribute list extraction -> to do once and for all at parser instanciation?

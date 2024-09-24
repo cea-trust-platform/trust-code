@@ -8,7 +8,7 @@ import unittest
 from test.reference_data import *
 import trustify.base as base
 import trustify.misc_utilities as mutil
-from trustify.misc_utilities import ClassFactory, logger
+from trustify.misc_utilities import ClassFactory, logger, toDatasetTokens
 from trustify.trust_parser import TRUSTParser, TRUSTStream, TRUSTEndOfStreamException
 import typing
 
@@ -41,34 +41,30 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         logger.debug("Token list has %d items" % len(stream))
         return stream
 
-    def builtin_test(self, builtin_cls , simple_str, simplify=True):
+    def builtin_test(self, builtin_cls, simple_str, simplify=True):
         """ Generic test method taking a builtin Python type, a string representing an extract of a data set
         and returning the corresponding stream, the value, and the parser object.
-        @parm builtin_cls a type as defined in 'typing' module, e.g. 'str', or 'List[float]'
+        @param builtin_cls a type as defined in Python 'typing' module, e.g. 'str', or 'List[float]'
+        @param simple_st a string representing the piece of dataset to be parsed
+        @param simplify whether to remove successive blanks etc. 
         """
         stream = self._import_and_gen_stream(simple_str, simplify)
         pars_cls = base.Builtin_Parser.DispatchFromBuiltin(builtin_cls, stream)
         val, pars = pars_cls.ReadFromTokensBuiltin(stream)
         return stream, val, pars
 
-    def string_test(self, cls_nam , simple_str, simplify=True):
-        """ Generic test method taking the string representing the arguments of a class and parse it. """
-        stream = self._import_and_gen_stream(simple_str, simplify)
-        ze_cls = ClassFactory.GetClassFromName(cls_nam)
-        return stream, ze_cls.ReadFromTokens(stream)
-
-    def generic_test(self, data_ex_orig, simplify=True):
+    def generic_test(self, data, simplify=True):
         """ Generic test method taking a (piece of) dataset and testing it.
         This is a (much) simpler version of base.DataSet_Parser.ReadFromTokens()
         It returns the parser stream, and the object created.
         """
-        stream = self._import_and_gen_stream(simple_str, simplify)
+        stream = self._import_and_gen_stream(data, simplify)
 
         data_list = []  # A list representing the object found in the TRUST data file
 
         # Mimick (in a minimal fashion) what is done in DataSet.ReadFromTokens():
         cls_nam = stream.probeNextLow()
-        ze_cls = ClassFactory.GetClassFromName(cls_nam)
+        ze_cls = ClassFactory.GetParserClassFromName(cls_nam)
 
         val = ze_cls.ReadFromTokens(stream)
         return stream, val
@@ -102,8 +98,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         res = ''.join(pars.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
         # Test inner braces in 'Chaine_Parser' (what makes 'bloc_lecture' work!)
-        # For this case, everything is kept in the resulting value, because we notably want to
-        # remain case-sensitive.
+        # In this specific situation (braces in the string), everything is kept in the resulting value, because we notably 
+        # want to remain case-sensitive.
         data_ex = """
           # with many comments
             before
@@ -124,24 +120,44 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # self.builtin_test(str, data_ex, simplify=False)
         self.assertRaises(ValueError, self.builtin_test, str, data_ex)
 
-    def test_float_list(self):
-        """ Test parsing simple float list """
+    def test_int_float(self):
+        """ Test parsing int and float """
         # Simple float first
         data_ex = """# comment #
     35.6"""
         stream, val, pars = self.builtin_test(float, data_ex, simplify=False)
         expec = 35.6
-        self.assertTrue(expec == val)
+        self.assertEqual(expec, val)
         self.assertTrue(stream.eof())
         # Test writing out:
         res = ''.join(pars.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        # Should fail:
+        data_ex = "toto"
+        # self.builtin_test(float, data_ex, simplify=False)
+        self.assertRaises(ValueError, self.builtin_test, float, data_ex)
 
-        # List of floats now:
+        # Simple int now:
+        data_ex = """# comment #
+    35"""
+        stream, val, pars = self.builtin_test(float, data_ex, simplify=False)
+        expec = 35
+        self.assertEqual(expec, val)
+        self.assertTrue(stream.eof())
+        # Test writing out:
+        res = ''.join(pars.toDatasetTokens())
+        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        # Should fail:
+        data_ex = "toto"
+        # self.builtin_test(int, data_ex, simplify=False)
+        self.assertRaises(ValueError, self.builtin_test, int, data_ex)
+        
+    def test_builtin_list(self):
+        """ Test parsing simple float list """
         data_ex = "3 48.5 89.2 18"
         stream, val, pars = self.builtin_test(typing.List[float], data_ex)
         expec = [48.5, 89.2, 18.0]
-        self.assertTrue(expec == inst)
+        self.assertEqual(expec, val)
         self.assertTrue(stream.eof())
 
         # Test writing out:
@@ -164,7 +180,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         stream, val, pars = self.builtin_test(typing.List[float], data_ex, simplify=False)  # warning: no simplification here
         expec = [48.5, 89.2, 18.0]
 
-        self.assertTrue(expec == inst)
+        self.assertTrue(expec == val)
         self.assertTrue(stream.eof())
         s = ''.join(pars.toDatasetTokens())
         self.assertEqual(s, data_ex)
@@ -175,9 +191,9 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
          89.2 # comment inside #  18"""
         res = ''.join(pars.toDatasetTokens())
         self.assertEqual(res, new_s)
-        pars.pop()
+        val.pop()
         new_s = """ 2 39.3
-         89.2""" # yes a space to start with ...
+         89.2""" # yes a space to start with, see comment above
         res = ''.join(pars.toDatasetTokens())
         self.assertEqual(res, new_s)
 
@@ -193,7 +209,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         """ Test parsing and loading of a minimal TRUST dataset using curly braces """
         data_ex = """
         # Some stupid test #
-        read_MED_bidon
+        read_MED_bidon # with comments #
           {
              mesh ze_mesh_name
              file a/complicated/path/to.med
@@ -202,21 +218,21 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
           }"""
         for simplify in [True, False]:
             stream, res = self.generic_test(data_ex, simplify=simplify)
-            exp = buildCurlyExpec(self._TRUG[0])
-            self.assertTrue(exp == res)
+            exp = buildCurlyExpec(self.mod)
+            self.assertEqual(exp.model_dump(), res.model_dump())
             self.assertTrue(stream.eof())
             if not simplify:
                 # Testing writing out
-                s = ''.join(res.toDatasetTokens())
+                s = ''.join(toDatasetTokens(res))
                 self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
         # Modifying data should change output!!
         res.convertalltopoly = False
         res.file = "new/file.med"
-        s = ''.join(res.toDatasetTokens())
+        s = ''.join(toDatasetTokens(res))
         new_s = """
         # Some stupid test #
-        read_MED_bidon
+        read_MED_bidon # with comments #
           {
              mesh ze_mesh_name
              file new/file.med
@@ -227,7 +243,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # Ill-formed dataset - missing brace
         data_ex = """
         # Some stupid test #
-        read_MED_bidon
+        read_MED_bidon # with comments #
 
              mesh ze_mesh_name
              file a/complicated/path/to.med
@@ -239,7 +255,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # Ill-formed dataset - missing brace
         data_ex = """
         # Some stupid test #
-        read_MED_bidon
+        read_MED_bidon # with comments # 
           {
              mesh ze_mesh_name
              file a/complicated/path/to.med
