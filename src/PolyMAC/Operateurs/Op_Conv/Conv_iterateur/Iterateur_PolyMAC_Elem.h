@@ -984,7 +984,7 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
     {
       DoubleTab& flux_bords=op_base->flux_bords();
       const Domaine_PolyMAC& le_domaine_vdf=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis());
-      const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur();
+      const Champ_base& rho = (op_base->equation()).milieu().masse_volumique();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
       const IntTab& face_voisins=le_domaine_vdf.face_voisins();
       int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);

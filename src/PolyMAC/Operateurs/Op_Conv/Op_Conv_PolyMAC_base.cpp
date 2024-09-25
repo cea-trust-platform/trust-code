@@ -20,7 +20,7 @@
 #include <Domaine_PolyMAC.h>
 #include <EcrFicPartage.h>
 #include <Probleme_base.h>
-#include <Champ.h>
+
 
 Implemente_base(Op_Conv_PolyMAC_base, "Op_Conv_PolyMAC_base", Operateur_Conv_base);
 

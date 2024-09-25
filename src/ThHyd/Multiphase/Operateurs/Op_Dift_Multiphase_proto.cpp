@@ -144,7 +144,7 @@ void Op_Dift_Multiphase_proto::mettre_a_jour_(const double temps, const bool is_
       if (mu_ou_alpha_turb_post_[n].non_nul()) // viscosite/diffusivite turbulente : toujours scalaire
         {
           DoubleTab& val = mu_ou_alpha_turb_post_[n]->valeurs();
-          const DoubleTab& rho = pbm_->milieu().masse_volumique()->passe();
+          const DoubleTab& rho = pbm_->milieu().masse_volumique().passe();
           const int nl = val.dimension(0), cR = (rho.dimension(0) == 1);
           if (is_face)
             {

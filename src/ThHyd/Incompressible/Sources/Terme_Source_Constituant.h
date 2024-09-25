@@ -26,7 +26,7 @@ class Champ_base;
 /*! @brief Classe Terme_Source_Constituant Cette classe represente un terme source de l'equation de transport des constituants
  *
  *     de type degagement volumique de puissance thermique.!!!!A MODIFIER
- *     Un objet Terme_Source_Constituant contient la puissance (Champ donne
+ *     Un objet Terme_Source_Constituant contient la puissance (OWN_PTR(Champ_base) donne
  *     utilisateur) et des references a la masse volumique (rho) et la chaleur.
  *     specifique (Cp).
  *

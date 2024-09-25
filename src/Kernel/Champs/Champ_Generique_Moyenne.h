@@ -23,7 +23,7 @@
 
 class Postraitement_base;
 
-/*! @brief class Champ_Generique_Moyenne Champ destine a post-traiter une moyenne d un champ generique
+/*! @brief class Champ_Generique_Moyenne OWN_PTR(Champ_base) destine a post-traiter une moyenne d un champ generique
  *
  *  La classe porte un operateur statistique "Op_Moyenne"
  *
@@ -61,7 +61,7 @@ public:
   inline Operateur_Statistique_tps_base& Operateur_Statistique() override;
   void completer(const Postraitement_base& post) override;
 
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   void nommer_source() override;
 
   const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;

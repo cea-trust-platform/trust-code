@@ -128,7 +128,7 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
    */
 
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
-  const Champ_base& rho = le_fluide->masse_volumique().valeur();
+  const Champ_base& rho = le_fluide->masse_volumique();
   DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n=tab_mu_sur_Sc.size();
@@ -172,7 +172,7 @@ void Loi_Etat_Binaire_GP_base::calculer_nu_sur_Sc()
 
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = diff_coeff_;
 
-  double temps_champ = le_fluide->masse_volumique()->temps();
+  double temps_champ = le_fluide->masse_volumique().temps();
   nu_sur_Sc->changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }

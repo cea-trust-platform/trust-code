@@ -41,7 +41,7 @@ void Op_Ecart_type::completer(const Probleme_base& Pb)
     integrale_champ_ = moyenne().integrale();
 
   // Dimensionnement du champ integrale_champ a la meme taille que mon_champ
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   const DoubleTab& tab1 = source.valeurs();
 

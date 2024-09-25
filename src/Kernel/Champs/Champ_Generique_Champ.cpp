@@ -65,15 +65,16 @@ void Champ_Generique_Champ::mettre_a_jour(double temps)
  * Ici, l'espace_stockage n'est pas utilise, le champ existe deja
  *
  */
-const Champ_base& Champ_Generique_Champ::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Champ::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  return champ_.valeur();
+  return champ_;
 }
 
 const Champ_base& Champ_Generique_Champ::get_ref_champ_base() const
 {
   return champ_.valeur();
 }
+
 void Champ_Generique_Champ::reset()
 {
   champ_.detach();

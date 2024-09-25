@@ -35,7 +35,7 @@ Entree& Integrale_tps_Champ::readOn(Entree& s)
  */
 void Integrale_tps_Champ::mettre_a_jour_integrale()
 {
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = le_champ_ref_->get_champ(espace_stockage_source);
   double t_courant = le_champ_ref_->get_time();
 

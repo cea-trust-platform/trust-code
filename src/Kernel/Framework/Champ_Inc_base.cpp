@@ -465,7 +465,7 @@ DoubleVect& Champ_Inc_base::valeur_a(const DoubleVect& position, DoubleVect& tab
   return valeur_a_elem(position, tab_valeurs, le_poly(0));
 }
 
-/*! @brief Affectation d'un Champ generique (Champ_base) dans un champ inconnue.
+/*! @brief Affectation d'un OWN_PTR(Champ_base) generique (Champ_base) dans un champ inconnue.
  *
  * @param (Champ_base& ch) le champ partie droite de l'affectation
  * @return (Champ_base&) le resultat de l'affectation (*this)
@@ -503,7 +503,7 @@ void Champ_Inc_base::verifie_valeurs_cl()
 {
 }
 
-/*! @brief Affectation d'une composante d'un Champ quelconque (Champ_base) dans une composante d'un champ inconnue
+/*! @brief Affectation d'une composante d'un OWN_PTR(Champ_base) quelconque (Champ_base) dans une composante d'un champ inconnue
  *
  * @param (Champ_base& ch) la partie droite de l'affectation
  * @param (int compo) l'index de la composante a affecter

@@ -49,9 +49,9 @@ void Sortie_libre_pression_imposee::completer()
   const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   if (sub_type(Fluide_Incompressible,mil) && mon_dom_cl_dis->equation().que_suis_je() != "QDM_Multiphase")
     {
-      if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
+      if (sub_type(Champ_Uniforme, mil.masse_volumique()))
         {
-          const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
+          const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique());
           d_rho = rho.valeurs()(0, 0);
         }
       else
@@ -96,7 +96,7 @@ double Sortie_libre_pression_imposee::flux_impose(int i, int j) const
   assert(!est_egal(d_rho, -123.));
   if (d_rho == -1)
     {
-      const Champ_base& rho = mil.masse_volumique().valeur();
+      const Champ_base& rho = mil.masse_volumique();
       rho_ = rho.valeurs()(i);
     }
   else

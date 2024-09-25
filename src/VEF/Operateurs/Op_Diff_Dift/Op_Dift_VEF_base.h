@@ -29,7 +29,7 @@ class Op_Dift_VEF_base : public Op_Diff_VEF_base, public Op_Diff_Turbulent_base
 public:
 
   double calculer_dt_stab() const override;
-  void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage, const Nom& option, int comp) const override;
 
   void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
   inline const Champ_base& diffusivite() const override { return diffusivite_.valeur(); }

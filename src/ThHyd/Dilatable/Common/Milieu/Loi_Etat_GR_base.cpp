@@ -52,7 +52,7 @@ void Loi_Etat_GR_base::initialiser()
   le_fluide->inco_chaleur().nommer("enthalpie");
 
   const DoubleTab& tab_H = le_fluide->inco_chaleur().valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
+  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   int i, n = tab_H.dimension(0);
   DoubleTab& tab_T = temperature_->valeurs();
   tab_TempC.resize(n);
@@ -82,7 +82,7 @@ void Loi_Etat_GR_base::initialiser_inco_ch()
 
   DoubleTab& tab_TH = le_fluide->inco_chaleur().valeurs();
   double Pth = le_fluide->pression_th();
-  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   tab_rho_n=tab_rho;
   tab_rho_np1=tab_rho;
   int som,n = tab_TH.dimension(0);

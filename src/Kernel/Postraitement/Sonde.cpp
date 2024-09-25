@@ -1122,10 +1122,10 @@ void Sonde::ouvrir_fichier()
           if (mon_champ.non_nul())
             {
               const Noms unites = mon_champ->get_property("unites");
-              s << "# Champ " << nom_champ_lu_ << " [" << unites[ncomp == -1 ? 0 : ncomp] << "]" << finl;
+              s << "# OWN_PTR(Champ_base) " << nom_champ_lu_ << " [" << unites[ncomp == -1 ? 0 : ncomp] << "]" << finl;
             }
           else
-            s << "# Champ " << nom_champ_lu_ << " [??]" << finl;
+            s << "# OWN_PTR(Champ_base) " << nom_champ_lu_ << " [??]" << finl;
           s << "# Type " << get_type() << finl;
         }
       // Ecriture de l'en tete des fichiers plan :
@@ -1276,7 +1276,7 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
       // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
       // Implemente au niveau de Sondes
       REF(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
-//      Champ espace_stockage;
+//      OWN_PTR(Champ_base) espace_stockage;
 //      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
 //        ma_source_mod.mettre_a_jour(un_temps);
       ma_source->mettre_a_jour(un_temps);

@@ -76,7 +76,7 @@ void Source_Force_Tchen_base::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
-                   &rho   = equation().milieu().masse_volumique()->passe(), &vf_dir = domaine.volumes_entrelaces_dir();
+                   &rho   = equation().milieu().masse_volumique().passe(), &vf_dir = domaine.volumes_entrelaces_dir();
 
   double pas_tps = equation().probleme().schema_temps().pas_de_temps();
   int N = inco.line_size(), nf = domaine.nb_faces();

@@ -42,7 +42,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs(),
                    *a_r = !pbm ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->equation_masse().champ_conserve().valeurs(),
                     *alp = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr,
-                     &rho = equation().milieu().masse_volumique()->passe();
+                     &rho = equation().milieu().masse_volumique().passe();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   int i, j, k, e = -100, eb, f, fb, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;

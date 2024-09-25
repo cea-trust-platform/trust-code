@@ -952,7 +952,7 @@ int Navier_Stokes_std::preparer_calcul()
       else
         {
           Cerr<<"Assembling for quasi-compressible"<<finl;
-          assembleur_pression_->assembler_QC(fluide().masse_volumique()->valeurs(),matrice_pression_);
+          assembleur_pression_->assembler_QC(fluide().masse_volumique().valeurs(),matrice_pression_);
         }
     }
 
@@ -1209,7 +1209,7 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
 {
   DoubleTab& Pa=la_pression_en_pa->valeurs();
   DoubleTab& tab_pression=la_pression->valeurs();
-  const Champ_base& rho=milieu().masse_volumique().valeur();
+  const Champ_base& rho=milieu().masse_volumique();
   if (Pa.get_md_vector() == tab_pression.get_md_vector())
     Pa = tab_pression; //Pa et tab_pression ont le meme support
   else
@@ -1420,7 +1420,7 @@ void Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hyd
       Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;
       exit();
     }
-  const Champ_base& rho = milieu().masse_volumique().valeur();
+  const Champ_base& rho = milieu().masse_volumique();
   if (!sub_type(Champ_Uniforme,rho))
     {
       Cerr<<"postprocessing of presion_hydrostatique availabe only for incompressible flow"<<finl;

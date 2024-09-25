@@ -21,7 +21,6 @@
 #include <Domaine_Cl_VEF.h>
 #include <Equation_base.h>
 #include <Modele_turbulence_scal_base.h>
-
 #include <Neumann_paroi.h>
 #include <Neumann_homogene.h>
 #include <Discretisation_base.h>
@@ -44,10 +43,10 @@ Entree& Champ_Generique_Tparoi_VEF::readOn(Entree& s )
   return s ;
 }
 
-const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
 
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
@@ -67,12 +66,12 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ
   espace_stockage = espace_stockage_fonc;
 
 
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
-const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
 
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
@@ -198,7 +197,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
   DoubleTab& espace_valeurs = espace_stockage->valeurs();
   espace_valeurs.echange_espace_virtuel();
 
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 const Noms Champ_Generique_Tparoi_VEF::get_property(const Motcle& query) const

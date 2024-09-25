@@ -37,7 +37,7 @@ Entree& Integrale_tps_produit_champs::readOn(Entree& s)
  */
 void Integrale_tps_produit_champs::mettre_a_jour_integrale()
 {
-  Champ espace_stockage_source, espace_stockage_source2;
+  OWN_PTR(Champ_base) espace_stockage_source, espace_stockage_source2;
   const Champ_base& source = mon_premier_champ()->get_champ(espace_stockage_source);
   const Champ_base& source2 = mon_second_champ()->get_champ(espace_stockage_source2);
   const Noms nom = mon_premier_champ()->get_property("nom");

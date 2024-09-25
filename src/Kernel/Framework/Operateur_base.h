@@ -114,7 +114,7 @@ public:
   virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
-  void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage, const Nom& option, int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
 
   // Je rajoute deux methodes pour le calcul du flux

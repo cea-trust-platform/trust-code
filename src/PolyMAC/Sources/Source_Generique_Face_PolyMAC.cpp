@@ -62,7 +62,7 @@ Nom Source_Generique_Face_PolyMAC::localisation_source()
 
 DoubleTab& Source_Generique_Face_PolyMAC::ajouter(DoubleTab& resu) const
 {
-  Champ espace_stockage;
+  OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = la_zcl_PolyMAC.valeur();
@@ -98,7 +98,7 @@ DoubleTab& Source_Generique_Face_PolyMAC::ajouter(DoubleTab& resu) const
 
 DoubleTab& Source_Generique_Face_PolyMAC_P0P1NC::ajouter(DoubleTab& resu) const
 {
-  Champ espace_stockage;
+  OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();

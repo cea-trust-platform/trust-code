@@ -690,7 +690,7 @@ void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equ
             }
         }
     }
-  else  // la conductivite est un Champ uniforme
+  else  // la conductivite est un OWN_PTR(Champ_base) uniforme
     {
       for (int face=ndeb; face<nfin; face++)
         {

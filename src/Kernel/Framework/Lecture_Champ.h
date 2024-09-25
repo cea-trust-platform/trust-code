@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,9 @@
 #define Lecture_Champ_included
 
 #include <TRUST_List.h>
-#include <Objet_U.h>
-#include <Champ.h>
+#include <TRUST_Deriv.h>
+
+class Champ_base;
 
 /*! @brief : class Lecture_Champ
  *
@@ -33,14 +34,14 @@ class Lecture_Champ : public Objet_U
 public :
 
   Entree& lire_champs(Entree& is, LIST(Nom)& noms_champs);
-  Champ& champ_lu(const Nom& nom) { return liste_champs(nom); }
-  const Champ& champ_lu(const Nom& nom)const { return liste_champs(nom); }
+  Champ_base& champ_lu(const Nom& nom) { return liste_champs(nom); }
+  const Champ_base& champ_lu(const Nom& nom)const { return liste_champs(nom); }
   bool champs_lus() { return champs_lus_; }
   bool champs_lus() const { return champs_lus_; }
 
 protected :
 
-  LIST(Champ) liste_champs;
+  LIST(OWN_PTR(Champ_base)) liste_champs;
   bool champs_lus_;
 };
 

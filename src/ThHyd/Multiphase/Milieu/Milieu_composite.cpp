@@ -183,7 +183,7 @@ int Milieu_composite::initialiser(const double temps)
   const bool res_en_T = equation_.count("temperature") ? true : false;
 
   const Equation_base& eqn = res_en_T ? equation("temperature") : equation("enthalpie");
-  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()),
+  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho),
                   &ch_e = ref_cast(Champ_Inc_base, e_int.valeur()),
                    &ch_h_ou_T = ref_cast(Champ_Inc_base, h_ou_T.valeur());
 
@@ -429,21 +429,21 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   const Domaine_VF& zvf = ref_cast(Domaine_VF, mil.equation_.begin()->second->domaine_dis());
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides_.size();
   std::vector<const DoubleTab *> split(N);
-  for (n = 0; n < N; n++) split[n] = &mil.fluides_[n]->masse_volumique()->valeurs();
+  for (n = 0; n < N; n++) split[n] = &mil.fluides_[n]->masse_volumique().valeurs();
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
 
   std::vector<DoubleTab> bsplit(N);
   for (n = 0; n < N; n++)
-    if (mil.fluides_[n]->masse_volumique()->a_un_domaine_dis_base())
-      bsplit[n] = mil.fluides_[n]->masse_volumique()->valeur_aux_bords();
-    else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides_[n]->masse_volumique()->valeur_aux(zvf.xv_bord(), bsplit[n]);
+    if (mil.fluides_[n]->masse_volumique().a_un_domaine_dis_base())
+      bsplit[n] = mil.fluides_[n]->masse_volumique().valeur_aux_bords();
+    else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides_[n]->masse_volumique().valeur_aux(zvf.xv_bord(), bsplit[n]);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = bsplit[n](i * (split[n]->dimension(0) > 1), 0);
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides_[n]->masse_volumique().valeur()) ? &ref_cast(Champ_Inc_base, mil.fluides_[n]->masse_volumique().valeur()).derivees() : nullptr;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides_[n]->masse_volumique()) ? &ref_cast(Champ_Inc_base, mil.fluides_[n]->masse_volumique()).derivees() : nullptr;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++)
     if (split_der[n])
@@ -563,7 +563,7 @@ bool Milieu_composite::initTimeStep(double dt)
 
   /* champs dont on doit creer des cases */
   std::vector<Champ_Inc_base *> vch;
-  if (rho.non_nul() && sub_type(Champ_Inc_base, rho.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, rho.valeur()));
+  if (rho.non_nul() && sub_type(Champ_Inc_base, rho)) vch.push_back(&ref_cast(Champ_Inc_base, rho));
   if (e_int.non_nul() && sub_type(Champ_Inc_base, e_int.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, e_int.valeur()));
   if (h_ou_T.non_nul() && sub_type(Champ_Inc_base, h_ou_T.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, h_ou_T.valeur()));
 

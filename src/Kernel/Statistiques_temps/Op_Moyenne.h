@@ -66,7 +66,7 @@ inline void Op_Moyenne::initialiser(double val_init)
 
 inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2)
 {
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = le_champ.get_champ(espace_stockage_source);
   Nom type_le_champ = source.que_suis_je();
 

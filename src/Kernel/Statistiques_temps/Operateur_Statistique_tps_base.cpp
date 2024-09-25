@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ int Operateur_Statistique_tps_base::completer_post_statistiques(const Domaine& d
   const Nom nom_post = le_nom();
   const Nom& localisation = localisation_post();
 
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = integrale().le_champ()->get_champ(espace_stockage_source);
   source.completer_post_champ(dom,axi,localisation,nom_post,format);
 

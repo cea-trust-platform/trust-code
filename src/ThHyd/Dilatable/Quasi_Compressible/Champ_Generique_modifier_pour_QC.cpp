@@ -51,19 +51,19 @@ void Champ_Generique_modifier_pour_QC::completer(const Postraitement_base& post)
   mon_milieu_ = mon_post.probleme().equation(0).milieu();
 }
 
-const Champ_base& Champ_Generique_modifier_pour_QC::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_modifier_pour_QC::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
-const Champ_base& Champ_Generique_modifier_pour_QC::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_modifier_pour_QC::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
@@ -75,7 +75,7 @@ const Champ_base& Champ_Generique_modifier_pour_QC::get_champ(Champ& espace_stoc
   const Fluide_Quasi_Compressible& fluide = ref_cast(Fluide_Quasi_Compressible,mon_milieu_.valeur());
   multiplier_diviser_rho(val,fluide,diviser_);
   val.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 //Nomme le champ en tant que source par defaut

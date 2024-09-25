@@ -115,7 +115,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_vitesse_rho_
 
   const Fluide_base& le_fluide = ref_cast(Fluide_base,mon_equation->milieu());
   const DoubleTab& visco_dyn = le_fluide.viscosite_dynamique()->valeurs();
-  const DoubleTab& tab_rho_face = le_fluide.masse_volumique()->valeurs();
+  const DoubleTab& tab_rho_face = le_fluide.masse_volumique().valeurs();
   int taille_mu=visco_dyn.dimension(0);
   int taille_rho=tab_rho_face.dimension(0);
 

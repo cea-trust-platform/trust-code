@@ -42,7 +42,7 @@ void Champ_Generique_Gradient::completer(const Postraitement_base& post)
   if (sub_type(Champ_Generique_refChamp,get_source(0)))
     {
 
-      Champ espace_stockage;
+      OWN_PTR(Champ_base) espace_stockage;
       const Champ_base& mon_champ = get_source(0).get_champ(espace_stockage);
       if (sub_type(Champ_Inc_base,mon_champ))
         {
@@ -92,7 +92,7 @@ void Champ_Generique_Gradient::completer(const Postraitement_base& post)
     }
 }
 
-const Champ_base& Champ_Generique_Gradient::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Gradient::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
   if (Op_Grad_.non_nul())
@@ -108,11 +108,11 @@ const Champ_base& Champ_Generique_Gradient::get_champ_without_evaluation(Champ& 
       Cerr<<"or to a field of type Champ_P1NC or Champ_P0_VDF at one component"<<finl;
       exit();
     }
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
-const Champ_base& Champ_Generique_Gradient::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Gradient::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
 
   if (Op_Grad_.non_nul())
@@ -137,7 +137,7 @@ const Champ_base& Champ_Generique_Gradient::get_champ(Champ& espace_stockage) co
 
   DoubleTab& espace_valeurs = espace_stockage->valeurs();
   espace_valeurs.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 const Noms Champ_Generique_Gradient::get_property(const Motcle& query) const

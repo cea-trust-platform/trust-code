@@ -49,7 +49,7 @@ public:
   KOKKOS_INLINE_FUNCTION double viscA(int face_i, int face_j, int num_elem, const _TYPE_& diffu, CIntTabView face_voisins_v, CDoubleTabView face_normales_v, CDoubleArrView inverse_volumes_v) const;
 
   double calculer_dt_stab() const override;
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
   virtual void remplir_nu(DoubleTab&) const;
   int phi_psi_diffuse(const Equation_base& eq) const;

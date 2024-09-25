@@ -315,7 +315,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       mon_equation->inconnue().valeur_aux_elems(coord_trace, les_polys, valeurs_);
 
       // Modifs VB pour prise en compte rho et calcul du flux enthalpique + Tmoy
-      mon_equation->fluide().masse_volumique()->valeur_aux_elems(coord_trace, les_polys, rho_);
+      mon_equation->fluide().masse_volumique().valeur_aux_elems(coord_trace, les_polys, rho_);
       mon_equation->fluide().capacite_calorifique()->valeur_aux_elems(coord_trace, les_polys, cp_);
       temp.valeur_aux_elems(coord_trace, les_polys, temper_);
       // Fin Modifs VB

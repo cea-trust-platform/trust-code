@@ -33,7 +33,7 @@ public:
   void preparer_calcul() override;
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl) override { iter_->associer_domaine_cl_dis(zcl); }
   void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const override;
   void creer_champ(const Motcle& ) override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   void mettre_a_jour(double ) override;

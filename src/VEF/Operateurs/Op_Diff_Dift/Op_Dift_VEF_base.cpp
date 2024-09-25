@@ -115,7 +115,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
-      double rhocp = mon_equation->domaine_dis().nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
+      double rhocp = mon_equation->domaine_dis().nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0) : 1.0;
       tab_diffu_turb /= rhocp;
       tab_diffu /= rhocp;
     }
@@ -167,11 +167,11 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 }
 
 // cf Op_Dift_VEF_Face::calculer_dt_stab() pour choix de calcul de dt_stab
-void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const
+void Op_Dift_VEF_base::calculer_pour_post(Champ_base& espace_stockage, const Nom& option, int comp) const
 {
   if (Motcle(option) == "stabilite")
     {
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
 
       if (le_dom_vef.non_nul())
         {

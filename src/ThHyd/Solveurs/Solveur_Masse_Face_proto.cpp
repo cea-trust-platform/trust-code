@@ -86,7 +86,7 @@ void Solveur_Masse_Face_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
   const IntTab& f_e = domaine.face_voisins();
   const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : nullptr;
-  const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &rho = solv_mass_->equation().milieu().masse_volumique()->passe(),
+  const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &rho = solv_mass_->equation().milieu().masse_volumique().passe(),
                    *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   int i, e, f, m, n, N = inco.line_size(), cR = rho.dimension_tot(0) == 1;

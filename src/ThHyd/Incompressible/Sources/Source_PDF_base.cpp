@@ -21,7 +21,7 @@
 #include <Probleme_base.h>
 #include <SFichier.h>
 #include <Param.h>
-#include <Champ.h>
+
 
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
 // XD source_pdf_base source_base source_pdf_base 1 Base class of the source term for the Immersed Boundary Penalized Direct Forcing method (PDF)

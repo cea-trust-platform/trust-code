@@ -109,9 +109,9 @@ double Sortie_libre_Gradient_Pression_impose::flux_impose(int face, int ncomp) c
 double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
 {
   const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
-  if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
+  if (sub_type(Champ_Uniforme, mil.masse_volumique()))
     {
-      const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
+      const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique());
       double d_rho = rho.valeurs()(0, 0);
       if (le_champ_front->valeurs().size() == 1)
         return le_champ_front->valeurs()(0, 0) / d_rho;
@@ -123,7 +123,7 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
   else
     {
       //quasi compressible
-      const DoubleTab& tab_rho = mil.masse_volumique()->valeurs();
+      const DoubleTab& tab_rho = mil.masse_volumique().valeurs();
       int elem = le_dom_VDF->face_voisins(face, 0);
       if (elem == -1)
         elem = le_dom_VDF->face_voisins(face, 1);

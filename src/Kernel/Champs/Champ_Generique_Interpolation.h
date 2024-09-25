@@ -47,9 +47,9 @@ public:
   virtual int     set_localisation(const Motcle& localisation, int exit_on_error = 1);
   virtual int     set_methode(const Motcle& methode, int exit_on_error = 1);
   virtual int     set_domaine(const Nom& nom_domaine, int exit_on_error = 1);
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
-  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
-  virtual const Champ_base&  get_champ_with_calculer_champ_post(Champ& espace_stockage) const;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
+  virtual const Champ_base&  get_champ_with_calculer_champ_post(OWN_PTR(Champ_base)& espace_stockage) const;
 
   const DoubleTab&  get_ref_values() const override;
   void              get_copy_values(DoubleTab&) const override;

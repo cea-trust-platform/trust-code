@@ -1379,7 +1379,7 @@ void Postraitement::init()
         if (!indic_correlation)
           {
 
-            Champ espace_stockage;
+            OWN_PTR(Champ_base) espace_stockage;
             const Champ_base& champ_ecriture = champ->get_champ(espace_stockage);
             Entity loc = champ->get_localisation();
             const Nom loc_post = get_nom_localisation(loc);
@@ -1573,7 +1573,7 @@ void Postraitement::postprocess_field_values()
       //Etape de calcul
       //Le champ cree est rendu dans champ_ecriture
 
-      Champ espace_stockage;
+      OWN_PTR(Champ_base) espace_stockage;
       const Champ_base& champ_ecriture = champ.get_champ(espace_stockage);
       DoubleTab val_vec;
       bool isChamp_Face_PolyMAC = (champ_ecriture.que_suis_je().debute_par("Champ_Face_PolyMAC") || champ_ecriture.que_suis_je().debute_par("Champ_Fonc_Face_PolyMAC"));
@@ -2107,7 +2107,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
       Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ_post.set_source(0));
       const Champ_Generique_refChamp& champ_ref = ref_cast(Champ_Generique_refChamp,champ_stat.get_source(0));
 
-      Champ espace_stockage;
+      OWN_PTR(Champ_base) espace_stockage;
       const Champ_base& champ_discret = champ_ref.get_champ(espace_stockage);
       const Noms& source_compos = champ_discret.noms_compo();
       const Nom& nom_dom = champ_post.get_ref_domain().le_nom();

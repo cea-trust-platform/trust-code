@@ -37,7 +37,7 @@ Entree& Source_Generique_P0_Elem::readOn(Entree& is)
 
 DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
 {
-  Champ espace_stockage;
+  OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
   const DoubleTab& valeurs_calc = champ_calc.valeurs();
 

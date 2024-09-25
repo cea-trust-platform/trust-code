@@ -72,7 +72,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
 
       EChaine str(Nom("Champ_Uniforme 1 ") + val_rho);
       str >> rho;
-      dis.nommer_completer_champ_physique(domaine_dis, "masse_volumique", "kg/m^3", rho.valeur(), pb);
+      dis.nommer_completer_champ_physique(domaine_dis, "masse_volumique", "kg/m^3", rho, pb);
     }
   else
     dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique", "kg/m^3", 1, nc, temps, rho_inc), rho = rho_inc;
@@ -95,8 +95,15 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
   dis.discretiser_champ("champ_elem", domaine_dis, "dilatabilite", "K-1", 1, temps, beta_th);
   dis.discretiser_champ("champ_elem", domaine_dis, "rho_cp_elem", "J/m^3/K", 1, temps, rho_cp_elem_);
   dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "J/m^3/K", 1, temps, rho_cp_comme_T_);
-  for (auto &&pch : { &rho, &e_int, &h_ou_T, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &alpha_fois_rho, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_elem_, (Champ*) &rho_cp_comme_T_ })
+
+  for (auto &pch : { &rho, &e_int, &h_ou_T })
     champs_compris_.ajoute_champ(pch->valeur());
+
+  for (Champ_Don * ch_don : { &mu, &nu, &alpha, &alpha_fois_rho, &lambda, &Cp, &beta_th })
+    champs_compris_.ajoute_champ(ch_don->valeur());
+
+  for (Champ_Fonc_base * ch_fonc : { &(rho_cp_elem_.valeur()), &(rho_cp_comme_T_.valeur()) })
+    champs_compris_.ajoute_champ(*ch_fonc);
 
   if (id_composite == -1)
     {
@@ -108,7 +115,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
 int Fluide_reel_base::initialiser(const double temps)
 {
   const Equation_base& eqn = res_en_T_ ? equation("temperature") : equation("enthalpie");
-  Champ_Inc_base *pch_rho = sub_type(Champ_Inc_base, rho.valeur()) ? &ref_cast(Champ_Inc_base, rho.valeur()) : nullptr;
+  Champ_Inc_base *pch_rho = sub_type(Champ_Inc_base, rho) ? &ref_cast(Champ_Inc_base, rho) : nullptr;
   Champ_Inc_base& ch_e = ref_cast(Champ_Inc_base, e_int.valeur()), &ch_h_ou_T = ref_cast(Champ_Inc_base, h_ou_T.valeur());
 
   if (pch_rho) pch_rho->associer_eqn(eqn), pch_rho->resize_val_bord(), pch_rho->set_val_bord_fluide_multiphase(true);
@@ -167,7 +174,7 @@ void Fluide_reel_base::mettre_a_jour(double t)
   DoubleTab& tab_Cp = Cp->valeurs(), &tab_mu = mu->valeurs(), &tab_lambda = lambda->valeurs(), &tab_alpha_fois_rho = alpha_fois_rho->valeurs(),
              &tab_nu = nu->valeurs(), &tab_alpha = alpha->valeurs(), &tab_beta = beta_th->valeurs(), &tab_rCp = rho_cp_comme_T_->valeurs();
 
-  const DoubleTab& tab_rho = masse_volumique()->valeurs();
+  const DoubleTab& tab_rho = masse_volumique().valeurs();
 
   int Ni = mu->valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
@@ -250,7 +257,7 @@ bool Fluide_reel_base::initTimeStep(double dt)
   const Schema_Temps_base& sch = equation_.begin()->second->schema_temps(); //on recupere le schema en temps par la 1ere equation
 
   /* champs dont on doit creer des cases */
-  std::vector<Champ_Inc_base *> vch = { sub_type(Champ_Inc_base, rho.valeur()) ?& ref_cast(Champ_Inc_base, rho.valeur()) : nullptr, &ref_cast(Champ_Inc_base, e_int.valeur()), &ref_cast(Champ_Inc_base, h_ou_T.valeur()) };
+  std::vector<Champ_Inc_base *> vch = { sub_type(Champ_Inc_base, rho) ?& ref_cast(Champ_Inc_base, rho) : nullptr, &ref_cast(Champ_Inc_base, e_int.valeur()), &ref_cast(Champ_Inc_base, h_ou_T.valeur()) };
   for (auto &&pch : vch)
     if (pch)
       for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
@@ -406,7 +413,7 @@ void Fluide_reel_base::calculate_fluid_properties_enthalpie()
   const Champ_Inc_base& ch_enth = equation("enthalpie").inconnue(), &ch_p = ref_cast(Navier_Stokes_std, equation("vitesse")).pression();
   const DoubleTab& enth = ch_enth.valeurs(), &p = ch_p.valeurs(), &benth = ch_enth.valeur_aux_bords(), &bp = ch_p.valeur_aux_bords();
 
-  Champ_Inc_base& ch_rho = ref_cast_non_const(Champ_Inc_base, rho.valeur());
+  Champ_Inc_base& ch_rho = ref_cast_non_const(Champ_Inc_base, rho);
   DoubleTab& val_rho = ch_rho.valeurs(), &bval_rho = ch_rho.val_bord();
 
   Champ_Inc_base& ch_temp = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());

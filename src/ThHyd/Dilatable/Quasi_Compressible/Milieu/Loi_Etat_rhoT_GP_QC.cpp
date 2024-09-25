@@ -70,7 +70,7 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
 void Loi_Etat_rhoT_GP_QC::initialiser_rho()
 {
   int isVDF = 0;
-  if (le_fluide->masse_volumique()->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (le_fluide->masse_volumique().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   // We know that mu is always stored on elems
   int nb_elems = le_fluide->viscosite_dynamique()->valeurs().size();
   // The Champ_Don rho_xyz_ is evaluated on elements
@@ -86,10 +86,10 @@ void Loi_Etat_rhoT_GP_QC::initialiser_rho()
   else
     {
       // Disc VEF => rho on faces ...
-      int nb_faces =  le_fluide->masse_volumique()->valeurs().size(); // rho on faces in VEF
+      int nb_faces =  le_fluide->masse_volumique().valeurs().size(); // rho on faces in VEF
       rho_.resize(nb_faces, 1);
 
-      Champ_base& ch_rho = le_fluide->masse_volumique().valeur();
+      Champ_base& ch_rho = le_fluide->masse_volumique();
       ch_rho.affecter_(rho_xyz_);
       DoubleTab& fld = ch_rho.valeurs();
       for (int i = 0; i < nb_faces; i++) rho_(i,0)= fld(i,0);
@@ -149,7 +149,7 @@ double Loi_Etat_rhoT_GP_QC::inverser_Pth(double T, double rho)
 void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
-  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
   if (is_exp_)

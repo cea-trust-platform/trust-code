@@ -49,7 +49,7 @@ public:
   DoubleTab& ajouter_new(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   double calculer_dt_stab() const override;
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const override;
   void verifier() const;
   void remplir_nu(DoubleTab&) const override;
   void remplir_marqueur_elem_CL_paroi(ArrOfInt& ,const Domaine_EF& ,const Domaine_Cl_EF& ) const;

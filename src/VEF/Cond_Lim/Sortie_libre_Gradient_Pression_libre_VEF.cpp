@@ -185,7 +185,7 @@ double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face, int ncomp
 double Sortie_libre_Gradient_Pression_libre_VEF::Grad_P_lib_VEF(int face) const
 {
   const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
-  const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
+  const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique());
   double d_rho = rho.valeurs()(0, 0);
   if (le_champ_front->valeurs().size() == 1)
     return le_champ_front->valeurs()(0, 0) / d_rho;

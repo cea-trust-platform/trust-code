@@ -122,8 +122,8 @@ int Navier_Stokes_Turbulent_QC::preparer_calcul()
   /*
    // Cerr << "Navier_Stokes_Fluide_Dilatable_Proto::preparer_calcul()" << finl;
    Equation_base::preparer_calcul();
-   //solveur_pression->assembler_QC(le_fluide->masse_volumique()->valeurs());
-   assembleur_pression_->assembler_QC(le_fluide->masse_volumique()->valeurs(),matrice_pression_);
+   //solveur_pression->assembler_QC(le_fluide->masse_volumique().valeurs());
+   assembleur_pression_->assembler_QC(le_fluide->masse_volumique().valeurs(),matrice_pression_);
 
 
    if (le_traitement_particulier.non_nul())

@@ -42,7 +42,7 @@ void Force_Tchen_PolyMAC_P0::ajouter_blocs_aux(matrices_t matrices, DoubleTab& s
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
-                   &rho   = equation().milieu().masse_volumique()->passe();
+                   &rho   = equation().milieu().masse_volumique().passe();
 
   double pas_tps = equation().probleme().schema_temps().pas_de_temps();
   int N = inco.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot();

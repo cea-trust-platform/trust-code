@@ -28,7 +28,7 @@ class Champ_base;
 /*! @brief Classe Terme_Puissance_Thermique Cette classe represente un terme source de l'equation de la thermique
  *
  *     du type degagement volumique de puissance thermique.
- *     Un objet Terme_Puissance_Thermique contient la puissance (Champ donne
+ *     Un objet Terme_Puissance_Thermique contient la puissance (OWN_PTR(Champ_base) donne
  *     utilisateur) et des references a la masse volumique (rho) et la chaleur.
  *     specifique (Cp).
  *

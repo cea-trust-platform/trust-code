@@ -102,12 +102,12 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
   if (equation_divisee_par_rho())
     {
       const Milieu_base& milieu = la_zcl->equation().milieu();
-      const Champ& rho = milieu.masse_volumique();
-      if (sub_type(Champ_Uniforme, rho.valeur()))
-        coef = rho->valeurs()(0, 0);
+      const Champ_base& rho = milieu.masse_volumique();
+      if (sub_type(Champ_Uniforme, rho))
+        coef = rho.valeurs()(0, 0);
       else
         {
-          const DoubleTab& val_rho = rho->valeurs();
+          const DoubleTab& val_rho = rho.valeurs();
           const IntTab& face_vois = le_dom->face_voisins();
           const DoubleVect& volumes = ref_cast(Domaine_VEF,le_dom.valeur()).volumes();
           coef = 0.;

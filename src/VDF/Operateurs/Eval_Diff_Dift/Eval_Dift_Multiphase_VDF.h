@@ -35,7 +35,7 @@ public:
 
   inline virtual void update_diffusivite_turbulente() final
   {
-    const DoubleTab& rho = ref_probleme_->milieu().masse_volumique()->passe();
+    const DoubleTab& rho = ref_probleme_->milieu().masse_volumique().passe();
     const int cR = rho.dimension(0) == 1;
     tab_diffusivite_turbulente = nu_t_;
 

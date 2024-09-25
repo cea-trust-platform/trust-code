@@ -22,7 +22,7 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Fonc_P0_base.h>
 #include <Discretisation_base.h>
-#include <Champ.h>
+
 #include <Check_espace_virtuel.h>
 #include <Echange_externe_impose.h>
 
@@ -183,11 +183,11 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
 }
 
 // cf Op_Diff_VEF_base::calculer_dt_stab() pour choix de calcul de dt_stab
-void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
+void Op_Diff_VEF_base::calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const
 {
   if (Motcle(option)=="stabilite")
     {
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
 
       if (le_dom_vef.non_nul())
         {

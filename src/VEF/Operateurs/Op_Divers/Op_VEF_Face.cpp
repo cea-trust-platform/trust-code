@@ -379,7 +379,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
   // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
   if (op.equation().inconnue().le_nom() == "temperature" && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite"))
     {
-      const Champ_base& rho = op.equation().milieu().masse_volumique().valeur();
+      const Champ_base& rho = op.equation().milieu().masse_volumique();
       const Champ_Don& Cp = op.equation().milieu().capacite_calorifique();
       bool rho_uniforme = sub_type(Champ_Uniforme,rho);
       bool cp_uniforme = sub_type(Champ_Uniforme,Cp.valeur());
@@ -402,7 +402,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
   Nom nom_eqn = op.equation().que_suis_je();
   if (nom_eqn.debute_par("Navier_Stokes") && pb.milieu().que_suis_je() == "Fluide_Incompressible")
     {
-      const Champ_base& rho = op.equation().milieu().masse_volumique().valeur();
+      const Champ_base& rho = op.equation().milieu().masse_volumique();
       if (sub_type(Champ_Uniforme, rho))
         {
           double coef = rho.valeurs()(0, 0);

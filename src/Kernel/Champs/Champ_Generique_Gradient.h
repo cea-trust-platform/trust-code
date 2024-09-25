@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <Champ_Generique_Operateur_base.h>
 #include <Operateur_Grad.h>
 
-/*! @brief class Champ_Generique_Gradient Champ destine a post-traiter le gradient d un champ generique
+/*! @brief class Champ_Generique_Gradient OWN_PTR(Champ_base) destine a post-traiter le gradient d un champ generique
  *
  *  La classe porte un operateur statistique "gradient"
  *
@@ -46,8 +46,8 @@ public:
   const Noms get_property(const Motcle& query) const override;
   Entity  get_localisation(const int index = -1) const override;
   const   Motcle             get_directive_pour_discr() const override;
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
-  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
 
   inline const Operateur_base& Operateur() const override;
   inline Operateur_base& Operateur() override;

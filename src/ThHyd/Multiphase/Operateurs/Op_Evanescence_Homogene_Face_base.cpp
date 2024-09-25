@@ -94,7 +94,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
-                    &rho = equation().milieu().masse_volumique()->passe(),
+                    &rho = equation().milieu().masse_volumique().passe(),
                      &temp_ou_enth  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
                       &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
                        &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique()->passe(),

@@ -48,7 +48,7 @@ public:
   inline void mettre_a_jour(double) override
   {
     mettre_a_jour_integrale();
-    Champ espace_stockage_source;
+    OWN_PTR(Champ_base) espace_stockage_source;
     const Champ_base& source = le_champ_ref_->get_champ(espace_stockage_source);
     le_champ_->changer_temps(source.temps());
   }

@@ -19,8 +19,7 @@
 #include <Liste_Champ_Generique.h>
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
-
-class Champ_Fonc_base;
+#include <Champ_Fonc_base.h>
 
 /*! @brief Classe de base des champs generiques ayant comme source d'autres champs generiques L'utilisation des methodes de la classe repose sur un principe de recursivite
  *

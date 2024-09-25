@@ -181,7 +181,7 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
             tab(face-ndeb,i) = pdt_scalSqrt(zvef,face,face,elem,dimension,tab_lambda(elem,i)) ;
         }
     }
-  else  // la conductivite est un Champ uniforme
+  else  // la conductivite est un OWN_PTR(Champ_base) uniforme
     {
       const DoubleTab& tab_lambda = mon_milieu.conductivite()->valeurs();
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ Roue_ptr::Roue_ptr() : ptr(new(Roue))
 /*! @brief Constructeur par recopie.
  *
  * Copie de l'ensemble de la roue. Utile pour les constructeurs par recopie des champs.
- *  (ce constructeur est appele quand on fait un Champ = un autre Champ,
+ *  (ce constructeur est appele quand on fait un OWN_PTR(Champ_base) = un autre Champ,
  *   la version precedente copie la reference, d'ou plantage a la destruction)
  *
  */

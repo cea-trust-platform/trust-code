@@ -182,7 +182,7 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
     }
 
   // la partie en TdivU est un bout de l'operateur de convection -> il doit etre multiplie par rhoCp
-  const double rhoCp = equation().milieu().capacite_calorifique()->valeurs()(0, 0) * equation().milieu().masse_volumique()->valeurs()(0, 0);
+  const double rhoCp = equation().milieu().capacite_calorifique()->valeurs()(0, 0) * equation().milieu().masse_volumique().valeurs()(0, 0);
   TdivU *= rhoCp;
   resu-=TdivU;
   // on remet la bonne domaine_cl_dis

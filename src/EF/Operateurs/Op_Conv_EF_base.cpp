@@ -20,7 +20,7 @@
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>
-#include <Champ.h>
+
 
 Implemente_base(Op_Conv_EF_base,"Op_Conv_EF_base",Operateur_Conv_base);
 
@@ -140,7 +140,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
 //-verifie en debug la compatibilite avec dt_stab considere pour le calcul
 // cf Op_Conv_EF_base::calculer_dt_stab() pour choix de calcul de dt_stab
 
-void Op_Conv_EF_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int) const
+void Op_Conv_EF_base::calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int) const
 {
   Cerr<<__FILE__<<(int)__LINE__<<" dt_stab mal code "<<finl;
   exit();

@@ -43,8 +43,8 @@ public:
   Champ_Generique_Extraction();
   void set_param(Param& param) override;
   Entity  get_localisation(const int index = -1) const override;
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
-  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
   const Noms        get_property(const Motcle& query) const override;
   void nommer_source() override;
   void completer(const Postraitement_base& post) override;

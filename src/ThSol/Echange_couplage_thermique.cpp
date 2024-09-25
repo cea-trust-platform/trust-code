@@ -100,7 +100,7 @@ void Echange_couplage_thermique::completer()
   flux_critique_paroi->fixer_nb_valeurs_temporelles(3);
 
   Nom nom_pb=mon_dom_cl_dis->equation().probleme().que_suis_je();
-  const Champ_base& rho=mon_dom_cl_dis->equation().milieu().masse_volumique().valeur();
+  const Champ_base& rho=mon_dom_cl_dis->equation().milieu().masse_volumique();
   if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho)
       ||nom_pb==Nom("Pb_Conduction") || nom_pb.debute_par("Pb_Conduction_Combustible")
       ||mon_dom_cl_dis->equation().que_suis_je()=="Convection_Diffusion_Concentration")
@@ -115,7 +115,7 @@ double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_fron
   if (divise_par_rho_cp_)
     {
       const Milieu_base& mil=mon_dom_cl_dis->equation().milieu();
-      const Champ_base& rho=mil.masse_volumique().valeur();
+      const Champ_base& rho=mil.masse_volumique();
       const Champ_Don& Cp=mil.capacite_calorifique();
       double d_rho = sub_type(Champ_Uniforme,rho) ? rho.valeurs()(0,0) : rho.valeurs()(i);
       double d_Cp = sub_type(Champ_Uniforme,Cp.valeur()) ? Cp->valeurs()(0,0) : Cp->valeurs()(i);

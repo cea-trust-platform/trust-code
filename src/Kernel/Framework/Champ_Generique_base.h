@@ -19,12 +19,13 @@
 #include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
 #include <Domaine.h>
-#include <Champ.h>
 #include <ArrOfBit.h>
 
 class Postraitement_base;
 class Discretisation_base;
+class Domaine_Cl_dis_base;
 class Param;
+class Champ_base;
 
 enum class Entity { NODE, SEGMENT, FACE, ELEMENT };
 
@@ -94,7 +95,7 @@ public:
   //  Soit elle renvoie un champ existant (voir Champ_Generique_refChamp)
   //   et elle n'utilise pas espace_stockage.
   //  Soit elle construit un nouveau champ qu'elle stocke dans espace_stockage,
-  //   et la valeur de retour est espace_stockage.valeur()
+  //   et la valeur de retour est espace_stockage
   //  L'appelant recupere le resultat du calcul dans la valeur de retour,
   //   sachant qu'elle peut eventuellement referencer espace_stockage
   //   (donc, ne pas detruire espace_stockage trop tot).
@@ -102,20 +103,15 @@ public:
   // Les etapes de creation de l espace de stockage sont :
   // espace_stockage.typer(type_champ)
   // espace_stockage.associer_domaine_dis_base(un_domaine_dis)
-  // espace_stockage->fixer_nb_comp(nb_comp);
-  // espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
+  // espace_stockage.fixer_nb_comp(nb_comp);
+  // espace_stockage.fixer_nb_valeurs_nodales(nb_ddl);
   // Calcul des valeurs par instruction de la forme
   // espace_stockage.valeurs() = Operateur.calculer(source.valeurs())
   // espace_stockage.valeurs().echange_espace_virtuel()
-  //return espace_stockage.valeur()
+  //return espace_stockage
 
-  virtual const Champ_base&   get_champ(Champ& espace_stockage) const = 0;
-  virtual const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const=0;
-  /*
-    {
-      return get_champ(espace_stockage);
-    };
-  */
+  virtual const Champ_base& get_champ(OWN_PTR(Champ_base) &espace_stockage) const = 0;
+  virtual const Champ_base& get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const=0;
 
   //get_champ_post() renvoie le champ si l identifiant passe en parametre designe
   //le nom du champ ou l une de ses composantes

@@ -90,7 +90,7 @@ protected :
   mutable int e_int_auto_ = 0; //1 si on a cree e_int
   static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv); // fonction de calcul par defaut
 
-  mutable Champ e_int, h_ou_T; //pour la creation sur demande : h is Energie_Multiphase et T si Energie_Multiphase_Enthalpie
+  mutable OWN_PTR(Champ_base) e_int, h_ou_T; //pour la creation sur demande : h is Energie_Multiphase et T si Energie_Multiphase_Enthalpie
   Champ_Don mu, nu, beta_co;
   double h0_ = 0, T0_ = 0;
 

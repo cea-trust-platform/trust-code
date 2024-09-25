@@ -75,7 +75,7 @@ void Loi_Etat_Multi_GP_WC::initialiser_inco_ch()
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   Champ_Don& Yn = FWC.fraction_massique_nonresolue();
   Yn->nommer("fraction_massique_nonresolue");
-  double t = le_fluide->masse_volumique()->temps(); // pas 0 car reprise pt etre
+  double t = le_fluide->masse_volumique().temps(); // pas 0 car reprise pt etre
   update_Yn_values(Yn,t);
   Loi_Etat_Multi_GP_base::initialiser_inco_ch();
 }
@@ -160,11 +160,11 @@ void Loi_Etat_Multi_GP_WC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 void Loi_Etat_Multi_GP_WC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
-  DoubleTab& tab_rho = le_fluide->masse_volumique()->valeurs();
+  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   Champ_Don& Yn = FWC.fraction_massique_nonresolue();
-  double temps = le_fluide->masse_volumique()->temps();
+  double temps = le_fluide->masse_volumique().temps();
   update_Yn_values(Yn,temps); // XXX : a voir si l'appel est dans le bon endroit ...
   Loi_Etat_Multi_GP_base::calculer_masse_molaire();
 
@@ -288,7 +288,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
 
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
   DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
-  const Champ_base& rho = le_fluide->masse_volumique().valeur();
+  const Champ_base& rho = le_fluide->masse_volumique();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n = tab_mu_sur_Sc.size();
 
@@ -341,7 +341,7 @@ void Loi_Etat_Multi_GP_WC::calculer_nu_sur_Sc()
   // TODO : FIXME : j'ai pris D de l'espece 1 ...
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = coeff_diffusion_especes()->valeurs()(0,0);
 
-  double temps_champ = le_fluide->masse_volumique()->temps();
+  double temps_champ = le_fluide->masse_volumique().temps();
   nu_sur_Sc->changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }

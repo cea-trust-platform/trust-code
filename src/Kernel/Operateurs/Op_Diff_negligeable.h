@@ -51,7 +51,7 @@ public :
   void associer_diffusivite(const Champ_base& ) override ;
   const Champ_base& diffusivite() const override;
   inline void associer_champ_masse_volumique(const Champ_base&) override;
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage,const Nom& option, int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
 
   void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const override;

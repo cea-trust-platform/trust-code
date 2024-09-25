@@ -19,7 +19,7 @@
 #include <Champ_Generique_base.h>
 #include <Champs_compris.h>
 #include <TRUST_List.h>
-#include <Champ.h>
+
 #include <Sonde.h>
 #include <Noms.h>
 
@@ -49,7 +49,7 @@ public:
 private:
   // Mecanisme de cache pour les sondes:
   LIST(REF(Champ_base)) sourceList;
-  LIST(Champ) espaceStockageList;
+  LIST(OWN_PTR(Champ_base)) espaceStockageList;
   Noms sourceNoms;
   REF(Postraitement) mon_post;
   Motcles noms_champs_postraitables_;

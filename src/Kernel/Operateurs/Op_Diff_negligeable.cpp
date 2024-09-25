@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #include <Op_Diff_negligeable.h>
 #include <Discretisation_base.h>
 #include <Champ_base.h>
-#include <Champ.h>
+
 
 Implemente_instanciable(Op_Diff_negligeable,"Op_Diff_negligeable",Operateur_Diff_base);
 Implemente_instanciable(Op_Dift_negligeable,"Op_Dift_negligeable",Op_Diff_negligeable);
@@ -47,11 +47,11 @@ const Champ_base& Op_Diff_negligeable::diffusivite() const
   return la_diffusivite.valeur();
 }
 
-void Op_Diff_negligeable::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
+void Op_Diff_negligeable::calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const
 {
   if (Motcle(option)=="stabilite")
     {
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
       es_valeurs = calculer_dt_stab();
     }
   else

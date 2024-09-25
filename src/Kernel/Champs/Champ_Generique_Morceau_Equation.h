@@ -22,7 +22,7 @@
 class Equation_base;
 class MorEqn;
 
-/*! @brief class Champ_Generique_Morceau_Equation Champ destine a post-traiter une quantite liee a un morceau d equation
+/*! @brief class Champ_Generique_Morceau_Equation OWN_PTR(Champ_base) destine a post-traiter une quantite liee a un morceau d equation
  *
  *  Consulter la hierarchie de MorEqn pour connaitre les morceaux d equation
  *  Syntaxe a respecter pour jdd
@@ -52,8 +52,8 @@ public:
   const Noms get_property(const Motcle& query) const override;
   Entity  get_localisation(const int index = -1) const override;
   const   Motcle             get_directive_pour_discr() const override;
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
-  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
 
   OWN_PTR(Champ_Fonc_base)& creer_espace_stockage(const Nature_du_champ& nature,
                                                   const int nb_comp,

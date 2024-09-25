@@ -24,7 +24,7 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
     {
       DoubleTab& flux_bords=op_base->flux_bords();
       const Domaine_VDF& le_dom_vdf=ref_cast(Domaine_VDF,op_base->equation().domaine_dis());
-      const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur();
+      const Champ_base& rho = (op_base->equation()).milieu().masse_volumique();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
       const IntTab& face_voisins=le_dom_vdf.face_voisins();
       int rho_uniforme = sub_type(Champ_Uniforme,rho) ? 1 : 0, cp_uniforme = sub_type(Champ_Uniforme,Cp.valeur()) ? 1 : 0;

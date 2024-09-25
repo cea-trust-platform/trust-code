@@ -172,7 +172,7 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
 /*! @brief Interpolation du champ source en fonction de la methode, localisation et domaine demandes.
  *
  */
-const Champ_base& Champ_Generique_Interpolation::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Interpolation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
   if (localisation_ == "")
     {
@@ -191,13 +191,13 @@ const Champ_base& Champ_Generique_Interpolation::get_champ(Champ& espace_stockag
       exit();
     }
 
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
-const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(espace_stockage_source);
   // Domaine sur lequel on interpole le champ :
   //  si domaine_ est une ref nulle, on prend le domaine natif du champ.
@@ -224,16 +224,16 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Ch
 
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 /*! @brief Interpolation du champ source a l'aide de Champ_base::calculer_champ_xxx_post
  *
  */
-const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source0 = get_source(0).get_champ(espace_stockage_source);
-  Champ source_bis;
+  OWN_PTR(Champ_base) source_bis;
 
   if (optimisation_sous_maillage_==-1)
     {
@@ -305,7 +305,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
         else espace_valeurs(i, ncomp) = val_temp[renumerotation_maillage_[i]];
 
       espace_valeurs.echange_espace_virtuel();
-      return espace_stockage.valeur();
+      return espace_stockage;
     }
 
   int imax = espace_valeurs.dimension(0);
@@ -351,7 +351,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     {
       const int nb_sommets = domaine.nb_som();
       // PL: mise a jour de l'espace virtuel de la source:
-      Champ copie_source;
+      OWN_PTR(Champ_base) copie_source;
       copie_source = source;
       copie_source->valeurs().echange_espace_virtuel();
       if (ncomp==-1)
@@ -427,7 +427,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       if (test)
         {
           ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=0;
-          Champ espace_stockage_test;
+          OWN_PTR(Champ_base) espace_stockage_test;
           get_champ_with_calculer_champ_post(espace_stockage_test);
           ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=test;
           get_champ_with_calculer_champ_post(espace_stockage);
@@ -455,12 +455,12 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     }
 
   espace_valeurs.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 const DoubleTab& Champ_Generique_Interpolation::get_ref_values() const
 {
-  Champ champ_a_ecrire;
+  OWN_PTR(Champ_base) champ_a_ecrire;
   get_champ(champ_a_ecrire);
   return champ_a_ecrire->valeurs();
 }

@@ -159,7 +159,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
             }
         }
     }
-  else  // la conductivite est un Champ uniforme
+  else  // la conductivite est un OWN_PTR(Champ_base) uniforme
     {
       for (int face=ndeb; face<nfin; face++)
         {
@@ -216,7 +216,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
             tab(face,i) = 1./(e(face)/lambda(face,i)+invhparoi);
           }
     }
-  else  // la conductivite est un Champ uniforme
+  else  // la conductivite est un OWN_PTR(Champ_base) uniforme
     {
       const DoubleTab& lambda = le_milieu.conductivite()->valeurs();
       for (int face=0; face<nb_faces_raccord1; face++)

@@ -27,7 +27,7 @@
 #include <EChaine.h>
 #include <Motcle.h>
 #include <Param.h>
-#include <Champ.h>
+
 
 Implemente_instanciable(Fluide_base, "Fluide_base", Milieu_base);
 // XD fluide_base milieu_base fluide_base -3 Basic class for fluids.
@@ -253,7 +253,7 @@ void Fluide_base::creer_nu()
   assert(mu.non_nul());
   assert(rho.non_nul());
   nu = mu;
-  if (sub_type(Champ_Uniforme, mu.valeur()) && !sub_type(Champ_Uniforme, rho.valeur()))
+  if (sub_type(Champ_Uniforme, mu.valeur()) && !sub_type(Champ_Uniforme, rho))
     nu->valeurs().resize(rho->valeurs().dimension_tot(0), rho->valeurs().line_size());
   nu->nommer("nu");
 }
@@ -264,7 +264,7 @@ void Fluide_base::calculer_nu()
   const DoubleTab& tabrho = rho->valeurs();
   DoubleTab& tabnu = nu->valeurs();
 
-  int cRho = sub_type(Champ_Uniforme, rho.valeur()), cMu = sub_type(Champ_Uniforme, mu.valeur()), i, j, n, Nl = tabnu.dimension_tot(0), N = tabnu.line_size();
+  int cRho = sub_type(Champ_Uniforme, rho), cMu = sub_type(Champ_Uniforme, mu.valeur()), i, j, n, Nl = tabnu.dimension_tot(0), N = tabnu.line_size();
   /* valeurs : mu / rho */
   for (i = j = 0; i < Nl; i++)
     for (n = 0; n < N; n++, j++)

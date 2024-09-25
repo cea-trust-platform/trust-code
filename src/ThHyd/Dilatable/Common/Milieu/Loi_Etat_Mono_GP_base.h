@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Loi_Etat_Mono_GP_base_included
 
 #include <Loi_Etat_GP_base.h>
-#include <Champ.h>
+
 
 /*! @brief classe Loi_Etat_Mono_GP_base Cette classe represente la loi d'etat base pour les gaz parfaits.
  *
@@ -31,7 +31,7 @@ class Loi_Etat_Mono_GP_base : public Loi_Etat_GP_base
 {
   Declare_base(Loi_Etat_Mono_GP_base);
 protected :
-  Champ rho_constant_pour_debug_;
+  OWN_PTR(Champ_base) rho_constant_pour_debug_;
 };
 
 #endif /* Loi_Etat_Mono_GP_base_included */

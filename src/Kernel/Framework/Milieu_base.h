@@ -24,7 +24,7 @@
 
 #include <TRUST_Ref.h>
 #include <Champ_Don.h>
-#include <Champ.h>
+
 
 class Discretisation_base;
 class Domaine_dis_base;
@@ -87,8 +87,9 @@ public:
   virtual void resetTime(double time);
   virtual int initialiser(const double temps);
   virtual void associer_gravite(const Champ_Don_base&);
-  virtual const Champ& masse_volumique() const;
-  virtual Champ& masse_volumique();
+  virtual const Champ_base& masse_volumique() const;
+  virtual Champ_base& masse_volumique();
+  bool has_masse_volumique() const { return rho.non_nul(); }
   virtual const Champ_Don& diffusivite() const;
   virtual Champ_Don& diffusivite();
   virtual const Champ_Don& diffusivite_fois_rho() const;
@@ -125,7 +126,7 @@ public:
 
 protected:
   REF(Domaine_dis_base) zdb_;
-  Champ rho; //peut etre un Champ_Don ou un Champ_Inc
+  OWN_PTR(Champ_base) rho; //peut etre un Champ_Don ou un Champ_Inc
   Champ_Don g, alpha, lambda, alpha_fois_rho, Cp, beta_th, porosites_champ, diametre_hyd_champ;
   OWN_PTR(Champ_Fonc_base)  rho_cp_elem_,rho_cp_comme_T_;
   Champs_compris champs_compris_;

@@ -44,7 +44,7 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 
   /* copie des valeurs du champ */
   afield._has_field_ownership = true;
-  Champ espace_stockage;
+  OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
   const DoubleTab& vals = champ_ecriture.valeurs();
   afield._nb_field_components = vals.nb_dim() > 1 ? vals.dimension(1) : 1;

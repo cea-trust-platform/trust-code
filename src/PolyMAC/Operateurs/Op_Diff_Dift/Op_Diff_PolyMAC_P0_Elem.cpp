@@ -646,7 +646,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                                               &vit = ref_cast(Navier_Stokes_std, pbp.equation(0)).inconnue().passe(),
                                                &lambda = pbp.milieu().conductivite()->passe(),
                                                 &mu = ref_cast(Fluide_base, pbp.milieu()).viscosite_dynamique()->passe(),
-                                                 &rho = pbp.milieu().masse_volumique()->passe(),
+                                                 &rho = pbp.milieu().masse_volumique().passe(),
                                                   &Cp = pbp.milieu().capacite_calorifique()->passe();
                             const int Clambda = lambda.dimension(0) == 1, Cmu = mu.dimension(0) == 1, Crho = rho.dimension(0) == 1, Ccp = Cp.dimension(0) == 1;
                             Flux_parietal_base::input_t in;

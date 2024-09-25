@@ -16,6 +16,7 @@
 #ifndef Operateur_included
 #define Operateur_included
 
+#include <TRUSTTabs_forward.h>
 #include <TRUST_Ref.h>
 #include <MorEqn.h>
 #include <Motcle.h>

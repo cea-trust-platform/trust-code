@@ -97,7 +97,7 @@ inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Cha
 
 inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ_a, const Champ_Generique_base& le_champ_b, double t1, double t2)
 {
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = le_champ_a.get_champ(espace_stockage_source);
   Nom type_le_champ = source.que_suis_je();
 

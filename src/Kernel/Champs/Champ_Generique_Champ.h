@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Champ_Generique_Champ_included
 
 #include <Champ_Generique_refChamp.h>
-#include <Champ.h>
+
 
 /*! @brief : class Champ_Generique_Champ
  *
@@ -33,14 +33,14 @@ class Champ_Generique_Champ : public Champ_Generique_refChamp
   Declare_instanciable( Champ_Generique_Champ ) ;
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  const Champ_base& get_champ(Champ& espace_stockage) const override;
+  const Champ_base& get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   const Champ_base& get_ref_champ_base() const override;
   void reset() override;
   void mettre_a_jour(double temps) override;
 public :
 
 protected :
-  Champ champ_;
+  OWN_PTR(Champ_base) champ_;
 };
 
 #endif /* Champ_Generique_Champ_included */

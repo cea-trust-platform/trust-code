@@ -413,16 +413,14 @@ void Champ_Generique_refChamp::mettre_a_jour(double temps)
  * Ici, l'espace_stockage n'est pas utilise, le champ existe deja
  *
  */
-const Champ_base& Champ_Generique_refChamp::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_refChamp::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  {
-    const Nom& nom_cible = get_ref_champ_base().le_nom();
-    ref_pb_->get_champ(nom_cible);
-    return get_ref_champ_base();
-  }
+  const Nom& nom_cible = get_ref_champ_base().le_nom();
+  ref_pb_->get_champ(nom_cible);
+  return get_ref_champ_base();
 }
 
-const Champ_base& Champ_Generique_refChamp::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_refChamp::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
   return get_champ(espace_stockage);
 }

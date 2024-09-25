@@ -38,7 +38,7 @@ Entree& Source_Generique_VDF_Face::readOn(Entree& is)
 
 void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  Champ espace_stockage;
+  OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
   const DoubleTab& valeurs_calc = champ_calc.valeurs();
 

@@ -45,7 +45,7 @@ public:
   void abortTimeStep() override;
   double calculer_dt_stab() const override ;
   void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
 
   virtual void remplir_fluent() const;

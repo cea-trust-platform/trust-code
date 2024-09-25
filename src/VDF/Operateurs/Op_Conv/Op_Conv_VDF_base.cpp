@@ -23,7 +23,7 @@
 #include <Statistiques.h>
 #include <Array_tools.h>
 #include <TRUSTTrav.h>
-#include <Champ.h>
+
 
 extern Stat_Counter_Id convection_counter_;
 
@@ -354,11 +354,11 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 }
 
 // cf Op_Conv_VDF_base::calculer_dt_stab() pour choix de calcul de dt_stab
-void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
+void Op_Conv_VDF_base::calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const
 {
   if (Motcle(option)=="stabilite")
     {
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
       es_valeurs = 1.e30;
 
       const Domaine_VDF& domaine_VDF = iter_->domaine();

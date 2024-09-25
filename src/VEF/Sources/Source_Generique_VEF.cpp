@@ -20,6 +20,7 @@
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Equation_base.h>
+#include <Champ_base.h>
 #include <Milieu_base.h>
 
 Implemente_instanciable(Source_Generique_VEF,"Source_Generique_VEF_P1NC",Source_Generique_base);
@@ -38,7 +39,7 @@ Entree& Source_Generique_VEF::readOn(Entree& is)
 
 DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
 {
-  Champ espace_stockage;
+  OWN_PTR(Champ_base) espace_stockage;
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
   const DoubleTab& valeurs_calc = champ_calc.valeurs();
 

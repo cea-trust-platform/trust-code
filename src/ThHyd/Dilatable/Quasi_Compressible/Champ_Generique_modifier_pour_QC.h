@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 
 class Milieu_base;
 
-/*! @brief class Champ_Generique_modifier_pour_QC Champ destine a post-traiter un champ d un probleme en quasi-compressible
+/*! @brief class Champ_Generique_modifier_pour_QC OWN_PTR(Champ_base) destine a post-traiter un champ d un probleme en quasi-compressible
  *
  *  que l on souhaite multiplier ou diviser par la masse volumique (rho).
  *  La classe porte une REF au milieu qui doit etre de type Fluide_Quasi_Compressible.
@@ -48,8 +48,8 @@ public:
   Champ_Generique_modifier_pour_QC();
   void set_param(Param& param) override;
   void completer(const Postraitement_base& post) override;
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
-  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
   void nommer_source() override;
 
 protected:

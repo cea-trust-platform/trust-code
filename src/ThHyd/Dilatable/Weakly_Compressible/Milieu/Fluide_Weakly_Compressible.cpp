@@ -141,7 +141,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
           else
             {
               // we use rho for affecter because the field is on the faces in VEF (as rho)
-              Champ_base& ch_rho = masse_volumique().valeur();
+              Champ_base& ch_rho = masse_volumique();
               ch_rho.affecter_(Pth_xyz_);
               Pth_tab_ = Pth_n_tab_ = ch_rho.valeurs();
             }
@@ -150,7 +150,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
         {
           Cerr << "Initializing the thermo-dynamic pressure ..." << finl;
           // Pth_tab_ doit avoir meme dimensions que rho (elem en VDF et faces en VEF)
-          Pth_tab_ = masse_volumique()->valeurs();
+          Pth_tab_ = masse_volumique().valeurs();
           const int n = Pth_tab_.dimension_tot(0);
           for (int i = 0; i < n; i++)
             Pth_tab_(i) = Pth_;

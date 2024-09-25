@@ -188,7 +188,7 @@ void Navier_Stokes_IBM_impl::preparer_calcul_IBM(const bool& is_QC)
       else
         {
           Cerr<<"Assembling for quasi-compressible"<<finl;
-          eq_NS->assembleur_pression()->assembler_QC(eq_NS->fluide().masse_volumique()->valeurs(),eq_NS->matrice_pression());
+          eq_NS->assembleur_pression()->assembler_QC(eq_NS->fluide().masse_volumique().valeurs(),eq_NS->matrice_pression());
         }
     }
 }

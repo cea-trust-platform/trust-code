@@ -44,7 +44,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   const DoubleTab& tab_a = valeurs_a();
   const DoubleTab& tab_b = valeurs_b();
 
-  Champ espace_stockage_source_a, espace_stockage_source_b;
+  OWN_PTR(Champ_base) espace_stockage_source_a, espace_stockage_source_b;
   const Champ_base& source_a = a->get_champ(espace_stockage_source_a);
   const Champ_base& source_b = b->get_champ(espace_stockage_source_b);
 

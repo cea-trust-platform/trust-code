@@ -35,7 +35,7 @@ public:
   virtual Champ_base& vitesse()=0;
   void completer() override;
   double calculer_dt_stab() const override;
-  void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
+  void calculer_pour_post(Champ_base& espace_stockage, const Nom& option, int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
   int impr(Sortie& os) const override;
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override;

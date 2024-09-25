@@ -75,10 +75,10 @@ void Champ_Generique_Ecart_Type::completer(const Postraitement_base& post)
     }
 }
 
-const Champ_base& Champ_Generique_Ecart_Type::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Ecart_Type::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
   const REF(Champ_Generique_base)& mon_champ = integrale().le_champ();
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
@@ -88,7 +88,7 @@ const Champ_base& Champ_Generique_Ecart_Type::get_champ(Champ& espace_stockage) 
   DoubleTab& tab_ecart_type = espace_stockage->valeurs();
   tab_ecart_type = Op_Ecart_Type_.calculer_valeurs();
   tab_ecart_type.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 const Noms Champ_Generique_Ecart_Type::get_property(const Motcle& query) const

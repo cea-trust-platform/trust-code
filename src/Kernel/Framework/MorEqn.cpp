@@ -32,7 +32,7 @@ void MorEqn::associer_eqn(const Equation_base& eqn)
 
 // Calcul des valeurs liees a un morceau d equation (Operateurs, ...) pour postraitement
 //
-void MorEqn::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
+void MorEqn::calculer_pour_post(Champ_base& espace_stockage,const Nom& option, int comp) const
 {
   Cerr<<"The method calculer_pour_post(...) is currently not coded"<<finl;
   Cerr<<"for the piece of the regarded equation and option chosen"<<finl;

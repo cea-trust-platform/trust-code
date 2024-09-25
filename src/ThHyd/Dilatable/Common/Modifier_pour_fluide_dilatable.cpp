@@ -60,7 +60,7 @@ void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_flu
       return;
     }
 
-  const DoubleTab& rho = le_fluide.masse_volumique()->valeurs();
+  const DoubleTab& rho = le_fluide.masse_volumique().valeurs();
   if (tab.get_md_vector() == md_elem && rho.get_md_vector() == md_elem)
     {
       multiplier_ou_diviser(tab, rho, diviser);
@@ -75,7 +75,7 @@ void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_flu
       const int nb_elem_tot = domaine.nb_elem_tot();
       const int nfe = zvf.elem_faces().dimension(1);
       const double facteur = 1. / nfe;
-      CDoubleArrView tab_rho = static_cast<const DoubleVect&>(le_fluide.masse_volumique()->valeurs()).view_ro();
+      CDoubleArrView tab_rho = static_cast<const DoubleVect&>(le_fluide.masse_volumique().valeurs()).view_ro();
       CIntTabView elem_faces = zvf.elem_faces().view_ro();
       DoubleArrView rho_elem = static_cast<DoubleVect&>(tab_rho_elem).view_wo();
       Kokkos::parallel_for(__KERNEL_NAME__, nb_elem_tot, KOKKOS_LAMBDA(const int elem)

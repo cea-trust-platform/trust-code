@@ -91,8 +91,8 @@ public:
   void verifier_coherence_donnees();
   void verifier_localisation();
   const Noms get_property(const Motcle& query) const override;
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
-  const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&   get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
 
   Entity  get_localisation(const int index = -1) const override;
   const Motcle get_directive_pour_discr() const override;

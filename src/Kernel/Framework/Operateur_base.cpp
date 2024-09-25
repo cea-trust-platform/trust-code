@@ -19,7 +19,7 @@
 #include <EcrFicPartage.h>
 #include <Periodique.h>
 #include <sys/stat.h>
-#include <Champ.h>
+
 #include <Front_VF.h>
 #include <Domaine_VF.h>
 #include <Matrice_Morse.h>
@@ -473,12 +473,12 @@ void Operateur_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 //Options reconnues : "stabilite" pour dt_stab
 //                      "flux_bords" ou "flux_surfacique_bords" pour flux_bords_
 //
-void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const
+void Operateur_base::calculer_pour_post(Champ_base& espace_stockage,const Nom& option, int comp) const
 {
   if (Motcle(option)=="flux_bords" || Motcle(option)=="flux_surfacique_bords")
     {
       bool surfacique = (Motcle(option)=="flux_surfacique_bords");
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
       es_valeurs = 0.;
       const Domaine_Cl_dis_base& zcl_dis = equation().domaine_Cl_dis();
       const Domaine_dis_base& zdis = equation().domaine_dis();

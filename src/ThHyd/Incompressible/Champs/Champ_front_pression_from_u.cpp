@@ -65,7 +65,7 @@ int Champ_front_pression_from_u::initialiser(double tps, const Champ_Inc_base& i
   const Milieu_base& mil=inco.equation().milieu();
   if (sub_type(Fluide_Incompressible,mil))
     {
-      if ((sub_type(Champ_Uniforme,mil.masse_volumique().valeur())))
+      if ((sub_type(Champ_Uniforme,mil.masse_volumique())))
         {
 
 

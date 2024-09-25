@@ -217,7 +217,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     {
       for (int i=0; i<nb_sources; i++)
         {
-          Champ source_espace_stockage;
+          OWN_PTR(Champ_base) source_espace_stockage;
           const Champ_base& source = get_source(i).get_champ_without_evaluation(source_espace_stockage);
 
           if ((Motcle(methode_) == "vecteur"))
@@ -271,7 +271,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
         {
           //loop over sources to check that all sources have the same location
           bool use_directive = false;
-          Champ my_field;
+          OWN_PTR(Champ_base) my_field;
 
           const Champ_base& source_i = get_source( i ).get_champ_without_evaluation( my_field );
           if( source_i.a_un_domaine_dis_base( ) )
@@ -498,14 +498,14 @@ void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domain
 //-Interpolation des valeurs des sources sur le support retenu
 //-Evaluation des valeurs de l espace de stockage en fonction de la fonction (les_fct)
 
-const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
   OWN_PTR(Champ_Fonc_base)  es_tmp;
 
   espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
-const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
   ToDo_Kokkos("critical");
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
@@ -577,7 +577,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   for (int so=0; so<nb_sources; so++)
     {
       const Champ_Generique_base& source = get_source(so);
-      Champ stockage_so;
+      OWN_PTR(Champ_base) stockage_so;
       const Champ_base& source_so = source.get_champ(stockage_so);
       const DoubleTab& source_so_val = source_so.valeurs();
       const Motcle directive_so = source.get_directive_pour_discr();
@@ -793,7 +793,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   // PL: Suppression d'une synchronisation couteuse tres souvent inutile
   // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel
   // valeurs_espace.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 //Les localisations elem som faces peuvent etre retenues pour le postraitement
@@ -899,7 +899,7 @@ int Champ_Generique_Transformation::preparer_macro()
     {
       for (int i=0; i<nb_sources; i++)
         {
-          Champ source_espace_stockage;
+          OWN_PTR(Champ_base) source_espace_stockage;
           const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
           int nb_comp = source.nb_comp();
           if (source.nature_du_champ()!=vectoriel && source.nature_du_champ()!=multi_scalaire)
@@ -932,7 +932,7 @@ int Champ_Generique_Transformation::preparer_macro()
           fxyz[0].setString(les_fct[0]);
           for (int i=0; i<nb_sources; i++)
             {
-              Champ source_espace_stockage;
+              OWN_PTR(Champ_base) source_espace_stockage;
               const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
               int nb_comp = source.nb_comp();
               const Noms compo = get_source(i).get_property("composantes");
@@ -978,7 +978,7 @@ int Champ_Generique_Transformation::preparer_macro()
       // La suite est faite si on n'a pas d'erreur !!
       if (erreur==0) // 1 source pas la peine de faire une boucle
         {
-          Champ source_espace_stockage;
+          OWN_PTR(Champ_base) source_espace_stockage;
           const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
           if (source.nature_du_champ()!=vectoriel && source.nature_du_champ()!=multi_scalaire)
             {

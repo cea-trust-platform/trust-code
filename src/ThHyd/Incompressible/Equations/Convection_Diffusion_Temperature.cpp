@@ -407,7 +407,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
 
 double Convection_Diffusion_Temperature::get_time_factor() const
 {
-  return domaine_dis().nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique()->valeurs()(0, 0) : 1.0;
+  return domaine_dis().nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0) : 1.0;
 }
 
 // ajoute les contributions des operateurs et des sources
@@ -1121,7 +1121,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis());
       const DoubleVect& vol_maille = domaine_vf.volumes();
       const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
-      const DoubleTab& tab_rho = fluide_inc.masse_volumique()->valeurs();
+      const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
       const double rho = tab_rho(0,0);
       const DoubleTab& tab_cp = fluide_inc.capacite_calorifique()->valeurs();
       const double cp = tab_cp(0,0);
@@ -1237,7 +1237,7 @@ void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, Dou
   const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
   const Champ_Inc_base& ch_T = eqn.inconnue();
-  const Champ_base& ch_rho = fl.masse_volumique().valeur();
+  const Champ_base& ch_rho = fl.masse_volumique();
   assert(sub_type(Champ_Uniforme, ch_rho));
   const Champ_Don& ch_cp = fl.capacite_calorifique();
   const DoubleTab& cp = fl.capacite_calorifique()->valeurs(), &rho = ch_rho.valeurs(), &T = ch_T.valeurs();

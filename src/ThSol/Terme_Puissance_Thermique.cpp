@@ -16,7 +16,7 @@
 #include <Terme_Puissance_Thermique.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Champ.h>
+
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc_Tabule.h>

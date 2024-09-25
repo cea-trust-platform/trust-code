@@ -82,7 +82,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
   const DoubleTab& Y = eqn.inconnue().valeurs(),
-                   &rho = fluide.masse_volumique()->valeurs(),
+                   &rho = fluide.masse_volumique().valeurs(),
                     &val_flux0 = ch_front_source_->valeurs();
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());

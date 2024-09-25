@@ -119,8 +119,8 @@ REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, con
   int num = sourceNoms.rang(nom_champ_lu_);
   if (num < 0)
     {
-      Champ espace_stockage;
-      const Champ_base& ma_source = ref_cast(Champ_base, mon_champ->get_champ(espace_stockage));
+      OWN_PTR(Champ_base) espace_stockage;
+      const Champ_base& ma_source = mon_champ->get_champ(espace_stockage);
       sourceList.add(ma_source);
       espaceStockageList.add(espace_stockage);
       sourceNoms.add(nom_champ_lu_);

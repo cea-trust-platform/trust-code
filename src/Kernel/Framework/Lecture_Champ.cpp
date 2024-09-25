@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Lecture_Champ.h>
+#include <Champ_base.h>
 #include <Motcle.h>
 
 Implemente_instanciable_sans_constructeur( Lecture_Champ, "Lecture_Champ", Objet_U ) ;
@@ -55,7 +56,7 @@ Entree& Lecture_Champ::lire_champs( Entree& is , LIST(Nom)& noms_champs)
 
       if (noms_champs.contient(nom))
         {
-          liste_champs.add(Champ());
+          liste_champs.add(OWN_PTR(Champ_base)());
           is >> liste_champs(lu);
           liste_champs(lu)->nommer(nom);
           lu++;

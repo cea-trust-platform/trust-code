@@ -63,7 +63,7 @@ public:
   void completer(const Postraitement_base& post) override;
 
   const Motcle get_directive_pour_discr() const override;
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   void nommer_source() override;
   int get_info_type_post() const override;
 

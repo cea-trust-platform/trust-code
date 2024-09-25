@@ -82,24 +82,24 @@ const Motcle Champ_Generique_Extraction::get_directive_pour_discr() const
   return directive;
 }
 
-const Champ_base& Champ_Generique_Extraction::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Extraction::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 /*! @brief Extraction des valeurs d un champ (trace ou champ frontiere) sur un bord du domaine
  *
  */
-const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Extraction::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_Generique_base& source = get_source(0);
   const Champ_base& source_stockage = source.get_champ(source_espace_stockage);
 
@@ -165,9 +165,9 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   //le Domaine discretise a associer n est actuellement pas disponible
   //On associe pas de domaine_discretisee et on ne fixe pas nb_valeurs_nodales
   espace_stockage.typer(type_espace_stockage);
-  ////espace_stockage->associer_domaine_dis_base(domaine_dis);
+  ////espace_stockage.associer_domaine_dis_base(domaine_dis);
   espace_stockage->fixer_nb_comp(nb_comp);
-  ////espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
+  ////espace_stockage.fixer_nb_valeurs_nodales(nb_ddl);
   espace_stockage->fixer_nature_du_champ(nature_source);
 
   DoubleTab& espace_valeurs = espace_stockage->valeurs();
@@ -197,7 +197,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   //L espace de stockage n a pas actuellement d espace virtuel
   ////espace_valeurs.echange_espace_virtuel();
 
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 const Noms Champ_Generique_Extraction::get_property(const Motcle& query) const
@@ -265,7 +265,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
     {
       if (sub_type(Champ_Generique_refChamp,source))
         {
-          Champ source_espace_stockage;
+          OWN_PTR(Champ_base) source_espace_stockage;
           const Champ_base& source_stockage = source.get_champ(source_espace_stockage);
           if (!sub_type(Champ_Inc_base,source_stockage))
             {

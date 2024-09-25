@@ -90,7 +90,7 @@ void Champ_Generique_Correlation::completer(const Postraitement_base& post)
   Op_Correlation_.completer(Pb);
 }
 
-const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Correlation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
   int nb_comp = integrale().le_champ_calcule().nb_comp();
   //Nature_du_champ nature_source = source.nature_du_champ();
@@ -103,7 +103,7 @@ const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage)
   DoubleTab& tab_correlation = espace_stockage->valeurs();
   tab_correlation = Op_Correlation_.calculer_valeurs();
   tab_correlation.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const

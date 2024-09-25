@@ -929,7 +929,7 @@ void Op_Dift_EF_Q1::verifier() const
   testee=1;
 }
 
-void Op_Dift_EF_Q1::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
+void Op_Dift_EF_Q1::calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const
 {
 }
 
@@ -961,7 +961,7 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
   DoubleTab diffu(nu_);
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
-      double rhocp = mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique()->valeurs()(0, 0);
+      double rhocp = mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
       diffu_turb /= rhocp;
       diffu /= rhocp;
     }

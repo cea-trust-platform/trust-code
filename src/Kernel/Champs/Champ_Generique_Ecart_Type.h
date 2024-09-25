@@ -23,7 +23,7 @@
 
 class Postraitement_base;
 
-/*! @brief class Champ_Generique_Ecart_Type Champ destine a post-traiter un Ecart_Type d un champ generique
+/*! @brief class Champ_Generique_Ecart_Type OWN_PTR(Champ_base) destine a post-traiter un Ecart_Type d un champ generique
  *
  *  La classe porte un operateur statistique "Op_Ecart_Type"
  *
@@ -53,7 +53,7 @@ public:
   inline Operateur_Statistique_tps_base& Operateur_Statistique() override { return Op_Ecart_Type_; }
   inline const Operateur_Statistique_tps_base& Operateur_Statistique() const override { return Op_Ecart_Type_; }
 
-  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   void completer(const Postraitement_base& post) override;
   void nommer_source() override;
 

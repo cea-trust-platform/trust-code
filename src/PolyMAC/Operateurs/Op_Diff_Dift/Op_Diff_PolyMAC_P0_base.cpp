@@ -60,7 +60,7 @@ void Op_Diff_PolyMAC_P0_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), N_mil = eq.milieu().masse_volumique().non_nul() ? eq.milieu().masse_volumique()->valeurs().line_size() : N;
+  int N = eq.inconnue().valeurs().line_size(), N_mil = eq.milieu().has_masse_volumique() ? eq.milieu().masse_volumique().valeurs().line_size() : N;
   int N_diff = diffusivite().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
 
   if ((N_nu == N_mil) | (N_nu == N))
@@ -230,7 +230,7 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
   int N = equation().inconnue().valeurs().line_size(),
-      N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique()->valeurs().line_size() : N,
+      N_mil = equation().milieu().has_masse_volumique() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
       N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
 

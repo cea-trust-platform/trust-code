@@ -66,7 +66,7 @@ int Champ_Generique_Statistiques_base::completer_post_statistiques(const Domaine
       exit();
     }
 
-  Champ espace_stockage_source;
+  OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = integrale().le_champ()->get_champ(espace_stockage_source);
   source.completer_post_champ(dom,is_axi,localisation,nom_post,format);
   return 1;

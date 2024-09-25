@@ -18,8 +18,8 @@
 
 #include <TRUST_Ref.h>
 #include <Motcle.h>
-#include <Champ.h>
 
+class Champ_base;
 class Equation_base;
 
 /*! @brief classe MorEqn Classe qui regroupe les fonctionnalites de liaison avec une
@@ -36,7 +36,7 @@ class MorEqn
 
 public:
   void associer_eqn(const Equation_base&);
-  virtual void calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const;
+  virtual void calculer_pour_post(Champ_base& espace_stockage,const Nom& option, int comp) const;
   virtual Motcle get_localisation_pour_post(const Nom& option) const;
   inline const Equation_base& equation() const;
   inline Equation_base& equation();

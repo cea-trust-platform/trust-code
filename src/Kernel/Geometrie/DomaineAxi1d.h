@@ -19,7 +19,7 @@
 #include <TRUSTTabs_forward.h>
 #include <TRUST_Ref.h>
 #include <Domaine.h>
-#include <Champ.h>
+#include <Champ_base.h>
 
 class Param;
 
@@ -38,8 +38,9 @@ public :
   using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
 
-  const Champ& champ_origine() const {   return champ_orig; }
-  const Champ& champ_origine()  {   return champ_orig; }
+  const Champ_base& champ_origine() const {   return champ_orig.valeur(); }
+  const Champ_base& champ_origine()  {   return champ_orig.valeur(); }
+  bool has_champ_origine() const  {   return champ_orig.non_nul(); }
   const DoubleTab_t& origine_repere() {   return ref_origine_.valeur(); }
   const DoubleTab_t& origine_repere() const {   return ref_origine_.valeur(); }
   void associer_origine_repere(const DoubleTab_t& orig) {   ref_origine_ = orig; }
@@ -49,7 +50,7 @@ public :
 protected :
   void set_param(Param& param);
 
-  Champ champ_orig;
+  OWN_PTR(Champ_base) champ_orig;
   REF(DoubleTab_t) ref_origine_;
 };
 

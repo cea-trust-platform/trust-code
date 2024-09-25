@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,6 @@ public:
   void              get_copy_connectivity(Entity index1, Entity index2, IntTab&) const override;
 
   const Probleme_base& get_ref_pb_base() const override;
-  virtual const Champ_base& get_ref_champ_base() const; //renvoie la reference au champ encapsule
   void              reset() override;
   void completer(const Postraitement_base& post) override;
   void              mettre_a_jour(double temps) override;
@@ -64,8 +63,9 @@ public:
   //get_champ() particulier car n utilise pas d espace de stockage
   //Actualise le champ discret si champ calcule du probleme
   //et renvoie la reference
-  const Champ_base& get_champ(Champ& espace_stockage) const override;
-  const Champ_base& get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Champ_base& get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base& get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
+  virtual const Champ_base& get_ref_champ_base() const; //renvoie la reference au champ encapsule
 
   virtual void set_ref_champ(const Champ_base&);
 
@@ -78,6 +78,7 @@ public:
 protected:
 
   REF(Champ_base) ref_champ_;
+  mutable OWN_PTR(Champ_base) ptr_champ_; /* XXX Elie Saikali : sais pas quoi faire */
 
   //temporaire voir utilite
   Motcle localisation_;

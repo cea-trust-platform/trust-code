@@ -86,7 +86,7 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
   const DoubleTab& tab_temperature = mon_equation_NRJ->inconnue().valeurs();
 
   const DoubleTab& vitesse = pb.get_champ(Motcle("vitesse")).valeurs();
-  const Champ_base& rho_ = pb.milieu().masse_volumique().valeur();
+  const Champ_base& rho_ = pb.milieu().masse_volumique();
   const DoubleTab& rho = rho_.valeurs();
   int taille_rho=rho.dimension(0);
   const double temps = mon_equation->inconnue().temps();

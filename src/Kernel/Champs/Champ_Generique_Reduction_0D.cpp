@@ -178,34 +178,34 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
 
 }
 
-const Champ_base& Champ_Generique_Reduction_0D::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Reduction_0D::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 /*! @brief Reduction_0D du champ source (au sens qu on le rend uniforme) en fonction de la methode (min, max, moyenne, moyenne_ponderee_volume_elem, somme, somme_ponderee)
  *
  *  Dans le cas ou le champ possede plusieurs composantes, elles sont traitees une par une
  *
  */
-const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
 
-  Champ source_espace_stockage;
+  OWN_PTR(Champ_base) source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
   const Domaine_dis_base& domaine_dis = get_source(0).get_ref_domaine_dis_base();
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
   // dimension() sur le tableau de valeurs des champs PolyMAC_P0P1NC renvoie -1 (plusieurs supports)
-  // ToDo: reecrire completement cette methode (horrible, tres mal ecrite) en deportant les methodes min/max/sum/... pour chaque Champ !
+  // ToDo: reecrire completement cette methode (horrible, tres mal ecrite) en deportant les methodes min/max/sum/... pour chaque OWN_PTR(Champ_base) !
   if (source.que_suis_je()=="Champ_Face_PolyMAC_P0P1NC" || source.que_suis_je()=="Champ_Face_PolyMAC_P0")
     Process::exit("PolyMAC_P0P1NC/PolyMAC_P0 face field not supported yet for Reduction_0D");
 
@@ -310,7 +310,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
     }
   espace_valeurs.echange_espace_virtuel();
 
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
 //Extrait la valeur du vecteur val_source dans val_extraite
@@ -626,7 +626,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // au ELEM
       if (get_localisation()==Entity::ELEMENT)
         {
-          Champ source_espace_stockage2;
+          OWN_PTR(Champ_base) source_espace_stockage2;
           const Champ_base& source2 = get_source(1).get_champ(source_espace_stockage2);
           Motcle nom_source_1(get_source(1).get_nom_post());
           if (!(nom_source_1.debute_par("porosite_volumique")||(nom_source_1.debute_par("beta"))))

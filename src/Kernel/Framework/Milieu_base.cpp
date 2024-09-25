@@ -26,7 +26,7 @@
 #include <EChaine.h>
 #include <Device.h>
 #include <Param.h>
-#include <Champ.h>
+
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
@@ -194,8 +194,8 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if  (rho.non_nul())
     {
-      dis.nommer_completer_champ_physique(domaine_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
-      champs_compris_.ajoute_champ(rho.valeur());
+      dis.nommer_completer_champ_physique(domaine_dis,"masse_volumique","kg/m^3",rho,pb);
+      champs_compris_.ajoute_champ(rho);
     }
   if (rho.non_nul() && Cp.non_nul())
     {
@@ -207,8 +207,8 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           // XXX : j'ai remis nb_comp = 1, sinon ca bloque dans Solveur_Masse_base => tab_divide_any_shape
           // parce qu'on a pas line_size % line_size_vx == 0 (cas nb_comp >1 pour rho et cp
           // TODO : FIXME : faut coder un cas generique dans DoubleVect::tab_divide_any_shape... bon courage
-          dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "J/m^3/K", 1 /* rho.nb_comp() */, temps, rho_cp_comme_T_);
-          dis.discretiser_champ( "champ_elem", domaine_dis,    "rho_cp_elem", "J/m^3/K", 1 /* rho.nb_comp() */, temps,    rho_cp_elem_);
+          dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "J/m^3/K", 1 /* rho->nb_comp() */, temps, rho_cp_comme_T_);
+          dis.discretiser_champ( "champ_elem", domaine_dis,    "rho_cp_elem", "J/m^3/K", 1 /* rho->nb_comp() */, temps,    rho_cp_elem_);
         }
       champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
@@ -801,18 +801,18 @@ void Milieu_base::fill_section_passage_face()
  *
  * @return (Champ_base&) le champ donne representant la masse volumique
  */
-const Champ& Milieu_base::masse_volumique() const
+const Champ_base& Milieu_base::masse_volumique() const
 {
-  return rho;
+  return rho.valeur();
 }
 
 /*! @brief Renvoie la masse volumique du milieu.
  *
  * @return (Champ_base&) le champ donne representant la masse volumique
  */
-Champ& Milieu_base::masse_volumique()
+Champ_base& Milieu_base::masse_volumique()
 {
-  return rho;
+  return rho.valeur();
 }
 
 /*! @brief Renvoie la diffusivite du milieu.

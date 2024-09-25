@@ -71,7 +71,7 @@ void Champ_Generique_Morceau_Equation::completer(const Postraitement_base& post)
   if (sub_type(Champ_Generique_refChamp,get_source(0)))
     {
 
-      Champ espace_stockage;
+      OWN_PTR(Champ_base) espace_stockage;
       const Champ_base& mon_champ = get_source(0).get_champ(espace_stockage);
       if (sub_type(Champ_Inc_base,mon_champ))
         {
@@ -150,7 +150,7 @@ OWN_PTR(Champ_Fonc_base)& Champ_Generique_Morceau_Equation::creer_espace_stockag
  *
  *
  */
-const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Morceau_Equation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   Nature_du_champ nature;
@@ -171,10 +171,10 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
   morceau().calculer_pour_post(espace_stockage,option_,compo_);
   DoubleTab& es_val = espace_stockage->valeurs();
   es_val.echange_espace_virtuel();
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 
-const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   Nature_du_champ nature;
@@ -187,7 +187,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation
     }
 
   espace_stockage = creer_espace_stockage(nature,nb_comp,es_tmp);
-  return espace_stockage.valeur();
+  return espace_stockage;
 }
 const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) const
 {

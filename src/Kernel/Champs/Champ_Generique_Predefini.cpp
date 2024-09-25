@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,11 +69,11 @@ const Champ_Generique_base& Champ_Generique_Predefini::get_source(int i) const
   return ref_cast(Champ_Gen_de_Champs_Gen,champ_.valeur()).get_source(i);
 }
 
-const Champ_base& Champ_Generique_Predefini::get_champ_without_evaluation(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Predefini::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
   return champ_->get_champ_without_evaluation(espace_stockage);
 }
-const Champ_base& Champ_Generique_Predefini::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Generique_Predefini::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
   return champ_->get_champ(espace_stockage);
 }

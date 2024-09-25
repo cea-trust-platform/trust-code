@@ -20,7 +20,7 @@
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>
-#include <Champ.h>
+
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
@@ -152,11 +152,11 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
 }
 
 // cf Op_Conv_VEF_base::calculer_dt_stab() pour choix de calcul de dt_stab
-void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
+void Op_Conv_VEF_base::calculer_pour_post(Champ_base& espace_stockage,const Nom& option,int comp) const
 {
   if (Motcle(option)=="stabilite")
     {
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
       es_valeurs = 1.e30;
 
       if ((le_dom_vef.non_nul()) && (la_zcl_vef.non_nul()))

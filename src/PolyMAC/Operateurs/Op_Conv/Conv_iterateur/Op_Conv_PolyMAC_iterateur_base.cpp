@@ -18,7 +18,7 @@
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
-#include <Champ.h>
+
 
 Implemente_base(Op_Conv_PolyMAC_iterateur_base, "Op_Conv_PolyMAC_iterateur_base", Operateur_Conv_base);
 
@@ -115,11 +115,11 @@ double Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() const
 }
 
 // cf Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() pour choix de calcul de dt_stab
-void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const
+void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ_base& espace_stockage, const Nom& option, int comp) const
 {
   if (Motcle(option) == "stabilite")
     {
-      DoubleTab& es_valeurs = espace_stockage->valeurs();
+      DoubleTab& es_valeurs = espace_stockage.valeurs();
       es_valeurs = 1.e30;
 
       const Domaine_PolyMAC& domaine_PolyMAC = iter_->domaine();

@@ -19,6 +19,7 @@
 #include <Conds_lim.h>
 #include <TRUST_Ref.h>
 #include <MorEqn.h>
+#include <Domaine_forward.h>
 
 /*! @brief classe Domaine_Cl_dis_base Les objets Domaine_Cl_dis_base representent les conditions aux limites
  *
