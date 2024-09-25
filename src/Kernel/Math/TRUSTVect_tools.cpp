@@ -153,10 +153,13 @@ template void ajoute_produit_scalaire<float, int>(TRUSTVect<float, int>& resu, f
 
 //Process bloc function used below in operation_speciale_tres_generic
 //It is templated as a function of the in/out view location and execution spaces (Device/Host)
-template<typename ExecSpace, typename ResuViewType, typename VxViewType, typename _TYPE_, typename _SIZE_>
-void process_blocks(ResuViewType resu_view, VxViewType vx_view, int nblocs_left,
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
+void process_blocks(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
                     Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
 {
+  auto vx_view= vx.template view_ro<ExecSpace>();
+  auto resu_view= resu.template view_rw<ExecSpace>();
+
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -180,13 +183,9 @@ void process_blocks(ResuViewType resu_view, VxViewType vx_view, int nblocs_left,
           {
             const int resu_idx = resu_start_idx + i * delta_line_size + j;
             if (IS_MUL)
-              {
-                resu_view(resu_idx) *= x;
-              }
+              resu_view(resu_idx) *= x;
             else //If it's not MUL, it's DIV
-              {
-                resu_view(resu_idx) *= ((_TYPE_)1 / x);
-              }
+              resu_view(resu_idx) *= ((_TYPE_)1 / x);
           }
       });
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
@@ -220,29 +219,15 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
 
   //Check where is the data to minimize memory transfer between Host and Device
   bool kernelOnDevice = (vx.isDataOnDevice() && resu.isDataOnDevice());
+
+  //Lauch computation with the execution space and view types as (template) parameters
   if (kernelOnDevice)
-    {
-      //Declare the device views on the resu and vx using .view_xx() (unmanaged dual view)
-      auto resu_view = resu.view_rw();
-      auto vx_view = vx.view_ro();
-      using ExecSpace = Kokkos::DefaultExecutionSpace; //Compute on the Device
-
-      //Lauch computation with the execution space and view types as (template) parameters
-      process_blocks<ExecSpace, decltype(resu_view), decltype(vx_view), _TYPE_, _SIZE_>(resu_view, vx_view, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
-    }
+    process_blocks<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
   else
-    {
-      //Declare the device views on the resu and vx using .view_xx() (unmanaged view on the host)
-      auto resu_view = HostViewArr<_TYPE_>(resu.addr(), resu.size());
-      auto vx_view = ConstHostViewArr<_TYPE_>(vx.addr(), vx.size());
-      using ExecSpace = Kokkos::DefaultHostExecutionSpace; //Compute on the Host
-
-      //Lauch computation with the execution space and view types as (template) parameters
-      process_blocks<ExecSpace, decltype(resu_view), decltype(vx_view), _TYPE_, _SIZE_>(resu_view, vx_view, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
-    }
-  // In debug mode, put invalid values where data has not been computed
+    process_blocks<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
 
 #ifndef NDEBUG
+  // In debug mode, put invalid values where data has not been computed
   invalidate_data(resu, opt);
 #endif
   return;

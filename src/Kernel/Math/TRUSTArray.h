@@ -232,10 +232,33 @@ public:
   inline virtual const Span_ get_span_tot() const { return span_; }
 
 #ifdef KOKKOS
-  // Kokkos accessors
-  inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
-  inline ViewArr<_TYPE_> view_wo();             // Write-only
-  inline ViewArr<_TYPE_> view_rw();             // Read-write
+  // Kokkos accessors (brace yourself!)
+
+  // Read-only
+  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline
+  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value, ConstViewArr<_TYPE_> >
+  view_ro() const;
+
+  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline
+  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value && !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value, ConstHostViewArr<_TYPE_> >
+  view_ro() const;
+
+  // Write-only
+  inline ViewArr<_TYPE_> view_wo();
+
+  // Read-write
+  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline
+  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value, ViewArr<_TYPE_> >
+  view_rw();
+
+  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline
+  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value && !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value, HostViewArr<_TYPE_> >
+  view_rw();
+
 #endif
 
   inline void sync_to_host() const;              // Synchronize back to host
