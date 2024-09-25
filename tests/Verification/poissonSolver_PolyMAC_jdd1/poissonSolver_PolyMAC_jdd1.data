@@ -62,8 +62,6 @@ Read pb
             left paroi_flux_impose Champ_Front_fonc_XYZ 1  -(-sin(x)*sin(y))
             right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 cos(x)*sin(y)
             up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 cos(x)*sin(y)
-            # left  paroi_flux_impose Champ_Front_fonc_XYZ 1 sin(x)*sin(y) # 
-            # up    paroi_flux_impose Champ_Front_fonc_XYZ 1   cos(x)*cos(y) # 
             down  paroi_flux_impose Champ_Front_fonc_XYZ 1   -cos(x)*cos(y)
         }
     }
@@ -105,16 +103,7 @@ Read pb
 									sources_reference { erreur }
     	        } 
 
-    	            /* sources 
-    	            {
-										refChamp { Pb_champ pb temperature nom_source temp } ,
-    	        			transformation
-    	        			{
-    	            		methode formule expression 1 cos(x)*sin(y) localisation elem nom_source T_analytique source refChamp { Pb_champ pb temperature } 
-    	        			}
-    	            } 
-    	        } */ 
-					}
+    	   					}
 
 					 Probes			{
     	        L2_norm 	L2_norm 	periode 1e+6 numero_elem_sur_maitre 0

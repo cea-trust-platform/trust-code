@@ -62,8 +62,6 @@ Read pb
             left paroi_flux_impose Champ_Front_fonc_XYZ 1  -(4*x^3+4*x*y-42*x+2*y^2-14)
             right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 ((x^2+y-11)^2+(x+y^2-7)^2)
             up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 ((x^2+y-11)^2+(x+y^2-7)^2)
-            # left  paroi_flux_impose Champ_Front_fonc_XYZ 1 sin(x)*sin(y) # 
-            # up    paroi_flux_impose Champ_Front_fonc_XYZ 1   (-22+2*x^2-26*y+4*x*y+4*y^3) # 
             down  paroi_flux_impose Champ_Front_fonc_XYZ 1   -(-22+2*x^2-26*y+4*x*y+4*y^3)
         }
     }
@@ -105,16 +103,7 @@ Read pb
 									sources_reference { erreur }
     	        } 
 
-    	            /* sources 
-    	            {
-										refChamp { Pb_champ pb temperature nom_source temp } ,
-    	        			transformation
-    	        			{
-    	            		methode formule expression 1 ((x^2+y-11)^2+(x+y^2-7)^2) localisation elem nom_source T_analytique source refChamp { Pb_champ pb temperature } 
-    	        			}
-    	            } 
-    	        } */ 
-					}
+    	   					}
 
 					 Probes			{
     	        L2_norm 	L2_norm 	periode 1e+6 numero_elem_sur_maitre 0
