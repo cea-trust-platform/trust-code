@@ -233,8 +233,8 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
   else
     {
       //Declare the device views on the resu and vx using .view_xx() (unmanaged view on the host)
-      auto resu_view = Kokkos::View<_TYPE_*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(resu.addr(), resu.size());
-      auto vx_view = Kokkos::View<const _TYPE_*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(vx.addr(), vx.size());
+      auto resu_view = HostViewArr<_TYPE_>(resu.addr(), resu.size());
+      auto vx_view = ConstHostViewArr<_TYPE_>(vx.addr(), vx.size());
       using ExecSpace = Kokkos::DefaultHostExecutionSpace; //Compute on the Host
 
       //Lauch computation with the execution space and view types as (template) parameters

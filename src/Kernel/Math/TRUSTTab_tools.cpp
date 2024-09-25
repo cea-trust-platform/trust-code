@@ -87,8 +87,8 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
     }
   else
     {
-      auto tableau_view = Kokkos::View<const _TYPE_**, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(tableau.addr(), tableau.size_array());
-      auto max_colonne_view = Kokkos::View<_TYPE_*, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(max_colonne.addr(), max_colonne.size_array());
+      auto tableau_view = ConstHostViewTab<_TYPE_>(tableau.addr(), tableau.size_array());
+      auto max_colonne_view = HostViewArr<_TYPE_>(max_colonne.addr(), max_colonne.size_array());
       using ExecSpace = Kokkos::DefaultHostExecutionSpace; //Compute on the Host
       parallel_max_abs_column<ExecSpace, decltype(tableau_view), decltype(max_colonne_view), decltype(blocs), _TYPE_, _SIZE_>(tableau_view, max_colonne_view, blocs, lsize, kernelOnDevice);
     }
