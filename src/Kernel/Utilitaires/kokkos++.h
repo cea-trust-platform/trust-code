@@ -35,7 +35,7 @@
 #include <Kokkos_DualView.hpp>
 #endif
 
-#undef _KOKKOS_AVX
+#define _KOKKOS_AVX
 
 #pragma GCC diagnostic pop
 #ifdef __NVCOMPILER

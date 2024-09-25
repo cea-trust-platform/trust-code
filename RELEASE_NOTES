@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) Build        : TRUST is now configured by default with Kokkos SIMD (if C++17) backend enabled
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
