@@ -22,9 +22,9 @@ linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD 					-benchma
 linux	rsync_ssh 	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD 					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-conda -disable-hwloc -without-visit     									# RedHat 8.4	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD  				-benchmark -cuda 	-openmp -build_64_bit -without-doc -disable-plot2d -without-conda -disable-hwloc  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD  				-benchmark	-without-doc -disable-plot2d -build_64_bit -without-conda -disable-hwloc   									# RedHat 8.3	CEA CCRT
-linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		  				-benchmark -cuda  	-openmp -build_64_bit -without-doc -disable-plot2d -without-visit -disable-mpi4py -without-conda -disable-hwloc   									# RedHat 8.3	CEA CCRT
+linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		 -TrioCFD  				-benchmark -cuda  	-openmp -build_64_bit -without-doc -disable-plot2d -without-visit -disable-mpi4py -without-conda -disable-hwloc   									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD            						-benchmark -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
-linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-benchmark -cuda -openmp 		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
+linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-benchmark -build_64_bit -cuda -openmp 		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD           		 		-build_64_bit -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit   
 linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit 

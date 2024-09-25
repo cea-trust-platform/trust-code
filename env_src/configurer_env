@@ -807,7 +807,7 @@ unset PYTHONPATH # We get a warning from conda if we do not unset this variable
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 # we add ncurses and libffi to overcome an issue with vi on Ub20 if env_for_python.sh loaded
-pkgs="pyqt nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
+pkgs="pyqt nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc` pydantic gtest"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniforge/local_channel --override-channels"
 [ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison psutil `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 

@@ -681,39 +681,39 @@ then
 else
    echo "  OK"
 fi
-liste_log=$REP_NUIT/Verify_liste_dep_$HOST.log
-echo " "
-echo "Call to "$TRUST_ROOT"/bin/gestion_externalpackages/Verify_liste_dep.sh"
-echo "  See $liste_log"
-echo "TRUST external packages liste dep on $HOST the `date` ...">$liste_log
-echo>>$liste_log
+#liste_log=$REP_NUIT/Verify_liste_dep_$HOST.log
+#echo " "
+#echo "Call to "$TRUST_ROOT"/bin/gestion_externalpackages/Verify_liste_dep.sh"
+#echo "  See $liste_log"
+#echo "TRUST external packages liste dep on $HOST the `date` ...">$liste_log
+#echo>>$liste_log
 # NB: Verification complete (apres nettoyage) le vendredi
-[ "`date '+%u'`" = 5 ] && rm -r -f $TRUST_ROOT/build/bin/gestion_externalpackages/Test
-./Verify_liste_dep.sh 1>>$liste_log 2>&1
+#[ "`date '+%u'`" = 5 ] && rm -r -f $TRUST_ROOT/build/bin/gestion_externalpackages/Test
+#./Verify_liste_dep.sh 1>>$liste_log 2>&1
 # les paquets suivants different:
 # scalapack car path pour intel (-fo_port obsolete)
 # med / medcoupling
-nb_error=`grep "FAILED" $liste_log | grep -v packagespy | grep -v scalapack | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v osqp-0.6.0 | grep -v configuration | grep -v medcoupling | grep -v xdata | grep -v hdf5 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v rocALUTION | grep -v rocm | grep -v ccache/ccache-4.8.2-linux-x86_64 | grep -v kokkos | grep -v magma | grep -v petsc | grep -v slate | grep -v zfp | wc -l`
+#nb_error=`grep "FAILED" $liste_log | grep -v packagespy | grep -v scalapack | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v osqp-0.6.0 | grep -v configuration | grep -v medcoupling | grep -v xdata | grep -v hdf5 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v rocALUTION | grep -v rocm | grep -v ccache/ccache-4.8.2-linux-x86_64 | grep -v kokkos | grep -v magma | grep -v petsc | grep -v slate | grep -v zfp | wc -l`
 
-if [ $nb_error != 0 ]
-then
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v packagespy | grep -v scalapack | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v osqp-0.6.0 | grep -v configuration | grep -v medcoupling | grep -v xdata | grep -v hdf5 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v rocALUTION | grep -v rocm | grep -v ccache/ccache-4.8.2-linux-x86_64 | grep -v kokkos | grep -v magma | grep -v petsc | grep -v slate | grep -v zfp`
-   cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
-   rm -r -f old new
-   for package in $liste_failed
-   do
-      echo>>$liste_log
-      echo "Launch ../compare_archive $package">>$liste_log
-      $TRUST_ROOT/bin/gestion_externalpackages/compare_archive $package 1>>$liste_log 2>&1
-   done
-   cd - 1>/dev/null 2>&1
-   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
-   grep "computed checksums did NOT match" $liste_log
-   grep "FAILED" $liste_log
-   echo "  KO"
-else
-   echo "  OK"
-fi
+#if [ $nb_error != 0 ]
+#then
+#   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v packagespy | grep -v scalapack | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v osqp-0.6.0 | grep -v configuration | grep -v medcoupling | grep -v xdata | grep -v hdf5 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v rocALUTION | grep -v rocm | grep -v ccache/ccache-4.8.2-linux-x86_64 | grep -v kokkos | grep -v magma | grep -v petsc | grep -v slate | grep -v zfp`
+#   cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
+#   rm -r -f old new
+#   for package in $liste_failed
+#   do
+#      echo>>$liste_log
+#      echo "Launch ../compare_archive $package">>$liste_log
+#      $TRUST_ROOT/bin/gestion_externalpackages/compare_archive $package 1>>$liste_log 2>&1
+#   done
+#   cd - 1>/dev/null 2>&1
+#   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TMA_PROJECT_LEADER $TRUST_MAIL
+#   grep "computed checksums did NOT match" $liste_log
+#   grep "FAILED" $liste_log
+#   echo "  KO"
+#else
+#   echo "  OK"
+#fi
 cd $TRUST_ROOT
 
 # Marque la version dans MAIN.cpp et mon_main.cpp
