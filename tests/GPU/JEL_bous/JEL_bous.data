@@ -10,8 +10,8 @@ Mailler dom
         Pave Entree
         {
         Origine 0. 0. 0.
-        /* Nombre_de_Noeuds 11 11 101 */
         Nombre_de_Noeuds 4 4 26
+        /* Nombre_de_Noeuds 19 19 181 */
         Longueurs 1 1 10
         }
         {
