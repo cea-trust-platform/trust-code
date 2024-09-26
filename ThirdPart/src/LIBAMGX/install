@@ -41,24 +41,26 @@ then
    fi
    cd $LIB && mkdir -p build && cd build
 
-   # Compilers
-   CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
-   CC=$TRUST_cc_BASE  && [ "$TRUST_cc_BASE_EXTP" != "" ] && CC=$TRUST_cc_BASE_EXTP && unset CPATH 
-   AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_FLAGS=-std=c++14" # See https://github.com/NVIDIA/AMGX for compilers...
+   # Compilers: See https://github.com/NVIDIA/AMGX
+   # Don't use unset CPATH, i get cusparse_v2.h not found on JeanZay after cmake upgrade !
+   [ "$TRUST_CC_BASE_EXTP" != "" ] && TRUST_CC_BASE=$TRUST_CC_BASE_EXTP
+   [ "$TRUST_cc_BASE_EXTP" != "" ] && TRUST_cc_BASE=$TRUST_cc_BASE_EXTP #&& unset CPATH
+   AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE -DCMAKE_CXX_FLAGS=-std=c++14"
    AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fno-openmp" # Important de specifier car AmgX cherche OpenMP par defaut
-   # ToDo -DCUDA_ARCH="60;70;80" ou --gpu=all
-   # -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 regle le pb de (cannot find -lcudadevrt -lcudart_static) au configure pour le NVidia SDK
-   # -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT  changement de syntax pour cmake 3.18 -> 3.22 ?
+   # Ajout de l'architecture:
+   [ "$TRUST_CUDA_CC" = 86 ] && TRUST_CUDA_CC=80 # 86 pas supporte
+   AMGX_COMPILERS=$AMGX_COMPILERS" -DCUDA_ARCH=$TRUST_CUDA_CC"
    
    # Hack du CMakeLists.txt (vu sur orcus avec Cuda 12) car manque de cublasLt
    sed -i "1,$ s?CUDA::cublas?CUDA::cublas CUDA::cublasLt?g" ../CMakeLists.txt || exit -1
    
-   cmake -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
-   #$TRUST_MAKE || exit -1
    if [ "$HOST" = jean-zay ]
    then
+      # ToDo: cublas not found on JeanZay so we simplify and it works now... Generalize to other builds ?
+      cmake -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
       make -j5 install || make install || exit -1 # Parallel build echoue sur JeanZay...! Donc on poursuit par un make simple
    else
+      cmake -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
       $TRUST_MAKE install || exit -1 # Important de faire en 1 fois car sur cluster make install recompile a nouveau apres make !!!
    fi
    cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
