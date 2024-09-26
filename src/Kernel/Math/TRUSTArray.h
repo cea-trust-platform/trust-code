@@ -30,10 +30,10 @@
 
 //Booleans for checking if an execution space is host or device
 //Checking if device: for GPU or CPU compilation, we only have to check if EXEC_SPACE=Device
-template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+template <typename EXEC_SPACE >
 constexpr bool is_default_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value;
-//Checking if host: For GPU compilation Device != Host, so we check if Exec_SPACE=Host. Sur CPU Device=Host, donc on est tjs sur le host
-template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+//Checking if host: For GPU compilation Device != Host, so we check if Exec_SPACE=Host. For CPU compilation, Device=Host, so we are always on the host
+template <typename EXEC_SPACE >
 constexpr bool is_host_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value &&
                                     !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value;
 
