@@ -56,9 +56,9 @@ void Solide::set_param(Param& param)
 void Solide::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";
-  if (sub_type(Champ_Uniforme,lambda.valeur()))
+  if (sub_type(Champ_Uniforme,ch_lambda_.valeur()))
     {
-      if (lambda->valeurs()(0,0) <= 0)
+      if (ch_lambda_->valeurs()(0,0) <= 0)
         {
           msg += "The conductivity lambda is not striclty positive. \n";
           err = 1;

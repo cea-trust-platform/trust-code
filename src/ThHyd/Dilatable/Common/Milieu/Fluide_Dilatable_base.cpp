@@ -50,7 +50,7 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
   // les champs seront nommes par le milieu_base
   Champ_Don ch_rho;
   dis.discretiser_champ("temperature",domaine_dis,"masse_volumique_p","neant",1,temps,ch_rho);
-  rho = ch_rho.valeur();
+  ch_rho_ = ch_rho.valeur();
 
   Champ_Don& cp = capacite_calorifique();
   if (cp.est_nul() || !sub_type(Champ_Uniforme,cp.valeur())) //ie Cp non constant : gaz reels
@@ -59,27 +59,27 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
       dis.discretiser_champ("temperature",domaine_dis,"cp_prov","neant",1,temps,cp);
     }
 
-  if (lambda.est_nul() || ((!sub_type(Champ_Uniforme,lambda.valeur())) && (!sub_type(Champ_Fonc_Tabule,lambda.valeur()))))
+  if (ch_lambda_.est_nul() || ((!sub_type(Champ_Uniforme,ch_lambda_.valeur())) && (!sub_type(Champ_Fonc_Tabule,ch_lambda_.valeur()))))
     {
       // cas particulier etait faux en VEF voir quand cela sert (FM slt) : sera nomme par milieu_base
-      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,lambda);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,ch_lambda_);
     }
 
-  dis.discretiser_champ("vitesse", domaine_dis,"rho_comme_v","kg/m3",1,temps,rho_comme_v);
-  champs_compris_.ajoute_champ(rho_comme_v);
+  dis.discretiser_champ("vitesse", domaine_dis,"rho_comme_v","kg/m3",1,temps,ch_rho_comme_v_);
+  champs_compris_.ajoute_champ(ch_rho_comme_v_);
 
-  dis.discretiser_champ("champ_elem",domaine_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
-  champs_compris_.ajoute_champ(mu_sur_Sc);
+  dis.discretiser_champ("champ_elem",domaine_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,ch_mu_sur_Sc);
+  champs_compris_.ajoute_champ(ch_mu_sur_Sc);
 
-  dis.discretiser_champ("champ_elem",domaine_dis,"nu_sur_Schmidt","m2/s",1,temps,nu_sur_Sc);
-  champs_compris_.ajoute_champ(nu_sur_Sc);
+  dis.discretiser_champ("champ_elem",domaine_dis,"nu_sur_Schmidt","m2/s",1,temps,ch_nu_sur_Sc);
+  champs_compris_.ajoute_champ(ch_nu_sur_Sc);
 
   Champ_Don& ptot = pression_tot();
   dis.discretiser_champ("champ_elem",domaine_dis,"pression_tot","Pa",1,temps,ptot);
   champs_compris_.ajoute_champ(ptot);
 
-  dis.discretiser_champ("temperature",domaine_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
-  champs_compris_.ajoute_champ(rho_gaz);
+  dis.discretiser_champ("temperature",domaine_dis,"rho_gaz","kg/m3",1,temps,ch_rho_gaz_);
+  champs_compris_.ajoute_champ(ch_rho_gaz_);
 
   Fluide_base::discretiser(pb,dis);
 }
@@ -119,8 +119,8 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
         les_options[1] = "conservation_masse";
         les_options[2] = "constant";
       }
-      traitement_PTh=les_options.search(trait);
-      if (traitement_PTh == -1)
+      traitement_PTh_=les_options.search(trait);
+      if (traitement_PTh_ == -1)
         {
           Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
           Cerr<< "One of the following options was expected : " << les_options << finl;
@@ -130,8 +130,8 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
     }
   else if (mot=="mu")
     {
-      is>>mu;
-      mu->nommer("mu");
+      is>>ch_mu_;
+      ch_mu_->nommer("mu");
       return 1;
     }
   else if (mot=="sutherland")
@@ -154,8 +154,8 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       if (motlu!="C") warn_syntax_Sutherland();
       is>>C;
 
-      mu.typer("Sutherland");
-      Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
+      ch_mu_.typer("Sutherland");
+      Sutherland& mu_suth = ref_cast(Sutherland,ch_mu_.valeur());
       mu_suth.set_val_params(prob,mu0,C,T0);
       mu_suth.lire_expression();
 
@@ -163,8 +163,8 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       //la loi de Sutherland qui concerne la conductivite
       if (Slambda!=-1)
         {
-          lambda.typer("Sutherland");
-          Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
+          ch_lambda_.typer("Sutherland");
+          Sutherland& lambda_suth = ref_cast(Sutherland,ch_lambda_.valeur());
           lambda_suth.set_prob(prob);
           lambda_suth.set_Tref(T0);
           lambda_suth.set_C(Slambda);
@@ -188,7 +188,7 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
  */
 void Fluide_Dilatable_base::checkTraitementPth(const Domaine_Cl_dis_base& domaine_cl)
 {
-  if (traitement_PTh==0)
+  if (traitement_PTh_==0)
     {
       /* Do nothing*/
     }
@@ -203,14 +203,14 @@ void Fluide_Dilatable_base::checkTraitementPth(const Domaine_Cl_dis_base& domain
           if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
         }
 
-      if (pression_imposee && traitement_PTh!=2)
+      if (pression_imposee && traitement_PTh_!=2)
         {
           Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
           Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
           Process::exit();
         }
 
-      if (!pression_imposee && traitement_PTh!=1)
+      if (!pression_imposee && traitement_PTh_!=1)
         {
           Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
           Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
@@ -236,17 +236,17 @@ void Fluide_Dilatable_base::warn_syntax_Sutherland()
 void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";
-  if (rho.non_nul()) { }
+  if (ch_rho_.non_nul()) { }
   else
     {
       msg += "The density rho has not been specified. \n";
       err = 1;
     }
-  if (mu.non_nul())
+  if (ch_mu_.non_nul())
     {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
+      if (sub_type(Champ_Uniforme,ch_mu_.valeur()))
         {
-          if (mu->valeurs()(0,0) <= 0)
+          if (ch_mu_->valeurs()(0,0) <= 0)
             {
               msg += "The dynamical viscosity mu is not striclty positive. \n";
               err = 1;
@@ -258,13 +258,13 @@ void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
       msg += "The dynamical viscosity mu has not been specified. \n";
       err = 1;
     }
-  if (lambda.non_nul()) { }
+  if (ch_lambda_.non_nul()) { }
   else
     {
       msg += "The conductivity lambda has not been specified. \n";
       err = 1;
     }
-  if (Cp.non_nul()) { }
+  if (ch_Cp_.non_nul()) { }
   else
     {
       msg += "The heat capacity Cp has not been specified. \n";
@@ -280,10 +280,10 @@ void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
  */
 void Fluide_Dilatable_base::set_Cp(double Cp_)
 {
-  Cp.typer("Champ_Uniforme");
-  Champ_Uniforme& ch_Cp = ref_cast(Champ_Uniforme,Cp.valeur());
+  ch_Cp_.typer("Champ_Uniforme");
+  Champ_Uniforme& ch_Cp = ref_cast(Champ_Uniforme,ch_Cp_.valeur());
   ch_Cp.dimensionner(1,1);
-  DoubleTab& tab_Cp = Cp->valeurs();
+  DoubleTab& tab_Cp = ch_Cp_->valeurs();
   tab_Cp(0,0) = Cp_;
 }
 
@@ -293,25 +293,25 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
   if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
-      mapToDevice(rho->valeurs(), "rho");
-      mapToDevice(rho_cp_elem_->valeurs(), "rho_cp_elem_");
-      mapToDevice(rho_cp_comme_T_->valeurs(), "rho_cp_comme_T_");
+      mapToDevice(ch_rho_->valeurs(), "rho");
+      mapToDevice(ch_rho_Cp_elem_->valeurs(), "rho_cp_elem_");
+      mapToDevice(ch_rho_Cp_comme_T_->valeurs(), "rho_cp_comme_T_");
     }
-  rho_cp_comme_T_->changer_temps(temps);
-  rho_cp_comme_T_->changer_temps(temps);
-  DoubleTab& rho_cp = rho_cp_comme_T_->valeurs();
-  if (sub_type(Champ_Uniforme,rho))
-    rho_cp = rho->valeurs()(0, 0);
+  ch_rho_Cp_comme_T_->changer_temps(temps);
+  ch_rho_Cp_comme_T_->changer_temps(temps);
+  DoubleTab& rho_cp = ch_rho_Cp_comme_T_->valeurs();
+  if (sub_type(Champ_Uniforme,ch_rho_.valeur()))
+    rho_cp = ch_rho_->valeurs()(0, 0);
   else
     {
       // AB: rho_cp = rho->valeurs() turns rho_cp into a 2 dimensional array with 1 compo. We want to stay mono-dim:
       rho_cp = 1.;
-      tab_multiply_any_shape(rho_cp, rho->valeurs());
+      tab_multiply_any_shape(rho_cp, ch_rho_->valeurs());
     }
-  if (sub_type(Champ_Uniforme, Cp.valeur()))
-    rho_cp *= Cp->valeurs()(0, 0);
+  if (sub_type(Champ_Uniforme, ch_Cp_.valeur()))
+    rho_cp *= ch_Cp_->valeurs()(0, 0);
   else
-    tab_multiply_any_shape(rho_cp,Cp->valeurs());
+    tab_multiply_any_shape(rho_cp,ch_Cp_->valeurs());
 }
 
 /*! @brief Renvoie le tableau des valeurs de le temperature
@@ -342,13 +342,13 @@ void Fluide_Dilatable_base::preparer_pas_temps()
 {
   loi_etat_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
   eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
-  if (traitement_PTh != 2 ) EDO_Pth_->mettre_a_jour_CL(Pth_);
+  if (traitement_PTh_ != 2 ) EDO_Pth_->mettre_a_jour_CL(Pth_);
 }
 
 void Fluide_Dilatable_base::abortTimeStep()
 {
   loi_etat()->abortTimeStep();
-  Pth_=Pth_n;
+  Pth_=Pth_n_;
 }
 
 void Fluide_Dilatable_base::creer_champs_non_lus()
@@ -356,22 +356,22 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
   // on s'occupe de lamda si mu uniforme et CP uniforme
   // on type lambda en champ uniforme et on met lambda=mu*Cp/Pr
   //
-  if (mu.non_nul())
+  if (ch_mu_.non_nul())
     {
-      if ((lambda.est_nul())||(!sub_type(Champ_Fonc_Tabule,lambda.valeur())))
-        if ((sub_type(Champ_Uniforme,mu.valeur()))&&(sub_type(Loi_Etat_GP_base,loi_etat_.valeur())))
+      if ((ch_lambda_.est_nul())||(!sub_type(Champ_Fonc_Tabule,ch_lambda_.valeur())))
+        if ((sub_type(Champ_Uniforme,ch_mu_.valeur()))&&(sub_type(Loi_Etat_GP_base,loi_etat_.valeur())))
           {
             if (!sub_type(Loi_Etat_Multi_GP_QC,loi_etat_.valeur()))
               {
                 // Si mu uniforme et si la loi d'etat est celle d'un gaz parfait
                 double lold=-1;
-                if (lambda.non_nul())
-                  lold=lambda->valeurs()(0,0);
-                lambda.typer(mu->le_type());
-                lambda=mu;
+                if (ch_lambda_.non_nul())
+                  lold=ch_lambda_->valeurs()(0,0);
+                ch_lambda_.typer(ch_mu_->le_type());
+                ch_lambda_=ch_mu_;
 
                 loi_etat_->calculer_lambda();
-                double lo=lambda->valeurs()(0,0);
+                double lo=ch_lambda_->valeurs()(0,0);
                 if (lold!=-1)
                   {
                     if (!est_egal(lold,lo))
@@ -387,20 +387,20 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
               }
           }
 
-      if (lambda.non_nul())
+      if (ch_lambda_.non_nul())
         {
-          if (sub_type(Sutherland,lambda.valeur()))
+          if (sub_type(Sutherland,ch_lambda_.valeur()))
             {
-              if (!sub_type(Champ_Uniforme,Cp.valeur()))
+              if (!sub_type(Champ_Uniforme,ch_Cp_.valeur()))
                 {
                   Cerr << "A sutherland law cannot be requested for the conductivity "<<finl;
                   Cerr << "by indicating Slambda if the heat capacity (Cp) is not uniform."<<finl;
                   Process::exit();
                 }
-              Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
+              Sutherland& mu_suth = ref_cast(Sutherland,ch_mu_.valeur());
               const double mu0 = mu_suth.get_A();
-              Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
-              double lambda0 = mu0/loi_etat_->Prandt()*Cp->valeurs()(0,0);
+              Sutherland& lambda_suth = ref_cast(Sutherland,ch_lambda_.valeur());
+              double lambda0 = mu0/loi_etat_->Prandt()*ch_Cp_->valeurs()(0,0);
               lambda_suth.set_A(lambda0);
               lambda_suth.lire_expression();
             }
@@ -414,12 +414,12 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
 int Fluide_Dilatable_base::initialiser(const double temps)
 {
   Cerr << "Fluide_Dilatable_base::initialiser()" << finl;
-  if (sub_type(Champ_Don_base, rho))
-    ref_cast(Champ_Don_base, rho).initialiser(temps);
+  if (sub_type(Champ_Don_base, ch_rho_.valeur()))
+    ref_cast(Champ_Don_base, ch_rho_.valeur()).initialiser(temps);
 
-  mu->initialiser(temps);
-  lambda->initialiser(temps);
-  Cp->initialiser(temps);
+  ch_mu_->initialiser(temps);
+  ch_lambda_->initialiser(temps);
+  ch_Cp_->initialiser(temps);
   update_rho_cp(temps);
 
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
@@ -428,9 +428,9 @@ int Fluide_Dilatable_base::initialiser(const double temps)
   if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
-      mapToDevice(rho->valeurs(), "rho");
-      mapToDevice(rho_cp_elem_->valeurs(), "rho_cp_elem_");
-      mapToDevice(rho_cp_comme_T_->valeurs(), "rho_cp_comme_T_");
+      mapToDevice(ch_rho_->valeurs(), "rho");
+      mapToDevice(ch_rho_Cp_elem_->valeurs(), "rho_cp_elem_");
+      mapToDevice(ch_rho_Cp_comme_T_->valeurs(), "rho_cp_comme_T_");
     }
   return 1;
 }
@@ -458,18 +458,18 @@ void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
  */
 void Fluide_Dilatable_base::calculer_pression_tot()
 {
-  DoubleTab& tab_Ptot = pression_tot_->valeurs();
+  DoubleTab& tab_Ptot = ch_pression_tot_->valeurs();
   const int n = tab_Ptot.dimension_tot(0);
   DoubleTrav tab_PHyd(n, 1);
-  if( n != pression_->valeurs().dimension_tot(0) )
+  if( n != ch_pression_->valeurs().dimension_tot(0) )
     {
       // Interpolation de pression_ aux elements (ex: P1P0)
-      const Domaine_dis_base& domaine_dis= pression_->domaine_dis_base();
+      const Domaine_dis_base& domaine_dis= ch_pression_->domaine_dis_base();
       const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
       const DoubleTab& centres_de_gravites=domaine.xp();
-      pression_->valeur_aux(centres_de_gravites,tab_PHyd);
+      ch_pression_->valeur_aux(centres_de_gravites,tab_PHyd);
     }
-  else  tab_PHyd = pression_->valeurs();
+  else  tab_PHyd = ch_pression_->valeurs();
   // impl dans les classes filles
   remplir_champ_pression_tot(n,tab_PHyd,tab_Ptot);
 }
@@ -478,22 +478,22 @@ void Fluide_Dilatable_base::creer_champ(const Motcle& motlu)
 {
   if(motlu == "source_masse_espece")
     {
-      if (source_masse_esp_.est_nul())
+      if (ch_source_masse_esp_.est_nul())
         {
           double temps = le_probleme_->schema_temps().temps_courant();
 
-          le_probleme_->discretisation().discretiser_champ("champ_elem", le_probleme_->equation(0).domaine_dis(), "source_masse_espece", "Kg/m3/s", 1, temps, source_masse_esp_);
-          champs_compris_.ajoute_champ(source_masse_esp_);
+          le_probleme_->discretisation().discretiser_champ("champ_elem", le_probleme_->equation(0).domaine_dis(), "source_masse_espece", "Kg/m3/s", 1, temps, ch_source_masse_esp_);
+          champs_compris_.ajoute_champ(ch_source_masse_esp_);
         }
     }
   else if (motlu == "source_masse_projection")
     {
-      if (source_masse_proj_.est_nul())
+      if (ch_source_masse_proj_.est_nul())
         {
           double temps = le_probleme_->schema_temps().temps_courant();
 
-          le_probleme_->discretisation().discretiser_champ("pression", le_probleme_->equation(0).domaine_dis(), "source_masse_projection", "Kg/m3/s", 1, temps, source_masse_proj_);
-          champs_compris_.ajoute_champ(source_masse_proj_);
+          le_probleme_->discretisation().discretiser_champ("pression", le_probleme_->equation(0).domaine_dis(), "source_masse_projection", "Kg/m3/s", 1, temps, ch_source_masse_proj_);
+          champs_compris_.ajoute_champ(ch_source_masse_proj_);
         }
     }
   else
@@ -527,13 +527,13 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
 
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
-  rho->mettre_a_jour(temps);
+  ch_rho_->mettre_a_jour(temps);
   ch_temperature()->mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
-  rho->changer_temps(temps);
+  ch_rho_->changer_temps(temps);
   ch_temperature()->changer_temps(temps);
-  mu->changer_temps(temps);
-  lambda->changer_temps(temps);
-  Cp->mettre_a_jour(temps);
+  ch_mu_->changer_temps(temps);
+  ch_lambda_->changer_temps(temps);
+  ch_Cp_->mettre_a_jour(temps);
   update_rho_cp(temps);
   write_mean_edo(temps); // si besoin (i.e. QC)
 }
@@ -554,7 +554,7 @@ void Fluide_Dilatable_base::preparer_calcul()
 void Fluide_Dilatable_base::update_pressure_fields(double temps)
 {
   calculer_pression_tot();
-  pression_tot_->mettre_a_jour(temps);
+  ch_pression_tot_->mettre_a_jour(temps);
 }
 
 /*! @brief Complete le fluide avec les champs inconnus associes au probleme
@@ -564,9 +564,9 @@ void Fluide_Dilatable_base::update_pressure_fields(double temps)
 void Fluide_Dilatable_base::completer(const Probleme_base& pb)
 {
   if (le_probleme_.est_nul()) le_probleme_ = pb;
-  inco_chaleur_ = pb.equation(1).inconnue();
-  vitesse_ = pb.equation(0).inconnue();
-  pression_ = ref_cast(Navier_Stokes_std, pb.equation(0)).pression();
+  ch_inco_chaleur_ = pb.equation(1).inconnue();
+  ch_vitesse_ = pb.equation(0).inconnue();
+  ch_pression_ = ref_cast(Navier_Stokes_std, pb.equation(0)).pression();
 
   Nom typ = pb.equation(0).discretisation().que_suis_je();
   if (typ == "VEFPreP1B")
@@ -580,12 +580,12 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   eos_tools_->mettre_a_jour(pb.schema_temps().temps_courant());
   loi_etat_->initialiser();
 
-  if (traitement_PTh != 2) completer_edo(pb);
+  if (traitement_PTh_ != 2) completer_edo(pb);
 }
 
 void Fluide_Dilatable_base::completer_edo(const Probleme_base& pb)
 {
-  assert(traitement_PTh != 2);
+  assert(traitement_PTh_ != 2);
   Nom typ = pb.equation(0).discretisation().que_suis_je();
   if (typ=="VEFPreP1B") typ = "VEF";
   typ += "_";
@@ -616,7 +616,7 @@ void Fluide_Dilatable_base::completer_edo(const Probleme_base& pb)
 
 void Fluide_Dilatable_base::prepare_pressure_edo()
 {
-  if (traitement_PTh != 2) EDO_Pth_->completer();
+  if (traitement_PTh_ != 2) EDO_Pth_->completer();
 
   eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
@@ -632,10 +632,10 @@ void Fluide_Dilatable_base::write_header_edo()
 
 void Fluide_Dilatable_base::write_mean_edo(double temps)
 {
-  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
-  const double rhom = eos_tools_->moyenne_vol(rho->valeurs());
+  const double Ch_m = eos_tools_->moyenne_vol(ch_inco_chaleur_->valeurs());
+  const double rhom = eos_tools_->moyenne_vol(ch_rho_->valeurs());
 
-  if (je_suis_maitre() && traitement_PTh != 2)
+  if (je_suis_maitre() && traitement_PTh_ != 2)
     {
       SFichier fic(output_file_, ios::app);
       fic << temps << " " << Ch_m << " " << rhom << " " << Pth_ << finl;

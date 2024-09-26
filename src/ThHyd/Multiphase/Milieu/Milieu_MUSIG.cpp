@@ -34,8 +34,8 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
 
   for (is >> mot; mot != "}"; is >> mot)
     {
-      if (Motcle(mot) == "POROSITES_CHAMP") is >> porosites_champ;
-      else if (Motcle(mot) == "DIAMETRE_HYD_CHAMP") is >> diametre_hyd_champ;
+      if (Motcle(mot) == "POROSITES_CHAMP") is >> ch_porosites_;
+      else if (Motcle(mot) == "DIAMETRE_HYD_CHAMP") is >> ch_diametre_hyd_;
       else if (Motcle(mot) == "POROSITES")
         {
           Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl;

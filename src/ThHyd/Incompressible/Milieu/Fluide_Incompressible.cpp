@@ -53,7 +53,7 @@ void Fluide_Incompressible::set_param(Param& param)
   Fluide_base::set_param(param);
   //La lecture de rho est rendue obligatoire ici
   param.supprimer("rho");
-  param.ajouter("rho",&rho,Param::REQUIRED);
+  param.ajouter("rho",&ch_rho_,Param::REQUIRED);
 }
 
 /*! @brief Verifie que les champs lus l'ont ete correctement.
@@ -64,17 +64,17 @@ void Fluide_Incompressible::set_param(Param& param)
 void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
 {
   msg="";
-  if (rho.non_nul())
+  if (ch_rho_.non_nul())
     {
-      if (!sub_type(Champ_Uniforme,rho.valeur()))
+      if (!sub_type(Champ_Uniforme,ch_rho_.valeur()))
         {
           msg += "The density rho is not of type Champ_Uniforme. \n";
           err = 1;
         }
     }
-  if (Cp.non_nul())
+  if (ch_Cp_.non_nul())
     {
-      if (!sub_type(Champ_Uniforme,Cp.valeur()))
+      if (!sub_type(Champ_Uniforme,ch_Cp_.valeur()))
         {
           msg += "Cp is not of type Champ_Uniforme. \n";
           err = 1;

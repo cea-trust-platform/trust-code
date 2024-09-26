@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,8 +32,8 @@ Entree& Espece::readOn(Entree& is)
 
 void Espece::set_param(Param& param)
 {
-  param.ajouter("mu",&mu,Param::REQUIRED); // XD_ADD_P field_base Species dynamic viscosity value (kg.m-1.s-1).
-  param.ajouter("Cp",&Cp,Param::REQUIRED); // XD_ADD_P field_base Species specific heat value (J.kg-1.K-1).
+  param.ajouter("mu",&ch_mu_,Param::REQUIRED); // XD_ADD_P field_base Species dynamic viscosity value (kg.m-1.s-1).
+  param.ajouter("Cp",&ch_Cp_,Param::REQUIRED); // XD_ADD_P field_base Species specific heat value (J.kg-1.K-1).
   param.ajouter("Masse_molaire",&Masse_mol_,Param::REQUIRED); // XD_ADD_P double Species molar mass.
 }
 

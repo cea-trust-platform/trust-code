@@ -44,8 +44,8 @@ Entree& Milieu_composite::readOn(Entree& is)
 
   for (is >> mot; mot != "}"; is >> mot)
     {
-      if (Motcle(mot) == "POROSITES_CHAMP") is >> porosites_champ;
-      else if (Motcle(mot) == "DIAMETRE_HYD_CHAMP") is >> diametre_hyd_champ;
+      if (Motcle(mot) == "POROSITES_CHAMP") is >> ch_porosites_;
+      else if (Motcle(mot) == "DIAMETRE_HYD_CHAMP") is >> ch_diametre_hyd_;
       else if (Motcle(mot) == "POROSITES")
         {
           Cerr << "You should use porosites_champ and not porosites ! Call the 911 !" << finl;
@@ -183,9 +183,9 @@ int Milieu_composite::initialiser(const double temps)
   const bool res_en_T = equation_.count("temperature") ? true : false;
 
   const Equation_base& eqn = res_en_T ? equation("temperature") : equation("enthalpie");
-  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho),
-                  &ch_e = ref_cast(Champ_Inc_base, e_int.valeur()),
-                   &ch_h_ou_T = ref_cast(Champ_Inc_base, h_ou_T.valeur());
+  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, ch_rho_.valeur()),
+                  &ch_e = ref_cast(Champ_Inc_base, ch_e_int_.valeur()),
+                   &ch_h_ou_T = ref_cast(Champ_Inc_base, ch_h_ou_T_.valeur());
 
   ch_rho.associer_eqn(eqn);
   ch_rho.init_champ_calcule(*this, calculer_masse_volumique);
@@ -199,9 +199,9 @@ int Milieu_composite::initialiser(const double temps)
   t_init_ = temps;
 
   // XXX Elie Saikali : utile pour cas reprise !
-  rho->changer_temps(temps);
-  e_int->changer_temps(temps);
-  h_ou_T->changer_temps(temps);
+  ch_rho_->changer_temps(temps);
+  ch_e_int_->changer_temps(temps);
+  ch_h_ou_T_->changer_temps(temps);
 
   return Milieu_base::initialiser_porosite(temps);
 }
@@ -232,23 +232,23 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   else
     dis.discretiser_champ("champ_elem", domaine_dis, "temperature", "C", N, nc, temps, h_ou_T_inc);
 
-  rho = rho_inc, e_int = ei_inc, h_ou_T = h_ou_T_inc;
+  ch_rho_ = rho_inc, ch_e_int_ = ei_inc, ch_h_ou_T_ = h_ou_T_inc;
 
   /* autres champs : champ_fonc */
-  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_dynamique", "kg/m/s", N, temps, mu);
-  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_cinematique", "m2/s", N, temps, nu);
-  dis.discretiser_champ("champ_elem", domaine_dis, "diffusivite", "m2/s", N, temps, alpha);
-  dis.discretiser_champ("champ_elem", domaine_dis, "alpha_fois_rho", "kg/m/s", N, temps, alpha_fois_rho);
-  dis.discretiser_champ("champ_elem", domaine_dis, "conductivite", "W/m/K", N, temps, lambda);
-  dis.discretiser_champ("champ_elem", domaine_dis, "capacite_calorifique", "J/kg/K", N, temps, Cp);
+  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_dynamique", "kg/m/s", N, temps, ch_mu_);
+  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_cinematique", "m2/s", N, temps, ch_nu_);
+  dis.discretiser_champ("champ_elem", domaine_dis, "diffusivite", "m2/s", N, temps, ch_alpha_);
+  dis.discretiser_champ("champ_elem", domaine_dis, "alpha_fois_rho", "kg/m/s", N, temps, ch_alpha_fois_rho_);
+  dis.discretiser_champ("champ_elem", domaine_dis, "conductivite", "W/m/K", N, temps, ch_lambda_);
+  dis.discretiser_champ("champ_elem", domaine_dis, "capacite_calorifique", "J/kg/K", N, temps, ch_Cp_);
   dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique_melange", "kg/m^3", 1, temps, rho_m_);
   dis.discretiser_champ("champ_elem", domaine_dis, "enthalpie_melange", "J/m^3", 1, temps, h_m_);
 
-  champs_compris_.ajoute_champ(rho);
-  champs_compris_.ajoute_champ(e_int);
-  champs_compris_.ajoute_champ(h_ou_T);
+  champs_compris_.ajoute_champ(ch_rho_);
+  champs_compris_.ajoute_champ(ch_e_int_);
+  champs_compris_.ajoute_champ(ch_h_ou_T_);
 
-  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &alpha_fois_rho, &Cp, &rho_m_, &h_m_};
+  std::vector<Champ_Don* > fields = {&ch_mu_, &ch_nu_, &ch_lambda_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_Cp_, &rho_m_, &h_m_};
   for (auto && f: fields) champs_compris_.ajoute_champ((*f).valeur());
 
   // on discretise les champs sigma / Tsat si besoin ...
@@ -292,11 +292,11 @@ void Milieu_composite::mettre_a_jour(double temps)
 {
   for (auto& itr : fluides_) itr->mettre_a_jour(temps);
 
-  rho->mettre_a_jour(temps);
-  e_int->mettre_a_jour(temps);
-  h_ou_T->mettre_a_jour(temps);
+  ch_rho_->mettre_a_jour(temps);
+  ch_e_int_->mettre_a_jour(temps);
+  ch_h_ou_T_->mettre_a_jour(temps);
 
-  std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &alpha_fois_rho, &Cp, &rho_m_, &h_m_};
+  std::vector<Champ_Don* > fields = {&ch_mu_, &ch_nu_, &ch_lambda_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_Cp_, &rho_m_, &h_m_};
   for (auto && f: fields) (*f)->mettre_a_jour(temps);
 
   mettre_a_jour_tabs();
@@ -320,8 +320,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* viscosite dynamique */
   {
-    DoubleTab& tab = mu->valeurs();
-    const int Nl = mu->valeurs().dimension_tot(0);
+    DoubleTab& tab = ch_mu_->valeurs();
+    const int Nl = ch_mu_->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->viscosite_dynamique();
@@ -332,8 +332,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* viscosite cinematique */
   {
-    DoubleTab& tab = nu->valeurs();
-    const int Nl = nu->valeurs().dimension_tot(0);
+    DoubleTab& tab = ch_nu_->valeurs();
+    const int Nl = ch_nu_->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->viscosite_cinematique();
@@ -344,8 +344,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* diffusivite */
   {
-    DoubleTab& tab = alpha->valeurs();
-    const int Nl = alpha->valeurs().dimension_tot(0);
+    DoubleTab& tab = ch_alpha_->valeurs();
+    const int Nl = ch_alpha_->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->diffusivite();
@@ -356,8 +356,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* alpha fois rho */
   {
-    DoubleTab& tab = alpha_fois_rho->valeurs();
-    const int Nl = alpha_fois_rho->valeurs().dimension_tot(0);
+    DoubleTab& tab = ch_alpha_fois_rho_->valeurs();
+    const int Nl = ch_alpha_fois_rho_->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->diffusivite_fois_rho();
@@ -368,8 +368,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* conductivite */
   {
-    DoubleTab& tab = lambda->valeurs();
-    const int Nl = lambda->valeurs().dimension_tot(0);
+    DoubleTab& tab = ch_lambda_->valeurs();
+    const int Nl = ch_lambda_->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->conductivite();
@@ -380,8 +380,8 @@ void Milieu_composite::mettre_a_jour_tabs()
 
   /* capacite calorifique */
   {
-    DoubleTab& tab = Cp->valeurs();
-    const int Nl = Cp->valeurs().dimension_tot(0);
+    DoubleTab& tab = ch_Cp_->valeurs();
+    const int Nl = ch_Cp_->valeurs().dimension_tot(0);
     for (int n = 0; n < N; n++)
       {
         const Champ_base& ch_n = fluides_[n]->capacite_calorifique();
@@ -394,8 +394,8 @@ void Milieu_composite::mettre_a_jour_tabs()
   DoubleTab& trm = rho_m_->valeurs(), &thm = h_m_->valeurs();
   trm = 0, thm = 0;
 
-  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = rho->valeurs(),
-                   &ent = res_en_T_ ? h_ou_T->valeurs() : equation("enthalpie").inconnue().valeurs();
+  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = ch_rho_->valeurs(),
+                   &ent = res_en_T_ ? ch_h_ou_T_->valeurs() : equation("enthalpie").inconnue().valeurs();
 
   const int Nl = rho_m_->valeurs().dimension_tot(0);
 
@@ -550,8 +550,8 @@ void Milieu_composite::calculer_temperature_multiphase(const Objet_U& obj, Doubl
 void Milieu_composite::abortTimeStep()
 {
   Fluide_base::abortTimeStep();
-  if (e_int.non_nul()) e_int->abortTimeStep();
-  if (h_ou_T.non_nul()) h_ou_T->abortTimeStep();
+  if (ch_e_int_.non_nul()) ch_e_int_->abortTimeStep();
+  if (ch_h_ou_T_.non_nul()) ch_h_ou_T_->abortTimeStep();
 }
 
 bool Milieu_composite::initTimeStep(double dt)
@@ -563,12 +563,18 @@ bool Milieu_composite::initTimeStep(double dt)
 
   /* champs dont on doit creer des cases */
   std::vector<Champ_Inc_base *> vch;
-  if (rho.non_nul() && sub_type(Champ_Inc_base, rho)) vch.push_back(&ref_cast(Champ_Inc_base, rho));
-  if (e_int.non_nul() && sub_type(Champ_Inc_base, e_int.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, e_int.valeur()));
-  if (h_ou_T.non_nul() && sub_type(Champ_Inc_base, h_ou_T.valeur())) vch.push_back(&ref_cast(Champ_Inc_base, h_ou_T.valeur()));
+  if (ch_rho_.non_nul() && sub_type(Champ_Inc_base, ch_rho_.valeur()))
+    vch.push_back(&ref_cast(Champ_Inc_base, ch_rho_.valeur()));
+  if (ch_e_int_.non_nul() && sub_type(Champ_Inc_base, ch_e_int_.valeur()))
+    vch.push_back(&ref_cast(Champ_Inc_base, ch_e_int_.valeur()));
+  if (ch_h_ou_T_.non_nul() && sub_type(Champ_Inc_base, ch_h_ou_T_.valeur()))
+    vch.push_back(&ref_cast(Champ_Inc_base, ch_h_ou_T_.valeur()));
 
   for (auto &pch : vch)
     for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
-      pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
+      {
+        pch->changer_temps_futur(sch.temps_futur(i), i);
+        pch->futur(i) = pch->valeurs();
+      }
   return true;
 }

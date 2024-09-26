@@ -62,9 +62,9 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
   if (mot == "pression")
     {
       is >> Pth_;
-      Pth_n = Pth_;
-      rho.typer("Champ_Uniforme");
-      DoubleTab& tab_rho = rho->valeurs();
+      Pth_n_ = Pth_;
+      ch_rho_.typer("Champ_Uniforme");
+      DoubleTab& tab_rho = ch_rho_->valeurs();
       tab_rho.resize(1, 1);
       tab_rho(0, 0) = 1.;
       return 1;
@@ -98,7 +98,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
   Cerr << "Fluide_Quasi_Compressible::completer Pth = " << Pth_ << finl;
-  if ((loi_etat_->que_suis_je() == "Loi_Etat_rhoT_Gaz_Parfait_QC" || loi_etat_->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC") && traitement_PTh == 0)
+  if ((loi_etat_->que_suis_je() == "Loi_Etat_rhoT_Gaz_Parfait_QC" || loi_etat_->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC") && traitement_PTh_ == 0)
     {
       Cerr << "The option Traitement_PTh EDO is not allowed with the state law " << loi_etat_->que_suis_je() << finl;
       Cerr << "Set **traitement_pth** constant or conservation_masse in the Fluide_Quasi_Compressible bloc definition." << finl;

@@ -38,7 +38,7 @@ Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const { return Fluide_Di
 
 Entree& Fluide_Weakly_Compressible::readOn(Entree& is)
 {
-  traitement_PTh = 2; /* par default */
+  traitement_PTh_ = 2; /* par default */
   return Fluide_Dilatable_base::readOn(is);
 }
 
@@ -46,7 +46,7 @@ void Fluide_Weakly_Compressible::set_param(Param& param)
 {
   Fluide_Dilatable_base::set_param(param);
   param.ajouter("pression_thermo", &Pth_); // XD_ADD_P double Initial thermo-dynamic pressure used in the assosciated state law.
-  param.ajouter("pression_xyz", &Pth_xyz_); // XD_ADD_P field_base Initial thermo-dynamic pressure used in the assosciated state law. It should be defined with as a Champ_Fonc_xyz.
+  param.ajouter("pression_xyz", &ch_Pth_xyz_); // XD_ADD_P field_base Initial thermo-dynamic pressure used in the assosciated state law. It should be defined with as a Champ_Fonc_xyz.
   param.ajouter("use_total_pressure", &use_total_pressure_); // XD_ADD_P entier Flag (0 or 1) used to activate and use the total pressure in the assosciated state law. The default value of this Flag is 0.
   param.ajouter("use_hydrostatic_pressure", &use_hydrostatic_pressure_); // XD_ADD_P entier Flag (0 or 1) used to activate and use the hydro-static pressure in the assosciated state law. The default value of this Flag is 0.
   param.ajouter("use_grad_pression_eos", &use_grad_pression_eos_); // XD_ADD_P entier Flag (0 or 1) used to specify whether or not the gradient of the thermo-dynamic pressure will be taken into account in the source term of the temperature equation (case of a non-uniform pressure). The default value of this Flag is 1 which means that the gradient is used in the source.
@@ -69,15 +69,15 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
   if (use_total_hydro_pressure())
     checkTraitementPth(pb.equation(0).domaine_Cl_dis());
 
-  if (Pth_xyz_.non_nul())
+  if (ch_Pth_xyz_.non_nul())
     {
-      if (Pth_xyz_->que_suis_je() != "Champ_Fonc_xyz") // TODO : check if it is generic
+      if (ch_Pth_xyz_->que_suis_je() != "Champ_Fonc_xyz") // TODO : check if it is generic
         {
           Cerr << "Error in your data file : This is not allowed !" << finl;
           Cerr << "Pression_xyz should be defined with Champ_Fonc_xyz !" << finl;
           Process::exit();
         }
-      if (Pth_ > -1. || Pth_n > -1.)
+      if (Pth_ > -1. || Pth_n_ > -1.)
         {
           Cerr << "Error in your data file : This is not allowed !" << finl;
           Cerr << "You can not specify both pression_xyz and pression_thermo !" << finl;
@@ -93,7 +93,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
   else // pression_xyz not specified in data file
     {
       if (Pth_ > -1.)
-        Pth_n = Pth_;
+        Pth_n_ = Pth_;
       else
         {
           Cerr << "Error in your data file : This is not allowed !" << finl;
@@ -134,15 +134,15 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
             isVDF = 1;
 
           // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
-          assert(Pth_xyz_->valeurs().size() == viscosite_dynamique()->valeurs().size());
+          assert(ch_Pth_xyz_->valeurs().size() == viscosite_dynamique()->valeurs().size());
 
           if (isVDF) // Disc VDF => Pth_xyz_ on elems => we do nothing
-            Pth_tab_ = Pth_n_tab_ = Pth_xyz_->valeurs();
+            Pth_tab_ = Pth_n_tab_ = ch_Pth_xyz_->valeurs();
           else
             {
               // we use rho for affecter because the field is on the faces in VEF (as rho)
               Champ_base& ch_rho = masse_volumique();
-              ch_rho.affecter_(Pth_xyz_);
+              ch_rho.affecter_(ch_Pth_xyz_);
               Pth_tab_ = Pth_n_tab_ = ch_rho.valeurs();
             }
         }
@@ -158,24 +158,24 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
         }
     }
 
-  pression_eos_->valeurs() = Pth_tab_;
+  ch_pression_eos_->valeurs() = Pth_tab_;
 
   Fluide_Dilatable_base::completer(pb);
 
   // le bon temps
-  assert(pression_eos_.non_nul());
-  pression_eos_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+  assert(ch_pression_eos_.non_nul());
+  ch_pression_eos_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 
-  if (pression_hydro_.non_nul())
-    pression_hydro_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+  if (ch_pression_hydro_.non_nul())
+    ch_pression_hydro_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 
-  if (unsolved_species_.non_nul())
-    unsolved_species_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+  if (ch_unsolved_species_.non_nul())
+    ch_unsolved_species_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
 
 void Fluide_Weakly_Compressible::checkTraitementPth(const Domaine_Cl_dis_base& domaine_cl)
 {
-  if (traitement_PTh == 0)
+  if (traitement_PTh_ == 0)
     {
       Cerr << "The EDO option for the pressure treatment is not yet supported for the Weakly_Compressible module !" << finl;
       Cerr << "Please use either conservation_masse or constant options !" << finl;
@@ -225,7 +225,7 @@ void Fluide_Weakly_Compressible::abortTimeStep()
 {
   Fluide_Dilatable_base::abortTimeStep();
   Pth_tab_ = Pth_n_tab_;
-  Pth_ = Pth_n;
+  Pth_ = Pth_n_;
 }
 
 void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
@@ -234,11 +234,11 @@ void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
   if (a_gravite())
     {
       calculer_pression_hydro();
-      pression_hydro_->mettre_a_jour(temps);
+      ch_pression_hydro_->mettre_a_jour(temps);
     }
   // for post-processing
-  pression_eos_->valeurs() = Pth_tab_;
-  pression_eos_->mettre_a_jour(temps);
+  ch_pression_eos_->valeurs() = Pth_tab_;
+  ch_pression_eos_->mettre_a_jour(temps);
 }
 
 /*! @brief Calcule la pression totale : pression thermodynamique + pression hydrodynamique
@@ -267,8 +267,8 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
  */
 void Fluide_Weakly_Compressible::calculer_pression_hydro()
 {
-  DoubleTab& tab_Phydro = pression_hydro_->valeurs();
-  const Domaine_dis_base& domaine_dis= pression_->domaine_dis_base();
+  DoubleTab& tab_Phydro = ch_pression_hydro_->valeurs();
+  const Domaine_dis_base& domaine_dis= ch_pression_->domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
   int is_VDF = domaine_dis.que_suis_je() == "Domaine_VDF" ? 1 : 0;
   const DoubleTab& centres_de_gravites = is_VDF ? domaine.xp() : domaine.xv();
@@ -333,7 +333,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
         { /* do nothing &  use saved data */ }
       else
         {
-          Pth_tab_ = pression_hydro_->valeurs();
+          Pth_tab_ = ch_pression_hydro_->valeurs();
           const int n = Pth_tab_.dimension_tot(0);
           for (int i = 0; i < n; i++)
             Pth_tab_(i) += Pth_; // present dt
@@ -360,10 +360,10 @@ void Fluide_Weakly_Compressible::write_header_edo()
 
 void Fluide_Weakly_Compressible::write_mean_edo(double temps)
 {
-  const double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
-  const double rhom = eos_tools_->moyenne_vol(rho->valeurs());
+  const double Ch_m = eos_tools_->moyenne_vol(ch_inco_chaleur_->valeurs());
+  const double rhom = eos_tools_->moyenne_vol(ch_rho_->valeurs());
 
-  if (je_suis_maitre() && traitement_PTh != 2)
+  if (je_suis_maitre() && traitement_PTh_ != 2)
     {
       SFichier fic(output_file_, ios::app);
       if (Pth_ > -1. && !use_total_pressure() && !use_hydrostatic_pressure())

@@ -50,9 +50,9 @@ private :
 
 inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()
 {
-  Pth_n = Pth_;
+  Pth_n_ = Pth_;
 
-  if (traitement_PTh != 2)
+  if (traitement_PTh_ != 2)
     {
       Pth_ = EDO_Pth_->resoudre(Pth_);
 
@@ -69,7 +69,7 @@ inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()
 //Calcule W=-dZ/dt, 2nd membre de l'equation div(rhoU) = W
 inline void Fluide_Quasi_Compressible::secmembre_divU_Z(DoubleTab& tab_W) const
 {
-  double temps=vitesse_->temps();
+  double temps=ch_vitesse_->temps();
   if (temps>temps_debut_prise_en_compte_drho_dt_)
     {
       eos_tools_->secmembre_divU_Z(tab_W);

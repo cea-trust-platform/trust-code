@@ -78,22 +78,22 @@ public :
   inline const Nom type_fluide() const { return loi_etat_->type_fluide(); }
   inline const OWN_PTR(Loi_Etat_base)& loi_etat() const { return loi_etat_; }
   inline OWN_PTR(Loi_Etat_base)&  loi_etat() { return loi_etat_; }
-  inline const Champ_Inc_base& inco_chaleur() const { return inco_chaleur_.valeur(); }
-  inline Champ_Inc_base& inco_chaleur() { return inco_chaleur_.valeur(); }
-  inline const Champ_Inc_base& vitesse() const { return vitesse_.valeur(); }
-  inline const Champ_Don& pression_tot() const { return pression_tot_; }
-  inline Champ_Don& pression_tot() { return pression_tot_; }
-  inline const Champ_Don& mu_sur_Schmidt() const { return mu_sur_Sc; }
-  inline Champ_Don& mu_sur_Schmidt() { return mu_sur_Sc; }
-  inline const Champ_Don& nu_sur_Schmidt() const { return nu_sur_Sc; }
-  inline Champ_Don& nu_sur_Schmidt() { return nu_sur_Sc; }
-  inline const Champ_Don& source_masse_espece() const { assert (source_masse_esp_.non_nul()); return source_masse_esp_; }
-  inline Champ_Don& source_masse_espece() { assert (source_masse_esp_.non_nul()); return source_masse_esp_; }
-  inline const Champ_Don& source_masse_projection() const { assert (source_masse_proj_.non_nul()); return source_masse_proj_; }
-  inline Champ_Don& source_masse_projection() { assert (source_masse_proj_.non_nul()); return source_masse_proj_; }
+  inline const Champ_Inc_base& inco_chaleur() const { return ch_inco_chaleur_.valeur(); }
+  inline Champ_Inc_base& inco_chaleur() { return ch_inco_chaleur_.valeur(); }
+  inline const Champ_Inc_base& vitesse() const { return ch_vitesse_.valeur(); }
+  inline const Champ_Don& pression_tot() const { return ch_pression_tot_; }
+  inline Champ_Don& pression_tot() { return ch_pression_tot_; }
+  inline const Champ_Don& mu_sur_Schmidt() const { return ch_mu_sur_Sc; }
+  inline Champ_Don& mu_sur_Schmidt() { return ch_mu_sur_Sc; }
+  inline const Champ_Don& nu_sur_Schmidt() const { return ch_nu_sur_Sc; }
+  inline Champ_Don& nu_sur_Schmidt() { return ch_nu_sur_Sc; }
+  inline const Champ_Don& source_masse_espece() const { assert (ch_source_masse_esp_.non_nul()); return ch_source_masse_esp_; }
+  inline Champ_Don& source_masse_espece() { assert (ch_source_masse_esp_.non_nul()); return ch_source_masse_esp_; }
+  inline const Champ_Don& source_masse_projection() const { assert (ch_source_masse_proj_.non_nul()); return ch_source_masse_proj_; }
+  inline Champ_Don& source_masse_projection() { assert (ch_source_masse_proj_.non_nul()); return ch_source_masse_proj_; }
 
-  inline bool has_source_masse_espece_champ() const { return source_masse_esp_.non_nul(); }
-  inline bool has_source_masse_projection_champ() const { return source_masse_proj_.non_nul(); }
+  inline bool has_source_masse_espece_champ() const { return ch_source_masse_esp_.non_nul(); }
+  inline bool has_source_masse_projection_champ() const { return ch_source_masse_proj_.non_nul(); }
 
   inline const  DoubleTab& rho_n() const { return loi_etat_->rho_n(); }
   inline const  DoubleTab& rho_np1() const { return loi_etat_->rho_np1(); }
@@ -107,11 +107,11 @@ public :
   inline void calculer_mu_sur_Sc() { loi_etat_-> calculer_mu_sur_Sc(); }
   inline void calculer_nu_sur_Sc() { loi_etat_-> calculer_nu_sur_Sc(); }
   inline void calculer_masse_volumique() { loi_etat_->calculer_masse_volumique(); }
-  inline void set_pression_th(double Pth) { Pth_n = Pth_ = Pth; }
-  inline int getTraitementPth() const { return traitement_PTh; }
+  inline void set_pression_th(double Pth) { Pth_n_ = Pth_ = Pth; }
+  inline int getTraitementPth() const { return traitement_PTh_; }
   inline double pression_th() const { return Pth_; } // Pression thermodynamique
-  inline double pression_thn() const { return Pth_n; } // Pression thermodynamique a l'etape precedente
-  inline double pression_th1() const { return Pth1; } // Pression thermodynamique calculee pour conserver la masse
+  inline double pression_thn() const { return Pth_n_; } // Pression thermodynamique a l'etape precedente
+  inline double pression_th1() const { return Pth1_; } // Pression thermodynamique calculee pour conserver la masse
   inline double calculer_H(double hh) const { return loi_etat_->calculer_H(Pth_,hh); }
 
   // Methodes inlines from EOS_Tools
@@ -127,12 +127,12 @@ protected :
   virtual void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) = 0;
   void completer_edo(const Probleme_base& );
 
-  int traitement_PTh = 0; // flag pour le traitement de la pression thermo
-  double Pth_ = -1., Pth_n = -1., Pth1 = -1.;
-  REF(Champ_Inc_base) inco_chaleur_, vitesse_, pression_;
+  int traitement_PTh_ = 0; // flag pour le traitement de la pression thermo
+  double Pth_ = -1., Pth_n_ = -1., Pth1_ = -1.;
+  REF(Champ_Inc_base) ch_inco_chaleur_, ch_vitesse_, ch_pression_;
   REF(Probleme_base) le_probleme_;
-  Champ_Don pression_tot_, mu_sur_Sc, nu_sur_Sc, rho_gaz, rho_comme_v;
-  Champ_Don source_masse_esp_, source_masse_proj_; /* si besoin */
+  Champ_Don ch_pression_tot_, ch_mu_sur_Sc, ch_nu_sur_Sc, ch_rho_gaz_, ch_rho_comme_v_;
+  Champ_Don ch_source_masse_esp_, ch_source_masse_proj_; /* si besoin */
   OWN_PTR(Loi_Etat_base) loi_etat_;
   OWN_PTR(EOS_Tools_base) eos_tools_;
   OWN_PTR(EDO_Pression_th_base) EDO_Pth_;

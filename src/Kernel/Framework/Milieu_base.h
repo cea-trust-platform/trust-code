@@ -56,19 +56,19 @@ public:
   void nommer(const Nom&) override;
   const Nom& le_nom() const override;
 
-  inline DoubleVect& porosite_elem() { return static_cast<DoubleVect&>(porosites_champ->valeurs()); }
-  inline const DoubleVect& porosite_elem() const { return static_cast<const DoubleVect&>(porosites_champ->valeurs()); }
-  inline double porosite_elem(const int i) const { return porosites_champ->valeurs()(i,0); }
+  inline DoubleVect& porosite_elem() { return static_cast<DoubleVect&>(ch_porosites_->valeurs()); }
+  inline const DoubleVect& porosite_elem() const { return static_cast<const DoubleVect&>(ch_porosites_->valeurs()); }
+  inline double porosite_elem(const int i) const { return ch_porosites_->valeurs()(i,0); }
   inline DoubleVect& porosite_face() { return porosite_face_; }
   inline const DoubleVect& porosite_face() const { return porosite_face_; }
-  inline const Champ_Don& get_porosites_champ() const { return porosites_champ; }
+  inline const Champ_Don& get_porosites_champ() const { return ch_porosites_; }
   inline double porosite_face(const int i) const { return porosite_face_[i]; }
   inline const DoubleVect& section_passage_face() const { return section_passage_face_; }
   inline double section_passage_face(int i) const { return section_passage_face_[i]; }
 
   // TODO : FIXME : DoubleVect peut etre ??
-  inline DoubleTab& diametre_hydraulique_elem() { return diametre_hyd_champ->valeurs(); }
-  inline const DoubleTab& diametre_hydraulique_elem() const { return diametre_hyd_champ->valeurs(); }
+  inline DoubleTab& diametre_hydraulique_elem() { return ch_diametre_hyd_->valeurs(); }
+  inline const DoubleTab& diametre_hydraulique_elem() const { return ch_diametre_hyd_->valeurs(); }
   inline DoubleVect& diametre_hydraulique_face() { return diametre_hydraulique_face_; }
   inline const DoubleVect& diametre_hydraulique_face() const { return diametre_hydraulique_face_; }
   inline double diametre_hydraulique_face(int i) const { return diametre_hydraulique_face_[i]; }
@@ -89,7 +89,7 @@ public:
   virtual void associer_gravite(const Champ_Don_base&);
   virtual const Champ_base& masse_volumique() const;
   virtual Champ_base& masse_volumique();
-  bool has_masse_volumique() const { return rho.non_nul(); }
+  bool has_masse_volumique() const { return ch_rho_.non_nul(); }
   virtual const Champ_Don& diffusivite() const;
   virtual Champ_Don& diffusivite();
   virtual const Champ_Don& diffusivite_fois_rho() const;
@@ -119,16 +119,16 @@ public:
 
   const bool& has_hydr_diam() { return has_hydr_diam_; }
   void set_id_composite(const int i);
-  int id_composite = -1;
+  int id_composite_ = -1;
 
   // Liste des champs des milieux:
   const LIST(REF(Champ_Don))& champs_don() const { return champs_don_; }
 
 protected:
   REF(Domaine_dis_base) zdb_;
-  OWN_PTR(Champ_base) rho; //peut etre un Champ_Don ou un Champ_Inc
-  Champ_Don g, alpha, lambda, alpha_fois_rho, Cp, beta_th, porosites_champ, diametre_hyd_champ;
-  OWN_PTR(Champ_Fonc_base)  rho_cp_elem_,rho_cp_comme_T_;
+  OWN_PTR(Champ_base) ch_rho_; //peut etre un Champ_Don ou un Champ_Inc
+  Champ_Don ch_g_, ch_alpha_, ch_lambda_, ch_alpha_fois_rho_, ch_Cp_, ch_beta_th_, ch_porosites_, ch_diametre_hyd_;
+  OWN_PTR(Champ_Fonc_base)  ch_rho_Cp_elem_, ch_rho_Cp_comme_T_;
   Champs_compris champs_compris_;
   DoubleVect porosite_face_, section_passage_face_ /* pour F5 */, diametre_hydraulique_face_;
   Nom nom_;
@@ -163,7 +163,7 @@ private:
   const bool& is_user_porosites() { return is_user_porosites_; }
   const bool& is_field_porosites() { return is_field_porosites_; }
 
-  mutable int deja_associe;
+  mutable int deja_associe_;
   bool via_associer_ = false;
   void warn_old_syntax();
   REF(Champ_Don_base) g_via_associer_;

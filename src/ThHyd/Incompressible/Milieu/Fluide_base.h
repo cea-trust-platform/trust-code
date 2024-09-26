@@ -55,14 +55,14 @@ public :
   const Champ_base& temperature_multiphase() const;
   Champ_base& temperature_multiphase();
 
-  inline const Champ_Don& viscosite_cinematique() const { return nu; }
-  inline Champ_Don& viscosite_cinematique() { return nu; }
-  inline const Champ_Don& viscosite_dynamique() const { return mu; }
-  inline Champ_Don& viscosite_dynamique() { return mu; }
+  inline const Champ_Don& viscosite_cinematique() const { return ch_nu_; }
+  inline Champ_Don& viscosite_cinematique() { return ch_nu_; }
+  inline const Champ_Don& viscosite_dynamique() const { return ch_mu_; }
+  inline Champ_Don& viscosite_dynamique() { return ch_mu_; }
 
   // Renvoie la dilatabilite du constituant, beta_co.
-  inline const Champ_Don& beta_c() const { return beta_co; }
-  inline Champ_Don& beta_c() { return beta_co; }
+  inline const Champ_Don& beta_c() const { return ch_beta_co_; }
+  inline Champ_Don& beta_c() { return ch_beta_co_; }
 
   // Renvoie le coefficient d'absorbtion du fluide
   inline Champ_Don& kappa() { return coeff_absorption_; }
@@ -90,8 +90,8 @@ protected :
   mutable int e_int_auto_ = 0; //1 si on a cree e_int
   static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv); // fonction de calcul par defaut
 
-  mutable OWN_PTR(Champ_base) e_int, h_ou_T; //pour la creation sur demande : h is Energie_Multiphase et T si Energie_Multiphase_Enthalpie
-  Champ_Don mu, nu, beta_co;
+  mutable OWN_PTR(Champ_base) ch_e_int_, ch_h_ou_T_; //pour la creation sur demande : h is Energie_Multiphase et T si Energie_Multiphase_Enthalpie
+  Champ_Don ch_mu_, ch_nu_, ch_beta_co_;
   double h0_ = 0, T0_ = 0;
 
   // Parametres du fluide rayonnant semi transparent

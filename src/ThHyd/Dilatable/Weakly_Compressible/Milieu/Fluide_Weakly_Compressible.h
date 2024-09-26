@@ -42,12 +42,12 @@ public :
 
   // Methodes inlines
   inline void Resoudre_EDO_PT() override;
-  inline const Champ_Don& pression_hydro() const { return pression_hydro_; }
-  inline Champ_Don& pression_hydro() { return pression_hydro_; }
-  inline const Champ_Don& pression_eos() const { return pression_eos_; }
-  inline Champ_Don& pression_eos() { return pression_eos_; }
-  inline const Champ_Don& fraction_massique_nonresolue() const { return unsolved_species_; }
-  inline Champ_Don& fraction_massique_nonresolue() { return unsolved_species_; }
+  inline const Champ_Don& pression_hydro() const { return ch_pression_hydro_; }
+  inline Champ_Don& pression_hydro() { return ch_pression_hydro_; }
+  inline const Champ_Don& pression_eos() const { return ch_pression_eos_; }
+  inline Champ_Don& pression_eos() { return ch_pression_eos_; }
+  inline const Champ_Don& fraction_massique_nonresolue() const { return ch_unsolved_species_; }
+  inline Champ_Don& fraction_massique_nonresolue() { return ch_unsolved_species_; }
   inline const DoubleTab& pression_th_tab() const { return Pth_tab_; } // Tab Pression thermodynamique
   inline DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
   inline const DoubleTab& pression_thn_tab() const { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
@@ -58,13 +58,13 @@ public :
   inline void set_resume_flag() { sim_resumed_ = 1; }
   inline bool use_total_pressure() { return use_total_pressure_; }
   inline bool use_hydrostatic_pressure() { return use_hydrostatic_pressure_; }
-  inline bool use_pth_xyz() { return Pth_xyz_.non_nul(); }
+  inline bool use_pth_xyz() { return ch_Pth_xyz_.non_nul(); }
   inline bool use_total_hydro_pressure() { return (use_total_pressure_||use_hydrostatic_pressure_); }
   inline bool use_saved_data() { return sim_resumed_; }
   inline bool use_grad_pression_eos() { return use_grad_pression_eos_; }
 
 protected:
-  Champ_Don Pth_xyz_, pression_hydro_, pression_eos_, unsolved_species_;
+  Champ_Don ch_Pth_xyz_, ch_pression_hydro_, ch_pression_eos_, ch_unsolved_species_;
   DoubleTab Pth_tab_, Pth_n_tab_, P_NS_elem_;
   int use_total_pressure_ = 0, use_hydrostatic_pressure_ = 0, use_grad_pression_eos_ = 1, sim_resumed_ = 0;
   double time_activate_ptot_ = -1.;
@@ -77,10 +77,10 @@ private:
 
 inline void Fluide_Weakly_Compressible::Resoudre_EDO_PT()
 {
-  if (Pth_ > -1.) Pth_n = Pth_;
+  if (Pth_ > -1.) Pth_n_ = Pth_;
   Pth_n_tab_ = Pth_tab_;
 
-  if (traitement_PTh != 2)
+  if (traitement_PTh_ != 2)
     {
       if (Pth_ > -1.)
         {
