@@ -12,17 +12,18 @@ check()
    TU=$1.TU
    ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
    new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $TU`
-   echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
+   echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit 1}}' # On verifie qu'on ne depasse pas +5% de la performance
    err=$?
-   if [ $err != 0 ]
+   if [ $err = 1 ]
    then
       sdiff $1.TU.ref_$2 $TU
       echo "================================"
       echo "Performance is KO for $1 on $2 !"
       echo "================================"
    else
-      ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
+      ecart=`echo $ref $new | awk '// {printf("%2.1f\n",-($1-$2)/($1+$2)*100)}'`
+      echo "Performance is OK ($ecart%) $new s < $ref s (reference) for $1 on $2"
+      [ `echo "$ecart<-0.5" | bc -l` = 1 ] && echo "Performance is improved so $1.TU.ref_$2 is updated !" && cp $TU $1.TU.ref_$2
    fi
 }
 run()

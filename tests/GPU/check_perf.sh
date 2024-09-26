@@ -4,7 +4,7 @@ do
 	cd $rep
 	echo $rep
 	./check_perf.sh
-	grep GPU: $rep"_BENCH".TU
+	grep GPU: $rep"_BENCH".TU 2>/dev/null
 	cd - 1>/dev/null 2>&1
 done
 
