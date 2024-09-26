@@ -28,6 +28,14 @@
 #include <Device.h>
 #include <View_Types.h>  // Kokkos stuff
 
+//Booleans for checking if an execution space is host or device
+//Checking if device: for GPU or CPU compilation, we only have to check if EXEC_SPACE=Device
+template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+constexpr bool is_default_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value;
+//Checking if host: For GPU compilation Device != Host, so we check if Exec_SPACE=Host. Sur CPU Device=Host, donc on est tjs sur le host
+template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+constexpr bool is_host_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value &&
+                                    !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value;
 
 /*! @brief Represents a an array of int/int64/double/... values.
  *
@@ -235,28 +243,29 @@ public:
   // Kokkos accessors (brace yourself!)
 
   // Read-only
-  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline
-  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value, ConstViewArr<_TYPE_> >
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewArr<_TYPE_> >
   view_ro() const;
 
-  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline
-  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value && !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value, ConstHostViewArr<_TYPE_> >
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewArr<_TYPE_> >
   view_ro() const;
 
   // Write-only
-  inline ViewArr<_TYPE_> view_wo();
+  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewArr<_TYPE_> >
+  view_wo();
 
+  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewArr<_TYPE_> >
+  view_wo();
   // Read-write
   template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline
-  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value, ViewArr<_TYPE_> >
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewArr<_TYPE_> >
   view_rw();
 
   template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline
-  std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value && !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value, HostViewArr<_TYPE_> >
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewArr<_TYPE_> >
   view_rw();
 
 #endif

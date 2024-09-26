@@ -154,7 +154,7 @@ template void ajoute_produit_scalaire<float, int>(TRUSTVect<float, int>& resu, f
 //Process bloc function used below in operation_speciale_tres_generic
 //It is templated as a function of the in/out view location and execution spaces (Device/Host)
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
-void process_blocks(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
+void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
                     Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
 {
   auto vx_view= vx.template view_ro<ExecSpace>();
@@ -222,9 +222,9 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
 
   //Lauch computation with the execution space and view types as (template) parameters
   if (kernelOnDevice)
-    process_blocks<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
+    operation_speciale_tres_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
   else
-    process_blocks<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
+    operation_speciale_tres_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
 
 #ifndef NDEBUG
   // In debug mode, put invalid values where data has not been computed

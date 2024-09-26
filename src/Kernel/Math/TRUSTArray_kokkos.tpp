@@ -62,8 +62,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view_arr() const
 // Device version
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<typename EXEC_SPACE>
-inline
-std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value, ConstViewArr<_TYPE_> >
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewArr<_TYPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
   // Init if necessary
@@ -81,18 +80,18 @@ TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 // Host version
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<typename EXEC_SPACE>
-inline
-std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value&&
-!std::is_same<Kokkos::DefaultExecutionSpace, Kokkos::DefaultExecutionSpace>::value,
-ConstHostViewArr<_TYPE_> >
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewArr<_TYPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
   return ConstHostViewArr<_TYPE_>(addr(), size_array());
 }
 
 //////////// Write-only ////////////////////////////
-template<typename _TYPE_, typename _SIZE_>
-inline ViewArr<_TYPE_> TRUSTArray<_TYPE_,_SIZE_>::view_wo()
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewArr<_TYPE_> >
+TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
   // Init if necessary
   init_view_arr();
@@ -106,13 +105,20 @@ inline ViewArr<_TYPE_> TRUSTArray<_TYPE_,_SIZE_>::view_wo()
   return dual_view_arr_.view_device();
 }
 
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewArr<_TYPE_> >
+TRUSTArray<_TYPE_,_SIZE_>::view_wo()
+{
+  return HostViewArr<_TYPE_>(addr(), size_array());
+}
 
 //////////// Read-Write ////////////////////////////
 // Device version
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<typename EXEC_SPACE>
-inline
-std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value, ViewArr<_TYPE_> >
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewArr<_TYPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
   // Init if necessary
@@ -131,10 +137,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<typename EXEC_SPACE>
-inline
-std::enable_if_t<std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value&&
-!std::is_same<Kokkos::DefaultExecutionSpace, Kokkos::DefaultExecutionSpace>::value,
-HostViewArr<_TYPE_> >
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewArr<_TYPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
   return HostViewArr<_TYPE_>(addr(), size_array());
