@@ -93,8 +93,12 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab2() const
   dual_view_tab2_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
+//////////// Read-Only ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
 {
   // Init if necessary
   init_view_tab2();
@@ -108,8 +112,21 @@ inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
   return dual_view_tab2_.view_device();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_wo()
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
+{
+  return ConstHostViewTab<_TYPE_>(this->addr(), this->size());
+}
+
+//////////// Write-only ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view_wo()
 {
   // Init if necessary
   init_view_tab2();
@@ -123,8 +140,21 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_wo()
   return dual_view_tab2_.view_device();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_rw()
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view_wo()
+{
+  return HostViewTab<_TYPE_>(this->addr(), this->size());
+}
+
+//////////// Read-Write ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view_rw()
 {
   // Init if necessary
   init_view_tab2();
@@ -138,6 +168,16 @@ inline ViewTab<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view_rw()
 #endif
   // return *device* view:
   return dual_view_tab2_.view_device();
+}
+
+
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view_rw()
+{
+  return HostViewTab<_TYPE_>(this->addr(), this->size());
 }
 
 template<typename _TYPE_, typename _SIZE_>
@@ -217,29 +257,45 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab3() const
   dual_view_tab3_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ConstViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_ro() const
+/////////// Read-Only ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab3<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view3_ro() const
 {
   // Init if necessary
   init_view_tab3();
 #ifdef _OPENMP
-  mapToDevice(*this, "Kokkos TRUSTTab::view3_ro()");
+  mapToDevice(*this, "Kokkos TRUSTTab3::view3_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_tab3_.template sync<memory_space>();
 #endif
-
   // return *device* view:
   return dual_view_tab3_.view_device();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab3<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view3_ro() const
+{
+  return ConstHostViewTab3<_TYPE_>(this->addr(), this->size());
+}
+
+//////////// Write-only ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab3<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
 {
   // Init if necessary
   init_view_tab3();
 #ifdef _OPENMP
-  computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_>::view3_wo()"); // ToDo allouer sans copie ?
+  computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_,_SIZE_>::view3_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab3_.template modify<memory_space>();
@@ -248,8 +304,21 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
   return dual_view_tab3_.view_device();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
+{
+  return HostViewTab3<_TYPE_>(this->addr(), this->size());
+}
+
+//////////// Read-Write ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab3<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
 {
   // Init if necessary
   init_view_tab3();
@@ -263,6 +332,14 @@ inline ViewTab3<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
 #endif
   // return *device* view:
   return dual_view_tab3_.view_device();
+}
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view3_rw()
+{
+  return HostViewTab3<_TYPE_>(this->addr(), this->size());
 }
 
 template<typename _TYPE_, typename _SIZE_>
@@ -344,13 +421,17 @@ inline void TRUSTTab<_TYPE_,_SIZE_>::init_view_tab4() const
   dual_view_tab4_.template modify<host_mirror_space>();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
+/////////// Read-Only ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab4<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
 {
   // Init if necessary
   init_view_tab4();
 #ifdef _OPENMP
-  mapToDevice(*this, "Kokkos TRUSTTab::view4_ro()");
+  mapToDevice(*this, "Kokkos TRUSTTab::view_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
   dual_view_tab4_.template sync<memory_space>();
@@ -359,13 +440,26 @@ inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
   return dual_view_tab4_.view_device();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab4<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
+{
+  return ConstHostViewTab4<_TYPE_>(this->addr(), this->size());
+}
+
+//////////// Write-only ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab4<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
 {
   // Init if necessary
   init_view_tab4();
 #ifdef _OPENMP
-  computeOnTheDevice(*this, "Kokkos TRUSTTab<_TYPE_>::view4_wo()"); // ToDo allouer sans copie ?
+  computeOnTheDevice(*this, "Kokkos TRUSTTab4<_TYPE_,_SIZE_>::view4_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
   dual_view_tab4_.template modify<memory_space>();
@@ -374,13 +468,26 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
   return dual_view_tab4_.view_device();
 }
 
-template<typename _TYPE_, typename _SIZE_>
-inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
+{
+  return HostViewTab4<_TYPE_>(this->addr(), this->size());
+}
+
+//////////// Read-Write ////////////////////////////
+// Device version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab4<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
 {
   // Init if necessary
   init_view_tab4();
 #ifdef _OPENMP
-  computeOnTheDevice(*this, "Kokkos view4_rw()"); //
+  computeOnTheDevice(*this, "Kokkos view4_rw()");
 #else
   // Copy to device (if needed) ...
   dual_view_tab4_.template sync<memory_space>();
@@ -389,6 +496,14 @@ inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
 #endif
   // return *device* view:
   return dual_view_tab4_.view_device();
+}
+// Host version
+template<typename _TYPE_, typename _SIZE_>  // this one first!!
+template<typename EXEC_SPACE>
+inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
+TRUSTTab<_TYPE_,_SIZE_>::view4_rw()
+{
+  return HostViewTab4<_TYPE_>(this->addr(), this->size());
 }
 
 template<typename _TYPE_, typename _SIZE_>

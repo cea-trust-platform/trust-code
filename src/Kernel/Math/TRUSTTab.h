@@ -237,25 +237,85 @@ public:
 public:
 #ifdef KOKKOS
   // Kokkos view accessors:
-  inline ConstViewTab<_TYPE_> view_ro() const;  // Read-only
-  inline ViewTab<_TYPE_> view_wo();             // Write-only
-  inline ViewTab<_TYPE_> view_rw();             // Read-write
+  // Read only
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab<_TYPE_> >
+  view_ro() const;
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab<_TYPE_> >
+  view_ro() const;
+
+  // Write only
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab<_TYPE_> >
+  view_wo();
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
+  view_wo();
+
+  // Read-write
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab<_TYPE_> >
+  view_rw();
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
+  view_rw();
 
   inline void sync_to_host() const;             // Synchronize back to host
   inline void modified_on_host() const;         // Mark data as being modified on host side
 
   // For 3D arrays:
-  inline ConstViewTab3<_TYPE_> view3_ro() const;  // Read-only
-  inline ViewTab3<_TYPE_> view3_wo();             // Write-only
-  inline ViewTab3<_TYPE_> view3_rw();             // Read-write
+  // Read only
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab3<_TYPE_> >
+  view3_ro() const;
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab3<_TYPE_> >
+  view3_ro() const;
+
+  // Write only
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab3<_TYPE_> >
+  view3_wo();
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
+  view3_wo();
+
+  // Read-write
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab3<_TYPE_> >
+  view3_rw();
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
+  view3_rw();
 
   inline void sync_to_host3() const;             // Synchronize back to host
   inline void modified_on_host3() const;         // Mark data as being modified on host side
 
   // For 4D arrays:
-  inline ConstViewTab4<_TYPE_> view4_ro() const;  // Read-only
-  inline ViewTab4<_TYPE_> view4_wo();             // Write-only
-  inline ViewTab4<_TYPE_> view4_rw();             // Read-write
+  // Read only
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab4<_TYPE_> >
+  view4_ro() const;
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab4<_TYPE_> >
+  view4_ro() const;
+
+  // Write only
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab4<_TYPE_> >
+  view4_wo();
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
+  view4_wo();
+
+  // Read-write
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab4<_TYPE_> >
+  view4_rw();
+  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
+  view4_rw();
 
   inline void sync_to_host4() const;             // Synchronize back to host
   inline void modified_on_host4() const;         // Mark data as being modified on host side
