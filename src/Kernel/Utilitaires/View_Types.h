@@ -85,13 +85,13 @@ template<typename T>
 using ConstViewTab4 = Kokkos::View</* const */T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 // Host views
 template<typename T>
-using ConstHostViewArr = Kokkos::View</* const */T *, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using ConstHostViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 template<typename T>
-using ConstHostViewTab = Kokkos::View</* const */T **, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using ConstHostViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 template<typename T>
-using ConstHostViewTab3 = Kokkos::View</* const */T ***, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using ConstHostViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 template<typename T>
-using ConstHostViewTab4 = Kokkos::View</* const */T ****, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using ConstHostViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
 #else //else openmp
 
