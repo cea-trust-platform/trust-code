@@ -26,7 +26,7 @@ do
    # je teste le .so.3.0.11 car sur rhel 8 (.so.3.0.5) sur rocky 9 (.so.3.0.10)
    [ -f /usr/lib64/libgd.so.3.0.11 ] && libgd=""
    # Hack configure (libgd from conda was found but not correctly linked to gnuplot):
-   sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib ?g" ./configure || exit -1
+   sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib -liconv ?g" ./configure || exit -1
 
    # configure:
    ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --disable-wxwidgets --without-lua --without-tutorial --with-readline=builtin --with-gd=$libgd 2>&1 || exit -1
