@@ -42,10 +42,13 @@ void local_carre_norme_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_T
     }
 }
 
-template <typename ExecSpace, typename tableauViewType, typename max_colonneViewType, typename BlocType, typename _TYPE_, typename _SIZE_>
-void parallel_max_abs_column(const tableauViewType& tableau_view, max_colonneViewType& max_colonne_view,
-                             BlocType blocs, int lsize, bool kernelOnDevice)
+template <typename ExecSpace, typename _TYPE_, typename _SIZE_>
+void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_,_SIZE_>& max_colonne,
+                              const TRUSTArray<int,_SIZE_>& blocs, int lsize, bool kernelOnDevice)
 {
+  auto tableau_view= tableau.template view_ro<ExecSpace>();
+  auto max_colonne_view= max_colonne.template view_rw<ExecSpace>();
+
   const _SIZE_ nblocs = blocs.size_array() >> 1;
   for (_SIZE_ ibloc = 0; ibloc < nblocs; ibloc++)
     {
@@ -80,17 +83,12 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
 
   if (kernelOnDevice)
     {
-      auto tableau_view = tableau.view_ro();
-      auto max_colonne_view = max_colonne.view_rw();
-      using ExecSpace = Kokkos::DefaultExecutionSpace; //Compute on the Device
-      parallel_max_abs_column<ExecSpace, decltype(tableau_view), decltype(max_colonne_view), decltype(blocs), _TYPE_, _SIZE_>(tableau_view, max_colonne_view, blocs, lsize, kernelOnDevice);
+      local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
     }
   else
     {
-      auto tableau_view = ConstHostViewTab<_TYPE_>(tableau.addr(), tableau.size_array());
-      auto max_colonne_view = HostViewArr<_TYPE_>(max_colonne.addr(), max_colonne.size_array());
-      using ExecSpace = Kokkos::DefaultHostExecutionSpace; //Compute on the Host
-      parallel_max_abs_column<ExecSpace, decltype(tableau_view), decltype(max_colonne_view), decltype(blocs), _TYPE_, _SIZE_>(tableau_view, max_colonne_view, blocs, lsize, kernelOnDevice);
+      local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
+
     }
   //Useful for host run ?
   //copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
