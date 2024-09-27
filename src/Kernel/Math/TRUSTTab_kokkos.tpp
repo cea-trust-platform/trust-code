@@ -118,7 +118,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view_ro() const
 {
-  return ConstHostViewTab<_TYPE_>(this->addr(), this->size());
+  return ConstHostViewTab<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1));
 }
 
 //////////// Write-only ////////////////////////////
@@ -146,7 +146,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view_wo()
 {
-  return HostViewTab<_TYPE_>(this->addr(), this->size());
+  return HostViewTab<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1)));
 }
 
 //////////// Read-Write ////////////////////////////
@@ -282,7 +282,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab3<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view3_ro() const
 {
-  return ConstHostViewTab3<_TYPE_>(this->addr(), this->size());
+  return ConstHostViewTab3<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1), this->dimension(2));
 }
 
 //////////// Write-only ////////////////////////////
@@ -310,7 +310,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
 {
-  return HostViewTab3<_TYPE_>(this->addr(), this->size());
+  return HostViewTab3<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1), this->dimension(2));
 }
 
 //////////// Read-Write ////////////////////////////
@@ -446,7 +446,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab4<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view4_ro() const
 {
-  return ConstHostViewTab4<_TYPE_>(this->addr(), this->size());
+  return ConstHostViewTab4<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1), this->dimension(2), this->dimension(3));
 }
 
 //////////// Write-only ////////////////////////////
@@ -474,7 +474,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
 {
-  return HostViewTab4<_TYPE_>(this->addr(), this->size());
+  return HostViewTab4<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1), this->dimension(2), this->dimension(3));
 }
 
 //////////// Read-Write ////////////////////////////

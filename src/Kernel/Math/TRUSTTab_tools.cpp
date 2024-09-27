@@ -58,10 +58,9 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray
       // Parallel loop for any value of lsize, using atomic_max for thread safety
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
       {
-        int k = i * lsize;
         for (int j = 0; j < lsize; j++)
           {
-            const _TYPE_ x = Kokkos::fabs(tableau_view(k,j));
+            const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
             Kokkos::atomic_max(&max_colonne_view(j), x);
           }
       });
@@ -79,7 +78,6 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
   assert(lsize == max_colonne.size_array());
 
   bool kernelOnDevice = tableau.isDataOnDevice();
-  ToDo_Kokkos("!!! WARNING !!!: Function local_max_abs_tab was never tested, contact remi.bourgeois@cea.fr if wrong results");
 
   if (kernelOnDevice)
     {
@@ -91,7 +89,8 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
 
     }
   //Useful for host run ?
-  //copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
+  ToDo_Kokkos("!!! WARNING !!!: the copyFromDevice should be checked");
+  copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
 }
 template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
 template void local_carre_norme_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& norme_colonne);
