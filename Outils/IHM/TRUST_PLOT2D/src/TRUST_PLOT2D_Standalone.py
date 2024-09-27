@@ -60,7 +60,7 @@ def main(args) :
                 print("could not load translation %s!" % f)
         app.installTranslator(trans)
     dw = app.desktop()
-    x, y = dw.height()*1.0, dw.height()*0.7
+    x, y = int(dw.height()*1.0), int(dw.height()*0.7)
 
     desktop = DynamicDesktop(None)
     sgPyQt = SalomePyQt_MockUp.SalomePyQt(desktop)
