@@ -620,8 +620,8 @@ class Write_tex:
                             ficTex.write_Tex('% nabil')
                         ficTex.write_Tex(r'% Inclusion des fichiers.data')
                         ficTex.write_Tex(r'\section{Data Files}')
-                        ficTex.write_Tex(r'\lstdefinelanguage{triou}{\nmorecomment=[s]{\#}{\#}, morekeywords={vefprep1b, vdf, lire, lire_fichier, domaine, dimension, postraitement, fluide_incompressible, schema_euler_explicite, pb_hydraulique_turbulent, pb_hydraulique}, sensitive=false\n}')
-                        ficTex.write_Tex(r'\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, language=triou\n}')
+                        ficTex.write_Tex(r'\lstdefinelanguage{triou}{morecomment=[s]{\#}{\#}, morekeywords={vefprep1b, vdf, lire, lire_fichier, domaine, dimension, postraitement, fluide_incompressible, schema_euler_explicite, pb_hydraulique_turbulent, pb_hydraulique}, sensitive=false}')
+                        ficTex.write_Tex(r'\lstset{ basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, language=triou}')
                         pass
                     print('-> File %s is included in the PDF report from %s' % (ficData, os.getcwd()))
                     # nomcas = get_nom_cas(cas[1])
