@@ -330,26 +330,33 @@ void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, D
 
 }
 
-DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
+DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& tab_x, const DoubleTab& tab_y, int incr) const
 {
-  int sz = y.dimension_tot(0) * y.line_size();
-  DoubleTrav diag(equation().inconnue().valeurs());
-  diag=1.;
-  appliquer(diag); // M-1
+  int sz = tab_y.dimension_tot(0) * tab_y.line_size();
+  DoubleTrav tab_diag(equation().inconnue().valeurs());
+  tab_diag=1.;
+  appliquer(tab_diag); // M-1
   // Si x et y sont sur le device, on deporte l'execution sur le device:
-  bool kernelOnDevice = x.checkDataOnDevice(y);
-  const double* diag_addr = mapToDevice(diag, "", kernelOnDevice);
-  const double* y_addr    = mapToDevice(y, "", kernelOnDevice);
-  double* x_addr          = computeOnTheDevice(x, "", kernelOnDevice);
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (kernelOnDevice)
-  for(int i=0; i<sz; i++)
+  bool kernelOnDevice = tab_x.checkDataOnDevice(tab_y);
+  if (kernelOnDevice)
     {
-      if (diag_addr[i]<1.e-12)
-        x_addr[i] = y_addr[i];
+      CDoubleArrView diag = static_cast<const ArrOfDouble&>(tab_diag).view_ro();
+      CDoubleArrView y    = static_cast<const ArrOfDouble&>(tab_y).view_ro();
+      DoubleArrView  x    = static_cast<ArrOfDouble&>(tab_x).view_wo();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), sz, KOKKOS_LAMBDA(const int i)
+      {
+        if (diag[i]<1.e-12)
+          x[i] = y[i];
+      });
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
-  return x;
+  else
+    {
+      for(int i=0; i<sz; i++)
+        if (tab_diag[i]<1.e-12)
+          tab_x[i] = tab_y[i];
+    }
+  return tab_x;
 }
 
 // Ajout d'une methode dimensionner()
