@@ -403,18 +403,16 @@ void Champ_base::corriger_unite_nom_compo()
 
 void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Domaine& dom) const
 {
-  //nom_post=le_nom();
-  Nom nom_dom=dom.le_nom();
-  const Domaine& dom_inc = sub_type(Champ_Inc_base,  *this) ? ref_cast(Champ_Inc_base,  *this).domaine() : ref_cast(Champ_Fonc_base, *this).domaine();
-  Nom nom_dom_inc= dom_inc.le_nom();
-
+  Nom nom_dom = dom.le_nom();
+  const Domaine* dom_inc = sub_type(Champ_Inc_base,  *this) ? &ref_cast(Champ_Inc_base,  *this).domaine() : (sub_type(Champ_Fonc_base, *this) ? &ref_cast(Champ_Fonc_base, *this).domaine() : nullptr);
+  Nom nom_dom_inc = dom_inc ? dom_inc->le_nom() : dom.le_nom();
   DoubleTrav centres_de_gravites(nb_elem, dimension);
 
   les_valeurs.resize(nb_elem, nb_compo_);
 
   if(nom_dom_inc == nom_dom || nom_dom_inc == dom.get_original_domain()) /* acceleration si domaine ou sous-domaine du champ original */
     {
-      const Sous_Domaine* ssz = nom_dom_inc == nom_dom ? nullptr : &dom_inc.ss_domaine(dom.get_original_subdomain());
+      const Sous_Domaine* ssz = nom_dom_inc == nom_dom ? nullptr : &(*dom_inc).ss_domaine(dom.get_original_subdomain());
       if(sub_type(Champ_Inc_base, *this) )
         {
           const Domaine_VF& zvf = ref_cast(Domaine_VF,ref_cast(Champ_Inc_base, *this).domaine_dis_base());
