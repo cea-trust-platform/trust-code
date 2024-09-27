@@ -88,9 +88,6 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
       local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize, kernelOnDevice);
 
     }
-  //Useful for host run ?
-  ToDo_Kokkos("!!! WARNING !!!: the copyFromDevice should be checked");
-  copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
 }
 template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
 template void local_carre_norme_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& norme_colonne);
