@@ -69,6 +69,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_centres_de_gravite(const Domaine&
   if (get_domaine_geom() != dom)
     Process::exit("Error, you must use valeur_aux_centres_de_gravite() on the whole discretized mesh.");
   int nb_polys = tab_result.dimension(0);
+
   if (nb_polys == 0)
     return tab_result;
 
@@ -106,7 +107,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_centres_de_gravite(const Domaine&
 template<typename ExecSpace>
 void valeur_aux_elems_kernel(const DoubleTab& tab_values, const IntVect& tab_polys, DoubleTab& tab_result, int nb_components)
 {
-  int nb_polys = tab_polys.size();
+  int nb_polys = std::min(tab_polys.size(), tab_result.dimension(0));
   int line_size = tab_result.line_size();
   int nb_dim = tab_values.nb_dim();
   auto polys = tab_polys.template view_ro<1, ExecSpace>();
