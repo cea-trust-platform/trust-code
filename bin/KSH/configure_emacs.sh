@@ -1,154 +1,214 @@
 #!/bin/bash
-# Configure emacs
 
-path_file=$TRUST_TMP/Keywords_Emacs.el
-keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
+path_file="${TRUST_TMP}/trust-mode.el"
+keywords="${TRUST_ROOT}/doc/TRUST/Keywords.txt"
+baltik_keywords="${TRUST_TMP}/baltik_keywords.txt"
+rm -f "${baltik_keywords}"
 
 # prise en compte des keywords des baltiks
-if [ -f $project_directory/share/doc_src/Keywords.txt.n ]
+if [ -f "${project_directory}/share/doc_src/Keywords.txt.n" ]
 then
-    keywords=$project_directory/share/doc_src/Keywords.Gedit
-    cat $TRUST_ROOT/doc/TRUST/Keywords.txt              >   $keywords
-    cat $project_directory/share/doc_src/Keywords.txt.n >>  $keywords
+    keywords="${project_directory}/share/doc_src/Keywords.Gedit"
+    # baltik_keywords=$TRUST_TMP/baltik_keywords.txt
+
+    cat "${TRUST_ROOT}/doc/TRUST/Keywords.txt"              >  "${keywords}"
+    cat "${project_directory}/share/doc_src/Keywords.txt.n" >  "${baltik_keywords}"
     # pour supprimer les lignes contenant "|\hyperpage{99}," et "|{" -> sinon probleme avec nedit
     # pour supprimer les lignes contenant "|/*" et "|\#" -> sinon probleme avec gedit
-    sed -i "/hyperpage/d; /{/d; /*/d; /#/d" $keywords
+    sed -i "/hyperpage/d; /{/d; /*/d; /#/d" ${keywords}
+    sed -i "/hyperpage/d; /{/d; /*/d; /#/d" ${baltik_keywords}
 fi
 
 echo 'Configure emacs: '$path_file
 
 # Grab the TRUST keywords
 KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' $keywords`
+if [ -f ${baltik_keywords} ]; then
+    KeywordsBALTIK=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' $baltik_keywords`
+else
+    KeywordsBALTIK=""
+fi
 
-# Count the keywords
-nbKeywordsTRUST=`echo $KeywordsTRUST | wc -w`
-nbKeywords=`$TRUST_Awk '/dimension/ {print NF-3}' $path_file 2>/dev/null`
+cat > ${path_file} <<EOF
+;;; trust-mode.el --- Major mode to manage data file for TRUST-based computations
 
-# If different, rebuild the configuration file for Emacs
-if [ "$nbKeywordsTRUST" != "$nbKeywords" ] || [ $0 -nt $path_file ]
-then
-   mkdir -p `dirname $path_file`
-   KeywordsTRUST=`echo $KeywordsTRUST | awk '{gsub(" ","\" \"",$0);print $0}'`
+;; Copyleft 🄯 2024 Alan Burlot
 
-   echo ";; TRUST mode is applied on .data files:
-(setq auto-mode-alist (cons '(\"\\\.data$\" . TRUST-mode) auto-mode-alist))
+;; Author: Alan Burlot <alan.burlot@cea.fr>
+;; Maintainer: Alan Burlot <alan.burlot@cea.fr>
+;; Version: 2024.07.05
+;; Packages-Requires: ((emacs "26"))
+;; Keywords: trust, triocfd, data
 
-;; Define the TRUST mode:
+;; This file is NOT par of GNU Emacs
+
+;;; License:
+
+;;; Commentary:
+;;
+;; This file has been adapted from Alan Burlot own trust-mode. Feel free to report any questions.
+
+;;; Code:
+
+(defvar trust-mode-syntax-table nil
+  "Syntax table for \`trust-mode'.")
+
+;; remove numbers and signs from
+(setq-local listexclude '("0" "1" "2" "<=" "="))
+(defvar trust-keywords
+  (let ((thekeywords (split-string "${KeywordsTRUST}")))
+	     (dolist (elt listexclude thekeywords)
+	       (setq thekeywords (delete elt thekeywords)))
+	     thekeywords)
+  "TRUST keywords.")
+
+
+(defvar baltik-keywords
+  (split-string "${KeywordsBALTIK}")
+  "BALTIK keywords.")
+
+(defvar trust-mode-indent-offset 2
+  "Indentation offset for \`TRUST-mode'.")
+
+(setq trust-mode-syntax-table
+  (let ((trust-table (make-syntax-table)))
+    ; The block delimiters
+    (modify-syntax-entry ?\{ "(}" trust-table)
+    (modify-syntax-entry ?\} "){" trust-table)
+    ; Comment style "# toto #"
+    (modify-syntax-entry ?# ". 14" trust-table)
+    (modify-syntax-entry ?  "- 23" trust-table) ; a dash to keep whitespace as a whitespace!
+    ; Comment style "/* toto */" nested
+    (modify-syntax-entry ?\/ ". 14bn" trust-table)
+    (modify-syntax-entry ?* ". 23bn" trust-table)
+    ; Stuff that are words and not delimiters
+    (modify-syntax-entry ?_ "w" trust-table)
+    (modify-syntax-entry ?\[ "w" trust-table) ; for math function
+    (modify-syntax-entry ?\] "w" trust-table) ; for math function
+    trust-table))
+
+(defun trust-mode-indent-line ()
+  "Indent current line for \`TRUST-mode'."
+  ;; Slightly adapted from https://stackoverflow.com/a/4158816/1879269.
+  (interactive)
+  (let ((indent-col 0))
+    (save-excursion
+      (beginning-of-line)
+      (condition-case nil
+          (while t
+            (backward-up-list 1)
+            (when (looking-at "[{]")
+              (setq indent-col (+ indent-col trust-mode-indent-offset))))
+        (error nil)))
+    (save-excursion
+      (back-to-indentation)
+      (when (and (looking-at "[}]") (>= indent-col trust-mode-indent-offset))
+        (setq indent-col (- indent-col trust-mode-indent-offset))))
+    (indent-line-to indent-col)))
+
+
+;; Completion (inspired by gmsh-mode)
+(defvar trust--completion-keywords
+  (append trust-keywords baltik-keywords)
+  "TRUST completion list.")
+
 ;;;###autoload
-(define-derived-mode TRUST-mode fundamental-mode \"TRUST-mode\"
-  \"Major mode for editing TRUST data files\"
+(defun trust-mode-completion-at-point ()
+  "TRUST function to be used for the hook \`completion-at-point-functions'."
+  (interactive)
+  (let* ((bds (bounds-of-thing-at-point 'symbol))
+         (start (car bds))
+         (end (cdr bds)))
+    (list start end trust--completion-keywords . nil)))
 
-  ;; code for syntax highlighting
-  (setq font-lock-defaults '((TRUST-font-lock-keywords)))
+;; Syntax coloring
+;; http://xahlee.info/emacs/emacs/elisp_syntax_coloring.html
+(defvar trust-font-lock nil
+  "Font lock for data file managed by \`TRUST-mode'.")
 
-  ;; To avoid _ is a delimiter:
-  (modify-syntax-entry ?_ \"w\" TRUST-mode-syntax-table)
+(setq trust-font-lock
+      (let* (;; define several category of keywords
+             (x-keywords-trust trust-keywords)
+             (x-keywords-baltik baltik-keywords)
+             (x-comments '("#" "#"))
 
-  ;; TRUST Comments # #
-  (setq comment-start \"# \")
-  (setq comment-end \" #\")
-  (setq comment-style 'multi-line) 
-  (modify-syntax-entry ?# \". 14\" TRUST-mode-syntax-table)
-  (modify-syntax-entry ? \". 23\" TRUST-mode-syntax-table)
+             ;; generate regex string for each category of keywords
+             (x-keywords-trust-regexp (regexp-opt x-keywords-trust 'words))
+             (x-keywords-baltik-regexp (regexp-opt x-keywords-baltik 'words))
+             (x-comments-regexp (regexp-opt x-comments 'words))
+             )
 
-  ;; TRUST Comments /* */
-  (modify-syntax-entry ?/ \"w\" TRUST-mode-syntax-table)
-  (modify-syntax-entry ?* \"w\" TRUST-mode-syntax-table)
+        \`((,x-comments-regexp . 'font-lock-comment-face)
+          (,x-keywords-baltik-regexp . 'font-lock-type-face)
+          (,x-keywords-trust-regexp . 'font-lock-keyword-face)
+          ;; note: order above matters, because once colored, that part won't change.
+          ;; in general, put longer words first. Trio first in case word is overrided.
+          )))
 
-  ;; Adding { and } to the words, so we can highlight them
-  (modify-syntax-entry ?{ \"w\" TRUST-mode-syntax-table)
-  (modify-syntax-entry ?} \"w\" TRUST-mode-syntax-table)
-)
+;; Mode definition
+(define-derived-mode trust-mode text-mode "TRUST-mode"
+  "Mode for editing TRUST custom data files."
 
-;; Case insensitive:
-(setq-default font-lock-keywords-case-fold-search t)
+  ;; = Indentation
+  ;; Define offset for indentation
+  (make-local-variable 'trust-mode-indent-offset)
+  ;; Set the indentation manager
+  (set (make-local-variable 'indent-line-function) 'trust-mode-indent-line)
 
-;; List of keywords:
-(setq TRUSTLanguageKeywords '(\"$KeywordsTRUST\") )
-(setq TRUSTAccolades '(\"{\" \"}\") )
-(setq TRUSTSecondComments '(\"/*\" \"*/\") )
+  ;; = Comments managment. We prefer the dash for automatic comments
+  (setq-local comment-start "#") ;; Allow to use the comment-region
+  (setq-local comment-end "#") ;; and uncomment-region functions
+  (setq-local comment-start-skip "/*")
+  (setq-local comment-end-skip "*/")
+  (setq-local comment-style 'multi-line)
 
-;; Regexp:
-(setq TRUSTLanguageKeywords-regexp (regexp-opt TRUSTLanguageKeywords 'words))
-(setq TRUSTAccolades-regexp (regexp-opt TRUSTAccolades 'words))
-(setq TRUSTSecondComments-regexp (regexp-opt TRUSTSecondComments 'words))
+  ;; = Associate the syntax table
+  (set-syntax-table trust-mode-syntax-table)
 
-;; create the list for font-lock.
-;; each category of keyword is given a particular face
-(setq TRUST-font-lock-keywords
-  \`(
-    (,TRUSTLanguageKeywords-regexp . font-lock-keyword-face)
-    (,TRUSTAccolades-regexp . font-lock-function-name-face)
-    (,TRUSTSecondComments-regexp . font-lock-function-name-face)
-))
-
-;; clear memory. no longer needed
-(setq TRUSTLanguageKeywords nil)
-(setq TRUSTAccolades nil)
-(setq TRUSTSecondComments nil)
-
-;; clear memory. no longer needed
-(setq TRUSTLanguageKeywords-regexp nil)
-(setq TRUSTAccolades-regexp nil)
-(setq TRUSTSecondComments-regexp nil)
-
-;; add the mode to the 'features' list
-(provide 'TRUST-mode)
-
-;; Local Variables&#58;
-;; coding: utf-8
-;; End:
-
-;;; TRUST-mode.el ends here"      > $path_file.tmp
+  ;; Font-lock-face
+  (setq-local font-lock-defaults '((trust-font-lock)
+                                   ;; options mix the behavior with delimiters
+                                   ;; nil ;; to allow comment font change
+                                   ;; t ;; to allow case insensitive
+                                   ))
 
 
-   if [ ! -f $path_file ] || [ "`diff $path_file $path_file.tmp`" != "" ]
-   then
-      mv -f $path_file.tmp $path_file
-      echo ""
-      echo $path_file' updated...'
-   fi
-   rm -f $path_file.tmp
-fi
-echo ""
+  ;; Local variables
+  (setq-local indent-tabs-mode nil) ;; Tab insert space
+  (setq-local tab-width trust-mode-indent-offset) ;; Width of a tab hit
+  (setq-local tab-stop-list '(number-sequence trust-mode-indent-offset 40 trust-mode-indent-offset))
+  (setq completion-ignore-case t)
+  (setq company-minimum-prefix-length 2)
 
-# Changement eventuel des fichiers de configuration si l'utilisateur
-# n'utilise pas xemacs (car bug si transfert de emacs vers xemacs)
-if [ ! -d ~/.xemacs ]
-then
-   #for config_file in ~/.emacs ~/.xemacs/init.el
-   for config_file in ~/.emacs
-   do
-      # S'il a commente la ligne, on ne fait rien:
-      if [ "`grep load $config_file 2>/dev/null | grep TRUST_ | grep ';;'`" = "" ]
-      then
-        touch $config_file.tmp
-#       echo "(load \"~/.emacs.d/TRUST.emacs\")" >> $config_file
-        echo "(load \"$path_file\")" >> $config_file.tmp
+  ;; Awesome completion !
+  (add-hook 'completion-at-point-functions 'trust-mode-completion-at-point nil 'local)
+  )
 
-        # s'il n'y a pas de fichier, on le cree
-        if [ ! -f $config_file ]
-        then
-            echo "Creation of a config file to highlight TRUST keywords with emacs."
-            mv $config_file.tmp $config_file
-            echo "$config_file updated to highlight TRUST keywords in a data file."
-            echo "You can comment with ;; the load line in the $config_file file if you do not want this feature."
-            echo ""
-        # si il y a qqch dans le fichier, on renomme et on remplit
-        else 
-            if [ "`diff $config_file $config_file.tmp`" != "" ]
-            then
-                mv -f $config_file $config_file.save
-                echo "Renaming old language file in $config_file.save"
-                mv -f $config_file.tmp $config_file
-                echo "-> $config_file updated to highlight TRUST keywords in a data file."
-                echo "You can comment with ;; the load line in the $config_file file if you do not want this feature."
-                echo ""
-            else
-                echo "Config file to highlight TRUST keywords with emacs already up to date!"
-                rm -f $config_file.tmp
-            fi
-        fi
-      fi
-   done
-fi
+;; Font-lock case insensitive
+;; Should be in the font-lock-default, but it mixes with the delimiters coloring
+(defun case-insensitive-advice ()
+  "Add a case advice for some obscur reasons."
+  (set (make-local-variable 'font-lock-keywords-case-fold-search) t))
+(advice-add 'trust-mode :after #'case-insensitive-advice)
+
+;; Add trust-mode to manage data files.
+(add-to-list 'auto-mode-alist '("\\\\.data\\\\'" . trust-mode))
+
+(provide 'trust-mode)
+;;; trust-mode.el ends here
+EOF
+
+# User message
+cat <<EOF
+
+================================================================
+
+    To activate the trust-mode in emacs, follow this steps:
+    1. copy ${path_file} in your ~/.emacs.d/ directory
+    2. add this line to your init.el file
+    (load "~/.emacs.d/trust-mode.el)
+    3. You can add the following minor-modes to enhance the buffer
+      - rainbow-delimiters-mode (to highlight the braces)
+      - indent-bars-mode (for a nice indent indicator)
+      - company-mode (for completion!)
+EOF
