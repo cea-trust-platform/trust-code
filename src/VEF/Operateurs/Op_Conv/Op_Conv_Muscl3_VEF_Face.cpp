@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ Entree& Op_Conv_Muscl3_VEF_Face::readOn(Entree& s )
   type_op=muscl;
   LIMITEUR=&vanleer;
   type_lim_int = type_lim_vanleer;
-  ordre=3;
+  ordre_=3;
   alpha_=1;
   // Lecture eventuelle de alpha_
   Motcle motlu, accouverte = "{" , accfermee = "}" ;

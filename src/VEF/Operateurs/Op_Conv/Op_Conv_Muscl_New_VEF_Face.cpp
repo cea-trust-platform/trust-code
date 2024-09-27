@@ -288,7 +288,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   const int nb_dim = Objet_U::dimension;
 
   //DoubleTab gradient_elem(nb_elem_tot,nb_comp,nb_dim);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
-  if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, nb_dim);  // (du/dx du/dy dv/dx dv/dy) pour un poly
+  if (gradient_elem_.size_array() == 0) gradient_elem_.resize(nb_elem_tot, nb_comp, nb_dim);  // (du/dx du/dy dv/dx dv/dy) pour un poly
 
   assert(tab_Fij.nb_dim()==4);
   assert(tab_Fij.dimension(0)==nb_elem_tot);
@@ -299,7 +299,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   //
   //Calcul des flux de l'operateur
   //
-  Champ_P1NC::calcul_gradient(tab_transporte,gradient_elem,domaine_Cl_VEF);
+  Champ_P1NC::calcul_gradient(tab_transporte,gradient_elem_,domaine_Cl_VEF);
 
   //Déclaration des vues sur les tableaux TRUSTS
   CIntArrView rang_elem_non_std = tab_rang_elem_non_std.view_ro();
@@ -315,7 +315,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CDoubleTabView coord_sommets = tab_coord_sommets.view_ro();
   CDoubleTabView xv = tab_xv.view_ro();
   DoubleTabView4 Fij = tab_Fij.view4_wo();
-  CDoubleTabView3 gradient_elem_ = gradient_elem.view3_ro(); //Gradient elem déclaré plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissée ici
+  CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro(); //Gradient elem déclaré plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissée ici
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
@@ -377,9 +377,9 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
             for (int dim = 0; dim < nb_dim; dim++)
               {
                 if (rang == -1)
-                  inco_m += gradient_elem_(elem, comp, dim) * vecteur_face_facette(elem, fa7, dim, dir);
+                  inco_m += gradient_elem(elem, comp, dim) * vecteur_face_facette(elem, fa7, dim, dir);
                 else
-                  inco_m += gradient_elem_(elem, comp, dim) * vecteur_face_facette_Cl(rang, fa7, dim, dir);
+                  inco_m += gradient_elem(elem, comp, dim) * vecteur_face_facette_Cl(rang, fa7, dim, dir);
               }
 
             // Compute inco_s_array
@@ -390,7 +390,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
                 double inco_s = transporteVect(face_amont, comp);
                 for (int dim = 0; dim < nb_dim; dim++)
                   {
-                    inco_s += gradient_elem_(elem, comp, dim) *
+                    inco_s += gradient_elem(elem, comp, dim) *
                               (coord_sommets(s_array[ip], dim) - xv(face_amont, dim));
                   }
                 inco_s_array[ip] = inco_s;
@@ -450,7 +450,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   int nb_dim = Objet_U::dimension;
 
   //DoubleTab gradient_elem(nb_elem_tot,nb_comp,nb_dim);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
-  if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
+  if (gradient_elem_.size_array() == 0) gradient_elem_.resize(nb_elem_tot, nb_comp, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
   IntTab face(nb_dim+1);
 
   assert(Fij.nb_dim()==4);
@@ -462,7 +462,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   //
   //Calcul des flux de l'operateur
   //
-  Champ_P1NC::calcul_gradient(transporte,gradient_elem,domaine_Cl_VEF);
+  Champ_P1NC::calcul_gradient(transporte,gradient_elem_,domaine_Cl_VEF);
   ToDo_Kokkos("critical");
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
@@ -509,7 +509,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                     //Calcul de la valeur de l'inconnue aux points d'integration de la formule du point milieu
                     double inco_m=transporteVect[face_amont*nb_comp+comp];
                     for(int dim=0; dim<nb_dim; dim++)
-                      inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
+                      inco_m+=gradient_elem_(elem,comp,dim)*vecteur_face_facette(elem,fa7,dim,dir);
 
                     //Calcul du flux final : formule du point milieu
                     double flux=inco_m*psc_m;
@@ -551,7 +551,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                   //Calcul de la valeur de l'inconnue aux points d'integration de la formule du point milieu
                   double inco_m=transporteVect[face_amont*nb_comp+comp];
                   for(int dim=0; dim<nb_dim; dim++)
-                    inco_m+=gradient_elem(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
+                    inco_m+=gradient_elem_(elem,comp,dim)*vecteur_face_facette_Cl(rang,fa7,dim,dir);
 
                   //Calcul du flux final : formule d'integration du point milieu
                   double flux=inco_m*psc_m;

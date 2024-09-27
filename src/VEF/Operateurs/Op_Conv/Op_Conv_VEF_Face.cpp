@@ -89,14 +89,14 @@ Entree& Op_Conv_VEF_Face::readOn(Entree& s )
           LIMITEUR=&superbee;
           type_lim_int = type_lim_superbee;
         }
-      s >> ordre;
+      s >> ordre_;
 
-      if (ordre!=1 && ordre!=2 && ordre!=3)
+      if (ordre_!=1 && ordre_!=2 && ordre_!=3)
         {
           Cerr << "l'ordre apres " << type_lim << " dans " << que_suis_je() << " doit etre soit 1, soit 2, soit 3" <<  finl;
           exit();
         }
-      if (ordre==3)
+      if (ordre_==3)
         {
           // Lecture de alpha_
           s >> alpha_;
@@ -106,9 +106,9 @@ Entree& Op_Conv_VEF_Face::readOn(Entree& s )
   if (type_op_lu=="centre")
     {
       type_op = centre;
-      s >> ordre;
+      s >> ordre_;
 
-      if (ordre!=1 && ordre!=2)
+      if (ordre_!=1 && ordre_!=2)
         {
           Cerr << "l'ordre apres " << type_op_lu << " dans " << que_suis_je() << " doit etre soit 1, soit 2 " <<  finl;
           exit();
@@ -118,7 +118,7 @@ Entree& Op_Conv_VEF_Face::readOn(Entree& s )
   if (type_op_lu=="amont")
     {
       type_op = amont;
-      ordre = 1;
+      ordre_ = 1;
     }
 
   return s ;
@@ -184,10 +184,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   int premiere_face_int = domaine_VEF.premiere_face_int();
-  int nb_faces_ = domaine_VEF.nb_faces();
+  int nb_faces = domaine_VEF.nb_faces();
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
   const DoubleTab& vecteur_face_facette = ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette();
@@ -197,7 +196,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
   // Permet d'avoir un flux_bord coherent avec les CLs (mais parfois diverge?)
   // Active uniquement pour ordre 3
-  int option_appliquer_cl_dirichlet = (ordre==3 ? 1 : 0);
+  int option_appliquer_cl_dirichlet = (ordre_==3 ? 1 : 0);
   int option_calcul_flux_en_un_point = 0;//(ordre==3 ? 1 : 0);
   // Definition d'un tableau pour un traitement special des schemas pres des bords
   if (traitement_pres_bord_.size_array()!=nb_elem_tot)
@@ -205,7 +204,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       traitement_pres_bord_.resize_array(nb_elem_tot);
       traitement_pres_bord_=0;
       // Pour muscl3 on applique le minmod sur les elements ayant une face de Dirichlet
-      if (ordre==3)
+      if (ordre_==3)
         {
           for (int n_bord=0; n_bord<nb_bord; n_bord++)
             {
@@ -214,6 +213,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 {
                   const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
                   int nb_faces_tot = le_bord.nb_faces_tot();
+                  const IntTab& face_voisins = domaine_VEF.face_voisins();
                   for (int ind_face=0; ind_face<nb_faces_tot; ind_face++)
                     {
                       int num_face = le_bord.num_face(ind_face);
@@ -337,16 +337,16 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
     }
 
-  DoubleTab gradient; // Peut pointer vers gradient_elem ou gradient_face selon schema
+  DoubleTab tab_gradient; // Peut pointer vers gradient_elem ou gradient_face selon schema
   if(type_op==centre || type_op==muscl)
     {
       // Tableau gradient base sur gradient_elem selon schema
-      if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, ncomp_ch_transporte, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
-      Champ_P1NC::calcul_gradient(transporte_face, gradient_elem, domaine_Cl_VEF);
+      if (gradient_elem_.size_array() == 0) gradient_elem_.resize(nb_elem_tot, ncomp_ch_transporte, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
+      Champ_P1NC::calcul_gradient(transporte_face, gradient_elem_, domaine_Cl_VEF);
 
       if (type_op == centre)
         {
-          gradient.ref(gradient_elem);
+          tab_gradient.ref(gradient_elem_);
         }
       else if (type_op == muscl)
         {
@@ -357,98 +357,82 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           if (type_lim_int == type_lim_chakravarthy) cas = 4;
           if (type_lim_int == type_lim_superbee) cas = 5;
           //  application du limiteur
-          if (!gradient_face.get_md_vector().non_nul())
+          if (!gradient_face_.get_md_vector().non_nul())
             {
-              gradient_face.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
-              domaine_VEF.creer_tableau_faces(gradient_face);
+              gradient_face_.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
+              domaine_VEF.creer_tableau_faces(gradient_face_);
             }
-          // ToDo OpenMP copyPartial ? Pas facile car boucle sur face et gradient aux elems. Fusionner plutot boucle interne et bord...
-          start_gpu_timer();
           for (int n_bord = 0; n_bord < nb_bord; n_bord++)
             {
               const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
-              /*
-              if (sub_type(Periodique, la_cl.valeur()))
+              if (sub_type(Symetrie, la_cl.valeur()))
                 {
-                  for (int fac = num1; fac < num2; fac++)
-                    {
-                      int elem1 = face_voisins(fac, 0);
-                      int elem2 = face_voisins(fac, 1);
-                      for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                        for (int i = 0; i < dimension; i++)
-                          {
-                            double grad1 = gradient_elem(elem1, comp0, i);
-                            double grad2 = gradient_elem(elem2, comp0, i);
-                            gradient_face(fac, comp0, i) = (*LIMITEUR)(grad1, grad2);
-                          }
-                    }
-                }
-              else */ if (sub_type(Symetrie, la_cl.valeur()))
-                {
-                  for (int fac = num1; fac < num2; fac++)
-                    {
-                      int elem1 = face_voisins(fac, 0);
-                      for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                        for (int i = 0; i < dimension; i++)
-                          gradient_face(fac, comp0, i) = gradient_elem(elem1, comp0, i);
+                  int ordre = ordre_;
+                  int dim = dimension;
+                  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+                  CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+                  CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro();
+                  DoubleTabView3 gradient_face = gradient_face_.view3_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_1D(num1, num2), KOKKOS_LAMBDA(const int fac)
+                  {
+                    int elem1 = face_voisins(fac, 0);
+                    for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                      for (int i = 0; i < dim; i++)
+                        gradient_face(fac, comp0, i) = gradient_elem(elem1, comp0, i);
 
-                      if (ordre == 3)
-                        {
-                          // On enleve la composante normale (on pourrait le faire pour les autres schemas...)
-                          // mais pour le moment, on ne veut pas changer le comportement par defaut du muscl...
-                          //const DoubleTab& facenormales = zone_VEF.face_normales();
-                          for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                            for (int i = 0; i < dimension; i++)
-                              {
-                                double carre_surface = 0;
-                                double tmp = 0;
-                                for (int j = 0; j < dimension; j++)
-                                  {
-                                    double ndS = facenormales(fac, j);
-                                    carre_surface += ndS * ndS;
-                                    tmp += gradient_face(fac, comp0, j) * ndS;
-                                  }
-                                gradient_face(fac, comp0, i) -= tmp * facenormales(fac, i) / carre_surface;
-                              }
-                        }
-                    }
-                }
-              gradient.ref(gradient_face);
-            }
-          end_gpu_timer(0, __KERNEL_NAME__);
-          // Need offload
-          const int *traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
-          const int *face_voisins_addr = mapToDevice(face_voisins);
-          const int *faces_doubles_addr = mapToDevice(domaine_VEF.faces_doubles());
-          const double *gradient_elem_addr = mapToDevice(gradient_elem, "gradient_elem");
-          double *gradient_addr = computeOnTheDevice(gradient, "gradient");
-          start_gpu_timer();
-          #pragma omp target teams distribute parallel for if (computeOnDevice)
-          for (int fac = 0; fac < nb_faces_; fac++)
-            {
-              if (faces_doubles_addr[fac] /* face perio */ || fac>=premiere_face_int /* face interne */)
-                {
-                  int elem1 = face_voisins_addr[fac * 2];
-                  int elem2 = face_voisins_addr[fac * 2 + 1];
-                  int limiteur = cas;
-                  if (ordre == 3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2]))
-                    limiteur = 1;
-                  for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                    for (int i = 0; i < dimension; i++)
+                    if (ordre == 3)
                       {
-                        double grad1 = gradient_elem_addr[(elem1 * ncomp_ch_transporte + comp0) * dimension + i];
-                        double grad2 = gradient_elem_addr[(elem2 * ncomp_ch_transporte + comp0) * dimension + i];
-                        gradient_addr[(fac * ncomp_ch_transporte + comp0) * dimension + i] = FCT_LIMITEUR(grad1,
-                                                                                                          grad2,
-                                                                                                          limiteur);
+                        // On enleve la composante normale (on pourrait le faire pour les autres schemas...)
+                        // mais pour le moment, on ne veut pas changer le comportement par defaut du muscl...
+                        for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                          for (int i = 0; i < dim; i++)
+                            {
+                              double carre_surface = 0;
+                              double tmp = 0;
+                              for (int j = 0; j < dim; j++)
+                                {
+                                  double ndS = face_normale(fac, j);
+                                  carre_surface += ndS * ndS;
+                                  tmp += gradient_face(fac, comp0, j) * ndS;
+                                }
+                              gradient_face(fac, comp0, i) -= tmp * face_normale(fac, i) / carre_surface;
+                            }
                       }
+                  });
+                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
                 }
-            } // fin du for faces
+            }
+          tab_gradient.ref(gradient_face_);
+          int dim = dimension;
+          int ordre = ordre_;
+          CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+          CIntArrView traitement_pres_bord = traitement_pres_bord_.view_ro();
+          CIntArrView faces_doubles = domaine_VEF.faces_doubles().view_ro();
+          CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro();
+          DoubleTabView3 gradient = tab_gradient.view3_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_1D(0, nb_faces), KOKKOS_LAMBDA(const int fac)
+          {
+            if (faces_doubles[fac] /* face perio */ || fac>=premiere_face_int /* face interne */)
+              {
+                int elem1 = face_voisins(fac, 0);
+                int elem2 = face_voisins(fac, 1);
+                int limiteur = cas;
+                if (ordre == 3 && (traitement_pres_bord[elem1] || traitement_pres_bord[elem2]))
+                  limiteur = 1;
+                for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                  for (int i = 0; i < dim; i++)
+                    {
+                      double grad1 = gradient_elem(elem1, comp0, i);
+                      double grad2 = gradient_elem(elem2, comp0, i);
+                      gradient(fac, comp0, i) = FCT_LIMITEUR(grad1, grad2, limiteur);
+                    }
+              }
+          });
           end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-          gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
+          tab_gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
         }// fin if(type_op==muscl)
     }
 
@@ -476,7 +460,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       if (passe==2)
         {
           type_op_boucle = centre;
-          gradient.ref(gradient_elem);
+          tab_gradient.ref(gradient_elem_);
         }
       // Les polyedres non standard sont ranges en 2 groupes dans le Domaine_VEF:
       //  - polyedres bords et joints
@@ -508,7 +492,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           CDoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
           CDoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
           CDoubleTabView transporte_face_v = transporte_face.view_ro();
-          CDoubleTabView3 gradient_v = gradient.view3_ro();
+          CDoubleTabView3 gradient_v = tab_gradient.view3_ro();
 
           DoubleTabView resu_v = resu.view_rw();
           DoubleTabView flux_b_v = flux_b.view_rw();
@@ -517,7 +501,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const int nb_som_facette = dim;
           const bool isMuscl = type_op_boucle == muscl;
           const bool isAmont = type_op_boucle == amont;
-          const int ordr = ordre;
+          const int ordre = ordre_;
 
           auto kern_conv_aj = KOKKOS_LAMBDA(int
                                             poly)
@@ -539,12 +523,12 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 {
                   int face_ = elem_faces_v(poly, face_adj);
                   face[face_adj] = face_;
-                  if (face_ < nb_faces_) contrib = 1; // Une face reelle sur l'element virtuel
+                  if (face_ < nb_faces) contrib = 1; // Une face reelle sur l'element virtuel
                 }
               //
               if (contrib)
                 {
-                  int calcul_flux_en_un_point = (ordr != 3) && (ordr == 1 || traitement_pres_bord_v(poly));
+                  int calcul_flux_en_un_point = (ordre != 3) && (ordre == 1 || traitement_pres_bord_v(poly));
                   for (int j = 0; j < dim; j++)
                     {
                       vs[j] = vitesse_face_absolue_v(face[0], j) * porosite_face_v(face[0]);
@@ -564,7 +548,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
                   calcul_vc_tetra_views(face, vc, vs, vsom, vitesse_v, itypcl, porosite_face_v);
                   // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                  if (ordr == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
+                  if (ordre == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                     {
                       int idirichlet;
                       int n1, n2, n3;
@@ -641,7 +625,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       int face_amont_c;
                       int face_amont_s;
                       int face_amont_s2;
-                      if (isMuscl && ordr == 3)
+                      if (isMuscl && ordre == 3)
                         {
                           face_amont_c = (psc_c >= 0) ? num10 : num20;
                           face_amont_s = (psc_s >= 0) ? num10 : num20;
@@ -728,7 +712,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                               // du polyedre. C=G centre du polyedre si volume non etendu
                               // xc donne par elemvef.calcul_xg()
                               double inco_c;
-                              if (ordr == 3)
+                              if (ordre == 3)
                                 {
                                   inco_c = transporte_face_v(face_amont_c, comp0);
                                   for (int j = 0; j < dim; j++)
@@ -787,12 +771,12 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 {
                   int face_ = elem_faces(poly,face_adj);
                   face(face_adj)= face_;
-                  if (face_<nb_faces_) contrib=1; // Une face reelle sur l'element virtuel
+                  if (face_<nb_faces) contrib=1; // Une face reelle sur l'element virtuel
                 }
               //
               if (contrib)
                 {
-                  int calcul_flux_en_un_point = (ordre != 3) && (ordre==1 || traitement_pres_bord_(poly));
+                  int calcul_flux_en_un_point = (ordre_ != 3) && (ordre_==1 || traitement_pres_bord_(poly));
                   for (int j=0; j<dimension; j++)
                     {
                       vs(j) = vitesse_face_absolue(face(0),j)*porosite_face(face(0));
@@ -826,7 +810,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   type_elemvef.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
 
                   // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                  if (ordre==3)
+                  if (ordre_==3)
                     {
                       int idirichlet;
                       int n1,n2,n3;
@@ -903,7 +887,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       int face_amont_c=face_amont_m;
                       int face_amont_s=face_amont_m;
                       int face_amont_s2=face_amont_m;
-                      if (type_op_boucle==muscl && ordre==3)
+                      if (type_op_boucle==muscl && ordre_==3)
                         {
                           face_amont_c  = (psc_c >= 0)  ? num10 : num20;
                           face_amont_s  = (psc_s >= 0)  ? num10 : num20;
@@ -935,16 +919,16 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                               // Calcul de l'inconnue au centre M de la fa7
                               if (rang==-1)
                                 for (int j=0; j<dimension; j++)
-                                  inco_m+= gradient(item_m,comp0,j)*vecteur_face_facette(poly,fa7,j,dir);
+                                  inco_m+= tab_gradient(item_m,comp0,j)*vecteur_face_facette(poly,fa7,j,dir);
                               else
                                 for (int j=0; j<dimension; j++)
-                                  inco_m+= gradient(item_m,comp0,j)*vecteur_face_facette_Cl(rang,fa7,j,dir);
+                                  inco_m+= tab_gradient(item_m,comp0,j)*vecteur_face_facette_Cl(rang,fa7,j,dir);
 
                               // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
                               double inco_s = (ncomp_ch_transporte==1?transporte_face(face_amont_s):transporte_face(face_amont_s,comp0));
                               int sommet_s = les_elems(poly,KEL(2,fa7));
                               for (int j=0; j<dimension; j++)
-                                inco_s+= gradient(item_s,comp0,j)*(-xv(face_amont_s,j)+coord_sommets(sommet_s,j));
+                                inco_s+= tab_gradient(item_s,comp0,j)*(-xv(face_amont_s,j)+coord_sommets(sommet_s,j));
 
                               // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
                               double inco_s2=0;
@@ -953,18 +937,18 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                   inco_s2 = (ncomp_ch_transporte==1?transporte_face(face_amont_s2):transporte_face(face_amont_s2,comp0));
                                   int sommet_s2 = les_elems(poly,KEL(3,fa7));
                                   for (int j=0; j<dimension; j++)
-                                    inco_s2+= gradient(item_s2,comp0,j)*(-xv(face_amont_s2,j)+coord_sommets(sommet_s2,j));
+                                    inco_s2+= tab_gradient(item_s2,comp0,j)*(-xv(face_amont_s2,j)+coord_sommets(sommet_s2,j));
                                 }
 
                               // Calcul de l'inconnue a C, une autre extremite de la fa7, intersection avec les autres fa7
                               // du polyedre. C=G centre du polyedre si volume non etendu
                               // xc donne par elemvef.calcul_xg()
                               double inco_c;
-                              if (ordre==3)
+                              if (ordre_==3)
                                 {
                                   inco_c = (ncomp_ch_transporte==1?transporte_face(face_amont_c):transporte_face(face_amont_c,comp0));
                                   for (int j=0; j<dimension; j++)
-                                    inco_c+= gradient(item_c,comp0,j)*(-xv(face_amont_c,j)+xc(j));
+                                    inco_c+= tab_gradient(item_c,comp0,j)*(-xv(face_amont_c,j)+xc(j));
                                 }
                               else
                                 {
@@ -1825,7 +1809,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
 
 void Op_Conv_VEF_Face::get_ordre(int& ord) const
 {
-  ord=ordre;
+  ord=ordre_;
 }
 void Op_Conv_VEF_Face::get_type_lim(Motcle& typelim) const
 {

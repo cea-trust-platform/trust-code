@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ Entree& Op_Conv_Centre_VEF_Face::readOn(Entree& s )
 {
 
   type_op=centre;
-  ordre=2;
+  ordre_=2;
   return s ;
 }
 

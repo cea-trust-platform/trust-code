@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ Entree& Op_Conv_Amont_VEF_Face::readOn(Entree& s )
 {
 
   type_op=amont;
-  ordre=1;
+  ordre_=1;
   return s ;
 }
 

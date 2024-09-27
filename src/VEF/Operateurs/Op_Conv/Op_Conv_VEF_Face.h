@@ -58,7 +58,7 @@ protected:
   Motcle type_lim;
   enum type_lim_type {type_lim_minmod,type_lim_vanleer,type_lim_vanalbada,type_lim_chakravarthy,type_lim_superbee};
   type_lim_type type_lim_int = type_lim_minmod;
-  int ordre = 1;
+  int ordre_ = 1;
   double alpha_=1.;
   enum type_operateur { amont, muscl, centre };
   type_operateur type_op = amont;
@@ -67,8 +67,8 @@ protected:
   mutable ArrOfInt traitement_pres_bord_;
   mutable ArrOfInt est_une_face_de_dirichlet_;
   mutable ArrOfInt type_elem_Cl_;
-  mutable DoubleTab gradient_face;
-  mutable DoubleTab gradient_elem;
+  mutable DoubleTab gradient_face_;
+  mutable DoubleTab gradient_elem_;
 };
 
 
