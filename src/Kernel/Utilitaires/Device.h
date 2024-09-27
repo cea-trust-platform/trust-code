@@ -52,9 +52,19 @@ std::string ptrToString(const void* adr);
 inline const std::string methodName(const std::string& prettyFunction, const int line)
 {
   size_t colons = prettyFunction.find("::");
-  size_t begin = prettyFunction.substr(0,colons).rfind(" ") + 1;
-  size_t end = prettyFunction.rfind("(") - begin;
-  return prettyFunction.substr(begin,end)+":"+std::to_string(line);
+  if (colons != std::string::npos)
+    {
+      // method::class:line
+      size_t begin = prettyFunction.substr(0, colons).rfind(" ") + 1;
+      size_t end = prettyFunction.rfind("(") - begin;
+      return prettyFunction.substr(begin, end) + ":" + std::to_string(line);
+    }
+  else
+    {
+      // return_type function:line
+      colons = prettyFunction.find('(');
+      return prettyFunction.substr(0, colons) + ":" + std::to_string(line);
+    }
 }
 #define __KERNEL_NAME__ methodName(__PRETTY_FUNCTION__,__LINE__)
 #else
