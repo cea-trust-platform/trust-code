@@ -98,7 +98,7 @@ Entree& Navier_Stokes_std::readOn(Entree& is)
   terme_convectif.set_fichier("Convection_qdm");
   terme_convectif.set_description("Momentum flow rate=Integral(rho*u*u*ndS) [N] if SI units used");
   terme_diffusif.set_fichier("Contrainte_visqueuse");
-  terme_diffusif.set_description("Friction drag exerted by the fluid=Integral(-mu*grad(u)*ndS) [N] if SI units used");
+  terme_diffusif.set_description("Friction drag exerted by the fluid=Integral(-mu*(grad(u) +grad(u)^T)*ndS) [N] if SI units used");
   divergence.set_fichier("Debit");
   divergence.set_description((Nom)"Volumetric flow rate=Integral(u*ndS) [m"+(Nom)(dimension+bidim_axi)+".s-1] if SI units used");
   gradient.set_fichier("Force_pression");
