@@ -207,46 +207,21 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
                        KOKKOS_LAMBDA (int fac)
   {
     int type_face = est_face_bord(fac);
-
-    // Faces de bord périodiques
-    if (type_face == 2)
+    // type_face 2 periodique
+    double coef = (type_face == 2 ? 0.5 : 1);
+    for (int j=0; j<2; j++)
       {
-        int elem1 = face_voisins(fac, 0);
-        int elem2 = face_voisins(fac, 1);
-
-        for (int icomp = 0; icomp < nb_comp; icomp++)
-          for (int i = 0; i < dimension; i++)
-            {
-              double grad = 0.5 * face_normales(fac,i) * variable(fac,icomp);
-              Kokkos::atomic_add(&gradient_elem(elem1, icomp, i), +grad);
-              Kokkos::atomic_add(&gradient_elem(elem2, icomp, i), -grad);
-            }
-      }
-    // Faces de bord non périodiques
-    else if (type_face == 1)
-      {
-        int elem1 = face_voisins(fac, 0);
-
-        for (int icomp = 0; icomp < nb_comp; icomp++)
-          for (int i = 0; i < dimension; i++)
-            {
-              double grad = face_normales(fac,i) * variable(fac,icomp);
-              Kokkos::atomic_add(&gradient_elem(elem1, icomp, i), grad);
-            }
-      }
-    // Faces internes
-    else if (type_face == 0)
-      {
-        int elem1 = face_voisins(fac, 0);
-        int elem2 = face_voisins(fac, 1);
-
-        for (int icomp = 0; icomp < nb_comp; icomp++)
-          for (int i = 0; i < dimension; i++)
-            {
-              double grad = face_normales(fac,i) * variable(fac,icomp);
-              if (elem1 >= 0) Kokkos::atomic_add(&gradient_elem(elem1, icomp, i), +grad);
-              if (elem2 >= 0) Kokkos::atomic_add(&gradient_elem(elem2, icomp, i), -grad);
-            }
+        int elem = face_voisins(fac, j);
+        if (elem >= 0)
+          {
+            for (int icomp = 0; icomp < nb_comp; icomp++)
+              for (int i = 0; i < dimension; i++)
+                {
+                  double grad = coef * face_normales(fac, i) * variable(fac, icomp);
+                  Kokkos::atomic_add(&gradient_elem(elem, icomp, i), grad);
+                }
+            coef*=-1;
+          }
       }
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);

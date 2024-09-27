@@ -2,6 +2,7 @@ for rep in `find */ -name check_perf.sh`
 do
 	rep=`dirname $rep`
 	cd $rep
+	echo "======================"
 	echo $rep
 	./check_perf.sh
 	grep GPU: $rep"_BENCH".TU 2>/dev/null

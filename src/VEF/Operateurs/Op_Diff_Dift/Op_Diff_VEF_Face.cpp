@@ -341,11 +341,12 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
         if (elem >= 0)
           {
             int ori = 1 - 2 * k;
+            double nu_elem = nu_v(elem, 0);
             for (int i = 0; i < nb_comp; i++)
               for (int j = 0; j < nb_comp; j++)
                 {
                   double flux = ori * face_normales_v(num_face, j)
-                                * (nu_v(elem, 0) * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
+                                * (nu_elem * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
                   Kokkos::atomic_sub(&resu_v(num_face, i), flux);
                   if (num_face < nb_faces_bord)
                     Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
