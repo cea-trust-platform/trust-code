@@ -479,16 +479,26 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
                 MAIN/mon_main.cpp
                 ${inst_compl}
             )
+
             target_link_libraries(${trio} ${libtrio} ${syslib})
         else()
             set(my_listobj)
             foreach(_obj IN LISTS listlibs)
                 list(APPEND my_listobj  $<TARGET_OBJECTS:obj_${_obj}>)
             endforeach()
-
             include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
             add_executable (${trio} ${inst_compl})
             target_link_libraries(${trio} ${my_listobj} ${syslib})
+            #
+            # The flag ENABLE_EXPORTS is set on the main executable to handle this:
+            #  - a dynamic library (.so) has been created which needs TRUST classes (e.g. Nom, Sortie, ...)
+            #  - this dynamic library is opened using dlopen from the main TRUST (or baltik executable)
+            #  - the dynamic library needs to resolve its undefined (TRUST) symbols from within the
+            #  executable that loads it.
+            # For all this to work, the exec needs to be linked with '-rdynamic', this is achieved in CMake 
+            # with ENABLE_EXPORTS: 
+            #
+            set_property(TARGET ${trio} PROPERTY ENABLE_EXPORTS 1)
         endif()
 
         install (TARGETS ${trio} DESTINATION exec)
@@ -596,6 +606,8 @@ add_library(list_obj  OBJECT ${srcs} ${srcdeps} ${CMAKE_SOURCE_DIR}/exec${OPT}/i
 # Baltik executable generation
 #
 add_executable(exe  $<TARGET_OBJECTS:list_obj>)
+# See comments above on main TRUST executable generation for this:
+set_property(TARGET exe PROPERTY ENABLE_EXPORTS 1)
 target_link_libraries(exe ${libdeps} ${libTrio}  ${syslib})
 
 ''')
