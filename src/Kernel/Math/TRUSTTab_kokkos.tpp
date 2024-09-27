@@ -146,7 +146,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view_wo()
 {
-  return HostViewTab<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1)));
+  return HostViewTab<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1));
 }
 
 //////////// Read-Write ////////////////////////////
