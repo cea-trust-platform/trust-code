@@ -1489,19 +1489,11 @@ void Op_Conv_VEF_Face::remplir_fluent() const
   int marq=phi_u_transportant(equation());
   // on force a calculer un pas de temps sans "porosite"
   marq=0;
-
-  const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  //const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
-  const IntTab& les_elems=domaine.les_elems();
-  const int nfa7 = domaine_VEF.type_elem().nb_facette();
-  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
-  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
-  const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
 
   // On definit le tableau des sommets:(C MALOD 17/07/2007)
 
@@ -1520,11 +1512,6 @@ void Op_Conv_VEF_Face::remplir_fluent() const
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
     istetra=1;
-  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
-
-
-  // Dimensionnement du tableau des flux convectifs au bord du domaine de calcul
-  const IntTab& KEL=type_elemvef.KEL();
 
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite
@@ -1537,125 +1524,96 @@ void Op_Conv_VEF_Face::remplir_fluent() const
   // dans le domaine
   if (nom_elem=="Tetra_VEF")
     {
-      const int *rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
-      const int *elem_faces_addr = mapToDevice(elem_faces);
-      const double *porosite_face_addr = mapToDevice(porosite_face);
-      const double *porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem");
-      const double *facette_normales_addr = mapToDevice(facette_normales);
-      const int *KEL_addr = mapToDevice(KEL);
-      const double *normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
-      const double *vitesse_face_addr = mapToDevice(vitesse().valeurs(),"vitesse_face");
-      const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
-      double *fluent_addr = computeOnTheDevice(fluent_, "fluent");
-      start_gpu_timer();
-      #pragma omp target teams if (computeOnDevice)
+      assert(dimension==3);
+      int dim = dimension;
+      CIntArrView rang_elem_non_std = domaine_VEF.rang_elem_non_std().view_ro();
+      CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+      CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view3_ro();
+      CDoubleTabView3 normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl().view3_ro();
+      CIntTabView KEL = type_elemvef.KEL().view_ro();
+      CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
+      CDoubleArrView porosite_elem = equation().milieu().porosite_elem().view_ro();
+      CDoubleTabView vitesse_face = vitesse().valeurs().view_ro();
+      CIntArrView type_elem_Cl = type_elem_Cl_.view_ro();
+      DoubleArrView fluent = fluent_.view_rw();
+      // boucle sur les polys
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(const int poly)
       {
         int face[4] {};
         double vs[3] {};
         double vc[3] {};
         double cc[3] {};
         double vsom[12] {};
-        // boucle sur les polys
-        #pragma omp distribute parallel for private(face, vs, vc, cc, vsom)
-        for (int poly = 0; poly < nb_elem_tot; poly++)
+
+        // calcul des numeros des faces du polyedre
+        for (int face_adj = 0; face_adj < nfac; face_adj++)
+          face[face_adj] = elem_faces(poly, face_adj);
+
+        for (int j = 0; j < dim; j++)
           {
+            vs[j] = 0;
+            for (int i = 0; i < nfac; i++)
+              vs[j] += vitesse_face(face[i], j) * porosite_face(face[i]);
+          }
 
-            // calcul des numeros des faces du polyedre
-            for (int face_adj = 0; face_adj < nfac; face_adj++)
-              face[face_adj] = elem_faces_addr[poly * nfac + face_adj];
+        // calcul de la vitesse aux sommets des tetradres
+        for (int i = 0; i < 4; i++)
+          for (int j = 0; j < 3; j++)
+            vsom[i * 3 + j] = (vs[j] - 3 * vitesse_face(face[i], j) * porosite_face(face[i]));
 
-            for (int j = 0; j < dimension; j++)
+        int itypcl = type_elem_Cl(poly);
+        // calcul de vc (a l'intersection des 3 facettes) vc vs vsom proportionnelles a la prosite
+        calcul_vc_tetra_views(face, vc, vs, vsom, vitesse_face, itypcl, porosite_face);
+        if (marq == 0)
+          {
+            double inv_porosite_poly = 1.0 / porosite_elem(poly);
+            for (int j = 0; j < dim; j++)
               {
-                vs[j] = vitesse_face_addr[face[0] * dimension + j] * porosite_face_addr[face[0]];
-                for (int i = 1; i < nfac; i++)
-                  {
-                    vs[j] += vitesse_face_addr[face[i] * dimension + j] * porosite_face_addr[face[i]];
-                  }
-              }
-
-            // calcul de la vitesse aux sommets des tetradres
-            for (int i = 0; i < 4; i++)
-              for (int j = 0; j < 3; j++)
-                vsom[i * 3 + j] = (vs[j] - 3 * vitesse_face_addr[face[i] * 3 + j] * porosite_face_addr[face[i]]);
-
-            int itypcl = type_elem_Cl_addr[poly];
-            // calcul de vc (a l'intersection des 3 facettes) vc vs vsom proportionnelles a la prosite
-            calcul_vc_tetra(face, vc, vs, vsom, vitesse_face_addr, itypcl, porosite_face_addr);
-            if (marq == 0)
-              {
-                double porosite_poly = porosite_elem_addr[poly];
+                vs[j] *= inv_porosite_poly;
+                vc[j] *= inv_porosite_poly;
                 for (int i = 0; i < nsom; i++)
-                  for (int j = 0; j < dimension; j++)
-                    vsom[i * dimension + j] /= porosite_poly;
-                for (int j = 0; j < dimension; j++)
-                  {
-                    vs[j] /= porosite_poly;
-                    vc[j] /= porosite_poly;
-                  }
+                  vsom[i * dim + j] *= inv_porosite_poly;
               }
-            int rang = rang_elem_non_std_addr[poly];
-            // Boucle sur les facettes du polyedre non standard:
-            for (int fa7 = 0; fa7 < nfa7; fa7++)
+          }
+        int rang = rang_elem_non_std(poly);
+        // Boucle sur les facettes du polyedre non standard:
+        for (int fa7 = 0; fa7 < nfa7; fa7++)
+          {
+            int num1 = face[KEL(0, fa7)];
+            int num2 = face[KEL(1, fa7)];
+            // normales aux facettes
+            for (int i = 0; i < dim; i++)
               {
-                int num1 = face[KEL_addr[fa7]];
-                int num2 = face[KEL_addr[nfa7 + fa7]];
-                // normales aux facettes
-                if (rang == -1)
-                  {
-                    for (int i = 0; i < dimension; i++)
-                      cc[i] = facette_normales_addr[(poly * nfa7 + fa7) * dimension + i];
-                  }
-                else
-                  {
-                    for (int i = 0; i < dimension; i++)
-                      cc[i] = normales_facettes_Cl_addr[(rang * nfa7 + fa7) * dimension + i];
-                  }
-                // On applique le schema de convection a chaque sommet de la facette
+                int elem = (rang == -1 ? poly : rang);
+                cc[i] = rang == -1 ? facette_normales(elem, fa7, i) : normales_facettes_Cl(elem, fa7, i);
+              }
 
-                double psc_c = 0, psc_s = 0, psc_m, psc_s2 = 0;
-                if (dimension == 2)
-                  {
-                    for (int i = 0; i < dimension; i++)
-                      {
-                        psc_c += vc[i] * cc[i];
-                        psc_s += vsom[KEL_addr[2 * nfa7 + fa7] * dimension + i] * cc[i];
-                      }
-                    psc_m = (psc_c + psc_s) / 2.;
-                  }
-                else
-                  {
-                    for (int i = 0; i < dimension; i++)
-                      {
-                        psc_c += vc[i] * cc[i];
-                        psc_s += vsom[KEL_addr[2 * nfa7 + fa7] * dimension + i] * cc[i];
-                        psc_s2 += vsom[KEL_addr[3 * nfa7 + fa7] * dimension + i] * cc[i];
-                      }
-                    psc_m = (psc_c + psc_s + psc_s2) / 3.;
-                  }
+            // On applique le schema de convection a chaque sommet de la facette
+            double psc_c = 0, psc_s = 0, psc_s2 = 0;
+            for (int i = 0; i < dim; i++)
+              {
+                psc_c  += vc[i] * cc[i];
+                psc_s  += vsom[KEL(2, fa7) * dim + i] * cc[i];
+                psc_s2 += vsom[KEL(3, fa7) * dim + i] * cc[i];
+              }
+            double psc_m = (psc_c + psc_s + psc_s2) / dim;
 
-                // int amont,dir;
-                if (psc_m >= 0)
-                  {
-                    // amont = num1;
-                    #pragma omp atomic
-                    fluent_addr[num2] += psc_m;
-                    //dir=0;
-                  }
-                else
-                  {
-                    //amont = num2;
-                    #pragma omp atomic
-                    fluent_addr[num1] -= psc_m;
-                    //dir=1;
-                  }
-
-              } // fin de la boucle sur les facettes
-          } // fin de la boucle
-      }
+            int num = (psc_m >= 0 ? num2 : num1);
+            Kokkos::atomic_add(&fluent[num], std::abs(psc_m));
+          } // fin de la boucle sur les facettes
+      }); // fin de la boucle
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else
     {
+      const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
+      const IntTab& KEL = type_elemvef.KEL();
+      const DoubleVect& porosite_face = equation().milieu().porosite_face();
+      const IntTab& elem_faces = domaine_VEF.elem_faces();
+      const DoubleTab& facette_normales = domaine_VEF.facette_normales();
+      const IntTab& les_elems = domaine.les_elems();
+      const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
+      const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
       ArrOfInt face(nfac);
       ArrOfDouble vs(dimension);
       ArrOfDouble vc(dimension);
