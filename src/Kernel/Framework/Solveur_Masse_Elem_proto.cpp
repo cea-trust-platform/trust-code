@@ -48,8 +48,10 @@ DoubleTab& Solveur_Masse_Elem_proto::appliquer_impl_proto(DoubleTab& sm) const
   /* partie elem */
   for (e = 0; e < ne_tot; e++)
     for (n = 0; n < N; n++)
-      if (der(e, n) > 1e-10) sm(e, n) /= pe(e) * ve(e) * der(e, n);
-      else sm(e, n) = 0; //cas d'une evanescence
+      if (std::abs(der(e, n)) > 1e-10)
+        sm(e, n) /= pe(e) * ve(e) * der(e, n);
+      else
+        sm(e, n) = 0; //cas d'une evanescence
 
   return sm;
 }
