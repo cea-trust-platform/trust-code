@@ -557,7 +557,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     for (int l = 0; l < dim; l++) vc[l] *= coeff;
                   }
                 // Boucle sur les facettes du polyedre:
-                double vecteur_face_fac7[3] {};
+                double centre_fa7[3] {};
                 double cc[3] {};
                 for (int fa7 = 0; fa7 < nfa7; fa7++)
                   {
@@ -603,20 +603,19 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     int item_s2 = isMuscl ? face_amont_s2 : poly;
 
                     int dir = (psc_m >= 0) ? 0 : 1;
+                    int num_face = elem_faces_v(poly, KEL_v(dir, fa7));
                     if (rang==-1)
                       {
-                        int num_face = elem_faces_v(poly, KEL_v(dir, fa7));
                         for (int j = 0; j < dim; j++)
                           {
-                            vecteur_face_fac7[j] = xp_v(poly, j);
+                            centre_fa7[j] = xp_v(poly, j);
                             for (int num_som_fa7 = 0; num_som_fa7 < nb_som_facette - 1; num_som_fa7++)
                               {
                                 int isom_loc = KEL_v(num_som_fa7 + 2, fa7);
                                 int isom_glob = les_elems_v(poly, isom_loc);
-                                vecteur_face_fac7[j] += coord_sommets_v(isom_glob, j);
+                                centre_fa7[j] += coord_sommets_v(isom_glob, j);
                               }
-                            vecteur_face_fac7[j] /= nb_som_facette;
-                            vecteur_face_fac7[j] -= xv_v(num_face, j);
+                            centre_fa7[j] /= nb_som_facette;
                           }
                       }
                     bool flux_avec_m = isAmont || appliquer_cl_dirichlet;
@@ -638,12 +637,13 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                 double gm = gradient_v(item_m, comp0, j);
                                 double gs = gradient_v(item_s, comp0, j);
                                 double gs2 = (dim == 3 ? gradient_v(item_s2, comp0, j) : 0);
+                                double xv_m = xv_v(num_face, j);
                                 double xv_s = xv_v(face_amont_s, j);
                                 double xv_s2 = xv_v(face_amont_s2, j);
                                 double cs_s = coord_sommets_v(sommet_s, j);
                                 double cs_s2 = (dim == 3 ? coord_sommets_v(sommet_s2, j) : 0);
                                 // Calcul de l'inconnue au centre M de la fa7
-                                inco_m += gm * (rang == -1 ? vecteur_face_fac7[j] : vecteur_face_facette_Cl_v(rang, fa7, j,  dir));
+                                inco_m += gm * (rang == -1 ? centre_fa7[j] - xv_m : vecteur_face_facette_Cl_v(rang, fa7, j,  dir));
                                 // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
                                 inco_s += gs * (cs_s - xv_s);
                                 // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
