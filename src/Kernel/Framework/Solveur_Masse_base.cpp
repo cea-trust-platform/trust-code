@@ -353,8 +353,8 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& tab_x, const DoubleT
   else
     {
       for(int i=0; i<sz; i++)
-        if (tab_diag[i]<1.e-12)
-          tab_x[i] = tab_y[i];
+        if (tab_diag.addr()[i]<1.e-12)
+          tab_x.addr()[i] = tab_y.addr()[i];
     }
   return tab_x;
 }

@@ -155,7 +155,7 @@ template void ajoute_produit_scalaire<float, int>(TRUSTVect<float, int>& resu, f
 //It is templated as a function of the in/out view location and execution spaces (Device/Host)
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
 void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
-                    Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
+                                            Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
 {
   auto vx_view= vx.template view_ro<ExecSpace>();
   auto resu_view= resu.template view_rw<ExecSpace>();
