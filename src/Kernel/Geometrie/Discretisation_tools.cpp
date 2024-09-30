@@ -21,9 +21,9 @@
 #include <Device.h>
 #include <Debog.h>
 
-void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
+void Discretisation_tools::nodes_to_cells(const Champ_base& Hn, Champ_base& He)
 {
-  ToDo_Kokkos("critical");
+  ToDo_Kokkos("critical for EF but not used in TRUST...");
   const DoubleTab& tabHn=Hn.valeurs();
   DoubleTab& tabHe=He.valeurs();
   const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
@@ -48,9 +48,9 @@ void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
   tabHe*=inv_nb_som_elem;
   tabHe.echange_espace_virtuel();
 }
-void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
+void Discretisation_tools::cells_to_nodes(const Champ_base& He, Champ_base& Hn)
 {
-  ToDo_Kokkos("critical");
+  ToDo_Kokkos("critical for EF");
   DoubleTab& tabHn=Hn.valeurs();
   const DoubleTab& tabHe=He.valeurs();
   Debog::verifier("elno entreee",tabHe);
@@ -84,9 +84,9 @@ void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
   tabHn.echange_espace_virtuel();
   Debog::verifier("elno sortie",tabHn);
 }
-void Discretisation_tools::faces_to_cells(const Champ_base& Hf,  Champ_base& He)
+void Discretisation_tools::faces_to_cells(const Champ_base& Hf, Champ_base& He)
 {
-  ToDo_Kokkos("critical");
+  ToDo_Kokkos("critical but seems not used by TRUST...");
   const DoubleTab& tabHf=Hf.valeurs();
   DoubleTab& tabHe=He.valeurs();
   const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
@@ -135,11 +135,11 @@ void cells_to_faces_kernel(const Domaine_VF& domaine_vf, const DoubleTab& tabHe,
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
-void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
+void Discretisation_tools::cells_to_faces(const Champ_base& He, Champ_base& Hf)
 {
   DoubleTab& tabHf=Hf.valeurs();
   const DoubleTab& tabHe=He.valeurs();
-  Debog::verifier("element_face entreee",tabHe);
+  Debog::verifier("element_face entree",tabHe);
   assert_espace_virtuel_vect(tabHe);
   const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
   const Domaine_VF& domaine_vf= ref_cast(Domaine_VF,domaine_dis_base);
@@ -221,35 +221,47 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
   Debog::verifier("element_face sortie",tabHf);
 }
 
-void Discretisation_tools::cells_to_faces(const Domaine_VF& dom_vf, const DoubleTab& tab_elem, DoubleTab& tab_face)
+void Discretisation_tools::cells_to_faces(const Domaine_VF& domaine_vf, const DoubleTab& tab_elem, DoubleTab& tab_face)
 {
-  ToDo_Kokkos("critical");
-  const DoubleVect& vol = dom_vf.volumes(), &volumes_entrelaces = dom_vf.volumes_entrelaces();
-  const IntTab& elem_faces = dom_vf.elem_faces();
-  const int nb_face_elem = elem_faces.line_size(), nb_comp = tab_face.line_size();
+  const int nb_face_elem = domaine_vf.elem_faces().line_size(), nb_comp = tab_face.line_size();
 
-  assert(tab_elem.dimension_tot(0) == dom_vf.nb_elem_tot() && tab_face.dimension_tot(0) == dom_vf.nb_faces_tot());
+  assert(tab_elem.dimension_tot(0) == domaine_vf.nb_elem_tot() && tab_face.dimension_tot(0) == domaine_vf.nb_faces_tot());
   assert(tab_elem.line_size() == nb_comp);
-  assert (dom_vf.que_suis_je() == "Domaine_VEF"); // TODO FIXME
+  if (domaine_vf.que_suis_je() != "Domaine_VEF")
+    Process::exit("Discretisation_tools::cells_to_faces limited to VEF."); // TODO FIXME
+
   tab_face = 0.;
-  for (int ele = 0; ele < dom_vf.nb_elem_tot(); ele++)
-    for (int s = 0; s < nb_face_elem; s++)
-      {
-        const int face = elem_faces(ele, s);
-        for (int comp = 0; comp < nb_comp; comp++)
-          tab_face(face, comp) += tab_elem(ele, comp) * vol(ele);
-      }
-
-  for (int f = 0; f < dom_vf.nb_faces(); f++)
+  int nb_elem_tot = domaine_vf.nb_elem_tot();
+  auto elem_faces = domaine_vf.elem_faces().view_ro();
+  auto volumes    = domaine_vf.volumes().view_ro();
+  auto tab_elem_v = tab_elem.view_ro();
+  auto tab_face_v = tab_face.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {nb_elem_tot, nb_face_elem}), KOKKOS_LAMBDA(const int ele, const int s)
+  {
+    int face = elem_faces(ele, s);
+    double volume_elem = volumes(ele);
     for (int comp = 0; comp < nb_comp; comp++)
-      tab_face(f, comp) /= volumes_entrelaces(f) * nb_face_elem;
+      Kokkos::atomic_add(&tab_face_v(face, comp), tab_elem_v(ele, comp) * volume_elem);
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
+  CDoubleArrView volumes_entrelaces = domaine_vf.volumes_entrelaces().view_ro();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {domaine_vf.nb_faces(), nb_comp}), KOKKOS_LAMBDA(const int f, const int comp)
+  {
+    tab_face_v(f, comp) /= volumes_entrelaces(f) * nb_face_elem;
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+
+  // tab_face /= volumes_entrelaces * nb_face_elem :
+  // PL: comprends pas, ecarts sur les cas thermal_coupling_on_coincident_domain_jddX avec:
+  // tab_face*=nb_face_elem;
+  // tab_divide_any_shape(tab_face, volumes_entrelaces, VECT_REAL_ITEMS);
   tab_face.echange_espace_virtuel();
 }
 
 void Discretisation_tools::faces_to_cells(const Domaine_VF& domaine_vf, const DoubleTab& tab_face, DoubleTab& tab_elem)
 {
-  ToDo_Kokkos("critical");
+  ToDo_Kokkos("critical but seems not used by TRUST");
   const IntTab& elem_faces = domaine_vf.elem_faces();
   const int nb_face_elem = elem_faces.dimension(1), nb_elem = domaine_vf.nb_elem(), nb_comp = tab_face.line_size();;
   assert(tab_elem.dimension_tot(0) == domaine_vf.nb_elem_tot() && tab_face.dimension_tot(0) == domaine_vf.nb_faces_tot());
