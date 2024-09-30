@@ -159,7 +159,7 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const IntTab& face_voisins = zvef.face_voisins();
 
-  int nb_comp = mon_milieu.conductivite()->nb_comp();
+  int nb_comp = mon_milieu.conductivite().nb_comp();
   const int nb_faces_bord = ma_front_vf.nb_faces();
 
   const int ndeb = ma_front_vf.num_premiere_face();
@@ -167,9 +167,9 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
 
 
 
-  if(!sub_type(Champ_Uniforme,mon_milieu.conductivite().valeur()))
+  if(!sub_type(Champ_Uniforme,mon_milieu.conductivite()))
     {
-      const DoubleTab& tab_lambda = mon_milieu.conductivite()->valeurs();
+      const DoubleTab& tab_lambda = mon_milieu.conductivite().valeurs();
 
       for (int face=ndeb; face<nfin; face++)
         {
@@ -183,7 +183,7 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
     }
   else  // la conductivite est un OWN_PTR(Champ_base) uniforme
     {
-      const DoubleTab& tab_lambda = mon_milieu.conductivite()->valeurs();
+      const DoubleTab& tab_lambda = mon_milieu.conductivite().valeurs();
 
       for (int face=ndeb; face<nfin; face++)
         {
@@ -222,7 +222,7 @@ void Echange_contact_Correlation_VEF::completer()
   const Milieu_base& mon_milieu = mon_eqn.milieu();
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const int nb_faces_bord = ma_front_vf.nb_faces();
-  int nb_comp = mon_milieu.conductivite()->nb_comp();
+  int nb_comp = mon_milieu.conductivite().nb_comp();
   h_solide.resize(nb_faces_bord,nb_comp);
 
 

@@ -16,7 +16,7 @@
 #include <Fluide_Dilatable_base.h>
 #include <Loi_Etat_TPPI_base.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Don.h>
+
 #include <Param.h>
 
 Implemente_base(Loi_Etat_TPPI_base, "Loi_Etat_TPPI_base", Loi_Etat_Mono_GP_base);
@@ -42,37 +42,37 @@ double Loi_Etat_TPPI_base::inverser_Pth(double, double)
 
 void Loi_Etat_TPPI_base::verify_fields()
 {
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  if (mu.est_nul())
+  if (le_fluide->has_viscosite_dynamique())
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Mu is not read in your medium and it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();
     }
-  if (sub_type(Champ_Uniforme, mu.valeur()))
+  Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  if (sub_type(Champ_Uniforme, mu))
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Mu should not be Champ_Uniforme since it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();
     }
 
-  Champ_Don& lambda = le_fluide->conductivite();
-  if (lambda.est_nul())
+  if (!le_fluide->has_conductivite())
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Lambda is not read in your medium and it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();
     }
-  if (sub_type(Champ_Uniforme, lambda.valeur()))
+  Champ_Don_base& lambda = le_fluide->conductivite();
+  if (sub_type(Champ_Uniforme, lambda))
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Lambda should not be Champ_Uniforme since it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();
     }
 
-  Champ_Don& alpha = le_fluide->diffusivite();
-  if (alpha.est_nul())
+  if (!le_fluide->has_diffusivite())
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Alpha is not read in your medium and it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();
     }
-  if (sub_type(Champ_Uniforme, alpha.valeur()))
+  Champ_Don_base& alpha = le_fluide->diffusivite();
+  if (sub_type(Champ_Uniforme, alpha))
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Alpha should not be Champ_Uniforme since it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();

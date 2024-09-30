@@ -1748,9 +1748,9 @@ std::string Probleme_base::newCompute()
             {
               for (auto const &champ_don: source->champs_don())
                 {
-                  if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
+                  if (sub_type(Champ_Parametrique, champ_don.valeur()))
                     {
-                      const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
+                      const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don.valeur());
                       dirname = champ.newCompute();
                     }
                 }
@@ -1759,9 +1759,9 @@ std::string Probleme_base::newCompute()
       // Boucle sur les champs du Milieu:
       for (auto const &champ_don: milieu().champs_don())
         {
-          if (champ_don->non_nul() && sub_type(Champ_Parametrique, champ_don->valeur()))
+          if (sub_type(Champ_Parametrique, champ_don.valeur()))
             {
-              const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don->valeur());
+              const Champ_Parametrique& champ = ref_cast(Champ_Parametrique, champ_don.valeur());
               dirname = champ.newCompute();
             }
         }

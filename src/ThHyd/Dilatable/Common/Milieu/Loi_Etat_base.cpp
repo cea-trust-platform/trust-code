@@ -61,14 +61,14 @@ void Loi_Etat_base::assoscier_probleme(const Probleme_base& pb)
 /*! @brief Renvoie le champ de le temperature
  *
  */
-const Champ_Don& Loi_Etat_base::ch_temperature() const
+const Champ_Don_base& Loi_Etat_base::ch_temperature() const
 {
-  return temperature_;
+  return temperature_.valeur();
 }
 
-Champ_Don& Loi_Etat_base::ch_temperature()
+Champ_Don_base& Loi_Etat_base::ch_temperature()
 {
-  return temperature_;
+  return temperature_.valeur();
 }
 
 /*! @brief Initialise l'inconnue de l'equation de chaleur : ne fai rien
@@ -115,15 +115,15 @@ void Loi_Etat_base::mettre_a_jour(double temps)
  */
 void Loi_Etat_base::calculer_mu()
 {
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  if (!sub_type(Champ_Uniforme,mu.valeur()))
+  Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  if (!sub_type(Champ_Uniforme,mu))
     {
       // E. Saikali : Pourquoi pas Champ_fonc_xyz pour mu ???
-      if (sub_type(Champ_Fonc_Tabule,mu.valeur()) || sub_type(Champ_Don_base,mu.valeur()))
-        mu->mettre_a_jour(temperature_->temps());
+      if (sub_type(Champ_Fonc_Tabule,mu) || sub_type(Champ_Don_base,mu))
+        mu.mettre_a_jour(temperature_->temps());
       else
         {
-          Cerr<<"The viscosity field mu of type "<<mu->que_suis_je()<<" is not recognized.";
+          Cerr<<"The viscosity field mu of type "<<mu.que_suis_je()<<" is not recognized.";
           Process::exit();
         }
     }
@@ -134,17 +134,17 @@ void Loi_Etat_base::calculer_mu()
  */
 void Loi_Etat_base::calculer_lambda()
 {
-  const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique()->valeurs();
-  const DoubleTab& tab_mu = mu->valeurs();
-  Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda->valeurs();
+  const Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
+  const DoubleTab& tab_mu = mu.valeurs();
+  Champ_Don_base& lambda = le_fluide->conductivite();
+  DoubleTab& tab_lambda = lambda.valeurs();
   ToDo_Kokkos("critical");
   int i, n = tab_lambda.size();
   // La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
-  if (!sub_type(Champ_Uniforme,lambda.valeur()))
+  if (!sub_type(Champ_Uniforme,lambda))
     {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
+      if (sub_type(Champ_Uniforme,mu))
         {
           double mu0 = tab_mu(0,0);
           for (i=0 ; i<n ; i++) tab_lambda(i,0) = mu0 * tab_Cp(i,0) / Pr_;
@@ -162,15 +162,15 @@ void Loi_Etat_base::calculer_lambda()
  */
 void Loi_Etat_base::calculer_nu()
 {
-  const Champ_Don& viscosite_dynamique = le_fluide->viscosite_dynamique();
-  bool uniforme = sub_type(Champ_Uniforme,viscosite_dynamique.valeur());
+  const Champ_Don_base& viscosite_dynamique = le_fluide->viscosite_dynamique();
+  bool uniforme = sub_type(Champ_Uniforme,viscosite_dynamique);
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  const DoubleTab& tab_mu = viscosite_dynamique->valeurs();
-  Champ_Don& viscosite_cinematique = le_fluide->viscosite_cinematique();
-  DoubleTab& tab_nu = viscosite_cinematique->valeurs();
+  const DoubleTab& tab_mu = viscosite_dynamique.valeurs();
+  Champ_Don_base& viscosite_cinematique = le_fluide->viscosite_cinematique();
+  DoubleTab& tab_nu = viscosite_cinematique.valeurs();
   int n = tab_nu.size();
 
-  if (viscosite_cinematique->que_suis_je()=="Champ_Fonc_P0_VDF")
+  if (viscosite_cinematique.que_suis_je()=="Champ_Fonc_P0_VDF")
     {
       // VDF
       for (int i=0 ; i<n ; i++)
@@ -203,12 +203,12 @@ void Loi_Etat_base::calculer_nu()
  */
 void Loi_Etat_base::calculer_alpha()
 {
-  DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
-  const Champ_Don& conductivite = le_fluide->conductivite();
-  bool uniforme = sub_type(Champ_Uniforme,conductivite.valeur());
+  DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
+  const Champ_Don_base& conductivite = le_fluide->conductivite();
+  bool uniforme = sub_type(Champ_Uniforme,conductivite);
   int n = tab_alpha.size();
-  CDoubleArrView lambda = static_cast<const DoubleVect&>(conductivite->valeurs()).view_ro();
-  CDoubleArrView Cp = static_cast<const DoubleVect&>(le_fluide->capacite_calorifique()->valeurs()).view_ro();
+  CDoubleArrView lambda = static_cast<const DoubleVect&>(conductivite.valeurs()).view_ro();
+  CDoubleArrView Cp = static_cast<const DoubleVect&>(le_fluide->capacite_calorifique().valeurs()).view_ro();
   CDoubleArrView rho = static_cast<const DoubleVect&>(le_fluide->masse_volumique().valeurs()).view_ro();
   DoubleArrView alpha = static_cast<DoubleVect&>(tab_alpha).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)

@@ -30,7 +30,7 @@ class Champ_base;
  *     discretisation et du type du champ de diffusivite. Ces variantes
  *     donneront lieu a des classes filles de Operateur_Diff_base.
  *
- * @sa Operateur_base Operateur_Diff, Classe abstraite, Methode abstraite, void associer_diffusivite(const Champ_Don& ), const Champ_Don_base& diffusivite() const
+ * @sa Operateur_base Operateur_Diff, Classe abstraite, Methode abstraite, void associer_diffusivite(const Champ_Don_base& ), const Champ_Don_base& diffusivite() const
  */
 class Operateur_Diff_base  : public Operateur_base,
   public Support_Champ_Masse_Volumique

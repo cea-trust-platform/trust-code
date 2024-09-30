@@ -18,10 +18,9 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Perte_Charge.h>
-
-#include <Champ_Don.h>
 #include <Parser_U.h>
 #include <Domaine_forward.h>
+
 class Domaine_dis_base;
 class Equation_base;
 class Source_base;

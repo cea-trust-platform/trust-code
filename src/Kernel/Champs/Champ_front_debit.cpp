@@ -15,7 +15,7 @@
 
 
 #include <Champ_front_debit.h>
-#include <Champ_Don.h>
+
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>

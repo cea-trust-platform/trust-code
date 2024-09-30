@@ -57,5 +57,5 @@ void Interpolation_IBM_power_law_tbl_u_star::discretise(const Discretisation_bas
   is_dirichlet_->affecter(is_dirichlet_lu_);
   dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0., solid_points_);
   solid_points_->affecter(solid_points_lu_);
-  computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_);
+  computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_, has_corresp_);
 }

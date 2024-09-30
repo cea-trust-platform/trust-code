@@ -18,7 +18,7 @@
 
 #include <Champs_compris_interface.h>
 #include <TRUST_List.h>
-#include <Champ_Don.h>
+
 #include <TRUST_Ref.h>
 #include <Reaction.h>
 #include <Objet_U.h>

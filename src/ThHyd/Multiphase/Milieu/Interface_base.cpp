@@ -39,6 +39,14 @@ Entree& Interface_base::readOn(Entree& is)
   return is;
 }
 
+void Interface_base::discretiser_sigma(const Nom& sig_nom, double temps)
+{
+  const Discretisation_base& dis = pb_->discretisation();
+  const Domaine_dis_base& dom_dis = pb_->domaine_dis();
+  dis.discretiser_champ("temperature", dom_dis, sig_nom, "N/m", 1, temps, ch_sigma_);
+}
+
+
 void Interface_base::mettre_a_jour(double temps)
 {
   DoubleTab& sigma_tab = ch_sigma_->valeurs();

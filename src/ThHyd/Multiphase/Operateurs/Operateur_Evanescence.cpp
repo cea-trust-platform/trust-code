@@ -16,7 +16,7 @@
 #include <Operateur_Evanescence.h>
 #include <Discretisation_base.h>
 #include <Champ_base.h>
-#include <Champ_Don.h>
+
 
 Implemente_instanciable(Operateur_Evanescence,"Operateur_Evanescence",OWN_PTR(Operateur_Evanescence_base));
 

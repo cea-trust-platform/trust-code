@@ -90,7 +90,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
-  Champ_Don * post_src_ch = fluide.has_source_masse_espece_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
+  Champ_Don_base * post_src_ch = fluide.has_source_masse_espece_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
@@ -117,14 +117,14 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
               resu(elem) += srcmass;
 
               if (post_src_ch)
-                (*post_src_ch)->valeurs()(elem) = srcmass;
+                (*post_src_ch).valeurs()(elem) = srcmass;
             }
         }
     }
 
   // pour post
   if (post_src_ch)
-    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur().temps());
+    (*post_src_ch).mettre_a_jour(fluide.inco_chaleur().temps());
 }
 
 void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
@@ -137,7 +137,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
   DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
-  Champ_Don * post_src_ch = fluide.has_source_masse_projection_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
+  Champ_Don_base* post_src_ch = fluide.has_source_masse_projection_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
@@ -163,12 +163,12 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
               resu(elem) -= source_per_dv;  // in [kg.m-3.s-1]
 
               if (post_src_ch)
-                (*post_src_ch)->valeurs()(elem) = source_per_dv;
+                (*post_src_ch).valeurs()(elem) = source_per_dv;
             }
         }
     }
 
   // pour post
   if (post_src_ch)
-    (*post_src_ch)->mettre_a_jour(fluide.inco_chaleur().temps());
+    (*post_src_ch).mettre_a_jour(fluide.inco_chaleur().temps());
 }

@@ -102,7 +102,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
   for (auto &pch : { &ch_rho_, &ch_e_int_, &ch_h_ou_T_ })
     champs_compris_.ajoute_champ(pch->valeur());
 
-  for (Champ_Don * ch_don : { &ch_mu_, &ch_nu_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_lambda_, &ch_Cp_, &ch_beta_th_ })
+  for (OWN_PTR(Champ_Don_base) * ch_don : { &ch_mu_, &ch_nu_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_lambda_, &ch_Cp_, &ch_beta_th_ })
     champs_compris_.ajoute_champ(ch_don->valeur());
 
   for (Champ_Fonc_base * ch_fonc : { &(ch_rho_Cp_elem_.valeur()), &(ch_rho_Cp_comme_T_.valeur()) })

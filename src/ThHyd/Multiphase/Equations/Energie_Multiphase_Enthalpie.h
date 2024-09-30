@@ -23,7 +23,7 @@ class Energie_Multiphase_Enthalpie : public Energie_Multiphase
   Declare_instanciable(Energie_Multiphase_Enthalpie);
 public:
   void discretiser() override;
-  const Champ_Don& diffusivite_pour_transport() const override;
+  const Champ_Don_base& diffusivite_pour_transport() const override;
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
 };
 

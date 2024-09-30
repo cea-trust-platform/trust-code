@@ -64,7 +64,7 @@ double Chimie::calculer_pas_de_temps() const
   // double dt_n=pb_->schema_temps().pas_de_temps();
   // filtre Butterworth :
   //        alpha=1    -> pas de filtre
-  //        alpha->0   -> tres filtre
+  //        alpha.0   -> tres filtre
   // double alpha_Butterworth=1.;
   // return (dt_n*(1.-alpha_Butterworth)+alpha_Butterworth*dt);
   return dt;
@@ -295,7 +295,7 @@ void  Chimie::mettre_a_jour(double temps)
 
               const DoubleTab& visc_turb=liste_C_[0]->equation().probleme().get_champ("viscosite_turbulente").valeurs();
               tau_mel=visc_turb;
-              const DoubleTab& D_moleculaire = ref_cast(Convection_Diffusion_Concentration,liste_C_[0]->equation()).constituant().diffusivite_constituant()->valeurs();
+              const DoubleTab& D_moleculaire = ref_cast(Convection_Diffusion_Concentration,liste_C_[0]->equation()).constituant().diffusivite_constituant().valeurs();
               double D_mol=0.;
               if (D_moleculaire.dimension(0) == 1)
                 D_mol = D_moleculaire(0, 0);

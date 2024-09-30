@@ -159,7 +159,7 @@ void VDF_discretisation::discretiser_champ(const Motcle& directive, const Domain
  *
  */
 void VDF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                           Champ_Don& champ) const
+                                           OWN_PTR(Champ_Don_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -176,7 +176,7 @@ void VDF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, con
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
   OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
-  Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Don_base) *champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   Motcles motcles(8);
   motcles[0] = "pression";
@@ -268,7 +268,7 @@ void VDF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, con
     }
   else if ((nature == multi_scalaire) && (champ_don))
     {
-      Cerr << "There is no field of type Champ_Don with a multi_scalaire nature." << finl;
+      Cerr << "There is no field of type OWN_PTR(Champ_Don_base) with a multi_scalaire nature." << finl;
       exit();
     }
 }
@@ -361,7 +361,7 @@ void VDF_discretisation::reynolds_maille(const Domaine_dis_base& z, const Fluide
   Reynolds_maille_Champ_Face& ch = ref_cast(Reynolds_maille_Champ_Face, champ.valeur());
   ch.associer_domaine_dis_base(domaine_vdf);
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vitesse);
-  const Champ_Don& nu = le_fluide.viscosite_cinematique();
+  const Champ_Don_base& nu = le_fluide.viscosite_cinematique();
   ch.associer_champ(vit, nu);
   ch.nommer("Reynolds_maille");
   ch.fixer_nb_comp(dimension);
@@ -483,10 +483,9 @@ void VDF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_b
   const Champ_Inc_base& ch_vitesse = eqn_hydr.inconnue();
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vitesse);
 
-  Champ_Don& mu = le_fluide.viscosite_dynamique();
+  Champ_Don_base& mu = le_fluide.viscosite_dynamique();
   //  mu est toujours un champ_Ostwald_VDF , il faut toujours faire ce qui suit
-  mu.typer("Champ_Ostwald_VDF");
-  Champ_Ostwald_VDF& ch_mu = ref_cast(Champ_Ostwald_VDF, mu.valeur());
+  Champ_Ostwald_VDF& ch_mu = ref_cast(Champ_Ostwald_VDF, mu);
   Cerr << "associe domainedisbase" << finl;
   ch_mu.associer_domaine_dis_base(domaine_vdf);
   ch_mu.associer_fluide(le_fluide);

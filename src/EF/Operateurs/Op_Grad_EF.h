@@ -20,7 +20,7 @@
 #include <Domaine_Cl_EF.h>
 #include <Domaine_EF.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 /*! @brief class Op_Grad_EF
  *
@@ -45,9 +45,11 @@ public:
   void calculer_flux_bords() const override;
 
 protected:
+  void ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl_EF& domaine_Cl_EF) const;
+
   REF(Domaine_EF) le_dom_EF;
   REF(Domaine_Cl_EF) la_zcl_EF;
-  Champ_Don int_P_bord_;
+  OWN_PTR(Champ_Don_base) int_P_bord_;
 
 };
 

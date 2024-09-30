@@ -22,7 +22,7 @@
 #include <Equation_base.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Milieu_base;
 class Solide;
@@ -60,7 +60,7 @@ public:
 
   const Motcle& domaine_application() const override;
   void mettre_a_jour(double temps) override;
-  virtual const Champ_Don& diffusivite_pour_transport() const;
+  virtual const Champ_Don_base& diffusivite_pour_transport() const;
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
 
   //Methodes de l interface des champs postraitables

@@ -115,7 +115,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
-      double rhocp = mon_equation->domaine_dis().nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique()->valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0) : 1.0;
+      double rhocp = mon_equation->domaine_dis().nb_elem() > 0 ?  mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0) : 1.0;
       tab_diffu_turb /= rhocp;
       tab_diffu /= rhocp;
     }

@@ -22,13 +22,14 @@
 
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
-
-#include <Champ_Don.h>
 #include <SFichier.h>
 #include <MorEqn.h>
 
 class Probleme_base;
 class Matrice_Morse;
+class Domaine_dis_base;
+class Domaine_Cl_dis_base;
+class Champ_Don_base;
 
 /*! @brief classe Source_base Un objet Source_base est un terme apparaissant au second membre d'une
  *
@@ -85,7 +86,7 @@ public:
   inline Champs_compris& champs_compris() { return champs_compris_; }
 
   // Liste des champs des sources:
-  const LIST(REF(Champ_Don))& champs_don() const { return champs_don_; }
+  const LIST(REF(Champ_Don_base))& champs_don() const { return champs_don_; }
 
 protected:
 
@@ -98,7 +99,7 @@ protected:
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
   mutable SFichier Flux;
   Champs_compris champs_compris_;
-  LIST(REF(Champ_Don)) champs_don_;
+  LIST(REF(Champ_Don_base)) champs_don_;
 };
 
 #endif /* Source_base_included */

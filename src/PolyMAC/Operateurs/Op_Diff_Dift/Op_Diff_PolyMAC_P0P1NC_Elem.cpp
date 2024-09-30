@@ -348,8 +348,8 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
         const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
         const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
                          &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
-                          &lambda = pbm.milieu().conductivite()->passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique()->passe(), &rho = pbm.milieu().masse_volumique().passe(), &Cp =
-                                                                                  pbm.milieu().capacite_calorifique()->passe();
+                          &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho = pbm.milieu().masse_volumique().passe(), &Cp =
+                                                                                 pbm.milieu().capacite_calorifique().passe();
         Flux_parietal_base::input_t in;
         Flux_parietal_base::output_t out;
         DoubleTrav qpk(N[0]), dTf_qpk(N[0], N[0]), dTp_qpk(N[0]), qpi(N[0], N[0]), dTf_qpi(N[0], N[0], N[0]), dTp_qpi(N[0], N[0]), v(N[0], D), nv(N[0]);
@@ -403,8 +403,8 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::ajouter_blocs_ext(int aux_only, matrices_t mat
             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
             const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(),
                              &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit = pbm.equation_qdm().inconnue().passe(),
-                              &lambda = pbm.milieu().conductivite()->passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique()->passe(), &rho = pbm.milieu().masse_volumique().passe(), &Cp =
-                                                                                      pbm.milieu().capacite_calorifique()->passe();
+                              &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho = pbm.milieu().masse_volumique().passe(), &Cp =
+                                                                                     pbm.milieu().capacite_calorifique().passe();
             DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), v(N[o_p], D), nv(N[o_p]);
             for (i = 0; i < e_f[o_p].get().dimension(1) && (fb = e_f[o_p](o_e, i)) >= 0; i++)
               for (prefac = fs[o_p](fb) * pf[o_p](fb) * (o_e == f_e[o_p](fb, 0) ? 1 : -1) / (pe[o_p](o_e) * ve[o_p](o_e)), n = 0; n < N[o_p]; n++)

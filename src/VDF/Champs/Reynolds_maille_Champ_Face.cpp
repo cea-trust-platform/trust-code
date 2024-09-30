@@ -15,7 +15,7 @@
 
 #include <Reynolds_maille_Champ_Face.h>
 #include <Champ_Face_VDF.h>
-#include <Champ_Don.h>
+
 #include <Domaine_VDF.h>
 
 Implemente_instanciable(Reynolds_maille_Champ_Face, "Reynolds_maille_Champ_Face", Champ_Fonc_Face_VDF);
@@ -24,7 +24,7 @@ Sortie& Reynolds_maille_Champ_Face::printOn(Sortie& s) const { return s << que_s
 
 Entree& Reynolds_maille_Champ_Face::readOn(Entree& s) { return s; }
 
-void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse, const Champ_Don& la_viscosite_cinematique)
+void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse, const Champ_Don_base& la_viscosite_cinematique)
 {
   vitesse_ = la_vitesse;
   nu_ = la_viscosite_cinematique;
@@ -50,7 +50,7 @@ void Reynolds_maille_Champ_Face::mettre_a_jour(double tps)
   for (int face = 0; face < nb_faces; face++)
     {
       // Calcul de la viscosite face
-      double nu_face = valeur(nu_->valeur().valeurs(), face, 0, domaine_vdf());
+      double nu_face = valeur(nu_->valeurs(), face, 0, domaine_vdf());
       // Calcul de la taille de maille entourant la face
       double taille_maille = domaine_vdf().volumes_entrelaces()(face) / domaine_vdf().face_surfaces(face);
       // Calcul du Reynolds de maille

@@ -25,7 +25,7 @@
  */
 #include <Source_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Probleme_base;
 class Conduction;

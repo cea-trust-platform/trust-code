@@ -15,7 +15,7 @@
 
 
 #include <Champ_front_debit_massique.h>
-#include <Champ_Don.h>
+
 #include <Champ_Inc_base.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>

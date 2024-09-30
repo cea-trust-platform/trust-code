@@ -18,15 +18,16 @@
 
 #include <Operateur_Statistique_tps_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Champ_Don.h>
+
 
 class Op_Moyenne: public Operateur_Statistique_tps_base
 {
   Declare_instanciable(Op_Moyenne);
 public:
+  Entree& lire_ch_moyenne(Entree& is);
   inline const Nom& le_nom() const override { return integrale_champ_.le_champ_calcule().le_nom(); }
   inline double temps() const override { return integrale_champ_.le_champ_calcule().temps(); }
-  inline Champ_Don& moyenne_convergee() { return ch_moyenne_convergee_; }
+  inline Champ_Don_base& moyenne_convergee() { return ch_moyenne_convergee_; }
   inline const Integrale_tps_Champ& integrale() const override { return integrale_champ_; }
   inline const DoubleTab& valeurs() const { return integrale_champ_.le_champ_calcule().valeurs(); }
   inline DoubleTab& valeurs() { return integrale_champ_.le_champ_calcule().valeurs(); }
@@ -44,7 +45,7 @@ public:
 
 protected:
   Integrale_tps_Champ integrale_champ_;
-  Champ_Don ch_moyenne_convergee_;
+  OWN_PTR(Champ_Don_base) ch_moyenne_convergee_;
 };
 
 inline void Op_Moyenne::mettre_a_jour(double tps)

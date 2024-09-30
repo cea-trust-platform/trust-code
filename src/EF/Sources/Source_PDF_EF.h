@@ -63,7 +63,7 @@ public:
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
 protected:
-  Champ_Don champ_nodal_;
+  OWN_PTR(Champ_Don_base) champ_nodal_;
   void compute_vitesse_imposee_projete(const DoubleTab&, const DoubleTab&, double, double) override;
   void calculer_vitesse_imposee_hybrid() override;
   void calculer_vitesse_imposee_elem_fluid() override;

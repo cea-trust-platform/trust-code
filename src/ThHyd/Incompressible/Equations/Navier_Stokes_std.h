@@ -25,7 +25,7 @@
 #include <Operateur_Div.h>
 #include <TRUST_Deriv.h>
 
-#include <Champ_Don.h>
+
 #include <TRUST_Ref.h>
 
 class Fluide_base;
@@ -130,7 +130,7 @@ public :
   inline Champ_Inc_base& div() { return divergence_U.valeur(); }
   inline const Champ_Inc_base& div() const { return divergence_U.valeur(); }
 
-  virtual const Champ_Don& diffusivite_pour_transport() const;
+  virtual const Champ_Don_base& diffusivite_pour_transport() const;
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
   virtual const Champ_base& vitesse_pour_transport() const;
 

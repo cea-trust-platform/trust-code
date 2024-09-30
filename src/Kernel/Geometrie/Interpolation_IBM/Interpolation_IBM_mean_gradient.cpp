@@ -45,8 +45,9 @@ void Interpolation_IBM_mean_gradient::discretise(const Discretisation_base& dis,
   Noms units(nb_comp);
   Noms c_nam(nb_comp);
 
-  if ((&corresp_elems_lu_)->non_nul())
+  if (corresp_elems_lu_.non_nul())
     {
+      has_corresp_ = true;
       dis.discretiser_champ("champ_elem",le_dom_EF,"corresp_elems","none",1,0., corresp_elems_);
       corresp_elems_->affecter(corresp_elems_lu_);
     }
@@ -56,5 +57,5 @@ void Interpolation_IBM_mean_gradient::discretise(const Discretisation_base& dis,
   is_dirichlet_->affecter(is_dirichlet_lu_);
   dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0., solid_points_);
   solid_points_->affecter(solid_points_lu_);
-  computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_);
+  computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_, has_corresp_);
 }

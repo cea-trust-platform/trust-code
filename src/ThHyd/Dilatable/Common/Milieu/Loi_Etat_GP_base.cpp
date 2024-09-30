@@ -94,19 +94,19 @@ void Loi_Etat_GP_base::calculer_Cp()
  */
 void Loi_Etat_GP_base::calculer_lambda()
 {
-  const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu->valeurs();
-  Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda =lambda->valeurs();
+  const Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  const DoubleTab& tab_mu = mu.valeurs();
+  Champ_Don_base& lambda = le_fluide->conductivite();
+  DoubleTab& tab_lambda =lambda.valeurs();
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
-  if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
+  if (sub_type(Champ_Fonc_Tabule,lambda))
     {
-      lambda->mettre_a_jour(temperature_->temps());
+      lambda.mettre_a_jour(temperature_->temps());
       return;
     }
-  if (!sub_type(Champ_Uniforme,lambda.valeur()))
+  if (!sub_type(Champ_Uniforme,lambda))
     {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
+      if (sub_type(Champ_Uniforme,mu))
         {
           double mu0 = tab_mu(0,0);
           tab_lambda *= (mu0 * Cp_ / Pr_);
@@ -119,9 +119,9 @@ void Loi_Etat_GP_base::calculer_lambda()
     }
   else
     {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
+      if (sub_type(Champ_Uniforme,mu))
         {
-          tab_lambda(0,0) = mu->valeurs()(0,0) * Cp_ / Pr_;
+          tab_lambda(0,0) = mu.valeurs()(0,0) * Cp_ / Pr_;
         }
       else
         {
@@ -140,16 +140,16 @@ void Loi_Etat_GP_base::calculer_lambda()
  */
 void Loi_Etat_GP_base::calculer_alpha()
 {
-  const Champ_Don& champ_lambda = le_fluide->conductivite();
-  const DoubleTab& tab_lambda = champ_lambda->valeurs();
-  Champ_Don& champ_alpha = le_fluide->diffusivite();
-  DoubleTab& tab_alpha = le_fluide->diffusivite()->valeurs();
+  const Champ_Don_base& champ_lambda = le_fluide->conductivite();
+  const DoubleTab& tab_lambda = champ_lambda.valeurs();
+  Champ_Don_base& champ_alpha = le_fluide->diffusivite();
+  DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
   int isVDF=0;
-  if (champ_alpha->que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (champ_alpha.que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   int n=tab_alpha.size();
-  bool lambda_uniforme = sub_type(Champ_Uniforme,champ_lambda.valeur());
+  bool lambda_uniforme = sub_type(Champ_Uniforme,champ_lambda);
   if (isVDF)
     {
       ToDo_Kokkos("critical");

@@ -68,12 +68,12 @@ Sortie& Fluide_base::printOn(Sortie& os) const
 Entree& Fluide_base::readOn(Entree& is)
 {
   Milieu_base::readOn(is);
-  champs_don_.add(ch_mu_);
-  champs_don_.add(ch_nu_);
-  champs_don_.add(ch_beta_co_);
-  champs_don_.add(coeff_absorption_);
-  champs_don_.add(indice_refraction_);
-  champs_don_.add(longueur_rayo_);
+  if (ch_mu_.non_nul()) champs_don_.add(ch_mu_.valeur());
+  if (ch_nu_.non_nul()) champs_don_.add(ch_nu_.valeur());
+  if (ch_beta_co_.non_nul()) champs_don_.add(ch_beta_co_.valeur());
+  if (coeff_absorption_.non_nul()) champs_don_.add(coeff_absorption_.valeur());
+  if (indice_refraction_.non_nul()) champs_don_.add(indice_refraction_.valeur());
+  if (longueur_rayo_.non_nul()) champs_don_.add(longueur_rayo_.valeur());
   return is;
 }
 
@@ -102,7 +102,7 @@ void Fluide_base::discretiser(const Probleme_base& pb, const Discretisation_base
     if (sub_type(Champ_Fonc_MED, ch_mu_.valeur()))
       {
         Cerr << " on convertit le champ_fonc_med en champ_don" << finl;
-        Champ_Don mu_prov;
+        OWN_PTR(Champ_Don_base) mu_prov;
         dis.discretiser_champ("champ_elem", domaine_dis, "neant", "neant", 1, temps, mu_prov);
         mu_prov->affecter(ch_mu_.valeur());
         ch_mu_.detach();
@@ -316,16 +316,16 @@ void Fluide_base::mettre_a_jour(double temps)
       // Mise a jour de longueur_rayo
       longueur_rayo_->mettre_a_jour(temps);
 
-      if (sub_type(Champ_Uniforme, kappa().valeur()))
+      if (sub_type(Champ_Uniforme, kappa()))
         {
-          longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()->valeurs()(0, 0));
-          longueur_rayo()->valeurs().echange_espace_virtuel();
+          longueur_rayo().valeurs()(0, 0) = 1 / (3 * kappa().valeurs()(0, 0));
+          longueur_rayo().valeurs().echange_espace_virtuel();
         }
       else
         {
           DoubleTab& l_rayo = longueur_rayo_->valeurs();
-          const DoubleTab& K = kappa()->valeurs();
-          for (int i = 0; i < kappa()->nb_valeurs_nodales(); i++)
+          const DoubleTab& K = kappa().valeurs();
+          for (int i = 0; i < kappa().nb_valeurs_nodales(); i++)
             l_rayo[i] = 1 / (3 * K[i]);
           l_rayo.echange_espace_virtuel();
         }
@@ -358,13 +358,13 @@ int Fluide_base::initialiser(const double temps)
 
       // Initialisation de longueur_rayo
       longueur_rayo_->initialiser(temps);
-      if (sub_type(Champ_Uniforme, kappa().valeur()))
-        longueur_rayo()->valeurs()(0, 0) = 1 / (3 * kappa()->valeurs()(0, 0));
+      if (sub_type(Champ_Uniforme, kappa()))
+        longueur_rayo().valeurs()(0, 0) = 1 / (3 * kappa().valeurs()(0, 0));
       else
         {
           DoubleTab& l_rayo = longueur_rayo_->valeurs();
-          const DoubleTab& K = kappa()->valeurs();
-          for (int i = 0; i < kappa()->nb_valeurs_nodales(); i++)
+          const DoubleTab& K = kappa().valeurs();
+          for (int i = 0; i < kappa().nb_valeurs_nodales(); i++)
             l_rayo[i] = 1 / (3 * K[i]);
         }
     }

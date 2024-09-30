@@ -17,7 +17,7 @@
 #define Loi_Fermeture_Test_included
 
 #include <Loi_Fermeture_base.h>
-#include <Champ_Don.h>
+
 
 /*! @brief : class Loi_Fermeture_Test
  *
@@ -37,7 +37,7 @@ public :
   void discretiser(const Discretisation_base& ) override;
   void set_param(Param& param) override;
 protected :
-  Champ_Don champ_test_;
+  OWN_PTR(Champ_Don_base) champ_test_;
   double coef_=1.;
 };
 

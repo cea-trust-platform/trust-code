@@ -18,7 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Loi_Etat_GP_base.h>
-#include <Champ_Don.h>
+
 #include <Parser_U.h>
 
 /*! @brief : class Loi_Etat_rhoT_GP_QC
@@ -44,7 +44,7 @@ public :
 
 protected :
   bool is_exp_;
-  Champ_Don rho_xyz_;
+  OWN_PTR(Champ_Don_base) rho_xyz_;
   DoubleTab rho_;
   double TMIN_=-1000;
   mutable Parser_U  parser_;

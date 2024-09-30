@@ -27,9 +27,7 @@
  */
 #include <Domaine_Cl_dis_base.h>
 
-#include <Champ_Don.h>
-
-
+class Champ_Don_base;
 class Domaine_EF;
 class Matrice_Morse;
 
@@ -72,7 +70,7 @@ protected:
   void remplir_type_elem_Cl(const Domaine_EF& );
   ArrOfInt type_sommet_;  // -1 interne 0 Neumann 1 Symetrie >2 Dirichlet
   // Un sommet est d'abord diri , puis Symetrie , puis Neumann , puis interne
-  Champ_Don normales_symetrie_,normales_symetrie_bis_,normales_symetrie_ter_;
+  OWN_PTR(Champ_Don_base) normales_symetrie_,normales_symetrie_bis_,normales_symetrie_ter_;
 };
 
 //

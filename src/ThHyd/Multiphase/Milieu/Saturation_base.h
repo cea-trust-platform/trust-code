@@ -34,8 +34,10 @@ public:
 
   void mettre_a_jour(double ) override;
 
-  Champ_Don& get_Tsat_champ() { return ch_Tsat_; }
-  const Champ_Don& get_Tsat_champ() const { return ch_Tsat_; }
+  void discretiser_Tsat(const Nom& Tsat_nom, double temps);
+
+  Champ_Don_base& get_Tsat_champ() { return ch_Tsat_; }
+  const Champ_Don_base& get_Tsat_champ() const { return ch_Tsat_; }
 
   DoubleTab& get_Tsat_tab() { return ch_Tsat_->valeurs(); }
   const DoubleTab& get_Tsat_tab() const { return ch_Tsat_->valeurs(); }
@@ -71,7 +73,7 @@ public:
 
 protected:
   double P_ref_ = -1, T_ref_ = -1;
-  Champ_Don ch_Tsat_;
+  OWN_PTR(Champ_Don_base) ch_Tsat_;
 
 private:
   typedef void(Saturation_base::*function_span_generic)(const SpanD , SpanD , int , int ) const;

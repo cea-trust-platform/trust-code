@@ -42,18 +42,18 @@ public :
   double calculer_masse_volumique(double P,double T,double r) const override;
 
   // Methodes inlines
-  inline const Champ_Don& masse_molaire_especes() const { return molar_mass_; }
-  inline const Champ_Don& visc_dynamique_especes() const { return mu_; }
-  inline const Champ_Don& coeff_diffusion_especes() const { return diffusion_coeff_; }
-  inline const Champ_Don& cp_especes() const { return cp_; }
+  inline const Champ_Don_base& masse_molaire_especes() const { return molar_mass_; }
+  inline const Champ_Don_base& visc_dynamique_especes() const { return mu_; }
+  inline const Champ_Don_base& coeff_diffusion_especes() const { return diffusion_coeff_; }
+  inline const Champ_Don_base& cp_especes() const { return cp_; }
 
 protected:
-  Champ_Don molar_mass_, mu_, diffusion_coeff_, cp_;
+  OWN_PTR(Champ_Don_base) molar_mass_, mu_, diffusion_coeff_, cp_;
   int num_espece_;
 
 private :
   void calculer_mu_wilke() override;
-  void update_Yn_values(Champ_Don& Yn, double temps) ;
+  void update_Yn_values(Champ_Don_base& Yn, double temps) ;
 };
 
 #endif /* Loi_Etat_Multi_GP_WC_included */

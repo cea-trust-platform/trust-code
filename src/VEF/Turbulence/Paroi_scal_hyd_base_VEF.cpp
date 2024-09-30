@@ -241,8 +241,8 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
           const Equation_base& eqn_hydr = eqn.probleme().equation(0);
           const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
           const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
-          bool unif = sub_type(Champ_Uniforme, le_fluide.conductivite().valeur());
-          CDoubleArrView conductivite = static_cast<const DoubleVect&>(le_fluide.conductivite()->valeurs()).view_ro();
+          bool unif = sub_type(Champ_Uniforme, le_fluide.conductivite());
+          CDoubleArrView conductivite = static_cast<const DoubleVect&>(le_fluide.conductivite().valeurs()).view_ro();
           CDoubleArrView conductivite_turbulente = static_cast<const DoubleVect&>(mon_modele_turb_scal->conductivite_turbulente().valeurs()).view_ro();
           CDoubleArrView face_surfaces = le_dom_VEF->face_surfaces().view_ro();
           CDoubleTabView face_normales = le_dom_VEF->face_normales().view_ro();

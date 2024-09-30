@@ -101,7 +101,7 @@ int Navier_Stokes_Turbulent::typer_lire_mod_turb_hyd(Entree& s)
   return 1;
 }
 
-const Champ_Don& Navier_Stokes_Turbulent::diffusivite_pour_transport() const
+const Champ_Don_base& Navier_Stokes_Turbulent::diffusivite_pour_transport() const
 {
   return fluide().viscosite_cinematique();
 }

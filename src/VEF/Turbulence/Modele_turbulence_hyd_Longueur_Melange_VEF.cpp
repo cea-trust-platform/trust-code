@@ -296,8 +296,8 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
   const IntTab& elem_faces = domaine_VEF.elem_faces();
 
   const Fluide_base& le_fluide = ref_cast(Fluide_base, mon_equation_->milieu());
-  const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+  const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
+  const DoubleTab& tab_visco = ch_visco_cin.valeurs();
   const DoubleTab& vit = mon_equation_->inconnue().valeurs();
 
   f_amortissement_.resize(nb_elem);
@@ -312,7 +312,7 @@ void Modele_turbulence_hyd_Longueur_Melange_VEF::calculer_f_amortissement()
   double visco = -1;
   int l_unif;
 
-  if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
+  if (sub_type(Champ_Uniforme, ch_visco_cin))
     {
       visco = std::max(tab_visco(0, 0), DMINFLOAT);
       l_unif = 1;

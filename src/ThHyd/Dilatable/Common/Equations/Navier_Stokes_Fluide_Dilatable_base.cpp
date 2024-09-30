@@ -117,7 +117,7 @@ void Navier_Stokes_Fluide_Dilatable_base::completer()
           const Fluide_Dilatable_base& fd = ref_cast(Fluide_Dilatable_base, le_fluide.valeur());
           assert(fd.loi_etat()->que_suis_je() == "Loi_Etat_Multi_Gaz_Parfait_WC");
           const Loi_Etat_Multi_GP_WC& loi_etat = ref_cast(Loi_Etat_Multi_GP_WC, fd.loi_etat().valeur());
-          const int nb_esp = loi_etat.masse_molaire_especes()->valeurs().line_size();
+          const int nb_esp = loi_etat.masse_molaire_especes().valeurs().line_size();
           if (nb_esp != ncomp)
             {
               Cerr << "Error in Navier_Stokes_Fluide_Dilatable_base::completer() !! " << finl;
@@ -134,7 +134,7 @@ void Navier_Stokes_Fluide_Dilatable_base::completer()
   Cerr << "Equation type : " << inconnue().equation().que_suis_je() << finl;
 }
 
-const Champ_Don& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_transport() const
+const Champ_Don_base& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_transport() const
 {
   return le_fluide->viscosite_dynamique();
 }

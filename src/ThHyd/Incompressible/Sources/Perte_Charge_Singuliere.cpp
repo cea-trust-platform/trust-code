@@ -119,7 +119,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
   int nfe = zvf.domaine().nb_faces_elem();
   IntTab face_tab; //1 for faces in the surface
   zvf.creer_tableau_faces(face_tab);
-  Champ_Don orientation;
+  OWN_PTR(Champ_Don_base) orientation;
 
   int algo=-1;
   Motcle method;

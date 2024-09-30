@@ -16,7 +16,7 @@
 #include <Transport_turbulent_GGDH.h>
 #include <Param.h>
 #include <Probleme_base.h>
-#include <Champ_Don.h>
+
 #include <Pb_Multiphase.h>
 #include <TRUSTTrav.h>
 #include <MD_Vector_tools.h>
@@ -42,7 +42,7 @@ Entree& Transport_turbulent_GGDH::readOn(Entree& is)
 
 void Transport_turbulent_GGDH::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
 {
-  const DoubleTab& mu0 = eq.diffusivite_pour_transport()->passe(), &nu0 = eq.diffusivite_pour_pas_de_temps().passe(), //viscosites moleculaires
+  const DoubleTab& mu0 = eq.diffusivite_pour_transport().passe(), &nu0 = eq.diffusivite_pour_pas_de_temps().passe(), //viscosites moleculaires
                    *alp = sub_type(Pb_Multiphase, pb_.valeur()) ? &pb_->get_champ("alpha").passe() : nullptr; //produit par alpha si Pb_Multiphase
   int i, nl = nu.dimension(0), n, N = nu.dimension(1), d, db, D = dimension;
   //par la viscosite turbulente : tenseur de Reynolds, facteur k / eps

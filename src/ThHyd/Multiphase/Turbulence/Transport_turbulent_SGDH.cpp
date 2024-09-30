@@ -16,7 +16,7 @@
 #include <Transport_turbulent_SGDH.h>
 #include <Param.h>
 #include <Probleme_base.h>
-#include <Champ_Don.h>
+
 #include <Pb_Multiphase.h>
 #include <TRUSTTrav.h>
 
@@ -45,7 +45,7 @@ Entree& Transport_turbulent_SGDH::readOn(Entree& is)
 // Modifier_nu modifie mu : alpha et rho font partie du terme
 void Transport_turbulent_SGDH::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
 {
-  const DoubleTab& mu0 = eq.diffusivite_pour_transport()->passe(),
+  const DoubleTab& mu0 = eq.diffusivite_pour_transport().passe(),
                    &nu0 = eq.diffusivite_pour_pas_de_temps().passe(), //viscosites moleculaires
                     *alp = (sub_type(Pb_Multiphase, pb_.valeur()) && !no_alpha_) ? &pb_->get_champ("alpha").passe() : nullptr; //produit par alpha si Pb_Multiphase
   const int cnu = nu0.dimension(0) == 1, cmu = mu0.dimension(0) == 1;

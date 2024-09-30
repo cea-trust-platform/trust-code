@@ -35,6 +35,7 @@
 #include <Discretisation_base.h>
 #include <Matrice_Morse.h>
 #include <Dirichlet_paroi_fixe_iso_Genepi2.h>
+#include <Champ_Don_base.h>
 
 Implemente_instanciable(Domaine_Cl_EF,"Domaine_Cl_EF",Domaine_Cl_dis_base);
 

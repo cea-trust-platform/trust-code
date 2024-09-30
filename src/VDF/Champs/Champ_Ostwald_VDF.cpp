@@ -40,13 +40,13 @@ void Champ_Ostwald_VDF::mettre_a_jour(double tps)
 
 void Champ_Ostwald_VDF::calculer_mu(DoubleTab& mu_tab)
 {
-  const double d_n = mon_fluide_->indice_struct()->valeurs()(0, 0);
+  const double d_n = mon_fluide_->indice_struct().valeurs()(0, 0);
 
   for (int i = 0; i < nb_valeurs_nodales(); i++)
     {
-      if (sub_type(Champ_Uniforme, mon_fluide_->consistance().valeur()))
+      if (sub_type(Champ_Uniforme, mon_fluide_->consistance()))
         {
-          const double d_k = mon_fluide_->consistance()->valeurs()(0, 0);
+          const double d_k = mon_fluide_->consistance().valeurs()(0, 0);
           if (mu_tab[i] < 1.E-4)
             mu_tab[i] = d_k * pow(0.5 * 1.E-4, (d_n - 1.) / 2.);
           else if (mu_tab[i] > 1.E16)
@@ -56,7 +56,7 @@ void Champ_Ostwald_VDF::calculer_mu(DoubleTab& mu_tab)
         }
       else  // K varie en fonction de la temperature
         {
-          const DoubleTab& K_tab = mon_fluide_->consistance()->valeurs();
+          const DoubleTab& K_tab = mon_fluide_->consistance().valeurs();
           if (mu_tab[i] < 1.E-4)
             mu_tab[i] = K_tab[i] * pow(0.5 * 1.E-4, (d_n - 1.) / 2.);
           else if (mu_tab[i] > 1.E16)

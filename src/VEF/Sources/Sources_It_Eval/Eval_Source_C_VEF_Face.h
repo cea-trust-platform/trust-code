@@ -19,7 +19,7 @@
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Champ_Uniforme.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 #include <TRUSTTab.h>
 
 class Eval_Source_C_VEF_Face: public Evaluateur_Source_VEF_Face
@@ -27,7 +27,7 @@ class Eval_Source_C_VEF_Face: public Evaluateur_Source_VEF_Face
 public:
   Eval_Source_C_VEF_Face() { }
   void completer() override;
-  void associer_champs(const Champ_Don&);
+  void associer_champs(const Champ_Don_base&);
   void mettre_a_jour() override { }
 
   template<typename Type_Double>
@@ -37,7 +37,7 @@ public:
   inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-  REF(Champ_Don) la_source_constituant;
+  REF(Champ_Don_base) la_source_constituant;
   DoubleTab source_constituant;
   IntTab face_voisins;
   DoubleVect volumes;
@@ -49,7 +49,7 @@ inline void Eval_Source_C_VEF_Face::calculer_terme_source_standard(int num_face,
 {
   const int size = source.size_array();
 
-  if (sub_type(Champ_Uniforme, la_source_constituant->valeur()))
+  if (sub_type(Champ_Uniforme, la_source_constituant.valeur()))
     for (int i = 0; i < size; i++) source[i] = source_constituant(0, i) * volumes_entrelaces[num_face] * porosite_surf[num_face];
   else
     for (int i = 0; i < size; i++)
@@ -62,7 +62,7 @@ inline void Eval_Source_C_VEF_Face::calculer_terme_source_non_standard(int num_f
 {
   const int size = source.size_array();
 
-  if (sub_type(Champ_Uniforme, la_source_constituant->valeur()))
+  if (sub_type(Champ_Uniforme, la_source_constituant.valeur()))
     for (int i = 0; i < size; i++) source[i] = source_constituant(0, i) * volumes_entrelaces_Cl[num_face] * porosite_surf[num_face];
   else
     {

@@ -18,10 +18,11 @@
 
 #include <Equation_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 #include <SFichier.h>
 
 class Champ_base;
+class Champ_Don_base;
 
 /*! @brief Classe Terme_Source_Constituant Cette classe represente un terme source de l'equation de transport des constituants
  *
@@ -42,7 +43,7 @@ public :
   void ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int flag) const;
   int completer(const Champ_Inc_base& inco);
 
-  inline const Champ_Don& get_source() const
+  inline const Champ_Don_base& get_source() const
   {
     return la_source_constituant ;
   };
@@ -55,15 +56,15 @@ public :
 protected:
   int colw_;
   REF(Champ_base) rho_ref;
-  Champ_Don la_source_constituant;
+  OWN_PTR(Champ_Don_base) la_source_constituant;
 
 };
 
 
 /*! @brief Associe les champs donnes rho (masse volumique) et Cp (chaleur specifique) a l'objet.
  *
- * @param (Champ_Don& rho) champ donne representant la masse volumique
- * @param (Champ_Don& cp) champ donne representant la chaleur specifique
+ * @param (Champ_Don_base& rho) champ donne representant la masse volumique
+ * @param (Champ_Don_base& cp) champ donne representant la chaleur specifique
  */
 inline void Terme_Source_Constituant::associer_champs(const Champ_base& rho)
 {

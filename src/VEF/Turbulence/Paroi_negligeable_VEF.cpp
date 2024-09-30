@@ -119,11 +119,11 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_k_eps)
       const IntTab& face_voisins = domaine_VEF.face_voisins();
       const IntTab& elem_faces = domaine_VEF.elem_faces();
       const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
-      const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-      const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+      const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
+      const DoubleTab& tab_visco = ch_visco_cin.valeurs();
       const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
 
-      if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
+      if (sub_type(Champ_Uniforme, ch_visco_cin))
         {
           if (tab_visco(0, 0) > DMINFLOAT)
             visco = tab_visco(0, 0);
@@ -218,12 +218,12 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
     {
       const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
       const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
-      const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-      const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+      const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
+      const DoubleTab& tab_visco = ch_visco_cin.valeurs();
 
       double visco0;
       bool l_unif;
-      if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
+      if (sub_type(Champ_Uniforme, ch_visco_cin))
         {
           if (tab_visco(0, 0) > DMINFLOAT)
             visco0 = tab_visco(0, 0);

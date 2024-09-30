@@ -158,13 +158,13 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
 void Convection_Diffusion_Temperature::discretiser()
 {
   if (!sub_type(Fluide_reel_base,le_fluide.valeur()))
-    if  (le_fluide->conductivite().est_nul() || le_fluide->capacite_calorifique().est_nul() || le_fluide->beta_t().est_nul())
+    if (!le_fluide->has_conductivite() || !le_fluide->has_capacite_calorifique() || !le_fluide->has_beta_t())
       {
         Cerr << "You have not defined the following physical properties of the fluid " << finl;
-        Cerr << "needed to solve energy equation: " << que_suis_je() << finl;
-        if  (le_fluide->conductivite().est_nul()) Cerr << "  Thermal conductivity (lambda)"<< finl;
-        if  (le_fluide->capacite_calorifique().est_nul()) Cerr << "  Specific heat capacity (Cp)"<< finl;
-        if  (le_fluide->beta_t().est_nul()) Cerr << "  Thermal expansion coefficient (beta_th)"<< finl;
+        Cerr << "needed to solve the energy equation: " << que_suis_je() << finl;
+        if  (!le_fluide->has_conductivite()) Cerr << "  Thermal conductivity (lambda)"<< finl;
+        if  (!le_fluide->has_capacite_calorifique()) Cerr << "  Specific heat capacity (Cp)"<< finl;
+        if  (!le_fluide->has_beta_t()) Cerr << "  Thermal expansion coefficient (beta_th)"<< finl;
         exit();
       }
 
@@ -407,7 +407,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
 
 double Convection_Diffusion_Temperature::get_time_factor() const
 {
-  return domaine_dis().nb_elem() ? milieu().capacite_calorifique()->valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0) : 1.0;
+  return domaine_dis().nb_elem() ? milieu().capacite_calorifique().valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0) : 1.0;
 }
 
 // ajoute les contributions des operateurs et des sources
@@ -1123,7 +1123,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
       const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
       const double rho = tab_rho(0,0);
-      const DoubleTab& tab_cp = fluide_inc.capacite_calorifique()->valeurs();
+      const DoubleTab& tab_cp = fluide_inc.capacite_calorifique().valeurs();
       const double cp = tab_cp(0,0);
 
       //  Methode pour calculer le flux total sur les ibc
@@ -1239,16 +1239,16 @@ void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, Dou
   const Champ_Inc_base& ch_T = eqn.inconnue();
   const Champ_base& ch_rho = fl.masse_volumique();
   assert(sub_type(Champ_Uniforme, ch_rho));
-  const Champ_Don& ch_cp = fl.capacite_calorifique();
-  const DoubleTab& cp = fl.capacite_calorifique()->valeurs(), &rho = ch_rho.valeurs(), &T = ch_T.valeurs();
+  const Champ_Don_base& ch_cp = fl.capacite_calorifique();
+  const DoubleTab& cp = fl.capacite_calorifique().valeurs(), &rho = ch_rho.valeurs(), &T = ch_T.valeurs();
 
   /* valeurs du champ */
-  const int N = val.line_size(), Nl = val.dimension_tot(0), cCp = sub_type(Champ_Uniforme, ch_cp.valeur());
+  const int N = val.line_size(), Nl = val.dimension_tot(0), cCp = sub_type(Champ_Uniforme, ch_cp);
   for (int i = 0; i < Nl; i++)
     for (int n = 0; n < N; n++) val(i, n) = rho(0, n) * cp(!cCp * i, n) * T(i, n);
 
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a un domaine_dis_base */
-  DoubleTab b_cp = cCp ? cp : ch_cp->valeur_aux_bords(), b_T = ch_T.valeur_aux_bords();
+  DoubleTab b_cp = cCp ? cp : ch_cp.valeur_aux_bords(), b_T = ch_T.valeur_aux_bords();
   int Nb = b_T.dimension_tot(0);
   // on suppose que rho est un champ_uniforme : on utilise directement le tableau du champ
   for (int i = 0; i < Nb; i++)

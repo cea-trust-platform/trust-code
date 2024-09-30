@@ -125,13 +125,13 @@ void Domaine_EF_axi::calculer_IPhi(const Domaine_Cl_dis_base& zcl)
 void Domaine_EF_axi::remplir_tableau_origine()
 {
   DomaineAxi1d& domax = domaine_axi();
-  const Champ_base& orig = domax.champ_origine();
 
   origine_repere_.resize(0,Objet_U::dimension-1);
   domax.creer_tableau_elements(origine_repere_);
 
   if (domax.has_champ_origine())
     {
+      const Champ_base& orig = domax.champ_origine();
       const DoubleTab& positions = xp();
 
       IntVect les_polys(nb_elem());

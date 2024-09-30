@@ -21,13 +21,14 @@
 
 #include <TRUST_Ref.h>
 
-#include <Champ_Don.h>
+
 
 class Champ_Fonc_Tabule;
 class Schema_Temps_base;
 class Domaine_dis_base;
 class Champ_Fonc_base;
 class Champ_Inc_base;
+class Champ_Don_base;
 class Probleme_base;
 class Equation_base;
 class Champ_base;
@@ -69,7 +70,7 @@ public :
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,
                          const Nom& sous_type=NOM_VIDE) const;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, OWN_PTR(Champ_Fonc_base)& champ) const;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Don& champ) const;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, OWN_PTR(Champ_Don_base)& champ) const;
 
   // Creation de champs generaux (eventuellement multiscalaires) :
   // * Ces methodes doivent etre surchargees.
@@ -78,7 +79,7 @@ public :
   virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
                                  OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type=NOM_VIDE) const;
   virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, OWN_PTR(Champ_Fonc_base)& champ) const;
-  virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const;
+  virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, OWN_PTR(Champ_Don_base)& champ) const;
 
   void nommer_completer_champ_physique(const Domaine_dis_base& domaine_vdf, const Nom& nom_champ, const Nom& unite, Champ_base& champ, const Probleme_base& pbi) const;
   int verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const;
@@ -91,7 +92,7 @@ public :
                           const Nom& directive=NOM_VIDE, const Nom& nom_discretisation=NOM_VIDE);
   static void creer_champ(OWN_PTR(Champ_Fonc_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
                           const Nom& nom_discretisation=NOM_VIDE);
-  static void creer_champ(Champ_Don& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
+  static void creer_champ(OWN_PTR(Champ_Don_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
                           const Nom& nom_discretisation=NOM_VIDE);
 
   virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const REF(Champ_base)& champ_supp =REF(Champ_base)()) const;

@@ -424,10 +424,10 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
   const IntTab& face_voisins = domaine_vef().face_voisins(), &elem_faces = domaine_vef().elem_faces();
   const Equation_base& eqn_hydr = equation();
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
-  const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+  const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
+  const DoubleTab& tab_visco = ch_visco_cin.valeurs();
 
-  if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
+  if (sub_type(Champ_Uniforme, ch_visco_cin))
     {
       if (tab_visco(0, 0) > DMINFLOAT)
         visco = tab_visco(0, 0);
@@ -637,14 +637,14 @@ void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
       if (sub_type(Echange_externe_impose, la_cl.valeur()))
         {
           const Champ_base& rho = equation().milieu().masse_volumique();
-          const Champ_Don& Cp = equation().milieu().capacite_calorifique();
+          const Champ_Don_base& Cp = equation().milieu().capacite_calorifique();
           int rho_uniforme = (sub_type(Champ_Uniforme,rho) ? 1 : 0);
-          int cp_uniforme = (sub_type(Champ_Uniforme,Cp.valeur()) ? 1 : 0);
+          int cp_uniforme = (sub_type(Champ_Uniforme,Cp) ? 1 : 0);
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
               int elem = face_voisins(num_face, 0);
               double rho_cp = (rho_uniforme ? rho.valeurs()(0, 0) : (rho.nb_comp() == 1 ? rho.valeurs()(num_face) : rho.valeurs()(num_face, 0)));
-              rho_cp *= (cp_uniforme ? Cp->valeurs()(0, 0) : (Cp->nb_comp() == 1 ? Cp->valeurs()(num_face) : Cp->valeurs()(num_face, 0)));
+              rho_cp *= (cp_uniforme ? Cp.valeurs()(0, 0) : (Cp.nb_comp() == 1 ? Cp.valeurs()(num_face) : Cp.valeurs()(num_face, 0)));
               h_conv(elem) = ref_cast(Echange_externe_impose,la_cl.valeur()).h_imp(num_face) * rho_cp;
               h_moy += h_conv(elem);
             }

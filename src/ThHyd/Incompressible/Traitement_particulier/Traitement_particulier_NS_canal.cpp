@@ -788,9 +788,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
             {
               rho = fluide.masse_volumique().valeurs()(0,0);
             }
-          if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+          if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
             {
-              mu = fluide.viscosite_dynamique()->valeurs()(0,0);
+              mu = fluide.viscosite_dynamique().valeurs()(0,0);
             }
 
 //            for each cl, calculation of the mean tauw
@@ -800,7 +800,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
               tauw_diri_tmp=0.;
               if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                 rho = 0.;
-              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
                 mu = 0.;
               const Cond_lim& la_cl = itr;
               if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
@@ -821,8 +821,8 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                             rho += fluide.masse_volumique().valeurs()[elem];
-                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                            mu += fluide.viscosite_dynamique()->valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
+                            mu += fluide.viscosite_dynamique().valeurs()[elem];
                         }
                     }
                   else
@@ -837,8 +837,8 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                             rho += fluide.masse_volumique().valeurs()[elem];
-                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                            mu += fluide.viscosite_dynamique()->valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
+                            mu += fluide.viscosite_dynamique().valeurs()[elem];
                         }
                     }
                   tauw_diri_tmp=mp_sum(tauw_diri_tmp)/mp_sum(nbfaces_bord_diri);
@@ -847,7 +847,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
                   if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                     rho=mp_sum(rho)/mp_sum(nbfaces_bord_diri);
-                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
                     mu=mp_sum(mu)/mp_sum(nbfaces_bord_diri);
 
                   tauw_diri(numero_bord_diri) = tauw_diri_tmp;
@@ -911,9 +911,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
             {
               rho = fluide.masse_volumique().valeurs()(0,0);
             }
-          if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+          if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
             {
-              mu = fluide.viscosite_dynamique()->valeurs()(0,0);
+              mu = fluide.viscosite_dynamique().valeurs()(0,0);
             }
 
 //            for each cl, calculation of the mean tauw
@@ -923,7 +923,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
               tauw_robin_tmp=0.;
               if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                 rho = 0.;
-              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
                 mu = 0.;
               const Cond_lim& la_cl = itr;
               if (la_cl->que_suis_je() == "Paroi_decalee_Robin")
@@ -944,8 +944,8 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                             rho+=fluide.masse_volumique().valeurs()[elem];
-                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                            mu+=fluide.viscosite_dynamique()->valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
+                            mu+=fluide.viscosite_dynamique().valeurs()[elem];
                         }
                     }
                   else
@@ -960,8 +960,8 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                             elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                             rho+=fluide.masse_volumique().valeurs()[elem];
-                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                            mu+=fluide.viscosite_dynamique()->valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
+                            mu+=fluide.viscosite_dynamique().valeurs()[elem];
                         }
                     }
                   tauw_robin_tmp=mp_sum(tauw_robin_tmp)/mp_sum(nbfaces_bord_robin);
@@ -970,7 +970,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
                   if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
                     rho=mp_sum(rho)/mp_sum(nbfaces_bord_robin);
-                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique()) )
                     mu=mp_sum(mu)/mp_sum(nbfaces_bord_robin);
 
                   tauw_robin(numero_bord_robin) = tauw_robin_tmp;

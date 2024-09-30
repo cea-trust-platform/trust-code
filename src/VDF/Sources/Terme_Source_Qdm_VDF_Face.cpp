@@ -63,7 +63,8 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
   const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleTab* rho = alp ? &equation().milieu().masse_volumique().passe() : nullptr;
 
-  const int cR = alp ? ((*rho).dimension_tot(0) == 1) : 0, nb_comp = equation().inconnue().valeurs().line_size();
+  const int cR = alp ? ((*rho).dimension_tot(0) == 1) : 0;
+  const int nb_comp = equation().inconnue().valeurs().line_size();
 
   double vol;
   int ndeb, nfin, ncomp, num_face, elem1, elem2;

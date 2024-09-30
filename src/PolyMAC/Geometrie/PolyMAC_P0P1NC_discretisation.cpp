@@ -139,7 +139,7 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(const Motcle& dir
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
   OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
-  Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Don_base) *champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC, z);
 
@@ -229,7 +229,7 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(const Motcle& dir
     }
   else if ((nature == multi_scalaire) && (champ_don))
     {
-      Cerr << "There is no field of type Champ_Don with a multi_scalaire nature." << finl;
+      Cerr << "There is no field of type OWN_PTR(Champ_Don_base) with a multi_scalaire nature." << finl;
       exit();
     }
 }

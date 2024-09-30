@@ -55,26 +55,30 @@ public :
   const Champ_base& temperature_multiphase() const;
   Champ_base& temperature_multiphase();
 
-  inline const Champ_Don& viscosite_cinematique() const { return ch_nu_; }
-  inline Champ_Don& viscosite_cinematique() { return ch_nu_; }
-  inline const Champ_Don& viscosite_dynamique() const { return ch_mu_; }
-  inline Champ_Don& viscosite_dynamique() { return ch_mu_; }
+  inline const Champ_Don_base& viscosite_cinematique() const { return ch_nu_.valeur(); }
+  inline Champ_Don_base& viscosite_cinematique() { return ch_nu_.valeur(); }
+  inline const Champ_Don_base& viscosite_dynamique() const { return ch_mu_.valeur(); }
+  inline Champ_Don_base& viscosite_dynamique() { return ch_mu_.valeur(); }
+  bool has_viscosite_dynamique() const { return ch_mu_.non_nul(); }
 
   // Renvoie la dilatabilite du constituant, beta_co.
-  inline const Champ_Don& beta_c() const { return ch_beta_co_; }
-  inline Champ_Don& beta_c() { return ch_beta_co_; }
+  inline const Champ_Don_base& beta_c() const { return ch_beta_co_.valeur(); }
+  inline Champ_Don_base& beta_c() { return ch_beta_co_.valeur(); }
+  bool has_beta_c() const { return ch_beta_co_.non_nul(); }
 
   // Renvoie le coefficient d'absorbtion du fluide
-  inline Champ_Don& kappa() { return coeff_absorption_; }
-  inline const Champ_Don& kappa() const { return coeff_absorption_; }
+  inline Champ_Don_base& kappa() { return coeff_absorption_.valeur(); }
+  inline const Champ_Don_base& kappa() const { return coeff_absorption_.valeur(); }
+  bool has_kappa() const { return coeff_absorption_.non_nul(); }
 
   // Renvoie l'indice de refraction du fluide
-  inline Champ_Don& indice() { return indice_refraction_; }
-  inline const Champ_Don& indice() const { return indice_refraction_; }
+  inline Champ_Don_base& indice() { return indice_refraction_.valeur(); }
+  inline const Champ_Don_base& indice() const { return indice_refraction_.valeur(); }
 
   //  Renvoie la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
-  inline Champ_Don& longueur_rayo() { return longueur_rayo_; }
-  inline const Champ_Don& longeur_rayo() const { return longueur_rayo_; }
+  inline Champ_Don_base& longueur_rayo() { return longueur_rayo_.valeur(); }
+  inline const Champ_Don_base& longeur_rayo() const { return longueur_rayo_.valeur(); }
+  void typer_longeur_rayo(const Nom& typ) { longueur_rayo_.typer(typ); }
 
   // Modif CHD 07/05/03 Ajout des parametres pour un fluide semi transparent on les ramene ici pour ne plus avoir a utiliser de Fluide incompressible semi transparent.
   int is_rayo_semi_transp() const override;
@@ -91,14 +95,14 @@ protected :
   static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv); // fonction de calcul par defaut
 
   mutable OWN_PTR(Champ_base) ch_e_int_, ch_h_ou_T_; //pour la creation sur demande : h is Energie_Multiphase et T si Energie_Multiphase_Enthalpie
-  Champ_Don ch_mu_, ch_nu_, ch_beta_co_;
+  OWN_PTR(Champ_Don_base) ch_mu_, ch_nu_, ch_beta_co_;
   double h0_ = 0, T0_ = 0;
 
   // Parametres du fluide rayonnant semi transparent
-  Champ_Don coeff_absorption_, indice_refraction_;
+  OWN_PTR(Champ_Don_base) coeff_absorption_, indice_refraction_;
 
   // Longueur caractaristique de la longueur de penetration du rayonnement dans le milieu semi transparent definie comme l = 1/(3*kappa)
-  Champ_Don longueur_rayo_;
+  OWN_PTR(Champ_Don_base) longueur_rayo_;
 
   void creer_nu();
   virtual void calculer_nu();

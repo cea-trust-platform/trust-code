@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,9 @@
 #ifndef Terme_Source_Qdm_included
 #define Terme_Source_Qdm_included
 
+#include <TRUST_Deriv.h>
 
-#include <Champ_Don.h>
-
+class Champ_Don_base;
 
 /*! @brief Classe Terme_Source_Qdm Cette classe represente un terme source qui figure dans l'equation
  *
@@ -30,11 +30,11 @@ class Terme_Source_Qdm
 
 public :
 
-  const Champ_Don& source() const;
+  const Champ_Don_base& source() const;
 
 protected :
 
-  Champ_Don la_source;
+  OWN_PTR(Champ_Don_base) la_source;
 };
 
 #endif

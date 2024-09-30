@@ -101,24 +101,27 @@ int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 //                                                            //
 ////////////////////////////////////////////////////////////////
 
-double valeur_a_la_face(const Champ_Don& le_ch, const IntTab& f_e, int f)
+namespace
 {
-  assert(le_ch->valeurs().line_size() == 1);
+double valeur_a_la_face(const Champ_Don_base& le_ch, const IntTab& f_e, int f)
+{
+  assert(le_ch.valeurs().line_size() == 1);
   double s = 0.0, val = 0.0;
   for (int i = 0, e; i < 2; i++)
     if ((e = f_e(f, i)) > -1)
       {
-        val += le_ch->valeurs()(e, 0);
+        val += le_ch.valeurs()(e, 0);
         s += 1.0;
       }
   val /= s;
   return val;
 }
+}
 
 DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
 {
   const Domaine_VEF& zvef=le_dom_VEF.valeur();
-  const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
+  const Champ_Don_base& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=zvef.xv() ;                 // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
@@ -130,8 +133,8 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
   DoubleVect pos(dimension);
   DoubleVect v_valeur(dimension);
   // Optimisations pour les cas ou nu ou diam_hydr sont constants
-  const bool nu_constant = sub_type(Champ_Uniforme, nu.valeur()), dh_constant = sub_type(Champ_Uniforme, diam_hydr.valeur()),
-             nu_xyz = sub_type(Champ_Don_Fonc_xyz, nu.valeur()) || sub_type(Champ_Don_Fonc_txyz, nu.valeur()),
+  const bool nu_constant = sub_type(Champ_Uniforme, nu), dh_constant = sub_type(Champ_Uniforme, diam_hydr.valeur()),
+             nu_xyz = sub_type(Champ_Don_Fonc_xyz, nu) || sub_type(Champ_Don_Fonc_txyz, nu),
              dh_xyz = sub_type(Champ_Don_Fonc_xyz, diam_hydr.valeur()) || sub_type(Champ_Don_Fonc_txyz, diam_hydr.valeur());
 
   // Le temps actuel
@@ -160,8 +163,8 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
           for (int i=0; i<dimension; i++)
             pos[i]=xv(la_face,i);
 
-          const double nu_valeur = nu_constant ? nu->valeurs()(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
-          const double dh_valeur = dh_constant ? diam_hydr->valeurs()(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
+          const double nu_valeur = nu_constant ? nu.valeurs()(0,0) : (nu_xyz ? nu.valeur_a_compo(pos,0) : ::valeur_a_la_face(nu, f_e, la_face));
+          const double dh_valeur = dh_constant ? diam_hydr->valeurs()(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : ::valeur_a_la_face(diam_hydr, f_e, la_face));
 
           // Calcul du reynolds
           double reynolds=norme_u*dh_valeur/nu_valeur;
@@ -197,7 +200,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   if (implicite_==0) return; // La perte de charge n'est pas implicitee, on quitte
 
   // Raccourcis
-  const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
+  const Champ_Don_base& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
@@ -212,8 +215,8 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   DoubleVect pos(dimension);
   DoubleVect v_valeur(dimension);
   // Optimisations pour les cas ou nu ou diam_hydr sont constants
-  const bool nu_constant = sub_type(Champ_Uniforme, nu.valeur()), dh_constant = sub_type(Champ_Uniforme, diam_hydr.valeur()),
-             nu_xyz = sub_type(Champ_Don_Fonc_xyz, nu.valeur()) || sub_type(Champ_Don_Fonc_txyz, nu.valeur()),
+  const bool nu_constant = sub_type(Champ_Uniforme, nu), dh_constant = sub_type(Champ_Uniforme, diam_hydr.valeur()),
+             nu_xyz = sub_type(Champ_Don_Fonc_xyz, nu) || sub_type(Champ_Don_Fonc_txyz, nu),
              dh_xyz = sub_type(Champ_Don_Fonc_xyz, diam_hydr.valeur()) || sub_type(Champ_Don_Fonc_txyz, diam_hydr.valeur());
 
   // Le temps actuel
@@ -227,7 +230,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 
   // To ensure that nu_valeur will not be zero
   // and not have a division by zero for the calculation of Reynolds
-  assert_espace_virtuel_vect(nu->valeurs());
+  assert_espace_virtuel_vect(nu.valeurs());
 
   for (int face=0; face<max_faces; face++)
     {
@@ -254,8 +257,8 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
       for (int i=0; i<dimension; i++)
         pos[i]=xv(la_face,i);
 
-      const double nu_valeur = nu_constant ? nu->valeurs()(0,0) : (nu_xyz ? nu->valeur_a_compo(pos,0) : valeur_a_la_face(nu, f_e, la_face));
-      const double dh_valeur = dh_constant ? diam_hydr->valeurs()(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : valeur_a_la_face(diam_hydr, f_e, la_face));
+      const double nu_valeur = nu_constant ? nu.valeurs()(0,0) : (nu_xyz ? nu.valeur_a_compo(pos,0) : ::valeur_a_la_face(nu, f_e, la_face));
+      const double dh_valeur = dh_constant ? diam_hydr->valeurs()(0,0) : (dh_xyz ? diam_hydr->valeur_a_compo(pos,0) : ::valeur_a_la_face(diam_hydr, f_e, la_face));
 
       // Calcul du reynolds
       reynolds=norme_u*dh_valeur/nu_valeur;

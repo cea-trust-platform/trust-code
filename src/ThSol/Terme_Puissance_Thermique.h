@@ -17,13 +17,16 @@
 #define Terme_Puissance_Thermique_included
 
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+#include <TRUST_Deriv.h>
+#include <TRUSTTabs_forward.h>
+#include <Champ_Don_base.h>
 
 class Domaine_Cl_dis_base;
 class Domaine_dis_base;
 class Equation_base;
 class Probleme_base;
 class Champ_base;
+class Entree;
 
 /*! @brief Classe Terme_Puissance_Thermique Cette classe represente un terme source de l'equation de la thermique
  *
@@ -45,7 +48,7 @@ public :
   void resetTime(double t);
 
 protected:
-  Champ_Don la_puissance_lu, la_puissance;
+  OWN_PTR(Champ_Don_base) la_puissance_lu, la_puissance;
 };
 
 #endif

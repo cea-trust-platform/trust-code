@@ -39,7 +39,7 @@ Entree& Navier_Stokes_Turbulent_QC::readOn(Entree& is)
   return is;
 }
 
-const Champ_Don& Navier_Stokes_Turbulent_QC::diffusivite_pour_transport() const
+const Champ_Don_base& Navier_Stokes_Turbulent_QC::diffusivite_pour_transport() const
 {
   return fluide().viscosite_dynamique();
 }
@@ -87,7 +87,7 @@ void Navier_Stokes_Turbulent_QC::completer()
     {
       Cerr << "Gravity=" << le_fluide->gravite() << finl;
       //l'equation de NS en quasi compressible peut contenir un terme source de gravite
-      if (le_fluide->beta_t().non_nul())    //pour debogage    A ENLEVER APRES
+      if (le_fluide->has_beta_t())    //pour debogage    A ENLEVER APRES
         {
           Cerr << "Beta_t !=0  -> Boussinesq is currently used :" << finl;
         }

@@ -33,7 +33,11 @@ public :
 
   void set_param(Param& param) override;
 
-  inline const Champ_Don& diffusivite_constituant() const { return D_; }
+  inline const Champ_Don_base& diffusivite_constituant() const
+  {
+    assert(D_.non_nul());
+    return D_.valeur();
+  }
 
   inline void mettre_a_jour(double temps) override
   {
@@ -53,7 +57,7 @@ public :
   inline int nb_constituants() const { return D_->nb_comp(); }
 
 protected :
-  Champ_Don D_; // Coefficient de diffusion du constituant dans un milieu
+  OWN_PTR(Champ_Don_base) D_; // Coefficient de diffusion du constituant dans un milieu
 };
 
 #endif /* Constituant_included */

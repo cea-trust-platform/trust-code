@@ -24,7 +24,7 @@
 #include <Champ_Q1NC.h>
 #include <Periodique.h>
 #include <TRUSTTrav.h>
-#include <Champ_Don.h>
+
 #include <Debog.h>
 
 Implemente_instanciable(Op_Dift_VEF_Face_Q1, "Op_Dift_VEF_Q1NC", Op_Dift_VEF_base);

@@ -18,7 +18,7 @@
 
 #include <Evaluateur_Source_Elem.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Don.h>
+
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
@@ -27,26 +27,26 @@ class Eval_Source_C_PolyMAC_Elem : public Evaluateur_Source_Elem
 public:
   Eval_Source_C_PolyMAC_Elem() { }
   void mettre_a_jour( ) override { }
-  inline void associer_champs(const Champ_Don& );
+  inline void associer_champs(const Champ_Don_base& );
 
   template <typename Type_Double>
   inline void calculer_terme_source(const int , Type_Double& ) const;
 
 protected:
-  REF(Champ_Don) la_source_constituant;
+  REF(Champ_Don_base) la_source_constituant;
   DoubleTab source_constituant;
 };
 
-inline void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+inline void Eval_Source_C_PolyMAC_Elem::associer_champs(const Champ_Don_base& Q)
 {
   la_source_constituant = Q;
-  source_constituant.ref(Q->valeurs());
+  source_constituant.ref(Q.valeurs());
 }
 
 template <typename Type_Double>
 inline void Eval_Source_C_PolyMAC_Elem::calculer_terme_source(int num_elem, Type_Double& source) const
 {
-  const int k = sub_type(Champ_Uniforme,la_source_constituant->valeur()) ? 0 : num_elem, size = source.size_array();
+  const int k = sub_type(Champ_Uniforme,la_source_constituant.valeur()) ? 0 : num_elem, size = source.size_array();
   for (int i = 0; i < size; i++) source[i] = source_constituant(k,i)*volumes(num_elem)*porosite_vol(num_elem);
 }
 

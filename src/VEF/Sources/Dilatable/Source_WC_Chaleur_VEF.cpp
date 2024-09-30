@@ -58,7 +58,7 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
 
   // On sait que grad_Ptot est un champ elem => on pense a la conductivite (elem en vef !! )
   DoubleTab grad_Ptot;
-  const DoubleTab& lambda = eqHyd.milieu().conductivite()->valeurs();
+  const DoubleTab& lambda = eqHyd.milieu().conductivite().valeurs();
   const int nb = lambda.size_totale(), nbcomp = la_vitesse.line_size();
   assert (nb == lambda.dimension_tot(0) && lambda.line_size() == 1);
   grad_Ptot.resize(nb,nbcomp);

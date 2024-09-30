@@ -133,8 +133,8 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
           if (pb.equation(0).discretisation().que_suis_je() == "VDF")
             isVDF = 1;
 
-          // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
-          assert(ch_Pth_xyz_->valeurs().size() == viscosite_dynamique()->valeurs().size());
+          // We know that mu is always stored on elems and that OWN_PTR(Champ_Don_base) rho_xyz_ is evaluated on elements
+          assert(ch_Pth_xyz_->valeurs().size() == viscosite_dynamique().valeurs().size());
 
           if (isVDF) // Disc VDF => Pth_xyz_ on elems => we do nothing
             Pth_tab_ = Pth_n_tab_ = ch_Pth_xyz_->valeurs();
@@ -192,32 +192,28 @@ void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const Disc
 
   // In *_Melange_Binaire_WC we do not even have a temperature variable ...
   // it is the species mass fraction Y1... Although named ch_temperature
-  Champ_Don& ch_TK = ch_temperature();
   if (pb.que_suis_je() == "Pb_Hydraulique_Melange_Binaire_WC" || pb.que_suis_je() == "Pb_Hydraulique_Melange_Binaire_Turbulent_WC")
-    dis.discretiser_champ("temperature", domaine_dis, "fraction_massique", "neant", 1, temps, ch_TK);
+    dis.discretiser_champ("temperature", domaine_dis, "fraction_massique", "neant", 1, temps, loi_etat_->temperature_);
   else
-    dis.discretiser_champ("temperature", domaine_dis, "temperature", "K", 1, temps, ch_TK);
+    dis.discretiser_champ("temperature", domaine_dis, "temperature", "K", 1, temps, loi_etat_->temperature_);
 
   if (type_fluide() != "Gaz_Parfait")
-    loi_etat()->champs_compris().ajoute_champ(ch_TK);
+    loi_etat()->champs_compris().ajoute_champ(ch_temperature());
 
   Fluide_Dilatable_base::discretiser(pb, dis);
 
   // XXX XXX : Champs pour WC : comme la temperature car elem en VDF et faces en VEF
-  Champ_Don& phydro = pression_hydro();
-  dis.discretiser_champ("temperature", domaine_dis, "pression_hydro", "Pa", 1, temps, phydro);
-  champs_compris_.ajoute_champ(phydro);
+  dis.discretiser_champ("temperature", domaine_dis, "pression_hydro", "Pa", 1, temps, ch_pression_hydro_);
+  champs_compris_.ajoute_champ(ch_pression_hydro_.valeur());
 
-  Champ_Don& peos = pression_eos();
-  dis.discretiser_champ("temperature", domaine_dis, "pression_eos", "Pa", 1, temps, peos);
-  champs_compris_.ajoute_champ(peos);
+  dis.discretiser_champ("temperature", domaine_dis, "pression_eos", "Pa", 1, temps, ch_pression_eos_);
+  champs_compris_.ajoute_champ(ch_pression_eos_.valeur());
 
   // Seulement pour multi-especes
   if (pb.que_suis_je() == "Pb_Thermohydraulique_Especes_WC")
     {
-      Champ_Don& yn = fraction_massique_nonresolue();
-      dis.discretiser_champ("temperature", domaine_dis, "fraction_massique_nonresolue", "neant", 1, temps, yn);
-      champs_compris_.ajoute_champ(yn);
+      dis.discretiser_champ("temperature", domaine_dis, "fraction_massique_nonresolue", "neant", 1, temps, ch_unsolved_species_);
+      champs_compris_.ajoute_champ(ch_unsolved_species_.valeur());
     }
 }
 

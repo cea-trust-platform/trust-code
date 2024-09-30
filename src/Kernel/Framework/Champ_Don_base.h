@@ -26,7 +26,7 @@
  *      mais peuvent etre variables dans le temps dans l'espace
  *      fonctions d'autres champs ...
  *
- * @sa Champ_base Champ_Don Champ_Fonc_base
+ * @sa Champ_base OWN_PTR(Champ_Don_base) Champ_Fonc_base
  */
 class Champ_Don_base : public Champ_base
 {

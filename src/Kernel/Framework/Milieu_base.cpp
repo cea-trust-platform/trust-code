@@ -90,13 +90,13 @@ Entree& Milieu_base::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
   check_gravity_vector();
   creer_champs_non_lus();
-  champs_don_.add(ch_g_);
-  champs_don_.add(ch_alpha_);
-  champs_don_.add(ch_lambda_);
-  champs_don_.add(ch_Cp_);
-  champs_don_.add(ch_beta_th_);
-  champs_don_.add(ch_porosites_);
-  champs_don_.add(ch_diametre_hyd_);
+  if (ch_g_.non_nul()) champs_don_.add(ch_g_.valeur());
+  if (ch_alpha_.non_nul()) champs_don_.add(ch_alpha_.valeur());
+  if (ch_lambda_.non_nul()) champs_don_.add(ch_lambda_.valeur());
+  if (ch_Cp_.non_nul()) champs_don_.add(ch_Cp_.valeur());
+  if (ch_beta_th_.non_nul()) champs_don_.add(ch_beta_th_.valeur());
+  if (ch_porosites_.non_nul()) champs_don_.add(ch_porosites_.valeur());
+  if (ch_diametre_hyd_.non_nul()) champs_don_.add(ch_diametre_hyd_.valeur());
   return is;
 }
 
@@ -126,7 +126,6 @@ int Milieu_base::lire_motcle_non_standard(const Motcle& mot_lu, Entree& is)
 void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
   Cerr << "Medium discretization." << finl;
-  Champ_Don& ch_lambda = conductivite(), &ch_alpha = diffusivite(), &ch_alpha_fois_rho = diffusivite_fois_rho(), &ch_beta_th = beta_t();
   const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
 
   // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
@@ -137,55 +136,55 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
 
   int lambda_nb_comp = 0;
 
-  if(ch_lambda.non_nul())
+  if(ch_lambda_.non_nul())
     {
       // Returns number of components of lambda field
-      lambda_nb_comp = ch_lambda->nb_comp( );
-      if (sub_type(Champ_Fonc_MED,ch_lambda.valeur()))
+      lambda_nb_comp = ch_lambda_->nb_comp( );
+      if (sub_type(Champ_Fonc_MED,ch_lambda_.valeur()))
         {
-          double temps=ch_lambda->temps();
+          double temps=ch_lambda_->temps();
           Cerr<<"Convert Champ_fonc_MED lambda in Champ_Don..."<<finl;
-          Champ_Don ch_lambda_prov;
+          OWN_PTR(Champ_Don_base) ch_lambda_prov;
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_prov);
-          ch_lambda_prov->affecter(ch_lambda.valeur());
-          ch_lambda.detach();
-          ch_alpha.detach();
-          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda);
-          ch_lambda->valeurs()=ch_lambda_prov->valeurs();
+          ch_lambda_prov->affecter(ch_lambda_.valeur());
+          ch_lambda_.detach();
+          ch_alpha_.detach();
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_);
+          ch_lambda_->valeurs()=ch_lambda_prov->valeurs();
         }
 
       if(lambda_nb_comp >1) // Pour anisotrope
-        ch_lambda->fixer_nature_du_champ(multi_scalaire);
+        ch_lambda_->fixer_nature_du_champ(multi_scalaire);
 
-      dis.nommer_completer_champ_physique(domaine_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"conductivite","W/m/K",ch_lambda_.valeur(),pb);
 
       // le vrai nom sera donne plus tard
-      if (sub_type(Champ_Fonc_Tabule,ch_lambda.valeur()))
+      if (sub_type(Champ_Fonc_Tabule,ch_lambda_.valeur()))
         {
-          double temps=ch_lambda->temps();
-          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
-          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho);
+          double temps=ch_lambda_->temps();
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_);
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho_);
         }
-      champs_compris_.ajoute_champ(ch_lambda.valeur());
+      champs_compris_.ajoute_champ(ch_lambda_.valeur());
     }
-  if (!ch_alpha.non_nul()&&(ch_lambda.non_nul()))
+  if (!ch_alpha_.non_nul()&&(ch_lambda_.non_nul()))
     {
-      double temps=ch_lambda->temps();
+      double temps=ch_lambda_->temps();
       // ch_alpha (i.e. diffusivite_thermique) will have same component number as ch_lambda
-      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
-      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha_fois_rho_);
     }
-  if (ch_alpha.non_nul())
+  if (ch_alpha_.non_nul())
     {
-      dis.nommer_completer_champ_physique(domaine_dis,"diffusivite_thermique","m2/s",ch_alpha.valeur(),pb);
-      dis.nommer_completer_champ_physique(domaine_dis,"alpha_fois_rho","kg/ms",ch_alpha_fois_rho.valeur(),pb);
-      champs_compris_.ajoute_champ(ch_alpha.valeur());
-      champs_compris_.ajoute_champ(ch_alpha_fois_rho.valeur());
+      dis.nommer_completer_champ_physique(domaine_dis,"diffusivite_thermique","m2/s",ch_alpha_.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"alpha_fois_rho","kg/ms",ch_alpha_fois_rho_.valeur(),pb);
+      champs_compris_.ajoute_champ(ch_alpha_.valeur());
+      champs_compris_.ajoute_champ(ch_alpha_fois_rho_.valeur());
     }
-  if (ch_beta_th.non_nul())
+  if (ch_beta_th_.non_nul())
     {
-      dis.nommer_completer_champ_physique(domaine_dis,"dilatabilite","K-1",ch_beta_th.valeur(),pb);
-      champs_compris_.ajoute_champ(ch_beta_th.valeur());
+      dis.nommer_completer_champ_physique(domaine_dis,"dilatabilite","K-1",ch_beta_th_.valeur(),pb);
+      champs_compris_.ajoute_champ(ch_beta_th_.valeur());
     }
   if  (ch_Cp_.non_nul())
     {
@@ -264,8 +263,8 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
         }
       else if (sub_type(Champ_Fonc_MED,ch_porosites_.valeur()))
         {
-          Cerr<<"Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..."<<finl;
-          Champ_Don tmp_fld;
+          Cerr<<"Convert Champ_fonc_MED " << fld_name << " to a OWN_PTR(Champ_Don_base) ..."<<finl;
+          OWN_PTR(Champ_Don_base) tmp_fld;
           dis.discretiser_champ("champ_elem",zdb_.valeur(),"neant",fld_unit,1,temps,tmp_fld);
           tmp_fld->affecter(ch_porosites_.valeur()); // interpolate ...
           ch_porosites_.detach();
@@ -339,8 +338,8 @@ void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Disc
       has_hydr_diam_ = true;
       if (sub_type(Champ_Fonc_MED, ch_diametre_hyd_.valeur()))
         {
-          Cerr << "Convert Champ_fonc_MED " << fld_name << " to a Champ_Don ..." << finl;
-          Champ_Don tmp_fld;
+          Cerr << "Convert Champ_fonc_MED " << fld_name << " to a OWN_PTR(Champ_Don_base) ..." << finl;
+          OWN_PTR(Champ_Don_base) tmp_fld;
           dis.discretiser_champ("champ_elem", zdb_.valeur(), "neant", fld_unit, 1, temps, tmp_fld);
           tmp_fld->affecter(ch_diametre_hyd_.valeur()); // interpolate ...
           ch_diametre_hyd_.detach();
@@ -481,7 +480,7 @@ void Milieu_base::warn_old_syntax()
 
 /*! @brief Associe la gravite en controlant dynamiquement le type de l'objet a associer.
  *
- *     Si l'objet est du type Champ_Don ou Champ_Don_base
+ *     Si l'objet est du type OWN_PTR(Champ_Don_base) ou Champ_Don_base
  *     l'association reussit, sinon elle echoue.
  *
  * @param (Objet_U& ob) un objet TRUST devant representer un champ de gravite
@@ -496,11 +495,11 @@ int Milieu_base::associer_(Objet_U& ob)
       associer_gravite(ref_cast(Champ_Don_base, ob));
       return 1;
     }
-  if (dynamic_cast <Champ_Don*>(&ob) != nullptr)
+  if (dynamic_cast <Champ_Don_base*>(&ob) != nullptr)
     {
       warn_old_syntax();
       via_associer_ = true;
-      associer_gravite(dynamic_cast<Champ_Don&>(ob).valeur());
+      associer_gravite(dynamic_cast<Champ_Don_base&>(ob));
       return 1;
     }
   return 0;
@@ -677,11 +676,6 @@ void Milieu_base::update_rho_cp(double temps)
     }
 }
 
-bool Milieu_base::initTimeStep(double dt)
-{
-  return true;
-}
-
 void Milieu_base::abortTimeStep()
 {
   if (ch_rho_.non_nul()) ch_rho_->abortTimeStep();
@@ -769,7 +763,6 @@ int Milieu_base::initialiser(const double temps)
 
   if (ch_rho_Cp_comme_T_.non_nul()) update_rho_cp(temps);
 
-
   int err=0;
   Nom msg;
   verifier_coherence_champs(err,msg);
@@ -819,90 +812,90 @@ Champ_base& Milieu_base::masse_volumique()
  *
  * (version const)
  *
- * @return (Champ_Don&) le champ donne representant la diffusivite
+ * @return (Champ_Don_base&) le champ donne representant la diffusivite
  */
-const Champ_Don& Milieu_base::diffusivite() const
+const Champ_Don_base& Milieu_base::diffusivite() const
 {
-  return ch_alpha_;
+  return ch_alpha_.valeur();
 }
 
 /*! @brief Renvoie la diffusivite du milieu.
  *
- * @return (Champ_Don&) le champ donne representant la diffusivite
+ * @return (Champ_Don_base&) le champ donne representant la diffusivite
  */
-Champ_Don& Milieu_base::diffusivite()
+Champ_Don_base& Milieu_base::diffusivite()
 {
-  return ch_alpha_;
+  return ch_alpha_.valeur();
 }
 
-const Champ_Don& Milieu_base::diffusivite_fois_rho() const
+const Champ_Don_base& Milieu_base::diffusivite_fois_rho() const
 {
-  return ch_alpha_fois_rho_;
+  return ch_alpha_fois_rho_.valeur();
 }
 
-Champ_Don& Milieu_base::diffusivite_fois_rho()
+Champ_Don_base& Milieu_base::diffusivite_fois_rho()
 {
-  return ch_alpha_fois_rho_;
+  return ch_alpha_fois_rho_.valeur();
 }
 
 /*! @brief Renvoie la conductivite du milieu.
  *
  * (version const)
  *
- * @return (Champ_Don&) le champ donne representant la conductivite
+ * @return (Champ_Don_base&) le champ donne representant la conductivite
  */
-const Champ_Don& Milieu_base::conductivite() const
+const Champ_Don_base& Milieu_base::conductivite() const
 {
-  return ch_lambda_;
+  return ch_lambda_.valeur();
 }
 
 /*! @brief Renvoie la conductivite du milieu.
  *
- * @return (Champ_Don&) le champ donne representant la conductivite
+ * @return (Champ_Don_base&) le champ donne representant la conductivite
  */
-Champ_Don& Milieu_base::conductivite()
+Champ_Don_base& Milieu_base::conductivite()
 {
-  return ch_lambda_;
+  return ch_lambda_.valeur();
 }
 
 /*! @brief Renvoie la capacite calorifique du milieu.
  *
  * (version const)
  *
- * @return (Champ_Don&) le champ donne representant la capacite calorifique
+ * @return (Champ_Don_base&) le champ donne representant la capacite calorifique
  */
-const Champ_Don& Milieu_base::capacite_calorifique() const
+const Champ_Don_base& Milieu_base::capacite_calorifique() const
 {
-  return ch_Cp_;
+  return ch_Cp_.valeur();
 }
 
 /*! @brief Renvoie la capacite calorifique du milieu.
  *
- * @return (Champ_Don&) le champ donne representant la capacite calorifique
+ * @return (Champ_Don_base&) le champ donne representant la capacite calorifique
  */
-Champ_Don& Milieu_base::capacite_calorifique()
+Champ_Don_base& Milieu_base::capacite_calorifique()
 {
-  return ch_Cp_;
+  return ch_Cp_.valeur();
 }
 
 /*! @brief Renvoie beta_t du milieu.
  *
  * (version const)
  *
- * @return (Champ_Don&) le champ donne representant beta_t
+ * @return (Champ_Don_base&) le champ donne representant beta_t
  */
-const Champ_Don& Milieu_base::beta_t() const
+const Champ_Don_base& Milieu_base::beta_t() const
 {
-  return ch_beta_th_;
+  return ch_beta_th_.valeur();
 }
 
 /*! @brief Renvoie beta_t du milieu.
  *
- * @return (Champ_Don&) le champ donne representant beta_t
+ * @return (Champ_Don_base&) le champ donne representant beta_t
  */
-Champ_Don& Milieu_base::beta_t()
+Champ_Don_base& Milieu_base::beta_t()
 {
-  return ch_beta_th_;
+  return ch_beta_th_.valeur();
 }
 
 /*! @brief Renvoie 1 si la gravite a ete initialisee
@@ -914,25 +907,11 @@ int Milieu_base::a_gravite() const
   return (ch_g_.non_nul() || g_via_associer_.non_nul()) ? 1 : 0;
 }
 
-int Milieu_base::is_rayo_semi_transp() const
-{
-  return 0;
-}
-
-int Milieu_base::is_rayo_transp() const
-{
-  return 0;
-}
-
-void Milieu_base::creer_champ(const Motcle& motlu)
-{
-
-}
-
 const Champ_base& Milieu_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
+
 void Milieu_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   if (opt==DESCRIPTION)

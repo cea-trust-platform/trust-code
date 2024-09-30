@@ -233,10 +233,10 @@ void Champ_front_synt::mettre_a_jour(double temps)
     Cerr << "temps = " << equ.inconnue().temps() << finl;
     Cerr << "dt = " << equ.schema_temps().pas_de_temps() << finl;
     Cerr << "visco cinematique = " << ref_cast(Fluide_base,mil).viscosite_cinematique().valeur()(0,0) << finl;
-    Cerr << "visco dynamique = " << ref_cast(Fluide_base,mil).viscosite_dynamique().valeur()(0,0) << finl;
+    Cerr << "visco dynamique = " << ref_cast(Fluide_base,mil).viscosite_dynamique()(0,0) << finl;
     Cerr << "*************************************************" << finl;
 
-    const Champ_Don& visco = ref_cast(Fluide_base,mil).viscosite_dynamique();
+    const Champ_Don_base& visco = ref_cast(Fluide_base,mil).viscosite_dynamique();
     if (sub_type(Champ_Uniforme,visco.valeur()))
       Cerr << "visco dynamique = " << visco(0,0) << finl;
     else
@@ -250,7 +250,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
   /// 	   donnees d'initialisation        ///
   ////////////////////////////////////////////
 
-  double visc = ref_cast(Fluide_base,mil).viscosite_cinematique()->valeurs()(0,0);
+  double visc = ref_cast(Fluide_base,mil).viscosite_cinematique().valeurs()(0,0);
   const Front_VF& front = ref_cast(Front_VF,la_frontiere_dis.valeur());
   int nb_face = front.nb_faces(); // real only
   const Faces& tabFaces = front.frontiere().faces(); // recuperation des faces

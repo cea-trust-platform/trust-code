@@ -79,7 +79,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Domai
   discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, temps, champ);
 }
 
-void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Don& champ) const
+void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, OWN_PTR(Champ_Don_base)& champ) const
 {
   Noms noms;
   Noms unites;
@@ -153,7 +153,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Domai
  *
  */
 void Discretisation_base::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                            Champ_Don& champ) const
+                                            OWN_PTR(Champ_Don_base)& champ) const
 
 {
   test_demande_description(directive, champ.que_suis_je());
@@ -234,13 +234,13 @@ void Discretisation_base::creer_champ(OWN_PTR(Champ_Fonc_base)& ch, const Domain
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
 }
 
-/*! @brief Methode statique qui cree un Champ_Don du type specifie.
+/*! @brief Methode statique qui cree un OWN_PTR(Champ_Don_base) du type specifie.
  *
  * Les parametres "directive" et "nom_discretisation" sont
  *  utilises pour l'affichage uniquement et sont optionnels
  *
  */
-void Discretisation_base::creer_champ(Champ_Don& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
+void Discretisation_base::creer_champ(OWN_PTR(Champ_Don_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
                                       const Nom& nom_discretisation)
 {
   //Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()

@@ -49,7 +49,7 @@ public :
   const Milieu_base& milieu() const override { return fluide(); }
   Milieu_base& milieu() override { return fluide(); }
   void associer_milieu_base(const Milieu_base& ) override;
-  const Champ_Don& diffusivite_pour_transport() const override { return milieu().conductivite(); }
+  const Champ_Don_base& diffusivite_pour_transport() const override { return milieu().conductivite(); }
   const Champ_base& diffusivite_pour_pas_de_temps() const override { return milieu().diffusivite(); }
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////

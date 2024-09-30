@@ -47,8 +47,7 @@ int Champ_Generique_Moyenne::lire_motcle_non_standard(const Motcle& mot, Entree&
 {
   if (mot=="moyenne_convergee")
     {
-      Op_Moyenne& operateur = ref_cast(Op_Moyenne,Operateur_Statistique());
-      is>>operateur.moyenne_convergee();
+      ref_cast(Op_Moyenne,Operateur_Statistique()).lire_ch_moyenne(is);
       return 1;
     }
   else

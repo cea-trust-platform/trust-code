@@ -4,3 +4,15 @@
 - OWN_PTR : dans Equation_base, parametre_equation() return un OWN_PTR ...
 - OWN_PTR : grep dans cpp ... faut limiter l'utilisation si possible
 - Operateur!!
+- what the fuck 
+      if(sub_type(Champ_Uniforme,le_milieu.diffusivite()))
+        alpha=le_milieu.diffusivite().valeurs()(0,0);
+      else
+        {
+          const DoubleTab& tab_alpha = le_milieu.diffusivite().valeurs();
+          alpha=tab_alpha(num);
+        }
+- Champ_Generique::get_champ()
+- champ_parametrique / Probleme_base::newCompute()
+- remplacer has_toto() par des méthodes qui renvoient pointeurs et qui testent si nullptr
+

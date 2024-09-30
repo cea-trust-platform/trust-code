@@ -19,6 +19,7 @@
 #include <Source_dep_inco_base.h>
 #include <TRUSTTabs_forward.h>
 #include <TRUST_Ref.h>
+#include <Champ_Don_base.h>
 
 class Champ_Face_VDF;
 class Probleme_base;

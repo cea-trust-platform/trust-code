@@ -17,7 +17,7 @@
 #define Discret_Thyd_included
 
 #include <Discret_Thermique.h>
-#include <Champ_Don.h>
+
 
 class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
@@ -77,7 +77,7 @@ public :
     Process::exit();
   }
 
-  inline virtual void estimateur_aposteriori(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, const Champ_Inc_base&, const Champ_Don&, OWN_PTR(Champ_Fonc_base)&) const
+  inline virtual void estimateur_aposteriori(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, const Champ_Inc_base&, const Champ_Don_base&, OWN_PTR(Champ_Fonc_base)&) const
   {
     Cerr << "estimateur_aposteriori keyword not available for this discretization." << finl;
     Cerr << "You should use it with the VEF_Aposteriori_discretisation !! " << finl;

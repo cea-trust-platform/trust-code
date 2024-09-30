@@ -37,7 +37,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
                      &temp = pbm.equation_energie().inconnue().passe(),
                       &rho = equation().milieu().masse_volumique().passe(),
-                       &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique()->passe(),
+                       &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                         &grad_v = equation().probleme().get_champ("gradient_vitesse").passe(),
                          &vort  = equation().probleme().get_champ("vorticite").passe(),
                           *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : nullptr,
@@ -271,7 +271,7 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
       const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
       const DoubleTab& pvit = equation().inconnue().passe(),
                        &alpha = pbm.equation_masse().inconnue().passe(),
-                        &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique()->passe(),
+                        &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                          &rho = equation().milieu().masse_volumique().passe(),
                           &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
                            &temp = pbm.equation_energie().inconnue().passe(),

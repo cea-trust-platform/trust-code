@@ -46,7 +46,7 @@ Entree& Champ_Parametrique::readOn(Entree& is)
   if (motlu!="{") Process::exit("Waiting { !");
   while (motlu!="}")
     {
-      Champ_Don ch;
+      OWN_PTR(Champ_Don_base) ch;
       fic >> ch;
       champs_.add(ch);
       //Cerr << "[Parameter] Reading: " << ch->que_suis_je() << finl;
@@ -69,10 +69,10 @@ std::string Champ_Parametrique::newCompute() const
       if (index_)
         {
           previous_field = " from ";
-          previous_field += champ()->que_suis_je();
+          previous_field += champ().que_suis_je();
         }
       index_++;
-      Nom next_field = champ()->que_suis_je();
+      Nom next_field = champ().que_suis_je();
       Cerr << "[Parameter] Updating field" << previous_field << " to " << next_field << finl;
       return Champ_Parametrique::dirnameCompute(index_);
     }

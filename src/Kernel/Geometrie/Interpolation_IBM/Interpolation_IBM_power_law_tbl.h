@@ -18,7 +18,7 @@
 
 #include <Interpolation_IBM_elem_fluid.h>
 #include <Interpolation_IBM_power_law_tbl_proto.h>
-#include <Champ_Don.h>
+
 #include <Domaine.h>
 #include <Param.h>
 

@@ -382,7 +382,7 @@ Entree& Equation_base::lire_cond_init(Entree& is)
            << inconnue().le_nom() << finl;
       exit();
     }
-  Champ_Don ch_init;
+  OWN_PTR(Champ_Don_base) ch_init;
   is >> ch_init;
   const int nb_comp = ch_init->nb_comp();
   verifie_ch_init_nb_comp(inconnue(),nb_comp);

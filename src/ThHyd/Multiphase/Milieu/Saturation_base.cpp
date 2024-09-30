@@ -18,6 +18,7 @@
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>
 #include <TPPI_tools.h>
+#include <Discretisation_base.h>
 
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);
 // XD saturation_base Interface_base saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)
@@ -52,6 +53,13 @@ void Saturation_base::mettre_a_jour(double temps)
   // call sigma
   sigma(Tsat_tab.get_span(), press.get_span(), sigma_tab.get_span(), 1, 0);
   sigma_tab.echange_espace_virtuel();
+}
+
+void Saturation_base::discretiser_Tsat(const Nom& Tsat_nom, double temps)
+{
+  const Discretisation_base& dis = pb_->discretisation();
+  const Domaine_dis_base& dom_dis = pb_->domaine_dis();
+  dis.discretiser_champ("temperature", dom_dis, Tsat_nom, "C", 1, temps, ch_Tsat_);
 }
 
 void Saturation_base::Tsat(const SpanD P, SpanD res, int ncomp, int ind) const

@@ -18,7 +18,7 @@
 #define Pb_Hydraulique_included
 
 #include <Pb_Fluide_base.h>
-#include <Champ_Don.h>
+
 #include <Navier_Stokes_std.h>
 
 

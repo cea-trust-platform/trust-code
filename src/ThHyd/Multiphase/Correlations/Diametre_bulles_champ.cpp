@@ -17,7 +17,7 @@
 #include <Pb_Multiphase.h>
 
 #include <Discret_Thyd.h>
-#include <Champ_Don.h>
+
 
 Implemente_instanciable(Diametre_bulles_champ, "Diametre_bulles_champ", Correlation_base);
 
@@ -28,7 +28,7 @@ Sortie& Diametre_bulles_champ::printOn(Sortie& os) const
 
 Entree& Diametre_bulles_champ::readOn(Entree& is)
 {
-  Champ_Don diametres_don_;
+  OWN_PTR(Champ_Don_base) diametres_don_;
   is >> diametres_don_;
 
   Pb_Multiphase& pb = ref_cast(Pb_Multiphase, pb_.valeur());

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Discr_inst.h>
-#include <Champ_Don.h>
+
 
 #include <Motcle.h>
 #include <Domaine_dis_base.h>
@@ -55,7 +55,7 @@ void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_ba
  * .. , Champ_Inc) pour un Champ_Don.
  *
  */
-void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps, Champ_Don& champ) const
+void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps, OWN_PTR(Champ_Don_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -72,7 +72,7 @@ void Discr_inst::discretiser_champ_fonc_don(const Motcle& directive, const Domai
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
   OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
-  Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Don_base) *champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   Motcles motcles(2);
   motcles[0] = "champ_elem";  // Creer un champ aux elements (de type P0)

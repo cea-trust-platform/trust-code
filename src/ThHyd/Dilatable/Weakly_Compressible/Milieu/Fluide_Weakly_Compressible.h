@@ -42,12 +42,12 @@ public :
 
   // Methodes inlines
   inline void Resoudre_EDO_PT() override;
-  inline const Champ_Don& pression_hydro() const { return ch_pression_hydro_; }
-  inline Champ_Don& pression_hydro() { return ch_pression_hydro_; }
-  inline const Champ_Don& pression_eos() const { return ch_pression_eos_; }
-  inline Champ_Don& pression_eos() { return ch_pression_eos_; }
-  inline const Champ_Don& fraction_massique_nonresolue() const { return ch_unsolved_species_; }
-  inline Champ_Don& fraction_massique_nonresolue() { return ch_unsolved_species_; }
+  inline const Champ_Don_base& pression_hydro() const { return ch_pression_hydro_; }
+  inline Champ_Don_base& pression_hydro() { return ch_pression_hydro_; }
+  inline const Champ_Don_base& pression_eos() const { return ch_pression_eos_; }
+  inline Champ_Don_base& pression_eos() { return ch_pression_eos_; }
+  inline const Champ_Don_base& fraction_massique_nonresolue() const { return ch_unsolved_species_; }
+  inline Champ_Don_base& fraction_massique_nonresolue() { return ch_unsolved_species_; }
   inline const DoubleTab& pression_th_tab() const { return Pth_tab_; } // Tab Pression thermodynamique
   inline DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
   inline const DoubleTab& pression_thn_tab() const { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
@@ -64,7 +64,7 @@ public :
   inline bool use_grad_pression_eos() { return use_grad_pression_eos_; }
 
 protected:
-  Champ_Don ch_Pth_xyz_, ch_pression_hydro_, ch_pression_eos_, ch_unsolved_species_;
+  OWN_PTR(Champ_Don_base) ch_Pth_xyz_, ch_pression_hydro_, ch_pression_eos_, ch_unsolved_species_;
   DoubleTab Pth_tab_, Pth_n_tab_, P_NS_elem_;
   int use_total_pressure_ = 0, use_hydrostatic_pressure_ = 0, use_grad_pression_eos_ = 1, sim_resumed_ = 0;
   double time_activate_ptot_ = -1.;

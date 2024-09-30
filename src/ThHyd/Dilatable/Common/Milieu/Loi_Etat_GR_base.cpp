@@ -63,7 +63,7 @@ void Loi_Etat_GR_base::initialiser()
       tab_TempC(i) = calculer_temperature(Pth,tab_H(i,0));
       tab_T(i) = tab_TempC(i);
     }
-  tab_Cp.ref(le_fluide->capacite_calorifique()->valeurs());
+  tab_Cp.ref(le_fluide->capacite_calorifique().valeurs());
   calculer_Cp();
 }
 
@@ -148,15 +148,15 @@ void Loi_Etat_GR_base::calculer_Cp()
  */
 void Loi_Etat_GR_base::calculer_lambda()
 {
-  const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu->valeurs();
-  Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda->valeurs();
+  const Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  const DoubleTab& tab_mu = mu.valeurs();
+  Champ_Don_base& lambda = le_fluide->conductivite();
+  DoubleTab& tab_lambda = lambda.valeurs();
 
   int i, n=tab_lambda.size();
-  if (!sub_type(Champ_Uniforme,lambda.valeur()))
+  if (!sub_type(Champ_Uniforme,lambda))
     {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
+      if (sub_type(Champ_Uniforme,mu))
         {
           for (i=0 ; i<n ; i++) tab_lambda(i,0) = tab_mu(0,0) * tab_Cp(i) / Pr_;
         }

@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Schema_Temps_base.h>
+#include <Champ_Don_base.h>
 #include <Probleme_base.h>
 #include <Op_Moyenne.h>
 
@@ -27,6 +28,11 @@ Sortie& Op_Moyenne::printOn(Sortie& s) const
 Entree& Op_Moyenne::readOn(Entree& s)
 {
   return s;
+}
+
+Entree& Op_Moyenne::lire_ch_moyenne(Entree& is)
+{
+  return is >> ch_moyenne_convergee_;
 }
 
 void Op_Moyenne::completer(const Probleme_base& Pb)

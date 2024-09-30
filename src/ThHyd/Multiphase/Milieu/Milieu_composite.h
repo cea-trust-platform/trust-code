@@ -62,7 +62,7 @@ public :
   inline const Noms& noms_phases() const { return noms_phases_; }
 
 protected :
-  Champ_Don rho_m_, h_m_;
+  OWN_PTR(Champ_Don_base) rho_m_, h_m_;
   Noms noms_phases_;
   double t_init_ = -1.;
   bool has_saturation_ = false, has_interface_ = false;

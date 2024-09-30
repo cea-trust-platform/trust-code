@@ -138,7 +138,7 @@ Operateur& Convection_Diffusion_std::operateur(int i)
   return terme_diffusif;
 }
 
-const Champ_Don& Convection_Diffusion_std::diffusivite_pour_transport() const
+const Champ_Don_base& Convection_Diffusion_std::diffusivite_pour_transport() const
 {
   return milieu().diffusivite();
 }

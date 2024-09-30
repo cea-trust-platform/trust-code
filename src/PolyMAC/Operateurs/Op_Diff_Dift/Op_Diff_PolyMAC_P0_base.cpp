@@ -31,7 +31,7 @@
 #include <Pb_Multiphase.h>
 #include <EcrFicPartage.h>
 #include <Milieu_base.h>
-#include <Champ_Don.h>
+
 #include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <Motcle.h>

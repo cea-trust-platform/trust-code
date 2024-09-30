@@ -21,6 +21,7 @@
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Domaine_forward.h>
+#include <Champ_Don_base.h>
 
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
@@ -85,7 +86,7 @@ protected:
                                    double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const = 0;
 
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
-  Champ_Don diam_hydr;
+  OWN_PTR(Champ_Don_base) diam_hydr;
   //! Fluide associe au probleme
   REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue

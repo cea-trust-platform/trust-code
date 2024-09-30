@@ -286,7 +286,7 @@ void VEF_discretisation::discretiser_champ(const Motcle& directive, const Domain
  *
  */
 void VEF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                           Champ_Don& champ) const
+                                           OWN_PTR(Champ_Don_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -303,7 +303,7 @@ void VEF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, con
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
   OWN_PTR(Champ_Fonc_base)  * champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
-  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Don_base) * champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   Motcles motcles(2);
   motcles[0] = "pression";    // Choix standard pour la pression
@@ -353,7 +353,7 @@ void VEF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, con
 
   if (nature == multi_scalaire)
     {
-      Cerr << "There is no field of type OWN_PTR(Champ_Fonc_base)  or Champ_Don with P1Bulle discretization" << finl;
+      Cerr << "There is no field of type OWN_PTR(Champ_Fonc_base)  or OWN_PTR(Champ_Don_base) with P1Bulle discretization" << finl;
       Cerr << "and a multi_scalaire nature." <<finl;
       exit();
     }
@@ -364,7 +364,7 @@ void VEF_discretisation::discretiser_champ_fonc_don_(const Motcle& directive, co
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
   OWN_PTR(Champ_Fonc_base)  * champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
-  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Don_base) * champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z);
 
@@ -487,7 +487,7 @@ void VEF_discretisation::discretiser_champ_fonc_don_(const Motcle& directive, co
     }
   else if ((nature == multi_scalaire) && (champ_don))
     {
-      Cerr << "There is no field of type Champ_Don with a multi_scalaire nature." << finl;
+      Cerr << "There is no field of type OWN_PTR(Champ_Don_base) with a multi_scalaire nature." << finl;
       exit();
     }
 }
@@ -636,10 +636,9 @@ void VEF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_b
   const Champ_Inc_base& ch_vitesse = eqn_hydr.inconnue();
   const Champ_P1NC& vit = ref_cast(Champ_P1NC, ch_vitesse);
 
-  Champ_Don& mu = le_fluide.viscosite_dynamique();
+  Champ_Don_base& mu = le_fluide.viscosite_dynamique();
   //  mu est toujours un champ_Ostwald_VEF , il faut toujours faire ce qui suit
-  mu.typer("Champ_Ostwald_VEF");
-  Champ_Ostwald_VEF& ch_mu = ref_cast(Champ_Ostwald_VEF, mu.valeur());
+  Champ_Ostwald_VEF& ch_mu = ref_cast(Champ_Ostwald_VEF, mu);
   Cerr << "associe domainedisbase VEF" << finl;
   ch_mu.associer_domaine_dis_base(domaine_vef);
   ch_mu.associer_fluide(le_fluide);

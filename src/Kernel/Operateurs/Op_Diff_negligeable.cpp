@@ -31,7 +31,7 @@ Entree& Op_Diff_negligeable::readOn(Entree& is) { return is; }
 
 /*! @brief Associe la diffusivite a l'operateur.
  *
- * @param (Champ_Don& ch) le champ representant la diffusivite
+ * @param (Champ_Don_base& ch) le champ representant la diffusivite
  */
 void Op_Diff_negligeable::associer_diffusivite(const Champ_base& ch)
 {

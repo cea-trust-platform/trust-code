@@ -263,7 +263,7 @@ int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     return Equation_base::lire_motcle_non_standard(mot,is);
 }
 
-const Champ_Don& Navier_Stokes_std::diffusivite_pour_transport() const
+const Champ_Don_base& Navier_Stokes_std::diffusivite_pour_transport() const
 {
   return fluide().viscosite_cinematique();
 }
@@ -655,14 +655,14 @@ Entree& Navier_Stokes_std::lire_cond_init(Entree& is)
       ind = compris.rang(motlu);
       if (ind==1)
         {
-          Champ_Don ch_init;
+          OWN_PTR(Champ_Don_base) ch_init;
           is >> ch_init;
           verifie_ch_init_nb_comp(inconnue(),ch_init->nb_comp());
           inconnue().affecter(ch_init.valeur());
         }
       else if (ind==2)
         {
-          Champ_Don ch_init;
+          OWN_PTR(Champ_Don_base) ch_init;
           is >> ch_init;
           verifie_ch_init_nb_comp(pression(),ch_init->nb_comp());
           pression().affecter(ch_init.valeur());

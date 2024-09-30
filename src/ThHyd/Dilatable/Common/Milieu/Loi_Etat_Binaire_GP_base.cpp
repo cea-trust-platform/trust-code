@@ -57,7 +57,7 @@ void Loi_Etat_Binaire_GP_base::calculer_lambda()
 void Loi_Etat_Binaire_GP_base::calculer_mu_wilke()
 {
   const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
-  DoubleTab& tab_mu = le_fluide->viscosite_dynamique()->valeurs();
+  DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
 
   int i, n=tab_mu.size();
   for (i=0 ; i<n ; i++)
@@ -91,10 +91,10 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_wilke()
  */
 void Loi_Etat_Binaire_GP_base::calculer_mu()
 {
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  if (!sub_type(Champ_Uniforme,mu.valeur()))
+  Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  if (!sub_type(Champ_Uniforme,mu))
     {
-      if (sub_type(Champ_Fonc_Tabule,mu.valeur()))
+      if (sub_type(Champ_Fonc_Tabule,mu))
         {
           Cerr << "We should not have a dynamic viscosity of type Champ_Fonc_Tabule !" << finl;
           Process::exit();
@@ -127,13 +127,13 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
    * ====================================================================
    */
 
-  Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
+  Champ_Don_base& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
   const Champ_base& rho = le_fluide->masse_volumique();
-  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
+  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n=tab_mu_sur_Sc.size();
 
-  if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
+  if (!sub_type(Champ_Uniforme,mu_sur_Sc))
     {
       if (sub_type(Champ_Uniforme,rho))
         {
@@ -150,7 +150,7 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
     }
 
   double temps_champ = rho.temps();
-  mu_sur_Sc->changer_temps(temps_champ);
+  mu_sur_Sc.changer_temps(temps_champ);
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
 
@@ -166,14 +166,14 @@ void Loi_Etat_Binaire_GP_base::calculer_nu_sur_Sc()
    * ====================================================================
    */
 
-  Champ_Don& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
-  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc->valeurs();
+  Champ_Don_base& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
+  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc.valeurs();
   const int n=tab_nu_sur_Sc.size();
 
   for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = diff_coeff_;
 
   double temps_champ = le_fluide->masse_volumique().temps();
-  nu_sur_Sc->changer_temps(temps_champ);
+  nu_sur_Sc.changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }
 

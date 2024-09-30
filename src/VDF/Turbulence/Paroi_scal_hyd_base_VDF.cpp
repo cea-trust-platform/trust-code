@@ -79,7 +79,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
   const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
   const Equation_base& eqn_hydr = eqn.probleme().equation(0);
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
-  const Champ_Don& conductivite = le_fluide.conductivite();
+  const Champ_Don_base& conductivite = le_fluide.conductivite();
   const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
 
   EcrFicPartage Nusselt;
@@ -150,14 +150,14 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   elem = face_voisins(num_face, 0);
                   if (elem == -1)
                     elem = face_voisins(num_face, 1);
-                  if (sub_type(Champ_Uniforme, conductivite.valeur()))
-                    lambda = conductivite->valeurs()(0, 0);
+                  if (sub_type(Champ_Uniforme, conductivite))
+                    lambda = conductivite.valeurs()(0, 0);
                   else
                     {
-                      if (conductivite->nb_comp() == 1)
-                        lambda = conductivite->valeurs()(elem);
+                      if (conductivite.nb_comp() == 1)
+                        lambda = conductivite.valeurs()(elem);
                       else
-                        lambda = conductivite->valeurs()(elem, 0);
+                        lambda = conductivite.valeurs()(elem, 0);
                     }
 
                   if (dimension == 2)
@@ -218,14 +218,14 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   elem = face_voisins(num_face, 0);
                   if (elem == -1)
                     elem = face_voisins(num_face, 1);
-                  if (sub_type(Champ_Uniforme, conductivite.valeur()))
-                    lambda = conductivite->valeurs()(0, 0);
+                  if (sub_type(Champ_Uniforme, conductivite))
+                    lambda = conductivite.valeurs()(0, 0);
                   else
                     {
-                      if (conductivite->nb_comp() == 1)
-                        lambda = conductivite->valeurs()(elem);
+                      if (conductivite.nb_comp() == 1)
+                        lambda = conductivite.valeurs()(elem);
                       else
-                        lambda = conductivite->valeurs()(elem, 0);
+                        lambda = conductivite.valeurs()(elem, 0);
                     }
 
                   if (dimension == 2)

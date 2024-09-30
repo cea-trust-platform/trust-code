@@ -78,8 +78,8 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
   const Probleme_base& mon_pb = mon_equation_->probleme();
   DoubleTab& lambda_t = conductivite_turbulente_->valeurs();
   lambda_t = diffusivite_turbulente_->valeurs();
-  const bool uniforme = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique().valeur());
-  const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique()->valeurs();
+  const bool uniforme = sub_type(Champ_Uniforme, mon_pb.milieu().capacite_calorifique());
+  const DoubleTab& tab_Cp = mon_pb.milieu().capacite_calorifique().valeurs();
   const DoubleTab& tab_rho = mon_pb.milieu().masse_volumique().valeurs();
   if (sub_type(Pb_Thermohydraulique_Turbulent_QC, mon_pb))
     {
@@ -131,8 +131,8 @@ Champ_Fonc_base& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente
       // On a alors alpha_t = nut * nut / ( 0.7 alpha + 0.85 nut )
 
       const Milieu_base& milieu = mon_equation_->milieu();
-      const Champ_Don& alpha = milieu.diffusivite();
-      if (!alpha.non_nul())
+      const Champ_Don_base& alpha = milieu.diffusivite();
+      if (!milieu.has_diffusivite())
         {
           // GF si cette condition est bloquante, on peut ameliorer en
           // tentant de creer un parser sans la variable alpha, si ok on peut dire que alpha existe , est constant et vaut 1.
@@ -140,17 +140,17 @@ Champ_Fonc_base& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente
           exit();
         }
       double d_alpha = 0.;
-      int is_alpha_unif = sub_type(Champ_Uniforme, alpha.valeur());
+      int is_alpha_unif = sub_type(Champ_Uniforme, alpha);
       if (is_alpha_unif)
         {
-          d_alpha = alpha->valeurs()(0, 0);
+          d_alpha = alpha.valeurs()(0, 0);
           fonction_.setVar("alpha", d_alpha);
         }
       ToDo_Kokkos("Critical");
       for (int i = 0; i < n; i++)
         {
           if (!is_alpha_unif)
-            fonction_.setVar("alpha", alpha->valeurs()(i));
+            fonction_.setVar("alpha", alpha.valeurs()(i));
           fonction_.setVar("nu_t", tab_nu_t[i]);
 
           tab_alpha_t[i] = fonction_.eval();

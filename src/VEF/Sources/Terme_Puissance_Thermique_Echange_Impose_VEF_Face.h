@@ -18,7 +18,7 @@
 
 #include <Source_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Probleme_base;
 class Domaine_Cl_VEF;
@@ -49,7 +49,7 @@ protected:
 
   REF(Domaine_VEF) le_dom_VEF;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
-  Champ_Don himp_,Text_;
+  OWN_PTR(Champ_Don_base) himp_,Text_;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   int initialiser(double temps) override;
 

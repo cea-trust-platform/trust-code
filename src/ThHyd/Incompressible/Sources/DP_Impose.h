@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,8 @@
 
 #include <Perte_Charge_Singuliere.h>
 
+class Champ_Don_base;
+
 /*! @brief Classe DP_Impose Cette classe derivee de Perte_Charge_Singuliere est utilisee lorsque l'on veut
  *
  *     impose un Delta P (pour simuler une pompe) depuis un champ exterieur
@@ -33,7 +35,7 @@ public:
   void update_dp_regul(const Equation_base& eqn, double deb, DoubleVect& bilan); //regule dp_regul_ a partir du debit calcule par update_Q
 
 protected:
-  Champ_Don DP_; //le champ de delta P qu'on veut imposer
+  OWN_PTR(Champ_Don_base) DP_; //le champ de delta P qu'on veut imposer
   double dp_regul_ = DMAXFLOAT;
 };
 

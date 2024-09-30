@@ -63,7 +63,7 @@ Entree& Milieu_composite::readOn(Entree& is)
           OWN_PTR(Fluide_base) fluide;
           fluide.typer_lire_simple(is, "Typing the fluid medium ...");
 
-          if (fluide->get_porosites_champ().non_nul())
+          if (fluide->has_porosites())
             {
               Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
               Process::exit();
@@ -248,7 +248,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   champs_compris_.ajoute_champ(ch_e_int_);
   champs_compris_.ajoute_champ(ch_h_ou_T_);
 
-  std::vector<Champ_Don* > fields = {&ch_mu_, &ch_nu_, &ch_lambda_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_Cp_, &rho_m_, &h_m_};
+  std::vector<OWN_PTR(Champ_Don_base)* > fields = {&ch_mu_, &ch_nu_, &ch_lambda_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_Cp_, &rho_m_, &h_m_};
   for (auto && f: fields) champs_compris_.ajoute_champ((*f).valeur());
 
   // on discretise les champs sigma / Tsat si besoin ...
@@ -266,19 +266,17 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
               {
                 Interface_base& inter = get_interface(k, l);
                 inter.assoscier_pb(pb);
-                Champ_Don& ch_sigma = inter.get_sigma_champ();
                 Nom sig_nom = Nom("surface_tension_") + espece;
-                dis.discretiser_champ("temperature", domaine_dis, sig_nom, "N/m", 1, temps, ch_sigma);
-                champs_compris_.ajoute_champ(ch_sigma.valeur());
+                inter.discretiser_sigma(sig_nom, temps);
+                champs_compris_.ajoute_champ(inter.get_sigma_champ());
               }
 
             if (has_saturation(k, l)) // OK si saturation seulement
               {
                 Saturation_base& sat = get_saturation(k, l);
-                Champ_Don& ch_Tsat = sat.get_Tsat_champ();
                 Nom Tsat_nom = Nom("Tsat_") + espece;
-                dis.discretiser_champ("temperature", domaine_dis, Tsat_nom, "C", 1, temps, ch_Tsat);
-                champs_compris_.ajoute_champ(ch_Tsat.valeur());
+                sat.discretiser_Tsat(Tsat_nom, temps);
+                champs_compris_.ajoute_champ(sat.get_Tsat_champ());
               }
           }
     }
@@ -296,7 +294,7 @@ void Milieu_composite::mettre_a_jour(double temps)
   ch_e_int_->mettre_a_jour(temps);
   ch_h_ou_T_->mettre_a_jour(temps);
 
-  std::vector<Champ_Don* > fields = {&ch_mu_, &ch_nu_, &ch_lambda_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_Cp_, &rho_m_, &h_m_};
+  std::vector<OWN_PTR(Champ_Don_base)* > fields = {&ch_mu_, &ch_nu_, &ch_lambda_, &ch_alpha_, &ch_alpha_fois_rho_, &ch_Cp_, &rho_m_, &h_m_};
   for (auto && f: fields) (*f)->mettre_a_jour(temps);
 
   mettre_a_jour_tabs();

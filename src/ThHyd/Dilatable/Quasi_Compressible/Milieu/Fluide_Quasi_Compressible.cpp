@@ -115,14 +115,13 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const Discr
 
   // In *_Melange_Binaire_QC we do not even have a temperature variable ...
   // it is the species mass fraction Y1... Although named ch_temperature
-  Champ_Don& ch_TK = ch_temperature();
   if (pb.que_suis_je() == "Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je() == "Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    dis.discretiser_champ("temperature", domaine_dis, "fraction_massique", "neant", 1, temps, ch_TK);
+    dis.discretiser_champ("temperature", domaine_dis, "fraction_massique", "neant", 1, temps, loi_etat_->temperature_);
   else
-    dis.discretiser_champ("temperature", domaine_dis, "temperature", "K", 1, temps, ch_TK);
+    dis.discretiser_champ("temperature", domaine_dis, "temperature", "K", 1, temps, loi_etat_->temperature_);
 
   if (type_fluide() != "Gaz_Parfait")
-    loi_etat()->champs_compris().ajoute_champ(ch_TK);
+    loi_etat()->champs_compris().ajoute_champ(ch_temperature());
 
   Fluide_Dilatable_base::discretiser(pb, dis);
 }

@@ -280,11 +280,11 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
               // Verification que les vitesses de translation du repere
               // mobiles sont bien definies et association des tableaux translation et
               // eventuellement rotation
-              if (terme_source_acceleration.champ_vitesse().non_nul())
+              if (terme_source_acceleration.has_champ_vitesse())
                 {
-                  translation=terme_source_acceleration.champ_vitesse()->valeurs();
-                  if (terme_source_acceleration.omega().non_nul())
-                    rotation=terme_source_acceleration.omega()->valeurs();
+                  translation=terme_source_acceleration.champ_vitesse().valeurs();
+                  if (terme_source_acceleration.has_omega())
+                    rotation=terme_source_acceleration.omega().valeurs();
                   else
                     rotation=rotation_nulle;
                   ok=1;

@@ -14,17 +14,17 @@
 *****************************************************************************/
 
 #include <Eval_Dirac_VEF_Face.h>
-#include <Champ_Don.h>
 
-void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& Q)
+
+void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance = Q->valeurs()(0);
+  puissance = Q.valeurs()(0);
 }
 
 void Eval_Dirac_VEF_Face::mettre_a_jour()
 {
-  puissance = la_puissance.valeur()->valeurs()(0);
+  puissance = la_puissance->valeurs()(0);
   mon_dom = le_dom->domaine();
 }
 

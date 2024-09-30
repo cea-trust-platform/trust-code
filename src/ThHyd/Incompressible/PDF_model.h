@@ -17,7 +17,7 @@
 #define PDF_model_included
 
 #include <TRUSTTabs_forward.h>
-#include <Champ_Don.h>
+
 #include <Parser_U.h>
 #include <Domaine_VF.h>
 #include <Motcle.h>
@@ -36,8 +36,8 @@ public :
 
 protected :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  Champ_Don vitesse_imposee_lu_;
-  Champ_Don vitesse_imposee_;
+  OWN_PTR(Champ_Don_base) vitesse_imposee_lu_;
+  OWN_PTR(Champ_Don_base) vitesse_imposee_;
   double eta_ = -100.;
   double coefku_= -100.;
   double temps_relax_=1.0e+12;

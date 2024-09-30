@@ -77,7 +77,7 @@ void Op_Grad_EF::associer(const Domaine_dis_base& domaine_dis,
 
 
     {
-      Champ_Don champ_lu;
+      OWN_PTR(Champ_Don_base) champ_lu;
       EChaine ee("champ_fonc_med last_time termes.med MAILLAGE_GENEPI terme_pression_limite_qdm_10 som 0.");
       ee>>champ_lu;
       int_P_bord_->affecter(champ_lu);
@@ -108,7 +108,7 @@ void test(const DoubleTab& pression, DoubleTab& grad,const Op_Grad_EF&  op)
 
 
 
-void ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl_EF& domaine_Cl_EF, const Champ_Don& int_P_bord_ )
+void Op_Grad_EF::ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl_EF& domaine_Cl_EF) const
 {
   // const IntTab& face_voisins = domaine_EF.face_voisins();
   const DoubleTab& face_normales = domaine_EF.face_normales();
@@ -314,7 +314,7 @@ DoubleTab& Op_Grad_EF::ajouter(const DoubleTab& pression, DoubleTab& grad) const
               }
           }
     }
-  ajouter_bord(grad,domaine_ef,la_zcl_EF.valeur(),int_P_bord_);
+  ajouter_bord(grad,domaine_ef,la_zcl_EF.valeur());
   grad.echange_espace_virtuel();
   return grad;
 }

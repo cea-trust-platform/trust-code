@@ -50,7 +50,7 @@ Entree& Champ_Input_P0_Composite::readOn(Entree& is)
       if (domaine_dis_base().nb_elem_tot() == champ_initial_->valeurs().dimension_tot(0)) { /* do nothing */ }
       else if (sub_type(Champ_Fonc_MED,champ_initial_.valeur()))
         {
-          Champ_Don tmp_fld;
+          OWN_PTR(Champ_Don_base) tmp_fld;
           disc.discretiser_champ("champ_elem",domaine_dis_base(),"neant","neant",ncomp ,0.,tmp_fld);
           tmp_fld->affecter(champ_initial_.valeur()); // interpolate ...
           champ_initial_.detach();

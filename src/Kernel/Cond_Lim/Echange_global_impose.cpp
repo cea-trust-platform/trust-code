@@ -139,17 +139,17 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front_base& cha
         }
       else
         {
-          const Champ_Don& Cp =mil.capacite_calorifique();
+          const Champ_Don_base& Cp =mil.capacite_calorifique();
 
           if (sub_type(Champ_Uniforme,rho))
             d_rho= rho.valeurs()(0,0);
           else
             d_rho= rho.valeurs()(i);
 
-          if (sub_type(Champ_Uniforme,Cp.valeur()))
-            d_Cp= Cp->valeurs()(0,0);
+          if (sub_type(Champ_Uniforme,Cp))
+            d_Cp= Cp.valeurs()(0,0);
           else
-            d_Cp= Cp->valeurs()(i);
+            d_Cp= Cp.valeurs()(i);
         }
 
       if (champ_ext.valeurs().size()==1)
@@ -193,17 +193,17 @@ double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front_bas
         }
       else
         {
-          const Champ_Don& Cp =mil.capacite_calorifique();
+          const Champ_Don_base& Cp =mil.capacite_calorifique();
 
           if (sub_type(Champ_Uniforme,rho))
             d_rho= rho.valeurs()(0,0);
           else
             d_rho= rho.valeurs()(i);
 
-          if (sub_type(Champ_Uniforme,Cp.valeur()))
-            d_Cp= Cp->valeurs()(0,0);
+          if (sub_type(Champ_Uniforme,Cp))
+            d_Cp= Cp.valeurs()(0,0);
           else
-            d_Cp= Cp->valeurs()(i);
+            d_Cp= Cp.valeurs()(i);
         }
       if (champ_ext.valeurs().dimension(0)==1)
         return champ_ext.valeurs()(0,j)/(d_rho*d_Cp);

@@ -21,7 +21,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Navier_Stokes_std.h>
 
-#include <Champ_Don.h>
+
 
 class Matrice_Morse;
 
@@ -52,7 +52,7 @@ public :
   int preparer_calcul() override;
   void set_param(Param& param) override;
   void discretiser() override;
-  const Champ_Don& diffusivite_pour_transport() const override;
+  const Champ_Don_base& diffusivite_pour_transport() const override;
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
   const Champ_base& vitesse_pour_transport() const override;
 

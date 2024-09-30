@@ -45,7 +45,7 @@ void PlaqThVDF::mettre_a_jour(double )
   const Front_VF& front= ref_cast(Front_VF,frontiere_dis());
 
   const Milieu_base& le_milieu=eqn.probleme().milieu();
-  h/=(le_milieu.masse_volumique().valeurs()(0,0)*le_milieu.capacite_calorifique()->valeurs()(0,0));
+  h/=(le_milieu.masse_volumique().valeurs()(0,0)*le_milieu.capacite_calorifique().valeurs()(0,0));
 
   // Calcul de himp :
   const RefObjU& modele_turbulence = eqn.get_modele(TURBULENCE);
@@ -77,8 +77,8 @@ void PlaqThVDF::mettre_a_jour(double )
           double e1 = loipar.equivalent_distance(boundary_index,local_face);
           double e2 = loipar.equivalent_distance(boundary_index,local_face2);
           tab(face,0) = tab(nbfs2+face,0) =
-                          2./(1./h+e1/le_milieu.diffusivite()->valeurs()(0,0)
-                              +e2/le_milieu.diffusivite()->valeurs()(0,0));
+                          2./(1./h+e1/le_milieu.diffusivite().valeurs()(0,0)
+                              +e2/le_milieu.diffusivite().valeurs()(0,0));
         }
     }
   else if (sub_type(Convection_Diffusion_Temperature,eqn))
@@ -93,8 +93,8 @@ void PlaqThVDF::mettre_a_jour(double )
       h_imp_->fixer_nb_comp(1);
       double e1 = le_dom_VDF.dist_norm_bord(front.num_premiere_face());
       double e2 = le_dom_VDF.dist_norm_bord(front.nb_faces()/2);
-      tab(0,0) = 2./(1./h+e1/le_milieu.diffusivite()->valeurs()(0,0)
-                     +e2/le_milieu.diffusivite()->valeurs()(0,0));
+      tab(0,0) = 2./(1./h+e1/le_milieu.diffusivite().valeurs()(0,0)
+                     +e2/le_milieu.diffusivite().valeurs()(0,0));
     }
 
   //Calcul de T_ext :

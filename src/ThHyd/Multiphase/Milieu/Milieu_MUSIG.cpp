@@ -61,7 +61,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
                 {
                   OWN_PTR(Fluide_base) subFluide(fluide_cast.getFluide());
 
-                  if (subFluide->get_porosites_champ().non_nul())
+                  if (subFluide->has_porosites())
                     {
                       Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_composite block, not in " + subFluide->que_suis_je() << finl;
                       Process::exit();
@@ -97,7 +97,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
             }
           else
             {
-              if (fluide->get_porosites_champ().non_nul())
+              if (fluide->has_porosites())
                 {
                   Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_composite block, not in " + fluide->que_suis_je() << finl;
                   Process::exit();

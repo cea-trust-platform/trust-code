@@ -240,7 +240,7 @@ void QDM_Multiphase::discretiser_grad_p()
 // La dicretisation par dans le QDM_Multiphase.creer_champ()
 }
 
-const Champ_Don& QDM_Multiphase::diffusivite_pour_transport() const
+const Champ_Don_base& QDM_Multiphase::diffusivite_pour_transport() const
 {
   return le_fluide->viscosite_dynamique();
 }
@@ -350,7 +350,7 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
   for (is >> nom; nom != "}"; is >> nom)
     if (nom == "vitesse" || nom == "velocity")
       {
-        Champ_Don src;
+        OWN_PTR(Champ_Don_base) src;
         is >> src;
 
         if (src->que_suis_je() == "Champ_Composite")
@@ -369,7 +369,7 @@ Entree& QDM_Multiphase::lire_cond_init(Entree& is)
       }
     else if (nom == "pression" || nom == "pressure")
       {
-        Champ_Don src;
+        OWN_PTR(Champ_Don_base) src;
         is >> src, verifie_ch_init_nb_comp(la_pression, src->nb_comp());
         la_pression->affecter(src);
         la_pression_en_pa->passe() = la_pression_en_pa->valeurs() = la_pression->passe() = la_pression->valeurs();

@@ -100,9 +100,9 @@ public:
     nb_consts_ = les_consts.nb_constituants();
     mil_constituants_.resize(nb_consts_);
 
-    if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant().valeur()))
+    if (!sub_type(Champ_Uniforme, les_consts.diffusivite_constituant()))
       {
-        Cerr << "Error in TRUSTProblem_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_resize_medium. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant()->que_suis_je() << " !!!" << finl;
+        Cerr << "Error in TRUSTProblem_Concentration_Gen<_DERIVED_TYPE_, _EQUATION_TYPE_, _MEDIUM_TYPE_>::lire_resize_medium. You can not use a diffusion coefficient of type " << les_consts.diffusivite_constituant().que_suis_je() << " !!!" << finl;
         Cerr << "We only accept uniform fields for the moment ... Fix your data set or call the 911 !!!" << finl;
         Process::exit();
       }
@@ -112,7 +112,7 @@ public:
   void create_constituants_echaines()
   {
     const Constituant& les_consts = ref_cast(_MEDIUM_TYPE_, _DERIVED_TYPE_::milieu_vect().back().valeur());
-    const DoubleTab& vals = les_consts.diffusivite_constituant()->valeurs();
+    const DoubleTab& vals = les_consts.diffusivite_constituant().valeurs();
 
     for (int i = 0; i < nb_consts_; i++)
       {

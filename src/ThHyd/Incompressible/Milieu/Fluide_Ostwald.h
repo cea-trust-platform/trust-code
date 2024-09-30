@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,10 +37,10 @@ class Fluide_Ostwald : public Fluide_Incompressible
 public :
 
   Fluide_Ostwald();
-  inline const Champ_Don& consistance() const;
-  inline Champ_Don& consistance();
-  inline const Champ_Don& indice_struct() const;
-  inline Champ_Don& indice_struct();
+  inline const Champ_Don_base& consistance() const { return K_.valeur(); }
+  inline Champ_Don_base& consistance() { return K_.valeur(); }
+  inline const Champ_Don_base& indice_struct() const { return N_.valeur(); }
+  inline Champ_Don_base& indice_struct() { return N_.valeur(); }
 
   void set_param(Param& param) override;
   void creer_champs_non_lus() override;
@@ -50,34 +50,10 @@ public :
 
 protected :
 
-  Champ_Don K_;  // consistance lue
-  Champ_Don N_;  // indice de structure lue
+  OWN_PTR(Champ_Don_base) K_;  // consistance lue
+  OWN_PTR(Champ_Don_base) N_;  // indice de structure lue
 
 
 };
-
-
-inline const Champ_Don& Fluide_Ostwald::consistance() const
-{
-  return K_;
-}
-
-inline Champ_Don& Fluide_Ostwald::consistance()
-{
-  return K_;
-}
-
-inline const Champ_Don& Fluide_Ostwald::indice_struct() const
-{
-  return N_;
-}
-
-inline Champ_Don& Fluide_Ostwald::indice_struct()
-{
-  return N_;
-}
-
-
-
 
 #endif

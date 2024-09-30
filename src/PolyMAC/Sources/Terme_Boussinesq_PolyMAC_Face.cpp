@@ -51,7 +51,7 @@ void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
-  const DoubleTab& beta_valeurs = beta()->valeurs();
+  const DoubleTab& beta_valeurs = beta().valeurs();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &vfd = domaine.volumes_entrelaces_dir(), &nf = domaine.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;

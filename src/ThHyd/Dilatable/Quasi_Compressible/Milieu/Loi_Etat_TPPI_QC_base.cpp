@@ -17,7 +17,7 @@
 #include <Loi_Etat_TPPI_QC_base.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_VF.h>
-#include <Champ_Don.h>
+
 
 Implemente_base(Loi_Etat_TPPI_QC_base, "Loi_Etat_TPPI_QC_base", Loi_Etat_TPPI_base);
 // XD loi_etat_tppi_base loi_etat_base loi_etat_tppi_base -1 Basic class for thermo-physical properties interface (TPPI) used for dilatable problems
@@ -55,24 +55,24 @@ void Loi_Etat_TPPI_QC_base::calculer_Cp()
   SpanD temp_span = tab_ICh.get_span(), p_span = SpanD(vec_press_);
 
   /* Step 2 : Mu */
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  DoubleTab& tab_mu = mu->valeurs();
+  Champ_Don_base& mu = le_fluide->viscosite_dynamique();
+  DoubleTab& tab_mu = mu.valeurs();
   TPPI_->tppi_get_mu_pT(p_span, temp_span, tab_mu.get_span());
   tab_mu.echange_espace_virtuel();
-  mu->mettre_a_jour(temperature_->temps());
+  mu.mettre_a_jour(temperature_->temps());
 
   /* Step 3 : Lambda */
-  Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda->valeurs();
+  Champ_Don_base& lambda = le_fluide->conductivite();
+  DoubleTab& tab_lambda = lambda.valeurs();
   TPPI_->tppi_get_lambda_pT(p_span, temp_span, tab_lambda.get_span());
   tab_lambda.echange_espace_virtuel();
 
   /* Step 4 : Alpha */
-  Champ_Don& alpha = le_fluide->diffusivite();
-  DoubleTab& tab_alpha = alpha->valeurs();
+  Champ_Don_base& alpha = le_fluide->diffusivite();
+  DoubleTab& tab_alpha = alpha.valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
-  const bool isVDF = (alpha->que_suis_je() == "Champ_Fonc_P0_VDF") ? true : false;
+  const bool isVDF = (alpha.que_suis_je() == "Champ_Fonc_P0_VDF") ? true : false;
 
   if (isVDF)
     for (int i = 0; i < tab_alpha.dimension(0); i++)

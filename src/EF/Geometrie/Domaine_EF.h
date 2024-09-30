@@ -102,7 +102,7 @@ protected:
 
 private:
   DoubleVect porosite_sommets_, volumes_sommets_thilde_, volumes_thilde_;
-  //  Champ_Don champ_porosite_sommets_,champ_porosite_lu_;
+  //  OWN_PTR(Champ_Don_base) champ_porosite_sommets_,champ_porosite_lu_;
   DoubleTab Bij_, Bij_thilde_;                         // stockage des matrice Bije
 
   double h_carre = 1.e30;			 // carre du pas du maillage

@@ -53,7 +53,7 @@ void Terme_Boussinesq_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   const Domaine_Cl_dis_base& domaine_Cl_scal = equation_scalaire().domaine_Cl_dis();
   const Domaine_Cl_VDF& domaine_Cl_VDF_scal = ref_cast(Domaine_Cl_VDF,domaine_Cl_scal);
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
-  const DoubleTab& beta_valeurs = beta()->valeurs();
+  const DoubleTab& beta_valeurs = beta().valeurs();
   const DoubleVect& grav = gravite().valeurs();
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntVect& orientation = domaine_VDF.orientation();

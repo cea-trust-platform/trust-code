@@ -19,7 +19,7 @@
 
 #include <Traitement_particulier_NS_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Champ_Don.h>
+
 #include <SFichier.h>
 
 /*! @brief classe Traitement_particulier_NS_temperature Cette classe permet de faire les traitements particuliers

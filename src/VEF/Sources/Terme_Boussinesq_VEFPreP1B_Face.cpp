@@ -172,7 +172,7 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
 
   // Calcul du terme source aux points d'integration :
   le_scalaire.valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_scalaire);
-  beta()->valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_beta);
+  beta().valeur_aux_elems(tab_les_positions, tab_les_polygones, tab_valeurs_beta);
 
   // Extension possible des volumes de controle:
   //int modif_traitement_diri=( sub_type(Domaine_VEF,domaine_VEF) ? ref_cast(Domaine_VEF,domaine_VEF).get_modif_div_face_dirichlet() : 0);

@@ -73,17 +73,17 @@ void Loi_Etat_Multi_GP_WC::initialiser_inco_ch()
     }
 
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  Champ_Don& Yn = FWC.fraction_massique_nonresolue();
-  Yn->nommer("fraction_massique_nonresolue");
+  Champ_Don_base& Yn = FWC.fraction_massique_nonresolue();
+  Yn.nommer("fraction_massique_nonresolue");
   double t = le_fluide->masse_volumique().temps(); // pas 0 car reprise pt etre
   update_Yn_values(Yn,t);
   Loi_Etat_Multi_GP_base::initialiser_inco_ch();
 }
 
-void Loi_Etat_Multi_GP_WC::update_Yn_values(Champ_Don& Yn, double temps)
+void Loi_Etat_Multi_GP_WC::update_Yn_values(Champ_Don_base& Yn, double temps)
 {
-  DoubleTab& tab_Yn = Yn->valeurs();
-  Yn->mettre_a_jour(temps);
+  DoubleTab& tab_Yn = Yn.valeurs();
+  Yn.mettre_a_jour(temps);
   tab_Yn = 1.0;// re-initialize as 1
   const int size = liste_Y(0)->valeurs().size();
   assert(tab_Yn.size() == size);
@@ -112,19 +112,19 @@ void Loi_Etat_Multi_GP_WC::update_Yn_values(Champ_Don& Yn, double temps)
  */
 void Loi_Etat_Multi_GP_WC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) const
 {
-  assert (sub_type(Champ_Uniforme,masse_molaire_especes().valeur()));
+  assert (sub_type(Champ_Uniforme,masse_molaire_especes()));
 
   const int size = tab_masse_mol_mel.size();
   assert (liste_Y(0)->valeurs().size()==size);
   ArrOfDouble inv_M(size);
 
   const Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Yn = FWC.fraction_massique_nonresolue()->valeurs();
+  const DoubleTab& Yn = FWC.fraction_massique_nonresolue().valeurs();
 
   for (int i=0; i < num_espece_; i++)
     {
       const DoubleTab& Y_i = (i == num_espece_ -1) ? Yn : liste_Y(i)->valeurs();
-      const double M_i = masse_molaire_especes()->valeurs()(0,i);
+      const double M_i = masse_molaire_especes().valeurs()(0,i);
       for (int elem=0; elem<size; elem++) inv_M[elem] += Y_i(elem,0)/M_i;
     }
 
@@ -137,19 +137,19 @@ void Loi_Etat_Multi_GP_WC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
 void Loi_Etat_Multi_GP_WC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 {
   // FIXME : Actuellement on suppose que Cp est pris constant pour chacune des especes
-  assert (sub_type(Champ_Uniforme,cp_especes().valeur()));
+  assert (sub_type(Champ_Uniforme,cp_especes()));
 
   tab_Cp = 0;
   const int size =liste_Y(0)->valeurs().size();
 
   const Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Yn = FWC.fraction_massique_nonresolue()->valeurs();
+  const DoubleTab& Yn = FWC.fraction_massique_nonresolue().valeurs();
 
   for (int i=0; i<num_espece_; i++)
     {
-      // TODO : FIXME : a voir si Yn->valeurs() est a jour
+      // TODO : FIXME : a voir si Yn.valeurs() est a jour
       const DoubleTab& Y_i = (i == num_espece_ -1) ? Yn : liste_Y(i)->valeurs();
-      const double cp_i = cp_especes()->valeurs()(0,i);
+      const double cp_i = cp_especes().valeurs()(0,i);
       for (int elem=0; elem<size; elem++) tab_Cp(elem,0) += Y_i(elem,0)*cp_i;
     }
 }
@@ -163,7 +163,7 @@ void Loi_Etat_Multi_GP_WC::calculer_masse_volumique()
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
 
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  Champ_Don& Yn = FWC.fraction_massique_nonresolue();
+  Champ_Don_base& Yn = FWC.fraction_massique_nonresolue();
   double temps = le_fluide->masse_volumique().temps();
   update_Yn_values(Yn,temps); // XXX : a voir si l'appel est dans le bon endroit ...
   Loi_Etat_Multi_GP_base::calculer_masse_molaire();
@@ -243,24 +243,24 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_wilke()
   phi = 0.;
 
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  DoubleTab& Yn = FWC.fraction_massique_nonresolue()->valeurs();
+  DoubleTab& Yn = FWC.fraction_massique_nonresolue().valeurs();
 
   for (int i=0; i < num_espece_ ; i++)
     {
       phi = 0.;
-      const double M_i = masse_molaire_especes()->valeurs()(0,i);
-      const double mu_i = visc_dynamique_especes()->valeurs()(0,i);
+      const double M_i = masse_molaire_especes().valeurs()(0,i);
+      const double mu_i = visc_dynamique_especes().valeurs()(0,i);
 
       for (int j=0; j < num_espece_ ; j++)
         if (j != i) // sinon phi_ii = 1
           {
-            const double M_j = masse_molaire_especes()->valeurs()(0,j);
-            const double mu_j = visc_dynamique_especes()->valeurs()(0,j);
+            const double M_j = masse_molaire_especes().valeurs()(0,j);
+            const double mu_j = visc_dynamique_especes().valeurs()(0,j);
 
             double a = 1. + sqrt( mu_i / mu_j ) * pow( M_j / M_i , 0.25);
             double b = sqrt( 8. * ( 1. + ( M_i / M_j )));
             double phi_ij = ( M_i / M_j ) * a * a / b;
-            // TODO : FIXME : a voir si Yn->valeurs() est a jour
+            // TODO : FIXME : a voir si Yn.valeurs() est a jour
             const DoubleTab& y_j = (j == num_espece_ -1) ? Yn : liste_Y(j)->valeurs();
             // node is elem (VDF) or face (VEF)
             for (int node=0; node<y_j.size(); node++) phi(node) += y_j(node,0) * phi_ij;
@@ -286,8 +286,8 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
    * ====================================================================
    */
 
-  Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
-  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc->valeurs();
+  Champ_Don_base& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
+  DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
   const Champ_base& rho = le_fluide->masse_volumique();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n = tab_mu_sur_Sc.size();
@@ -295,7 +295,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
   // TODO : FIXME : On a tab_mu_sur_Sc.line_size() = 1 :( :/ :(
   // BUG : il faut avoir line_size = num_espece_ car on peut avoir D qui varie entre espece
 
-  if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
+  if (!sub_type(Champ_Uniforme,mu_sur_Sc))
     {
       if (sub_type(Champ_Uniforme,rho))
         {
@@ -306,7 +306,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
         for (int i=0 ; i<n ; i++)
           {
             // TODO : FIXME : j'ai pris D de l'espece 1 ...
-            tab_mu_sur_Sc(i,0) = tab_rho(i,0) * coeff_diffusion_especes()->valeurs()(0,0);
+            tab_mu_sur_Sc(i,0) = tab_rho(i,0) * coeff_diffusion_especes().valeurs()(0,0);
           }
     }
   else
@@ -315,7 +315,7 @@ void Loi_Etat_Multi_GP_WC::calculer_mu_sur_Sc()
       Process::exit();
     }
 
-  mu_sur_Sc->changer_temps(rho.temps());
+  mu_sur_Sc.changer_temps(rho.temps());
   tab_mu_sur_Sc.echange_espace_virtuel();
 }
 
@@ -331,17 +331,17 @@ void Loi_Etat_Multi_GP_WC::calculer_nu_sur_Sc()
    * ====================================================================
    */
 
-  Champ_Don& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
-  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc->valeurs();
+  Champ_Don_base& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
+  DoubleTab& tab_nu_sur_Sc = nu_sur_Sc.valeurs();
   const int n = tab_nu_sur_Sc.size();
 
   // TODO : FIXME : On a tab_nu_sur_Sc.line_size() = 1 :( :/ :(
   // BUG : il faut avoir line_size = num_espece_ car on peut avoir D qui varie entre espece
 
   // TODO : FIXME : j'ai pris D de l'espece 1 ...
-  for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = coeff_diffusion_especes()->valeurs()(0,0);
+  for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = coeff_diffusion_especes().valeurs()(0,0);
 
   double temps_champ = le_fluide->masse_volumique().temps();
-  nu_sur_Sc->changer_temps(temps_champ);
+  nu_sur_Sc.changer_temps(temps_champ);
   tab_nu_sur_Sc.echange_espace_virtuel();
 }

@@ -21,7 +21,7 @@
 #include <Champ_Uniforme.h>
 #include <Operateur_Diff.h>
 #include <Probleme_base.h>
-#include <Champ_Don.h>
+
 #include <Domaine.h>
 #include <Avanc.h>
 

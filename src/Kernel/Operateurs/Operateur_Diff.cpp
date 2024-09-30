@@ -17,7 +17,7 @@
 #include <Operateur_Diff.h>
 #include <stat_counters.h>
 #include <Champ_base.h>
-#include <Champ_Don.h>
+
 
 Implemente_instanciable(Operateur_Diff,"Operateur_Diff",OWN_PTR(Operateur_Diff_base));
 // XD diffusion_deriv objet_lecture diffusion_deriv 0 not_set
@@ -123,7 +123,7 @@ DoubleTab& Operateur_Diff::calculer(const DoubleTab& donnee,
 
 /*! @brief Renvoie le champ representant la diffusivite.
  *
- * @return (Champ_Don&) le champ representant la diffusivite
+ * @return (Champ_Don_base&) le champ representant la diffusivite
  */
 const Champ_base& Operateur_Diff::diffusivite() const
 {
@@ -133,7 +133,7 @@ const Champ_base& Operateur_Diff::diffusivite() const
 
 /*! @brief Associe la diffusivite a l'operateur.
  *
- * @param (Champ_Don& nu) le champ representant la diffusivite
+ * @param (Champ_Don_base& nu) le champ representant la diffusivite
  * @return le champ representant la diffusivite
  */
 void Operateur_Diff::associer_diffusivite(const Champ_base& nu)

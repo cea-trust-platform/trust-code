@@ -38,7 +38,7 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
           fluide.typer_lire_simple(is, "Typing the fluid medium ...");
 
           verifFluide++;
-          if (fluide->get_porosites_champ().non_nul())
+          if (fluide->has_porosites())
             {
               Cerr << que_suis_je() + " : porosity should be defined only once in the milieu_MUSIG block, not in " + fluide->que_suis_je() << finl;
               Process::exit();

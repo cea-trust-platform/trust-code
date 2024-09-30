@@ -21,7 +21,7 @@
 #include <Champ_P1NC.h>
 #include <Periodique.h>
 #include <TRUSTLists.h>
-#include <Champ_Don.h>
+
 #include <Solv_GCP.h>
 #include <Symetrie.h>
 #include <Domaine.h>

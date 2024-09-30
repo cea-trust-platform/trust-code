@@ -20,6 +20,7 @@
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
+#include <Champ_Don_base.h>
 
 class Sous_domaine_VF;
 class Domaine_Cl_VEF;
@@ -83,7 +84,7 @@ protected:
                                    double& u_l, DoubleVect& v_valeur) const=0;
 
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
-  Champ_Don diam_hydr;
+  OWN_PTR(Champ_Don_base) diam_hydr;
   //! Fluide associe au probleme
   REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue

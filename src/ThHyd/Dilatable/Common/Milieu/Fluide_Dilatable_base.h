@@ -47,8 +47,8 @@ public :
   int initialiser(const double temps) override;
 
   const DoubleTab& temperature() const;
-  const Champ_Don& ch_temperature() const;
-  Champ_Don& ch_temperature();
+  const Champ_Don_base& ch_temperature() const;
+  Champ_Don_base& ch_temperature();
 
   virtual void calculer_pression_tot();
   void preparer_pas_temps();
@@ -81,16 +81,16 @@ public :
   inline const Champ_Inc_base& inco_chaleur() const { return ch_inco_chaleur_.valeur(); }
   inline Champ_Inc_base& inco_chaleur() { return ch_inco_chaleur_.valeur(); }
   inline const Champ_Inc_base& vitesse() const { return ch_vitesse_.valeur(); }
-  inline const Champ_Don& pression_tot() const { return ch_pression_tot_; }
-  inline Champ_Don& pression_tot() { return ch_pression_tot_; }
-  inline const Champ_Don& mu_sur_Schmidt() const { return ch_mu_sur_Sc; }
-  inline Champ_Don& mu_sur_Schmidt() { return ch_mu_sur_Sc; }
-  inline const Champ_Don& nu_sur_Schmidt() const { return ch_nu_sur_Sc; }
-  inline Champ_Don& nu_sur_Schmidt() { return ch_nu_sur_Sc; }
-  inline const Champ_Don& source_masse_espece() const { assert (ch_source_masse_esp_.non_nul()); return ch_source_masse_esp_; }
-  inline Champ_Don& source_masse_espece() { assert (ch_source_masse_esp_.non_nul()); return ch_source_masse_esp_; }
-  inline const Champ_Don& source_masse_projection() const { assert (ch_source_masse_proj_.non_nul()); return ch_source_masse_proj_; }
-  inline Champ_Don& source_masse_projection() { assert (ch_source_masse_proj_.non_nul()); return ch_source_masse_proj_; }
+  inline const Champ_Don_base& pression_tot() const { return ch_pression_tot_; }
+  inline Champ_Don_base& pression_tot() { return ch_pression_tot_; }
+  inline const Champ_Don_base& mu_sur_Schmidt() const { return ch_mu_sur_Sc; }
+  inline Champ_Don_base& mu_sur_Schmidt() { return ch_mu_sur_Sc; }
+  inline const Champ_Don_base& nu_sur_Schmidt() const { return ch_nu_sur_Sc; }
+  inline Champ_Don_base& nu_sur_Schmidt() { return ch_nu_sur_Sc; }
+  inline const Champ_Don_base& source_masse_espece() const { assert (ch_source_masse_esp_.non_nul()); return ch_source_masse_esp_; }
+  inline Champ_Don_base& source_masse_espece() { assert (ch_source_masse_esp_.non_nul()); return ch_source_masse_esp_; }
+  inline const Champ_Don_base& source_masse_projection() const { assert (ch_source_masse_proj_.non_nul()); return ch_source_masse_proj_; }
+  inline Champ_Don_base& source_masse_projection() { assert (ch_source_masse_proj_.non_nul()); return ch_source_masse_proj_; }
 
   inline bool has_source_masse_espece_champ() const { return ch_source_masse_esp_.non_nul(); }
   inline bool has_source_masse_projection_champ() const { return ch_source_masse_proj_.non_nul(); }
@@ -131,8 +131,8 @@ protected :
   double Pth_ = -1., Pth_n_ = -1., Pth1_ = -1.;
   REF(Champ_Inc_base) ch_inco_chaleur_, ch_vitesse_, ch_pression_;
   REF(Probleme_base) le_probleme_;
-  Champ_Don ch_pression_tot_, ch_mu_sur_Sc, ch_nu_sur_Sc, ch_rho_gaz_, ch_rho_comme_v_;
-  Champ_Don ch_source_masse_esp_, ch_source_masse_proj_; /* si besoin */
+  OWN_PTR(Champ_Don_base) ch_pression_tot_, ch_mu_sur_Sc, ch_nu_sur_Sc, ch_rho_gaz_, ch_rho_comme_v_;
+  OWN_PTR(Champ_Don_base) ch_source_masse_esp_, ch_source_masse_proj_; /* si besoin */
   OWN_PTR(Loi_Etat_base) loi_etat_;
   OWN_PTR(EOS_Tools_base) eos_tools_;
   OWN_PTR(EDO_Pression_th_base) EDO_Pth_;

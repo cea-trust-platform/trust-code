@@ -76,7 +76,7 @@ void Loi_paroi_base::mettre_a_jour(double temps)
   if (temps > tps_loc)
     {
       const DoubleTab& vit = pb_->get_champ("vitesse").passe();
-      const DoubleTab& nu  = ref_cast(Fluide_base, pb_->milieu()).viscosite_cinematique()->valeurs();
+      const DoubleTab& nu  = ref_cast(Fluide_base, pb_->milieu()).viscosite_cinematique().valeurs();
       calc_y_plus(vit, nu);
 
       if (sub_type(Navier_Stokes_std, pb_->equation(0)) && pb_->has_champ("y_plus"))

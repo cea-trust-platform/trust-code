@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <Milieu_base.h>
 #include <Domaine_Cl_VEF.h>
-#include <Champ_Don.h>
+
 #include <Domaine_VEF.h>
 #include <Param.h>
 

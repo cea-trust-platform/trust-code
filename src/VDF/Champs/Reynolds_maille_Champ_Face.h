@@ -18,7 +18,7 @@
 
 #include <Champ_Fonc_Face_VDF.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Champ_Face_VDF;
 
@@ -28,11 +28,11 @@ class Reynolds_maille_Champ_Face: public Champ_Fonc_Face_VDF
 public:
   inline const Champ_Face_VDF& vitesse() const { return vitesse_.valeur(); }
   void mettre_a_jour(double) override;
-  void associer_champ(const Champ_Face_VDF&, const Champ_Don&);
+  void associer_champ(const Champ_Face_VDF&, const Champ_Don_base&);
 
 protected:
   REF(Champ_Face_VDF) vitesse_;
-  REF(Champ_Don) nu_;
+  REF(Champ_Don_base) nu_;
 };
 
 #endif /* Reynolds_maille_Champ_Face_included */

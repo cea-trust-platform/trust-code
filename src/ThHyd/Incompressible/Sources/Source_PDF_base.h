@@ -19,11 +19,11 @@
 #include <Interpolation_IBM_base.h>
 #include <Source_dep_inco_base.h>
 #include <TRUST_Deriv.h>
-#include <Champ_Don.h>
 #include <PDF_model.h>
 #include <TRUSTTab.h>
 
 class Probleme_base;
+class Champ_Don_base;
 
 /*! @brief class Source_PDF_base Base class for the source terms for the penalisation of the momentum in the Immersed Boundary Method (IBM)
  *
@@ -77,7 +77,7 @@ protected:
   virtual void compute_indicateur_nodal_champ_aire();
   int type_vitesse_imposee_ = -1;
 
-  Champ_Don champ_rotation_lu_, champ_rotation_, champ_aire_lu_, champ_aire_, champ_rho_;
+  OWN_PTR(Champ_Don_base) champ_rotation_lu_, champ_rotation_, champ_aire_lu_, champ_aire_, champ_rho_;
 
   int transpose_rotation_ = -1;
   DoubleTab indicateur_nodal_champ_aire_;

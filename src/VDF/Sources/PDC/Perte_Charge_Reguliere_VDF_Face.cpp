@@ -135,15 +135,15 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
   const DoubleTab& vit = la_vitesse->valeurs();
   int ndeb_faces_int = domaine_VDF.premiere_face_int();
   // on prend nu et non mu
-  const Champ_Don& nu = le_fluide->viscosite_cinematique();
+  const Champ_Don_base& nu = le_fluide->viscosite_cinematique();
 
 
   double d_visco=-1;
   int l_visco_unif=0;
 
-  if (sub_type(Champ_Uniforme,nu.valeur()))
+  if (sub_type(Champ_Uniforme,nu))
     {
-      const Champ_Uniforme& ch_nu = ref_cast(Champ_Uniforme,nu.valeur());
+      const Champ_Uniforme& ch_nu = ref_cast(Champ_Uniforme,nu);
       d_visco = ch_nu.valeurs()(0,0);
       l_visco_unif = 1;
     }
@@ -152,7 +152,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
     int nb_faces,numfa;
 
     double Cf,CK,U,U_abs,Reynolds;
-    const DoubleTab& visco = nu->valeurs();
+    const DoubleTab& visco = nu.valeurs();
     {
       nb_faces = num_faces.size();
       for (int i=0; i<nb_faces; i++)

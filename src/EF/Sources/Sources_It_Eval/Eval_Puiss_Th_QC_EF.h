@@ -18,7 +18,7 @@
 
 #include <Evaluateur_Source_EF_Som.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Don.h>
+
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
@@ -28,19 +28,19 @@ public:
   Eval_Puiss_Th_QC_EF() { }
   void completer() override { Evaluateur_Source_EF_Som::completer(); }
   void mettre_a_jour() override { }
-  inline void associer_puissance(const Champ_Don&);
+  inline void associer_puissance(const Champ_Don_base&);
 
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& source) const;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF(Champ_Don_base) la_puissance;
   DoubleTab puissance;
 };
 
-inline void Eval_Puiss_Th_QC_EF::associer_puissance(const Champ_Don& Q)
+inline void Eval_Puiss_Th_QC_EF::associer_puissance(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q->valeurs());
+  puissance.ref(Q.valeurs());
 }
 
 template <typename Type_Double>
@@ -49,7 +49,7 @@ void Eval_Puiss_Th_QC_EF::calculer_terme_source(const int num_elem, Type_Double&
   const int size = source.size_array();
   if (size > 1) Process::exit("Eval_Puiss_Th_EF::calculer_terme_source not available for multi-inco !");
 
-  const int k = (sub_type(Champ_Uniforme,la_puissance->valeur())) ? 0 : num_elem;
+  const int k = (sub_type(Champ_Uniforme,la_puissance.valeur())) ? 0 : num_elem;
   for (int i = 0; i < size; i++) source[i] = puissance(k,i);
 }
 

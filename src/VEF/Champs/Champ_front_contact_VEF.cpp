@@ -226,9 +226,9 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
   //DoubleTab positions_Pf;
 
   if (!sub_type(Convection_Diffusion_Concentration,inco.equation()))
-    coeff_lam = le_milieu.conductivite()->valeurs();
+    coeff_lam = le_milieu.conductivite().valeurs();
   else
-    coeff_lam = ref_cast(Constituant,le_milieu).diffusivite_constituant()->valeurs();
+    coeff_lam = ref_cast(Constituant,le_milieu).diffusivite_constituant().valeurs();
   int dim = coeff_lam.nb_dim();
 
   const RefObjU& mod = inco.equation().get_modele(TURBULENCE);
@@ -521,11 +521,11 @@ void Champ_front_contact_VEF::calcul_coeff_amort()
       ratio = sqrt(ratio);
 
       double alpha;
-      if(sub_type(Champ_Uniforme,le_milieu.diffusivite().valeur()))
-        alpha=le_milieu.diffusivite()->valeurs()(0,0);
+      if(sub_type(Champ_Uniforme,le_milieu.diffusivite()))
+        alpha=le_milieu.diffusivite().valeurs()(0,0);
       else
         {
-          const DoubleTab& tab_alpha = le_milieu.diffusivite()->valeurs();
+          const DoubleTab& tab_alpha = le_milieu.diffusivite().valeurs();
           alpha=tab_alpha(num);
         }
 

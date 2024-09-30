@@ -19,7 +19,7 @@
 //  Cette classe porte les tableaux qui servent a mettre en oeuvre
 //  les condition aux limites dans la formulation PolyMAC
 #include <Domaine_Cl_dis_base.h>
-#include <Champ_Don.h>
+
 
 
 class Domaine_VF;

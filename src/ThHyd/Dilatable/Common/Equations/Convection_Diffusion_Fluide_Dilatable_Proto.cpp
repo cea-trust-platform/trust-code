@@ -309,8 +309,8 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
       eqn.operateur(1).l_op_base().contribuer_au_second_membre(conv);
       eqn.sources().ajouter(diff);
       double Cp = -5.;
-      int is_cp_unif= sub_type(Champ_Uniforme,fluide_dil.capacite_calorifique().valeur());
-      const DoubleTab& tab_cp = fluide_dil.capacite_calorifique()->valeurs();
+      int is_cp_unif= sub_type(Champ_Uniforme,fluide_dil.capacite_calorifique());
+      const DoubleTab& tab_cp = fluide_dil.capacite_calorifique().valeurs();
       if (is_cp_unif) Cp=tab_cp(0,0);
 
       for (int som=0 ; som<n ; som++)

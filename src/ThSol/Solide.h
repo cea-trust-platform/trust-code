@@ -38,7 +38,7 @@ public:
 private:
   bool is_user_defined_ = false;
   Motcle nom_champ_;
-  Champ_Don mon_champ_;
+  OWN_PTR(Champ_Don_base) mon_champ_;
 };
 
 #endif /* Solide_included */

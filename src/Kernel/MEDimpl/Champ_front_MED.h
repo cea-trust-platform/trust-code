@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,8 @@
 #define Champ_front_MED_included
 
 #include <Champ_front_txyz.h>
-#include <Champ_Don.h>
+
+class Champ_Don_base;
 
 class Champ_front_MED : public Champ_front_txyz
 {
@@ -32,7 +33,7 @@ public:
 
 protected:
   void remplir_tab( DoubleTab&,double ) const;
-  Champ_Don champ_volumique_;
+  OWN_PTR(Champ_Don_base) champ_volumique_;
   mutable DoubleTab pos_,val_;
 };
 

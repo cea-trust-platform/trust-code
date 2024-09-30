@@ -15,16 +15,16 @@
 
 #include <Eval_Puiss_Neutr_VDF_Elem.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Don.h>
+
 #include <Sous_Domaine.h>
 #include <Domaine_VDF.h>
 #include <algorithm>
 #include <Parser.h>
 
-void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)
+void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don_base& Q)
 {
-  la_puissance = ref_cast(Champ_Uniforme,Q.valeur());
-  puissance = Q->valeurs()(0,0);
+  la_puissance = ref_cast(Champ_Uniforme,Q);
+  puissance = Q.valeurs()(0,0);
 }
 
 void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& nom_ssz)

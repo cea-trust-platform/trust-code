@@ -28,9 +28,9 @@ Entree& Puissance_Thermique_EF::readOn(Entree& s)
 {
   const Equation_base& eqn = equation();
   Terme_Puissance_Thermique::lire_donnees(s, eqn);
-  champs_compris_.ajoute_champ(la_puissance);
-  champs_don_.add(la_puissance);
-  champs_don_.add(la_puissance_lu);
+  champs_compris_.ajoute_champ(la_puissance.valeur());
+  if (la_puissance.non_nul()) champs_don_.add(la_puissance.valeur());
+  if (la_puissance_lu.non_nul()) champs_don_.add(la_puissance_lu.valeur());
   return s;
 }
 

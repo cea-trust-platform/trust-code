@@ -17,7 +17,7 @@
 #include <Pb_Multiphase.h>
 
 #include <Discret_Thyd.h>
-#include <Champ_Don.h>
+
 
 Implemente_instanciable(Gravite_Multiphase, "Gravite_Multiphase", Correlation_base);
 
@@ -28,7 +28,7 @@ Sortie& Gravite_Multiphase::printOn(Sortie& os) const
 
 Entree& Gravite_Multiphase::readOn(Entree& is)
 {
-  Champ_Don gravite_don_;
+  OWN_PTR(Champ_Don_base) gravite_don_;
   is >> gravite_don_;
 
   Pb_Multiphase& pb = ref_cast(Pb_Multiphase, pb_.valeur());

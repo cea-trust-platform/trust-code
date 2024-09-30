@@ -21,9 +21,9 @@
 
 /*! @brief Renvoie le champ donne representant le terme source
  *
- * @return (Champ_Don&) le champ donne representant le terme source
+ * @return (Champ_Don_base&) le champ donne representant le terme source
  */
-const Champ_Don& Terme_Source_Qdm::source() const
+const Champ_Don_base& Terme_Source_Qdm::source() const
 {
   return la_source;
 }

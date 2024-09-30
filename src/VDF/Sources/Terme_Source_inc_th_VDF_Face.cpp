@@ -98,7 +98,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
   const Domaine& domaine = le_dom_VDF->domaine();
   int nb_elem = domaine.nb_elem();
-  const Champ_Uniforme& ch_beta = ref_cast(Champ_Uniforme,beta().valeur());
+  const Champ_Uniforme& ch_beta = ref_cast(Champ_Uniforme,beta());
   const DoubleTab& vitesse = eq_hydraulique().inconnue().valeurs();
   const DoubleVect& temperature = eq_thermique().inconnue().valeurs();
   DoubleVect cell_cent_temp(temperature);

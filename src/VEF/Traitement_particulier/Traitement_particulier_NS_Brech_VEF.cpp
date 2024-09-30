@@ -316,7 +316,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
 
       // Modifs VB pour prise en compte rho et calcul du flux enthalpique + Tmoy
       mon_equation->fluide().masse_volumique().valeur_aux_elems(coord_trace, les_polys, rho_);
-      mon_equation->fluide().capacite_calorifique()->valeur_aux_elems(coord_trace, les_polys, cp_);
+      mon_equation->fluide().capacite_calorifique().valeur_aux_elems(coord_trace, les_polys, cp_);
       temp.valeur_aux_elems(coord_trace, les_polys, temper_);
       // Fin Modifs VB
 
@@ -396,7 +396,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 
   const DoubleTab&  vitesse = mon_equation->inconnue().valeurs();
   const DoubleVect& gravite = mon_equation->fluide().gravite().valeurs();
-  const DoubleVect& beta     = mon_equation->fluide().beta_t()->valeurs();
+  const DoubleVect& beta     = mon_equation->fluide().beta_t().valeurs();
 
   const int nb_faces = domaine_VEF.nb_faces();
 

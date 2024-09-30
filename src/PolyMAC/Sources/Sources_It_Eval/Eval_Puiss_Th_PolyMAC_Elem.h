@@ -19,7 +19,7 @@
 #include <Evaluateur_Source_Elem.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
-#include <Champ_Don.h>
+
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
@@ -27,26 +27,26 @@ class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_Elem
 {
 public:
   void mettre_a_jour() override { }
-  inline void associer_champs(const Champ_Don&);
+  inline void associer_champs(const Champ_Don_base&);
 
   template <typename Type_Double>
   inline void calculer_terme_source(const int, Type_Double&) const;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF(Champ_Don_base) la_puissance;
   DoubleTab puissance;
 };
 
-inline void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
+inline void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q->valeurs());
+  puissance.ref(Q.valeurs());
 }
 
 template <typename Type_Double>
 inline void Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(const int e, Type_Double& S) const
 {
-  const int k = sub_type(Champ_Uniforme,la_puissance->valeur()) ? 0 : e, size = S.size_array();
+  const int k = sub_type(Champ_Uniforme,la_puissance.valeur()) ? 0 : e, size = S.size_array();
   for (int i = 0; i < size; i++) S[i] = puissance(k, i) * volumes(e) * porosite_vol(e);
 }
 

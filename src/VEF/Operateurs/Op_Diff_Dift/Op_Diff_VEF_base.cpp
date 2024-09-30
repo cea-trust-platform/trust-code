@@ -142,7 +142,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
             {
               // get the thermal conductivity
               const Milieu_base& mon_milieu = mon_eqn.milieu();
-              const DoubleVect& tab_lambda = mon_milieu.conductivite()->valeurs();
+              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
               max_conductivity = local_max_vect(tab_lambda);
               // compute Biot number given by Bi = L*h/lambda.
               double Bi = h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;

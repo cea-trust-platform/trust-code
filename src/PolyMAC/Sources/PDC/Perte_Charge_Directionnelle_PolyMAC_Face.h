@@ -49,7 +49,7 @@ protected:
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
                            DoubleVect& v_valeur) const override;
 
-  Champ_Don v; //!< Vecteur directeur de la perte de charge.
+  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
 };
 
 class Perte_Charge_Directionnelle_PolyMAC_P0P1NC_Face: public Perte_Charge_Directionnelle_PolyMAC_Face

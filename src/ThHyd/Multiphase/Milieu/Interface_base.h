@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Interface_base_included
 
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+#include <Champ_Don_base.h>
 #include <span.hpp>
 #include <Param.h>
 
@@ -35,8 +35,10 @@ public:
   virtual void mettre_a_jour(double );
   void assoscier_pb(const Probleme_base& pb) { pb_ = pb; }
 
-  Champ_Don& get_sigma_champ() { return ch_sigma_; }
-  const Champ_Don& get_sigma_champ() const { return ch_sigma_; }
+  Champ_Don_base& get_sigma_champ() { return ch_sigma_; }
+  const Champ_Don_base& get_sigma_champ() const { return ch_sigma_; }
+
+  void discretiser_sigma(const Nom& sig_nom, double temps);
 
   DoubleTab& get_sigma_tab() { return ch_sigma_->valeurs(); }
   const DoubleTab& get_sigma_tab() const { return ch_sigma_->valeurs(); }
@@ -51,7 +53,7 @@ public:
 
 protected:
   REF(Probleme_base) pb_;
-  Champ_Don ch_sigma_;
+  OWN_PTR(Champ_Don_base) ch_sigma_;
   double sigma__ = -1.;
 
   virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;

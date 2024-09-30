@@ -48,15 +48,14 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
   double temps=pb.schema_temps().temps_courant();
 
   // les champs seront nommes par le milieu_base
-  Champ_Don ch_rho;
+  OWN_PTR(Champ_Don_base) ch_rho;
   dis.discretiser_champ("temperature",domaine_dis,"masse_volumique_p","neant",1,temps,ch_rho);
   ch_rho_ = ch_rho.valeur();
 
-  Champ_Don& cp = capacite_calorifique();
-  if (cp.est_nul() || !sub_type(Champ_Uniforme,cp.valeur())) //ie Cp non constant : gaz reels
+  if (ch_Cp_.est_nul() || !sub_type(Champ_Uniforme,ch_Cp_.valeur())) //ie Cp non constant : gaz reels
     {
       Cerr<<"Heat capacity Cp is discretized once more for space variable case."<<finl;
-      dis.discretiser_champ("temperature",domaine_dis,"cp_prov","neant",1,temps,cp);
+      dis.discretiser_champ("temperature",domaine_dis,"cp_prov","neant",1,temps,ch_Cp_);
     }
 
   if (ch_lambda_.est_nul() || ((!sub_type(Champ_Uniforme,ch_lambda_.valeur())) && (!sub_type(Champ_Fonc_Tabule,ch_lambda_.valeur()))))
@@ -74,9 +73,8 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
   dis.discretiser_champ("champ_elem",domaine_dis,"nu_sur_Schmidt","m2/s",1,temps,ch_nu_sur_Sc);
   champs_compris_.ajoute_champ(ch_nu_sur_Sc);
 
-  Champ_Don& ptot = pression_tot();
-  dis.discretiser_champ("champ_elem",domaine_dis,"pression_tot","Pa",1,temps,ptot);
-  champs_compris_.ajoute_champ(ptot);
+  dis.discretiser_champ("champ_elem",domaine_dis,"pression_tot","Pa",1,temps,ch_pression_tot_);
+  champs_compris_.ajoute_champ(ch_pression_tot_.valeur());
 
   dis.discretiser_champ("temperature",domaine_dis,"rho_gaz","kg/m3",1,temps,ch_rho_gaz_);
   champs_compris_.ajoute_champ(ch_rho_gaz_);
@@ -319,18 +317,18 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
  */
 const DoubleTab& Fluide_Dilatable_base::temperature() const
 {
-  return ch_temperature()->valeurs();
+  return ch_temperature().valeurs();
 }
 
 /*! @brief Renvoie le champ de le temperature
  *
  */
-const Champ_Don& Fluide_Dilatable_base::ch_temperature() const
+const Champ_Don_base& Fluide_Dilatable_base::ch_temperature() const
 {
   return loi_etat_->ch_temperature();
 }
 
-Champ_Don& Fluide_Dilatable_base::ch_temperature()
+Champ_Don_base& Fluide_Dilatable_base::ch_temperature()
 {
   return loi_etat_->ch_temperature();
 }
@@ -442,13 +440,13 @@ void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
   coeff_absorption_->initialiser(temps);
   indice_refraction_->initialiser(temps);
   longueur_rayo_->initialiser(temps);
-  if (sub_type(Champ_Uniforme,kappa().valeur()))
-    longueur_rayo()->valeurs()(0,0)=1/(3*kappa()->valeurs()(0,0));
+  if (sub_type(Champ_Uniforme,kappa()))
+    longueur_rayo().valeurs()(0,0)=1/(3*kappa().valeurs()(0,0));
   else
     {
       DoubleTab& l_rayo = longueur_rayo_->valeurs();
-      const DoubleTab& K = kappa()->valeurs();
-      for (int i=0; i<kappa()->nb_valeurs_nodales(); i++)
+      const DoubleTab& K = kappa().valeurs();
+      for (int i=0; i<kappa().nb_valeurs_nodales(); i++)
         l_rayo[i] = 1/(3*K[i]);
     }
 }
@@ -528,9 +526,9 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
   ch_rho_->mettre_a_jour(temps);
-  ch_temperature()->mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
+  ch_temperature().mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
   ch_rho_->changer_temps(temps);
-  ch_temperature()->changer_temps(temps);
+  ch_temperature().changer_temps(temps);
   ch_mu_->changer_temps(temps);
   ch_lambda_->changer_temps(temps);
   ch_Cp_->mettre_a_jour(temps);

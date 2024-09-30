@@ -20,7 +20,7 @@
 #include <Op_Diff_EF_base.h>
 #include <Op_EF_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Domaine_Cl_EF;
 class Domaine_EF;

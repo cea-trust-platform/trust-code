@@ -19,7 +19,7 @@
 #include <Op_Dift_EF_base.h>
 #include <Op_EF_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Champ_Uniforme;
 class Matrice_Morse;

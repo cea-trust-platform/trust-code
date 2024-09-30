@@ -23,7 +23,7 @@
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
 #include <Domaine_VF.h>
-#include <Champ_Don.h>
+
 #include <SFichier.h>
 
 Implemente_base_sans_constructeur(Turbulence_paroi_scal_base, "Turbulence_paroi_scal_base", Objet_U);

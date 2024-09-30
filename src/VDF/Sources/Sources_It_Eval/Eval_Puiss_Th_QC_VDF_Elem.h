@@ -19,26 +19,26 @@
 #include <Fluide_Quasi_Compressible.h>
 #include <Evaluateur_Source_Elem.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 
 class Eval_Puiss_Th_QC_VDF_Elem: public Evaluateur_Source_Elem
 {
 public:
   Eval_Puiss_Th_QC_VDF_Elem() { }
-  inline void associer_puissance(const Champ_Don& Q);
+  inline void associer_puissance(const Champ_Don_base& Q);
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   inline void mettre_a_jour() override { /* Do nothing */}
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF(Champ_Don_base) la_puissance;
   DoubleTab puissance;
 };
 
-inline void Eval_Puiss_Th_QC_VDF_Elem::associer_puissance(const Champ_Don& Q)
+inline void Eval_Puiss_Th_QC_VDF_Elem::associer_puissance(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q->valeurs());
+  puissance.ref(Q.valeurs());
 }
 
 template <typename Type_Double>

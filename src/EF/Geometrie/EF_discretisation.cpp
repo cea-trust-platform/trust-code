@@ -179,7 +179,7 @@ void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine
  *
  */
 void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                          Champ_Don& champ) const
+                                          OWN_PTR(Champ_Don_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -196,7 +196,7 @@ void EF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
   OWN_PTR(Champ_Fonc_base) *champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
-  Champ_Don *champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Don_base) *champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 
@@ -313,7 +313,7 @@ void EF_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
     }
   else if ((nature == multi_scalaire) && (champ_don))
     {
-      Cerr << "There is no field of type Champ_Don with a multi_scalaire nature." << finl;
+      Cerr << "There is no field of type OWN_PTR(Champ_Don_base) with a multi_scalaire nature." << finl;
       exit();
     }
 
@@ -456,13 +456,9 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis_ba
   const Champ_Inc_base& ch_vitesse = eqn_hydr.inconnue();
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse);
 
-
-
-
-  Champ_Don& mu = le_fluide.viscosite_dynamique();
+  Champ_Don_base& mu = le_fluide.viscosite_dynamique();
   //  mu est toujours un champ_Ostwald_EF , il faut toujours faire ce qui suit
-  mu.typer("Champ_Ostwald_EF");
-  Champ_Ostwald_EF& ch_mu = ref_cast(Champ_Ostwald_EF,mu.valeur());
+  Champ_Ostwald_EF& ch_mu = ref_cast(Champ_Ostwald_EF,mu);
   Cerr<<"associe domainedisbase EF"<<finl;
   ch_mu.associer_domaine_dis_base(domaine_EF);
   ch_mu.associer_fluide(le_fluide);

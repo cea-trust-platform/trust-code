@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #ifndef Champ_Composite_included
 #define Champ_Composite_included
 
-#include <Champ_Don.h>
+#include <Champ_Don_base.h>
 
 class Champ_Composite : public Champ_Don_base
 {
@@ -29,12 +29,12 @@ public:
   // methodes specifiques
   int get_champ_composite_dim() { return dim_; }
   const int& get_champ_composite_dim() const { return dim_; }
-  Champ_Don& get_champ_composite(const int i) { return z_fld_[i]; }
-  const Champ_Don& get_champ_composite(const int i) const { return z_fld_[i]; }
+  Champ_Don_base& get_champ_composite(const int i) { return z_fld_[i].valeur(); }
+  const Champ_Don_base& get_champ_composite(const int i) const { return z_fld_[i].valeur(); }
 
 protected:
   void fill_valeurs_composite();
-  std::vector<Champ_Don> z_fld_;
+  std::vector<OWN_PTR(Champ_Don_base)> z_fld_;
   int dim_ = -1;
 };
 

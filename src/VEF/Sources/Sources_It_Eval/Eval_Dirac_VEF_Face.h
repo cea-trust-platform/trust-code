@@ -18,7 +18,7 @@
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 #include <Domaine.h>
 
 class Eval_Dirac_VEF_Face: public Evaluateur_Source_VEF_Face
@@ -26,7 +26,7 @@ class Eval_Dirac_VEF_Face: public Evaluateur_Source_VEF_Face
 public:
   Eval_Dirac_VEF_Face() : puissance(-123.), nb_dirac(-123.) {}
 
-  void associer_champs(const Champ_Don& );
+  void associer_champs(const Champ_Don_base& );
   void mettre_a_jour() override;
 
   template <typename Type_Double>
@@ -39,7 +39,7 @@ public:
   DoubleVect le_point;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF(Champ_Don_base) la_puissance;
   REF(Domaine) mon_dom;
   double puissance, nb_dirac;
 

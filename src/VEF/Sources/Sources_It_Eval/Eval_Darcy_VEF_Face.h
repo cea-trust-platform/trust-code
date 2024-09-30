@@ -20,7 +20,7 @@
 #include <Modele_Permeabilite_base.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_VEF.h>
-#include <Champ_Don.h>
+
 #include <TRUST_Ref.h>
 
 
@@ -40,7 +40,7 @@ public:
   template <typename Type_Double>
   inline void calculer_terme_source_non_standard(const int num_face, Type_Double& source) const { calculer_terme_source(num_face, source, volumes_entrelaces_Cl); }
 
-  inline void associer(const Champ_Don&);
+  inline void associer(const Champ_Don_base&);
   inline void associer(const Champ_Inc_base& v) { vitesse_ = v; }
   inline double& getPorosite() { return porosite_; }
 
@@ -56,11 +56,11 @@ private:
   double porosite_;
 };
 
-void Eval_Darcy_VEF_Face::associer(const Champ_Don& diffu)
+void Eval_Darcy_VEF_Face::associer(const Champ_Don_base& diffu)
 {
   int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
   db_diffusivite_.resize(nb_faces_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  diffusivite_ = diffu.valeur();
+  diffusivite_ = diffu;
   mettre_a_jour();
 }
 

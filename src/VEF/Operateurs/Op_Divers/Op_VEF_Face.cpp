@@ -18,7 +18,7 @@
 #include <Equation_base.h>
 #include <Sortie.h>
 #include <Probleme_base.h>
-#include <Champ_Don.h>
+
 #include <Champ_Uniforme.h>
 #include <Schema_Temps_base.h>
 #include <Milieu_base.h>
@@ -380,13 +380,13 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
   if (op.equation().inconnue().le_nom() == "temperature" && !( sub_type(Operateur_Diff_base,op) && ref_cast(Operateur_Diff_base,op).diffusivite().le_nom() == "conductivite"))
     {
       const Champ_base& rho = op.equation().milieu().masse_volumique();
-      const Champ_Don& Cp = op.equation().milieu().capacite_calorifique();
+      const Champ_Don_base& Cp = op.equation().milieu().capacite_calorifique();
       bool rho_uniforme = sub_type(Champ_Uniforme,rho);
-      bool cp_uniforme = sub_type(Champ_Uniforme,Cp.valeur());
+      bool cp_uniforme = sub_type(Champ_Uniforme,Cp);
       bool is_rho_u = (sub_type(Op_Conv_VEF_base, op) && ref_cast(Op_Conv_VEF_base,op).vitesse().le_nom() == "rho_u") ? true : false;
       const int nb_faces_bords = le_dom_vef.nb_faces_bord();
       CDoubleArrView rho_face = static_cast<const DoubleVect&>(rho.valeurs()).view_ro();
-      CDoubleArrView Cp_face = static_cast<const DoubleVect&>(Cp->valeurs()).view_ro();
+      CDoubleArrView Cp_face = static_cast<const DoubleVect&>(Cp.valeurs()).view_ro();
       DoubleArrView flux_bords = static_cast<DoubleVect&>(flux_bords_).view_rw();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_bords, KOKKOS_LAMBDA(
                              const int face)

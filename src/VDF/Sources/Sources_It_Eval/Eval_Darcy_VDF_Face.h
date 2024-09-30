@@ -20,7 +20,7 @@
 #include <Evaluateur_Source_Face.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_VDF.h>
-#include <Champ_Don.h>
+
 
 #include <TRUST_Ref.h>
 
@@ -35,7 +35,7 @@ public:
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   template <typename Type_Double> void calculer_terme_source_bord(int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour() override;
-  inline void associer(const Champ_Don&);
+  inline void associer(const Champ_Don_base&);
   inline void associer(const Champ_Inc_base& vit) { vitesse_ = vit; }
 
   OWN_PTR(Modele_Permeabilite_base) modK_;
@@ -50,11 +50,11 @@ protected:
 /*! @brief associe le champ de diffusivite
  *
  */
-inline void Eval_Darcy_VDF_Face::associer(const Champ_Don& diffu)
+inline void Eval_Darcy_VDF_Face::associer(const Champ_Don_base& diffu)
 {
   const int nb_faces_tot = ref_cast(Domaine_VDF,le_dom.valeur()).nb_faces_tot();
   db_diffusivite_.resize(nb_faces_tot,RESIZE_OPTIONS::NOCOPY_NOINIT);
-  diffusivite_ = diffu.valeur();
+  diffusivite_ = diffu;
   mettre_a_jour();
 }
 

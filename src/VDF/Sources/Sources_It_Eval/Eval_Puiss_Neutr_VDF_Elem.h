@@ -18,7 +18,7 @@
 
 #include <Evaluateur_Source_Elem.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Champ_Uniforme;
 
@@ -26,7 +26,7 @@ class Eval_Puiss_Neutr_VDF_Elem: public Evaluateur_Source_Elem
 {
 public:
   Eval_Puiss_Neutr_VDF_Elem() : puissance(-123.) { }
-  void associer_champs(const Champ_Don& );
+  void associer_champs(const Champ_Don_base& );
   void associer_repartition(const Nom& fxyz, const Nom& nom_ssz);
   void mettre_a_jour() override;
   void completer() override;

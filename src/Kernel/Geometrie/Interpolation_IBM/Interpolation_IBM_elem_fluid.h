@@ -39,11 +39,11 @@ protected :
   virtual void computeFluidElems(Domaine_dis_base&);
   void set_param(Param&);
 
-  Champ_Don fluid_points_lu_;
-  Champ_Don fluid_points_;
+  OWN_PTR(Champ_Don_base) fluid_points_lu_;
+  OWN_PTR(Champ_Don_base) fluid_points_;
 
-  Champ_Don fluid_elems_lu_;
-  Champ_Don fluid_elems_;
+  OWN_PTR(Champ_Don_base) fluid_elems_lu_;
+  OWN_PTR(Champ_Don_base) fluid_elems_;
 
   friend class Source_PDF_EF;
 };

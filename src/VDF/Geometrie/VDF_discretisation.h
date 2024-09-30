@@ -33,7 +33,7 @@
  */
 
 #include <Discret_Thyd.h>
-#include <Champ_Don.h>
+
 
 class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
@@ -54,7 +54,7 @@ public:
                          const Nom& sous_type = NOM_VIDE) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps,
                          OWN_PTR(Champ_Fonc_base) &champ) const override;
-  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
+  void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, OWN_PTR(Champ_Don_base)& champ) const override;
 
   Nom domaine_cl_dis_type() const override { return "Domaine_Cl_VDF"; }
 

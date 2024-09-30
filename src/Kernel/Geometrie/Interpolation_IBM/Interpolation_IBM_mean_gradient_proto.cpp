@@ -19,8 +19,9 @@
 #include <Process.h>
 
 void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Domaine_dis_base& le_dom_EF,
-                                                                  const Champ_Don& solid_points,
-                                                                  const Champ_Don& corresp_elems)
+                                                                  const Champ_Don_base& solid_points,
+                                                                  const Champ_Don_base& corresp_elems,
+                                                                  bool has_corres)
 {
   int nb_som = le_dom_EF.nb_som();
   int nb_som_tot = le_dom_EF.nb_som_tot();
@@ -30,7 +31,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Domaine_dis_ba
   DoubleTab& elems_solid_ref = solid_elems_->valeurs();
   const IntTab& elems = le_dom_EF.domaine().les_elems();
   const DoubleTab& coordsDom = le_dom_EF.domaine().coord_sommets();
-  const DoubleTab& solidPointsCoords = solid_points->valeurs();
+  const DoubleTab& solidPointsCoords = solid_points.valeurs();
 
   //Cerr << "nb_som_elem = " << nb_som_elem << finl;
 
@@ -64,9 +65,9 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Domaine_dis_ba
   // l'etape calcul (cas du pre_pro Salome)
   // On utilise un champ d'etiquette pour solid_elems_ (par exemple le no elem Salome)
   // et un champ d'element reprenant ces etiquettes
-  if ((&corresp_elems)->non_nul())
+  if (has_corres)
     {
-      const DoubleTab& corresp_elemsref = corresp_elems->valeurs();
+      const DoubleTab& corresp_elemsref = corresp_elems.valeurs();
       int nb_tag_max = -1;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {

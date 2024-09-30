@@ -19,14 +19,14 @@
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Champ_Uniforme.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 #include <TRUSTTab.h>
 
 class Eval_Puiss_Th_VEF_Face: public Evaluateur_Source_VEF_Face
 {
 public:
   void completer() override;
-  void associer_champs(const Champ_Don& );
+  void associer_champs(const Champ_Don_base& );
   void mettre_a_jour() override { }
 
   template<typename Type_Double>
@@ -36,7 +36,7 @@ public:
   inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF(Champ_Don_base) la_puissance;
   DoubleTab puissance;
   IntTab face_voisins;
   DoubleVect volumes;
@@ -49,7 +49,7 @@ inline void Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard(int num_face,
   const int size = source.size_array();
   if (size > 1) Process::exit("Eval_Puiss_Th_VEF_Face::calculer_terme_source_standard not available for multi-inco !");
 
-  if (sub_type(Champ_Uniforme, la_puissance->valeur()))
+  if (sub_type(Champ_Uniforme, la_puissance.valeur()))
     for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces[num_face] * porosite_surf[num_face];
   else
     for (int i = 0; i < size; i++) source[i] = ((puissance(face_voisins(num_face, 0), 0) * volumes(face_voisins(num_face, 0)) + puissance(face_voisins(num_face, 1), 0) * volumes(face_voisins(num_face, 1)))
@@ -62,7 +62,7 @@ inline void Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard(int num_f
   const int size = source.size_array();
   if (size > 1) Process::exit("Eval_Puiss_Th_VEF_Face::calculer_terme_source_non_standard not available for multi-inco !");
 
-  if (sub_type(Champ_Uniforme, la_puissance->valeur()))
+  if (sub_type(Champ_Uniforme, la_puissance.valeur()))
     for (int i = 0; i < size; i++) source[i] =  puissance(0, 0) * volumes_entrelaces_Cl[num_face];
   else
     {

@@ -18,7 +18,7 @@
 #define Traitement_particulier_NS_EC_included
 
 #include <Traitement_particulier_NS_base.h>
-#include <Champ_Don.h>
+
 #include <SFichier.h>
 
 /*! @brief classe Traitement_particulier_EC Cette classe permet de faire les traitements particuliers

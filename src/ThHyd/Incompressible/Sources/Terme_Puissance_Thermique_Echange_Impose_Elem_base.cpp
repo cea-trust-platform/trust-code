@@ -18,6 +18,7 @@
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <Champ_Don_base.h>
 #include <Domaine_VF.h>
 #include <Param.h>
 

@@ -203,7 +203,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   // A factoriser plus tard....
   // copie de Perte_Charge_VEF::ajouter
   // Raccourcis
-  const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
+  const Champ_Don_base& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
@@ -219,7 +219,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   static DoubleVect pos(dimension);
 
   // Optimisations pour les cas ou nu ou diam_hydr sont constants
-  bool nu_constant=sub_type(Champ_Uniforme,nu.valeur())?true:false;
+  bool nu_constant=sub_type(Champ_Uniforme,nu)?true:false;
   double nu_valeur;
   //if (nu_constant)
   ////nu_valeur=nu(0,0);
@@ -257,7 +257,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
 
   // Calcul de nu
   if (!nu_constant) {
-  nu_valeur=nu->valeur_a_compo(pos,0);
+  nu_valeur=nu.valeur_a_compo(pos,0);
   } else nu_valeur=nu(0,0);
 
   // Calcul du diametre hydraulique

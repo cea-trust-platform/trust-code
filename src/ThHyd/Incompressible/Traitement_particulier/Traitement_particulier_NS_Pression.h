@@ -19,7 +19,7 @@
 
 #include <Traitement_particulier_NS_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Champ_Don.h>
+
 
 
 /*! @brief

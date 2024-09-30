@@ -644,10 +644,10 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             const DoubleTab* alpha = sub_type(Pb_Multiphase, pbp) ? &ref_cast(Pb_Multiphase, pbp).equation_masse().inconnue().passe() : nullptr,
                                              &dh = pbp.milieu().diametre_hydraulique_elem(), &press = ref_cast(Navier_Stokes_std, pbp.equation(0)).pression().passe(),
                                               &vit = ref_cast(Navier_Stokes_std, pbp.equation(0)).inconnue().passe(),
-                                               &lambda = pbp.milieu().conductivite()->passe(),
-                                                &mu = ref_cast(Fluide_base, pbp.milieu()).viscosite_dynamique()->passe(),
+                                               &lambda = pbp.milieu().conductivite().passe(),
+                                                &mu = ref_cast(Fluide_base, pbp.milieu()).viscosite_dynamique().passe(),
                                                  &rho = pbp.milieu().masse_volumique().passe(),
-                                                  &Cp = pbp.milieu().capacite_calorifique()->passe();
+                                                  &Cp = pbp.milieu().capacite_calorifique().passe();
                             const int Clambda = lambda.dimension(0) == 1, Cmu = mu.dimension(0) == 1, Crho = rho.dimension(0) == 1, Ccp = Cp.dimension(0) == 1;
                             Flux_parietal_base::input_t in;
                             Flux_parietal_base::output_t out;

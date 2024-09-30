@@ -21,7 +21,7 @@
 #include <Probleme_base.h>
 #include <TRUST_Vector.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 #include <Parser_U.h>
 #include <Domaine.h>
 
@@ -61,7 +61,7 @@ public :
   inline const Champ_Don_base& gravite() const { return la_gravite_.valeur(); }
   inline int verification() const { return verif_; }
   inline double Scalaire0(int i) const { return Scalaire0_[i]; }
-  inline const Champ_Don& beta() const { return beta_.valeur(); }
+  inline const Champ_Don_base& beta() const { return beta_.valeur(); }
   inline const Convection_Diffusion_std& equation_scalaire() const { return equation_scalaire_.valeur(); }
   DoubleTab& calculer(DoubleTab& resu) const override
   {
@@ -87,7 +87,7 @@ protected :
   ArrOfDouble Scalaire0_; // T0=Scalaire0_(0) ou C0(i)=Scalaire0_(i)
   Nom NomScalaire_; // Temperature ou Concentration
   VECT(Parser_U) fct_Scalaire0_;
-  REF(Champ_Don) beta_;
+  REF(Champ_Don_base) beta_;
   REF(Convection_Diffusion_std) equation_scalaire_;
   inline void check() const;
 };

@@ -77,13 +77,13 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
 
   if (NomScalaire_=="temperature")
     {
-      valid_beta_field = fluide.beta_t( ).non_nul( );
+      valid_beta_field = fluide.has_beta_t();
       beta_field_name = "thermal expansion value (beta_th)";
       beta_=fluide.beta_t();
     }
   else if (NomScalaire_=="concentration")
     {
-      valid_beta_field = fluide.beta_c( ).non_nul( );
+      valid_beta_field = fluide.has_beta_c();
       beta_field_name = "volume expansion coefficient values in concentration (beta_co)";
       beta_=fluide.beta_c();
     }

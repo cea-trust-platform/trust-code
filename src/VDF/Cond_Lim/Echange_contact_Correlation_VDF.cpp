@@ -664,7 +664,7 @@ void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equ
   DoubleVect e;
   const IntTab& face_voisins = zvdf_2.face_voisins();
   int i;
-  int nb_comp = le_milieu.conductivite()->nb_comp();
+  int nb_comp = le_milieu.conductivite().nb_comp();
   int ndeb = front_vf.num_premiere_face();
   int nfin = ndeb + front_vf.nb_faces();
 
@@ -674,10 +674,10 @@ void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equ
     e(face-ndeb) = zvdf_2.dist_norm_bord(face);
 
   // Calcul de tab = 1/(e/lambda + 1/h_paroi) =1/(e/lambda+invhparoi)
-  if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
+  if(!sub_type(Champ_Uniforme,le_milieu.conductivite()))
     {
       //Cerr << "raccord local homogene et conductivite non uniforme" << finl;
-      const DoubleTab& tab_lambda = le_milieu.conductivite()->valeurs();
+      const DoubleTab& tab_lambda = le_milieu.conductivite().valeurs();
       for (int face=ndeb; face<nfin; face++)
         {
           int elem = face_voisins(face,0);
@@ -685,7 +685,7 @@ void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equ
             elem = face_voisins(face,1);
           for(i=0; i<nb_comp; i++)
             {
-              assert(le_milieu.conductivite()->valeurs()(elem,i)!=0.);
+              assert(le_milieu.conductivite().valeurs()(elem,i)!=0.);
               tab(face-ndeb,i) = tab_lambda(elem,i)/e(face-ndeb);
             }
         }
@@ -696,8 +696,8 @@ void Echange_contact_Correlation_VDF::calculer_h_solide(DoubleTab& tab,const Equ
         {
           for(i=0; i<nb_comp; i++)
             {
-              assert(le_milieu.conductivite()->valeurs()(0,i)!=0.);
-              tab(face-ndeb,i) = le_milieu.conductivite()->valeurs()(0,i)/e(face-ndeb);
+              assert(le_milieu.conductivite().valeurs()(0,i)!=0.);
+              tab(face-ndeb,i) = le_milieu.conductivite().valeurs()(0,i)/e(face-ndeb);
             }
         }
     }

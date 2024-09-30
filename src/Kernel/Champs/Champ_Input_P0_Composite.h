@@ -17,7 +17,7 @@
 #define Champ_Input_P0_Composite_included
 
 #include <Champ_input_P0.h>
-#include <Champ_Don.h>
+
 using ICoCo::TrioField;
 
 class Champ_Input_P0_Composite : public Champ_Fonc_P0_base
@@ -51,7 +51,7 @@ public:
 
 private:
   Champ_input_P0 champ_input_;
-  Champ_Don champ_initial_;
+  OWN_PTR(Champ_Don_base) champ_initial_;
 };
 
 #endif /* Champ_Input_P0_Composite_included */

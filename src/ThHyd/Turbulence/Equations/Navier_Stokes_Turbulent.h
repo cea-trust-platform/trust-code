@@ -43,7 +43,7 @@ public:
   bool initTimeStep(double dt) override;
   void mettre_a_jour(double) override;
   void completer() override;
-  const Champ_Don& diffusivite_pour_transport() const override;
+  const Champ_Don_base& diffusivite_pour_transport() const override;
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
 
   void creer_champ(const Motcle& motlu) override;

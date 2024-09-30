@@ -24,8 +24,8 @@ void Eval_Puiss_Th_QC_VEF_Face::completer()
   nb_faces_elem = le_dom->domaine().nb_faces_elem();
 }
 
-void Eval_Puiss_Th_QC_VEF_Face::associer_puissance(const Champ_Don& Q)
+void Eval_Puiss_Th_QC_VEF_Face::associer_puissance(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q->valeurs());
+  puissance.ref(Q.valeurs());
 }

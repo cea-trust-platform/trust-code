@@ -46,11 +46,11 @@ Entree& Champ_MUSIG::readOn( Entree& is )
         }
       int nbSubPhases;
       is >> nbSubPhases;
-      Champ_Don tmp;
+      OWN_PTR(Champ_Don_base) tmp;
       is >> tmp;
       for(int j=0; j<nbSubPhases; j++)
         {
-          Champ_Don tmp2(tmp);
+          OWN_PTR(Champ_Don_base) tmp2(tmp);
           z_fld_.push_back(tmp2);
         }
       dim_ += nbSubPhases;

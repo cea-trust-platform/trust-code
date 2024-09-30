@@ -20,7 +20,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
-#include <Champ_Don.h>
+
 
 class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
@@ -42,8 +42,8 @@ class Terme_Source_inc_th_VDF_Face : public Source_base, public Terme_Source_inc
 public :
   void associer_pb(const Probleme_base& ) override;
   DoubleTab& calculer(DoubleTab& ) const override;
-  /*    virtual const Champ_Don& beta() const =0; */
-  inline const Champ_Don& beta() const ;
+  /*    virtual const Champ_Don_base& beta() const =0; */
+  inline const Champ_Don_base& beta() const ;
   void mettre_a_jour(double temps) override
   {
     Terme_Source_inc_th::mettre_a_jour(temps);
@@ -70,7 +70,7 @@ protected :
 
 };
 
-inline const Champ_Don& Terme_Source_inc_th_VDF_Face::beta() const
+inline const Champ_Don_base& Terme_Source_inc_th_VDF_Face::beta() const
 {
   return beta_t_.valeur();
 }

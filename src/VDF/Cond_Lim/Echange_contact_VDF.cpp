@@ -97,7 +97,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
   const IntTab& face_voisins = zvdf_2.face_voisins();
   int i;
   int nb_faces=front_vf.nb_faces();
-  int nb_comp = le_milieu.conductivite()->nb_comp();
+  int nb_comp = le_milieu.conductivite().nb_comp();
   int ndeb = front_vf.num_premiere_face();
   int nfin = ndeb + nb_faces;
   bool dequiv=false;
@@ -144,9 +144,9 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
     }
 
   // Calcul de tab = 1/(e/lambda + 1/h_paroi) =1/(e/lambda+invhparoi)
-  if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
+  if(!sub_type(Champ_Uniforme,le_milieu.conductivite()))
     {
-      const DoubleTab& lambda = le_milieu.conductivite()->valeurs();
+      const DoubleTab& lambda = le_milieu.conductivite().valeurs();
       for (int face=ndeb; face<nfin; face++)
         {
           int elem = face_voisins(face,0);
@@ -154,7 +154,7 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
             elem = face_voisins(face,1);
           for(i=0; i<nb_comp; i++)
             {
-              assert(le_milieu.conductivite()->valeurs()(elem,i)!=0.);
+              assert(le_milieu.conductivite().valeurs()(elem,i)!=0.);
               tab(face-ndeb,i) = 1./(e(face-ndeb)/lambda(elem,i)+invhparoi);
             }
         }
@@ -165,8 +165,8 @@ void calculer_h_local(DoubleTab& tab,const Equation_base& une_eqn,const Domaine_
         {
           for(i=0; i<nb_comp; i++)
             {
-              assert(le_milieu.conductivite()->valeurs()(0,i)!=0.);
-              tab(face-ndeb,i) = 1./(e(face-ndeb)/le_milieu.conductivite()->valeurs()(0,i)+invhparoi);
+              assert(le_milieu.conductivite().valeurs()(0,i)!=0.);
+              tab(face-ndeb,i) = 1./(e(face-ndeb)/le_milieu.conductivite().valeurs()(0,i)+invhparoi);
             }
         }
     }
@@ -178,7 +178,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
 {
   DoubleVect e;
   int i;
-  int nb_comp = le_milieu.conductivite()->nb_comp();
+  int nb_comp = le_milieu.conductivite().nb_comp();
   int nb_faces_raccord1 =tab.dimension(0); //= domaine_dis1.domaine().raccord(nom_racc1)->nb_faces();
   bool dequiv=false;
 
@@ -205,10 +205,10 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
 
   // Calcul de tab = 1/(e/lambda + 1/h_paroi)=1/(e/lambda + invhparoi)
 
-  if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
+  if(!sub_type(Champ_Uniforme,le_milieu.conductivite()))
     {
       DoubleTab lambda;
-      front_vf.frontiere().trace_elem_distant(le_milieu.conductivite()->valeurs(),lambda);
+      front_vf.frontiere().trace_elem_distant(le_milieu.conductivite().valeurs(),lambda);
       for (int face=0; face<nb_faces_raccord1; face++)
         for(i=0; i<nb_comp; i++)
           {
@@ -218,7 +218,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Domain
     }
   else  // la conductivite est un OWN_PTR(Champ_base) uniforme
     {
-      const DoubleTab& lambda = le_milieu.conductivite()->valeurs();
+      const DoubleTab& lambda = le_milieu.conductivite().valeurs();
       for (int face=0; face<nb_faces_raccord1; face++)
         for(i=0; i<nb_comp; i++)
           {
@@ -246,7 +246,7 @@ void Echange_contact_VDF::calculer_h_autre_pb(DoubleTab& tab,double invhparoi,in
   const Domaine_VDF& zvdf_2=ref_cast(Domaine_VDF, ch.domaine_dis());
   const Front_VF& front_vf=ref_cast(Front_VF, ch.front_dis());
   const Equation_base& une_eqn=ch.equation();
-  int nb_comp = le_milieu.conductivite()->nb_comp();
+  int nb_comp = le_milieu.conductivite().nb_comp();
   assert(nb_comp==1);
 
   Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis();
@@ -285,7 +285,7 @@ int Echange_contact_VDF::initialiser(double temps)
   const Domaine_VDF& o_domaine = ref_cast(Domaine_VDF, ch.domaine_dis());
   const IntTab& o_f_e = o_domaine.face_voisins();
   const Milieu_base& le_milieu = ch.milieu();
-  int nb_comp = le_milieu.conductivite()->nb_comp();
+  int nb_comp = le_milieu.conductivite().nb_comp();
   Nom nom_racc1 = frontiere_dis().frontiere().le_nom();
   Domaine_dis_base& domaine_dis1 = domaine_Cl_dis().domaine_dis();
   int nb_faces_raccord1 = domaine_dis1.domaine().raccord(nom_racc1)->nb_faces();
@@ -348,7 +348,7 @@ void Echange_contact_VDF::mettre_a_jour(double temps)
 {
   Champ_front_calc& ch=ref_cast(Champ_front_calc, T_autre_pb());
   const Milieu_base& le_milieu=ch.milieu();
-  int nb_comp = le_milieu.conductivite()->nb_comp();
+  int nb_comp = le_milieu.conductivite().nb_comp();
   assert(nb_comp==1);
 
   T_autre_pb().mettre_a_jour(temps);

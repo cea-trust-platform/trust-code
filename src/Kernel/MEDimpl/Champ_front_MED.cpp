@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_MED.h>
+#include <Champ_Don_base.h>
 #include <Domaine.h>
 #include <Frontiere_dis_base.h>
 #include <Param.h>

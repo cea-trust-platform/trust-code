@@ -66,7 +66,7 @@ protected:
 private:
 
   mutable Parser_U lambda_ortho;
-  Champ_Don v; //!< Vecteur directeur de la perte de charge.
+  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
 };
 
 class Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_Anisotrope_PolyMAC_Face

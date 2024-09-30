@@ -33,8 +33,9 @@ Sortie& Solide::printOn(Sortie& os) const { return Milieu_base::printOn(os); }
 
 Entree& Solide::readOn(Entree& is)
 {
-  champs_don_.add(mon_champ_);
-  return Milieu_base::readOn(is);
+  Milieu_base::readOn(is);
+  if (mon_champ_.non_nul())  champs_don_.add(mon_champ_.valeur());
+  return is;
 }
 
 void Solide::set_param(Param& param)
@@ -95,8 +96,8 @@ void Solide::discretiser(const Probleme_base& pb, const Discretisation_base& dis
       const double temps = pb.schema_temps().temps_courant();
       if (sub_type(Champ_Fonc_MED,mon_champ_.valeur()))
         {
-          Cerr<<"Convert Champ_fonc_MED " << nom_champ_ << " to a Champ_Don ..."<<finl;
-          Champ_Don tmp_fld;
+          Cerr<<"Convert Champ_fonc_MED " << nom_champ_ << " to a OWN_PTR(Champ_Don_base) ..."<<finl;
+          OWN_PTR(Champ_Don_base) tmp_fld;
           dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,tmp_fld);
           tmp_fld->affecter(mon_champ_.valeur()); // interpolate ...
           mon_champ_.detach();

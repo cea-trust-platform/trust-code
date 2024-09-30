@@ -52,8 +52,9 @@ void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Do
 
   dis.discretiser_champ("champ_sommets",le_dom_EF,"fluid_elems","none",1,0., fluid_elems_);
   fluid_elems_->affecter(fluid_elems_lu_);
-  if ((&corresp_elems_lu_)->non_nul())
+  if (corresp_elems_lu_.non_nul())
     {
+      has_corresp_ = true;
       dis.discretiser_champ("champ_elem",le_dom_EF,"corresp_elems","none",1,0., corresp_elems_);
       corresp_elems_->affecter(corresp_elems_lu_);
     }

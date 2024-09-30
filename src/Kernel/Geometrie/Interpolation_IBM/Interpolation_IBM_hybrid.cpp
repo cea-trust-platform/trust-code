@@ -49,6 +49,6 @@ void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Domain
   dis.discretiser_champ("champ_sommets",le_dom_EF,"is_dirichlet","none",1,0., is_dirichlet_);
   is_dirichlet_->affecter(is_dirichlet_lu_);
 
-  computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_);
+  computeSommetsVoisins(le_dom_EF, solid_points_, corresp_elems_, has_corresp_);
 }
 

@@ -116,16 +116,10 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
 void Convection_Diffusion_Concentration::associer_milieu_base(const Milieu_base& un_milieu)
 {
   const Constituant& un_constituant = ref_cast(Constituant,un_milieu);
-  if (un_constituant.diffusivite_constituant().non_nul())
-    associer_constituant(un_constituant);
-  else
-    {
-      Cerr << "The dye (constituant) diffusivity has not been defined." << finl ;
-      exit();
-    }
+  associer_constituant(un_constituant);
 }
 
-const Champ_Don& Convection_Diffusion_Concentration::diffusivite_pour_transport() const
+const Champ_Don_base& Convection_Diffusion_Concentration::diffusivite_pour_transport() const
 {
   return constituant().diffusivite_constituant();
 }

@@ -985,10 +985,10 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
       DoubleTab& flux_bords=op_base->flux_bords();
       const Domaine_PolyMAC& le_domaine_vdf=ref_cast(Domaine_PolyMAC,op_base->equation().domaine_dis());
       const Champ_base& rho = (op_base->equation()).milieu().masse_volumique();
-      const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
+      const Champ_Don_base& Cp = (op_base->equation()).milieu().capacite_calorifique();
       const IntTab& face_voisins=le_domaine_vdf.face_voisins();
       int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);
-      int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
+      int cp_uniforme=(sub_type(Champ_Uniforme,Cp) ? 1:0);
       int is_rho_u=op_base->equation().probleme().is_dilatable();
       if (is_rho_u)
         {
@@ -1006,11 +1006,11 @@ template <class _TYPE_>  void  Iterateur_PolyMAC_Elem<_TYPE_>::modifier_flux() c
           if (num_elem == -1)
             num_elem = face_voisins(face, 1);
           if (cp_uniforme)
-            Cp_ = Cp->valeurs()(0, 0);
-          else if (Cp->nb_comp() == 1)
-            Cp_ = Cp->valeurs()(num_elem);
+            Cp_ = Cp.valeurs()(0, 0);
+          else if (Cp.nb_comp() == 1)
+            Cp_ = Cp.valeurs()(num_elem);
           else
-            Cp_ = Cp->valeurs()(num_elem, 0);
+            Cp_ = Cp.valeurs()(num_elem, 0);
           if (rho_uniforme)
             rho_ = rho.valeurs()(0, 0);
           else if (rho.nb_comp() == 1)
