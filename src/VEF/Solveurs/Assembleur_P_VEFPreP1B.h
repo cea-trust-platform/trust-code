@@ -55,7 +55,7 @@ public :
   // Methodes du changement de base P0+P1<->P1Bulle
   int changement_base() const
   {
-    return (beta!=0);
+    return (beta_!=0);
   };
   void changer_base_matrice(Matrice&);              // A->A~ (P0+P1->P1Bulle)
   void changer_base_second_membre(DoubleVect&);     // y->y~ (P0+P1->P1Bulle)
@@ -72,7 +72,7 @@ protected:
   int init = -1;
   OBS_PTR(Equation_base) mon_equation;
   void projete_L2(DoubleTab&);
-  double alpha=0., beta=0.; // Coefficients du changement de base P0+P1<->P1Bulle
+  double alpha_=0., beta_=0.; // Coefficients du changement de base P0+P1<->P1Bulle
 };
 
 #endif

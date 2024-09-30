@@ -90,8 +90,8 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
   if (domaine_Vef().get_P1Bulle())
     {
       // Pour changer de base et retrouver le P1Bulle
-      alpha=1./Objet_U::dimension;
-      beta=1./(Objet_U::dimension*(Objet_U::dimension+1));
+      alpha_=1./Objet_U::dimension;
+      beta_=1./(Objet_U::dimension*(Objet_U::dimension+1));
     }
   la_matrice_de_travail_.typer("Matrice_Bloc_Sym");
 }
@@ -1132,16 +1132,16 @@ void Assembleur_P_VEFPreP1B::changer_base_matrice(Matrice& la_matrice)
 
   // Modification du bloc A11
   // As1s2~=As1s2-beta*[somme(Ak1s2)(s1 appartient a k1)+somme(Ak1s1)(s2 appartenant a k1)]+beta*beta*somme(Ak1k2)(s1 appartenant a k1 et s2 appartenant a k2)
-  operation11(A00,A01,A11,beta,domaine_Vef().domaine());
+  operation11(A00,A01,A11,beta_,domaine_Vef().domaine());
 
   // Modification du bloc A01
   // Ak1s~=alpha*Ak1s - alpha*beta*somme(Ak1k2)(s appartenant a k2)
-  A01*=alpha;
-  operation01(A00,A01,alpha,beta,domaine_Vef().domaine());
+  A01*=alpha_;
+  operation01(A00,A01,alpha_,beta_,domaine_Vef().domaine());
 
   // Modification du bloc A00
   // Ak1k2~ = alpha * alpha * Ak1k2
-  A00*=alpha*alpha;
+  A00*=alpha_*alpha_;
 }
 
 
@@ -1170,36 +1170,32 @@ void Assembleur_P_VEFPreP1B::changer_base_pression(DoubleVect& x)
 }
 
 template<vecteur _v_>
-void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& v)
+void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& tab_v)
 {
   assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // xk~ = xk / alpha + beta / alpha * somme(xs)(s appartenant a k)
   // xs~ = xs
+  double alpha = alpha_;
+  double beta = beta_;
   int nb_elem_tot = domaine_Vef().nb_elem_tot();
   int nb_som_elem = domaine_Vef().domaine().les_elems().dimension(1);
-  const int* les_elems_addr = mapToDevice(domaine_Vef().domaine().les_elems());
-  const int* renum_som_perio_addr = mapToDevice(domaine_Vef().domaine().get_renum_som_perio());
-  double* v_addr = computeOnTheDevice(v);
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int k=0; k<nb_elem_tot; k++)
-    {
-      if (_v_==vecteur::pression) v_addr[k] /= alpha;
-      double somme=0;
-      for (int som=0; som<nb_som_elem; som++)
-        {
-          int s = nb_elem_tot + renum_som_perio_addr[les_elems_addr[k*nb_som_elem+som]];
-          if (_v_==vecteur::pression)         somme += v_addr[s];
-          if (_v_==vecteur::pression_inverse) somme += v_addr[s];
-          if (_v_==vecteur::second_membre)
-            {
-              #pragma omp atomic
-              v_addr[s] -= beta * v_addr[k];
-            }
-        }
-      if (_v_==vecteur::pression)         v_addr[k] += beta / alpha * somme;
-      if (_v_==vecteur::pression_inverse) v_addr[k] = alpha * v_addr[k] - beta * somme;
-      if (_v_==vecteur::second_membre)    v_addr[k] *= alpha;
-    }
+  CIntTabView les_elems = domaine_Vef().domaine().les_elems().view_ro();
+  CIntArrView renum_som_perio = domaine_Vef().domaine().get_renum_som_perio().view_ro();
+  DoubleArrView v = tab_v.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(const int k)
+  {
+    if (_v_==vecteur::pression) v(k) /= alpha;
+    double somme=0;
+    for (int som=0; som<nb_som_elem; som++)
+      {
+        int s = nb_elem_tot + renum_som_perio(les_elems(k, som));
+        if (_v_==vecteur::pression)         somme += v(s);
+        if (_v_==vecteur::pression_inverse) somme += v(s);
+        if (_v_==vecteur::second_membre) Kokkos::atomic_sub(&v(s), beta * v(k));
+      }
+    if (_v_==vecteur::pression)         v(k) += beta / alpha * somme;
+    if (_v_==vecteur::pression_inverse) v(k) = alpha * v(k) - beta * somme;
+    if (_v_==vecteur::second_membre)    v(k) *= alpha;
+  });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 }
