@@ -523,6 +523,49 @@ double residual_device(const GlobalMatrix<double>& a, const GlobalVector<double>
 }
 #endif
 
+template<typename ExecSpace>
+void Solv_rocALUTION::Update_lhs_rhs(const DoubleVect& b, DoubleVect& x)
+{
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
+  int size=b.size_array();
+  auto x_v = x.template view_ro<ExecSpace>();
+  auto b_v = b.template view_ro<ExecSpace>();
+  auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
+  auto sol_v = sol_host.template view_wo<ExecSpace>();
+  auto rhs_v = rhs_host.template view_wo<ExecSpace>();
+  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+                         const int i)
+  {
+    int ind = index[i];
+    if (ind != -1)
+      {
+        sol_v[ind] = x_v[i];
+        rhs_v[ind] = b_v[i];
+      }
+  });
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
+
+template<typename ExecSpace>
+void Solv_rocALUTION::Update_solution(DoubleVect& x)
+{
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
+  int size = x.size_array();
+  auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
+  auto sol_v = sol_host.template view_ro<ExecSpace>();
+  auto x_v = x.template view_wo<ExecSpace>();
+  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+                         const int i)
+  {
+    int ind = index[i];
+    if (ind != -1)
+      x_v[i] = sol_v[ind];
+  });
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
+
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
 #ifdef ROCALUTION_ROCALUTION_HPP_
@@ -609,23 +652,10 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       rhs.Allocate("rhs", N);
       e.Allocate("e", N);
     }
-  const double * x_addr        = keepDataOnDevice ? mapToDevice(x)               : x.addr();
-  const double * b_addr        = keepDataOnDevice ? mapToDevice(b)               : b.addr();
-  const int * index_addr       = keepDataOnDevice ? mapToDevice(index_)          : index_.addr();
-  double * sol_host_addr       = keepDataOnDevice ? computeOnTheDevice(sol_host) : sol_host.addr();
-  double * rhs_host_addr       = keepDataOnDevice ? computeOnTheDevice(rhs_host) : rhs_host.addr();
-  start_gpu_timer();
-  #pragma omp target teams distribute parallel for if (keepDataOnDevice)
-  for (int i=0; i<size; i++)
-    if (index_addr[i]!=-1)
-      {
-        sol_host_addr[index_addr[i]] = x_addr[i];
-        rhs_host_addr[index_addr[i]] = b_addr[i];
-      }
-  end_gpu_timer(keepDataOnDevice, __KERNEL_NAME__);
 
   if (keepDataOnDevice)
     {
+      Update_lhs_rhs<Kokkos::DefaultExecutionSpace>(b, x);
       // Les vecteurs rocALUTION sont deplaces sur le device pour une mise a jour sur le device (optimal)
       if (gpu) statistiques().begin_count(gpu_copytodevice_counter_);
       sol.MoveToAccelerator();
@@ -637,15 +667,18 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     }
   else
     {
+      Update_lhs_rhs<Kokkos::DefaultHostExecutionSpace>(b, x);
       // Les vecteurs sont remplis sur le host puis deplaces vers le device
-      sol.GetInterior().CopyFromData(sol_host_addr);
-      rhs.GetInterior().CopyFromData(rhs_host_addr);
+      sol.GetInterior().CopyFromData(sol_host.addr());
+      rhs.GetInterior().CopyFromData(rhs_host.addr());
       if (gpu) statistiques().begin_count(gpu_copytodevice_counter_);
       sol.MoveToAccelerator();
       rhs.MoveToAccelerator();
       e.MoveToAccelerator();
       if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * (int)sizeof(double) * nb_rows_);
     }
+
+
   Cout << "[rocALUTION] Time to build and move vectors on device: " << (rocalution_time() - tick) / 1e6 << finl;
 
   if (write_system_) write_vectors(rhs, sol);
@@ -714,6 +747,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     {
       // Les vecteurs sont mis a jour entre eux sur le device (optimal)
       sol.GetInterior().CopyToData(addrOnDevice(sol_host));
+      Update_solution<Kokkos::DefaultExecutionSpace>(x);
     }
   else
     {
@@ -721,17 +755,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       if (gpu) statistiques().begin_count(gpu_copyfromdevice_counter_);
       sol.MoveToHost();
       if (gpu) statistiques().end_count(gpu_copyfromdevice_counter_, (int)sizeof(double) * nb_rows_);
-      sol.GetInterior().CopyToData(sol_host_addr);
+      sol.GetInterior().CopyToData(sol_host.addr());
+      Update_solution<Kokkos::DefaultHostExecutionSpace>(x);
     }
-  double * xx_addr = keepDataOnDevice ? computeOnTheDevice(x) : x.addr();
-  start_gpu_timer();
-#ifndef TRUST_USE_CUDA
-  #pragma omp target teams distribute parallel for if (keepDataOnDevice)
-#endif
-  for (int i=0; i<size; i++)
-    if (index_addr[i]!=-1)
-      xx_addr[i] = sol_host_addr[index_addr[i]];
-  end_gpu_timer(keepDataOnDevice, __KERNEL_NAME__);
   x.echange_espace_virtuel();
   if (first_solve_) res_final = residual(a, b, x); // Securite a la premiere resolution
 #ifndef NDEBUG

@@ -64,6 +64,10 @@ public :
 private :
   void initialize();
   void Create_objects(const Matrice_Morse&);
+  template<typename ExecSpace>
+  void Update_lhs_rhs(const DoubleVect& b, DoubleVect& x);
+  template<typename ExecSpace>
+  void Update_solution(DoubleVect& x);
 #ifdef ROCALUTION_ROCALUTION_HPP_
   rocalution_initializer rocalution_initializer_;
   template <typename T>
