@@ -10,7 +10,7 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 11 11
+        Nombre_de_Noeuds 51 51
         Longueurs 1. 1.
     }
     {
@@ -51,11 +51,11 @@ Scheme_euler_explicit sch_expl
 Read sch_expl
 {
     tinit 0
+		nb_pas_dt_max 200
     tmax 300.
-    dt_min 0.0001
+    dt_min 0.00001
     dt_max 0.1
     dt_impr 1.e-8
-    facsec 0.5
     seuil_statio 1.e-8
 }
 
@@ -65,7 +65,7 @@ Read sch_impl
     tinit   0
     dt_max  0.5
     facsec 1e30
-    seuil_statio 1e-8
+    seuil_statio 1e-6
     solveur implicite { solveur petsc cholesky { } }
 }
 
@@ -86,8 +86,11 @@ Read pb
     {
         diffusion { }
         initial_conditions {
-            temperature Champ_Fonc_XYZ dom 1 sin(2*pi*x)*sin(2*pi*y)
+            temperature Champ_Uniforme 1 0.
         }
+         sources {
+        Puissance_thermique champ_fonc_xyz dom 1 0.08*pi*pi*sin(2.*pi*x)*sin(2.*pi*y)
+        }  
         boundary_conditions {
             Bas paroi_temperature_imposee Champ_Front_Uniforme 1 0. 
             Haut paroi_temperature_imposee Champ_Front_Uniforme 1 0. 
@@ -98,12 +101,57 @@ Read pb
 
     Post_processing
     {
-				format lata
-        fields dt_post 1
-        {
-            temperature elem
-        }
-    }
+
+				Definition_champs
+    	    {
+						solution transformation {
+							Localisation ELEM
+							methode formule expression 1 sin(2*pi*x)*sin(2*pi*y)
+						}
+    	      
+						erreur transformation
+    	      {
+    	          methode formule expression 1 abs(temp-solution)
+								localisation ELEM
+								sources 
+								{
+								refChamp { Pb_champ pb temperature nom_source temp } 
+								}
+								sources_reference { solution }
+						}
+						L2_norm reduction_0D {
+    	            methode L2_norm
+									sources_reference { erreur }
+    	        }
+    	      
+						L1_norm reduction_0D {
+    	            methode L1_norm
+									sources_reference { erreur }
+    	        } 
+						
+						Linf_norm reduction_0D {
+    	            methode max
+									sources_reference { erreur }
+    	        } 
+
+    	   					}
+
+					 Probes			{
+    	        L2_norm 	L2_norm 	periode 1e+6 numero_elem_sur_maitre 0
+    	        L1_norm 	L1_norm 	periode 1e+6 numero_elem_sur_maitre 0
+    	        Linf_norm 	Linf_norm 	periode 1e+6 numero_elem_sur_maitre 0
+    	    }
+
+
+    	    format LATA
+    	    fields dt_post 30.
+    	    {
+    		      temperature ELEM
+    	        solution ELEM
+    	        erreur ELEM
+							Puissance_volumique ELEM 
+    	    }
+		}
 }
 
 

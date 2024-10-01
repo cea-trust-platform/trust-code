@@ -169,26 +169,26 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
   motcles[7] = "champ_face";     // Choix standard pour la vitesse
   motcles[5] = "gradient_pression";  // Le type de champ obtenu en calculant grad P
 
-  // Le type de champ de vitesse depend du type d'element :
-  Nom type_champ_vitesse("Champ_Fonc_Face_DG");
-  Nom type_elem("Champ_Fonc_Elem_DG");
-
   Nom type;
   int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
   int rang = motcles.search(directive);
+//  const int order_DG = Option_DG::Get_order_for(directive);
   switch(rang)
     {
     case 0:
     case 1:
+      type = "Champ_Fonc_P1_DG";
+      default_nb_comp = 7; //Option_DG::Nb_col_from_order(order_DG);;
+      break;
     case 2:
     case 3:
-      type = type_elem;
+      type = "Champ_Fonc_Elem_DG";
       default_nb_comp = 1;
       break;
     case 4:
     case 5:
     case 7:
-      type = type_champ_vitesse;
+      type = "Champ_Fonc_P1_DG";
       default_nb_comp = 3;
       break;
     case 6:
@@ -216,10 +216,8 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
-  if (type == "Champ_Fonc_Elem_DG")
+  if (type == "Champ_Fonc_Elem_DG" || type == "Champ_Fonc_P1_DG")
     nb_ddl = z.nb_elem();
-  else if (type == type_champ_vitesse)
-    nb_ddl = domaine_DG.nb_faces();
   else if (type == "Champ_Fonc_Som_DG")
     nb_ddl = domaine_DG.nb_som();
   else

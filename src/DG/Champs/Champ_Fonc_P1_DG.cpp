@@ -13,63 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Eval_Puiss_Th_DG_Elem_included
-#define Eval_Puiss_Th_DG_Elem_included
-
-#include <Evaluateur_Source_Elem.h>
-#include <Champ_Uniforme.h>
-#include <Equation_base.h>
-#include <Champ_Don.h>
-#include <TRUST_Ref.h>
-#include <TRUSTTab.h>
-#include <Champ_Elem_DG.h>
+#include <Champ_Fonc_P1_DG.h>
 #include <Domaine_DG.h>
+#include <Quadrature_base.h>
 
-class Eval_Puiss_Th_DG_Elem: public Evaluateur_Source_Elem
+Implemente_instanciable(Champ_Fonc_P1_DG, "Champ_Fonc_P1_DG", Champ_Fonc_P0_base);
+
+Sortie& Champ_Fonc_P1_DG::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+
+Entree& Champ_Fonc_P1_DG::readOn(Entree& s) { return s; }
+
+Champ_base& Champ_Fonc_P1_DG::affecter_(const Champ_base& ch)
 {
-public:
-  void mettre_a_jour() override { }
-  inline void associer_champs(const Champ_Don&);
+  const Domaine_DG& domaine = ref_cast(Domaine_DG, le_dom_VF.valeur());
 
-  template <typename Type_Double>
-  inline void calculer_terme_source(const int, Type_Double&) const;
-
-protected:
-  REF(Champ_Don) la_puissance;
-  DoubleTab puissance;
-};
-
-inline void Eval_Puiss_Th_DG_Elem::associer_champs(const Champ_Don& Q)
-{
-  la_puissance = Q;
-  puissance.ref(Q->valeurs());
-}
-
-template <typename Type_Double>
-inline void Eval_Puiss_Th_DG_Elem::calculer_terme_source(const int e, Type_Double& S) const
-{
-  //  const int k = sub_type(Champ_Uniforme,la_puissance->valeur()) ? 0 : e, size = S.size_array();
-  //  for (int i = 0; i < size; i++) S[i] = puissance(k, i) * volumes(e) * porosite_vol(e);
-
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, la_zcl->inconnue().valeur());
-  const Domaine_DG& dom = ref_cast(Domaine_DG, le_dom.valeur());
-
-  Quadrature_base& quad = dom.create_quadrature(5);
+  Quadrature_base& quad = domaine.create_quadrature(5);
+  DoubleTab& integ_points = quad.get_integ_points();
   int nb_pts_integ = quad.nb_pts_integ();
-  const int nb_bfunc = ch.nb_bfunc();
 
-  DoubleTab product(nb_pts_integ);
+  int nb_elem = domaine.nb_elem();
 
-  DoubleTab fbase(nb_bfunc, nb_pts_integ);
-  ch.eval_bfunc(quad, e, fbase);
+  DoubleTab position, values;
 
-  for (int fb = 0; fb < nb_bfunc; fb++)
+  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
     {
-      for (int k = 0; k < nb_pts_integ ; k++)
-        product(k) = puissance(e,k) * fbase(fb, k);
+      position.ref_tab(integ_points, num_elem,1);
+      position.reshape(nb_pts_integ, Objet_U::dimension);
 
-      S(fb) = quad.compute_integral_on_elem(e, product);
+      values.ref_tab(valeurs_, num_elem, 1);
+      values.reshape(nb_pts_integ, 1);
+
+      ch.valeur_aux(position, values);
     }
-}
 
-#endif /* Eval_Puiss_Th_DG_Elem_included */
+  return *this;
+}
