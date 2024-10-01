@@ -43,8 +43,6 @@ public:
 
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  virtual LIST(Champ_Generique)& get_set_sources();
-  virtual Champ_Generique&        get_set_source();
   void   reset() override;
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
@@ -97,17 +95,10 @@ public:
   virtual void fixer_tstat_deb(const double t1,const double t2);
   virtual void lire_bidon(Entree& is) const;
 
-
 protected:
-
+  LIST(OWN_PTR(Champ_Generique_base)) sources_;        //Attribut qui designent les sources de "premier niveau"
   LIST(Nom) noms_sources_ref_;
   LIST(REF(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
-  //champ generique deja defini a partir de son nom (noms_ource_ref_)
-
-private:
-  LIST(Champ_Generique) sources_;        //Attribut qui designent les sources de "premier niveau"
-  //Chacune de ses sources est susceptible de posseder une
-  //ou plusieurs sources
 };
 
 #endif

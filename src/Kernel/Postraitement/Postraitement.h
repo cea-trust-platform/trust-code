@@ -96,7 +96,7 @@ public:
   //et construit la liste noms_champs_a_post_ des champs post-traites
   int lire_champs_stat_a_postraiter(Entree&);        //idem pour statistiques
   int lire_champs_operateurs(Entree& is);                //Lecture d un champ generique, nomme et complete
-  void complete_champ(Champ_Generique& champ,const Motcle& motlu);
+  void complete_champ(Champ_Generique_base& champ,const Motcle& motlu);
   int postraiter_tableaux();
   int traiter_tableaux();
   int lire_tableaux_a_postraiter(Entree& );
@@ -154,12 +154,12 @@ public:
   //Methode macro pour le cas des champs med
   void creer_champ_post_med(const Motcle& motlu1,const Motcle& motlu2,Entree& s);
 
-  //Methode comprend_champ_post() qui indique si l identifiant correspond au nom d un Champ_Generique
+  //Methode comprend_champ_post() qui indique si l identifiant correspond au nom d un Champ_Generique_base
   //ou a l une de ses composantes-les sources sont testees recusrivement
   int comprend_champ_post(const Motcle& identifiant) const;
 
   //temporaire a reviser
-  void verifie_nom_et_sources(const Champ_Generique& champ);
+  void verifie_nom_et_sources(const Champ_Generique_base& champ);
   static Nom get_nom_localisation(const Entity& loc);
 
   int champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF(Operateur_Statistique_tps_base)&

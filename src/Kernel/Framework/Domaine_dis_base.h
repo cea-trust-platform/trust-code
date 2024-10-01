@@ -54,10 +54,8 @@ public :
   /// Sous_domaines_dis
   ///
   int nombre_de_sous_domaines_dis() const;
-  const Sous_domaine_dis& sous_domaine_dis(int i) const;
-  Sous_domaine_dis& sous_domaine_dis(int i);
-  Sous_domaines_dis& sous_domaines_dis()             { return les_sous_domaines_dis; }
-  const Sous_domaines_dis& sous_domaines_dis() const { return les_sous_domaines_dis; }
+  const Sous_domaine_dis_base& sous_domaine_dis(int i) const;
+  Sous_domaine_dis_base& sous_domaine_dis(int i);
 
   ///
   /// Bord and Frontiere
@@ -110,7 +108,7 @@ public :
 protected :
   REF(Domaine) le_dom;
 
-  Sous_domaines_dis les_sous_domaines_dis;
+  TRUST_Vector<OWN_PTR(Sous_domaine_dis_base)> les_sous_domaines_dis;
   int dist_paroi_initialisee_ = 0;
   DoubleTab y_elem_, y_faces_;
   Champs_compris champs_compris_;

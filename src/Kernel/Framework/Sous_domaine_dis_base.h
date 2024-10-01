@@ -25,13 +25,13 @@ class Domaine_dis_base;
 
 /*! @brief Cette classe est a la base de la hierarchie des sous-domaines discretises.
  * Au moment de la discretisation du domaine, de meme qu'un
- * Domaine_dis est creee pour chaque domaine, un Sous_domaine_dis est
+ * Domaine_dis est creee pour chaque domaine, un Sous_domaine_dis_base est
  * cree pour chaque Sous_Domaine et discretise.
  *
  * Les classes qui heritent de Sous_domaine_dis_base doivent surcharger la methode discretiser();
  *
  * L Sous_Domaine definit un sous-ensemble des elements du Domaine.
- * De meme, le Sous_domaine_dis definit un sous_ensemble des attributs
+ * De meme, le Sous_domaine_dis_base definit un sous_ensemble des attributs
  * du Domaine_dis, en particulier des faces.
  *
  * @sa Domaine_dis, Sous_Domaine, Domaine_dis_base, Sous_Domaine_VF
@@ -57,8 +57,5 @@ protected:
   REF(Sous_Domaine) le_sous_domaine;
   REF(Domaine_dis_base) le_dom_dis;
 };
-
-using Sous_domaine_dis = OWN_PTR(Sous_domaine_dis_base);
-using Sous_domaines_dis = TRUST_Vector<Sous_domaine_dis>;
 
 #endif /* Sous_domaine_dis_base_included */

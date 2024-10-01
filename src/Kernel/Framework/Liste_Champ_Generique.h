@@ -19,13 +19,12 @@
 #include <Champ_Generique_base.h>
 #include <TRUST_List.h>
 
-/*! @brief classe List_Champ_Generique Represente une liste de Champ_Generique
+/*! @brief classe List_Champ_Generique Represente une liste de Champ_Generique_base
  *
  */
-class Liste_Champ_Generique : public LIST(Champ_Generique)
+class Liste_Champ_Generique : public LIST(OWN_PTR(Champ_Generique_base))
 {
   Declare_instanciable(Liste_Champ_Generique);
-
 public :
   int reprendre(Entree& is) override;
   int sauvegarder(Sortie& os) const override;

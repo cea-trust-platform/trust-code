@@ -164,8 +164,6 @@ inline int Champ_Generique_base::composante(const Nom& nom_test,const Nom& nom,c
   return ncomp;
 }
 
-using Champ_Generique = OWN_PTR(Champ_Generique_base);
-
 /*
  * @brief class Champ_Generique_erreur
  *

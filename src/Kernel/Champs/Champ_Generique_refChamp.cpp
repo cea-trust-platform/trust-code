@@ -473,7 +473,7 @@ double Champ_Generique_refChamp::get_time() const
 
 //Renvoie la directive (champ_elem, champ_sommets, champ_face ou pression)
 //pour lancer la discretisation de l espace de stockage rendu par
-//la methode get_champ() du Champ_Generique qui a lance l appel de cette methode
+//la methode get_champ() du Champ_Generique_base qui a lance l appel de cette methode
 const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
 {
   Motcle directive;

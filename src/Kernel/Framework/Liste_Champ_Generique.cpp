@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 
 #include <Liste_Champ_Generique.h>
 
-Implemente_instanciable(Liste_Champ_Generique, "Liste_Champ_Generique", LIST(Champ_Generique));
+Implemente_instanciable(Liste_Champ_Generique, "Liste_Champ_Generique", LIST(OWN_PTR(Champ_Generique_base)));
 
 Sortie& Liste_Champ_Generique::printOn(Sortie& os) const { return os; }
 

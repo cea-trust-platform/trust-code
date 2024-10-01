@@ -62,7 +62,7 @@ int Champ_Generique_base::get_dimension() const
   // On n'arrive jamais ici
 }
 
-/*! @brief Renvoie le temps du Champ_Generique.
+/*! @brief Renvoie le temps du Champ_Generique_base.
  *
  */
 double Champ_Generique_base::get_time() const

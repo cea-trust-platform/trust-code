@@ -74,7 +74,7 @@ void Champ_Generique_Extraction::set_param(Param& param)
 
 //Renvoie la directive (champ_elem, champ_sommets, champ_face ou pression)
 //pour lancer la discretisation de l espace de stockage rendu par
-//la methode get_champ() du Champ_Generique qui a lance l appel de cette methode
+//la methode get_champ() du Champ_Generique_base qui a lance l appel de cette methode
 const Motcle Champ_Generique_Extraction::get_directive_pour_discr() const
 {
   Motcle directive;

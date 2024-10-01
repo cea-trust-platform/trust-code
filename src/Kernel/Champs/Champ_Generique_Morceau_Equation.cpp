@@ -145,7 +145,7 @@ OWN_PTR(Champ_Fonc_base)& Champ_Generique_Morceau_Equation::creer_espace_stockag
 /*! @brief le morceau d equation lance la discretisation du champ espace_stockage et remplit son tableau de valeurs par la methode calculer_pour_post(.
  *
  * ..)
- *  Rq : Ce procede differe de celui applique dans les autres Champ_Generique pour lesquels
+ *  Rq : Ce procede differe de celui applique dans les autres Champ_Generique_base pour lesquels
  *  le remplissage du tableau de valeurs de espace_stockage n'est pas delegue
  *
  *
@@ -321,7 +321,7 @@ void Champ_Generique_Morceau_Equation::nommer_source()
 
 }
 
-//Rend le morceau d equation considere pour ce Champ_Generique
+//Rend le morceau d equation considere pour ce Champ_Generique_base
 //Actuellement seul type de morceau considere : les operateurs
 //Pour considerer  d autres morceaux d equation il faudra tester type_morceau_
 const MorEqn& Champ_Generique_Morceau_Equation::morceau() const

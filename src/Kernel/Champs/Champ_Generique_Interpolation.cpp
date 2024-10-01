@@ -543,7 +543,7 @@ const Noms Champ_Generique_Interpolation::get_property(const Motcle& query) cons
 
         if (compo_.size()>1)
           {
-            //Le champ a ete cree par macro et on a rempli l attribut compo_ du Champ_Generique
+            //Le champ a ete cree par macro et on a rempli l attribut compo_ du Champ_Generique_base
             //Cela permet de reproduire les noms de composantes dans les lml
             compo=compo_;
           }

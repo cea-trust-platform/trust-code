@@ -177,7 +177,7 @@ inline int composante(const Nom& le_nom_, const Champ_base& mon_champ)
       int ncomp = les_noms_comp.search(motlu);
       if (ncomp == -1)
         {
-          Cerr << "TRUST error, the Champ_Generique name : " << le_nom_ << finl
+          Cerr << "TRUST error, the Champ_Generique_base name : " << le_nom_ << finl
                << " is neither the field name nor"
                << " one of its components\n";
           Cerr << le_nom_ch << " have for components : " << finl;
@@ -570,7 +570,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
           Cerr << "We expected the keyword dt_post or nb_pas_dt_post" << finl;
           exit();
         }
-      //La methode lire_champs_a_postraiter() va generer auatomatiquement un Champ_Generique
+      //La methode lire_champs_a_postraiter() va generer auatomatiquement un Champ_Generique_base
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
       if (keyword=="Fields_file")
@@ -607,7 +607,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
           Cerr << "We expected the keyword dt_post or nb_pas_dt_post" << finl;
           exit();
         }
-      //La methode lire_champs_stat_a_postraiter() va generer auatomatiquement un Champ_Generique
+      //La methode lire_champs_stat_a_postraiter() va generer auatomatiquement un Champ_Generique_base
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
       if (keyword=="Statistics_file")
@@ -1003,7 +1003,7 @@ int Postraitement::lire_champs_a_postraiter(Entree& s)
       int is_champ_predefini = probleme().expression_predefini(motlu,expression);
       if ((is_champ_predefini) && (!comprend_champ_post(motlu)))
         {
-          Champ_Generique champ;
+          OWN_PTR(Champ_Generique_base) champ;
           Entree_complete s_complete(expression,s);
           s_complete>>champ;
           complete_champ(champ,motlu);
@@ -1023,10 +1023,10 @@ int Postraitement::lire_champs_a_postraiter(Entree& s)
       else
         {
 
-          //On teste la distinction entre un Champ_Generique a creer par macro (sans som specifie)
-          //et l ajout d un Champ_Generique deja cree (existant dans champs_post_complet_)
+          //On teste la distinction entre un Champ_Generique_base a creer par macro (sans som specifie)
+          //et l ajout d un Champ_Generique_base deja cree (existant dans champs_post_complet_)
           //On va tester si le motlu correpond au nom d un champ porte par le probleme
-          //Si c est le cas on cree un Champ_Generique par macro sinon on va recuperer le Champ_Generique dans la liste complete
+          //Si c est le cas on cree un Champ_Generique_base par macro sinon on va recuperer le Champ_Generique_base dans la liste complete
           //et on l ajoute dans la liste des champs a postraiter
 
           Motcles mots_compare(liste_noms.size());
@@ -1216,7 +1216,7 @@ int Postraitement::lire_champs_operateurs(Entree& s)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Motcle motlu;
-  Champ_Generique champ;
+  OWN_PTR(Champ_Generique_base) champ;
 
   s>>motlu;
   if (motlu != accolade_ouverte)
@@ -1247,22 +1247,22 @@ int Postraitement::lire_champs_operateurs(Entree& s)
   return 1;
 }
 
-void Postraitement::complete_champ(Champ_Generique& champ,const Motcle& motlu)
+void Postraitement::complete_champ(Champ_Generique_base& champ,const Motcle& motlu)
 {
 
-  if (sub_type(Champ_Gen_de_Champs_Gen,champ.valeur()))
+  if (sub_type(Champ_Gen_de_Champs_Gen,champ))
     {
-      const Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,champ.valeur());
+      const Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,champ);
       cherche_stat_dans_les_sources(champ_post,motlu);
       if (sub_type(Champ_Generique_Statistiques_base,champ_post))
         nb_champs_stat_ += 1;
     }
-  champ->nommer(motlu);
+  champ.nommer(motlu);
   //On teste le nom du champ et de ses sources si elles ont ete specifiees par l utilisateur
   //Methode suivante a reviser ou a ne pas utiliser
   verifie_nom_et_sources(champ);
 
-  Champ_Generique& champ_a_completer = champs_post_complet_.add_if_not(champ);
+  OWN_PTR(Champ_Generique_base)& champ_a_completer = champs_post_complet_.add_if_not(champ);
   champ_a_completer->completer(*this);
 }
 
@@ -1871,7 +1871,7 @@ Nom Postraitement::set_expression_champ(const Motcle& motlu1,const Motcle& motlu
 
 void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,Entree& s)
 {
-  Champ_Generique champ;
+  OWN_PTR(Champ_Generique_base) champ;
   Nom ajout;
   Nom nom_champ, nom_champ_a_post;
 
@@ -2027,7 +2027,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
       }
     }
 
-  Champ_Generique& champ_a_completer = champs_post_complet_.add_if_not(champ);
+  OWN_PTR(Champ_Generique_base)& champ_a_completer = champs_post_complet_.add_if_not(champ);
   champ_a_completer->completer(*this);
 
   if (motlu2!="natif")
@@ -2076,7 +2076,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
 void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& motlu2,const Motcle& motlu3,const Motcle&
                                           motlu4,const double t_deb,const double t_fin,Entree& s)
 {
-  Champ_Generique champ;
+  OWN_PTR(Champ_Generique_base) champ;
   Nom ajout;
   Nom nom_champ;
 
@@ -2137,7 +2137,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
 
       champ_post.fixer_noms_compo(compo);
       champ_stat.fixer_tdeb_tfin(t_deb,t_fin);
-      Champ_Generique& champ_a_completer = champs_post_complet_.add_if_not(champ);
+      OWN_PTR(Champ_Generique_base)& champ_a_completer = champs_post_complet_.add_if_not(champ);
       champ_a_completer->completer(*this);
 
       //On fixe l attribut compo_ pour le Champ_Generique_Interpolation d une correlation cree par cette macro
@@ -2191,7 +2191,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
 }
 
 //Creation d un champ generique en fonction des parametres qui sont passes a la methode
-//Cette methode a pour objectif de creer un Champ_Generique de type Champ_Generique_Morceau_Equation
+//Cette methode a pour objectif de creer un Champ_Generique_base de type Champ_Generique_Morceau_Equation
 //Les etapes sont les suivantes :
 // -creation d une chaine de caracteres pour indiquer le type de champ generique a creer
 // -lecture du champ generique
@@ -2209,7 +2209,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
 //
 void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& option,const int num_eq,const int num_morceau,const int compo,Entree& s)
 {
-  Champ_Generique champ;
+  OWN_PTR(Champ_Generique_base) champ;
   Nom ajout("");
   Nom nom_champ, nom_champ_a_post;
   const Champ_Inc_base& ch_inco = mon_probleme->equation(num_eq).inconnue();
@@ -2288,7 +2288,7 @@ void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& opt
     }
   champ->nommer(nom_champ);
 
-  Champ_Generique& champ_a_completer = champs_post_complet_.add_if_not(champ);
+  OWN_PTR(Champ_Generique_base)& champ_a_completer = champs_post_complet_.add_if_not(champ);
   champ_a_completer->completer(*this);
   Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,champ.valeur());
   champ_post.nommer_sources(*this);
@@ -2373,7 +2373,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
 }
 
 //Decider de ce que doit faire exactement cette methode ou la supprimer
-void Postraitement::verifie_nom_et_sources(const Champ_Generique& champ)
+void Postraitement::verifie_nom_et_sources(const Champ_Generique_base& champ)
 {
   Noms liste_noms;
   const Probleme_base& Pb = probleme();
@@ -2382,7 +2382,7 @@ void Postraitement::verifie_nom_et_sources(const Champ_Generique& champ)
   Motcles mots_compare(liste_noms.size());
   for (int i=0; i<liste_noms.size(); i++)
     mots_compare[i] = liste_noms[i];
-  const Noms nom = champ->get_property("nom");
+  const Noms nom = champ.get_property("nom");
   const Motcle& nom_champ = nom[0];
 
   if (mots_compare.contient_(nom_champ))

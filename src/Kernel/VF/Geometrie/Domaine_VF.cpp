@@ -405,10 +405,11 @@ void Domaine_VF::typer_discretiser_ss_domaine(int i)
 {
   Domaine& dom = domaine();
 
-  sous_domaine_dis(i).typer("Sous_domaine_VF");
-  sous_domaine_dis(i)->associer_sous_domaine(dom.ss_domaine(i));
-  sous_domaine_dis(i)->associer_domaine_dis(*this);
-  sous_domaine_dis(i)->discretiser();
+  auto& sds = les_sous_domaines_dis[i];
+  sds.typer("Sous_domaine_VF");
+  sds->associer_sous_domaine(dom.ss_domaine(i));
+  sds->associer_domaine_dis(*this);
+  sds->discretiser();
 }
 
 void Domaine_VF::remplir_face_voisins_fictifs(const Domaine_Cl_dis_base& )

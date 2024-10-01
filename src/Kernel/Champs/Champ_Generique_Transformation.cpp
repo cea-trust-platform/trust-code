@@ -174,7 +174,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
   if (nb_sources==0)
     {
       nb_source_fictive = 1;
-      Champ_Generique& new_src = get_set_sources().add(Champ_Generique());
+      OWN_PTR(Champ_Generique_base)& new_src = sources_.add(OWN_PTR(Champ_Generique_base)());
       Nom nom_probleme = ref_cast(Postraitement,post).probleme().le_nom();
       const Objet_U& ob = interprete().objet(nom_probleme);
       const Probleme_base& pb = ref_cast(Probleme_base,ob);
@@ -197,9 +197,9 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     {
       if (get_nb_sources()>1)
         {
-          assert( get_set_sources().size( ) == 1 );
+          assert( sources_.size( ) == 1 );
           // on a rajoute une source pour rien ...
-          get_set_sources().vide();
+          sources_.vide();
           nb_source_fictive = 0;
         }
     }

@@ -304,7 +304,7 @@ Entree& Sonde::readOn(Entree& is)
       int is_champ_predefini = Pb.expression_predefini(motlu,expression);
       if ((is_champ_predefini) && (!mon_post->comprend_champ_post(nom_champ_lu_)))
         {
-          Champ_Generique champ;
+          OWN_PTR(Champ_Generique_base) champ;
           Entree_complete s_complete(expression,is);
           s_complete>>champ;
           mon_post->complete_champ(champ,nom_champ_lu_);

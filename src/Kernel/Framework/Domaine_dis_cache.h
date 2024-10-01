@@ -45,14 +45,12 @@ public:
   void clear() override { cache_.clear(); }
 
 private:
-  Domaine_dis_cache() {}
-
-  using Shared_Dom_dis = OWN_PTR(Domaine_dis_base);
+  Domaine_dis_cache() { }
   /*! The actual cache hodling the true Domaine_dis objects.
   * Store them as shared_ptr since we need easy duplication, notably for NO_FACE_ discretisations.
   * See build_or_get() method.
   */
-  std::map<std::string, Shared_Dom_dis> cache_;
+  std::map<std::string, OWN_PTR(Domaine_dis_base)> cache_;
 };
 
 #endif

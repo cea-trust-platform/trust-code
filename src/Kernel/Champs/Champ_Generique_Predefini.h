@@ -58,7 +58,7 @@ protected:
 
   Nom type_champ_;         //Type de champ predefini a lire (ex : energie_cinetique)
   Nom nom_pb_;
-  Champ_Generique champ_;  //Le champ generique predefini par type_champ_
+  OWN_PTR(Champ_Generique_base) champ_;  //Le champ generique predefini par type_champ_
 
 };
 

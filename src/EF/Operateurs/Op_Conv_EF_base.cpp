@@ -134,7 +134,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
 
 //calcul des valeurs du pas de temps de stabilite de l operateur pour postraitement
 //-discretisation de l espace de stockage (aux faces)
-//	espace_stockage nomme "localisation" pour completer le Champ_Generique
+//	espace_stockage nomme "localisation" pour completer le Champ_Generique_base
 //	espace_stockage nomme "??" sinon
 //-calcul des valeurs
 //-verifie en debug la compatibilite avec dt_stab considere pour le calcul

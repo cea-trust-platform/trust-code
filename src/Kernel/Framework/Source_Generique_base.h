@@ -23,7 +23,7 @@
 
 /*! @brief classe Source_Generique_base Cette classe est la base de la hierarchie des sources portant
  *
- *      un Champ_Generique qui permet d'evaluer une expression dependante
+ *      un OWN_PTR(Champ_Generique_base) qui permet d'evaluer une expression dependante
  *      de champs du probleme.
  *
  * @sa Source_base, Classe abstraite., Methodes abstraites:, DoubleTab& ajouter(DoubleTab& ) const, void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) [protected], void associer_pb(const Probleme_base& ) [protected], Nom localisation_source(), Syntaxe :, Sources { Source_Generique "Champ_Generique { ...} " }, avec "Champ_Generique" un champ generique a specifier., Rq : la discretisation du champ renvoye par le champ generique, doit correspondre a celle ou est evaluee le terme source.
@@ -44,7 +44,7 @@ public :
 
 protected :
 
-  Champ_Generique ch_source_;
+  OWN_PTR(Champ_Generique_base) ch_source_;
 
 };
 

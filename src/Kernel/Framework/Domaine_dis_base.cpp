@@ -37,14 +37,14 @@ int Domaine_dis_base::nombre_de_sous_domaines_dis() const
   return les_sous_domaines_dis.size();
 }
 
-const Sous_domaine_dis& Domaine_dis_base::sous_domaine_dis(int i) const
+const Sous_domaine_dis_base& Domaine_dis_base::sous_domaine_dis(int i) const
 {
-  return les_sous_domaines_dis[i];
+  return les_sous_domaines_dis[i].valeur();
 }
 
-Sous_domaine_dis& Domaine_dis_base::sous_domaine_dis(int i)
+Sous_domaine_dis_base& Domaine_dis_base::sous_domaine_dis(int i)
 {
-  return les_sous_domaines_dis[i];
+  return les_sous_domaines_dis[i].valeur();
 }
 
 /*! @brief Associe un Domaine a l'objet.
@@ -165,8 +165,7 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
     discretiser_no_face();
 
   // Remplit les sous_domaines_dis, les type, et leur associe les domaine_dis et les sous_domaine correspondantes.
-  Sous_domaines_dis& sszd = sous_domaines_dis();
-  sszd.dimensionner(dom.nb_ss_domaines());
+  les_sous_domaines_dis.dimensionner(dom.nb_ss_domaines());
 
   for (int i=0; i<dom.nb_ss_domaines(); i++)
     {

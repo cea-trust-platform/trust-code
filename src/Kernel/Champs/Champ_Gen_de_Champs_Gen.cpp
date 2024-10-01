@@ -52,7 +52,7 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
 {
   if (mot=="source")
     {
-      Champ_Generique& new_src = sources_.add(Champ_Generique());
+      OWN_PTR(Champ_Generique_base)& new_src = sources_.add(OWN_PTR(Champ_Generique_base)());
       Nom typ;
       is >> typ;
       Journal() << "Reading a source type " << typ << finl;
@@ -84,7 +84,7 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
         }
       while(1)
         {
-          Champ_Generique& new_src = sources_.add(Champ_Generique());
+          OWN_PTR(Champ_Generique_base)& new_src = sources_.add(OWN_PTR(Champ_Generique_base)());
           Journal() << "Reading a source type " << typ << finl;
           new_src.typer(typ);
           is >> new_src.valeur();
@@ -109,18 +109,6 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
     }
   else
     return Champ_Generique_base::lire_motcle_non_standard(mot,is);
-}
-
-LIST(Champ_Generique)& Champ_Gen_de_Champs_Gen::get_set_sources()
-{
-  return sources_;
-}
-
-Champ_Generique& Champ_Gen_de_Champs_Gen::get_set_source()
-{
-  if (sources_.size() < 1)
-    sources_.add(Champ_Generique());
-  return sources_[0];
 }
 
 void Champ_Gen_de_Champs_Gen::reset()

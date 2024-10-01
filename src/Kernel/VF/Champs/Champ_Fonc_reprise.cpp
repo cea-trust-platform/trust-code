@@ -353,7 +353,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       Op_Moyenne champ_moyen;
       //On construit un Champ_Generique_refChamp pour pouvoir associer un Champ_Generique_base
       //a l operateur
-      Champ_Generique champ;
+      OWN_PTR(Champ_Generique_base) champ;
       Nom ajout("");
       ajout += " refChamp { Pb_champ ";
       ajout += pb.le_nom();

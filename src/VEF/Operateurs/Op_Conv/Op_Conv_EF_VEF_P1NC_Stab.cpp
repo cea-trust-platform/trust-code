@@ -2198,10 +2198,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
           bool trouve=false;
           for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_domaines_dis(); ssz++)
             {
-              if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(le_sous_domaine))
+              if (le_domaine_dis.sous_domaine_dis(ssz).sous_domaine().est_egal_a(le_sous_domaine))
                 {
                   trouve=true;
-                  la_ssz=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
+                  la_ssz=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz));
                 }
             }
 
@@ -2232,10 +2232,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
       const Domaine_dis_base& le_domaine_dis=le_dom_vef.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_domaines_dis(); ssz++)
         {
-          if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(le_sous_domaine))
+          if (le_domaine_dis.sous_domaine_dis(ssz).sous_domaine().est_egal_a(le_sous_domaine))
             {
               sous_domaine=true;
-              le_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
+              le_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz));
             }
         }
 
