@@ -64,10 +64,6 @@ public :
 private :
   void initialize();
   void Create_objects(const Matrice_Morse&);
-  template<typename ExecSpace>
-  void Update_lhs_rhs(const DoubleVect& b, DoubleVect& x);
-  template<typename ExecSpace>
-  void Update_solution(DoubleVect& x);
 #ifdef ROCALUTION_ROCALUTION_HPP_
   rocalution_initializer rocalution_initializer_;
   template <typename T>
@@ -94,7 +90,6 @@ private :
   Motcle coarse_grid_solver_ = "LU";
   double omega_ = 0.8;
   int coarse_grids_host_ = 0;
-  ArrOfDouble sol_host,rhs_host;
   GlobalVector<double> sol, rhs, e;
   IntVect local_renum_;
 #endif

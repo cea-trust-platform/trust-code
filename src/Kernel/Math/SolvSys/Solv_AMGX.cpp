@@ -94,13 +94,13 @@ void Solv_AMGX::Create_vectors(const DoubleVect& b)
 
 void Solv_AMGX::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
 {
-  Update_lhs_rhs_onDevice(secmem, solution);
+  Solv_Externe::Update_lhs_rhs<Kokkos::DefaultExecutionSpace>(secmem, solution);
   if (reorder_matrix_) Process::exit("Option not supported yet for AmgX.");
 }
 
 void Solv_AMGX::Update_solution(DoubleVect& solution)
 {
-  Update_solution_onDevice(solution);
+  Solv_Externe::Update_solution<Kokkos::DefaultExecutionSpace>(solution);
 }
 
 // Fonction de conversion Petsc ->CSR

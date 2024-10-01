@@ -523,49 +523,6 @@ double residual_device(const GlobalMatrix<double>& a, const GlobalVector<double>
 }
 #endif
 
-template<typename ExecSpace>
-void Solv_rocALUTION::Update_lhs_rhs(const DoubleVect& b, DoubleVect& x)
-{
-  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
-  int size=b.size_array();
-  auto x_v = x.template view_ro<ExecSpace>();
-  auto b_v = b.template view_ro<ExecSpace>();
-  auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
-  auto sol_v = sol_host.template view_wo<ExecSpace>();
-  auto rhs_v = rhs_host.template view_wo<ExecSpace>();
-  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
-                         const int i)
-  {
-    int ind = index[i];
-    if (ind != -1)
-      {
-        sol_v[ind] = x_v[i];
-        rhs_v[ind] = b_v[i];
-      }
-  });
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
-}
-
-template<typename ExecSpace>
-void Solv_rocALUTION::Update_solution(DoubleVect& x)
-{
-  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
-  int size = x.size_array();
-  auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
-  auto sol_v = sol_host.template view_ro<ExecSpace>();
-  auto x_v = x.template view_wo<ExecSpace>();
-  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
-                         const int i)
-  {
-    int ind = index[i];
-    if (ind != -1)
-      x_v[i] = sol_v[ind];
-  });
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
-}
-
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
 #ifdef ROCALUTION_ROCALUTION_HPP_
@@ -640,11 +597,11 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   tick = rocalution_time();
   auto N = pm.GetGlobalNrow();
   int size=b.size_array();
-  if (rhs_host.size_array()==0)
+  if (rhs_.size_array()==0)
     {
       // Allocation initiale
-      sol_host.resize(size);
-      rhs_host.resize(size);
+      lhs_.resize(size);
+      rhs_.resize(size);
       sol.SetParallelManager(pm);
       rhs.SetParallelManager(pm);
       e.SetParallelManager(pm);
@@ -662,15 +619,15 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       rhs.MoveToAccelerator();
       e.MoveToAccelerator();
       if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * (int)sizeof(double) * nb_rows_);
-      sol.GetInterior().CopyFromData(addrOnDevice(sol_host));
-      rhs.GetInterior().CopyFromData(addrOnDevice(rhs_host));
+      sol.GetInterior().CopyFromData(addrOnDevice(lhs_));
+      rhs.GetInterior().CopyFromData(addrOnDevice(rhs_));
     }
   else
     {
       Update_lhs_rhs<Kokkos::DefaultHostExecutionSpace>(b, x);
       // Les vecteurs sont remplis sur le host puis deplaces vers le device
-      sol.GetInterior().CopyFromData(sol_host.addr());
-      rhs.GetInterior().CopyFromData(rhs_host.addr());
+      sol.GetInterior().CopyFromData(lhs_.addr());
+      rhs.GetInterior().CopyFromData(rhs_.addr());
       if (gpu) statistiques().begin_count(gpu_copytodevice_counter_);
       sol.MoveToAccelerator();
       rhs.MoveToAccelerator();
@@ -746,7 +703,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   if (keepDataOnDevice)
     {
       // Les vecteurs sont mis a jour entre eux sur le device (optimal)
-      sol.GetInterior().CopyToData(addrOnDevice(sol_host));
+      sol.GetInterior().CopyToData(addrOnDevice(lhs_));
       Update_solution<Kokkos::DefaultExecutionSpace>(x);
     }
   else
@@ -755,7 +712,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       if (gpu) statistiques().begin_count(gpu_copyfromdevice_counter_);
       sol.MoveToHost();
       if (gpu) statistiques().end_count(gpu_copyfromdevice_counter_, (int)sizeof(double) * nb_rows_);
-      sol.GetInterior().CopyToData(sol_host.addr());
+      sol.GetInterior().CopyToData(lhs_.addr());
       Update_solution<Kokkos::DefaultHostExecutionSpace>(x);
     }
   x.echange_espace_virtuel();

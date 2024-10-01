@@ -2090,7 +2090,7 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
   if (gpu_ && DataOnDevice && !isViennaCLVector()) // The 2 arrays are up to date on the device and the solver is a GPU one (fastest strategy)
     {
       // We update PETSc vectors with the arrays on device:
-      Update_lhs_rhs_onDevice(secmem, solution);
+      Update_lhs_rhs<Kokkos::DefaultExecutionSpace>(secmem, solution);
 #ifdef PETSC_HAVE_CUDA
       VecCUDAPlaceArray(SecondMembrePetsc_, addrOnDevice(rhs_));
       VecCUDAPlaceArray(SolutionPetsc_, addrOnDevice(lhs_));
@@ -2144,7 +2144,7 @@ void Solv_Petsc::Update_solution(DoubleVect& solution)
   bool DataOnDevice = solution.checkDataOnDevice(__KERNEL_NAME__);
   if (gpu_ && DataOnDevice && !isViennaCLVector()) // solution is on the device to SolutionPetsc_ -> solution update without copy
     {
-      Update_solution_onDevice(solution);
+      Solv_Externe::Update_solution<Kokkos::DefaultExecutionSpace>(solution);
 #ifdef PETSC_HAVE_CUDA
       VecCUDAResetArray(SecondMembrePetsc_);
       VecCUDAResetArray(SolutionPetsc_);

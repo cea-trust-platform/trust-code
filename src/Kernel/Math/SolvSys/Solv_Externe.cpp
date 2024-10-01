@@ -161,33 +161,51 @@ void Solv_Externe::Create_lhs_rhs_onDevice()
   rhs_.resize(nb_rows_);
 }
 
-void Solv_Externe::Update_lhs_rhs_onDevice(const DoubleVect& tab_secmem, DoubleVect& tab_solution)
+template<typename ExecSpace>
+void Solv_Externe::Update_lhs_rhs(const DoubleVect& tab_b, DoubleVect& tab_x)
 {
-  CIntArrView index = static_cast<const ArrOfInt&>(index_).view_ro();
-  CDoubleArrView secmem = tab_secmem.view_ro();
-  CDoubleArrView solution = tab_solution.view_ro();
-  DoubleArrView rhs = rhs_.view_wo();
-  DoubleArrView lhs = lhs_.view_wo();
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), index_.size_array(), KOKKOS_LAMBDA(const int i)
+  int size = tab_b.size_array();
+  auto x = tab_x.template view_ro<ExecSpace>();
+  auto b = tab_b.template view_ro<ExecSpace>();
+  auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
+  auto lhs = lhs_.template view_wo<ExecSpace>();
+  auto rhs = rhs_.template view_wo<ExecSpace>();
+  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+                         const int i)
   {
-    if (index[i]!=-1)
+    int ind = index[i];
+    if (ind != -1)
       {
-        lhs[index[i]] = solution[i];
-        rhs[index[i]] = secmem[i];
+        lhs[ind] = x[i];
+        rhs[ind] = b[i];
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
-void Solv_Externe::Update_solution_onDevice(DoubleVect& tab_solution)
+template<typename ExecSpace>
+void Solv_Externe::Update_solution(DoubleVect& tab_x)
 {
-  CIntArrView index = static_cast<const ArrOfInt&>(index_).view_ro();
-  CDoubleArrView lhs = lhs_.view_ro();
-  DoubleArrView solution = tab_solution.view_wo();
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), index_.size_array(), KOKKOS_LAMBDA(const int i)
+  int size = tab_x.size_array();
+  auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
+  auto lhs = lhs_.template view_ro<ExecSpace>();
+  auto x = tab_x.template view_wo<ExecSpace>();
+  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+                         const int i)
   {
-    if (index[i]!=-1)
-      solution[i] = lhs[index[i]];
+    int ind = index[i];
+    if (ind != -1)
+      x[i] = lhs[ind];
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
+
+template void Solv_Externe::Update_lhs_rhs<Kokkos::DefaultExecutionSpace>(const DoubleVect&, DoubleVect&);
+template void Solv_Externe::Update_lhs_rhs<Kokkos::DefaultHostExecutionSpace>(const DoubleVect&, DoubleVect&);
+template void Solv_Externe::Update_solution<Kokkos::DefaultExecutionSpace>(DoubleVect&);
+template void Solv_Externe::Update_solution<Kokkos::DefaultHostExecutionSpace>(DoubleVect&);
+
