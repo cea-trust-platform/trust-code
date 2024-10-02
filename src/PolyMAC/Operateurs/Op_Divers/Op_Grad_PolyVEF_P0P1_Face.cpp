@@ -123,12 +123,12 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
             for (d = 0; d < D; d++)
               for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
-                  for (secmem(f, N * d + n) -= a_v(n) * (i ? 1 : -1) * nf(f, d) * press(e, m), j = 0, k = es_d(e); j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++, k++)
-                    secmem(f, N * d + n) -= a_v(n) * (vfd(f, i) * Gs(j, d) - (i ? 1 : -1) * nf(f, d) * v_es(k) / ve(e)) * (scl_d(s + 1) == scl_d(s) ? press(ne_tot + s, m) : ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), m));
+                  for (secmem(f, N * d + n) -= a_v(n) * (i ? 1 : -1) * 0.5 * nf(f, d) * press(e, m), j = 0, k = es_d(e); j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++, k++)
+                    secmem(f, N * d + n) -= a_v(n) * (vfd(f, i) * Gs(j, d) - (i ? 1 : -1) * 0.5 * nf(f, d) * v_es(k) / ve(e)) * (scl_d(s + 1) == scl_d(s) ? press(ne_tot + s, m) : ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), m));
                   if (mat)
-                    for ((*mat)(N * (D * f + d) + n, M * e + m) += a_v(n) * (i ? 1 : -1) * nf(f, d), j = 0, k = es_d(e); j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++, k++)
+                    for ((*mat)(N * (D * f + d) + n, M * e + m) += a_v(n) * (i ? 1 : -1) * 0.5 * nf(f, d), j = 0, k = es_d(e); j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++, k++)
                       if (scl_d(s) == scl_d(s + 1))
-                        (*mat)(N * (D * f + d) + n, M * (ne_tot + s) + m) += a_v(n) * (vfd(f, i) * Gs(j, d) - (i ? 1 : -1) * nf(f, d) * v_es(k) / ve(e));
+                        (*mat)(N * (D * f + d) + n, M * (ne_tot + s) + m) += a_v(n) * (vfd(f, i) * Gs(j, d) - (i ? 1 : -1) * 0.5 * nf(f, d) * v_es(k) / ve(e));
                 }
           }
       }
