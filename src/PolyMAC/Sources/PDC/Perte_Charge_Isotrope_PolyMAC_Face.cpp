@@ -15,6 +15,7 @@
 
 #include <Perte_Charge_Isotrope_PolyMAC_Face.h>
 #include <Motcle.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Perte_Charge_Isotrope_PolyMAC_Face, "Perte_Charge_Isotrope_Face_PolyMAC", Perte_Charge_PolyMAC);
 

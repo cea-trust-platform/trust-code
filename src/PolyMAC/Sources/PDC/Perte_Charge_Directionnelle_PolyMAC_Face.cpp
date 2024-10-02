@@ -16,6 +16,7 @@
 #include <Perte_Charge_Directionnelle_PolyMAC_Face.h>
 #include <Motcle.h>
 #include <Param.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Perte_Charge_Directionnelle_PolyMAC_Face, "Perte_Charge_Directionnelle_Face_PolyMAC", Perte_Charge_PolyMAC);
 
