@@ -42,6 +42,8 @@ void local_carre_norme_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_T
     }
 }
 
+namespace
+{
 template <typename ExecSpace, typename _TYPE_, typename _SIZE_>
 void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_,_SIZE_>& max_colonne,
                               const TRUSTArray<int,_SIZE_>& blocs, int lsize, bool kernelOnDevice)
@@ -66,6 +68,7 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray
       });
     }
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
 }
 
 template <typename _TYPE_, typename _SIZE_>

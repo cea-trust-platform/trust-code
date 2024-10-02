@@ -153,6 +153,9 @@ template void ajoute_produit_scalaire<float, int>(TRUSTVect<float, int>& resu, f
 
 //Process bloc function used below in operation_speciale_tres_generic
 //It is templated as a function of the in/out view location and execution spaces (Device/Host)
+#ifndef LATATOOLS
+namespace
+{
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
 void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
                                             Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
@@ -191,10 +194,13 @@ void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, con
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
+}
+#endif
 
 template<TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_, typename _TYPE_, typename _SIZE_>
 void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt)
 {
+#ifndef LATATOOLS
 
   // Check the nature of the operation
   static constexpr bool IS_MUL = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC_GENERIC::MUL_); //it's either MUL or DIV
@@ -231,6 +237,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
   invalidate_data(resu, opt);
 #endif
   return;
+#endif
 }
 
 
