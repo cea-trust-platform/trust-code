@@ -53,59 +53,13 @@ void Op_Grad_PolyVEF_P0P1_Face::completer()
   last_gradp_ = -DBL_MAX;
 }
 
-const DoubleTab& Op_Grad_PolyVEF_P0P1_Face::alpha_es() const
-{
-  if (alpha_es_.nb_dim() > 1) return alpha_es_;
-  const Domaine_PolyMAC& dom = ref_domaine.valeur();
-  const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
-  const IntTab& e_s = dom.domaine().les_elems(), &scl_d = ch.scl_d(1), &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();;
-  const DoubleTab& xp = dom.xp(), &xs = dom.domaine().coord_sommets();
-  int e, s, i, j, D = dimension, nl = D + 1, nc, nm, un = 1, infoo = 0, rank, nw;
-  double eps = 1e-8;
-  std::vector<int> v_s;//sommets qu'on peut utiliser
-  DoubleTrav A, B, W(1);
-  IntTrav pvt;
-  alpha_es_.resize(e_s.dimension_tot(0), e_s.dimension_tot(1)), alpha_es_ = 0;
-
-  for (e = 0; e < dom.nb_elem_tot(); e++)
-    {
-      for (v_s.clear(), i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-        if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
-          v_s.push_back(s);
-      nc = (int) v_s.size(), nm = std::max(nc, nl), A.resize(nc, nl), B.resize(nm), pvt.resize(nm);
-      if (nc < D + 1) //pas assez de points pour une interpolation lineaire -> on fait comme on peut...
-        {
-          for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-            if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
-              j++;
-          for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-            if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
-              alpha_es_(e, i) = 1. / j;
-          continue;
-        }
-
-      /* systeme lineaire : interpolation exacte sur les fonctions affines */
-      for (A = 0, B = 0, B(D) = 1, i = 0; i < nc; i++)
-        for (s = v_s[i], j = 0; j < nl; j++)
-          A(i, j) = j < D ? xs(s, j) - xp(e, j) : 1;
-      /* resolution */
-      nw = -1, pvt = 0,                     F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
-      W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
-      /* stockage */
-      for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-        if (ps_ref(s) < 0 || scl_d(s) < scl_d(s + 1))
-          alpha_es_(e, j) = B(j), j++;
-    }
-  return alpha_es_;
-}
-
 void Op_Grad_PolyVEF_P0P1_Face::dimensionner_blocs_ext(matrices_t matrices, int virt, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& dom = ref_domaine.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
-  const IntTab& f_e = dom.face_voisins(), &e_s = dom.domaine().les_elems(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1);
-  int i, j, e, f, s, ne_tot = dom.nb_elem_tot(), ns_tot = dom.nb_som_tot(), nf_tot = dom.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size() / D,
-                     m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
+  const IntTab& f_e = dom.face_voisins(), &f_s = dom.face_sommets(), &fcl = ch.fcl(), &scl_d = ch.scl_d(1);
+  int i, e, f, s, ne_tot = dom.nb_elem_tot(), ns_tot = dom.nb_som_tot(), nf_tot = dom.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size() / D,
+                  m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
 
   IntTrav sten(0, 2); //stencil (NS, pression)
   Matrice_Morse *mat = matrices["pression"], mat2;
@@ -120,12 +74,12 @@ void Op_Grad_PolyVEF_P0P1_Face::dimensionner_blocs_ext(matrices_t matrices, int 
             for (d = 0; d < D; d++)
               for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 sten.append_line(N * (D * f + d) + n, M * e + m);
-            for (j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++)
-              if (scl_d(s + 1) == scl_d(s))
-                for (d = 0; d < D; d++)
-                  for (n = 0, m = 0; n < N; n++, m += (M > 1))
-                    sten.append_line(N * (D * f + d) + n, M * (ne_tot + s) + m);
           }
+        for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+          if (scl_d(s + 1) == scl_d(s))
+            for (d = 0; d < D; d++)
+              for (n = 0, m = 0; n < N; n++, m += (M > 1))
+                sten.append_line(N * (D * f + d) + n, M * (ne_tot + s) + m);
       }
 
   /* allocation / remplissage */
@@ -138,10 +92,10 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
   const Domaine_PolyMAC& dom = ref_domaine.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const Conds_lim& cls = ref_dcl->les_conditions_limites();
-  const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl(), &f_s = dom.face_sommets(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1), &e_s = dom.domaine().les_elems();
+  const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl(), &f_s = dom.face_sommets(), &scl_d = ch.scl_d(1), &scl_c = ch.scl_c(1);
   const DoubleTab& xp = dom.xp(), &xv = dom.xv(), &vfd = dom.volumes_entrelaces_dir(), &xs = dom.domaine().coord_sommets(), &nf = dom.face_normales(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr, &a_es = alpha_es();
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& fs = dom.face_surfaces(), &pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
   int i, j, e, f, s, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = secmem.line_size() / D, m, M = press.line_size();
   Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : nullptr;
@@ -188,12 +142,8 @@ void Op_Grad_PolyVEF_P0P1_Face::ajouter_blocs_ext(matrices_t matrices, DoubleTab
             for (d = 0; d < D; d++)
               for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
-                  for (secmem(f, N * d + n) -= p_a_v(n) * G(i, d) * D * press(e, m), j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++)
-                    secmem(f, N * d + n) += (D - 1) * p_a_v(n) * G(i, d) * (scl_d(s + 1) == scl_d(s) ? press(ne_tot + s, m) : ref_cast(Neumann, cls[scl_c(scl_d(s), 0)].valeur()).flux_impose(scl_c(scl_d(s), 1), m)) * a_es(e, j);
-                  if (mat)
-                    for ((*mat)(N * (D * f + d) + n, M * e + m) += D * p_a_v(n) * G(i, d), j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++)
-                      if (scl_d(s) == scl_d(s + 1))
-                        (*mat)(N * (D * f + d) + n, M * (ne_tot + s) + m) -= (D - 1) * p_a_v(n) * G(i, d) * a_es(e, j);
+                  secmem(f, N * d + n) -= p_a_v(n) * G(i, d) * press(e, m);
+                  if (mat) (*mat)(N * (D * f + d) + n, M * e + m) += p_a_v(n) * G(i, d);
                 }
           }
         /* second membre / matrice : sommets -> avec la pression au sommet si celle-ci n'est pas imposee, avec celle de la premiere CL qui passe sinon*/
