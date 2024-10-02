@@ -13,17 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Assembleur_P_PolyVEF_P0P1NC_included
+#define Assembleur_P_PolyVEF_P0P1NC_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Assembleur_P_PolyMAC.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+class Assembleur_P_PolyVEF_P0P1NC : public Assembleur_P_PolyMAC
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1"), Nom("PolyVEF_P0P1NC")   };
+  Declare_instanciable(Assembleur_P_PolyVEF_P0P1NC);
+public:
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
 
-  return Dirichlet::readOn(s);
-}
+  int modifier_secmem(DoubleTab&) override { return 1; }
+  int modifier_solution(DoubleTab&) override;
+
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  DoubleTab norme_continuite() const override;
+
+  /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
+   fac est le coefficient tel que p_final - press = fac * sol */
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
+
+  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
+  {
+    Process::exit("Assembleur_P_PolyVEF_P0P1NC::corriger_vitesses() should not be used ... ");
+  }
+};
+
+#endif /* Assembleur_P_PolyVEF_P0P1NC_included */

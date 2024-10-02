@@ -27,10 +27,14 @@
 #include <Param.h>
 #include <cmath>
 #include <Masse_ajoutee_base.h>
+#include <Synonyme_info.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face|Op_Conv_EF_Stab_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyVEF_Face, "Op_Conv_EF_Stab_PolyVEF_P0_Face|Op_Conv_EF_Stab_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face );
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_Face, "Op_Conv_Amont_PolyVEF_P0_Face|Op_Conv_Amont_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyVEF_Face);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_Face, "Op_Conv_Centre_PolyVEF_P0_Face|Op_Conv_Centre_PolyVEF_P0P1_Face", Op_Conv_EF_Stab_PolyVEF_Face);
+Add_synonym(Op_Conv_EF_Stab_PolyVEF_Face, "Op_Conv_EF_Stab_PolyVEF_P0P1NC_Face");
+Add_synonym(Op_Conv_Amont_PolyVEF_Face, "Op_Conv_Amont_PolyVEF_P0P1NC_Face");
+Add_synonym(Op_Conv_Centre_PolyVEF_Face, "Op_Conv_Centre_PolyVEF_P0P1NC_Face");
 
 Op_Conv_Amont_PolyVEF_Face::Op_Conv_Amont_PolyVEF_Face() { alpha = 1.0; }
 Op_Conv_Centre_PolyVEF_Face::Op_Conv_Centre_PolyVEF_Face() { alpha = 0.0; }

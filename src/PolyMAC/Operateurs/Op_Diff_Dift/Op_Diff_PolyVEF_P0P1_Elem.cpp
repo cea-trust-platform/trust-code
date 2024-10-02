@@ -59,7 +59,7 @@ void Op_Diff_PolyVEF_P0P1_Elem::completer()
 {
   Op_Diff_PolyMAC_P0P1NC_base::completer();
   Equation_base& eq = equation();
-  Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
+  Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue());
   ch.init_auxiliary_variables();
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   if (dom.nb_joints() && dom.joint(0).epaisseur() < 1)
@@ -107,7 +107,7 @@ double Op_Diff_PolyVEF_P0P1_Elem::calculer_dt_stab() const
   const Domaine_PolyMAC& dom = le_dom_poly_.valeur();
   const IntTab& e_f = dom.elem_faces();
   const DoubleTab& nf = dom.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL,
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr,
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = dom.volumes_entrelaces(), &ve = dom.volumes();
   update_nu();
@@ -144,16 +144,16 @@ void Op_Diff_PolyVEF_P0P1_Elem::dimensionner_blocs_ext(int aux_only, matrices_t 
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
-      dom.push_back(std::ref(ref_cast(Domaine_PolyVEF, op_ext[i]->equation().domaine_dis().valeur())));
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
+      dom.push_back(std::ref(ref_cast(Domaine_PolyVEF, op_ext[i]->equation().domaine_dis())));
       f_e.push_back(std::ref(dom[i].get().face_voisins())), e_f.push_back(std::ref(dom[i].get().elem_faces())), f_s.push_back(std::ref(dom[i].get().face_sommets()));
       cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyVEF_P0P1_Elem, *op_ext[i]).nu());
-      const Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
+      const Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue());
       scl_d.push_back(std::ref(ch.scl_d(0))), scl_c.push_back(std::ref(ch.scl_c(0)));
       N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(dom[i].get().nb_elem_tot());
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
-      stencil[i].resize(0, 2), stencil[i].set_smart_resize(1);
+      stencil[i].resize(0, 2);
     }
 
   for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
@@ -191,19 +191,19 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
-      dom.push_back(std::ref(ref_cast(Domaine_PolyVEF, op_ext[i]->equation().domaine_dis().valeur())));
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
+      dom.push_back(std::ref(ref_cast(Domaine_PolyVEF, op_ext[i]->equation().domaine_dis())));
       f_e.push_back(std::ref(dom[i].get().face_voisins())), e_f.push_back(std::ref(dom[i].get().elem_faces())), f_s.push_back(std::ref(dom[i].get().face_sommets()));
       fs.push_back(std::ref(dom[i].get().face_surfaces())), nf.push_back(std::ref(dom[i].get().face_normales()));
       xp.push_back(std::ref(dom[i].get().xp())), xv.push_back(std::ref(dom[i].get().xv())), xs.push_back(std::ref(dom[i].get().domaine().coord_sommets()));
       vf.push_back(std::ref(dom[i].get().volumes_entrelaces()));
       cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyVEF_P0P1_Elem, *op_ext[i]).nu());
-      const Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
+      const Champ_Elem_PolyVEF_P0P1& ch = ref_cast(Champ_Elem_PolyVEF_P0P1, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue());
       scl_d.push_back(std::ref(ch.scl_d(0))), scl_c.push_back(std::ref(ch.scl_c(0)));
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
-                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal").valeur()) : NULL);
+                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal")) : nullptr);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(dom[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 
@@ -215,7 +215,6 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
   for (i = 0; i < n_ext; i++) v_aux.push_back(use_aux_ ? ref_cast(Op_Diff_PolyVEF_P0P1_Elem, *op_ext[i]).var_aux : v_part[i][1]); /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
 
   DoubleTrav Sa, Gf, Gfa, A; //surface par arete du diamant, gradient non stabilise (par diamant) et stabilise (par arete du diamant), forme bilineaire
-  Gf.set_smart_resize(1), Gfa.set_smart_resize(1), A.set_smart_resize(1);
   for (f = 0; f < dom[0].get().nb_faces_tot(); f++)
     {
       for (ok = 0, i = 0; i < 2 + f_s[0].get().dimension(1); i++) /* si aucun element ou sommet reel autour de f, rien a faire */
