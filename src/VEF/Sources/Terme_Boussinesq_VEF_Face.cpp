@@ -57,7 +57,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& tab_resu) const
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
 
   CDoubleArrView scalaire0 = Scalaire0_.view_ro();
-  CDoubleTabView beta_v = beta().valeur().valeurs().view_ro();
+  CDoubleTabView beta_v = beta().valeurs().view_ro();
   CDoubleArrView g = static_cast<const DoubleVect&>(gravite().valeurs()).view_ro();
   CDoubleTabView xv = domaine_VEF.xv().view_ro();
   CDoubleTabView xp = domaine_VEF.xp().view_ro();
@@ -69,9 +69,9 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& tab_resu) const
 
   // Boucle sur toutes les faces
   int nb_faces = domaine_VEF.nb_faces();
-  int dimension = Objet_U::dimension;
-  const int beta_dimension0 = beta().valeur().valeurs().dimension(0);
-  const int beta_nb_dim = beta().valeur().valeurs().nb_dim();
+  int dim = Objet_U::dimension;
+  const int beta_dimension0 = beta().valeurs().dimension(0);
+  const int beta_nb_dim = beta().valeurs().nb_dim();
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        nb_faces,
@@ -84,7 +84,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& tab_resu) const
     for (int compo = 0; compo < nbcomp_param; compo++)
       delta_param += valeur(beta_v,beta_dimension0,beta_nb_dim,elem1,elem2,compo,nbcomp_param)*(scalaire0(compo)-param(face,compo));
 
-    for (int comp = 0; comp < dimension; comp++)
+    for (int comp = 0; comp < dim; comp++)
       {
         double delta_coord;
         if (elem2 == -1) // Face de bord

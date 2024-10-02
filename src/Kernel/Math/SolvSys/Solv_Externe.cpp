@@ -164,7 +164,7 @@ void Solv_Externe::Create_lhs_rhs_onDevice()
 template<typename ExecSpace>
 void Solv_Externe::Update_lhs_rhs(const DoubleVect& tab_b, DoubleVect& tab_x)
 {
-  int size = tab_b.size_array();
+  long unsigned int size = tab_b.size_array();
   auto x = tab_x.template view_ro<ExecSpace>();
   auto b = tab_b.template view_ro<ExecSpace>();
   auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
@@ -188,7 +188,7 @@ void Solv_Externe::Update_lhs_rhs(const DoubleVect& tab_b, DoubleVect& tab_x)
 template<typename ExecSpace>
 void Solv_Externe::Update_solution(DoubleVect& tab_x)
 {
-  int size = tab_x.size_array();
+  long unsigned int size = tab_x.size_array();
   auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
   auto lhs = lhs_.template view_ro<ExecSpace>();
   auto x = tab_x.template view_wo<ExecSpace>();
@@ -204,8 +204,10 @@ void Solv_Externe::Update_solution(DoubleVect& tab_x)
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
+#ifdef _OPENMP
 template void Solv_Externe::Update_lhs_rhs<Kokkos::DefaultExecutionSpace>(const DoubleVect&, DoubleVect&);
-template void Solv_Externe::Update_lhs_rhs<Kokkos::DefaultHostExecutionSpace>(const DoubleVect&, DoubleVect&);
 template void Solv_Externe::Update_solution<Kokkos::DefaultExecutionSpace>(DoubleVect&);
+#endif
+template void Solv_Externe::Update_lhs_rhs<Kokkos::DefaultHostExecutionSpace>(const DoubleVect&, DoubleVect&);
 template void Solv_Externe::Update_solution<Kokkos::DefaultHostExecutionSpace>(DoubleVect&);
 

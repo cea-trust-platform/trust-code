@@ -66,11 +66,11 @@ Champ_Fonc_base& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulen
   Champ_P1NC::calcul_gradient(la_vitesse,tab_duidxj,domaine_Cl_VEF);
 
   double cw = cw_; // Necessary to avoid kernel crash
-  int dimension = Objet_U::dimension;
+  int dim = Objet_U::dimension;
 
   CDoubleArrView l = l_.view_ro();
   CDoubleTabView3 duidxj = tab_duidxj.view3_ro();
-  CDoubleArrView visco_turb = static_cast<DoubleVect&>(tab_visco_turb).view_rw();
+  DoubleArrView visco_turb = static_cast<DoubleVect&>(tab_visco_turb).view_rw();
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        nb_elem,
@@ -80,22 +80,22 @@ Champ_Fonc_base& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulen
     double sd[3][3] {};
 
     // Calcul du terme gij2.
-    for (int i = 0; i < dimension; i++)
-      for (int j = 0; j < dimension; j++)
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
         {
           gij2[i][j] = 0;
-          for (int k = 0; k < dimension; k++)
+          for (int k = 0; k < dim; k++)
             gij2[i][j] += duidxj(elem,i,k) * duidxj(elem,k,j);
         }
 
     // Calcul du terme gkk2.
     double gkk2 = 0;
-    for (int k = 0; k < dimension; k++)
+    for (int k = 0; k < dim; k++)
       gkk2 += gij2[k][k];
 
     // Calcul de sd.
-    for (int i = 0; i < dimension; i++)
-      for (int j = 0; j < dimension; j++)
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
         {
           sd[i][j] = 0.5 * (gij2[i][j] + gij2[j][i]);
           if (i == j)
@@ -105,8 +105,8 @@ Champ_Fonc_base& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulen
     // Calcul de sd2 et Sij2.
     double sd2 = 0.;
     double Sij2 = 0.;
-    for (int i = 0; i < dimension; i++)
-      for (int j = 0; j < dimension; j++)
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
         {
           sd2 += sd[i][j] * sd[i][j];
           //Deplacement du calcul de Sij

@@ -317,7 +317,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
       corrige_sommets_sans_degre_liberte_ = (mp_min_vect(nb_degres_liberte_) == 0);
     }
 
-  int dimension = Objet_U::dimension;
+  int dim = Objet_U::dimension;
   int modif_traitement_diri = domaine_VEF.get_modif_div_face_dirichlet();
   const Domaine_Cl_VEF& zcl = ref_cast(Domaine_Cl_VEF, la_zcl_vef.valeur());
 
@@ -337,24 +337,24 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
     for (int indice = 0; indice < nfe; indice++)
       {
         int face = elem_faces(elem,indice);
-        for (int comp = 0; comp < dimension; comp++)
+        for (int comp = 0; comp < dim; comp++)
           sigma[comp] += vit(face,comp);
       }
 
-    double coeff_som = 1. / (dimension * (dimension + 1));
+    double coeff_som = 1. / (dim * (dim + 1));
     if (modif_traitement_diri)
       {
         True_int indice_diri[4];
         True_int nb_face_diri = 0;
         True_int rang_elem = (True_int)rang_elem_non_std(elem);
         True_int type_elem = rang_elem < 0 ? 0 : (True_int)type_elem_Cl(rang_elem);
-        coeff_som = calculer_coef_som(type_elem, dimension, nb_face_diri, indice_diri);
+        coeff_som = calculer_coef_som(type_elem, dim, nb_face_diri, indice_diri);
         // on retire la contribution des faces dirichlets
         for (int fdiri = 0; fdiri < nb_face_diri; fdiri++)
           {
             int indice = indice_diri[fdiri];
             int face = elem_faces(elem,indice);
-            for (int comp = 0; comp < dimension; comp++)
+            for (int comp = 0; comp < dim; comp++)
               sigma[comp] -= vit(face,comp);
           }
       }
@@ -369,7 +369,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
           signe = -1;
 
         double psc = 0;
-        for (int comp = 0; comp < dimension; comp++)
+        for (int comp = 0; comp < dim; comp++)
           psc += sigma[comp] * face_normales(face,comp);
 
         Kokkos::atomic_add(&div(som), signe * coeff_som * psc);
