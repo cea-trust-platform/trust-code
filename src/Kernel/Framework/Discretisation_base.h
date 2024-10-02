@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -108,6 +108,7 @@ public :
   virtual bool is_polyvef() const { return false; }
   virtual bool is_polyvef_p0() const { return false; }
   virtual bool is_polyvef_p0p1() const { return false; }
+  virtual bool is_polyvef_p0p1nc() const { return false; }
   virtual bool is_polymac_family() const { return false; }
 
 protected:
