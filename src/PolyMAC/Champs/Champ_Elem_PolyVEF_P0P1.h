@@ -33,8 +33,12 @@ class Champ_Elem_PolyVEF_P0P1: public Champ_Elem_PolyMAC_P0
 public:
   const Domaine_PolyVEF& domaine_PolyVEF() const;
   void init_auxiliary_variables() override;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override;
   DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override;
+  const DoubleTab& alpha_es() const;
+private:
+  mutable DoubleTab alpha_es_;
 };
 
 #endif /* Champ_Elem_PolyVEF_P0P1_included */
