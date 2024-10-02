@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ const DoubleTab& Op_Grad_PolyVEF_P0P1_Face::alpha_es() const
   double eps = 1e-8;
   std::vector<int> v_s;//sommets qu'on peut utiliser
   DoubleTrav A, B, W(1);
-  IntTrav pvt;
+  IntTab pvt;
   alpha_es_.resize(e_s.dimension_tot(0), e_s.dimension_tot(1)), alpha_es_ = 0;
 
   for (e = 0; e < dom.nb_elem_tot(); e++)
@@ -97,7 +97,7 @@ void Op_Grad_PolyVEF_P0P1_Face::dimensionner_blocs_ext(matrices_t matrices, int 
   int i, j, e, f, s, ne_tot = dom.nb_elem_tot(), ns_tot = dom.nb_som_tot(), nf_tot = dom.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size() / D,
                      m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
 
-  IntTrav sten(0, 2); //stencil (NS, pression)
+  IntTab sten(0, 2); //stencil (NS, pression)
   Matrice_Morse *mat = matrices["pression"], mat2;
 
   /* aux faces : gradient aux faces + remplissage de dgp_pb */
