@@ -21,6 +21,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Flux_parietal_base.h>
 #include <Pb_Multiphase.h>
+#include <Synonyme_info.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
 #include <Array_tools.h>
@@ -29,6 +30,8 @@
 extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_P0P1NC_Elem, "Op_Diff_PolyMAC_P0P1NC_Elem|Op_Diff_PolyMAC_P0P1NC_var_Elem", Op_Diff_PolyMAC_P0P1NC_base);
+Add_synonym(Op_Diff_PolyMAC_P0P1NC_Elem, "Op_Diff_PolyVEF_P0P1NC_Elem");
+Add_synonym(Op_Diff_PolyMAC_P0P1NC_Elem, "Op_Diff_PolyVEF_P0P1NC_var_Elem");
 
 Op_Diff_PolyMAC_P0P1NC_Elem::Op_Diff_PolyMAC_P0P1NC_Elem()
 {

@@ -27,6 +27,8 @@
 #include <cfloat>
 
 Implemente_instanciable(DP_Impose_PolyVEF_Face, "DP_Impose_Face_PolyVEF_P0", DP_Impose_PolyMAC_Face);
+Add_synonym(DP_Impose_PolyVEF_Face, "DP_Impose_Face_PolyVEF_P0P1");
+Add_synonym(DP_Impose_PolyVEF_Face, "DP_Impose_Face_PolyVEF_P0P1NC");
 
 Sortie& DP_Impose_PolyVEF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 

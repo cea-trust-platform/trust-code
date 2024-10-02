@@ -13,41 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef PolyVEF_discretisation_included
-#define PolyVEF_discretisation_included
+#ifndef Op_Div_PolyVEF_P0P1NC_included
+#define Op_Div_PolyVEF_P0P1NC_included
 
-#include <PolyMAC_P0_discretisation.h>
+#include <Op_Div_PolyMAC.h>
 
-class PolyVEF_discretisation : public PolyMAC_P0_discretisation
+/*! @brief class Op_Div_PolyVEF_P0P1NC
+ *
+ *   Cette classe represente l'operateur de divergence La discretisation est PolyVEF_P0P1NC
+ *   On calcule la divergence d'un champ_P1NC (la vitesse)
+ *
+ * @sa Op_Div_PolyMAC
+ *
+ */
+class Op_Div_PolyVEF_P0P1NC: public Op_Div_PolyMAC
 {
-  Declare_base(PolyVEF_discretisation);
-public :
-  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl,const Champ_Inc_base& ch_vitesse,OWN_PTR(Champ_Fonc_base)& ) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-
-  bool is_polyvef() const override { return true; }
+  Declare_instanciable(Op_Div_PolyVEF_P0P1NC);
+public:
+  /* interface ajouter_blocs */
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
 };
 
-class PolyVEF_P0_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0_discretisation);
-public :
-  bool is_polyvef_p0() const override { return true; }
-};
-
-class PolyVEF_P0P1_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1_discretisation);
-public :
-  bool is_polyvef_p0p1() const override { return true; }
-};
-
-class PolyVEF_P0P1NC_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1NC_discretisation);
-public :
-  bool is_polyvef_p0p1nc() const override { return true; }
-};
-
-#endif /* PolyVEF_discretisation_included */
+#endif /* Op_Div_PolyVEF_P0P1NC_included */

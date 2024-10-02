@@ -32,8 +32,10 @@
 #include <Vecteur3.h>
 #include <TRUSTTab.h>
 #include <Piso.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Masse_PolyVEF_Face, "Masse_PolyVEF_P0_Face|Masse_PolyVEF_P0P1_Face", Masse_PolyMAC_P0_Face);
+Add_synonym(Masse_PolyVEF_Face, "Masse_PolyVEF_P0P1NC_Face");
 
 Sortie& Masse_PolyVEF_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
