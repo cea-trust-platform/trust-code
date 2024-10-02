@@ -74,7 +74,7 @@ Read pb
                 methode formule expression 1 p-pmoy
                 sources
                 {
-                    refChamp { Pb_champ pb pression nom_source p } ,
+                    interpolation { source refChamp { Pb_champ pb pression } localisation elem nom_source p } ,
                     reduction_0d { methode moyenne_ponderee source interpolation { source refChamp { Pb_champ pb pression } localisation elem } nom_source pmoy }
                 }
                 localisation elem
@@ -89,7 +89,7 @@ Read pb
                         methode formule expression 1 p-pmoy
                         sources
                         {
-                            refChamp { Pb_champ pb pression nom_source p } ,
+                            interpolation { source refChamp { Pb_champ pb pression } localisation elem nom_source p } ,
                             reduction_0d { methode moyenne_ponderee source interpolation { source refChamp { Pb_champ pb pression } localisation elem } nom_source pmoy }
                         }
                         localisation elem
