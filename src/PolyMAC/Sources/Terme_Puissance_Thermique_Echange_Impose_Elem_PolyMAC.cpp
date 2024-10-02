@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,8 @@
 Implemente_instanciable(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC, "Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC|Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_Echange_Impose_Elem_base);
 Add_synonym(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC, "Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_P0");
 Add_synonym(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC, "Terme_Puissance_Thermique_Echange_Impose_Elem_PolyVEF_P0");
+Add_synonym(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC, "Terme_Puissance_Thermique_Echange_Impose_Elem_PolyVEF_P0P1");
+Add_synonym(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC, "Terme_Puissance_Thermique_Echange_Impose_Elem_PolyVEF_P0P1NC");
 
 Sortie& Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::printOn(Sortie& s ) const { return Terme_Puissance_Thermique_Echange_Impose_Elem_base::printOn(s); }
 Entree& Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::readOn(Entree& s ) { return Terme_Puissance_Thermique_Echange_Impose_Elem_base::readOn(s); }
