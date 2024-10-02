@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,10 +51,6 @@ public:
   }
 
   void check_multiphase_compatibility() const override { }; //ok
-
-  const DoubleTab& alpha_es() const;
-private:
-  mutable DoubleTab alpha_es_;
 };
 
 #endif /* Op_Grad_PolyVEF_P0P1_Face_included */
