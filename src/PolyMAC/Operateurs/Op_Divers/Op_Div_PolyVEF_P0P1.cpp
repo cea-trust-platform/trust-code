@@ -106,7 +106,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
           sgn = (e == f_e(f, 0) ? 1 : -1);
           /* contribs aux elements */
           if (e < dom.nb_elem())
-            for (d = 0, prefac = sgn * pf(f); d < D; d++)
+            for (d = 0, prefac = sgn * 0.5 * pf(f); d < D; d++)
               for (fac = prefac * nf(f, d), n = 0; n < N; n++)
                 {
                   secmem(e, n) += fac * vit(f, N * d + n);
@@ -124,7 +124,7 @@ void Op_Div_PolyVEF_P0P1::ajouter_blocs_ext(const DoubleTab& vit, matrices_t mat
         for (i = 0, j = es_d(e); i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++, j++)
           if (s < dom.nb_som() && scl_d(s) == scl_d(s + 1))
             for (k = 0; k < e_f.dimension(1) && (f = e_f(e, k)) >= 0; k++)
-              for (prefac = pf(f) * vfd(f, e != f_e(f, 0)) / ve(e), prefac2 = (e == f_e(f, 0) ? 1 : -1) * pf(f) * v_es(j) / ve(e), d = 0; d < D; d++)
+              for (prefac = pf(f) * vfd(f, e != f_e(f, 0)) / ve(e), prefac2 = (e == f_e(f, 0) ? 1 : -1) * pf(f) * 0.5 * v_es(j) / ve(e), d = 0; d < D; d++)
                 for (fac = prefac * S_se(i, d) - prefac2 * nf(f, d), n = 0; n < N; n++)
                   {
                     secmem(ne_tot + s, n) += fac * vit(f, N * d + n);
