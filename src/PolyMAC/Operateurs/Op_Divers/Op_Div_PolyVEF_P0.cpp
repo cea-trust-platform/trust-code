@@ -117,9 +117,3 @@ void Op_Div_PolyVEF_P0::ajouter_blocs_ext(const DoubleTab& vit, matrices_t matri
             secmem(ne_tot + f, n) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
     }
 }
-
-DoubleTab& Op_Div_PolyVEF_P0::ajouter(const DoubleTab& vit, DoubleTab& div) const
-{
-  ajouter_blocs_ext(equation().inconnue().valeurs(), {}, div);
-  return div;
-}
