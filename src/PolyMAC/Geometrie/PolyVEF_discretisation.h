@@ -43,4 +43,11 @@ public :
   bool is_polyvef_p0p1() const override { return true; }
 };
 
+class PolyVEF_P0P1NC_discretisation : public PolyVEF_discretisation
+{
+  Declare_instanciable(PolyVEF_P0P1NC_discretisation);
+public :
+  bool is_polyvef_p0p1nc() const override { return true; }
+};
+
 #endif /* PolyVEF_discretisation_included */

@@ -16,6 +16,7 @@
 #include <Perte_Charge_Circulaire_PolyMAC_Face.h>
 #include <Motcle.h>
 #include <Param.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Perte_Charge_Circulaire_PolyMAC_Face, "Perte_Charge_Circulaire_Face_PolyMAC", Perte_Charge_PolyMAC);
 
@@ -110,6 +111,8 @@ void Perte_Charge_Circulaire_PolyMAC_P0P1NC_Face::coeffs_perte_charge(const Doub
 /////////////////////////////////////////////////
 
 Implemente_instanciable(Perte_Charge_Circulaire_PolyVEF_Face, "Perte_Charge_Circulaire_Face_PolyVEF_P0", Perte_Charge_PolyVEF);
+Add_synonym(Perte_Charge_Circulaire_PolyVEF_Face, "Perte_Charge_Circulaire_Face_PolyVEF_P0P1");
+Add_synonym(Perte_Charge_Circulaire_PolyVEF_Face, "Perte_Charge_Circulaire_Face_PolyVEF_P0P1NC");
 
 Sortie& Perte_Charge_Circulaire_PolyVEF_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

@@ -13,17 +13,26 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Champ_Elem_PolyVEF_P0P1NC_included
+#define Champ_Elem_PolyVEF_P0P1NC_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Champ_Elem_PolyMAC_P0P1NC.h>
+#include <Operateur.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+class Domaine_PolyVEF;
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+/*! @brief : class Champ_Elem_PolyVEF_P0P1NC
+ *
+ *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
+ *  Degres de libertes : valeur aux elements + flux aux faces
+ *
+ */
+class Champ_Elem_PolyVEF_P0P1NC: public Champ_Elem_PolyMAC_P0P1NC
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1"), Nom("PolyVEF_P0P1NC")   };
+  Declare_instanciable(Champ_Elem_PolyVEF_P0P1NC);
+public:
+  const Domaine_PolyVEF& domaine_PolyVEF() const;
+  void init_auxiliary_variables() override;
+};
 
-  return Dirichlet::readOn(s);
-}
+#endif /* Champ_Elem_PolyVEF_P0P1NC_included */

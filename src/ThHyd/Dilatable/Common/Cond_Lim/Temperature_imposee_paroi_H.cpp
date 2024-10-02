@@ -24,7 +24,7 @@ Sortie& Temperature_imposee_paroi_H::printOn(Sortie& s) const { return s << que_
 Entree& Temperature_imposee_paroi_H::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique_H") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1")   };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1"), Nom("PolyVEF_P0P1NC")   };
 
   return Dirichlet::readOn(s);
 }

@@ -13,17 +13,27 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Op_Div_PolyVEF_P0P1NC_included
+#define Op_Div_PolyVEF_P0P1NC_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Op_Div_PolyMAC.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+/*! @brief class Op_Div_PolyVEF_P0P1NC
+ *
+ *   Cette classe represente l'operateur de divergence La discretisation est PolyVEF_P0P1NC
+ *   On calcule la divergence d'un champ_P1NC (la vitesse)
+ *
+ * @sa Op_Div_PolyMAC
+ *
+ */
+class Op_Div_PolyVEF_P0P1NC: public Op_Div_PolyMAC
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1"), Nom("PolyVEF_P0P1NC")   };
+  Declare_instanciable(Op_Div_PolyVEF_P0P1NC);
+public:
+  /* interface ajouter_blocs */
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+};
 
-  return Dirichlet::readOn(s);
-}
+#endif /* Op_Div_PolyVEF_P0P1NC_included */

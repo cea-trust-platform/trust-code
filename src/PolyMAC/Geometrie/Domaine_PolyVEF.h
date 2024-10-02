@@ -47,6 +47,13 @@ public :
   mutable MD_Vector mdv_elems_soms;
 };
 
+class Domaine_PolyVEF_P0P1NC : public Domaine_PolyVEF
+{
+  Declare_instanciable(Domaine_PolyVEF_P0P1NC);
+public :
+  void discretiser() override;
+};
+
 inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
 {
   const IntTab& f_s = face_sommets(), &f_e = face_voisins();
@@ -54,7 +61,7 @@ inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
   int i, j, e, n_sf = 0, d, D = dimension;
   double vz[3] = { 0, 0, 1 }, xa[3] = { 0, }, x_es[3] = { 0, }, x_esb[3] = { 0, }, x_ea[3] = { 0, }, fac;
   for (n_sf = 0; n_sf < f_s.dimension(1) && f_s(f, n_sf) >= 0; ) n_sf++; //nombre de sommets a la face
-  Sa.set_smart_resize(1), Sa.resize(n_sf, D < 3 ? 2 : 5, D);
+  Sa.resize(n_sf, D < 3 ? 2 : 5, D);
   for (Sa = 0, i = 0; i < n_sf; i++)
     {
       int s = f_s(f, i), ib = i + 1 < n_sf ? i + 1 : 0, sb = D < 3 ? -1 : f_s(f, ib);
@@ -67,7 +74,7 @@ inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
             if (D == 3)
               for (d = 0; d < D; d++) x_esb[d] = (xp_(e, d) + xs(sb, d)) / 2, x_ea[d] = (xp_(e, d) + 2 * xa[d]) / 3;
             //surface s -> e
-            auto v = cross(D, 3, x_es, D < 3 ? vz : x_ea, &xv_(f, 0), D < 3 ? NULL : &xv_(f, 0));
+            auto v = cross(D, 3, x_es, D < 3 ? vz : x_ea, &xv_(f, 0), D < 3 ? nullptr : &xv_(f, 0));
             for (fac = (dot(&xp_(e, 0), &v[0], &xs(s, 0)) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++) Sa(i, j, d) += fac * v[d];
             if (D < 3) continue;
             //3D : surfaces sb -> e et s -> sb
@@ -78,7 +85,7 @@ inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
           }
         else //vers l'exterieur
           {
-            auto v = cross(D, 3, &xv_(f, 0), D < 3 ? &vz[0] : xa, &xs(s, 0), D < 3 ? NULL : &xs(s, 0));
+            auto v = cross(D, 3, &xv_(f, 0), D < 3 ? &vz[0] : xa, &xs(s, 0), D < 3 ? nullptr : &xs(s, 0));
             for (fac = (dot(&nf(f, 0), &v[0]) > 0 ? 1. : -1.) / (D - 1), d = 0; d < D; d++) Sa(i, j, d) += fac * v[d]; //s -> ext
             if (D == 3)
               for (d = 0; d < D; d++) Sa(ib, j, d) += fac * v[d]; //3D : sb -> ext
