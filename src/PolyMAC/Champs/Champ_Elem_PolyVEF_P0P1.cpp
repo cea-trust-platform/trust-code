@@ -52,6 +52,70 @@ void Champ_Elem_PolyVEF_P0P1::init_auxiliary_variables()
       }
 }
 
+const DoubleTab& Champ_Elem_PolyVEF_P0P1::alpha_es() const
+{
+  if (alpha_es_.nb_dim() > 1) return alpha_es_;
+  const Domaine_PolyMAC& dom = ref_cast(Domaine_PolyVEF_P0P1,le_dom_VF.valeur());
+  const IntTab& e_s = dom.domaine().les_elems(), &scld = scl_d(1), &ps_ref = ref_cast(Assembleur_P_PolyVEF_P0P1, ref_cast(Navier_Stokes_std, equation()).assembleur_pression().valeur()).ps_ref();;
+  const DoubleTab& xp = dom.xp(), &xs = dom.domaine().coord_sommets();
+  int e, s, i, j, D = dimension, nl = D + 1, nc, nm, un = 1, infoo = 0, rank, nw;
+  double eps = 1e-8;
+  std::vector<int> v_s;//sommets qu'on peut utiliser
+  DoubleTrav A, B, W(1);
+  IntTrav pvt;
+  alpha_es_.resize(e_s.dimension_tot(0), e_s.dimension_tot(1)), alpha_es_ = 0;
+
+  for (e = 0; e < dom.nb_elem_tot(); e++)
+    {
+      for (v_s.clear(), i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+        if (ps_ref(s) < 0 || scld(s) < scld(s + 1))
+          v_s.push_back(s);
+      nc = (int) v_s.size(), nm = std::max(nc, nl), A.resize(nc, nl), B.resize(nm), pvt.resize(nm);
+      if (nc < D + 1) //pas assez de points pour une interpolation lineaire -> on fait comme on peut...
+        {
+          for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+            if (ps_ref(s) < 0 || scld(s) < scld(s + 1))
+              j++;
+          for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+            if (ps_ref(s) < 0 || scld(s) < scld(s + 1))
+              alpha_es_(e, i) = 1. / j;
+          continue;
+        }
+
+      /* systeme lineaire : interpolation exacte sur les fonctions affines */
+      for (A = 0, B = 0, B(D) = 1, i = 0; i < nc; i++)
+        for (s = v_s[i], j = 0; j < nl; j++)
+          A(i, j) = j < D ? xs(s, j) - xp(e, j) : 1;
+      /* resolution */
+      nw = -1, pvt = 0,                     F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+      W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+      /* stockage */
+      for (i = 0, j = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+        if (ps_ref(s) < 0 || scld(s) < scld(s + 1))
+          alpha_es_(e, j) = B(j), j++;
+    }
+  return alpha_es_;
+}
+
+DoubleTab& Champ_Elem_PolyVEF_P0P1::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
+{
+  if (!sub_type(Navier_Stokes_std, equation()) || (this != &ref_cast(Navier_Stokes_std, equation()).pression() && this != &ref_cast(Navier_Stokes_std, equation()).pression_pa()))
+    return Champ_Elem_PolyMAC_P0::valeur_aux_elems(positions, polys, result); //ne s'applique qu'a la pression
+  const Domaine_PolyMAC& dom = ref_cast(Domaine_PolyVEF_P0P1,le_dom_VF.valeur());
+  const IntTab& e_s = dom.domaine().les_elems();
+  const DoubleTab& vals = valeurs(), &a_es = alpha_es();
+  int e, s, i, j, n, N = valeurs().line_size(), ne_tot = dom.nb_elem_tot();
+  for (i = 0; i < polys.size(); i++)
+    {
+      for (e = polys(i), n = 0; n < N; n++) result(i, n) = 0.5 * vals(e, n);
+      for (j = 0; j < e_s.dimension(1) && (s = e_s(e, j)) >= 0; j++)
+        for (n = 0; n < N; n++)
+          result(i, n) += 0.5 * a_es(e, j) * vals(ne_tot + s, n);
+    }
+  return result;
+}
+
+
 DoubleTab& Champ_Elem_PolyVEF_P0P1::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
 {
   if (&domain == &le_dom_VF->domaine() && valeurs().dimension_tot(0) > le_dom_VF->nb_elem_tot())
