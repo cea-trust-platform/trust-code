@@ -45,8 +45,10 @@
 #include <Domaine.h>
 #include <array>
 #include <cmath>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Champ_Face_PolyVEF, "Champ_Face_PolyVEF_P0|Champ_Face_PolyVEF_P0P1", Champ_Face_PolyMAC_P0);
+Add_synonym(Champ_Face_PolyVEF, "Champ_Face_PolyVEF_P0P1NC");
 
 Sortie& Champ_Face_PolyVEF::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
@@ -275,9 +277,9 @@ void Champ_Face_PolyVEF::init_vf2() const
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
 void Champ_Face_PolyVEF::update_vf2(DoubleTab& val, int incr) const
 {
-  if (!Option_PolyVEF_P0::interp_vf2 || 1)
-    return;
   const Domaine_PolyVEF& dom = domaine_PolyVEF();
+  if (!Option_PolyVEF_P0::interp_vf2 || sub_type(Domaine_PolyVEF_P0P1, dom) || 1)
+    return;
   const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = dom.face_normales();
   const DoubleVect& fs = dom.face_surfaces(); //, &pf = equation().milieu().porosite_face();

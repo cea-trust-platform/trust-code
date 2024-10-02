@@ -39,6 +39,8 @@ Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_Fac
 
 Implemente_instanciable(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_PolyVEF_Face", Terme_Boussinesq_PolyMAC_Face);
 Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0");
+Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0P1");
+Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_temperature_Face_PolyVEF_P0P1NC");
 Add_synonym(Terme_Boussinesq_PolyVEF_Face, "Boussinesq_concentration_PolyVEF_Face");
 
 Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s) const { return Terme_Boussinesq_base::printOn(s); }

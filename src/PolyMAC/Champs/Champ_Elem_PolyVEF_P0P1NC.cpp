@@ -13,17 +13,41 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#include <Champ_Elem_PolyVEF_P0P1NC.h>
+#include <Connectivite_som_elem.h>
+#include <Domaine_PolyVEF.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Champ_Face_PolyVEF.h>
+#include <Assembleur_P_PolyVEF_P0P1NC.h>
+#include <Navier_Stokes_std.h>
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+Implemente_instanciable(Champ_Elem_PolyVEF_P0P1NC,"Champ_Elem_PolyVEF_P0P1NC",Champ_Elem_PolyMAC_P0P1NC);
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Sortie& Champ_Elem_PolyVEF_P0P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+Entree& Champ_Elem_PolyVEF_P0P1NC::readOn(Entree& s) { return Champ_Elem_PolyMAC_P0P1NC::readOn(s) ; }
+
+const Domaine_PolyVEF& Champ_Elem_PolyVEF_P0P1NC::domaine_PolyVEF() const
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1"), Nom("PolyVEF_P0P1NC")   };
-
-  return Dirichlet::readOn(s);
+  return ref_cast(Domaine_PolyVEF, le_dom_VF.valeur());
 }
+
+void Champ_Elem_PolyVEF_P0P1NC::init_auxiliary_variables()
+{
+  const Domaine_PolyVEF_P0P1NC& dom = ref_cast(Domaine_PolyVEF_P0P1NC,le_dom_VF.valeur());
+  const IntTab& f_e = dom.face_voisins();
+  for (int n = 0; n < nb_valeurs_temporelles(); n++)
+    if (futur(n).size_reelle_ok())
+      {
+        DoubleTab& vals = futur(n);
+        vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
+        vals.resize_dim0(dom.mdv_elems_faces.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
+        vals.set_md_vector(dom.mdv_elems_faces); //...et on remet le bon MD_Vector
+        /* initialisation des variables aux faces : par celle de l'elem amont */
+        for (int f = 0, ne_tot = dom.nb_elem_tot(); f < dom.nb_faces(); f++)
+          for (int m = 0, e = f_e(f, 0); m < vals.dimension(1); m++)
+            vals(ne_tot + f, m) = vals(e, m);
+        vals.echange_espace_virtuel();
+      }
+}
+

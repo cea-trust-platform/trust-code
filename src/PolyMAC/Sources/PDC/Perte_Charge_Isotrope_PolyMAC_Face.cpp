@@ -15,6 +15,7 @@
 
 #include <Perte_Charge_Isotrope_PolyMAC_Face.h>
 #include <Motcle.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Perte_Charge_Isotrope_PolyMAC_Face, "Perte_Charge_Isotrope_Face_PolyMAC", Perte_Charge_PolyMAC);
 
@@ -45,6 +46,8 @@ void Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face::coeffs_perte_charge(const Double
 /////////////////////////////////////////////////
 
 Implemente_instanciable(Perte_Charge_Isotrope_PolyVEF_Face, "Perte_Charge_Isotrope_Face_PolyVEF_P0", Perte_Charge_PolyVEF);
+Add_synonym(Perte_Charge_Isotrope_PolyVEF_Face, "Perte_Charge_Isotrope_Face_PolyVEF_P0P1");
+Add_synonym(Perte_Charge_Isotrope_PolyVEF_Face, "Perte_Charge_Isotrope_Face_PolyVEF_P0P1NC");
 
 Sortie& Perte_Charge_Isotrope_PolyVEF_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 Entree& Perte_Charge_Isotrope_PolyVEF_Face::readOn(Entree& s) { return Perte_Charge_PolyVEF::readOn(s); }

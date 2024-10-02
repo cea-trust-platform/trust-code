@@ -13,17 +13,29 @@
 *
 *****************************************************************************/
 
-#include <Temperature_imposee_paroi.h>
+#ifndef Op_Grad_PolyVEF_P0P1NC_Face_included
+#define Op_Grad_PolyVEF_P0P1NC_Face_included
 
-Implemente_instanciable(Temperature_imposee_paroi, "Temperature_imposee_paroi|Enthalpie_imposee_paroi", Scalaire_impose_paroi);
-// XD temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
+#include <Op_Grad_PolyMAC_Face.h>
 
-Sortie& Temperature_imposee_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Temperature_imposee_paroi::readOn(Entree& s)
+/*! @brief class Op_Grad_PolyVEF_P0P1NC_Face
+ *
+ *   Cette classe represente l'operateur de gradient La discretisation est PolyVEF_P0P1NC
+ *   On calcule le gradient d'un champ_Elem_PolyVEF_P0P1NC (la pression)
+ *
+ * @sa Operateur_Grad_base
+ */
+class Op_Grad_PolyVEF_P0P1NC_Face: public Op_Grad_PolyMAC_Face
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0"), Nom("PolyVEF_P0"), Nom("PolyVEF_P0P1"), Nom("PolyVEF_P0P1NC")   };
+  Declare_instanciable(Op_Grad_PolyVEF_P0P1NC_Face);
+public:
+  void completer() override;
 
-  return Dirichlet::readOn(s);
-}
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+  void check_multiphase_compatibility() const override { } //ok
+};
+
+#endif /* Op_Grad_PolyVEF_P0P1NC_Face_included */
