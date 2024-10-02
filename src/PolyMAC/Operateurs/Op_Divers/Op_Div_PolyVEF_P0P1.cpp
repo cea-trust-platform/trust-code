@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ void Op_Div_PolyVEF_P0P1::dimensionner_blocs(matrices_t matrices, const tabs_t& 
   int i, j, e, f, s, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = inco.line_size() / D;
 
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
-  IntTrav sten_v(0,2), sten_p(0, 2); //stencil des deux matrices
+  IntTab sten_v(0,2), sten_p(0, 2); //stencil des deux matrices
 
   for (f = 0; f < dom.nb_faces_tot(); f++)
     if (fcl(f, 0) < 2) /* sten_v : divergence "classique" */
