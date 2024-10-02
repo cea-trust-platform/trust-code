@@ -19,7 +19,6 @@
 #include <Equation_base.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 Implemente_base(Source_QC_Chaleur,"Source_QC_Chaleur",Source_Chaleur_Fluide_Dilatable_base);
 

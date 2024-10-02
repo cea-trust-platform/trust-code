@@ -60,8 +60,8 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
   for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
 
-  auto tableau_view= tableau.template view_ro<ExecSpace>();
-  auto max_colonne_view= max_colonne.template view_rw<ExecSpace>();
+  auto tableau_view= tableau.template view_ro<2, ExecSpace>();
+  auto max_colonne_view= max_colonne.template view_rw<1, ExecSpace>();
 
   for (; nblocs_left; nblocs_left--)
     {

@@ -252,43 +252,50 @@ public:
   inline virtual const Span_ get_span() const { return span_; }
   inline virtual const Span_ get_span_tot() const { return span_; }
 
+  //From TRUSTArray.h, now also here and overridden in TRUSTTab
+  inline virtual _SIZE_ dimension_tot(int) const;
+
 #ifdef KOKKOS
 
   //Clean the internal view of the Trust Array in case it is needed, if the Array is static to avoid it's destruction after Kokkos::finalize
-  inline void CleanMyDualView() {dual_view_arr_=DualViewArr<_TYPE_>();}
+  inline void CleanMyDualView()
+  {
+    dual_view_1_=DualView<_TYPE_,1>();
+    dual_view_2_=DualView<_TYPE_,2>();
+    dual_view_3_=DualView<_TYPE_,3>();
+    dual_view_4_=DualView<_TYPE_,4>();
+  }
 
   // Kokkos accessors (brace yourself!)
 
   // Read-only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewArr<_TYPE_> >
+  template <int SHAPE, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_,SHAPE> >
   view_ro() const;
 
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewArr<_TYPE_> >
+  template <int SHAPE, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,SHAPE> >
   view_ro() const;
 
   // Write-only
-  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewArr<_TYPE_> >
+  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,SHAPE> >
   view_wo();
 
-  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewArr<_TYPE_> >
+  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,SHAPE> >
   view_wo();
+
   // Read-write
-  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewArr<_TYPE_> >
+  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,SHAPE> >
   view_rw();
 
-  template <typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewArr<_TYPE_> >
+  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,SHAPE> >
   view_rw();
 
 #endif
-
-  inline void sync_to_host() const;              // Synchronize back to host
-  inline void modified_on_host() const;         // Mark data as being modified on host side
 
 protected:
   inline void attach_array(const TRUSTArray& a, _SIZE_ start=0, _SIZE_ size=-1);
@@ -296,15 +303,23 @@ protected:
 
   void resize_array_(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
-  // Kokkos members
-  inline void init_view_arr() const;
-
-
 #ifdef KOKKOS
-  mutable DualViewArr<_TYPE_> dual_view_arr_;
+  // Kokkos members
+  template<int _SHAPE_> inline void init_view() const;
+
+  mutable DualView<_TYPE_, 1> dual_view_1_;
+  mutable DualView<_TYPE_, 2> dual_view_2_;
+  mutable DualView<_TYPE_, 3> dual_view_3_;
+  mutable DualView<_TYPE_, 4> dual_view_4_;
+
 #endif
 
 private:
+
+  //From TRUSTArray.h, now also here
+  static constexpr int MAXDIM_TAB = 4;
+  int nb_dim_ = 1;
+
   /*! Shared pointer to the actual underlying memory block:
    *   - shared_ptr because data can be shared between several owners -> see ref_array()
    *   - std::vector<> because we want contiguous data, with a smart allocation mechanism
@@ -328,8 +343,33 @@ private:
   mutable std::shared_ptr<DataLocation> data_location_;
 
 private:
-
+  /*! Debug */
+  inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const;
   template<typename _TAB_> void ref_conv_helper_(_TAB_& out) const;
+
+#ifdef KOKKOS
+
+  // get_dual_view for _SHAPE_ == 1
+  template<int _SHAPE_>
+  typename std::enable_if<_SHAPE_ == 1, DualView<_TYPE_, 1>>::type&
+                                                          get_dual_view() const;
+
+  // get_dual_view for _SHAPE_ == 2
+  template<int _SHAPE_>
+  typename std::enable_if<_SHAPE_ == 2, DualView<_TYPE_, 2>>::type&
+                                                          get_dual_view() const;
+
+  // get_dual_view for _SHAPE_ == 3
+  template<int _SHAPE_>
+  typename std::enable_if<_SHAPE_ == 3, DualView<_TYPE_, 3>>::type&
+                                                          get_dual_view() const;
+
+  // get_dual_view for _SHAPE_ == 4
+  template<int _SHAPE_>
+  typename std::enable_if<_SHAPE_ == 4, DualView<_TYPE_, 4>>::type&
+                                                          get_dual_view() const;
+
+#endif
 };
 
 using ArrOfDouble = TRUSTArray<double, int>;

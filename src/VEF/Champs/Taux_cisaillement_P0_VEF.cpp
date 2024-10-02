@@ -19,7 +19,6 @@
 #include <Domaine_VF.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 Implemente_instanciable(Taux_cisaillement_P0_VEF, "Taux_cisaillement_P0_VEF", Champ_Fonc_P0_VEF);
 

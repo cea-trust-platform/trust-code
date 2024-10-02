@@ -26,7 +26,6 @@
 #include <Symetrie.h>
 
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 #include <kokkos++.h>
 
 void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Domaine_dis_base& dds,const Domaine_Cl_dis_base& domaine_cl)

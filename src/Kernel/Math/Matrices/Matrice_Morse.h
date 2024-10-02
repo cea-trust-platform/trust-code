@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 /*! @brief Classe Matrice_Morse Represente une matrice M (creuse), non necessairement carree
  *

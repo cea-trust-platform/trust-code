@@ -23,7 +23,6 @@
 #include <Param.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 Implemente_base_sans_constructeur(Modele_turbulence_hyd_LES_base, "Modele_turbulence_hyd_LES_base", Modele_turbulence_hyd_0_eq_base);
 

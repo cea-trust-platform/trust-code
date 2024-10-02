@@ -29,7 +29,6 @@
 #include <Device.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_>
 void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue, const DoubleTab& tab_resu, const DoubleTab& tab_nu, const DoubleTab& tab_nu_turb) const

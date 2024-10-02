@@ -33,7 +33,6 @@
 
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 DoubleVect& Champ_P1iP1B_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {

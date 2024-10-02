@@ -20,7 +20,6 @@
 #include <TRUSTTab.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 class Champ_implementation_P1: public Champ_implementation_sommet
 {

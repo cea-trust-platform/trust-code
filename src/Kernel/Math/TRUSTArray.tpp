@@ -302,4 +302,12 @@ inline bool TRUSTArray<_TYPE_, _SIZE_>::detach_array()
   return true;
 }
 
+//From TRUSTArray.h, now also here, overidden in TRUSTTab
+template<typename _TYPE_, typename _SIZE_>
+inline _SIZE_ TRUSTArray<_TYPE_,_SIZE_>::dimension_tot(int i) const
+{
+  assert(i == 0); //If Array, we never want size of index i>0
+  return size_array();
+}
+
 #endif /* TRUSTArray_TPP_included */

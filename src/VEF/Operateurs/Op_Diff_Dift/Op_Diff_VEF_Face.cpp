@@ -67,6 +67,11 @@ const Champ_base& Op_Diff_VEF_Face::diffusivite() const
   return diffusivite_.valeur();
 }
 
+int ma_func_qui_renvoie_int()
+{
+  return 1;
+}
+
 void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
                                             DoubleTab& tab_resu, DoubleTab& tab_flux_bords,
                                             DoubleTab& tab_nu,
@@ -82,7 +87,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
   if (tab_flux_bords.size_array()==0) tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
   tab_flux_bords=0.;
 
-  CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+  CIntTabView  elem_faces = domaine_VEF.elem_faces().view_ro();
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
   CDoubleArrView inverse_volumes = domaine_VEF.inverse_volumes().view_ro();
@@ -337,7 +342,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
   CDoubleTabView nu_v = nu.view_ro();
-  CDoubleTabView3 grad_v = grad_.view3_ro();
+  CDoubleTabView3 grad_v = grad_.view_ro<3>();
   DoubleTabView resu_v = resu.view_rw();
   DoubleTabView tab_flux_bords_v = tab_flux_bords.view_rw();
 

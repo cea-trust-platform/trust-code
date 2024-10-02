@@ -31,7 +31,6 @@
 #include <SSOR.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 static int methode_calcul_valeurs_sommets_static = 2 ;
 

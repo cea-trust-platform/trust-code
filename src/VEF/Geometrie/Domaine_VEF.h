@@ -17,7 +17,6 @@
 #define Domaine_VEF_included
 
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 #include <Elem_VEF_base.h>
 #include <TRUST_Deriv.h>
 #include <Domaine_VF.h>

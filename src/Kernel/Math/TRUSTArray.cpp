@@ -221,8 +221,8 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::inject_array(const TRUST
       if (kernelOnDevice)
         {
 #ifndef LATATOOLS
-          const auto addr_source = source.view_ro();
-          auto addr_dest = view_rw();
+          const auto addr_source = source.view_ro<1>();
+          auto addr_dest = view_rw<1>();
           Kokkos::parallel_for(__KERNEL_NAME__, nb_elements, KOKKOS_LAMBDA(const _SIZE_ i) { addr_dest[first_element_dest+i] = addr_source[first_element_source+i]; });
 #endif
         }
@@ -344,7 +344,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator=(_TYPE_ x)
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
-      auto data = view_rw();
+      auto data = view_rw<1>();
       Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const int i) { data[i] = x; });
 #endif
     }
@@ -369,8 +369,8 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator+=(const TRUSTAr
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
-      const auto dy = y.view_ro();
-      auto dx = view_rw();
+      const auto dy = y.view_ro<1>();
+      auto dx = view_rw<1>();
       Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { dx[i] += dy[i]; });
 #endif
     }
@@ -395,7 +395,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator+=(const _TYPE_ 
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
-      auto data = view_rw();
+      auto data = view_rw<1>();
       Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { data[i] += dy; });
 #endif
     }
@@ -420,8 +420,8 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator-=(const TRUSTAr
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
-      auto data = view_rw();
-      const auto data_y = y.view_ro();
+      auto data = view_rw<1>();
+      const auto data_y = y.view_ro<1>();
       Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { data[i] -= data_y[i]; });
 #endif
     }
@@ -455,7 +455,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator*= (const _TYPE_
   if (kernelOnDevice)
     {
 #ifndef LATATOOLS
-      auto data = view_rw();
+      auto data = view_rw<1>();
       Kokkos::parallel_for(__KERNEL_NAME__, size, KOKKOS_LAMBDA(const _SIZE_ i) { data[i] *= dy; });
 #endif
     }

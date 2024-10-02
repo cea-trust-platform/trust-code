@@ -26,7 +26,6 @@
 #include <Debog.h>
 #include <Statistiques.h>
 #include <kokkos++.h>
-#include <TRUSTTab_kokkos.tpp>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;

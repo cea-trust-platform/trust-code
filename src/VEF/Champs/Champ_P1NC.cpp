@@ -35,7 +35,6 @@
 #include <Device.h>
 #include <kokkos++.h>
 #include <TRUSTArray_kokkos.tpp>
-#include <TRUSTTab_kokkos.tpp>
 
 Implemente_instanciable(Champ_P1NC,"Champ_P1NC",Champ_Inc_base);
 

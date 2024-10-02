@@ -22,17 +22,25 @@
 // The DualView type allowing semi-automatic sync between host and device.
 // By default, host is 'LayoutRight' and device is 'LayoutLeft' -> very important
 // We keep Kokkos::LayoutRight for OpenMP now
-template<typename T>
-using DualViewArr = Kokkos::DualView<T *, Kokkos::LayoutRight>;
-template<typename T>
-using DualViewTab = Kokkos::DualView<T **, Kokkos::LayoutRight>;
-template<typename T>
-using DualViewTab3 = Kokkos::DualView<T ***, Kokkos::LayoutRight>;
-template<typename T>
-using DualViewTab4 = Kokkos::DualView<T ****, Kokkos::LayoutRight>;
+
+template<typename T, int _SHAPE_> struct InnerType { using TYPE = void;  };
+template<typename T> struct InnerType<T,1> { using TYPE = T*;  };
+template<typename T> struct InnerType<T,2> { using TYPE = T**;  };
+template<typename T> struct InnerType<T,3> { using TYPE = T***;  };
+template<typename T> struct InnerType<T,4> { using TYPE = T****;  };
+
+//I had to do this otherwise ConstViews becomes view of pointers to consts T...
+template<typename T, int _SHAPE_> struct ConstInnerType { using TYPE = void;  };
+template<typename T> struct ConstInnerType<T,1> { using TYPE = const T*;  };
+template<typename T> struct ConstInnerType<T,2> { using TYPE = const T**;  };
+template<typename T> struct ConstInnerType<T,3> { using TYPE = const T***;  };
+template<typename T> struct ConstInnerType<T,4> { using TYPE = const T****;  };
+
+template<typename T, int _SHAPE_>
+using DualView = Kokkos::DualView<typename InnerType<T, _SHAPE_>::TYPE, Kokkos::LayoutRight>;
 
 // The execution space (=where code is run): on the device if compiled for GPU, else CPU.
-using execution_space = DualViewArr<double>::execution_space;
+using execution_space = DualView<double, 1>::execution_space;
 
 // Typedefs for range policies in kernels
 using range_1D = Kokkos::RangePolicy<execution_space>;
@@ -42,150 +50,90 @@ using range_3D = Kokkos::MDRangePolicy<execution_space, Kokkos::Rank<3>>;
 // The memory space (=where data is stored): on the device if compiled for GPU, or on CPU otherwise:
 typedef std::conditional< \
 std::is_same<execution_space, Kokkos::DefaultExecutionSpace>::value , \
-DualViewArr<double>::memory_space, DualViewArr<double>::host_mirror_space>::type \
+DualView<double,1>::memory_space, DualView<double,1>::host_mirror_space>::type \
 memory_space;
 
 // Whatever the compilation type, the host memory space:
-using host_mirror_space = DualViewArr<double>::host_mirror_space;
+using host_mirror_space = DualView<double, 1>::host_mirror_space;
 
 //for host views:
 //"You do not need to explicitly specify host_execution_space because host_mirror_space already implies that you are using the host execution space."
 //memory space implies execution space
 
 using random_unmanaged_memory = Kokkos::MemoryTraits<Kokkos::RandomAccess | Kokkos::Unmanaged>;
+
 // The actual view type that will be manipulated everywhere in the kernels (a *device* view)
-template<typename T>
-using ViewArr = Kokkos::View<T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ViewTab = Kokkos::View<T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ViewTab3 = Kokkos::View<T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ViewTab4 = Kokkos::View<T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T, int _SHAPE_>
+using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
 // Views on the host that allow conditional execution of loop that are not fully ported to device. They are unmanaged to avoid new allocation
-template<typename T>
-using HostViewArr = Kokkos::View<T *, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using HostViewTab = Kokkos::View<T **, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using HostViewTab3 = Kokkos::View<T ***, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using HostViewTab4 = Kokkos::View<T ****, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+template<typename T, int _SHAPE_>
+using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
 // Its const version (const disabled for OpenMP, weird bug)
 #ifdef _OPENMP_TARGET
-template<typename T>
-using ConstViewArr = Kokkos::View</* const */T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab = Kokkos::View</* const */T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab3 = Kokkos::View</* const */T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab4 = Kokkos::View</* const */T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T, int _SHAPE_>
+using ConstView = Kokkos::View</* const */typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 // Host views
-template<typename T>
-using ConstHostViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using ConstHostViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using ConstHostViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using ConstHostViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+template<typename T, int _SHAPE_>
+using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
 #else //else openmp
 
-template<typename T>
-using ConstViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-template<typename T>
-using ConstViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-// Host views
-template<typename T>
-using ConstHostViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using ConstHostViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using ConstHostViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
-template<typename T>
-using ConstHostViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+template<typename T, int _SHAPE_>
+using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T, int _SHAPE_>
+using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 #endif
 
-// Handy aliases:
-using IntArrView = ViewArr<int>;
-using DoubleArrView = ViewArr<double>;
+// Handy aliases
+using IntArrView = View<int, 1>;
+using DoubleArrView = View<double, 1>;
 
-using CIntArrView = ConstViewArr<int>;
-using CDoubleArrView = ConstViewArr<double>;
+using CIntArrView = ConstView<int, 1>;
+using CDoubleArrView = ConstView<double, 1>;
 
-using IntTabView = ViewTab<int>;
-using DoubleTabView = ViewTab<double>;
-using DoubleTabView3 = ViewTab3<double>;
-using DoubleTabView4 = ViewTab4<double>;
+using IntTabView = View<int, 2>;
+using IntTabView3 = View<int, 3>;
+using IntTabView4 = View<int, 4>;
+using DoubleTabView = View<double, 2>;
+using DoubleTabView3 = View<double, 3>;
+using DoubleTabView4 = View<double, 4>;
 
-using CIntTabView = ConstViewTab<int>;
-using CIntTabView3 = ConstViewTab3<int>;
-using CDoubleTabView = ConstViewTab<double>;
-using CDoubleTabView3 = ConstViewTab3<double>;
-using CDoubleTabView4 = ConstViewTab4<double>;
+using CIntTabView = ConstView<int, 2>;
+using CIntTabView3 = ConstView<int, 3>;
+using CIntTabView4 = ConstView<int, 4>; // Changed from double to int
+using CDoubleTabView = ConstView<double, 2>;
+using CDoubleTabView3 = ConstView<double, 3>;
+using CDoubleTabView4 = ConstView<double, 4>;
 
 // Host views
-using IntArrHostView = HostViewArr<int>;
-using DoubleArrHostView = HostViewArr<double>;
+using IntArrHostView = HostView<int, 1>;
+using DoubleArrHostView = HostView<double, 1>;
 
-using CIntArrHostView = ConstHostViewArr<int>;
-using CDoubleArrHostView = ConstHostViewArr<double>;
+using CIntArrHostView = ConstHostView<int, 1>;
+using CDoubleArrHostView = ConstHostView<double, 1>;
 
-using IntTabHostView = HostViewTab<int>;
-using DoubleTabHostView = HostViewTab<double>;
-using DoubleTabHostView3 = HostViewTab3<double>;
-using DoubleTabHostView4 = HostViewTab4<double>;
+using IntTabHostView = HostView<int, 2>;
+using IntTabHostView3 = HostView<int, 3>;
+using IntTabHostView4 = HostView<int, 4>;
+using DoubleTabHostView = HostView<double, 2>;
+using DoubleTabHostView3 = HostView<double, 3>;
+using DoubleTabHostView4 = HostView<double, 4>;
 
-using CIntTabHostView = ConstHostViewTab<int>;
-using CIntTabHostView3 = ConstHostViewTab3<int>;
-using CDoubleTabHostView = ConstHostViewTab<double>;
-using CDoubleTabHostView3 = ConstHostViewTab3<double>;
-using CDoubleTabHostView4 = ConstHostViewTab4<double>;
+using CIntTabHostView = ConstHostView<int, 2>;
+using CIntTabHostView3 = ConstHostView<int, 3>;
+using CIntTabHostView4 = ConstHostView<int, 4>; // Changed from double to int
+using CDoubleTabHostView = ConstHostView<double, 2>;
+using CDoubleTabHostView3 = ConstHostView<double, 3>;
+using CDoubleTabHostView4 = ConstHostView<double, 4>;
 
 extern void kokkos_self_test();
-#else
 
-using IntArrView = IntVect;
-using DoubleArrView = DoubleVect;
+#else // Kokkos not defined
 
-using CIntArrView = const IntVect;
-using CDoubleArrView = const DoubleVect;
-
-using IntTabView = IntTab;
-using DoubleTabView = DoubleTab;
-using DoubleTabView3 = DoubleTab;
-using DoubleTabView4 = DoubleTab;
-
-using CIntTabView = IntTab& ;
-using CIntTabView3 = IntTab& ;
-using CDoubleTabView = const DoubleTab& ;
-using CDoubleTabView3 = const DoubleTab;
-using CDoubleTabView4 = const DoubleTab;
-//Host
-using IntArrHostView = IntVect;
-using DoubleArrHostView = DoubleVect;
-
-using CIntArrHostView = const IntVect;
-using CDoubleArrHostView = const DoubleVect;
-
-using IntTabHostView = IntTab;
-using DoubleTabHostView = DoubleTab;
-using DoubleTabHostView3 = DoubleTab;
-using DoubleTabHostView4 = DoubleTab;
-
-using CIntTabHostView = IntTab& ;
-using CIntTabHostView3 = IntTab& ;
-using CDoubleTabHostView = const DoubleTab& ;
-using CDoubleTabHostView3 = const DoubleTab;
-using CDoubleTabHostView4 = const DoubleTab;
+template<int _SHAPE_> using IntView = IntTab;
+template<int _SHAPE_> using DoubleView = DoubleTab;
 
 #define KOKKOS_INLINE_FUNCTION inline
 #endif

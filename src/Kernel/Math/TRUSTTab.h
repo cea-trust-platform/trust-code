@@ -190,7 +190,6 @@ public:
   _SIZE_ dimension(int d) const;
   int dimension_int(int d) const;
 
-  inline _SIZE_ dimension_tot(int) const;
   inline int nb_dim() const { return nb_dim_; }
 
   // See same method in TRUSTArray - CAREFUL, this is not an override because arg types are different (tab vs arr)
@@ -226,6 +225,7 @@ public:
   int max_du_u(const TRUSTTab<int,_SIZE_>&) = delete;
 
   // methodes virtuelles
+  inline _SIZE_ dimension_tot(int) const override;
   inline virtual void ref(const TRUSTTab&);
   inline virtual void ref_tab(TRUSTTab&, _SIZE_ start_line=0, _SIZE_ nb_lines=-1);
   inline void set_md_vector(const MD_Vector&) override;
@@ -238,97 +238,10 @@ public:
   inline void reset() override;
   inline void resize_tab(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) override;
 
-public:
-#ifdef KOKKOS
-  // Kokkos view accessors:
-  // Read only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab<_TYPE_> >
-  view_ro() const;
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab<_TYPE_> >
-  view_ro() const;
-
-  // Write only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab<_TYPE_> >
-  view_wo();
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
-  view_wo();
-
-  // Read-write
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab<_TYPE_> >
-  view_rw();
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab<_TYPE_> >
-  view_rw();
-
-  inline void sync_to_host() const;             // Synchronize back to host
-  inline void modified_on_host() const;         // Mark data as being modified on host side
-
-  // For 3D arrays:
-  // Read only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab3<_TYPE_> >
-  view3_ro() const;
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab3<_TYPE_> >
-  view3_ro() const;
-
-  // Write only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab3<_TYPE_> >
-  view3_wo();
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
-  view3_wo();
-
-  // Read-write
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab3<_TYPE_> >
-  view3_rw();
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
-  view3_rw();
-
-  inline void sync_to_host3() const;             // Synchronize back to host
-  inline void modified_on_host3() const;         // Mark data as being modified on host side
-
-  // For 4D arrays:
-  // Read only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstViewTab4<_TYPE_> >
-  view4_ro() const;
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostViewTab4<_TYPE_> >
-  view4_ro() const;
-
-  // Write only
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab4<_TYPE_> >
-  view4_wo();
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
-  view4_wo();
-
-  // Read-write
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ViewTab4<_TYPE_> >
-  view4_rw();
-  template <typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
-  view4_rw();
-
-  inline void sync_to_host4() const;             // Synchronize back to host
-  inline void modified_on_host4() const;         // Mark data as being modified on host side
-#endif
-
 private:
   static constexpr int MAXDIM_TAB = 4;
   // Nombre de dimensions du tableau (nb_dim_>=1)
-  int nb_dim_;
+  int nb_dim_; //Now Also in TrustArray
 
   /*! Dimensions "reelles" (dimensions_[0] * line_size() = size_reelle()) : line_size() est egal au produit des dimensions_[i] pour 1 <= i < nb_dim_
    *  Everything is stored as _SIZE_ but higher dims (>=1) should fit in an int. See line_size().
@@ -338,18 +251,6 @@ private:
   // Dimension totale (nombre de lignes du tableau) = nb lignes reeles + nb lignes virtuelles
   // Les dimensions dimension_tot(i>=1) sont implicitement egales a dimension(i)
   _SIZE_ dimension_tot_0_;
-
-#ifdef KOKKOS
-  // Kokkos members
-protected:
-
-  inline void init_view_tab2() const;
-  inline void init_view_tab3() const;
-  inline void init_view_tab4() const;
-  mutable DualViewTab<_TYPE_> dual_view_tab2_;      // For 2D case : A(i,j)
-  mutable DualViewTab3<_TYPE_> dual_view_tab3_;      // For 3D case : A(i,j,k)
-  mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)
-#endif
 
   inline void verifie_MAXDIM_TAB() const
   {
@@ -396,7 +297,6 @@ using BigTIDTab = BigTRUSTTab<trustIdType>;
  * FONCTIONS MEMBRES DE TRUSTTab *
  * ***************************** */
 
-#include <TRUSTTab_kokkos.tpp> // Kokkos stuff
 #include <TRUSTTab.tpp> // The rest here!
 
 #endif /* TRUSTTab_included */
