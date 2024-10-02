@@ -13,41 +13,29 @@
 *
 *****************************************************************************/
 
-#ifndef PolyVEF_discretisation_included
-#define PolyVEF_discretisation_included
+#ifndef Op_Grad_PolyVEF_P0P1NC_Face_included
+#define Op_Grad_PolyVEF_P0P1NC_Face_included
 
-#include <PolyMAC_P0_discretisation.h>
+#include <Op_Grad_PolyMAC_Face.h>
 
-class PolyVEF_discretisation : public PolyMAC_P0_discretisation
+/*! @brief class Op_Grad_PolyVEF_P0P1NC_Face
+ *
+ *   Cette classe represente l'operateur de gradient La discretisation est PolyVEF_P0P1NC
+ *   On calcule le gradient d'un champ_Elem_PolyVEF_P0P1NC (la pression)
+ *
+ * @sa Operateur_Grad_base
+ */
+class Op_Grad_PolyVEF_P0P1NC_Face: public Op_Grad_PolyMAC_Face
 {
-  Declare_base(PolyVEF_discretisation);
-public :
-  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl,const Champ_Inc_base& ch_vitesse,OWN_PTR(Champ_Fonc_base)& ) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
+  Declare_instanciable(Op_Grad_PolyVEF_P0P1NC_Face);
+public:
+  void completer() override;
 
-  bool is_polyvef() const override { return true; }
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+  void check_multiphase_compatibility() const override { } //ok
 };
 
-class PolyVEF_P0_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0_discretisation);
-public :
-  bool is_polyvef_p0() const override { return true; }
-};
-
-class PolyVEF_P0P1_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1_discretisation);
-public :
-  bool is_polyvef_p0p1() const override { return true; }
-};
-
-class PolyVEF_P0P1NC_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1NC_discretisation);
-public :
-  bool is_polyvef_p0p1nc() const override { return true; }
-};
-
-#endif /* PolyVEF_discretisation_included */
+#endif /* Op_Grad_PolyVEF_P0P1NC_Face_included */

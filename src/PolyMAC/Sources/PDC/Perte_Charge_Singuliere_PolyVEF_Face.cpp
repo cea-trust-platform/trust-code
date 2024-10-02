@@ -24,8 +24,11 @@
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <Domaine.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Perte_Charge_Singuliere_PolyVEF_Face, "Perte_Charge_Singuliere_Face_PolyVEF_P0", Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face);
+Add_synonym(Perte_Charge_Singuliere_PolyVEF_Face, "Perte_Charge_Singuliere_Face_PolyVEF_P0P1");
+Add_synonym(Perte_Charge_Singuliere_PolyVEF_Face, "Perte_Charge_Singuliere_Face_PolyVEF_P0P1NC");
 
 Sortie& Perte_Charge_Singuliere_PolyVEF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
