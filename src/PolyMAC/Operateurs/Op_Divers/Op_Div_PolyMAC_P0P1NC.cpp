@@ -75,40 +75,47 @@ void Op_Div_PolyMAC_P0P1NC::dimensionner_blocs(matrices_t matrices, const tabs_t
     matp->nb_colonnes() ? *matp += matp2 : *matp = matp2;
 }
 
-void Op_Div_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Op_Div_PolyMAC_P0P1NC::ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue());
   const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
-  const DoubleTab& inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = domaine.face_normales();
+  const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = domaine.face_normales();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
-  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), d, D = dimension;
+  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), d, D = dimension, has_f = secmem.dimension_tot(0) > ne_tot;
   Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr; //, matv2, matp2;
 
   DoubleTrav w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
 
+
+  DoubleTab& tab_flux_bords = flux_bords_;
+  tab_flux_bords.resize(domaine.nb_faces_bord(), 1);
 
   for (f = 0; f < domaine.nb_faces(); f++) /* divergence aux elements + equations aux bords */
     {
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         if (e < domaine.nb_elem()) /* divergence aux elems */
           {
-            secmem(e) -= (i ? 1 : -1) * fs(f) * pf(f) * inco(f);
+            secmem(e) -= (i ? 1 : -1) * fs(f) * pf(f) * vit(f);
             if (fcl(f, 0) < 2 && matv)
               (*matv)(e, f) += (i ? 1 : -1) * fs(f) * pf(f);
           }
+
+      if (f < domaine.premiere_face_int())
+        tab_flux_bords(f) = fs(f) * pf(f) * vit(f);
+
       /* equations v = v_imp ou p = p_imp aux faces de bord */
-      if (fcl(f, 0) > 1)
+      if (has_f && fcl(f, 0) > 1)
         {
           if (fcl(f, 0) == 3)
             for (d = 0; d < D; d++)
               secmem(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
-          secmem(ne_tot + f) -= fs(f) * pf(f) * inco(f);
+          secmem(ne_tot + f) -= fs(f) * pf(f) * vit(f);
           if (matv)
             (*matv)(ne_tot + f, f) += fs(f) * pf(f);
         }
-      else if (fcl(f, 0) == 1)
+      else if (has_f && fcl(f, 0) == 1)
         {
           secmem(ne_tot + f) += ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), 0) - press(ne_tot + f);
           if (matp)
@@ -117,6 +124,7 @@ void Op_Div_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
     }
 
   /* equations aux faces internes : egalite des gradients */
+  if (!has_f) return;
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (domaine.W2(nullptr, e, w2), i = 0; i < w2.dimension(0); i++)
       if ((f = e_f(e, i)) < domaine.nb_faces() && !fcl(f, 0))
@@ -133,40 +141,4 @@ void Op_Div_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
           if (matp)
             (*matp)(ne_tot + f, e) -= coeff_e;
         }
-}
-
-DoubleTab& Op_Div_PolyMAC_P0P1NC::ajouter(const DoubleTab& vit, DoubleTab& div) const
-{
-  Debog::verifier("div in", div);
-  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
-  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
-  const DoubleTab& nf = domaine.face_normales();
-  const Conds_lim& cls = le_dcl_PolyMAC->les_conditions_limites();
-  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue()).fcl();
-  int i, e, f, ne_tot = domaine.nb_elem_tot(), d, D = dimension, has_f = div.dimension_tot(0) > ne_tot;
-
-  DoubleTab& tab_flux_bords = flux_bords_;
-  tab_flux_bords.resize(domaine.nb_faces_bord(), 1);
-  tab_flux_bords = 0;
-
-  for (f = 0; f < domaine.nb_faces(); f++)
-    {
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        if (e < domaine.nb_elem()) /* aux elements */
-          div(e) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f);
-      if (f >= domaine.premiere_face_int())
-        continue;
-      /* si "div" a des valeurs aux faces : bilan de masse avec la CL imposee aux faces de bord de Dirichlet */
-      if (has_f && fcl(f, 0) != 1)
-        div(ne_tot + f) -= fs(f) * pf(f) * vit(f);
-      if (has_f && fcl(f, 0) == 3)
-        for (d = 0; d < D; d++)
-          div(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
-      /* a toutes les faces de bord : contribution a tab_flux_bords */
-      tab_flux_bords(f) = fs(f) * pf(f) * vit(f); //flux aux bords
-    }
-
-  div.echange_espace_virtuel();
-  Debog::verifier("div out", div);
-  return div;
 }
