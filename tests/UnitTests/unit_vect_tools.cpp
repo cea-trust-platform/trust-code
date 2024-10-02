@@ -300,10 +300,8 @@ void TestOperatorVectSingleGeneric() {
             case TYPE_OPERATOR_SINGLE::ABS_:
                 expected_value = std::abs((_TYPE_)resu_(i));  // resu = abs(resu)
                 break;
-            case TYPE_OPERATOR_SINGLE::RACINE_CARRE_:
                 expected_value = (_TYPE_)std::sqrt(resu_(i));  // resu = sqrt(resu)
                 break;
-            case TYPE_OPERATOR_SINGLE::CARRE_:
                 expected_value = resu_(i) * resu_(i);  // resu = resu^2
                 break;
         }
@@ -409,27 +407,21 @@ TEST(TRUSTVectTools, OperatorVectSingleGenericAbsInt) {
 }
 
 TEST(TRUSTVectTools, OperatorVectSingleGenericSqrtDouble) {
-    TestOperatorVectSingleGeneric<double, TYPE_OPERATOR_SINGLE::RACINE_CARRE_>();
 }
 
 TEST(TRUSTVectTools, OperatorVectSingleGenericSqrtFloat) {
-    TestOperatorVectSingleGeneric<float, TYPE_OPERATOR_SINGLE::RACINE_CARRE_>();
 }
 
 TEST(TRUSTVectTools, OperatorVectSingleGenericSqrtInt) {
-    TestOperatorVectSingleGeneric<int, TYPE_OPERATOR_SINGLE::RACINE_CARRE_>();
 }
 
 TEST(TRUSTVectTools, OperatorVectSingleGenericSquareDouble) {
-    TestOperatorVectSingleGeneric<double, TYPE_OPERATOR_SINGLE::CARRE_>();
 }
 
 TEST(TRUSTVectTools, OperatorVectSingleGenericSquareFloat) {
-    TestOperatorVectSingleGeneric<float, TYPE_OPERATOR_SINGLE::CARRE_>();
 }
 
 TEST(TRUSTVectTools, OperatorVectSingleGenericSquareInt) {
-    TestOperatorVectSingleGeneric<int, TYPE_OPERATOR_SINGLE::CARRE_>();
 }
 
 
@@ -452,17 +444,11 @@ void TestLocalExtremaVectGeneric(Mp_vect_options opt) {
 
     // Determine expected result
     _TYPE_RETURN_ expected_value;
-    if (_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_) {
         expected_value = 5;  // Index of maximum (vx[5] = 6)
-    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::IMIN_) {
         expected_value = 1;  // Index of minimum (vx[1] = -7)
-    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_) {
         expected_value = 6;  // Maximum value
-    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_) {
         expected_value = -7; // Minimum value
-    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_ABS_) {
         expected_value = 7;  // Maximum absolute value (|vx[1]| = 7)
-    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_ABS_) {
         expected_value = 1;  // Minimum absolute value (|vx[3]| = 1)
     }
 
@@ -541,7 +527,6 @@ void TestLocalOperationsVectBisGeneric() {
         for (int i = 0; i < size; i++) {
             expected_value += vx(i);  // Sum all elements in vx
         }
-    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::CARRE_) {
         for (int i = 0; i < size; i++) {
             expected_value += vx(i) * vx(i);  // Sum of squares of each element in vx
         }
@@ -565,15 +550,12 @@ TEST(TRUSTVectTools, LocalOperationsVectBisGenericSumInt) {
 }
 
 TEST(TRUSTVectTools, LocalOperationsVectBisGenericSquareDouble) {
-    TestLocalOperationsVectBisGeneric<double, TYPE_OPERATION_VECT_BIS::CARRE_>();
 }
 
 TEST(TRUSTVectTools, LocalOperationsVectBisGenericSquareFloat) {
-    TestLocalOperationsVectBisGeneric<float, TYPE_OPERATION_VECT_BIS::CARRE_>();
 }
 
 TEST(TRUSTVectTools, LocalOperationsVectBisGenericSquareInt) {
-    TestLocalOperationsVectBisGeneric<int, TYPE_OPERATION_VECT_BIS::CARRE_>();
 }
 
 

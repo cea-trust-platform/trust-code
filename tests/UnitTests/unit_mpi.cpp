@@ -120,3 +120,4 @@ TEST(MPI, Simple2procs) {
 #pragma diag_default 177
 #endif
 
+
