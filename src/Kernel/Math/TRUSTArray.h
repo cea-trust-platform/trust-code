@@ -156,6 +156,8 @@ public:
   inline void set_mem_storage(const STORAGE storage);
   inline STORAGE get_mem_storage() const { return storage_type_; }
 
+  inline std::shared_ptr<Vector_> get_mem() {return mem_;}
+
   inline TRUSTArray& operator=(const TRUSTArray&);
 
   inline _TYPE_& operator[](_SIZE_ i);

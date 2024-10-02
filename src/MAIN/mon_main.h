@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,21 +38,21 @@
 class mon_main
 {
 public:
-  mon_main(int verbose_level = 9, int journal_master = 0, int journal_shared = 0, Nom log_directory = "",  bool apply_verification=true, int disable_stop = 0);
+  mon_main(int verbose_level=9, bool journal_master=false, bool journal_shared=false, Nom log_directory = "",  bool apply_verification=true, bool disable_stop=false);
   ~mon_main();
-  void init_parallel(const int argc, char **argv,
-                     int with_mpi, int check_enabled = 0, int with_petsc = 1);
+
+  void init_parallel(const int argc, char **argv, bool with_mpi, bool check_enabled=false, bool with_petsc=true);
   void finalize();
   void dowork(const Nom& nom_du_cas);
 
 private:
   int verbose_level_;
-  int journal_master_;
-  int journal_shared_;
+  bool journal_master_;
+  bool journal_shared_;
   Nom log_directory_;
-  int trio_began_mpi_;
+  bool trio_began_mpi_;
   bool apply_verification_;
-  int disable_stop_;
+  bool disable_stop_;
   OWN_PTR(Comm_Group) groupe_trio_;
   Interprete_bloc interprete_principal_;
 };

@@ -77,6 +77,7 @@ utils,ed-1.13.tar.lz,outil,GF,GPL,http://www.gnu.org/software/ed,http://ftp.gnu.
 utils,unzip-60.tar.gz,outil,GF,GPL,http://www.info-zip.org,https://src.fedoraproject.org/repo/pkgs/unzip/unzip60.tar.gz/62b490407489521db863b523a7f86375/unzip60.tar.gz,
 utils,sed-4.3.tar.xz,outil,GF,GPL,http://www.gnu.org/software/sed,http://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz,
 utils,lzip-1.19.tar.gz,outil,MR,GPL,http://ftp.nchc.org.tw/Unix/NonGNU/lzip/,http://download.savannah.gnu.org/releases/lzip/lzip-1.19.tar.gz,
+utils,googletest-1.15.2.tar.gz,outil,ND,Google,https://github.com/google/googletest,https://github.com/google/googletest/releases/tag/v1.15.2,
 utils,libxml2-v2.12.7.tar.gz,outil,ND,MIT,https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home,https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.12.7/libxml2-v2.12.7.tar.gz,
 Miniforge,Miniforge3-24.7.1-1-Linux-x86_64.sh,outil,ND,BSD,,https://github.com/conda-forge/miniforge/releases/download/24.7.1-1/Miniforge3-24.7.1-1-Linux-x86_64.sh,
 Miniforge,Miniforge3-24.7.1-0-MacOSX-arm64.sh,outil,PL,BSD,,https://github.com/conda-forge/miniforge/releases/download/24.7.1-0/Miniforge3-24.7.1-0-MacOSX-arm64.sh,

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,6 +56,7 @@ void usage()
 #ifdef ROCALUTION_ROCALUTION_HPP_
   Cerr << " -disable_accelerator=> Disable the use of accelerator with rocALUTION solver\n";
 #endif
+  Cerr << " -unit               => Only perform TRUST initialisation without trying to execute any data file. Used for unit testing.\n";
   Cerr << finl;
   Process::exit();
 }
@@ -66,7 +67,7 @@ void usage()
 #define DEFAULT_CHECK_ENABLED 1
 #endif
 
-int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
+int main_TRUST(int argc, char** argv,mon_main*& main_process,bool force_mpi)
 {
 #ifdef VTRACE
   //VT_USER_END("Initialization");
@@ -79,22 +80,23 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   // Voir <PARALLEL_OK>
 
   // *************** Process command-line arguments ********************
-  int with_mpi = force_mpi;
+  bool with_mpi = force_mpi;
   int check_enabled = DEFAULT_CHECK_ENABLED;
   int with_petsc = -1;       // -1 => use petsc if compiled
   int nproc = -1;
   int verbose_level = -1;
-  int journal_master = 0;
-  int journal_shared = 0;
+  bool journal_master = false;
+  bool journal_shared = false;
   Nom log_directory = "";
-  int helptrust = 0;
-  int ieee = 1;  // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+  bool helptrust = false;
+  bool ieee = true;  // true => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 // Crashes bizarres sur compilateurs clang++, fcc, nvc++ donc on desactive:
 #if defined(_COMPILE_AVEC_CLANG) || defined (_COMPILE_AVEC_FCC) || defined(__NVCOMPILER)
-  ieee = 0;
+  ieee = false;
 #endif
   bool apply_verification = true;
-  int disable_stop = 0;
+  bool disable_stop = false;
+  bool unit_test = false;
   Nom data_file;
   data_file = "";
   Nom exec_script;
@@ -109,16 +111,16 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
       // Le -help est reserve par Petsc
       if (strcmp(argv[i], "-help_trust") == 0)
         {
-          helptrust = 1;
+          helptrust = true;
         }
       else if (strcmp(argv[i], "-disable_ieee") == 0)
         {
-          ieee = 0;
+          ieee = false;
           arguments_info += "-disable_ieee => disable of feenableexcept\n";
         }
       else if (strcmp(argv[i], "-mpi") == 0)
         {
-          with_mpi = 1;
+          with_mpi = true;
           arguments_info += "-mpi => parallel computation with mpi\n";
         }
       else if (strcmp(argv[i], "-no_verify") == 0)
@@ -128,12 +130,12 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         }
       else if (strcmp(argv[i], "-check_enabled=1") == 0)
         {
-          check_enabled = 1;
+          check_enabled = true;
           arguments_info += "-check_enabled=1 => force enable parallel message checking\n";
         }
       else if (strcmp(argv[i], "-check_enabled=0") == 0)
         {
-          check_enabled = 0;
+          check_enabled = false;
           arguments_info += "-check_enabled=0 => force disable parallel message checking\n";
         }
       else if (strncmp(argv[i], "-debugscript=", 13) == 0)
@@ -145,7 +147,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         }
       else if (strcmp(argv[i], "-petsc=0") == 0)
         {
-          with_petsc = 0;
+          with_petsc = false;
           arguments_info += "-petsc=0 => disable call to PetscInitialize\n";
         }
       else if (strncmp(argv[i], "-journal=", 9) == 0)
@@ -166,22 +168,22 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         }
       else if (strcmp(argv[i], "-journal_master") == 0)
         {
-          journal_master = 1;
+          journal_master = true;
           arguments_info += "-journal_master => Only the master processor will write a journal";
           if(journal_shared)
             {
-              journal_shared = 0;
+              journal_shared = false;
               arguments_info += " (journal_shared is thus ignored)";
             }
           arguments_info += "\n";
         }
       else if (strcmp(argv[i], "-journal_shared") == 0)
         {
-          journal_shared = 1;
+          journal_shared = true;
           arguments_info += "-journal_shared => all the processors are going to write in a unique journal file";
           if(journal_master)
             {
-              journal_master = 0;
+              journal_master = false;
               arguments_info += " (journal_master is thus ignored)";
             }
           arguments_info += "\n";
@@ -196,8 +198,12 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         }
       else if (strcmp(argv[i], "-disable_stop") == 0)
         {
-          disable_stop = 1;
+          disable_stop = true;
           arguments_info += "-disable_stop => Disable the writing of the .stop file.\n";
+        }
+      else if (strcmp(argv[i], "-unit") == 0)
+        {
+          unit_test = true;
         }
 #ifdef ROCALUTION_ROCALUTION_HPP_
       else if (strcmp(argv[i], "-disable_accelerator") == 0)
@@ -223,7 +229,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
               nproc = nprocs;
               if (nproc > 1)
                 {
-                  with_mpi = 1;
+                  with_mpi = true;
                   arguments_info += "Running in parallel with ";
                   arguments_info += Nom(nproc);
                   arguments_info += " processors\n";
@@ -289,7 +295,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 #ifdef linux
     fedisableexcept(FE_ALL_EXCEPT);
 #endif
-    if ( ieee == 1 )
+    if (ieee)
       {
         char* theValue = getenv("TRUST_DISABLE_FP_EXCEPT");
         if (theValue == nullptr || atoi(theValue) == 0)
@@ -325,7 +331,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 
     if (master)
       {
-        if ( helptrust == 1 ) usage();
+        if (helptrust) usage();
 
         // On affiche le resultat de la ligne de commande ici pour ne pas remplir stderr
         // avec tous les processeurs...
@@ -344,55 +350,58 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     cout.setf(ios::scientific);
     cout.precision(12);
 
-    // ****************** Nom du cas ***********************
-    if (data_file == "")
+    // Handle dataset name - only if we are not in unit_test mode for which we do not want to process any datafile at all.
+    if (!unit_test)
       {
-        // TRUST sans argument => nom du cas = nom du repertoire courant
-        Nom pwd(::pwd());
-        if (master)
-          Cerr << "No command line argument. Data file name from directory name:\n "
-               << pwd << finl;
-        const int l = pwd.longueur() - 1; // Attention, longueur()=strlen+1
-        int i = l - 1;
-        while(i > 0 && pwd[i] != directory_separator)
+        // ****************** Nom du cas ***********************
+        if (data_file == "")
           {
-            i--;
+            // TRUST sans argument => nom du cas = nom du repertoire courant
+            Nom pwd(::pwd());
+            if (master)
+              Cerr << "No command line argument. Data file name from directory name:\n "
+                   << pwd << finl;
+            const int l = pwd.longueur() - 1; // Attention, longueur()=strlen+1
+            int i = l - 1;
+            while(i > 0 && pwd[i] != directory_separator)
+              {
+                i--;
+              }
+            if (i == l - 1)
+              {
+                if (master)
+                  {
+                    Cerr << "Error : pwd() ends with directory separator " << (int)directory_separator << finl;
+                    Process::exit();
+                  }
+              }
+            data_file = pwd.substr_old(i + 2, l - i - 1); // Attention, voir Nom::substr()
           }
-        if (i == l - 1)
+        if (master)
+          {
+            Cerr << "Data file : " << data_file << finl;
+          }
+        // Si le nom du cas finit par .data, on l'enleve.
+        if (data_file.finit_par(".data"))
           {
             if (master)
               {
-                Cerr << "Error : pwd() ends with directory separator " << (int)directory_separator << finl;
-                Process::exit();
+                Cerr << " (removing .data extension)" << finl;
               }
+            data_file.prefix(".data");
           }
-        data_file = pwd.substr_old(i + 2, l - i - 1); // Attention, voir Nom::substr()
-      }
-    if (master)
-      {
-        Cerr << "Data file : " << data_file << finl;
-      }
-    // Si le nom du cas finit par .data, on l'enleve.
-    if (data_file.finit_par(".data"))
-      {
+
         if (master)
           {
-            Cerr << " (removing .data extension)" << finl;
+            Cerr<<"Localisation etude: " << ::pwd() << finl;
+            Cerr<<"Nom du cas " << data_file << finl;
+            Cerr<<" code : "<< argv[0] << finl;
+            Cerr<<" version : " << TRUST_VERSION << " " << finl;
           }
-        data_file.prefix(".data");
+
+        main_process->dowork(data_file);
       }
 
-
-
-    if (master)
-      {
-        Cerr<<"Localisation etude: " << ::pwd() << finl;
-        Cerr<<"Nom du cas " << data_file << finl;
-        Cerr<<" code : "<< argv[0] << finl;
-        Cerr<<" version : " << TRUST_VERSION << " " << finl;
-      }
-
-    main_process->dowork(data_file);
 
     if (master)
       {

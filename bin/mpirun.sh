@@ -79,7 +79,7 @@ case $Mpirun in
 		#######################
 		# Lancement avec -gdb #
 		#######################
-		if [ $1 = -gdb ]
+		if [ "$1" = "-gdb" ]
 		then
 		   unset TRUST_GDB 
 		   if [ $MPI = "MPICH2" ]

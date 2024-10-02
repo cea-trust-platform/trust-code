@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,4 +15,4 @@
 
 
 class mon_main;
-int main_TRUST(int argc, char** argv,mon_main*& main_process, int force_mpi=0);
+int main_TRUST(int argc, char** argv,mon_main*& main_process, bool force_mpi=0);
