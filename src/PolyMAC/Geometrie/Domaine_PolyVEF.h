@@ -47,6 +47,13 @@ public :
   mutable MD_Vector mdv_elems_soms;
 };
 
+class Domaine_PolyVEF_P0P1NC : public Domaine_PolyVEF
+{
+  Declare_instanciable(Domaine_PolyVEF_P0P1NC);
+public :
+  void discretiser() override;
+};
+
 inline void Domaine_PolyVEF::surf_elem_som(int f, DoubleTab& Sa) const
 {
   const IntTab& f_s = face_sommets(), &f_e = face_voisins();

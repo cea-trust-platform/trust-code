@@ -19,14 +19,17 @@
 Implemente_base(Domaine_PolyVEF, "Domaine_PolyVEF", Domaine_PolyMAC_P0);
 Implemente_instanciable(Domaine_PolyVEF_P0, "Domaine_PolyVEF_P0", Domaine_PolyVEF);
 Implemente_instanciable(Domaine_PolyVEF_P0P1, "Domaine_PolyVEF_P0P1", Domaine_PolyVEF);
+Implemente_instanciable(Domaine_PolyVEF_P0P1NC, "Domaine_PolyVEF_P0P1NC", Domaine_PolyVEF);
 
 Entree& Domaine_PolyVEF::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 Entree& Domaine_PolyVEF_P0::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 Entree& Domaine_PolyVEF_P0P1::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
+Entree& Domaine_PolyVEF_P0P1NC::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 
 Sortie& Domaine_PolyVEF::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 Sortie& Domaine_PolyVEF_P0::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 Sortie& Domaine_PolyVEF_P0P1::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
+Sortie& Domaine_PolyVEF_P0P1NC::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 
 
 void Domaine_PolyVEF::discretiser()
@@ -55,4 +58,14 @@ void Domaine_PolyVEF_P0P1::discretiser()
   mdc_elems_soms.add_part(domaine().md_vector_elements());
   mdc_elems_soms.add_part(domaine().md_vector_sommets());
   mdv_elems_soms.copy(mdc_elems_soms);
+}
+
+void Domaine_PolyVEF_P0P1NC::discretiser()
+{
+  Domaine_PolyVEF::discretiser();
+  //MD_vector pour la pression (elements + faces)
+  MD_Vector_composite mdc_elems_faces;
+  mdc_elems_faces.add_part(domaine().md_vector_elements());
+  mdc_elems_faces.add_part(md_vector_faces());
+  mdv_elems_faces.copy(mdc_elems_faces);
 }

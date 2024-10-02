@@ -39,6 +39,10 @@ Add_synonym(Op_Diff_PolyVEF_Face, "Op_Diff_PolyVEF_P0P1_Face");
 Add_synonym(Op_Diff_PolyVEF_Face, "Op_Dift_PolyVEF_Face_PolyVEF_P0P1");
 Add_synonym(Op_Diff_PolyVEF_Face, "Op_Diff_PolyVEF_P0P1_var_Face");
 Add_synonym(Op_Diff_PolyVEF_Face, "Op_Dift_PolyVEF_P0P1_var_Face_PolyVEF_P0P1");
+Add_synonym(Op_Diff_PolyVEF_Face, "Op_Diff_PolyVEF_P0P1NC_Face");
+Add_synonym(Op_Diff_PolyVEF_Face, "Op_Dift_PolyVEF_Face_PolyVEF_P0P1NC");
+Add_synonym(Op_Diff_PolyVEF_Face, "Op_Diff_PolyVEF_P0P1NC_var_Face");
+Add_synonym(Op_Diff_PolyVEF_Face, "Op_Dift_PolyVEF_P0P1NC_var_Face_PolyVEF_P0P1NC");
 
 Sortie& Op_Diff_PolyVEF_Face::printOn( Sortie& os ) const
 {
