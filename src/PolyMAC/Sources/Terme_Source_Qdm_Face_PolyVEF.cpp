@@ -19,8 +19,10 @@
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Terme_Source_Qdm_Face_PolyVEF, "Source_Qdm_Face_PolyVEF_P0|Source_Qdm_Face_PolyVEF_P0P1", Terme_Source_Qdm_Face_PolyMAC_P0P1NC);
+Add_synonym(Terme_Source_Qdm_Face_PolyVEF, "Source_Qdm_Face_PolyVEF_P0P1NC");
 
 Sortie& Terme_Source_Qdm_Face_PolyVEF::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 

@@ -13,41 +13,26 @@
 *
 *****************************************************************************/
 
-#ifndef PolyVEF_discretisation_included
-#define PolyVEF_discretisation_included
+#ifndef Champ_Elem_PolyVEF_P0P1NC_included
+#define Champ_Elem_PolyVEF_P0P1NC_included
 
-#include <PolyMAC_P0_discretisation.h>
+#include <Champ_Elem_PolyMAC_P0P1NC.h>
+#include <Operateur.h>
 
-class PolyVEF_discretisation : public PolyMAC_P0_discretisation
+class Domaine_PolyVEF;
+
+/*! @brief : class Champ_Elem_PolyVEF_P0P1NC
+ *
+ *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
+ *  Degres de libertes : valeur aux elements + flux aux faces
+ *
+ */
+class Champ_Elem_PolyVEF_P0P1NC: public Champ_Elem_PolyMAC_P0P1NC
 {
-  Declare_base(PolyVEF_discretisation);
-public :
-  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl,const Champ_Inc_base& ch_vitesse,OWN_PTR(Champ_Fonc_base)& ) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-
-  bool is_polyvef() const override { return true; }
+  Declare_instanciable(Champ_Elem_PolyVEF_P0P1NC);
+public:
+  const Domaine_PolyVEF& domaine_PolyVEF() const;
+  void init_auxiliary_variables() override;
 };
 
-class PolyVEF_P0_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0_discretisation);
-public :
-  bool is_polyvef_p0() const override { return true; }
-};
-
-class PolyVEF_P0P1_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1_discretisation);
-public :
-  bool is_polyvef_p0p1() const override { return true; }
-};
-
-class PolyVEF_P0P1NC_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1NC_discretisation);
-public :
-  bool is_polyvef_p0p1nc() const override { return true; }
-};
-
-#endif /* PolyVEF_discretisation_included */
+#endif /* Champ_Elem_PolyVEF_P0P1NC_included */

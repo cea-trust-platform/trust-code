@@ -13,41 +13,32 @@
 *
 *****************************************************************************/
 
-#ifndef PolyVEF_discretisation_included
-#define PolyVEF_discretisation_included
+#ifndef Assembleur_P_PolyVEF_P0P1NC_included
+#define Assembleur_P_PolyVEF_P0P1NC_included
 
-#include <PolyMAC_P0_discretisation.h>
+#include <Assembleur_P_PolyMAC.h>
 
-class PolyVEF_discretisation : public PolyMAC_P0_discretisation
+class Assembleur_P_PolyVEF_P0P1NC : public Assembleur_P_PolyMAC
 {
-  Declare_base(PolyVEF_discretisation);
-public :
-  void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl,const Champ_Inc_base& ch_vitesse,OWN_PTR(Champ_Fonc_base)& ) const override;
-  void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
+  Declare_instanciable(Assembleur_P_PolyVEF_P0P1NC);
+public:
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
 
-  bool is_polyvef() const override { return true; }
+  int modifier_secmem(DoubleTab&) override { return 1; }
+  int modifier_solution(DoubleTab&) override;
+
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  DoubleTab norme_continuite() const override;
+
+  /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
+   fac est le coefficient tel que p_final - press = fac * sol */
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
+
+  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
+  {
+    Process::exit("Assembleur_P_PolyVEF_P0P1NC::corriger_vitesses() should not be used ... ");
+  }
 };
 
-class PolyVEF_P0_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0_discretisation);
-public :
-  bool is_polyvef_p0() const override { return true; }
-};
-
-class PolyVEF_P0P1_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1_discretisation);
-public :
-  bool is_polyvef_p0p1() const override { return true; }
-};
-
-class PolyVEF_P0P1NC_discretisation : public PolyVEF_discretisation
-{
-  Declare_instanciable(PolyVEF_P0P1NC_discretisation);
-public :
-  bool is_polyvef_p0p1nc() const override { return true; }
-};
-
-#endif /* PolyVEF_discretisation_included */
+#endif /* Assembleur_P_PolyVEF_P0P1NC_included */
