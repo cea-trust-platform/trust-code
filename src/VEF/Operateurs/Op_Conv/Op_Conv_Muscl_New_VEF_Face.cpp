@@ -792,7 +792,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
       else if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
           const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
-          CDoubleTabView val_ext = la_sortie_libre.tab_ext().view_ro();
+          CDoubleTabView val_ext = la_sortie_libre.val_ext().view_ro();
           Kokkos::parallel_for(__KERNEL_NAME__, num2, KOKKOS_LAMBDA(const int ind_face)
           {
             int facei = le_bord_num_face(ind_face);
