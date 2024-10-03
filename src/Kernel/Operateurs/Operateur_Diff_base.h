@@ -44,7 +44,7 @@ public:
 
   //liste d'Op_Diff de problemes resolus simultanement (thermique monolithique)
   mutable std::vector<const Operateur_Diff_base *> op_ext;
-  virtual void init_op_ext() const {}    //remplissage de op_ext (ne peut pas etre fait dans completer(), trop tot)
+  virtual void init_op_ext() const { op_ext = { this }; }    //remplissage de op_ext (ne peut pas etre fait dans completer(), trop tot)
 
   virtual bool is_turb() const { return false; }
   virtual const Correlation* correlation_viscosite_turbulente() const { return nullptr; }
