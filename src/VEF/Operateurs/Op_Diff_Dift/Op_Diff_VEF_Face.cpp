@@ -1114,6 +1114,25 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, kern_elem_faces);
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
+  for (int n_bord = 0; n_bord < nb_bords; n_bord++)
+    {
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
+
+      if (sub_type(Echange_externe_impose, la_cl.valeur()))
+        {
+          const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face = ndeb; face < nfin; face++)
+            for (int nc = 0; nc < nb_comp; nc++)
+              {
+                const int i = face * nb_comp + nc;
+                tab_matrice(i, i) += la_cl_paroi.h_imp(face - ndeb, nc) * domaine_VEF.surface(face);
+              }
+        }
+    }
+
   modifier_matrice_pour_periodique_apres_contribuer(tab_matrice, equation());
 }
 
