@@ -49,8 +49,7 @@ void local_carre_norme_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& 
 namespace
 {
 template <typename ExecSpace, typename _TYPE_>
-void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_colonne,
-                              bool kernelOnDevice)
+void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_colonne)
 {
   const TRUSTVect<_TYPE_,int>& vect = tableau;
   const int lsize = vect.line_size(), vect_size_tot = vect.size_totale();
@@ -80,6 +79,8 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
           }
       });
     }
+
+  bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 }
@@ -91,9 +92,9 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_
   bool kernelOnDevice = tableau.checkDataOnDevice();
 
   if (kernelOnDevice)
-    local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_>(tableau, max_colonne, kernelOnDevice);
+    local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_>(tableau, max_colonne);
   else
-    local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_>(tableau, max_colonne, kernelOnDevice);
+    local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_>(tableau, max_colonne);
 }
 
 template void local_carre_norme_tab<double>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
