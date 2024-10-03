@@ -149,7 +149,7 @@ help()
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
    echo "-queue queue                  : Create a submission file with the specified queue and submit the job."
    echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
-   [ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
+   [ "$TRUST_USE_GPU" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
    #[ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
    echo "-convert_data datafile        : Convert a data file to the new 1.9.1 syntax (milieu, interfaces, read_med and champ_fonc_med)."
@@ -633,7 +633,7 @@ fi
 ##############
 # GPU Direct #
 ##############
-if [ $NB_PROCS -gt 1 ] && [ "$TRUST_USE_GPU_AWARE_MPI" = 1 ] # On n'active pas par defaut car pas fiable encore sur plusieurs noeuds...
+if [ $NB_PROCS -gt 1 ] && [ "$TRUST_USE_MPI_GPU_AWARE" = 1 ] # On n'active pas par defaut car pas fiable encore sur plusieurs noeuds...
 then
    if [ "$TRUST_USE_ROCM" = 1 ] && [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" != "" ]
    then
@@ -646,6 +646,11 @@ then
       echo "Enabling CUDA support for MPI ..."
    fi
 fi
+# Si MPI n'est pas GPU-Aware:
+if [ "$TRUST_USE_GPU" = 1 ]
+then
+   [ "$TRUST_MPI_GPU_AWARE" = 0 ] && PETSC_OPTIONS=$PETSC_OPTIONS" -use_gpu_aware_mpi 0"
+fi
 
 #################
 # PETSc options #
@@ -655,8 +660,6 @@ if [ "`echo $PETSC_OPTIONS | grep -i cusp`" != "" ]
 then
    gpu=1 # Activate also GPU option if some gpu option is passed through the command line option:
 fi
-# Si MPI n'est pas MPI-Aware (test un peu bourrin...) on evite un stop avec PETSc:
-[ "$TRUST_USE_CUDA" = 1 ] && grep -i cuda $MPI_ROOT/lib/libmpi* 1>/dev/null 2>&1 || PETSC_OPTIONS=$PETSC_OPTIONS" -use_gpu_aware_mpi 0"
 
 ###########################################
 # Lancement en interactif avec monitoring #
@@ -934,10 +937,8 @@ then
                             / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / || / resoudre / {use_petsc=1;exit}
                             END {print use_petsc}'`
 fi
-if [ "$TRUST_USE_CUDA" = 1 ] || [ "$TRUST_USE_ROCM" = 1 ]
-then
-   gpu=1
-fi
+[ "$TRUST_USE_GPU" = 1 ] && gpu=1
+
 ######################
 # Selon les machines #
 ######################

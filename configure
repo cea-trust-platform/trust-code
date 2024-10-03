@@ -403,8 +403,10 @@ export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
 export TRUST_INT64_NEW=0
-export TRUST_USE_CUDA=0
 export TRUST_USE_AMGX=0
+export TRUST_USE_CUDA=0
+export TRUST_USE_ROCM=0
+export TRUST_USE_GPU=0
 export TRUST_USE_EOS=0
 export TRUST_USE_COOLPROP=0
 export TRUST_USE_REFPROP=0
@@ -435,7 +437,6 @@ unset TRUST_REFPROP_HOME_DIR
 unset TRUST_CC_BASE_EXTP
 unset TRUST_F77_BASE_EXTP
 unset TRUST_cc_BASE_EXTP
-unset TRUST_USE_ROCM
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"

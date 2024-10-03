@@ -104,8 +104,10 @@ let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -sub_pc_type s
 
 # CG + ILU BLR de MUMPS et STRUMPACK
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ILU_MUMPS     { epsilon 1.e-4 } impr }"		;sym[$i]=1	
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ILU_STRUMPACK { epsilon 1.e-4 } impr }"		;sym[$i]=1	
-
+if [ -f $PETSC_DIR/lib/libstrumpack.a ]
+then
+   let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ILU_STRUMPACK { epsilon 1.e-4 } impr }"		;sym[$i]=1
+fi
 # CG + BLOCK JACOBI ILU PETSC
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"		;sym[$i]=1	;rank[$i]=8;		
 
