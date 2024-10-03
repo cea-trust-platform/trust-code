@@ -448,7 +448,7 @@ add_package metis
 # STRUMPACK #
 #############
 TRUST_USE_STRUMPACK=1
-if [ "$TRUST_USE_STRUMPACK" = 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" != 1 ]
+if [ "$TRUST_USE_STRUMPACK" = 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" = 0 ]
 then
    add_package zfp
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
