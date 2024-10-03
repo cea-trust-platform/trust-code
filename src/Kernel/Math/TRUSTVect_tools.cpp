@@ -156,9 +156,9 @@ template void ajoute_produit_scalaire<float, int>(TRUSTVect<float, int>& resu, f
 #ifndef LATATOOLS
 namespace
 {
-template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_, bool IS_MUL>
 void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
-                                            Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL)
+                                            Block_Iter<_SIZE_>& bloc_itr, const int line_size_vx, const int vect_size_tot, const int delta_line_size)
 {
   auto vx_view= vx.template view_ro<ExecSpace>();
   auto resu_view= resu.template view_rw<ExecSpace>();
@@ -228,9 +228,9 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
 
   //Lauch computation with the execution space and view types as (template) parameters
   if (kernelOnDevice)
-    operation_speciale_tres_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL);
+    operation_speciale_tres_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_, IS_MUL>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size);
   else
-    operation_speciale_tres_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL);
+    operation_speciale_tres_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_, IS_MUL>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size);
 
 #ifndef NDEBUG
   // In debug mode, put invalid values where data has not been computed
@@ -247,20 +247,53 @@ template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::
 template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_, double, int>(TRUSTVect<double, int>& resu, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
 template void operation_speciale_tres_generic<TYPE_OPERATION_VECT_SPEC_GENERIC::DIV_, float, int>(TRUSTVect<float, int>& resu, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
 
+#ifndef LATATOOLS
+namespace
+{
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_, bool IS_ADD>
+void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, _TYPE_ alpha, int nblocs_left,
+                                       Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size)
+{
+  auto vx_view= vx.template view_ro<ExecSpace>();
+  auto resu_view= resu.template view_rw<ExecSpace>();
 
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
+      const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
+      const int count = end_bloc - begin_bloc;
+
+      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      {
+        const _TYPE_ x = vx_view(begin_bloc + i);
+
+        const int resu_idx = begin_bloc + i ;
+        if (IS_ADD) //done at compile time
+          // Use atomic add to avoid concurrent writes
+          Kokkos::atomic_add(&resu_view(resu_idx), alpha * x);
+        else //If it's not ADD, it's CARRE
+          // Use atomic add to avoid concurrent writes
+          Kokkos::atomic_add(&resu_view(resu_idx), alpha * x * x);
+      });
+      bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+    }
+}
+}
+#endif
 
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_, typename _SIZE_>
 void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha,
                                        const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt)
 {
-  static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::ADD_),
-                        IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::CARRE_);
+#ifndef LATATOOLS
+  static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::ADD_);
 
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_,_SIZE_>& master_vect = resu;
-  const int line_size = master_vect.line_size();
-  const _SIZE_ vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
+  const int line_size = resu.line_size();
+  const _SIZE_ vect_size_tot = resu.size_totale();
+  const MD_Vector& md = resu.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
 #ifndef LATATOOLS
@@ -273,32 +306,18 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
   if (bloc_itr.empty()) return;
 
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
-  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
-  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_gpu_timer();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      _TYPE_ *resu_ptr = resu_base + begin_bloc;
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice)
-      for (_SIZE_ count = 0; count < end_bloc - begin_bloc ; count++)
-        {
-          const _TYPE_ x = x_ptr[count];
-          _TYPE_& p_resu = resu_ptr[count];
 
-          if (IS_ADD) p_resu += alpha * x;
-          if (IS_CARRE) p_resu += alpha * x * x;
-        }
-    }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
-  // In debug mode, put invalid values where data has not been computed
+  if (kernelOnDevice)
+    operation_speciale_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_, IS_ADD>(resu, vx, alpha, nblocs_left, bloc_itr, vect_size_tot, line_size);
+  else
+    operation_speciale_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_, IS_ADD>(resu, vx, alpha, nblocs_left, bloc_itr, vect_size_tot, line_size);
+
+
 #ifndef NDEBUG
   invalidate_data(resu, opt);
 #endif
   return;
+#endif
 }
 
 // Explicit instanciation for templates:

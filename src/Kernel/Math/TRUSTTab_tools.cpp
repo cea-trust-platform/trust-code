@@ -46,7 +46,7 @@ namespace
 {
 template <typename ExecSpace, typename _TYPE_, typename _SIZE_>
 void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_,_SIZE_>& max_colonne,
-                              const TRUSTArray<int,_SIZE_>& blocs, int lsize)
+                              const TRUSTArray<int,_SIZE_>& blocs, const int lsize)
 {
   auto tableau_view= tableau.template view_ro<ExecSpace>();
   auto max_colonne_view= max_colonne.template view_rw<ExecSpace>();
@@ -85,14 +85,10 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
   bool kernelOnDevice = tableau.checkDataOnDevice();
 
   if (kernelOnDevice)
-    {
-      local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize);
-    }
+    local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize);
   else
-    {
-      local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize);
+    local_max_abs_tab_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(tableau, max_colonne, blocs, lsize);
 
-    }
 }
 template void local_carre_norme_tab<double,int>(const TRUSTTab<double,int>& tableau, TRUSTArray<double,int>& norme_colonne);
 template void local_carre_norme_tab<float,int>(const TRUSTTab<float,int>& tableau, TRUSTArray<float,int>& norme_colonne);
