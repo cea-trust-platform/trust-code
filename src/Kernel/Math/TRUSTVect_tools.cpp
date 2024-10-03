@@ -158,7 +158,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
 void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
-                                            Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL, bool kernelOnDevice)
+                                            Block_Iter<_SIZE_>& bloc_itr, int line_size_vx, int vect_size_tot, int delta_line_size, bool IS_MUL)
 {
   auto vx_view= vx.template view_ro<ExecSpace>();
   auto resu_view= resu.template view_rw<ExecSpace>();
@@ -191,6 +191,7 @@ void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, con
               resu_view(resu_idx) *= ((_TYPE_)1 / x);
           }
       });
+      bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
@@ -227,9 +228,9 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
 
   //Lauch computation with the execution space and view types as (template) parameters
   if (kernelOnDevice)
-    operation_speciale_tres_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
+    operation_speciale_tres_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL);
   else
-    operation_speciale_tres_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL, kernelOnDevice);
+    operation_speciale_tres_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, vx, nblocs_left, bloc_itr, line_size_vx, vect_size_tot, delta_line_size, IS_MUL);
 
 #ifndef NDEBUG
   // In debug mode, put invalid values where data has not been computed
