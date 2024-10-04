@@ -310,7 +310,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab3<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view3_wo()
 {
-  return HostViewTab3<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1), this->dimension(2));
+  return HostViewTab3<_TYPE_>(this->addr(), this->dimension_tot(0), this->dimension_tot(1), this->dimension_tot(2));
 }
 
 //////////// Read-Write ////////////////////////////
@@ -474,7 +474,7 @@ template<typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostViewTab4<_TYPE_> >
 TRUSTTab<_TYPE_,_SIZE_>::view4_wo()
 {
-  return HostViewTab4<_TYPE_>(this->addr(), this->dimension(0), this->dimension(1), this->dimension(2), this->dimension(3));
+  return HostViewTab4<_TYPE_>(this->addr(), this->dimension_tot(0), this->dimension_tot(1), this->dimension_tot(2), this->dimension_tot(3));
 }
 
 //////////// Read-Write ////////////////////////////
