@@ -21,8 +21,6 @@
 namespace
 {
 
-static constexpr int NB_PTS_INTEG = 7;
-static constexpr int NB_PTS_INTEG_FACETS = 5;
 static constexpr double WEIGHTS[7] = {0.225, 0.125939180544827, 0.125939180544827, 0.125939180544827, 0.132394152788506, 0.132394152788506, 0.132394152788506};
 static constexpr double WEIGHTS_FACETS[5] = {7. / 90., 32. / 90., 12. / 90., 32. / 90., 7. / 90.};
 static constexpr double LAMBDA[7][3] =
@@ -43,20 +41,8 @@ static constexpr double LAMBDA_FACETS[5][2] =
   {1. / 4, 3. / 4},
   {0., 1.}
 }; // Barycentric coordinates coefficients of integration points on facets */
-static constexpr int ORDER = 5;
 }
 
-Implemente_instanciable(Quadrature_Ord5_Triangle,"Quadrature_Ord5_Triangle",Quadrature_base);
-
-Sortie& Quadrature_Ord5_Triangle::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Quadrature_Ord5_Triangle::readOn(Entree& s )
-{
-  return s;
-}
 
 void Quadrature_Ord5_Triangle::compute_integ_points()
 {
@@ -64,22 +50,21 @@ void Quadrature_Ord5_Triangle::compute_integ_points()
 
   const IntTab& vert_elems = dom_->domaine().les_elems();
   int nb_elem_tot = dom_->nb_elem_tot();
-  int nb_pts_integ = ::NB_PTS_INTEG;
   int ndim = Objet_U::dimension;
   DoubleTab& xs = dom_->domaine().les_sommets(); // facets barycentre
   // We ensure that sum(weights)=1 and sum(Lambda[i])=1
-  DoubleTab lambda(nb_pts_integ, ndim + 1);
+  DoubleTab lambda(nb_pts_integ_, ndim + 1);
 
-  integ_points_.resize(nb_elem_tot, nb_pts_integ, ndim);
-  weights_.resize(nb_pts_integ);
+  integ_points_.resize(nb_elem_tot*nb_pts_integ_, ndim);
+  weights_.resize(nb_pts_integ_);
 
-  weights_[nb_pts_integ-1] = 1;
-  for (int pts = 0; pts < nb_pts_integ; pts++)
+  weights_[nb_pts_integ_-1] = 1;
+  for (int pts = 0; pts < nb_pts_integ_; pts++)
     {
-      if (pts < nb_pts_integ - 1)
+      if (pts < nb_pts_integ_ - 1)
         {
           weights_(pts) = ::WEIGHTS[pts];
-          weights_(nb_pts_integ-1) -= weights_(pts);
+          weights_(nb_pts_integ_-1) -= weights_(pts);
         }
       lambda(pts, 0) = ::LAMBDA[pts][0];
       lambda(pts, 1) = ::LAMBDA[pts][1];
@@ -88,13 +73,13 @@ void Quadrature_Ord5_Triangle::compute_integ_points()
 
   for (int e = 0; e < nb_elem_tot; e++)
     {
-      for (int pts = 0; pts < nb_pts_integ; pts++)
+      for (int pts = 0; pts < nb_pts_integ_; pts++)
         {
           for (int dim = 0; dim < ndim; dim++)
             {
-              integ_points_(e, pts, dim) = 0.;
+//              integ_points_(e*nb_pts_integ + pts, dim) = 0.;
               for (int loc_vert = 0; loc_vert < ndim + 1; loc_vert++)
-                integ_points_(e, pts, dim) += xs(vert_elems(e, loc_vert), dim) * lambda(pts, loc_vert);
+                integ_points_(e*nb_pts_integ_ + pts, dim) += xs(vert_elems(e, loc_vert), dim) * lambda(pts, loc_vert);
             }
         }
     }
@@ -109,20 +94,19 @@ void Quadrature_Ord5_Triangle::compute_integ_points_on_facet()
   int ndim = Objet_U::dimension;
   DoubleTab& xs = dom_->domaine().les_sommets(); // facets barycentre
   IntTab& face_sommets = dom_->face_sommets();
-  int nb_pts_integ = NB_PTS_INTEG_FACETS;
 
-  integ_points_facets_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
-  weights_facets_.resize(nb_pts_integ);
+  integ_points_facets_.resize(nb_faces, nb_pts_integ_facets_, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
+  weights_facets_.resize(nb_pts_integ_facets_);
 
   // We ensure that sum(weights)=1 and sum(Lambda[i])=1
-  DoubleTab lambda_facets(nb_pts_integ, ndim);
-  weights_facets_[nb_pts_integ-1] = 1;
-  for (int pts = 0; pts < nb_pts_integ; pts++)
+  DoubleTab lambda_facets(nb_pts_integ_facets_, ndim);
+  weights_facets_[nb_pts_integ_facets_-1] = 1;
+  for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
     {
-      if (pts < nb_pts_integ - 1)
+      if (pts < nb_pts_integ_facets_ - 1)
         {
           weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
-          weights_facets_(nb_pts_integ-1) -= weights_facets_(pts);
+          weights_facets_(nb_pts_integ_facets_-1) -= weights_facets_(pts);
         }
       lambda_facets(pts, 0) = ::LAMBDA_FACETS[pts][0];
       lambda_facets(pts, 1) = 1 - lambda_facets(pts, 0);
@@ -130,7 +114,7 @@ void Quadrature_Ord5_Triangle::compute_integ_points_on_facet()
 
   for (int f = 0; f < nb_faces; f++)
     {
-      for (int pts = 0; pts < nb_pts_integ; pts++)
+      for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
         {
           for (int dim = 0; dim < ndim; dim++)
             {

@@ -19,9 +19,16 @@
 
 class Quadrature_Ord1_Triangle : public Quadrature_base
 {
-  Declare_instanciable(Quadrature_Ord1_Triangle);
-
 public:
+
+  Quadrature_Ord1_Triangle(const Domaine_DG& dom) : Quadrature_base(dom)
+  {
+    nb_pts_integ_ = 1;
+    nb_pts_integ_facets_ = 1;
+
+    compute_integ_points();
+    compute_integ_points_on_facet();
+  }
 
   /*! Compute for the whole domain the exact location of integration points per element
    */
@@ -30,11 +37,6 @@ public:
   /*! Compute for the whole domain the exact location of integration points per facet
    */
   void compute_integ_points_on_facet() override;
-
-  inline int order() const override { return 1; }
-  inline int nb_pts_integ() const override { return 1; }
-  inline int nb_pts_integ_facets() const override { return 1; }
-
 
 };
 

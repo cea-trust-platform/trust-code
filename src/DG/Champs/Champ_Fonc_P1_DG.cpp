@@ -27,24 +27,16 @@ Champ_base& Champ_Fonc_P1_DG::affecter_(const Champ_base& ch)
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG, le_dom_VF.valeur());
 
-  Quadrature_base& quad = domaine.create_quadrature(5);
-  DoubleTab& integ_points = quad.get_integ_points();
+  const Quadrature_base& quad = domaine.get_quadrature(5);
+  const DoubleTab& integ_points = quad.get_integ_points();
   int nb_pts_integ = quad.nb_pts_integ();
+  int nb_elem_tot = domaine.nb_elem_tot();
 
-  int nb_elem = domaine.nb_elem();
+  DoubleTab values;
+  values.ref_tab(valeurs_,0,nb_elem_tot);
+  values.reshape(nb_elem_tot*nb_pts_integ,1);
 
-  DoubleTab position, values;
-
-  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
-    {
-      position.ref_tab(integ_points, num_elem,1);
-      position.reshape(nb_pts_integ, Objet_U::dimension);
-
-      values.ref_tab(valeurs_, num_elem, 1);
-      values.reshape(nb_pts_integ, 1);
-
-      ch.valeur_aux(position, values);
-    }
+  ch.valeur_aux(integ_points, values);
 
   return *this;
 }

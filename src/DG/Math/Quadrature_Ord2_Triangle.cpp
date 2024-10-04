@@ -20,7 +20,6 @@
 /****************************************************************/
 namespace
 {
-static constexpr int NB_PTS_INTEG_FACETS = 3;
 static constexpr double WEIGHTS[3] = {1. / 3, 1. / 3, 1. / 3};
 static constexpr double WEIGHTS_FACETS[3] = {1./6, 4./6, 1./6};
 /*static constexpr double LAMBDA[3][3] = {
@@ -38,48 +37,36 @@ static constexpr double LAMBDA_FACETS[3][2] =
   {1./2, 1./2},
   {0., 1.}
 }; // Barycentric coordinates coefficients of integration points on facets */
-static constexpr int ORDER = 2;
 }
 
-Implemente_instanciable(Quadrature_Ord2_Triangle,"Quadrature_Ord2_Triangle",Quadrature_base);
 
-Sortie& Quadrature_Ord2_Triangle::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Quadrature_Ord2_Triangle::readOn(Entree& s )
-{
-  return s;
-}
 
 void Quadrature_Ord2_Triangle::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
   int nb_elem_tot = dom_->nb_elem_tot();
-  int nb_pts_integ = 3;
   int ndim = Objet_U::dimension;
   const DoubleTab& xv = dom_->xv(); // facets barycentre
   const IntTab& elem_faces = dom_->elem_faces();
 
-  integ_points_.resize(nb_elem_tot, nb_pts_integ, ndim); // three point per element, 2D -> 1*2 = 2 columns
-  weights_.resize(nb_pts_integ);
+  integ_points_.resize(nb_elem_tot*nb_pts_integ_, ndim); // three point per element, 2D -> 1*2 = 2 columns
+  weights_.resize(nb_pts_integ_);
 
   for (int e = 0; e < nb_elem_tot; e++)
     {
-      for (int pts = 0; pts < nb_pts_integ; pts++)
+      for (int pts = 0; pts < nb_pts_integ_; pts++)
         {
           for (int dim = 0; dim < ndim; dim++)
-            integ_points_(e, pts, dim) = xv(elem_faces(e, pts), dim);
+            integ_points_(e*nb_pts_integ_ + pts, dim) = xv(elem_faces(e, pts), dim);
         }
     }
   // We ensure that sum(weights)=1;
-  weights_[nb_pts_integ-1] = 1;
-  for (int pts = 0; pts < nb_pts_integ - 1; pts++)
+  weights_[nb_pts_integ_-1] = 1;
+  for (int pts = 0; pts < nb_pts_integ_- 1; pts++)
     {
       weights_[pts] = ::WEIGHTS[pts];
-      weights_[nb_pts_integ-1] -= weights_(pts);
+      weights_[nb_pts_integ_-1] -= weights_(pts);
     }
 }
 
@@ -92,17 +79,16 @@ void Quadrature_Ord2_Triangle::compute_integ_points_on_facet()
   int ndim = Objet_U::dimension;
   DoubleTab& xs = dom_->domaine().les_sommets(); // facets barycentre
   IntTab& face_sommets = dom_->face_sommets();
-  int nb_pts_integ = NB_PTS_INTEG_FACETS;
 
-  integ_points_facets_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
-  weights_facets_.resize(nb_pts_integ);
+  integ_points_facets_.resize(nb_faces, nb_pts_integ_facets_, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
+  weights_facets_.resize(nb_pts_integ_facets_);
 
   // We ensure that sum(weights)=1 and sum(Lambda[i])=1
-  DoubleTab lambda_facets(nb_pts_integ, ndim);
-  weights_facets_[nb_pts_integ-1] = 1;
-  for (int pts = 0; pts < nb_pts_integ; pts++)
+  DoubleTab lambda_facets(nb_pts_integ_facets_, ndim);
+  weights_facets_[nb_pts_integ_facets_-1] = 1;
+  for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
     {
-      if (pts < nb_pts_integ )
+      if (pts < nb_pts_integ_facets_ )
         {
           weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
 //          weights_facets_(nb_pts_integ-1) -= weights_facets_(pts);
@@ -113,7 +99,7 @@ void Quadrature_Ord2_Triangle::compute_integ_points_on_facet()
 
   for (int f = 0; f < nb_faces; f++)
     {
-      for (int pts = 0; pts < nb_pts_integ; pts++)
+      for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
         {
           for (int dim = 0; dim < ndim; dim++)
             {

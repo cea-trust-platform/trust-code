@@ -54,7 +54,7 @@ inline void Eval_Puiss_Th_DG_Elem::calculer_terme_source(const int e, Type_Doubl
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, la_zcl->inconnue().valeur());
   const Domaine_DG& dom = ref_cast(Domaine_DG, le_dom.valeur());
 
-  Quadrature_base& quad = dom.create_quadrature(5);
+  const Quadrature_base& quad = dom.get_quadrature(5);
   int nb_pts_integ = quad.nb_pts_integ();
   const int nb_bfunc = ch.nb_bfunc();
 

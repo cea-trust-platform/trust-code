@@ -18,15 +18,16 @@
 #include <TRUSTTabs_forward.h>
 #include <Parser_U.h>
 #include <Domaine_DG.h>
-#include <Objet_U.h>
 #include <Matrice_Morse_Sym.h>
 
-class Quadrature_base : public Objet_U
+class Quadrature_base
 {
-  Declare_base(Quadrature_base);
 public:
+  Quadrature_base(const Domaine_DG& dom) : dom_(dom), nb_pts_integ_(-1), nb_pts_integ_facets_(-1)
+  { }
 
-  inline DoubleTab& get_integ_points() { return integ_points_; }
+  virtual ~Quadrature_base() {}
+
   inline const DoubleTab& get_integ_points() const { return integ_points_; }
   inline const DoubleTab& get_integ_points_facets() const { return integ_points_facets_; }
 
@@ -43,21 +44,8 @@ public:
    */
   virtual void compute_integ_points_on_facet() = 0;
 
-  /*! Compute the mass matrix
-   */
-
-  virtual int order() const=0;
-  virtual int nb_pts_integ() const=0;
-  virtual int nb_pts_integ_facets() const=0;
-
-
-
-  /*! Compute for a elem the projection of a function on the basis functions
-   */
-//  virtual DoubleTab compute_projection_on_elem(const DoubleTab& val_pts_integer) const = 0;
-
-  void associer_domaine(const Domaine_DG& dom);
-  void initialiser_weights_and_points();
+  inline int nb_pts_integ() const { return nb_pts_integ_; }
+  inline int nb_pts_integ_facets() const { return nb_pts_integ_facets_; }
 
   /*! Compute the integral of a function on the whole domain
    */
@@ -89,16 +77,16 @@ public:
 
 protected:
   REF(Domaine_DG) dom_;
+
+  int nb_pts_integ_;
+  int nb_pts_integ_facets_;
+
   Parser_U parser_; // why not?
 
   DoubleTab integ_points_; // number of cols (line size) will vary according to order of the method and element type
   DoubleTab integ_points_facets_;
   DoubleTab weights_;
   DoubleTab weights_facets_;
-
-  Matrice_Morse_Sym mass_matrix_;
-  Matrice_Morse_Sym inv_mass_matrix_;
-
 
 };
 

@@ -144,7 +144,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
 
-  Quadrature_base& quad = domaine.create_quadrature(2);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
   int nb_pts_integ = quad.nb_pts_integ();
 
@@ -357,7 +357,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec_(const DoubleTab& inco, Matrice_Morse& m
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
 
-  Quadrature_base& quad = domaine.create_quadrature(2);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
   int nordre = ch.get_order();
 

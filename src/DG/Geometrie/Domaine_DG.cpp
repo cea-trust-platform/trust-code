@@ -33,6 +33,10 @@
 #include <EChaine.h>
 #include <Interprete_bloc.h>
 #include <Quadrature_base.h>
+#include <Quadrature_Ord1_Triangle.h>
+#include <Quadrature_Ord2_Triangle.h>
+#include <Quadrature_Ord5_Triangle.h>
+
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
 
@@ -45,34 +49,15 @@ void Domaine_DG::discretiser()
   Domaine_Poly_base::discretiser();
 
   calculer_h_carre();
-}
 
-Quadrature_base& Domaine_DG::create_quadrature(const int& order_quad) const
-{
+  Quadrature_base* quad1 = new Quadrature_Ord1_Triangle(*this);
+  Quadrature_base* quad2 = new Quadrature_Ord2_Triangle(*this);
+  Quadrature_base* quad5 = new Quadrature_Ord5_Triangle(*this);
 
-  Nom type_quadrature="Quadrature_Ord"+std::to_string(order_quad)+"_Triangle"; //Todo DG varier avec type_elem + renommer ordre ?
-  Nom nom_quadrature = type_quadrature+"_"+domaine().le_nom();
+  set_quadrature(1, quad1);
+  set_quadrature(2, quad2);
+  set_quadrature(5, quad5);
 
-  // Creation
-  Cerr << "Creating a quadrature named " << nom_quadrature << " based on the domain " << domaine().le_nom() << finl;
-
-  Interprete_bloc& interp = Interprete_bloc::interprete_courant();
-  if (interp.objet_global_existant(nom_quadrature))
-    {
-      Cerr << "Quadrature " << nom_quadrature << " already exists, writing to this object." << finl;
-      Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
-      return quad;
-    }
-  else
-    {
-      DerObjU ob;
-      ob.typer(type_quadrature);
-      interp.ajouter(nom_quadrature, ob);
-
-      Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
-      quad.associer_domaine(*this);
-      return quad;
-    }
 }
 
 //TODO DG h_carre with diameter

@@ -19,9 +19,14 @@
 
 class Quadrature_Ord2_Triangle : public Quadrature_base
 {
-  Declare_instanciable(Quadrature_Ord2_Triangle);
 public:
-
+  Quadrature_Ord2_Triangle(const Domaine_DG& dom) : Quadrature_base(dom)
+  {
+    nb_pts_integ_ = 3;
+    nb_pts_integ_facets_ = 3;
+    compute_integ_points();
+    compute_integ_points_on_facet();
+  }
   /*! Compute for the whole domain the exact location of integration points per element
    */
   void compute_integ_points() override;
@@ -29,11 +34,6 @@ public:
   /*! Compute for the whole domain the exact location of integration points per facet
    */
   void compute_integ_points_on_facet() override;
-
-  inline int order() const override { return 2; }
-  inline int nb_pts_integ() const override { return 3; }
-  inline int nb_pts_integ_facets() const override { return 3; }
-
 
 };
 

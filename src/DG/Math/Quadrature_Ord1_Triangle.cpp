@@ -19,19 +19,6 @@ namespace
 {
 static constexpr double WEIGHTS[1] = {1.0};
 static constexpr double WEIGHTS_FACETS[1] = {1.0};
-static constexpr int ORDER = 1;
-}
-
-Implemente_instanciable(Quadrature_Ord1_Triangle,"Quadrature_Ord1_Triangle",Quadrature_base);
-
-Sortie& Quadrature_Ord1_Triangle::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Quadrature_Ord1_Triangle::readOn(Entree& s )
-{
-  return s;
 }
 
 
@@ -40,26 +27,25 @@ void Quadrature_Ord1_Triangle::compute_integ_points()
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
   int nb_elem_tot = dom_->nb_elem_tot();
-  int nb_pts_integ = ::ORDER; // one point per element, 2D -> 1*2 = 2 columns
   int ndim = Objet_U::dimension;
 
-  integ_points_.resize(nb_elem_tot, nb_pts_integ, ndim);
-  weights_.resize(nb_pts_integ);
+  integ_points_.resize(nb_elem_tot*nb_pts_integ_, ndim);
+  weights_.resize(nb_pts_integ_);
   const DoubleTab& xp = dom_->xp(); // barycentre elem
-  for (int pts = 0; pts < nb_pts_integ; pts++)
+  for (int e = 0; e < nb_elem_tot; e++) // TODO : Utiliser plutôt la fonction copy
     {
-      for (int e = 0; e < nb_elem_tot; e++) // TODO : Utiliser plutôt la fonction copy
+      for (int pts = 0; pts < nb_pts_integ_; pts++)
         {
           for (int dim = 0; dim < ndim; dim++)
-            integ_points_(e, pts, dim) = xp(e, dim);
+            integ_points_(e*nb_pts_integ_ + pts, dim) = xp(e, dim);
         }
     }
   // We ensure that sum(weights)=1;
-  weights_(nb_pts_integ-1)=1;
-  for (int pts = 0; pts < nb_pts_integ-1; pts++)
+  weights_(nb_pts_integ_-1)=1;
+  for (int pts = 0; pts < nb_pts_integ_-1; pts++)
     {
       weights_(pts) = ::WEIGHTS[pts];
-      weights_(nb_pts_integ-1)-=weights_(pts);
+      weights_(nb_pts_integ_-1)-=weights_(pts);
     }
 }
 
@@ -69,11 +55,10 @@ void Quadrature_Ord1_Triangle::compute_integ_points_on_facet()
 
   int nb_faces = dom_->nb_faces();
   DoubleTab& xv = dom_->xv(); // facets barycentre
-  int nb_pts_integ = ::ORDER;
 
-  weights_facets_.resize(nb_pts_integ);
-  integ_points_facets_.resize(nb_faces, ::ORDER, 2); // one point per facets, 2D -> 1*2 = 2 columns
-  for (int pts = 0; pts < nb_pts_integ; pts++)
+  weights_facets_.resize(nb_pts_integ_facets_);
+  integ_points_facets_.resize(nb_faces, nb_pts_integ_facets_, 2); // one point per facets, 2D -> 1*2 = 2 columns
+  for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
     {
       for (int f = 0; f < nb_faces; f++) // TODO : Utiliser plutôt la fonction copy
         {
@@ -82,9 +67,9 @@ void Quadrature_Ord1_Triangle::compute_integ_points_on_facet()
         }
       weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
     }
-  weights_facets_(nb_pts_integ-1)=1;
-  for (int pts = 0; pts < nb_pts_integ-1; pts++)
+  weights_facets_(nb_pts_integ_facets_-1)=1;
+  for (int pts = 0; pts < nb_pts_integ_facets_-1; pts++)
     {
-      weights_facets_(nb_pts_integ-1)-=weights_facets_(pts);
+      weights_facets_(nb_pts_integ_facets_-1)-=weights_facets_(pts);
     }
 }

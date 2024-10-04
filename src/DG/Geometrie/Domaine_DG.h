@@ -28,14 +28,29 @@ class Domaine_DG : public Domaine_Poly_base
 public :
   void discretiser() override;
 
-  Quadrature_base& create_quadrature(const int& order_quad) const;
+
+  inline void set_quadrature(int order, const Quadrature_base* quad);
+  inline const Quadrature_base& get_quadrature(int order) const;
 
 //  void calculer_h_carre() override;
 
 
 private:
 
+  std::map<int, const Quadrature_base*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
+
 };
+
+void Domaine_DG::set_quadrature(int order, const Quadrature_base* quad)
+{
+  assert(quad_map_.count(order) == 0); // fail if a quadrature is already registered for this order
+  quad_map_[order] = quad;
+}
+
+const Quadrature_base& Domaine_DG::get_quadrature(int order) const
+{
+  return *quad_map_.at(order);
+}
 
 
 #endif /* Domaine_DG_included */

@@ -71,7 +71,7 @@ void Champ_Elem_DG::build_mass_matrix()
 
   int current_indice = 0;
 
-  Quadrature_base& quad = domaine.create_quadrature(2);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   int nb_pts_integ = quad.nb_pts_integ();
 
   DoubleTab fbase(nb_bfunc_, nb_pts_integ);
@@ -215,8 +215,8 @@ void Champ_Elem_DG::eval_bfunc(const Quadrature_base& quad, const int& nelem, Do
           fbasis(0, pt) = 1;
           if (order_ == 0) continue;
 
-          fbasis(1, pt) = (integ_points(nelem, pt, 0) - xp(nelem,0))*invh;
-          fbasis(2, pt) = (integ_points(nelem, pt, 1) - xp(nelem,1))*invh;
+          fbasis(1, pt) = (integ_points(nelem*nb_pts_integ + pt, 0) - xp(nelem,0))*invh;
+          fbasis(2, pt) = (integ_points(nelem*nb_pts_integ + pt, 1) - xp(nelem,1))*invh;
 
           if (order_ == 1) continue;
           throw;
@@ -388,37 +388,33 @@ Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
 
-  Quadrature_base& quad = domaine.create_quadrature(5); // if Uniforme remplissage automatique
+  const Quadrature_base& quad = domaine.get_quadrature(5); // if Uniforme remplissage automatique
   //sinon interdit d'avoir 1
 
   //creation d'un DoubleTab intermediaire pour recuperer les valeurs du champ ch sur les points de quadrature ?
-  DoubleTab& integ_points = quad.get_integ_points();
+  const DoubleTab& integ_points = quad.get_integ_points();
   int nb_pts_integ = quad.nb_pts_integ();
 
-  int nb_elem = domaine.nb_elem();
+  int nb_elem_tot = domaine.nb_elem_tot();
 
-  DoubleTab position;
   DoubleTab product(nb_pts_integ);
-  DoubleTab values(nb_pts_integ,1);
+  DoubleTab values(nb_elem_tot*nb_pts_integ,1);
   DoubleTab phi_rhs(nb_bfunc_);
   DoubleTab res;
 
   DoubleTab fbase(nb_bfunc_, nb_pts_integ);
 
+  ch.valeur_aux(integ_points, values);
 
-  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+  for (int num_elem = 0; num_elem < nb_elem_tot; num_elem++)
     {
-      position.ref_tab(integ_points, num_elem,1);
-      position.reshape(nb_pts_integ, Objet_U::dimension);
-
-      ch.valeur_aux(position, values);
 
       eval_bfunc(quad, num_elem, fbase);
 
       for (int fb = 0; fb < nb_bfunc_; fb++)
         {
           for (int k = 0; k < nb_pts_integ ; k++)
-            product(k) = values(k,0) * fbase(fb, k);
+            product(k) = values(num_elem*nb_pts_integ + k,0) * fbase(fb, k);
 
           phi_rhs(fb) = quad.compute_integral_on_elem(num_elem, product);
         }
@@ -440,7 +436,7 @@ DoubleTab& Champ_Elem_DG::valeur_aux_elems(const DoubleTab& positions, const Int
 
   const DoubleVect& volume = domaine.volumes();
 
-  Quadrature_base& quad = domaine.create_quadrature(5);
+  const Quadrature_base& quad = domaine.get_quadrature(5);
   int nb_pts_integ = quad.nb_pts_integ();
 
   const Champ_base& ch_base = le_champ();
