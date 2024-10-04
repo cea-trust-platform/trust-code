@@ -31,16 +31,26 @@
 
 #include <Domaine_forward.h>
 
-class Raffiner_anisotrope : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Raffiner_anisotrope_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Raffiner_anisotrope);
+  Declare_instanciable_32_64(Raffiner_anisotrope_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using ArrOfDouble_t = ArrOfDouble_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;
-  void raffiner_(Domaine&);
+  void raffiner_(Domaine_t&);
 
 };
+
+using Raffiner_anisotrope = Raffiner_anisotrope_32_64<int>;
+using Raffiner_anisotrope_64 = Raffiner_anisotrope_32_64<trustIdType>;
 
 #endif
 

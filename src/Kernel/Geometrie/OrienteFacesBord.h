@@ -28,11 +28,18 @@
 
 #include <Domaine_forward.h>
 
-class OrienteFacesBord : public Interprete_geometrique_base
+template <typename _SIZE_>
+class OrienteFacesBord_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(OrienteFacesBord);
+  Declare_instanciable_32_64(OrienteFacesBord_32_64);
 
-public :
+public:
+  using int_t = _SIZE_;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;
 
@@ -40,6 +47,9 @@ private:
 
   void oriente_faces_bord(const Nom& nom_dom);
 };
+
+using OrienteFacesBord = OrienteFacesBord_32_64<int>;
+using OrienteFacesBord_64 = OrienteFacesBord_32_64<trustIdType>;
 
 #endif
 

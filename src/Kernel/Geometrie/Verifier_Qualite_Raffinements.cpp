@@ -18,39 +18,45 @@
 #include <TRUSTArray.h>
 #include <SFichier.h>
 
-Implemente_instanciable(Verifier_Qualite_Raffinements,"Verifier_Qualite_Raffinements",Interprete_geometrique_base) ;
+Implemente_instanciable_32_64(Verifier_Qualite_Raffinements_32_64,"Verifier_Qualite_Raffinements",Interprete_geometrique_base_32_64<_T_>) ;
 // XD verifier_qualite_raffinements interprete verifier_qualite_raffinements 0 not_set
 // XD  attr domain_names vect_nom domain_names 0 not_set
 
-Sortie& Verifier_Qualite_Raffinements::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Verifier_Qualite_Raffinements_32_64<_SIZE_>::printOn(Sortie& os) const
 {
-  Interprete_geometrique_base::printOn(os);
+  Interprete_geometrique_base_32_64<_SIZE_>::printOn(os);
   return os;
 }
 
-Entree& Verifier_Qualite_Raffinements::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Verifier_Qualite_Raffinements_32_64<_SIZE_>::readOn(Entree& is)
 {
-  Interprete_geometrique_base::readOn(is);
+  Interprete_geometrique_base_32_64<_SIZE_>::readOn(is);
   return is;
 }
 
 static void compute_triangle_side_lengths(const ArrOfDouble& x,const ArrOfDouble& y,ArrOfDouble& l)
 {
-  double dx,dy;
   for (int i=0; i<3; ++i)
     {
-      dx = x[(i+1)%3] - x[i];
-      dy = y[(i+1)%3] - y[i];
+      const double dx = x[(i+1)%3] - x[i];
+      const double dy = y[(i+1)%3] - y[i];
       l[i] = sqrt(dx*dx + dy*dy);
     }
 }
 
-static void compute_cell_qualities_for_triangle(const Domaine& domain, ArrOfDouble& quality)
+template <typename _SIZE_>
+static void compute_cell_qualities_for_triangle(const Domaine_32_64<_SIZE_>& domain, ArrOfDouble_T<_SIZE_>& quality)
 {
-  const IntTab&    cells = domain.les_elems();
-  const DoubleTab& nodes = domain.les_sommets();
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
-  const int nb_cells = cells.dimension(0);
+  const IntTab_t&    cells = domain.les_elems();
+  const DoubleTab_t& nodes = domain.les_sommets();
+
+  const int_t nb_cells = cells.dimension(0);
   quality.resize_array(nb_cells);
 
 
@@ -58,9 +64,7 @@ static void compute_cell_qualities_for_triangle(const Domaine& domain, ArrOfDoub
   ArrOfDouble y(3);
   ArrOfDouble l(3);
 
-  double p,r,h;
-
-  for (int cell=0; cell<nb_cells; ++cell)
+  for (int_t cell=0; cell<nb_cells; ++cell)
     {
 
       for (int i=0; i<3; ++i)
@@ -71,9 +75,9 @@ static void compute_cell_qualities_for_triangle(const Domaine& domain, ArrOfDoub
 
       compute_triangle_side_lengths(x,y,l);
 
-      p = l[0]+l[1]+l[2];
-      r = sqrt(p*(p-l[0])*(p-l[1])*(p-l[2]))/p;
-      h = (l[0] > l[1]) ? ( (l[0]>l[2]) ? l[0] : l[2]) : ( (l[1]>l[2]) ? l[1] : l[2] );
+      const double p = l[0]+l[1]+l[2];
+      const double r = sqrt(p*(p-l[0])*(p-l[1])*(p-l[2]))/p;
+      const double h = (l[0] > l[1]) ? ( (l[0]>l[2]) ? l[0] : l[2]) : ( (l[1]>l[2]) ? l[1] : l[2] );
 
       quality[cell] = ( h / r );
     }
@@ -82,15 +86,14 @@ static void compute_cell_qualities_for_triangle(const Domaine& domain, ArrOfDoub
 static double compute_tetrahedron_diameter(const ArrOfDouble& x,const ArrOfDouble& y,const ArrOfDouble& z)
 {
   double diameter = 0.;
-  double dx,dy,dz,l;
   for (int i=0; i<4; ++i)
     {
       for (int j=i+1; j<4; ++j)
         {
-          dx = x[j]-x[i];
-          dy = y[j]-y[i];
-          dz = z[j]-z[i];
-          l = dx*dx + dy*dy + dz*dz;
+          const double dx = x[j]-x[i];
+          const double dy = y[j]-y[i];
+          const double dz = z[j]-z[i];
+          const double l = dx*dx + dy*dy + dz*dz;
           diameter = (diameter < l) ? l : diameter;
         }
     }
@@ -168,21 +171,24 @@ static double compute_tetrahedron_surface(const ArrOfDouble& x,const ArrOfDouble
   return surface;
 }
 
-static void compute_cell_qualities_for_tetrahedron(const Domaine& domain, ArrOfDouble& quality)
+template <typename _SIZE_>
+static void compute_cell_qualities_for_tetrahedron(const Domaine_32_64<_SIZE_>& domain, ArrOfDouble_T<_SIZE_>& quality)
 {
-  const IntTab&    cells = domain.les_elems();
-  const DoubleTab& nodes = domain.les_sommets();
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
-  const int nb_cells = cells.dimension(0);
+  const IntTab_t&    cells = domain.les_elems();
+  const DoubleTab_t& nodes = domain.les_sommets();
+
+  const int_t nb_cells = cells.dimension(0);
   quality.resize_array(nb_cells);
 
   ArrOfDouble x(4);
   ArrOfDouble y(4);
   ArrOfDouble z(4);
 
-  double h,s,v;
-
-  for (int cell=0; cell<nb_cells; ++cell)
+  for (int_t cell=0; cell<nb_cells; ++cell)
     {
 
       for (int i=0; i<4; ++i)
@@ -192,15 +198,16 @@ static void compute_cell_qualities_for_tetrahedron(const Domaine& domain, ArrOfD
           z[i] = nodes(cells(cell,i),2);
         }
 
-      h = compute_tetrahedron_diameter(x,y,z);
-      v = compute_tetrahedron_volume(x,y,z);
-      s = compute_tetrahedron_surface(x,y,z);
+      const double h = compute_tetrahedron_diameter(x,y,z);
+      const double v = compute_tetrahedron_volume(x,y,z);
+      const double s = compute_tetrahedron_surface(x,y,z);
 
       quality[cell] = ( (h*s) / v );
     }
 }
 
-static void compute_cell_qualities(const Domaine& domain, ArrOfDouble& quality)
+template <typename _SIZE_>
+static void compute_cell_qualities(const Domaine_32_64<_SIZE_>& domain, ArrOfDouble_T<_SIZE_>& quality)
 {
   const Nom& cell_type = domain.type_elem()->que_suis_je();
 
@@ -225,23 +232,24 @@ static void compute_cell_qualities(const Domaine& domain, ArrOfDouble& quality)
     }
 }
 
-void Verifier_Qualite_Raffinements::verifier_qualite_raffinements()
+template <typename _SIZE_>
+void Verifier_Qualite_Raffinements_32_64<_SIZE_>::verifier_qualite_raffinements()
 {
-  const int nb_domains = domaines().size() ;
+  const int nb_domains = this->domaines().size() ;
   assert( nb_domains > 1 );
 
   for (int i=0; i<nb_domains; ++i)
     {
-      ArrOfDouble qualities;
-      compute_cell_qualities(domaine(i),qualities);
+      ArrOfDouble_t qualities;
+      compute_cell_qualities(this->domaine(i),qualities);
 
       Nom filename("quality_");
       filename += Nom(i);
       filename += Nom(".gnu");
 
       SFichier os(filename);
-      const int nb_cells = qualities.size_array();
-      for (int cell=0; cell<nb_cells; ++cell)
+      const int_t nb_cells = qualities.size_array();
+      for (int_t cell=0; cell<nb_cells; ++cell)
         {
           os << qualities[cell] << finl;
         }
@@ -249,16 +257,21 @@ void Verifier_Qualite_Raffinements::verifier_qualite_raffinements()
     }
 }
 
-
-Entree& Verifier_Qualite_Raffinements::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Verifier_Qualite_Raffinements_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   int nb_refinements;
   is >> nb_refinements;
 
   for (int i=0; i<nb_refinements; ++i)
     {
-      associer_domaine(is);
+      this->associer_domaine(is);
     }
   verifier_qualite_raffinements();
   return is;
 }
+
+template class Verifier_Qualite_Raffinements_32_64<int>;
+#if INT_is_64_ == 2
+template class Verifier_Qualite_Raffinements_32_64<trustIdType>;
+#endif

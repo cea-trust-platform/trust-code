@@ -28,16 +28,25 @@
 
 #include <Domaine_forward.h>
 
-class Modif_bord_to_raccord : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Modif_bord_to_raccord_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Modif_bord_to_raccord);
+  Declare_instanciable_32_64(Modif_bord_to_raccord_32_64);
 
 public :
+  using Bord_t = Bord_32_64<_SIZE_>;
+  using Bords_t = Bords_32_64<_SIZE_>;
+  using Raccord_t = OWN_PTR(Raccord_base_32_64<_SIZE_>);
+  using Raccord_base_t = Raccord_base_32_64<_SIZE_>;
+  using Raccords_t = Raccords_32_64<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;
-
-
 };
+
+using Modif_bord_to_raccord = Modif_bord_to_raccord_32_64<int>;
+using Modif_bord_to_raccord_64 = Modif_bord_to_raccord_32_64<trustIdType>;
 
 #endif
 

@@ -16,9 +16,8 @@
 #ifndef Transformer_included
 #define Transformer_included
 
+#include <Interprete_geometrique_base.h>
 #include <Domaine.h>
-
-
 
 /*! @brief Classe Transformer Applique un changement de coordonnees
  *
@@ -27,17 +26,27 @@
  *
  *
  */
-#include <Interprete_geometrique_base.h>
-class Transformer : public Interprete_geometrique_base
+
+template <typename _SIZE_>
+class Transformer_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Transformer);
+  Declare_instanciable_32_64(Transformer_32_64);
 public :
+  using int_t = _SIZE_;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+
+  using Bords_t = Bords_32_64<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree&) override;
 
-  void transformer(Domaine&, Noms&);
+  void transformer(Domaine_t&, Noms&);
   void transformation_complete(Noms& les_fcts);
   void verifie_type_elem();
-
 };
+
+using Transformer = Transformer_32_64<int>;
+using Transformer_64 = Transformer_32_64<trustIdType>;
+
 #endif
 

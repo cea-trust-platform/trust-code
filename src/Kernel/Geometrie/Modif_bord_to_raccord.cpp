@@ -16,42 +16,50 @@
 #include <Modif_bord_to_raccord.h>
 #include <EFichier.h>
 
-Implemente_instanciable(Modif_bord_to_raccord,"Modif_bord_to_raccord",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Modif_bord_to_raccord_32_64,"Modif_bord_to_raccord",Interprete_geometrique_base_32_64<_T_>);
 // XD modif_bord_to_raccord interprete modif_bord_to_raccord -1 Keyword to convert a boundary of domain_name domain of kind Bord to a boundary of kind Raccord (named boundary_name). It is useful when using meshes with boundaries of kind Bord defined and to run a coupled calculation.
 // XD  attr domaine ref_domaine domain 0 Name of domain
 // XD  attr nom_bord chaine nom_bord 0 Name of the boundary to transform.
 
-Sortie& Modif_bord_to_raccord::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Modif_bord_to_raccord_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& Modif_bord_to_raccord::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Modif_bord_to_raccord_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Entree& Modif_bord_to_raccord::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Modif_bord_to_raccord_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   Nom nom_bord;
-  associer_domaine(is);
+  this->associer_domaine(is);
   is>>nom_bord;
-  Domaine& dom=domaine();
+  Domaine_t& dom = this->domaine();
 
-  Bord& bord=dom.bord(nom_bord);
+  Bord_t& bord=dom.bord(nom_bord);
 
-  Raccords& listrac=dom.faces_raccord();
+  Raccords_t& listrac=dom.faces_raccord();
 
-  Raccord racc_base;
+  Raccord_t racc_base;
   racc_base.typer("Raccord_local_homogene");
-  Raccord_base& racc=racc_base.valeur();
+  Raccord_base_t& racc=racc_base.valeur();
 
   // on caste en Frontiere pour pouvoir faire la copie ...
-  ref_cast(Frontiere,racc)=ref_cast(Frontiere,bord);
+  ref_cast(Frontiere_t,racc)=ref_cast(Frontiere_t,bord);
   listrac.add(racc_base);
 
-  Bords& listbord=dom.faces_bord();
+  Bords_t& listbord=dom.faces_bord();
   listbord.suppr(dom.bord(nom_bord));
   dom.fixer_premieres_faces_frontiere();
   return is;
 }
+
+template class Modif_bord_to_raccord_32_64<int>;
+#if INT_is_64_ == 2
+template class Modif_bord_to_raccord_32_64<trustIdType>;
+#endif

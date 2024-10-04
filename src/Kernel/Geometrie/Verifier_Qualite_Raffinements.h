@@ -26,17 +26,24 @@
  *
  */
 
-class Verifier_Qualite_Raffinements : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Verifier_Qualite_Raffinements_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
 
-  Declare_instanciable(Verifier_Qualite_Raffinements) ;
+  Declare_instanciable_32_64(Verifier_Qualite_Raffinements_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using ArrOfDouble_t = ArrOfDouble_T<_SIZE_>;
+
   Entree& interpreter_(Entree& is) override;
 
 protected :
   void verifier_qualite_raffinements();
 
 };
+
+using Verifier_Qualite_Raffinements = Verifier_Qualite_Raffinements_32_64<int>;
+using Verifier_Qualite_Raffinements_64 = Verifier_Qualite_Raffinements_32_64<trustIdType>;
 
 #endif /* Verifier_Qualite_Raffinements_inclus */

@@ -16,27 +16,30 @@
 #include <RegroupeBord.h>
 #include <EFichier.h>
 
-Implemente_instanciable(RegroupeBord,"RegroupeBord",Interprete_geometrique_base);
+Implemente_instanciable_32_64(RegroupeBord_32_64,"RegroupeBord",Interprete_geometrique_base_32_64<_T_>);
 // XD regroupebord interprete regroupebord -1 Keyword to build one boundary new_bord with several boundaries of the domain named domaine.
 // XD   attr domaine ref_domaine domain 0 Name of domain
 // XD   attr new_bord chaine new_bord 0 Name of the new boundary
 // XD   attr bords bloc_lecture bords 0 { Bound1 Bound2 }
 
-Sortie& RegroupeBord::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& RegroupeBord_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& RegroupeBord::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& RegroupeBord_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Entree& RegroupeBord::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& RegroupeBord_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   Nom nom;
   LIST(Nom) nlistbord;
-  associer_domaine(is);
+  this->associer_domaine(is);
   is >> nom;
 
   //is>>nlistbord;
@@ -47,7 +50,7 @@ Entree& RegroupeBord::interpreter_(Entree& is)
     if (mot!="{")
       {
         Cerr<< "we expected { and not "<<mot<<finl;
-        exit();
+        this->exit();
       }
     is >>mot;
     while (mot!="}")
@@ -57,14 +60,14 @@ Entree& RegroupeBord::interpreter_(Entree& is)
       }
   }
 
-  Domaine& dom=domaine();
+  Domaine_t& dom = this->domaine();
   // test pour savoir si la frontiere a regrouper est valide
   // i.e : si frontiere est une frontiere du domaine  : on applique regroupe_bord()
   LIST(Nom) nlistbord_dom; // liste stockant tous les noms de frontiere du domaine
   int nbfr=dom.nb_front_Cl();
   for (int b=0; b<nbfr; b++)
     {
-      Frontiere& org=dom.frontiere(b);
+      Frontiere_t& org=dom.frontiere(b);
       nlistbord_dom.add(org.le_nom());
     }
   for (int i=0; i<nlistbord.size(); i++)
@@ -73,7 +76,7 @@ Entree& RegroupeBord::interpreter_(Entree& is)
         {
           Cerr << "Problem in the RegroupeBord instruction " << finl;
           Cerr << "The boundary named " << nlistbord[i] << " is not a boundary of the domain " << dom.le_nom() << finl;
-          exit();
+          this->exit();
 
         }
     }
@@ -82,14 +85,14 @@ Entree& RegroupeBord::interpreter_(Entree& is)
   return is;
 }
 
-
-void RegroupeBord::rassemble_bords(Domaine& dom)
+template <typename _SIZE_>
+void RegroupeBord_32_64<_SIZE_>::rassemble_bords(Domaine_t& dom)
 {
   int nbfr=dom.nb_front_Cl();
   for (int b=0; b<nbfr; b++)
     {
 
-      Frontiere& org=dom.frontiere(b);
+      Frontiere_t& org=dom.frontiere(b);
       const Nom& nom_bord=org.le_nom();
 
       LIST(Nom) listn;
@@ -105,15 +108,16 @@ void RegroupeBord::rassemble_bords(Domaine& dom)
     }
 }
 
-void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord)
+template <typename _SIZE_>
+void RegroupeBord_32_64<_SIZE_>::regroupe_bord(Domaine_t& dom, Nom nom,const LIST(Nom)& nlistbord)
 {
   int nbfr=dom.nb_front_Cl();
-  int nbfacestot=0;
+  int_t nbfacestot=0;
   int prem_b=-1;
 
   for (int b=0; b<nbfr; b++)
     {
-      Frontiere& org=dom.frontiere(b);
+      Frontiere_t& org=dom.frontiere(b);
 
       if (nlistbord.contient(org.le_nom()))
         {
@@ -122,28 +126,28 @@ void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbor
           nbfacestot+=org.nb_faces();
         }
     }
-  Frontiere& newb=dom.frontiere(prem_b);
+  Frontiere_t& newb=dom.frontiere(prem_b);
 
 
-  Faces& newfaces=newb.faces();
+  Faces_t& newfaces=newb.faces();
   //newfaces.typer(domaine.frontiere(0).faces().type_face());
   int nbsom=newfaces.nb_som_faces();
-  int nbfacestot0=newfaces.nb_faces();
+  int_t nbfacestot0=newfaces.nb_faces();
   newfaces.dimensionner(nbfacestot);
-  IntTab& newsommet=newfaces.les_sommets();
-  nbfacestot=nbfacestot0;
+  IntTab_t& newsommet=newfaces.les_sommets();
+  nbfacestot = nbfacestot0;
   for (int b=0; b<nbfr; b++)
     {
       if (b!=prem_b)
         {
-          Frontiere& org=dom.frontiere(b);
+          Frontiere_t& org=dom.frontiere(b);
           Nom nombord=org.le_nom();
 
           if (nlistbord.contient(nombord))
             {
-              const IntTab& sommets=org.faces().les_sommets();
-              int nbface=org.nb_faces();
-              for (int fa=0; fa<nbface; fa++)
+              const IntTab_t& sommets=org.faces().les_sommets();
+              int_t nbface=org.nb_faces();
+              for (int_t fa=0; fa<nbface; fa++)
                 for (int s=0; s<nbsom; s++)
                   newsommet(fa+nbfacestot,s)=sommets(fa,s);
               nbfacestot+=org.nb_faces();
@@ -157,10 +161,10 @@ void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbor
     {
       // la recup des bords et des raccords est dans la boucle
       // pour pouvoir supprimer ...
-      Bords& listbord=dom.faces_bord();
-      Raccords& listrac=dom.faces_raccord();
+      Bords_t& listbord=dom.faces_bord();
+      Raccords_t& listrac=dom.faces_raccord();
       //const Nom& nombord=nlistbord[b];
-      Frontiere& org=dom.frontiere(b);
+      Frontiere_t& org=dom.frontiere(b);
       const Nom& nombord=org.le_nom();
 
       if (nlistbord.contient(nombord))
@@ -183,3 +187,8 @@ void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbor
   newb.nommer(nom);
   dom.fixer_premieres_faces_frontiere();
 }
+
+template class RegroupeBord_32_64<int>;
+#if INT_is_64_ == 2
+template class RegroupeBord_32_64<trustIdType>;
+#endif

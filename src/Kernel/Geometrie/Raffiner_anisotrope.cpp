@@ -16,69 +16,73 @@
 #include <Raffiner_anisotrope.h>
 #include <Scatter.h>
 
-Implemente_instanciable(Raffiner_anisotrope,"Raffiner_anisotrope",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Raffiner_anisotrope_32_64,"Raffiner_anisotrope",Interprete_geometrique_base_32_64<_T_>);
 // XD raffiner_anisotrope interprete raffiner_anisotrope -1 Only for VEF discretizations, allows to cut triangle elements in 3, or tetrahedra in 4 parts, by defining a new summit located at the center of the element: \includepng{{raffineranisotri.pdf}}{{4}} \includepng{{raffineranisotetra.jpeg}}{{6}} NL2 Note that such a cut creates flat elements (anisotropic).
 // XD attr domain_name ref_domaine domain_name 0 Name of domain.
 
 
-Sortie& Raffiner_anisotrope::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Raffiner_anisotrope_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& Raffiner_anisotrope::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Raffiner_anisotrope_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-Entree& Raffiner_anisotrope::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Raffiner_anisotrope_32_64<_SIZE_>::interpreter_(Entree& is)
 {
-  if (dimension == 2)
+  if (this->dimension == 2)
     {
       Cerr << "Refinement of each element into 3 new triangles... " <<finl;
     }
-  else if (dimension == 3)
+  else if (this->dimension == 3)
     {
       Cerr << "Refinement of each element into 4 new tetrahedra... " <<finl;
     }
   else
     {
-      Cerr << "we can not refine in dimension " << dimension <<finl;
-      exit();
+      Cerr << "we can not refine in dimension " << this->dimension <<finl;
+      this->exit();
     }
-  associer_domaine(is);
-  Scatter::uninit_sequential_domain(domaine());
-  raffiner_(domaine());
-  Scatter::init_sequential_domain(domaine());
+  this->associer_domaine(is);
+  Scatter::uninit_sequential_domain(this->domaine());
+  raffiner_(this->domaine());
+  Scatter::init_sequential_domain(this->domaine());
   Cerr << "Refinement... OK" << finl;
   return is;
 }
 
-void Raffiner_anisotrope::raffiner_(Domaine& domaine)
+template <typename _SIZE_>
+void Raffiner_anisotrope_32_64<_SIZE_>::raffiner_(Domaine_t& domaine)
 {
   if  ((domaine.type_elem()->que_suis_je() == "Triangle")
        ||(domaine.type_elem()->que_suis_je() == "Tetraedre"))
     {
-      Domaine& dom=domaine;
-      IntTab& les_elems=domaine.les_elems();
-      int oldsz=les_elems.dimension(0);
-      DoubleTab& sommets=dom.les_sommets();
-      int cpt=sommets.dimension(0);
+      Domaine_t& dom=domaine;
+      IntTab_t& les_elems=domaine.les_elems();
+      int_t oldsz=les_elems.dimension(0);
+      DoubleTab_t& sommets=dom.les_sommets();
+      int_t cpt=sommets.dimension(0);
       {
-        DoubleTab sommets_ajoutes(oldsz, dimension);
+        DoubleTab_t sommets_ajoutes(oldsz, this->dimension);
         domaine.type_elem()->calculer_centres_gravite(sommets_ajoutes);
-        sommets.resize(cpt+oldsz, dimension);
-        for(int i=0; i<oldsz; i++)
-          for(int j=0; j<dimension; j++)
+        sommets.resize(cpt+oldsz, this->dimension);
+        for(int_t i=0; i<oldsz; i++)
+          for(int j=0; j<this->dimension; j++)
             sommets(cpt+i,j)=sommets_ajoutes(i,j);
       }
 
       domaine.typer(domaine.type_elem()->que_suis_je());
-      IntTab new_elems((dimension+1)*oldsz, dimension+1);
+      IntTab_t new_elems((this->dimension+1)*oldsz, this->dimension+1);
 
-      if(dimension==2)
+      if(this->dimension==2)
         {
-          for(int i=0; i< oldsz; i++)
+          for(int_t i=0; i< oldsz; i++)
             {
               new_elems(i  , 0) = i+cpt;
               new_elems(i  , 1) = les_elems(i,0);
@@ -88,18 +92,18 @@ void Raffiner_anisotrope::raffiner_(Domaine& domaine)
               new_elems(i+oldsz, 1) = les_elems(i,0);
               new_elems(i+oldsz, 2) = les_elems(i,2);
 
-              mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
+              this->mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
 
               new_elems(i+2*oldsz, 0) = i+cpt;
               new_elems(i+2*oldsz, 1) = les_elems(i,1);
               new_elems(i+2*oldsz, 2) = les_elems(i,2);
 
-              mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
+              this->mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
             }
         }
       else
         {
-          for(int i=0; i< oldsz; i++)
+          for(int_t i=0; i< oldsz; i++)
             {
               new_elems(i  , 0) = i+cpt;
               new_elems(i  , 1) = les_elems(i,0);
@@ -111,28 +115,28 @@ void Raffiner_anisotrope::raffiner_(Domaine& domaine)
               new_elems(i+oldsz, 2) = les_elems(i,1);
               new_elems(i+oldsz, 3) = les_elems(i,3);
 
-              mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
+              this->mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
 
               new_elems(i+2*oldsz, 0) = i+cpt;
               new_elems(i+2*oldsz, 1) = les_elems(i,0);
               new_elems(i+2*oldsz, 2) = les_elems(i,2);
               new_elems(i+2*oldsz, 3) = les_elems(i,3);
 
-              mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
+              this->mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
 
               new_elems(i+3*oldsz, 0) = i+cpt;
               new_elems(i+3*oldsz, 1) = les_elems(i,1);
               new_elems(i+3*oldsz, 2) = les_elems(i,2);
               new_elems(i+3*oldsz, 3) = les_elems(i,3);
 
-              mettre_a_jour_sous_domaine(domaine,i,i+3*oldsz,1);
+              this->mettre_a_jour_sous_domaine(domaine,i,i+3*oldsz,1);
             }
         }
 
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      if (dimension == 2)
+      if (this->dimension == 2)
         Cerr << "We have split the triangles ..." << finl;
       else
         Cerr << "We have split the tetrahedra ..." << finl;
@@ -145,8 +149,12 @@ void Raffiner_anisotrope::raffiner_(Domaine& domaine)
     {
       Cerr << "We do not yet know how to Raffiner_anisotrope the "
            << domaine.type_elem()->que_suis_je() <<"s"<<finl;
-      exit();
+      this->exit();
     }
 }
 
 
+template class Raffiner_anisotrope_32_64<int>;
+#if INT_is_64_ == 2
+template class Raffiner_anisotrope_32_64<trustIdType>;
+#endif

@@ -32,18 +32,30 @@
 
 #include <Domaine_forward.h>
 
-class RegroupeBord : public Interprete_geometrique_base
+template <typename _SIZE_>
+class RegroupeBord_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(RegroupeBord);
+  Declare_instanciable_32_64(RegroupeBord_32_64);
 
 public :
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Faces_t = Faces_32_64<_SIZE_>;
+  using Bords_t = Bords_32_64<_SIZE_>;
+  using Raccords_t = Raccords_32_64<_SIZE_>;
 
   Entree& interpreter_(Entree&) override;
-  void regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord);
+  void regroupe_bord(Domaine_t& dom, Nom nom,const LIST(Nom)& nlistbord);
   // regroupe les bords de meme nom en un seul bord du meme nom
-  void rassemble_bords(Domaine& dom);
+  void rassemble_bords(Domaine_t& dom);
 
 };
+
+using RegroupeBord = RegroupeBord_32_64<int>;
+using RegroupeBord_64 = RegroupeBord_32_64<trustIdType>;
 
 #endif
 
