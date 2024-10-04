@@ -211,7 +211,7 @@ inline _TYPE_ mp_min_abs_vect(const TRUSTVect<_TYPE_,_SIZE_>& x, Mp_vect_options
 template<typename _TYPE_, typename _SIZE_>
 extern _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_,_SIZE_>& vy, Mp_vect_options opt=VECT_SEQUENTIAL_ITEMS);
 
-enum class TYPE_OPERATION_VECT_BIS { CARRE_ , SOMME_ };
+enum class TYPE_OPERATION_VECT_BIS { SQUARE_ , SOMME_ };
 
 template <typename _TYPE_, typename _SIZE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_ >
 extern _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_vect_options opt);
@@ -219,7 +219,7 @@ extern _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& 
 template<typename _TYPE_, typename _SIZE_>
 inline _TYPE_ local_carre_norme_vect(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt=VECT_SEQUENTIAL_ITEMS)
 {
-  return local_operations_vect_bis_generic<_TYPE_,_SIZE_,TYPE_OPERATION_VECT_BIS::CARRE_>(vx,opt);
+  return local_operations_vect_bis_generic<_TYPE_,_SIZE_,TYPE_OPERATION_VECT_BIS::SQUARE_>(vx,opt);
 }
 
 template<typename _TYPE_, typename _SIZE_>
@@ -326,7 +326,7 @@ inline void operator_egal(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<_TYPE_
   operator_vect_vect_generic<_TYPE_,_SIZE_,TYPE_OPERATOR_VECT::EGAL_>(resu,vx,opt);
 }
 
-enum class TYPE_OPERATOR_SINGLE { ADD_ , SUB_ , MULT_ , DIV_ , EGAL_ , NEGATE_ , INV_ , ABS_ , RACINE_CARRE_ , CARRE_ };
+enum class TYPE_OPERATOR_SINGLE { ADD_ , SUB_ , MULT_ , DIV_ , EGAL_ , NEGATE_ , INV_ , ABS_ , SQRT_ , SQUARE_ };
 
 template <typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_SINGLE _TYPE_OP_ >
 extern void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x, Mp_vect_options opt);
@@ -393,7 +393,7 @@ inline void racine_carree(TRUSTVect<int,_SIZE_>& resu, Mp_vect_options opt=VECT_
 template<typename _TYPE_, typename _SIZE_>
 inline void racine_carree(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt=VECT_ALL_ITEMS)
 {
-  operator_vect_single_generic<_TYPE_,_SIZE_,TYPE_OPERATOR_SINGLE::RACINE_CARRE_>(resu,0. /* inutile */,opt);
+  operator_vect_single_generic<_TYPE_,_SIZE_,TYPE_OPERATOR_SINGLE::SQRT_>(resu,0. /* inutile */,opt);
 }
 
 template<typename _SIZE_>
@@ -408,7 +408,7 @@ inline void racine_carree_(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt=V
 template<typename _TYPE_, typename _SIZE_>
 inline void carre(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt=VECT_ALL_ITEMS)
 {
-  operator_vect_single_generic<_TYPE_,_SIZE_,TYPE_OPERATOR_SINGLE::CARRE_>(resu,0. /* inutile */,opt);
+  operator_vect_single_generic<_TYPE_,_SIZE_,TYPE_OPERATOR_SINGLE::SQUARE_>(resu,0. /* inutile */,opt);
 }
 
 template<typename _TYPE_, typename _SIZE_>
@@ -422,7 +422,7 @@ inline void carre_(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt)
 
 // ==================================================================================================================================
 // DEBUT code pour operations speciales
-enum class TYPE_OPERATION_VECT_SPEC { ADD_ , CARRE_ };
+enum class TYPE_OPERATION_VECT_SPEC { ADD_ , SQUARE_ };
 
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_, typename _SIZE_>
 inline void ajoute_operation_speciale_generic(TRUSTVect<int,_SIZE_>& resu, int alpha, const TRUSTVect<int,_SIZE_>& vx, Mp_vect_options opt) = delete; // forbidden ... ajoute si besoin
@@ -439,7 +439,7 @@ inline void ajoute_alpha_v(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const T
 template<typename _TYPE_, typename _SIZE_>
 inline void ajoute_carre(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt=VECT_ALL_ITEMS)
 {
-  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_,_TYPE_>(resu,alpha,vx,opt);
+  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::SQUARE_,_TYPE_>(resu,alpha,vx,opt);
 }
 
 template<typename _TYPE_, typename _SIZE_>

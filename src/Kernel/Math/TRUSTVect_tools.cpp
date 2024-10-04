@@ -191,7 +191,7 @@ void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, con
               resu_view(resu_idx) *= ((_TYPE_)1 / x);
           }
       });
-      bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
@@ -274,10 +274,10 @@ void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TR
         const int resu_idx = begin_bloc + i ;
         if (IS_ADD) //done at compile time
           resu_view(resu_idx) += alpha * x;
-        else //If it's not ADD, it's CARRE
+        else //If it's not ADD, it's SQUARE
           resu_view(resu_idx) += alpha * x * x;
       });
-      bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
@@ -323,8 +323,8 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
 // Explicit instanciation for templates:
 template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::ADD_, double, int>(TRUSTVect<double, int>& resu, double alpha, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
 template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::ADD_, float, int>(TRUSTVect<float, int>& resu, float alpha, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
-template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_, double, int>(TRUSTVect<double, int>& resu, double alpha, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
-template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_, float, int>(TRUSTVect<float, int>& resu, float alpha, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
+template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::SQUARE_, double, int>(TRUSTVect<double, int>& resu, double alpha, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
+template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::SQUARE_, float, int>(TRUSTVect<float, int>& resu, float alpha, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
 
 #ifndef LATATOOLS
 namespace
@@ -362,7 +362,7 @@ void operator_vect_vect_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRU
         if (IS_DIV) resu_view(resu_idx) /= x;
         if (IS_EGAL) resu_view(resu_idx) = x;
       });
-      bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
@@ -418,19 +418,60 @@ template void operator_vect_vect_generic<double, int, TYPE_OPERATOR_VECT::EGAL_>
 template void operator_vect_vect_generic<int, int, TYPE_OPERATOR_VECT::EGAL_>(TRUSTVect<int, int>& resu, const TRUSTVect<int, int>& vx, Mp_vect_options opt);
 template void operator_vect_vect_generic<float, int, TYPE_OPERATOR_VECT::EGAL_>(TRUSTVect<float, int>& resu, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
 
-template <typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_SINGLE _TYPE_OP_ >
-void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x, Mp_vect_options opt)
+#ifndef LATATOOLS
+namespace
+{
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_SINGLE _TYPE_OP_>
+void operator_vect_single_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x, int nblocs_left,
+                                         Block_Iter<_SIZE_>& bloc_itr,  const int vect_size_tot, const int line_size)
 {
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::DIV_), IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::EGAL_),
                         IS_NEGATE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::NEGATE_), IS_INV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::INV_), IS_ABS = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ABS_),
-                        IS_RACINE_CARRE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::RACINE_CARRE_), IS_CARRE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::CARRE_);
+                        IS_SQRT = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SQRT_), IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SQUARE_);
 
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_,_SIZE_>& master_vect = resu;
-  const int line_size = master_vect.line_size();
-  const _SIZE_ vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
+  auto resu_view= resu.template view_rw<ExecSpace>();
+
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
+      const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
+      const int count = end_bloc - begin_bloc;
+
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+
+      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      {
+        const int resu_idx = begin_bloc + i ;
+
+        if (IS_SUB) resu_view(resu_idx) -= x;
+        if (IS_ADD) resu_view(resu_idx) += x;
+        if (IS_MULT) resu_view(resu_idx) *= x;
+        if (IS_EGAL) resu_view(resu_idx) = x;
+        if (IS_NEGATE) resu_view(resu_idx) = -resu_view(resu_idx);
+        if (IS_ABS) resu_view(resu_idx) = (_TYPE_) Kokkos::abs(resu_view(resu_idx));
+        if (IS_SQRT) resu_view(resu_idx) = (_TYPE_) Kokkos::sqrt(resu_view(resu_idx));
+        if (IS_SQUARE) resu_view(resu_idx)=resu_view(resu_idx)*resu_view(resu_idx);
+        if (IS_DIV) resu_view(resu_idx) /= x;
+        if (IS_INV) resu_view(resu_idx) = (_TYPE_) ((_TYPE_)1 /resu_view(resu_idx));
+      });
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+    }
+}
+}
+#endif
+
+
+template <typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_SINGLE _TYPE_OP_ >
+void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x, Mp_vect_options opt)
+{
+#ifndef LATATOOLS
+  const int line_size = resu.line_size();
+  const _SIZE_ vect_size_tot = resu.size_totale();
+  const MD_Vector& md = resu.get_md_vector();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
   Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
@@ -438,50 +479,18 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
   if (bloc_itr.empty()) return;
 
   bool kernelOnDevice = resu.checkDataOnDevice();
-  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
-  start_gpu_timer();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      _TYPE_ *resu_ptr = resu_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice)
-      for (_SIZE_ count=0; count < end_bloc - begin_bloc; count++)
-        {
-          _TYPE_ &p_resu = resu_ptr[count];
-          if (IS_ADD) p_resu += x;
-          if (IS_SUB) p_resu -= x;
-          if (IS_MULT) p_resu *= x;
-          if (IS_EGAL) p_resu = x;
-          if (IS_NEGATE) p_resu = -p_resu;
-          if (IS_ABS) p_resu = (_TYPE_) std::abs(p_resu);  // the proper specialisation of std::abs should be selected (int, long, float, double)
-          if (IS_RACINE_CARRE) p_resu = (_TYPE_) sqrt(p_resu);  // _TYPE_ casting just to pass 'int' instanciation of the template wo triggering -Wconversion warning
-          if (IS_CARRE) p_resu *= p_resu;
 
-          if (IS_DIV)
-            {
-#ifndef _OPENMP_TARGET
-              if (x == (_TYPE_)0) error_divide(__func__);
-#endif
-              p_resu /= x;
-            }
+  if (kernelOnDevice)
+    operator_vect_single_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_, _TYPE_OP_>(resu, x, nblocs_left, bloc_itr, vect_size_tot, line_size);
+  else
+    operator_vect_single_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_, _TYPE_OP_>(resu, x, nblocs_left, bloc_itr, vect_size_tot, line_size);
 
-          if (IS_INV)
-            {
-#ifndef _OPENMP_TARGET
-              if (p_resu == (_TYPE_)0) error_divide(__func__);
-#endif
-              p_resu = (_TYPE_) ((_TYPE_)1 / p_resu); // same as sqrt above
-            }
-        }
-    }
-  if (timer) end_gpu_timer(kernelOnDevice, "operator_vect_single_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
 #endif
   return;
+#endif
 }
 // Explicit instanciation for templates:
 template void operator_vect_single_generic<double, int, TYPE_OPERATOR_SINGLE::ADD_>(TRUSTVect<double, int>& resu, const double x, Mp_vect_options opt);
@@ -508,12 +517,12 @@ template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::INV
 template void operator_vect_single_generic<double, int, TYPE_OPERATOR_SINGLE::ABS_>(TRUSTVect<double, int>& resu, const double x, Mp_vect_options opt);
 template void operator_vect_single_generic<int, int, TYPE_OPERATOR_SINGLE::ABS_>(TRUSTVect<int, int>& resu, const int x, Mp_vect_options opt);
 template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::ABS_>(TRUSTVect<float, int>& resu, const float x, Mp_vect_options opt);
-template void operator_vect_single_generic<double, int, TYPE_OPERATOR_SINGLE::RACINE_CARRE_>(TRUSTVect<double, int>& resu, const double x, Mp_vect_options opt);
-template void operator_vect_single_generic<int, int, TYPE_OPERATOR_SINGLE::RACINE_CARRE_>(TRUSTVect<int, int>& resu, const int x, Mp_vect_options opt);
-template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::RACINE_CARRE_>(TRUSTVect<float, int>& resu, const float x, Mp_vect_options opt);
-template void operator_vect_single_generic<double, int, TYPE_OPERATOR_SINGLE::CARRE_>(TRUSTVect<double, int>& resu, const double x, Mp_vect_options opt);
-template void operator_vect_single_generic<int, int, TYPE_OPERATOR_SINGLE::CARRE_>(TRUSTVect<int, int>& resu, const int x, Mp_vect_options opt);
-template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::CARRE_>(TRUSTVect<float, int>& resu, const float x, Mp_vect_options opt);
+template void operator_vect_single_generic<double, int, TYPE_OPERATOR_SINGLE::SQRT_>(TRUSTVect<double, int>& resu, const double x, Mp_vect_options opt);
+template void operator_vect_single_generic<int, int, TYPE_OPERATOR_SINGLE::SQRT_>(TRUSTVect<int, int>& resu, const int x, Mp_vect_options opt);
+template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::SQRT_>(TRUSTVect<float, int>& resu, const float x, Mp_vect_options opt);
+template void operator_vect_single_generic<double, int, TYPE_OPERATOR_SINGLE::SQUARE_>(TRUSTVect<double, int>& resu, const double x, Mp_vect_options opt);
+template void operator_vect_single_generic<int, int, TYPE_OPERATOR_SINGLE::SQUARE_>(TRUSTVect<int, int>& resu, const int x, Mp_vect_options opt);
+template void operator_vect_single_generic<float, int, TYPE_OPERATOR_SINGLE::SQUARE_>(TRUSTVect<float, int>& resu, const float x, Mp_vect_options opt);
 
 #if INT_is_64_ == 2
 template void operator_vect_single_generic<trustIdType, trustIdType, TYPE_OPERATOR_SINGLE::ADD_>(TRUSTVect<trustIdType, trustIdType>& resu, const trustIdType x, Mp_vect_options opt);
@@ -677,7 +686,7 @@ template int local_extrema_vect_generic<int, int, int, TYPE_OPERATION_VECT::MIN_
 template <typename _TYPE_, typename _SIZE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_ >
 _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_vect_options opt)
 {
-  static constexpr bool IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::CARRE_), IS_SOMME = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
+  static constexpr bool IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SQUARE_), IS_SOMME = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
 
   _TYPE_ sum = 0;
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
@@ -711,7 +720,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
           for (_SIZE_ count = 0; count < end_bloc - begin_bloc; count++)
             {
               const _TYPE_ x = x_ptr[count];
-              if (IS_CARRE) sum += x * x;
+              if (IS_SQUARE) sum += x * x;
               if (IS_SOMME) sum += x;
             }
         }
@@ -720,7 +729,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
           for (_SIZE_ count = 0; count < end_bloc - begin_bloc; count++)
             {
               const _TYPE_ x = x_ptr[count];
-              if (IS_CARRE) sum += x * x;
+              if (IS_SQUARE) sum += x * x;
               if (IS_SOMME) sum += x;
             }
         }
@@ -729,9 +738,9 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
   return sum;
 }
 // Explicit instanciation for templates:
-template double local_operations_vect_bis_generic<double, int, TYPE_OPERATION_VECT_BIS::CARRE_>(const TRUSTVect<double, int>& vx,Mp_vect_options opt);
-template int local_operations_vect_bis_generic<int, int, TYPE_OPERATION_VECT_BIS::CARRE_>(const TRUSTVect<int, int>& vx,Mp_vect_options opt);
-template float local_operations_vect_bis_generic<float, int, TYPE_OPERATION_VECT_BIS::CARRE_>(const TRUSTVect<float, int>& vx,Mp_vect_options opt);
+template double local_operations_vect_bis_generic<double, int, TYPE_OPERATION_VECT_BIS::SQUARE_>(const TRUSTVect<double, int>& vx,Mp_vect_options opt);
+template int local_operations_vect_bis_generic<int, int, TYPE_OPERATION_VECT_BIS::SQUARE_>(const TRUSTVect<int, int>& vx,Mp_vect_options opt);
+template float local_operations_vect_bis_generic<float, int, TYPE_OPERATION_VECT_BIS::SQUARE_>(const TRUSTVect<float, int>& vx,Mp_vect_options opt);
 template double local_operations_vect_bis_generic<double, int, TYPE_OPERATION_VECT_BIS::SOMME_>(const TRUSTVect<double, int>& vx,Mp_vect_options opt);
 template int local_operations_vect_bis_generic<int, int, TYPE_OPERATION_VECT_BIS::SOMME_>(const TRUSTVect<int, int>& vx,Mp_vect_options opt);
 template float local_operations_vect_bis_generic<float, int, TYPE_OPERATION_VECT_BIS::SOMME_>(const TRUSTVect<float, int>& vx,Mp_vect_options opt);

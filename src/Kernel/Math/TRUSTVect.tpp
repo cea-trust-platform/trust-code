@@ -395,7 +395,7 @@ template<typename _TYPE_, typename _SIZE_>
 template<typename _SCALAR_TYPE_>
 inline void TRUSTVect<_TYPE_,_SIZE_>::ajoute_carre(_SCALAR_TYPE_ alpha, const TRUSTVect& y, Mp_vect_options opt)
 {
-  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_,_TYPE_>(*this,alpha,y,opt);
+  ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::SQUARE_,_TYPE_>(*this,alpha,y,opt);
 }
 
 
