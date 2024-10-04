@@ -29,16 +29,25 @@
 #include <View_Types.h>  // Kokkos stuff
 
 //Booleans for checking if an execution space is host or device
-//Checking if device: for GPU or CPU compilation, we only have to check if EXEC_SPACE=Device
 #ifndef LATATOOLS
 
+//Checking if ExecSpace is Device (Kokkos::DefaultExecutionSpace) or Host (DefaultHostExecutionSpace)
+//When compiled on CPU, DefaultExecutionSpace=DefaultHostExecutionSpace = serial or OpenMP
+//When compiled on GPU, DefaultExecutionSpace=Cuda, DefaultHostExecutionSpace=serial or OpenMP
+
+//Checking if ExecSpace is Kokkos::DefaultExecutionSpace
+//CPU or GPU, true if ExecSpace=Device
 template <typename EXEC_SPACE >
 constexpr bool is_default_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value;
-//Checking if host: For GPU compilation Device != Host, so we check if Exec_SPACE=Host. For CPU compilation, Device=Host, so we are always on the host
+
+//Checking if ExecSpace is Kokkos::DefaultHostExecutionSpace
+//GPU: !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value; true is Exec=Host
+//CPU: !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value; false, always false
 template <typename EXEC_SPACE >
 constexpr bool is_host_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value &&
                                     !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value;
 #endif
+
 /*! @brief Represents a an array of int/int64/double/... values.
  *
  * The two main members are mem_ and span_:
