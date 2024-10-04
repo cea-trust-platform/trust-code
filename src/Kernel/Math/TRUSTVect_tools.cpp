@@ -242,6 +242,8 @@ void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TR
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
       const int count = end_bloc - begin_bloc;
 
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+
       Kokkos::RangePolicy<ExecSpace> policy(0, count);
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
       {
@@ -249,11 +251,9 @@ void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TR
 
         const int resu_idx = begin_bloc + i ;
         if (IS_ADD) //done at compile time
-          // Use atomic add to avoid concurrent writes
-          Kokkos::atomic_add(&resu_view(resu_idx), alpha * x);
+          resu_view(resu_idx) += alpha * x;
         else //If it's not ADD, it's CARRE
-          // Use atomic add to avoid concurrent writes
-          Kokkos::atomic_add(&resu_view(resu_idx), alpha * x * x);
+          resu_view(resu_idx) += alpha * x * x;
       });
       bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
       end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
@@ -304,65 +304,80 @@ template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::ADD_, 
 template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_, double, int>(TRUSTVect<double, int>& resu, double alpha, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
 template void ajoute_operation_speciale_generic<TYPE_OPERATION_VECT_SPEC::CARRE_, float, int>(TRUSTVect<float, int>& resu, float alpha, const TRUSTVect<float, int>& vx, Mp_vect_options opt);
 
-template <typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_VECT _TYPE_OP_>
-void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt)
+#ifndef LATATOOLS
+namespace
+{
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_VECT _TYPE_OP_>
+void operator_vect_vect_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
+                                       Block_Iter<_SIZE_>& bloc_itr,  const int vect_size_tot, const int line_size)
 {
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_VECT::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_VECT::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_VECT::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_VECT::DIV_),
                         IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_VECT::EGAL_);
 
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_,_SIZE_>& master_vect = resu;
-  const int line_size = master_vect.line_size();
-  const _SIZE_ vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
+  auto vx_view= vx.template view_ro<ExecSpace>();
+  auto resu_view= resu.template view_rw<ExecSpace>();
+
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
+      const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
+      const int count = end_bloc - begin_bloc;
+
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+
+      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      {
+        const _TYPE_ x = vx_view(begin_bloc + i);
+
+        const int resu_idx = begin_bloc + i ;
+
+        if (IS_ADD) resu_view(resu_idx) += x;
+        if (IS_SUB) resu_view(resu_idx) -= x;
+        if (IS_MULT) resu_view(resu_idx) *= x;
+        if (IS_DIV) resu_view(resu_idx) /= x;
+        if (IS_EGAL) resu_view(resu_idx) = x;
+      });
+      bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+    }
+}
+}
+#endif
+
+
+template <typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_VECT _TYPE_OP_>
+void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt)
+{
+#ifndef LATATOOLS
+  const int line_size = resu.line_size();
+  const _SIZE_ vect_size_tot = resu.size_totale();
+  const MD_Vector& md = resu.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
 #ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
 #endif
   // Determine blocs of data to process, depending on " opt"
-  int nblocs_left_size;
-  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left_size);
+  int nblocs_left;
+  Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
   // Shortcut for empty arrays (avoid case line_size == 0)
   if (bloc_itr.empty()) return;
 
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
-  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
-  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_gpu_timer();
-  for (int nblocs_left=nblocs_left_size; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      _TYPE_ *resu_ptr = resu_base + begin_bloc;
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice)
-      for (_SIZE_ count = 0; count < end_bloc - begin_bloc ; count++)
-        {
-          const _TYPE_& x = x_ptr[count];
-          _TYPE_ &p_resu = resu_ptr[count];
-          if (IS_ADD) p_resu += x;
-          if (IS_SUB) p_resu -= x;
-          if (IS_MULT) p_resu *= x;
-          if (IS_EGAL) p_resu = x;
-          if (IS_DIV)
-            {
-#ifndef _OPENMP_TARGET
-              if (x == 0.) error_divide(__func__);
-#endif
-              p_resu /= x;
-            }
-          //printf("After resu %p %p %f\n,",(void*)&x, (void*)&p_resu, p_resu);
-        }
-    }
-  if (timer) end_gpu_timer(kernelOnDevice, "operator_vect_vect_generic(x,y)");
+
+  if (kernelOnDevice)
+    operator_vect_vect_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_, _TYPE_OP_>(resu, vx, nblocs_left, bloc_itr, vect_size_tot, line_size);
+  else
+    operator_vect_vect_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_, _TYPE_OP_>(resu, vx, nblocs_left, bloc_itr, vect_size_tot, line_size);
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
 #endif
   return;
+#endif
 }
 // Explicit instanciation for templates:
 template void operator_vect_vect_generic<double, int, TYPE_OPERATOR_VECT::ADD_>(TRUSTVect<double, int>& resu, const TRUSTVect<double, int>& vx, Mp_vect_options opt);
