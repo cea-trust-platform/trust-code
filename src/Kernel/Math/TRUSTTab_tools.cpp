@@ -80,7 +80,7 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
       });
     }
 
-  bool kernelOnDevice = not(is_host_exec_space<ExecSpace>) ;
+  bool kernelOnDevice = is_default_exec_space<ExecSpace>;
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 }
