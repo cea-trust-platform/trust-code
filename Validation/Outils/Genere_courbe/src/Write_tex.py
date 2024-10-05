@@ -173,10 +173,12 @@ class Write_tex:
                     fichier.write_text_sans_nl(r'fichier %s' % ((courbe.fichier)))
                     pass
                 if (courbe.fonction!='Undefined'):
-                    fichier.write_text_sans_nl(r'\nfonction %s' % ((courbe.fonction)))
+                    fichier.write_text_sans_nl(r'fonction %s' % ((courbe.fonction)))
                     pass
                 pass
-            fichier.write_Tex(r'''\end{itemize}
+            fichier.write_Tex(r'''
+
+\end{itemize}
 ''')
             pass
         pass
@@ -427,7 +429,8 @@ class Write_tex:
             for k2, v2 in i.items():
                 if v2 == 'description': 
                     fichier.write_text_sans_nl(i["valeur"])
-                    fichier.write_Tex('% nabil')
+                    fichier.write_Tex(r'''
+''')
                 if v2 == 'figure':
                     self.inclureObjet(maitre,i["valeur"],fichier)
 #
@@ -446,7 +449,11 @@ class Write_tex:
             pass
 #        fichier.write_Tex('\\\\')
         fichier.write_Tex_sans_nl(r' \vspace{0.3cm}')
-        suite_entete=''' Validation made by : __AUTEUR__.\\Report generated  __DATE__.'''
+        suite_entete=r'''
+        
+Validation made by : __AUTEUR__.
+
+Report generated  __DATE__.'''
         suite_entete = suite_entete.replace('__AUTEUR__',maitre.auteur)
         import time
         date = time.strftime('%d/%m/%Y')
@@ -457,7 +464,7 @@ class Write_tex:
         '''Inclusion du paragraphe Problem Description dans le fichier latex du rapport de validation.'''
         fichier=self.ficTex
         fichier.write_Tex('% Debut Chapitre Problem Description')
-        fichier.write_Tex(r'\section{Problem Description}\n')
+        fichier.write_Tex(r'\section{Problem Description}')
         fichier.write_description(pbdescription.description)
         iter = 0
 
@@ -473,7 +480,7 @@ class Write_tex:
         '''Inclusion du paragraphe Case Setup dans le fichier latex du rapport de validation.'''
         fichier=self.ficTex
         fichier.write_Tex('% Debut Chapitre Case Setup')
-        fichier.write_Tex(r'\section{Case Setup}\n')
+        fichier.write_Tex(r'\section{Case Setup}')
         fichier.write_description(casesetup.description)
         iter = 0
 
@@ -489,7 +496,7 @@ class Write_tex:
         '''Inclusion du paragraphe Results dans le fichier latex du rapport de validation.'''
         fichier=self.ficTex
         fichier.write_Tex(r'% Debut Chapitre Conclusion')
-        fichier.write_Tex(r'\section{Results}\n')
+        fichier.write_Tex(r'\section{Results}')
         fichier.write_Tex(r'\par\subsection{Validation Specific Informations}')
         fichier.write_Tex(r'\begin{itemize}')
         version=maitre.versionTrioU
@@ -508,12 +515,14 @@ class Write_tex:
             pass
 #
         if maitre.casTest:
-            fichier.write_Tex(r'\item Generated Test cases : \n')
+            fichier.write_Tex(r'''\item Generated Test cases :
+''')
             for cas in maitre.casTest:
                 from lib import get_detail_cas
                 nomcas,dir,nb_proc,comment=get_detail_cas(cas)
                 ficData=nomcas+'.data'
-                fichier.write_Tex('$\rightarrow$ %s : \textit{%s}\n' % (chaine2Tex(dir+"/"+ficData), chaine2Tex(comment)))
+                fichier.write_Tex(r'''$\rightarrow$ %s : \textit{%s}
+''' % (chaine2Tex(dir+"/"+ficData), chaine2Tex(comment)))
 
         fichier.write_Tex(r'\item Performance Chart : ')
         from Tableau import Tableau_performance_nvellevalid
@@ -530,7 +539,8 @@ class Write_tex:
             for k2, v2 in i.items():
                 if v2 == 'description': 
                     fichier.write_text(i["valeur"])
-                    fichier.write_Tex('% nabil')
+                    fichier.write_Tex(r'''
+''')
                 if v2 == 'figure':
                     self.inclureObjet(maitre,i["valeur"],fichier)
 #
@@ -539,7 +549,7 @@ class Write_tex:
         fichier=self.ficTex
         fichier.write_Tex('% Debut Chapitre Conclusion')
 ##        if not conclusion.description:   - a faire : tester existance du paragrpahe
-        fichier.write_Tex(r'\section{Conclusion}\n')
+        fichier.write_Tex(r"\section{Conclusion}")
         fichier.write_description(conclusion.description)
         iter = 0
 
@@ -680,7 +690,9 @@ class Write_tex:
         suite_entete=r'''\section{Introduction}
 '''
         ficTex.write_Tex(suite_entete)
-        suite_entete=r'''Validation made by : __AUTEUR__.\\Report generated  __DATE__.'''
+        suite_entete=r'''Validation made by : __AUTEUR__.
+
+Report generated  __DATE__.'''
         # '
         suite_entete = suite_entete.replace('__AUTEUR__',maitre.auteur)
         import time

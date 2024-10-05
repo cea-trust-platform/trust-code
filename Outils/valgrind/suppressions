@@ -12,16 +12,16 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
-   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.550.90.07
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.*
    obj:/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0
    fun:clGetPlatformIDs
    fun:hwloc_opencl_discover
