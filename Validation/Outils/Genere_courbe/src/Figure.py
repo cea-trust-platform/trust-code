@@ -199,6 +199,7 @@ class Figure:
             '''Gnuplot supporte mal le UTF-8'''
             ficPlot = open(nomFichierPlotComplet, 'w', encoding='iso_8859_1')
             ficPlot.write('#Fichier de plot correspondant a la figure "%s"\n' % chaine2Ascii(self.titre))
+            ficPlot.write('set colors classic # Meme palette que gnuplot 4 \n')
             ficPlot.write('set encoding iso_8859_1\n')
             if self.pointSize!='Undefined':
                 ficPlot.write('set pointsize %s\n' % (self.pointSize))
