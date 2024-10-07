@@ -74,7 +74,7 @@ do
   files=`grep -l Implemente_base $TRUST_ROOT/$d/*.cpp 2>/dev/null`
   for f in $files
   do
-    if [ "`grep Implemente_base_32_64 $f 2>/dev/null`" = "" ]
+    if [ "`grep _base_32_64 $f 2>/dev/null`" = "" ]
     then
       okl=`ana_base $f 0`
     else

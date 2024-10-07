@@ -1135,6 +1135,20 @@ then
    echo $ECHO_OPTS "source ./env_for_python.sh"
    echo
 
+   if [ $TRUST_WITHOUT_VISIT != 1 ]
+   then
+      echo
+      echo $ECHO_OPTS "# Warning: Some packages could be downloaded from internet. If you do not want to download it, reconfigure with:"
+      echo $ECHO_OPTS "./configure -without-visit"
+      echo
+   fi
+   if [ $TRUST_USE_COOLPROP = 1 ]
+   then
+      echo
+      echo $ECHO_OPTS "# Warning: You enabled CoolProp, Coolprop will be downloaded using pip"
+      echo
+   fi
+
 fi
 
 exit 0

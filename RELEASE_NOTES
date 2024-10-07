@@ -3,6 +3,7 @@ Release notes version 1.9.5_beta : Enhancements, modifications and corrected bug
 --------------------------------------------------------------------------------------------------
 07/10/24 (TRUST) New Keyword  : Added a new correlation for Nusselt heat flux, including Nusselt parser with Reynolds (Re) and Prandtl (Pr) number dependency.
 07/10/24 (TRUST) New Feature  : Move correlation structures from Pb_Multiphase to Probleme_base (allow to use CMFD type turbulence or parietal heat transfer correlations with (thermo)hydraulic problems for example). TrioCFD needed for turbulence equations.
+07/10/24 (TRUST) Tools        : Patched MEDCoupling to add crackAlong() functionality.
 26/09/24 (TRUST) Change       : cmake upgraded from 3.22 to 3.30.
 26/09/24 (TRUST) Change       : python upgraded from 3.7 to 3.12.
 26/09/24 (TRUST) Change       : mpi4py upgraded from 3.0.3 to 4.0.0.
