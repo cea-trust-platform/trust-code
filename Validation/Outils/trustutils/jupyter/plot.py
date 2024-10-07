@@ -99,50 +99,6 @@ def read_csv(data, **kwargs):
     return df
 
 
-def lastMoment(name):
-    """
-    Method to return the last moment
-        
-    Parameters
-    --------- 
-    name : str 
-        name of the file. 
-
-    Returns
-    ------- 
-    The last time of the plot.
-        
-    """
-    f = open(name, "r")
-    return f.readlines()[-1].split(" ")[0]
-
-
-def timeArray(name):
-    """
-
-    Method to return the time step list.
-        
-    Parameters
-    --------- 
-    name : str 
-        name of the file. 
-
-    Returns
-    ------- 
-    The last time of the plot.
-        
-    """
-    f = open(name, "r")
-    time_list = []
-    for i in f.readlines():
-        tmp = i.split(" ")[0]
-        if tmp != "#":
-            time_list.append(float(tmp))
-            # time_list.append(tmp)
-
-    return time_list
-
-
 class Graph:
 
     """
