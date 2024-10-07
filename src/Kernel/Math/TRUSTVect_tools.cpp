@@ -791,15 +791,66 @@ template void invalidate_data<float>(TRUSTVect<float, int>& resu, Mp_vect_option
 template void invalidate_data<int>(TRUSTVect<int, int>& resu, Mp_vect_options opt);
 #endif /* NDEBUG */
 
+#ifndef LATATOOLS
+namespace
+{
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
+void local_prodscal_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_,_SIZE_>& vy, int nblocs_left,
+                           Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size, _TYPE_& sum)
+{
+  auto vx_view= vx.template view_ro<ExecSpace>();
+  auto vy_view= vy.template view_ro<ExecSpace>();
+
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
+      const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
+      const int count = end_bloc - begin_bloc;
+
+      //Asserts
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+
+      //Define Policy
+      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+
+      // Define the bloc sum
+      _TYPE_ bloc_sum=0;
+
+      //Reduction
+      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                              policy,
+                              KOKKOS_LAMBDA(const int i, _TYPE_& local_sum)
+      {
+        const int resu_idx = begin_bloc + i ;
+        local_sum += vx_view(resu_idx)*vy_view(resu_idx);
+      }
+      ,bloc_sum); //Reduce in bloc_sum
+
+      //timer
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+
+      //Fence (necessary for now)
+      Kokkos::fence();
+
+      //Bloc-level reduction
+      sum += bloc_sum;
+    }
+}
+}
+#endif
+
 template<typename _TYPE_, typename _SIZE_>
 _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_,_SIZE_>& vy, Mp_vect_options opt)
 {
+#ifndef LATATOOLS
   _TYPE_ sum = 0;
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_,_SIZE_>& master_vect = vx;
-  const int line_size = master_vect.line_size();
-  const _SIZE_ vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
+
+  const int line_size = vx.line_size();
+  const _SIZE_ vect_size_tot = vx.size_totale();
+  const MD_Vector& md = vx.get_md_vector();
+
   assert(vx.line_size() == line_size && vy.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
 #ifndef LATATOOLS
@@ -812,25 +863,17 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
   if (bloc_itr.empty()) return sum;
 
   bool kernelOnDevice = const_cast<TRUSTVect<_TYPE_,_SIZE_>&>(vx).checkDataOnDevice(vy);
-  const _TYPE_ *vx_ptr = mapToDevice(vx, "", kernelOnDevice);
-  const _TYPE_ *vy_ptr = mapToDevice(vy, "", kernelOnDevice);
-  if (timer) start_gpu_timer(__KERNEL_NAME__);
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      // ToDo OpenMP bug nvc++ compiler recent bouh: https://forums.developer.nvidia.com/t/openmp-nvc-duplicate-name-in-reduction-clause-error-with-recent-sdk/255696/3
-      if (kernelOnDevice)
-        #pragma omp target teams distribute parallel for reduction(+:sum)
-        for (_SIZE_ i=begin_bloc; i<end_bloc; i++)
-          sum += vx_ptr[i] * vy_ptr[i];
-      else
-        for (_SIZE_ i=begin_bloc; i<end_bloc; i++)
-          sum += vx_ptr[i] * vy_ptr[i];
-    }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+
+  if (kernelOnDevice)
+    local_prodscal_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(vx, vy, nblocs_left, bloc_itr, vect_size_tot,line_size, sum);
+  else
+    local_prodscal_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(vx, vy, nblocs_left, bloc_itr, vect_size_tot,line_size, sum);
+
   return sum;
+
+#else
+  return (_TYPE_)0; // For compil in latatools
+#endif
 }
 // Explicit instanciation for templates:
 template double local_prodscal(const TRUSTVect<double, int>& vx, const TRUSTVect<double, int>& vy, Mp_vect_options opt);
