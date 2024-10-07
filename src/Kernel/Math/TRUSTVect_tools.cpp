@@ -560,6 +560,11 @@ void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int n
   static constexpr bool IS_MINS = (IS_MIN || IS_MIN_ABS || IS_IMIN);
   static constexpr bool IS_ABS = (IS_MAX_ABS || IS_MIN_ABS);
 
+  // Define the reducer, based on the reduction type
+  using reducer = typename std::conditional<IS_MAXS, Kokkos::MaxLoc<_TYPE_, int>, Kokkos::MinLoc<_TYPE_, int>>::type;
+  // Define the type of what the reducer will return ( a value + a index)
+  using reducer_value_type  = typename reducer::value_type;
+
   if (not(IS_MAXS || IS_MINS)) {Process::exit("Wrong operation type in local_extrema_vect_generic_kernel");}
 
   auto vx_view= vx.template view_ro<ExecSpace>();
@@ -577,10 +582,6 @@ void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int n
       //Define Policy
       Kokkos::RangePolicy<ExecSpace> policy(0, count);
 
-      // Define the reducer, based on the reduction type
-      using reducer = typename std::conditional<IS_MAXS, Kokkos::MaxLoc<_TYPE_, int>, Kokkos::MinLoc<_TYPE_, int>>::type;
-      // Define the type of what the reducer will return ( a value + a index)
-      using reducer_value_type  = typename reducer::value_type;
       // Define the object in which the reduction is saved
       reducer_value_type bloc_min_max;
 
