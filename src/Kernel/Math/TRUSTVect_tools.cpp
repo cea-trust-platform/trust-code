@@ -521,127 +521,126 @@ template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SI
 
 #endif
 
-template <typename _TYPE_, typename _SIZE_, typename _TYPE_RETURN_, TYPE_OPERATION_VECT _TYPE_OP_ >
-_TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt)
+#ifndef LATATOOLS
+namespace
 {
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_,typename _TYPE_RETURN_,  TYPE_OPERATION_VECT _TYPE_OP_>
+void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int nblocs_left, Block_Iter<_SIZE_>& bloc_itr,
+                                       const int vect_size_tot, const int line_size, _TYPE_& min_max_val, int& i_min_max)
+{
+
+  // Shortcut for empty arrays (avoid case line_size == 0)
+  if (bloc_itr.empty()) return ;
+
   static constexpr bool IS_IMAX = (_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_), IS_IMIN = (_TYPE_OP_ == TYPE_OPERATION_VECT::IMIN_), IS_MAX = (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_),
                         IS_MIN = (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_), IS_MAX_ABS = (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_ABS_), IS_MIN_ABS = (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_ABS_);
 
-  _TYPE_ min_max_val = neutral_value<_TYPE_,_TYPE_OP_>(); // _TYPE_ et pas _TYPE_RETURN_ desole ...
-  _TYPE_RETURN_ i_min_max = -1 ; // seulement pour IMAX_ et IMIN_
+  //For clearer code, is it max, is it a min, is it done on absolute values ?
+  static constexpr bool IS_MAXS = (IS_MAX || IS_MAX_ABS || IS_IMAX);
+  static constexpr bool IS_MINS = (IS_MIN || IS_MIN_ABS || IS_IMIN);
+  static constexpr bool IS_ABS = (IS_MAX_ABS || IS_MIN_ABS);
 
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_,_SIZE_>& master_vect = vx;
-  const int line_size = master_vect.line_size();
-  const _SIZE_ vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
+  if (not(IS_MAXS || IS_MINS)) {Process::exit("Wrong operation type in local_extrema_vect_generic_kernel");}
+
+  auto vx_view= vx.template view_ro<ExecSpace>();
+
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
+      const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
+      const int count = end_bloc - begin_bloc;
+
+      //Asserts
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+
+      //Define Policy
+      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+
+      // Define the reducer, based on the reduction type
+      using reducer = typename std::conditional<IS_MAXS, Kokkos::MaxLoc<_TYPE_, int>, Kokkos::MinLoc<_TYPE_, int>>::type;
+      // Define the type of what the reducer will return ( a value + a index)
+      using reducer_value_type  = typename reducer::value_type;
+      // Define the object in which the reduction is saved
+      reducer_value_type bloc_min_max;
+
+      //Reduction
+      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                              policy,
+                              KOKKOS_LAMBDA(const int i, reducer_value_type& local_min_max)
+      {
+        const int resu_idx = begin_bloc + i ;
+
+        _TYPE_ val = (IS_ABS) ? Kokkos::abs(vx_view(resu_idx)) : vx_view(resu_idx);
+
+        if ( (IS_MAXS && val>local_min_max.val) || (IS_MINS && val<local_min_max.val) )
+          {
+            local_min_max.val=val;
+            local_min_max.loc=i; // not begin_bloc + i ? This seems to be what was done before, although this is weird to me (dont we want the global index ?)
+          }
+      }
+      ,reducer(bloc_min_max)); //Reduce in bloc_min_max
+
+      //timer
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+
+      //Fence (necessary for now)
+      Kokkos::fence();
+
+      //Bloc-level reduction
+      if ( (IS_MAXS && bloc_min_max.val > min_max_val) || (IS_MINS && bloc_min_max.val < min_max_val) )
+        {
+          min_max_val=bloc_min_max.val;
+          i_min_max= bloc_min_max.loc;
+        }
+    }
+}
+}
+#endif
+
+template <typename _TYPE_, typename _SIZE_, typename _TYPE_RETURN_, TYPE_OPERATION_VECT _TYPE_OP_ >
+_TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_vect_options opt)
+{
+#ifndef LATATOOLS
+
+  //Array info
+  const int line_size = vx.line_size();
+  const _SIZE_ vect_size_tot = vx.size_totale();
+  const MD_Vector& md = vx.get_md_vector();
+
+  //Asserts
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
 #ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
 #endif
+
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
   Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
-  // Shortcut for empty arrays (avoid case line_size == 0)
-  if (bloc_itr.empty())
-    return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
+  //Initialize results
+  _TYPE_ min_max_val = neutral_value<_TYPE_,_TYPE_OP_>(); // _TYPE_ et pas _TYPE_RETURN_ desole ...
+  int i_min_max = -1 ; // seulement pour IMAX_ et IMIN_
+
+  //Localize data
   bool kernelOnDevice = vx.checkDataOnDevice();
-  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_gpu_timer();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      _SIZE_ size_bloc = end_bloc - begin_bloc;
-      if (IS_MAX || IS_MAX_ABS)
-        {
-          if (kernelOnDevice)
-            {
-              #pragma omp target teams distribute parallel for reduction(max:min_max_val)
-              for (_SIZE_ count = 0; count < size_bloc; count++)
-                {
-                  const _TYPE_ x = IS_MAX ? x_ptr[count] : (_TYPE_) std::abs(x_ptr[count]);
-                  if (x > min_max_val) min_max_val = x;
-                }
-            }
-          else
-            {
-              for (_SIZE_ count = 0; count < size_bloc; count++)
-                {
-                  const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
-                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
-                  if (x > min_max_val) min_max_val = x;
-                }
-            }
-        }
-      else if (IS_MIN || IS_MIN_ABS)
-        {
-          if (kernelOnDevice)
-            {
-              #pragma omp target teams distribute parallel for reduction(min:min_max_val)
-              for (_SIZE_ count = 0; count < size_bloc; count++)
-                {
-                  const _TYPE_ x = IS_MIN ? x_ptr[count] : (_TYPE_) std::abs(x_ptr[count]);
-                  if (x < min_max_val) min_max_val = x;
-                }
-            }
-          else
-            {
-              for (_SIZE_ count = 0; count < size_bloc; count++)
-                {
-                  const _TYPE_ x = IS_MIN ? x_ptr[count] : (_TYPE_) std::abs(x_ptr[count]);
-                  if (x < min_max_val) min_max_val = x;
-                }
-            }
-        }
-      // ToDo OpenMP Pas porte sur device car le compilateur NVidia plante:
-      if (IS_IMAX || IS_IMIN)
-        {
-          for (_SIZE_ count = 0; count < size_bloc; count++)
-            {
-              const _TYPE_ x = x_ptr[count];
-              if ((IS_IMAX && x > min_max_val) || (IS_IMIN && x < min_max_val))
-                {
-                  i_min_max = (_TYPE_RETURN_) count;
-                  min_max_val = x;
-                }
-            }
-        }
-      // Compilateur NVidia plante sur cela: "symbol local_min_max_val(20167) is team-private but we are returning false"
-      /*
-      if (IS_IMAX || IS_IMIN)
-        {
-          #pragma omp target parallel if (kernelOnDevice)
-          {
-            _TYPE_ local_min_max_val = min_max_val;
-            _TYPE_RETURN_ local_i_min_max = -1;
-            #pragma omp for nowait
-            for (_SIZE_ count = 0; count < end_bloc - begin_bloc; count++)
-              {
-                const _TYPE_ x = x_ptr[count];
-                if ((IS_IMAX && x > local_min_max_val) || (IS_IMIN && x < local_min_max_val))
-                  {
-                    local_min_max_val = x;
-                    local_i_min_max = (_TYPE_RETURN_) count;
-                  }
-              }
-            #pragma omp critical
-            {
-              if ((IS_IMAX && local_min_max_val > min_max_val) || (IS_IMIN && local_min_max_val < min_max_val))
-                {
-                  min_max_val = local_min_max_val;
-                  i_min_max = local_i_min_max;
-                }
-            }
-          }
-        } */
-    }
-  if (timer) end_gpu_timer(kernelOnDevice, "local_extrema_vect_generic(x)");
-  return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
+
+  //Compute reduction
+  if (kernelOnDevice)
+    local_extrema_vect_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_, _TYPE_RETURN_, _TYPE_OP_>(vx, nblocs_left, bloc_itr, vect_size_tot, line_size, min_max_val, i_min_max);
+  else
+    local_extrema_vect_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_, _TYPE_RETURN_, _TYPE_OP_>(vx, nblocs_left, bloc_itr, vect_size_tot, line_size, min_max_val, i_min_max);
+
+  //Return index or value
+  static constexpr bool IS_IMAX = (_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_), IS_IMIN = (_TYPE_OP_ == TYPE_OPERATION_VECT::IMIN_);
+
+  return (IS_IMAX || IS_IMIN) ? (_TYPE_RETURN_)i_min_max : (_TYPE_RETURN_)min_max_val;
+
+#else
+  return (_TYPE_RETURN_)0; // For compil in latatools
+#endif
 }
 // Explicit instanciation for templates:
 template double local_extrema_vect_generic<double, int, double, TYPE_OPERATION_VECT::IMAX_>(const TRUSTVect<double, int>& vx, Mp_vect_options opt);
