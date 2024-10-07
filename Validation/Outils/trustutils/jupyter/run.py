@@ -714,21 +714,6 @@ class TRUSTSuite(object):
             text += "\n"
         displayMD(text)
 
-def readFile(data):
-    """
-    Method to open and read file with Save in FileAccumulator"
-    """
-    path = os.getcwd()
-    os.chdir(BUILD_DIRECTORY)
-
-    f = open(data,"r")
-    print(f.read())
-    f.close()
-
-    os.chdir(path)
-
-    saveFileAccumulator(data)
-
 def saveFileAccumulator(data):
     """ Method for saving files for the Non Regression test
 

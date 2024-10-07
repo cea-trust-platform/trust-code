@@ -99,31 +99,6 @@ def read_csv(data, **kwargs):
     return df
 
 
-def readFile(name):
-    """
-    Method for loading and saving files.
-        
-    Parameters
-    --------- 
-    data : str 
-        name of the file we want to save. 
-
-    Returns
-    ------- 
-    list of lines
-    """
-    origin = os.getcwd()
-    os.chdir(BUILD_DIRECTORY)
-
-    f = open(name, "r")
-    data = f.read().splitlines()
-
-    os.chdir(origin)
-    saveFileAccumulator(name)
-
-    return data
-
-
 def lastMoment(name):
     """
     Method to return the last moment
