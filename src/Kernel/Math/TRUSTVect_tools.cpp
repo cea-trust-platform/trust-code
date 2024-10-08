@@ -25,6 +25,7 @@ static bool timer=true;
 #else
 static bool timer=false;
 #endif
+#endif
 
 /*! Determine which blocks of indices should be used to perform an operation.
  */
@@ -528,7 +529,6 @@ template<typename ExecSpace, typename _TYPE_, typename _SIZE_,typename _TYPE_RET
 void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int nblocs_left, Block_Iter<_SIZE_>& bloc_itr,
                                        const int vect_size_tot, const int line_size, _TYPE_& min_max_val, int& i_min_max)
 {
-
   // Shortcut for empty arrays (avoid case line_size == 0)
   if (bloc_itr.empty()) return ;
 
@@ -668,11 +668,68 @@ template int local_extrema_vect_generic<int, trustIdType, int, TYPE_OPERATION_VE
 template trustIdType local_extrema_vect_generic<trustIdType, trustIdType, trustIdType, TYPE_OPERATION_VECT::MAX_>(const TRUSTVect<trustIdType, trustIdType>& vx, Mp_vect_options opt);
 #endif
 
+#ifndef LATATOOLS
+namespace
+{
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_>
+void local_operations_vect_bis_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int nblocs_left,
+                                              Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size, _TYPE_& sum)
+{
+  static constexpr bool IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SQUARE_), IS_SUM = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
+
+  auto vx_view= vx.template view_ro<ExecSpace>();
+
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
+      const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
+      const int count = end_bloc - begin_bloc;
+
+      //Asserts
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+
+      //Define Policy
+      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+
+      // Define the bloc sum
+      _TYPE_ bloc_sum=0;
+
+      //Reduction
+      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                              policy,
+                              KOKKOS_LAMBDA(const int i, _TYPE_& local_sum)
+      {
+        const int resu_idx = begin_bloc + i ;
+        if (IS_SUM)
+          {
+            local_sum += vx_view(resu_idx);
+          }
+        else if (IS_SQUARE)
+          {
+            local_sum += vx_view(resu_idx)*vx_view(resu_idx);
+          }
+      }
+      ,bloc_sum); //Reduce in bloc_sum
+
+      //timer
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+
+      //Fence (necessary for now)
+      Kokkos::fence();
+
+      //Bloc-level reduction
+      sum += bloc_sum;
+    }
+}
+}
+#endif
+
 template <typename _TYPE_, typename _SIZE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_ >
 _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_vect_options opt)
 {
-  static constexpr bool IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SQUARE_), IS_SOMME = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
-
+#ifndef LATATOOLS
   _TYPE_ sum = 0;
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
   const TRUSTVect<_TYPE_,_SIZE_>& master_vect = vx;
@@ -691,36 +748,16 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
   if (bloc_itr.empty()) return sum;
 
   bool kernelOnDevice = vx.checkDataOnDevice();
-  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
-  start_gpu_timer();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      if (kernelOnDevice)
-        {
-          #pragma omp target teams distribute parallel for reduction(+:sum)
-          for (_SIZE_ count = 0; count < end_bloc - begin_bloc; count++)
-            {
-              const _TYPE_ x = x_ptr[count];
-              if (IS_SQUARE) sum += x * x;
-              if (IS_SOMME) sum += x;
-            }
-        }
-      else
-        {
-          for (_SIZE_ count = 0; count < end_bloc - begin_bloc; count++)
-            {
-              const _TYPE_ x = x_ptr[count];
-              if (IS_SQUARE) sum += x * x;
-              if (IS_SOMME) sum += x;
-            }
-        }
-    }
-  if (timer) end_gpu_timer(kernelOnDevice, "local_operations_vect_bis_generic(x)");
+
+  if (kernelOnDevice)
+    local_operations_vect_bis_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_, _TYPE_OP_>(vx, nblocs_left, bloc_itr, vect_size_tot, line_size, sum);
+  else
+    local_operations_vect_bis_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_, _TYPE_OP_>(vx, nblocs_left, bloc_itr, vect_size_tot, line_size, sum);
+
   return sum;
+#else
+  return (_TYPE_)0; // For compil in latatools
+#endif
 }
 // Explicit instanciation for templates:
 template double local_operations_vect_bis_generic<double, int, TYPE_OPERATION_VECT_BIS::SQUARE_>(const TRUSTVect<double, int>& vx,Mp_vect_options opt);
