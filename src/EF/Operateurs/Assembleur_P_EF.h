@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,9 +42,9 @@ public:
   inline const Equation_base& equation() const;
 
 protected:
-  REF(Equation_base) mon_equation;
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  OBS_PTR(Equation_base) mon_equation;
+  OBS_PTR(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_Cl_EF) le_dom_Cl_EF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
 };

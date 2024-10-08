@@ -111,7 +111,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       const int nb_elem = domaine_VEF.nb_elem();
 
       Objet_U& ob1=Interprete::objet(nom_autre_pb);
-      REF(Probleme_base) pb;
+      OBS_PTR(Probleme_base) pb;
       if( sub_type(Probleme_base, ob1) )
         pb = ref_cast(Probleme_base, ob1);
       else
@@ -120,7 +120,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
           exit();
         }
 
-      REF(Champ_base) rch;
+      OBS_PTR(Champ_base) rch;
       rch = pb->get_champ(nom_inco);
       l_inconnue=ref_cast(Champ_Inc_base, rch.valeur()) ;
 

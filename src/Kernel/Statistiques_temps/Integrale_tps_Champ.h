@@ -31,7 +31,7 @@ class Integrale_tps_Champ : public Objet_U
 public:
   inline const Champ_Fonc_base& le_champ_calcule() const { return le_champ_.valeur(); }
   inline Champ_Fonc_base& le_champ_calcule() { return le_champ_.valeur(); }
-  inline const REF(Champ_Generique_base)& le_champ() const { return le_champ_ref_; }
+  inline const OBS_PTR(Champ_Generique_base)& le_champ() const { return le_champ_ref_; }
 
   inline double temps_integrale() const { return tps_integrale_; } // le temps courant de l'integrale
   inline double t_debut() const { return t_debut_; } // le temps de debut d'integration
@@ -56,7 +56,7 @@ public:
 
 protected:
   OWN_PTR(Champ_Fonc_base) le_champ_;
-  REF(Champ_Generique_base) le_champ_ref_;
+  OBS_PTR(Champ_Generique_base) le_champ_ref_;
   int puissance_ = -10;
   double t_debut_ = -100., t_fin_ = -100.;
   double tps_integrale_ = -100., dt_integr_calcul_ = -100.;

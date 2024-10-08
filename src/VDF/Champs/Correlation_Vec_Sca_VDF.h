@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ public:
   inline const Champ_base& mon_champ_Vec() const { return mon_champ_Vec_.valeur(); }
   inline const Champ_base& mon_champ_Sca() const { return mon_champ_Sca_.valeur(); }
 protected:
-  REF(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
+  OBS_PTR(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
 };
 
 #endif /* Correlation_Vec_Sca_VDF_included */

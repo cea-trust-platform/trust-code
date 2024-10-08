@@ -68,7 +68,7 @@ public:
   inline const IJK_Shear_Periodic_helpler& get_shear_BC_helpler() const { return shear_BC_helpler_; }
 
 protected:
-  REF(IJK_Splitting) splitting_ref_;
+  OBS_PTR(IJK_Splitting) splitting_ref_;
   IJK_Splitting::Localisation localisation_;
   IJK_Shear_Periodic_helpler shear_BC_helpler_;
 

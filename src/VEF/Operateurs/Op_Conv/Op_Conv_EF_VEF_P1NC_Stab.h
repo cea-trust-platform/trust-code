@@ -112,7 +112,7 @@ private :
   bool sous_domaine = false;  // Cas d'un sous-domaine a definir pour que l'EF_Stab degenere en Amont
   int new_jacobienne_ = 0;
   Nom nom_sous_domaine;
-  REF(Sous_domaine_VF) le_sous_domaine_dis;
+  OBS_PTR(Sous_domaine_VF) le_sous_domaine_dis;
 
   int nb_ssz_alpha = -1;
   DoubleVect alpha_ssz;

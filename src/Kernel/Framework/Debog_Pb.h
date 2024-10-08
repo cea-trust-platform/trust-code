@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public:
   void verifier_matrice(const char *const msg, const Matrice_Base&, const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
   void verifier_Mat_elems(const char *const msg, const Matrice_Base& la_matrice);
 
-  static REF(Debog_Pb)& get_debog_instance() { return instance_debog_; }
+  static OBS_PTR(Debog_Pb)& get_debog_instance() { return instance_debog_; }
 
   template <typename _TYPE_> std::enable_if_t< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >
   verifier(const char *const msg, _TYPE_, _TYPE_ *refvalue = 0);
@@ -82,7 +82,7 @@ protected:
   // Nombre de messages ecrits dans le fichier
   int debog_msg_count_ = 0;
   Nom nom_pb_;
-  REF(Probleme_base) ref_pb_;
+  OBS_PTR(Probleme_base) ref_pb_;
   Nom fichier_domaine_;
   Nom fichier_faces_;
   Nom fichier_debog_; // fichier contenant les valeurs a relire
@@ -118,7 +118,7 @@ protected:
 
   Nom nom_pb_actuel_;
 
-  static REF(Debog_Pb) instance_debog_;
+  static OBS_PTR(Debog_Pb) instance_debog_;
 };
 
 // This is the interpreter (what we use in a data set TRUST).. it will instanciate a Debog_Pb object

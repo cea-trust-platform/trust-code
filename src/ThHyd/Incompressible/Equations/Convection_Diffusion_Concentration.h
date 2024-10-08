@@ -60,7 +60,7 @@ protected :
 
   int nb_constituants_;
   OWN_PTR(Champ_Inc_base) la_concentration;
-  REF(Constituant) le_constituant;
+  OBS_PTR(Constituant) le_constituant;
   double masse_molaire_;
 };
 

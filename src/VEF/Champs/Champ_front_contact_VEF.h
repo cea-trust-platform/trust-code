@@ -99,11 +99,11 @@ public:
 
 protected :
   int is_conduction=0; // Est-on dans un probleme conduction ?
-  REF(Champ_Inc_base) l_inconnue1;
-  REF(Champ_Inc_base) l_inconnue2;
-  REF(Champ_Inc_base) l_inconnue;
-  REF(Front_VF) fr_vf_autre_pb;
-  REF(Champ_front_contact_VEF) ch_fr_autre_pb;
+  OBS_PTR(Champ_Inc_base) l_inconnue1;
+  OBS_PTR(Champ_Inc_base) l_inconnue2;
+  OBS_PTR(Champ_Inc_base) l_inconnue;
+  OBS_PTR(Front_VF) fr_vf_autre_pb;
+  OBS_PTR(Champ_front_contact_VEF) ch_fr_autre_pb;
 
   Nom nom_bord1;
   Nom nom_bord2;

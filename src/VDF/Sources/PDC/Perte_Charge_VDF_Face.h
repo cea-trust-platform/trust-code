@@ -37,10 +37,10 @@ public:
   inline int has_interface_blocs() const override { return 1; }
 
 protected:
-  REF(Champ_Face_VDF) la_vitesse;
-  REF(Fluide_base) le_fluide;
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  OBS_PTR(Champ_Face_VDF) la_vitesse;
+  OBS_PTR(Fluide_base) le_fluide;
+  OBS_PTR(Domaine_VDF) le_dom_VDF;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
   IntVect num_faces;
   DoubleVect corr_front_ss;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;

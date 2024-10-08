@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,8 +42,8 @@ public:
   }
 
 protected:
-  REF(Domaine_dis_base) le_dom;
-  REF(Domaine_Cl_dis_base) la_zcl;
+  OBS_PTR(Domaine_dis_base) le_dom;
+  OBS_PTR(Domaine_Cl_dis_base) la_zcl;
 };
 
 #endif /* Evaluateur_Source_included */

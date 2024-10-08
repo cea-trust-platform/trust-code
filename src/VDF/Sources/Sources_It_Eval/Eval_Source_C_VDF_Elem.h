@@ -30,7 +30,7 @@ public:
   inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
-  REF(Champ_Don_base) la_source_constituant;
+  OBS_PTR(Champ_Don_base) la_source_constituant;
   DoubleTab source_constituant;
 };
 

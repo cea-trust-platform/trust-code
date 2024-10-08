@@ -43,10 +43,10 @@ public :
 private :
 
   bool write_field_during_current_timestep_() const;
-  bool getStatField_(const Nom& fname, REF(Champ_base)& field, REF(Operateur_Statistique_tps_base)& op_stat) const;
+  bool getStatField_(const Nom& fname, OBS_PTR(Champ_base)& field, OBS_PTR(Operateur_Statistique_tps_base)& op_stat) const;
   void writeValuesOnBoundary_(const Nom& fname, const std::string& bname, const DoubleTab& pos, const DoubleTab& val) const;
 
-  REF(Equation_base) eqn_;
+  OBS_PTR(Equation_base) eqn_;
   int binary_file_ = 1;
   double dt_ = -123.; //file writing frequency
   Noms fields_names_;

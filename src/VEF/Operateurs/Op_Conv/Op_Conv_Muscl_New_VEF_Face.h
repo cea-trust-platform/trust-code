@@ -103,7 +103,7 @@ private :
 
   // bool sous_domaine;  // Cas d'un sous-domaine a definir pour que l'EF_Stab degenere en Amont
   Nom nom_sous_domaine;
-  //REF(Sous_domaine_VF) le_sous_domaine_dis;
+  //OBS_PTR(Sous_domaine_VF) le_sous_domaine_dis;
 
   //double (*limiteur_)(double)=nullptr;
 

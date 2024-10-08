@@ -45,7 +45,7 @@ public :
   virtual double moyenne_vol(const DoubleTab&) const =0;
 
 protected :
-  REF(Fluide_Dilatable_base) le_fluide_;
+  OBS_PTR(Fluide_Dilatable_base) le_fluide_;
 };
 
 #endif /* EOS_Tools_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,8 @@ public:
   void associer_champ(const Champ_Face_VDF&, const Domaine_Cl_dis_base&);
 
 private:
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF(Champ_Face_VDF) vitesse_;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  OBS_PTR(Champ_Face_VDF) vitesse_;
 };
 
 #endif /* Taux_cisaillement_P0_VDF_included */

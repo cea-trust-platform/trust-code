@@ -133,13 +133,13 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_pre
 
 int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
-  const REF(Domaine_dis_base) domaine_dis_base;
+  const OBS_PTR(Domaine_dis_base) domaine_dis_base;
   return ecrire_domaine_dis(domaine, domaine_dis_base, est_le_premier_post);
 }
 
 /*! @brief voir Format_Post_base::ecrire_domaine
  */
-int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
+int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const OBS_PTR(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
 {
   Nom nom_fich(med_basename_);
   nom_fich +=".";
@@ -324,7 +324,7 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
   return 1;
 }
 
-int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
+int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const OBS_PTR(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
 {
   int dim = domaine.les_sommets().dimension(1);
   bool append = !est_le_premier_post;

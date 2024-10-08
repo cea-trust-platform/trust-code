@@ -43,8 +43,8 @@ public :
   virtual void associer_champ_temp(const Champ_Inc_base&, bool) const { }
 
 protected :
-  REF(Champ_base) la_norme_vitesse;
-  REF(Champ_base) vitesse_pour_pas_de_temps_;
+  OBS_PTR(Champ_base) la_norme_vitesse;
+  OBS_PTR(Champ_base) vitesse_pour_pas_de_temps_;
   double dt_stab_conv_;
   int incompressible_ = 1; // incompressible_= 1 -> l'operateur discretise div(v x inco), incompressible_ = 0 -> il discretise v.grad(inco)
 };

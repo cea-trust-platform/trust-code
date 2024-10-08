@@ -47,7 +47,7 @@ public :
   void associer_norme_vitesse(const Champ_base&);
 protected :
 
-  REF(Champ_base) la_vitesse;
+  OBS_PTR(Champ_base) la_vitesse;
 };
 
 /*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base

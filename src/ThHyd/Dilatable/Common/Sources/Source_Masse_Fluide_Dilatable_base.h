@@ -53,7 +53,7 @@ protected :
   int ncomp_ = -1;
   Nom nom_bord_;
   OWN_PTR(Champ_front_base) ch_front_source_;
-  REF(Domaine_Cl_dis_base) domaine_cl_dis_;
+  OBS_PTR(Domaine_Cl_dis_base) domaine_cl_dis_;
 };
 
 #endif /* Source_Masse_Fluide_Dilatable_base_included */

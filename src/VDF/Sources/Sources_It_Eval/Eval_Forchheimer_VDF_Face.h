@@ -36,7 +36,7 @@ public:
   OWN_PTR(Modele_Permeabilite_base) modK_;
 
 protected:
-  REF(Champ_Inc_base) vitesse_;
+  OBS_PTR(Champ_Inc_base) vitesse_;
   double Cf_, porosite_;
 };
 

@@ -52,9 +52,9 @@ public:
   mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:
-  REF(Domaine_PolyMAC) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Domaine_PolyMAC) le_dom_poly_;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_poly_;
+  OBS_PTR(Champ_base) diffusivite_;
   mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
   mutable int nu_a_jour_ = 0; //si on doit mettre a jour nu
   mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ public:
   }
 
 protected:
-  REF(Champ_P1NC) mon_champ_;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  OBS_PTR(Champ_P1NC) mon_champ_;
+  OBS_PTR(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
 #endif /* Y_plus_Champ_P1NC_included */

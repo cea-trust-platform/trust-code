@@ -76,8 +76,8 @@ protected:
   OWN_PTR(Correlation_base) corr_; // correlation de viscosite/transport turbulente
   std::vector<OWN_PTR(Champ_Fonc_base)> nu_ou_lambda_turb_post_, mu_ou_alpha_turb_post_; // champ de postraitement
   Motcles noms_nu_ou_lambda_turb_post_, noms_mu_ou_alpha_turb_post_; //leurs noms
-  REF(Probleme_base) pbm_;
-  REF(Champs_compris) le_chmp_compris_;
+  OBS_PTR(Probleme_base) pbm_;
+  OBS_PTR(Champs_compris) le_chmp_compris_;
 };
 
 #endif /* Op_Dift_Multiphase_proto_included */

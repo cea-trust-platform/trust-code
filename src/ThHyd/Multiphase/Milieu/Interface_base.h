@@ -52,7 +52,7 @@ public:
   void   sigma_h(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
 
 protected:
-  REF(Probleme_base) pb_;
+  OBS_PTR(Probleme_base) pb_;
   OWN_PTR(Champ_Don_base) ch_sigma_;
   double sigma__ = -1.;
 

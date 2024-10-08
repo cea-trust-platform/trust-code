@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ protected :
   IntVect nb_marqs_sz;        //nombre de marqueurs par sous domaine
   IntTab nb_marqs_par_dir;        //nombre de marqueurs dans chacune des directions d un sous domaine
   //si distribution uniforme sur la sous domaine
-  REF(Domaine) mon_dom_;                //REF au Domaine du maillage Eulerien
+  OBS_PTR(Domaine) mon_dom_;                //REF au Domaine du maillage Eulerien
 
   DoubleTab sommets_lu_;      //Coordonnees des sommets lus dans le cas d une lecture dans un fichier
 

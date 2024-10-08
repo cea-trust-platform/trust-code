@@ -45,7 +45,7 @@ Entree& Traitement_particulier_NS_Brech_VEF::readOn(Entree& is)
   }
 
   int Traitement_particulier_NS_Brech_VEF::a_pour_Champ_Fonc(const Motcle& mot,
-  REF(Champ_base)& ch_ref) const
+  OBS_PTR(Champ_base)& ch_ref) const
   {
   if (mot == "Richardson")
   {
@@ -235,8 +235,8 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       DoubleTab valeurs_(taille,3) ;
 
       // Modifs VB pour prise en compte rho et calcul du flux enthalpique + Tmoy
-      REF(Champ_base) rch1 ;
-      REF(Champ_Inc_base) l_inco ;
+      OBS_PTR(Champ_base) rch1 ;
+      OBS_PTR(Champ_Inc_base) l_inco ;
       const Probleme_base& pb = mon_equation->probleme();
       /*
         pb.a_pour_Champ_Inc("Temperature", rch1 ) ;
@@ -379,8 +379,8 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis() );
 
-  REF(Champ_base) rch1 ;
-  REF(Champ_Inc_base) l_inco ;
+  OBS_PTR(Champ_base) rch1 ;
+  OBS_PTR(Champ_Inc_base) l_inco ;
 
   const Probleme_base& pb = mon_equation->probleme();
   /*

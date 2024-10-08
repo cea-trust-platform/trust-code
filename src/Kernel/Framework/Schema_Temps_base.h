@@ -276,7 +276,7 @@ public :
   void finir() const;
 
 protected :
-  REF(Probleme_base) mon_probleme;
+  OBS_PTR(Probleme_base) mon_probleme;
   Nom nom_;
   double dt_;                                // Pas de temps de calcul
   DoubleTab dt_locaux_;                     // Local time steps: Vector of size nb faces of the mesh

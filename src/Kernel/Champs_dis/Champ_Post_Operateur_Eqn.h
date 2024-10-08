@@ -62,7 +62,7 @@ public:
 
 protected:
   int numero_source_,numero_op_, numero_masse_;
-  REF(Equation_base) ref_eq_;
+  OBS_PTR(Equation_base) ref_eq_;
   int sans_solveur_masse_;
   Entity localisation_inco_ = Entity::NODE;
   int compo_;                            //Pour identifier la composante a recuperer

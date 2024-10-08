@@ -33,8 +33,8 @@ public:
   DoubleVect& equivalent_distance_name(DoubleVect& d_equiv, const Nom& nom_bord) const override;
 
 protected:
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  OBS_PTR(Domaine_VDF) le_dom_VDF;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
   mutable int nb_impr_ = -123;        // Compteur d'impression
 };
 

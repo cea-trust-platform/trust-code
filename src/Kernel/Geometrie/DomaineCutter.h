@@ -67,10 +67,10 @@ private:
   DomaineCutter(const DomaineCutter& dc);
 
   // Reference au domaine global
-  REF(Domaine) ref_domaine_;
+  OBS_PTR(Domaine) ref_domaine_;
   // Reference au tableau de decoupage
   //  (pour chaque element du domaine global, numero de sous-domaine)
-  REF(IntVect) ref_elem_part_;
+  OBS_PTR(IntVect) ref_elem_part_;
   // Liste des noms des bords periodiques
   Noms liste_bords_periodiques_;
   // Nombre total de parties (>= a max_array(elem_part) + 1)

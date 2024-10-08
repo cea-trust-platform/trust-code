@@ -74,7 +74,7 @@ public:
 protected :
 
 
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Champ_base) diffusivite_;
   mutable DoubleTab grad_;  // grad
 
   //DoubleVect porosite_face;

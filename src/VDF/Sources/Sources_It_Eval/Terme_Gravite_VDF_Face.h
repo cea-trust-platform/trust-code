@@ -36,7 +36,7 @@ public:
   inline void mettre_a_jour(double temps) override { gravite->mettre_a_jour(temps); }
 
 protected:
-  REF(Champ_Don_base) gravite;
+  OBS_PTR(Champ_Don_base) gravite;
   void associer_gravite(const Champ_Don_base& );
 };
 

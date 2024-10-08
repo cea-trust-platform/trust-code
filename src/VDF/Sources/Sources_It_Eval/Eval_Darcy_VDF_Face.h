@@ -41,8 +41,8 @@ public:
   OWN_PTR(Modele_Permeabilite_base) modK_;
 
 protected:
-  REF(Champ_Inc_base) vitesse_;
-  REF(Champ_Don_base) diffusivite_;
+  OBS_PTR(Champ_Inc_base) vitesse_;
+  OBS_PTR(Champ_Don_base) diffusivite_;
   DoubleTab db_diffusivite_;
   double porosite_;
 };

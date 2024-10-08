@@ -46,8 +46,8 @@ public:
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse& matrice) const override;
 
 protected:
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
 #endif /* Op_Div_PolyMAC_included */

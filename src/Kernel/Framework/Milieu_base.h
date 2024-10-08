@@ -127,17 +127,17 @@ public:
   int id_composite_ = -1;
 
   // Liste des champs des milieux:
-  const LIST(REF(Champ_Don_base))& champs_don() const { return champs_don_; }
+  const LIST(OBS_PTR(Champ_Don_base))& champs_don() const { return champs_don_; }
 
 protected:
-  REF(Domaine_dis_base) zdb_;
+  OBS_PTR(Domaine_dis_base) zdb_;
   OWN_PTR(Champ_base) ch_rho_; //peut etre un OWN_PTR(Champ_Don_base) ou un Champ_Inc
   OWN_PTR(Champ_Don_base) ch_g_, ch_alpha_, ch_lambda_, ch_alpha_fois_rho_, ch_Cp_, ch_beta_th_, ch_porosites_, ch_diametre_hyd_;
   OWN_PTR(Champ_Fonc_base)  ch_rho_Cp_elem_, ch_rho_Cp_comme_T_;
   Champs_compris champs_compris_;
   DoubleVect porosite_face_, section_passage_face_ /* pour F5 */, diametre_hydraulique_face_;
   Nom nom_;
-  LIST(REF(Champ_Don_base)) champs_don_;
+  LIST(OBS_PTR(Champ_Don_base)) champs_don_;
 
   enum Type_rayo { NONRAYO, TRANSP, SEMITRANSP };
   Type_rayo indic_rayo_;
@@ -171,7 +171,7 @@ private:
   mutable int deja_associe_;
   bool via_associer_ = false;
   void warn_old_syntax();
-  REF(Champ_Don_base) g_via_associer_;
+  OBS_PTR(Champ_Don_base) g_via_associer_;
 };
 
 #endif /* Milieu_base_included */

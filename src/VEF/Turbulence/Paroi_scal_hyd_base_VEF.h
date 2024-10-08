@@ -36,8 +36,8 @@ public:
   DoubleVect& equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const override;
 
 protected:
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  OBS_PTR(Domaine_VEF) le_dom_VEF;
+  OBS_PTR(Domaine_Cl_VEF) le_dom_Cl_VEF;
   DoubleVect tab_d_reel_;   // tableau des distances (dimenssionnelles) du
 };
 

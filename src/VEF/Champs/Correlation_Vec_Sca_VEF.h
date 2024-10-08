@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ public:
   inline void mettre_a_jour(double) override;
 
 protected:
-  REF(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
+  OBS_PTR(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
 };
 
 inline void Correlation_Vec_Sca_VEF::mettre_a_jour(double tps)

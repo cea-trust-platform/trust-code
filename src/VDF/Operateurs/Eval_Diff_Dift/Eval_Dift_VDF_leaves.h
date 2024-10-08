@@ -99,8 +99,8 @@ public:
   double tau_tan_impl(int face,int k) const;
 
 private:
-  REF(Modele_turbulence_hyd_base) le_modele_turbulence;
-  REF(Turbulence_paroi_base) loipar;
+  OBS_PTR(Modele_turbulence_hyd_base) le_modele_turbulence;
+  OBS_PTR(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
 };
 

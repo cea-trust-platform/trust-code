@@ -482,7 +482,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                 }
               ArrOfInt elem(2),som(nb_som_face);
               int nb_face_lu=ifin-ideb+1;
-              REF(Frontiere) nouveau_bord;
+              OBS_PTR(Frontiere) nouveau_bord;
               // On lit les sommets de la face et les 2 elements au contact de la face
               for (int i=0; i<nb_face_lu; i++)
                 {

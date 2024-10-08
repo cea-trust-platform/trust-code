@@ -42,7 +42,7 @@ public:
   int reculer(double temps) override;
 
 protected:
-  REF(Champ_Inc_base) ch_inco_;
+  OBS_PTR(Champ_Inc_base) ch_inco_;
   OWN_PTR(Champ_front_base) velocity_profil_;
   OWN_PTR(Champ_front_base) flow_rate_;
   // in TRUST the normal vector to a surface is stocked weighted by the area of the surface via "face_normales"

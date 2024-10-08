@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,8 +47,8 @@ public:
   }
 
 protected:
-  REF(Domaine_VDF) le_dom;
-  REF(Domaine_Cl_VDF) la_zcl;
+  OBS_PTR(Domaine_VDF) le_dom;
+  OBS_PTR(Domaine_Cl_VDF) la_zcl;
   int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces

@@ -42,8 +42,8 @@ public:
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
 protected:
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  OBS_PTR(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_Cl_EF) le_dom_Cl_EF;
   IntVect face_keps_imposee_; // avec descripteur parallele
   int flag_face_keps_imposee_ = 0;
 };

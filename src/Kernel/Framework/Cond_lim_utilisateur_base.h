@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ public:
   virtual void ecrire(const Nom&);
 protected :
   Cond_lim* la_cl_;
-  REF(Equation_base) mon_equation;
+  OBS_PTR(Equation_base) mon_equation;
   Nom nom_bord_;
 };
 

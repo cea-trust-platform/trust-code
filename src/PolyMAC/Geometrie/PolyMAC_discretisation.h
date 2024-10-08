@@ -55,14 +55,14 @@ public:
   void grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const override;
   inline type_calcul_du_residu codage_du_calcul_du_residu() const override { return VIA_AJOUTER; }
 
-  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const override;
+  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const override;
 
   bool is_polymac() const override { return true; }
   bool is_polymac_family() const override { return true; }
 
 private:
   virtual void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Objet_U& champ) const;
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &ch_temper) const override;
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf, Champ_Fonc_Tabule& lambda_tab, const VECT(OBS_PTR(Champ_base)) &ch_temper) const override;
 };
 
 #endif /* PolyMAC_discretisation_included */

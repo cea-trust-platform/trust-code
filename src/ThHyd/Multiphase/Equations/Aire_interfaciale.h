@@ -56,7 +56,7 @@ public :
 protected :
   OWN_PTR(Champ_Inc_base) l_inco_ch_;
   OWN_PTR(Champ_Fonc_base)  diametre_bulles_;
-  REF(Fluide_base) le_fluide_;
+  OBS_PTR(Fluide_base) le_fluide_;
 
   int n_l_=-1 ; // Number of the liquid phase (the one where no IA is stored)
 };

@@ -1986,7 +1986,7 @@ void Domaine_32_64<int>::creer_mes_domaines_frontieres(const Domaine_VF& domaine
       Domaine& dom_new = ref_cast(Domaine, interprete().objet(nom_domaine_surfacique));
 
       Extraire_surface::extraire_surface(dom_new,*this,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,0,nom_frontiere);
-      REF(Domaine)& ref_dom_new=domaines_frontieres_.add(REF(Domaine)());
+      OBS_PTR(Domaine)& ref_dom_new=domaines_frontieres_.add(OBS_PTR(Domaine)());
       ref_dom_new=dom_new;
     }
 }

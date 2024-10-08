@@ -135,7 +135,7 @@ public:
   virtual int comprend_champ_post(const Motcle& nom) const;
 
   // Fonctions de recherche de IntTab pour le postraitement
-  virtual int a_pour_IntVect(const Motcle&, REF(IntVect)& ) const;
+  virtual int a_pour_IntVect(const Motcle&, OBS_PTR(IntVect)& ) const;
   virtual void lire_postraitement_interfaces(Entree& is);
   virtual void postraiter_interfaces(const Nom& nom_fich, Sortie& s, const Nom& format, double temps);
 
@@ -184,8 +184,8 @@ public:
   bool updateGivenFields() override { return updateGivenFields_impl(*this); }
   double futureTime() const override { return futureTime_impl(*this); }
 
-  REF(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
-  REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
+  OBS_PTR(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
+  OBS_PTR(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
   virtual bool is_pb_med() { return false ; }
   virtual bool is_pb_rayo() { return false ; }
@@ -208,12 +208,12 @@ public:
 
 protected :
   std::vector<OWN_PTR(Milieu_base)> le_milieu_;
-  REF(Domaine_dis_base) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
+  OBS_PTR(Domaine_dis_base) le_domaine_dis_;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
   Postraitements les_postraitements_;
-  REF(Domaine) le_domaine_;
-  REF(Schema_Temps_base) le_schema_en_temps_;
-  REF(Discretisation_base) la_discretisation_;
-  REF(Probleme_Couple) pbc_;
+  OBS_PTR(Domaine) le_domaine_;
+  OBS_PTR(Schema_Temps_base) le_schema_en_temps_;
+  OBS_PTR(Discretisation_base) la_discretisation_;
+  OBS_PTR(Probleme_Couple) pbc_;
   void warn_old_syntax();
   virtual void typer_lire_milieu(Entree& is) ;
   virtual void lire_solved_equations(Entree& is) { /* Do nothing */ }
@@ -239,8 +239,8 @@ protected :
   static int Num_pb_;                // numero du probleme
   mutable Nom error_;                // Erreur d'allocation
 
-  LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
-  LIST(REF(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
+  LIST(OBS_PTR(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
+  LIST(OBS_PTR(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
   LIST(OWN_PTR(Equation_base)) eq_opt_; //autres equations (turbulence, aire interfaciale...)
   std::map<std::string, OWN_PTR(Correlation_base)> correlations_;
 };

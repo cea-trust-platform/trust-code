@@ -34,8 +34,8 @@ public:
 
 protected:
   bool no_diff_ = false;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
 };
 
 class Masse_PolyMAC_P0P1NC_base : public Masse_PolyMAC_base

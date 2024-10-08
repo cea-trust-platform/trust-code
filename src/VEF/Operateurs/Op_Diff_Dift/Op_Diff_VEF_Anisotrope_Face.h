@@ -67,7 +67,7 @@ public:
 protected :
 
 
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Champ_base) diffusivite_;
 
   //DoubleVect porosite_face;
 };

@@ -38,7 +38,7 @@ public:
   int reprendre(Entree&) override;
 
 protected:
-  REF(Champ_Fonc_base) la_viscosite_turbulente_;
+  OBS_PTR(Champ_Fonc_base) la_viscosite_turbulente_;
 };
 
 #endif /* Modele_turbulence_scal_diffturb_base_included */

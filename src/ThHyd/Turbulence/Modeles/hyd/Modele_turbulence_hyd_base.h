@@ -85,7 +85,7 @@ public:
 protected:
   double LeCmu_ = CMU;
   OWN_PTR(Champ_Fonc_base)  la_viscosite_turbulente_, wall_length_;
-  REF(Equation_base) mon_equation_;
+  OBS_PTR(Equation_base) mon_equation_;
   OWN_PTR(Turbulence_paroi_base)loipar_;
   double dt_impr_ustar_  = 1.e20, dt_impr_ustar_mean_only_  = 1.e20;
   int boundaries_ = 0;

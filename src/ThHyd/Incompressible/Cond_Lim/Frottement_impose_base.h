@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ public:
   void verifie_ch_init_nb_comp() const override { }
 
 protected:
-  REF(Frontiere_dis_base) la_frontiere_dis;
+  OBS_PTR(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1e10;
 //  int is_calc_qdm = 1 ;
 };

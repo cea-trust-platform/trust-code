@@ -52,7 +52,7 @@ public:
 protected:
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
 
-  REF(Champ_base) diffusivite_pour_pas_de_temps_;
+  OBS_PTR(Champ_base) diffusivite_pour_pas_de_temps_;
 };
 
 #endif

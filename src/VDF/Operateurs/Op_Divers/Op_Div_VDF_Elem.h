@@ -35,8 +35,8 @@ public:
   void volumique(DoubleTab& ) const override;
 
 protected:
-  REF(Domaine_VDF) le_dom_vdf;
-  REF(Domaine_Cl_VDF) la_zcl_vdf;
+  OBS_PTR(Domaine_VDF) le_dom_vdf;
+  OBS_PTR(Domaine_Cl_VDF) la_zcl_vdf;
 };
 
 #endif /* Op_Div_VDF_Elem_included */

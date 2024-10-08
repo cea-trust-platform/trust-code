@@ -77,9 +77,9 @@ public:
   virtual int impr(Sortie& os) const =0;
 
 protected:
-  REF(Domaine_PolyMAC) le_domaine;
-  REF(Domaine_Cl_PolyMAC) la_zcl;
-  REF(Operateur_base) op_base;
+  OBS_PTR(Domaine_PolyMAC) le_domaine;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl;
+  OBS_PTR(Operateur_base) op_base;
 };
 
 inline Type_Cl_PolyMAC Iterateur_PolyMAC_base::type_cl(const Cond_lim& la_cl) const

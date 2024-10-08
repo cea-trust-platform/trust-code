@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public:
 
 protected :
   int ismoyen=0;
-  REF(Fluide_Quasi_Compressible) fluide;
+  OBS_PTR(Fluide_Quasi_Compressible) fluide;
 
 private :
   mutable VECT(Parser_U) f_debit_t;

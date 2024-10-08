@@ -65,13 +65,13 @@ public:
   void h_conv(const Domaine_dis_base& z, const Domaine_Cl_dis_base&, const Champ_Inc_base& temperature, OWN_PTR(Champ_Fonc_base) &ch, Motcle& nom, int temp_ref) const override;
   inline type_calcul_du_residu codage_du_calcul_du_residu() const override { return VIA_CONTRIBUER_AU_SECOND_MEMBRE; }
 
-  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const override;
+  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const override;
   bool is_ef() const override { return true; }
 
 private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Objet_U& champ) const;
 
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &ch_temper) const override;
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf, Champ_Fonc_Tabule& lambda_tab, const VECT(OBS_PTR(Champ_base)) &ch_temper) const override;
 };
 
 #endif

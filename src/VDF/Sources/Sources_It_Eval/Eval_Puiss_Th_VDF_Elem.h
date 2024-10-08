@@ -29,7 +29,7 @@ public:
   void mettre_a_jour() override { /* Do nothing */}
 
 protected:
-  REF(Champ_Don_base) la_puissance;
+  OBS_PTR(Champ_Don_base) la_puissance;
   DoubleTab puissance;
 };
 

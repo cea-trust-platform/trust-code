@@ -41,7 +41,7 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_EF) le_dom_EF;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 
   OWN_PTR(Champ_Don_base) la_source_,la_source_lu_;

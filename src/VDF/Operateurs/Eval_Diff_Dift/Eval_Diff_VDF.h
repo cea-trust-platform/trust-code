@@ -105,8 +105,8 @@ public:
 
 protected:
   int is_var_ = 0;
-  REF(Probleme_base) ref_probleme_;
-  REF(Champ_base) ref_diffusivite_;
+  OBS_PTR(Probleme_base) ref_probleme_;
+  OBS_PTR(Champ_base) ref_diffusivite_;
   DoubleTab tab_diffusivite_, tab_alpha_;
 };
 

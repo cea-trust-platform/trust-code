@@ -32,8 +32,8 @@ protected:
   void associer_volume_porosite_impl(const Domaine_dis_base& domaine, DoubleVect& volumes, DoubleVect& porosites);
   void ajouter_impl( const DoubleVect& g, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 
-  REF(Domaine_Cl_VDF) le_dom_Cl;
-  REF(Domaine_VDF) le_dom;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl;
+  OBS_PTR(Domaine_VDF) le_dom;
 };
 
 #endif /* Source_Fluide_Dilatable_VDF_Proto_included */

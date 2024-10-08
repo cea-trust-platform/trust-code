@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,9 +51,9 @@ public:
   }
 
 protected:
-  REF(Equation_base) mon_equation;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  OBS_PTR(Equation_base) mon_equation;
+  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
 
   DoubleTab les_coeff_pression;
 

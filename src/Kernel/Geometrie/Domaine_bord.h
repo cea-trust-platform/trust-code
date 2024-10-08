@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ public:
                                     ArrOfInt& renum_som);
 protected:
   // Reference au domaine source:
-  REF(Domaine) domaine_source_;
+  OBS_PTR(Domaine) domaine_source_;
   // Nom du bord dans le domaine source:
   Nom bord_source_;
   // Pour chaque sommet de ce domaine, indice du meme sommet dans le domaine source:

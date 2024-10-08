@@ -31,8 +31,8 @@ public:
   void associer_champ(const Champ_Face_VDF&, const Champ_Don_base&);
 
 protected:
-  REF(Champ_Face_VDF) vitesse_;
-  REF(Champ_Don_base) nu_;
+  OBS_PTR(Champ_Face_VDF) vitesse_;
+  OBS_PTR(Champ_Don_base) nu_;
 };
 
 #endif /* Reynolds_maille_Champ_Face_included */

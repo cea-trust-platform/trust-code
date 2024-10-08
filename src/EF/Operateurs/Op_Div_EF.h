@@ -47,8 +47,8 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
+  OBS_PTR(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_Cl_EF) la_zcl_EF;
 
   DoubleVect porosite_face;
 };

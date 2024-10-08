@@ -49,7 +49,7 @@ public:
 
   Nom nom_domaine;
   OWN_PTR(Partitionneur_base) deriv_partitionneur;
-  REF(Domaine) ref_domaine;
+  OBS_PTR(Domaine) ref_domaine;
   int nb_parts_tot = -1;
   Noms liste_bords_periodiques;
 

@@ -233,7 +233,7 @@ public:
     void dX_dT_P(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dT);
 
   private:
-    REF(Fluide_reel_base) z_fld_;
+    OBS_PTR(Fluide_reel_base) z_fld_;
   };
 
   H_to_T converter_h_T_;

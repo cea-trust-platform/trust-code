@@ -45,8 +45,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Domaine_VDF) le_dom;
-  REF(Domaine_Cl_dis_base) le_dom_Cl;
+  OBS_PTR(Domaine_VDF) le_dom;
+  OBS_PTR(Domaine_Cl_dis_base) le_dom_Cl;
   DoubleTab tab_rho_face, tab_rho_face_demi, tab_rho_face_np1;
 };
 

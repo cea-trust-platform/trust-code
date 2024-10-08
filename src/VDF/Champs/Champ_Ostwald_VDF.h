@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public :
 
 protected :
   void calculer_mu(DoubleTab& );
-  REF(Champ_Face_VDF) mon_champ_;
+  OBS_PTR(Champ_Face_VDF) mon_champ_;
 };
 
 #endif /* Champ_Ostwald_VDF_included */

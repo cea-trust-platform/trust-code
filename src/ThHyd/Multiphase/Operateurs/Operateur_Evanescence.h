@@ -41,7 +41,7 @@ public:
   inline int op_non_nul() const override { return non_nul(); };
 
 protected:
-  REF(Champ_base) la_diffusivite_;
+  OBS_PTR(Champ_base) la_diffusivite_;
 };
 
 #endif /* Operateur_Evanescence_included */

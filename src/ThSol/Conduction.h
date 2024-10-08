@@ -72,7 +72,7 @@ public:
   /////////////////////////////////////////////////////
 
 private :
-  REF(Solide) le_solide;
+  OBS_PTR(Solide) le_solide;
   OWN_PTR(Champ_Inc_base) la_temperature;
   Operateur_Diff terme_diffusif;
 

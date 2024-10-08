@@ -49,8 +49,8 @@ public:
   inline int reprendre(Entree& is) override;
 
 protected:
-  REF(Op_Moyenne) la_moyenne_;
-  REF(Integrale_tps_Champ) integrale_champ_;
+  OBS_PTR(Op_Moyenne) la_moyenne_;
+  OBS_PTR(Integrale_tps_Champ) integrale_champ_;
   Integrale_tps_Champ integrale_carre_champ_;
 };
 

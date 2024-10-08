@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
     {
       CHTAB ch_lu;
       /* 1. lecture du sous-domaine */
-      REF(Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
+      OBS_PTR(Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
       Sous_Domaine& ssz = refssz.valeur();
 
       /* 2. lecture des champs parametres */

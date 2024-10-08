@@ -69,8 +69,8 @@ public:
   inline const Correlation_base& get_corr() const { return corr_; }
 
 protected:
-  REF(Correlation_base) corr_;
-  REF(DoubleTab) nu_t_;
+  OBS_PTR(Correlation_base) corr_;
+  OBS_PTR(DoubleTab) nu_t_;
   bool need_alpha_rho_ = true, tab_diff_turb_first_update_ = true;
 };
 

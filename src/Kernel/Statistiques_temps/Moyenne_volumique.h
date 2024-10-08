@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ protected:
   void traiter_champs(const Motcles& noms_champs, const Nom& nom_pb, const Nom& nom_dom, const DoubleTab& coords, Format_Post_base& post, double temps, const Motcle& localisation);
 
   int get_champ(const Nom& nom_pb, const Nom& nom_champ,
-                REF(Champ_base) &ref_champ);
+                OBS_PTR(Champ_base) &ref_champ);
 
   virtual void calculer_convolution(const Domaine_VF& domaine_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 

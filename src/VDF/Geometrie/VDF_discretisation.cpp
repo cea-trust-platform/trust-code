@@ -457,7 +457,7 @@ void VDF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_
  ch_tp.changer_temps(eqn.inconnue().temps());
  } */
 
-void VDF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(REF(Champ_base)) &ch_inc) const
+void VDF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(OBS_PTR(Champ_base)) &ch_inc) const
 {
   le_champ_tabule.typer_champ_tabule_discretise("Champ_Fonc_Tabule_P0_VDF");
   Champ_Fonc_Tabule_P0_VDF& le_champ_tabule_dis = ref_cast(Champ_Fonc_Tabule_P0_VDF, le_champ_tabule.le_champ_tabule_discretise());

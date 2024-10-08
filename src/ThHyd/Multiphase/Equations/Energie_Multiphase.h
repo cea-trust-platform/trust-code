@@ -89,7 +89,7 @@ protected :
 
   OWN_PTR(Champ_Inc_base) l_inco_ch_;
   Operateur_Evanescence evanescence_;
-  REF(Fluide_base) le_fluide_;
+  OBS_PTR(Fluide_base) le_fluide_;
 };
 
 /*! @brief Renvoie le champ inconnue representant l'inconnue (T ou H) (version const)

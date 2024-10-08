@@ -61,7 +61,7 @@ public :
   Entree& interpreter(Entree&) override;
 
   void ecrire_domaine(bool append=true);
-  void ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append=true);
+  void ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append=true);
 
   void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Noms& noms_compo,const Nom& type_elem,double time);
   void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,const Champ_Inc_base& le_champ);
@@ -69,11 +69,11 @@ public :
 protected:
 
   void get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const;
-  void fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base);
+  void fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& domaine_dis_base);
 
   bool major_mode_ = false;   ///< False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
   Nom nom_fichier_;           ///< Name of the MED file to write
-  REF(Domaine) dom_;          ///< Domain that will be written
+  OBS_PTR(Domaine) dom_;          ///< Domain that will be written
   std::map<std::string, int> timestep_;
   int mesh_dimension_ = -1;
 

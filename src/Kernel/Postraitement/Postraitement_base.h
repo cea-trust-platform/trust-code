@@ -58,7 +58,7 @@ public:
 
 protected:
   Nom le_nom_;
-  REF(Probleme_base) mon_probleme;
+  OBS_PTR(Probleme_base) mon_probleme;
   double temps_;
 };
 

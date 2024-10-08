@@ -88,17 +88,17 @@ protected:
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
   OWN_PTR(Champ_Don_base) diam_hydr;
   //! Fluide associe au probleme
-  REF(Fluide_base) le_fluide;
+  OBS_PTR(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
-  REF(Champ_Inc_base) la_vitesse;
+  OBS_PTR(Champ_Inc_base) la_vitesse;
   //! Domaine dans laquelle s'applique la perte de charge
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
 
   // Cas d'une sous-domaine
   bool sous_domaine = false; //!< Le terme est-il limite a une sous-domaine ?
   Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF(Sous_Domaine) le_sous_domaine; //!< Initialise dans completer()
+  OBS_PTR(Sous_Domaine) le_sous_domaine; //!< Initialise dans completer()
   int implicite_ = 1;
 
   mutable Parser_U lambda;

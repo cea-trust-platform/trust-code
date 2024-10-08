@@ -34,10 +34,10 @@ public:
   void mettre_a_jour(double) override { }
 
 protected:
-  REF(Champ_Inc_base) la_vitesse;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  REF(Fluide_base) le_fluide;
+  OBS_PTR(Champ_Inc_base) la_vitesse;
+  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  OBS_PTR(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;

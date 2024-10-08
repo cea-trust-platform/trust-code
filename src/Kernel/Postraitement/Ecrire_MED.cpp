@@ -127,7 +127,7 @@ void Ecrire_MED::ecrire_domaine(bool m)
 {
   med_non_installe();
 }
-void Ecrire_MED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   med_non_installe();
 }
@@ -197,7 +197,7 @@ void Ecrire_MED::ecrire_domaine(bool append)
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << finl;
     }
-  REF(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretise
+  OBS_PTR(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretise
   ecrire_domaine_dis(domaine_dis_base, append);
 }
 
@@ -209,7 +209,7 @@ void Ecrire_MED::ecrire_domaine(bool append)
  * - or, we only write boundary faces. In this case we can still preserve face numbering for all 'classical' borders (i.e. not
  * joints) since by construction TRUST places those faces first, but faces of **joints** are renumbered.
  */
-void Ecrire_MED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base)
+void Ecrire_MED::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& domaine_dis_base)
 {
 #if !defined(INT_is_64_) || INT_is_64_ == 1
 
@@ -310,7 +310,7 @@ void Ecrire_MED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_
  *
  * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
  */
-void Ecrire_MED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   if (Objet_U::dimension==0)
     Process::exit("Dimension is not defined. Check your data file.");

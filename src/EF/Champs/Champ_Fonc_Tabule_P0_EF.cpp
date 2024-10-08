@@ -23,7 +23,7 @@ Sortie& Champ_Fonc_Tabule_P0_EF::printOn(Sortie& s) const { return s << que_suis
 
 Entree& Champ_Fonc_Tabule_P0_EF::readOn(Entree& s) { return s; }
 
-void Champ_Fonc_Tabule_P0_EF::associer_param(const VECT(REF(Champ_base)) &les_champs, const Table& une_table)
+void Champ_Fonc_Tabule_P0_EF::associer_param(const VECT(OBS_PTR(Champ_base)) &les_champs, const Table& une_table)
 {
   les_ch_param = les_champs;
   la_table = une_table;

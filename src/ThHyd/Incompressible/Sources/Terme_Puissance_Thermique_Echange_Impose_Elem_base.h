@@ -39,8 +39,8 @@ public:
   int initialiser(double temps) override;
 
 protected:
-  REF(Domaine_VF) le_dom;
-  REF(Domaine_Cl_dis_base) le_dom_Cl;
+  OBS_PTR(Domaine_VF) le_dom;
+  OBS_PTR(Domaine_Cl_dis_base) le_dom_Cl;
   OWN_PTR(Champ_Don_base) himp_,Text_;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   // PID controler

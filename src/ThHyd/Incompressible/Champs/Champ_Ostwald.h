@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ public :
   }
 
 protected:
-  REF(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
+  OBS_PTR(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
 };
 
 #endif /* Champ_Ostwald_included */

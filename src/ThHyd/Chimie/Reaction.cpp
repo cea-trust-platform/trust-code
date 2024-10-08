@@ -179,7 +179,7 @@ void Reaction::discretiser_omega(const Probleme_base& pb,const Nom& nom)
   const Equation_base& eqn=pb.equation(0);
   eqn.discretisation().discretiser_champ("temperature",eqn.domaine_dis(),nom,"unit", -1,0.,omega_);
 }
-void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
+void Reaction::reagir(VECT(OBS_PTR(Champ_Inc_base))& liste_C,double deltat) const
 {
   // il faut savoir e que l'on veut faire ....
 

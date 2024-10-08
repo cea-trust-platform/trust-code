@@ -58,8 +58,8 @@ protected :
   Nom dom_extrac_;              // Nom du domaine d extraction
   Nom nom_fr_;                  // Nom de la frontiere sur laquelle on fait l extraction
   Nom methode_;                 // Type de methode pour extraire ("trace" ou "champ_frontiere")
-  REF(Domaine) domaine_;        // Reference sur le domaine d extraction
-  REF(Domaine_dis_base) le_dom_dis;  // Le domaine discretise - real owner is Domaine_dis_cache
+  OBS_PTR(Domaine) domaine_;        // Reference sur le domaine d extraction
+  OBS_PTR(Domaine_dis_base) le_dom_dis;  // Le domaine discretise - real owner is Domaine_dis_cache
 };
 
 #endif

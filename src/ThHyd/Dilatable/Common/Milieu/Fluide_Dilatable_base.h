@@ -129,8 +129,8 @@ protected :
 
   int traitement_PTh_ = 0; // flag pour le traitement de la pression thermo
   double Pth_ = -1., Pth_n_ = -1., Pth1_ = -1.;
-  REF(Champ_Inc_base) ch_inco_chaleur_, ch_vitesse_, ch_pression_;
-  REF(Probleme_base) le_probleme_;
+  OBS_PTR(Champ_Inc_base) ch_inco_chaleur_, ch_vitesse_, ch_pression_;
+  OBS_PTR(Probleme_base) le_probleme_;
   OWN_PTR(Champ_Don_base) ch_pression_tot_, ch_mu_sur_Sc, ch_nu_sur_Sc, ch_rho_gaz_, ch_rho_comme_v_;
   OWN_PTR(Champ_Don_base) ch_source_masse_esp_, ch_source_masse_proj_; /* si besoin */
   OWN_PTR(Loi_Etat_base) loi_etat_;

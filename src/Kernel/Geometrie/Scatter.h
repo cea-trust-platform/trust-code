@@ -75,7 +75,7 @@ public:
 
 
 protected:
-  REF(Domaine) le_domaine;
+  OBS_PTR(Domaine) le_domaine;
 
   void read_domain_no_comm(Entree& fic );
 };

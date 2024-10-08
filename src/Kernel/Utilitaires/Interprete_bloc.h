@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ protected:
   // Noms des objets lus dans le bloc:
   Noms les_noms_;
   // Reference a l'interprete courant avant la creation de celui-ci
-  REF(Interprete_bloc) pere_;
+  OBS_PTR(Interprete_bloc) pere_;
 };
 
 

@@ -55,7 +55,7 @@ public:
 protected:
 
   int diviser_;
-  REF(Milieu_base) mon_milieu_;
+  OBS_PTR(Milieu_base) mon_milieu_;
 };
 
 #endif

@@ -55,7 +55,7 @@ void Loi_Etat_Multi_GP_base::calculer_masse_molaire()
  */
 void Loi_Etat_Multi_GP_base::associer_inconnue(const Champ_Inc_base& inconnue)
 {
-  REF(Champ_Inc_base) inco;
+  OBS_PTR(Champ_Inc_base) inco;
   inco = inconnue;
   liste_Y.add(inco);
 }

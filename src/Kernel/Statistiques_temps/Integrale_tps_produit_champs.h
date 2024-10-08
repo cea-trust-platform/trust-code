@@ -31,8 +31,8 @@ class Integrale_tps_produit_champs: public Integrale_tps_Champ
   Declare_instanciable(Integrale_tps_produit_champs);
 public:
 
-  inline const REF(Champ_Generique_base)& mon_premier_champ() const { return le_champ_ref_; }
-  inline const REF(Champ_Generique_base)& mon_second_champ() const { return le_second_champ_ref_; }
+  inline const OBS_PTR(Champ_Generique_base)& mon_premier_champ() const { return le_champ_ref_; }
+  inline const OBS_PTR(Champ_Generique_base)& mon_second_champ() const { return le_second_champ_ref_; }
   inline int premiere_puissance() const { return puissance_; }
   inline int seconde_puissance() const { return seconde_puissance_; }
   inline const int& get_support_different() const { return support_different_; }
@@ -57,7 +57,7 @@ public:
   void ajoute_produit_tensoriel(double, const Champ_base&, const Champ_base&);
 
 protected:
-  REF(Champ_Generique_base) le_second_champ_ref_;
+  OBS_PTR(Champ_Generique_base) le_second_champ_ref_;
   int seconde_puissance_ = -10, support_different_ = -10;
 };
 

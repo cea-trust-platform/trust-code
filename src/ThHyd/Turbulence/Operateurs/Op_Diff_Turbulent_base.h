@@ -33,7 +33,7 @@ public :
   inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
 
 private:
-  REF(Champ_Fonc_base) la_diffusivite_turbulente;
+  OBS_PTR(Champ_Fonc_base) la_diffusivite_turbulente;
 };
 
 #endif /* Op_Diff_Turbulent_base_included */

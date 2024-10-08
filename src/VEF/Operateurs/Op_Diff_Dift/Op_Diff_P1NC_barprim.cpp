@@ -40,7 +40,7 @@ void Op_Diff_P1NC_barprim::associer(const Domaine_dis_base& domaine_dis, const D
   if (sub_type(Champ_P1NC, ch_diffuse))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_diffuse);
-      REF(Champ_P1NC) inconnue;
+      OBS_PTR(Champ_P1NC) inconnue;
       inconnue = inco;
     }
 }

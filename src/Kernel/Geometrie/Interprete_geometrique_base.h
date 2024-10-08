@@ -47,13 +47,13 @@ public :
   void associer_domaine(Domaine_t& dom);
   inline Domaine_t& domaine(int i=0) { return domains_(i).valeur(); }
   inline const Domaine_t& domaine(int i=0) const { return domains_(i).valeur(); }
-  inline LIST(REF(Domaine_t))& domaines() { return domains_; }
+  inline LIST(OBS_PTR(Domaine_t))& domaines() { return domains_; }
   void mettre_a_jour_sous_domaine(Domaine_t& domaine, int_t& elem, int_t num_premier_elem, int_t nb_elem) const;
 
 protected :
   virtual Entree& interpreter_(Entree& is)=0;
 
-  LIST(REF(Domaine_t)) domains_; // List of reference to domains
+  LIST(OBS_PTR(Domaine_t)) domains_; // List of reference to domains
 };
 
 using Interprete_geometrique_base = Interprete_geometrique_base_32_64<int>;

@@ -38,7 +38,7 @@ public:
   void associer_post(const Postraitement&);
   void postraiter();
   void mettre_a_jour(double temps, double tinit);
-  REF(Champ_base) get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
+  OBS_PTR(Champ_base) get_from_cache(OBS_PTR(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
   void clear_cache();
   void set_noms_champs_postraitables();
   const Motcles& get_noms_champs_postraitables() const { return noms_champs_postraitables_; }
@@ -48,10 +48,10 @@ public:
 
 private:
   // Mecanisme de cache pour les sondes:
-  LIST(REF(Champ_base)) sourceList;
+  LIST(OBS_PTR(Champ_base)) sourceList;
   LIST(OWN_PTR(Champ_base)) espaceStockageList;
   Noms sourceNoms;
-  REF(Postraitement) mon_post;
+  OBS_PTR(Postraitement) mon_post;
   Motcles noms_champs_postraitables_;
 };
 

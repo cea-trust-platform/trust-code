@@ -78,7 +78,7 @@ public :
 
 protected :
   OWN_PTR(Champ_Inc_base) l_inco_ch_;
-  REF(Fluide_base) le_fluide_;
+  OBS_PTR(Fluide_base) le_fluide_;
   Operateur_Grad Op_Grad_; // Pour calculer le gradient en VDF
   Operateur_Evanescence evanescence_;
 

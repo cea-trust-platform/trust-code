@@ -233,7 +233,7 @@ public:
   ///
   /// Domaines frontieres
   ///
-  inline const LIST(REF(Domaine_32_64))& domaines_frontieres() const { return domaines_frontieres_; }
+  inline const LIST(OBS_PTR(Domaine_32_64))& domaines_frontieres() const { return domaines_frontieres_; }
 
   ///
   /// Raccords
@@ -285,7 +285,7 @@ public:
   inline Sous_Domaine_t& ss_domaine(const Nom& nom)  { return les_ss_domaines_(nom).valeur(); }
   void add(const Sous_Domaine_t& sd)  { les_ss_domaines_.add(sd); }
   int associer_(Objet_U&) override;  // Associate sous_domaine
-  inline const LIST(REF(Sous_Domaine_t))& ss_domaines() const { return les_ss_domaines_; }
+  inline const LIST(OBS_PTR(Sous_Domaine_t))& ss_domaines() const { return les_ss_domaines_; }
 
 
   ///
@@ -402,7 +402,7 @@ protected:
   ArrOfDouble cg_moments_;  // max dim 3
 
   // List of references to sub domains
-  LIST(REF(Sous_Domaine_t)) les_ss_domaines_;
+  LIST(OBS_PTR(Sous_Domaine_t)) les_ss_domaines_;
 
   // Bords, raccords et Bords_Internes forment les "faces_frontiere" sur lesquelles
   //  sont definies les conditions aux limites.
@@ -415,7 +415,7 @@ protected:
   //  du domaine locale a ce processeur qui se raccordent a un processeur voisin)
   Joints_t mes_faces_joint_;
 
-  LIST(REF(Domaine_32_64)) domaines_frontieres_;
+  LIST(OBS_PTR(Domaine_32_64)) domaines_frontieres_;
 
 
 #ifdef MEDCOUPLING_

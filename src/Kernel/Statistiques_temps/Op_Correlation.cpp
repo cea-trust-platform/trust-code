@@ -32,8 +32,8 @@ Entree& Op_Correlation::readOn(Entree& s)
 
 void Op_Correlation::completer(const Probleme_base& Pb)
 {
-  const REF(Champ_Generique_base)& a = la_moyenne_a().integrale().le_champ();
-  const REF(Champ_Generique_base)& b = la_moyenne_b().integrale().le_champ();
+  const OBS_PTR(Champ_Generique_base)& a = la_moyenne_a().integrale().le_champ();
+  const OBS_PTR(Champ_Generique_base)& b = la_moyenne_b().integrale().le_champ();
   integrale_tps_a_ = la_moyenne_a().integrale();
   integrale_tps_b_ = la_moyenne_b().integrale();
 

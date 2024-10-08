@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,9 +59,9 @@ protected:
   virtual void set_nb_comp(int i)=0; // calls fixer_nb_comp
   virtual void set_name(const Nom& name)=0; // calls nommer
 
-  REF(Probleme_base) mon_pb;
+  OBS_PTR(Probleme_base) mon_pb;
   bool sous_domaine_ok; // This fields knows how to deal with a sous_domaine
-  REF(Sous_Domaine) mon_sous_domaine;
+  OBS_PTR(Sous_Domaine) mon_sous_domaine;
   ArrOfDouble initial_value_;
 };
 

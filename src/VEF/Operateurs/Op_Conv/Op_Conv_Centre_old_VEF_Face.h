@@ -42,7 +42,7 @@ public:
 
 protected:
 
-  REF(Champ_Inc_base) champ_transporte;
+  OBS_PTR(Champ_Inc_base) champ_transporte;
 //  DoubleVect porosite_face;
 };
 

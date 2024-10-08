@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,7 @@ private:
   MPI_Comm  mpi_comm_; // Handle sur le communicateur mpi
 
   int must_finalize_; // Faut-il le faire dans le destructeur ?
-  REF(Comm_Group) groupe_pere_;
+  OBS_PTR(Comm_Group) groupe_pere_;
 #endif
 };
 

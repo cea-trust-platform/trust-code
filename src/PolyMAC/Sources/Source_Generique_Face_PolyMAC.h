@@ -31,8 +31,8 @@ public:
   Nom localisation_source() override;
 
 protected:
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
 class Source_Generique_Face_PolyMAC_P0P1NC: public Source_Generique_Face_PolyMAC

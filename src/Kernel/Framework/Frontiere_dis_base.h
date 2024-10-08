@@ -45,8 +45,8 @@ public :
 
 protected :
 
-  REF(Frontiere) la_frontiere;
-  REF(Domaine_dis_base) le_dom_dis;
+  OBS_PTR(Frontiere) la_frontiere;
+  OBS_PTR(Domaine_dis_base) le_dom_dis;
 };
 
 #endif

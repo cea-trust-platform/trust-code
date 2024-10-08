@@ -219,7 +219,7 @@ void Champ_Gen_de_Champs_Gen::completer(const Postraitement_base& post)
       sources_reference_.vide();
       for (int i=0; i<n_sources_ref; i++)
         {
-          REF(Champ_Generique_base)& source_ref=sources_reference_.add(REF(Champ_Generique_base)());
+          OBS_PTR(Champ_Generique_base)& source_ref=sources_reference_.add(OBS_PTR(Champ_Generique_base)());
           const Postraitement& postraitement =ref_cast(Postraitement,post);
           //const Probleme_base& pb = ref_cast(Postraitement,post).probleme();
           source_ref = postraitement.get_champ_post(noms_sources_ref_[i]);

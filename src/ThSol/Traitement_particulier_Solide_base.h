@@ -50,7 +50,7 @@ public :
   /////////////////////////////////////////////////////
 protected :
 
-  REF(Conduction) mon_equation;
+  OBS_PTR(Conduction) mon_equation;
 
 private :
 

@@ -32,7 +32,7 @@ public:
 
 private:
   IntTab is_dirichlet_faces_;
-  REF(Champ_Inc_base) divergence_U;
+  OBS_PTR(Champ_Inc_base) divergence_U;
 
   int nu_lu_ = 1, nut_lu_ = 1, nu_transp_lu_ = 0, nut_transp_lu_ = 1;
   int new_jacobian_ = 0, standard_ = 0;

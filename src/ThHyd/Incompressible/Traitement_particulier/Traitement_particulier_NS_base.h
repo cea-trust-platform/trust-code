@@ -61,7 +61,7 @@ public :
 
 protected :
 
-  REF(Navier_Stokes_std) mon_equation;
+  OBS_PTR(Navier_Stokes_std) mon_equation;
 
   Champs_compris champs_compris_;
 

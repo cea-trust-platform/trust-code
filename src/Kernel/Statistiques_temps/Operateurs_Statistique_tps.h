@@ -41,7 +41,7 @@ public:
   int reprendre(Entree &is) override;
 
 protected:
-  REF(Postraitement) mon_post_;
+  OBS_PTR(Postraitement) mon_post_;
   int lserie_ = -123;
   double dt_integr_serie_ = 123.;
 };

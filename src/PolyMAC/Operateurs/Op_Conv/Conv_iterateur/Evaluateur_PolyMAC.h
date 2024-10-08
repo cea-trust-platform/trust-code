@@ -43,8 +43,8 @@ public:
   virtual void associer_porosite(const DoubleVect&);
 
 protected:
-  REF(Domaine_PolyMAC) le_domaine;
-  REF(Domaine_Cl_PolyMAC) la_zcl;
+  OBS_PTR(Domaine_PolyMAC) le_domaine;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl;
   int dimension = -3;
   int premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face

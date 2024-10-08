@@ -54,11 +54,11 @@ int Modele_turbulence_scal_Schmidt::comprend_champ(const Motcle& mot) const
  *     Renvoie 0 sinon.
  *
  * @param (Motcle& mot) le nom d'un champ fonction du modele de turbulence
- * @param (REF(Champ_base)& ch_ref) la reference sur le champ recherche (si il a ete trouve)
+ * @param (OBS_PTR(Champ_base)& ch_ref) la reference sur le champ recherche (si il a ete trouve)
  * @return (int) 1 si un champ fonction du nom specifie a ete trouve 0 sinon
  */
 int Modele_turbulence_scal_Schmidt::a_pour_Champ_Fonc(const Motcle& mot,
-                                                      REF(Champ_base) &ch_ref) const
+                                                      OBS_PTR(Champ_base) &ch_ref) const
 {
   if (mot == Motcle("diffusion_turbulente"))
     {

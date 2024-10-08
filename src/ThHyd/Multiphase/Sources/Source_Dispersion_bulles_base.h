@@ -39,7 +39,7 @@ public :
   const Correlation_base& correlation() const { return correlation_.valeur(); }
 
 protected:
-  REF(Correlation_base) correlation_; //correlation donnant le coeff de dispersion turbulente
+  OBS_PTR(Correlation_base) correlation_; //correlation donnant le coeff de dispersion turbulente
   int is_turb = 0;
   double beta_ = 1.; // To adjust the force in .data
 

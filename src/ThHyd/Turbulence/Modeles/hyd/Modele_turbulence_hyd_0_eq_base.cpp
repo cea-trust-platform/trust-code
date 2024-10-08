@@ -52,7 +52,7 @@ void Modele_turbulence_hyd_0_eq_base::associer(const Domaine_dis_base& domaine_d
 }
 
 int Modele_turbulence_hyd_0_eq_base::a_pour_Champ_Fonc(const Motcle& mot,
-                                                       REF(Champ_base) &ch_ref) const
+                                                       OBS_PTR(Champ_base) &ch_ref) const
 {
   Motcles les_motcles(3);
   {

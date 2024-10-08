@@ -29,7 +29,7 @@ public:
   inline void mettre_a_jour() override;
 
 protected:
-  REF(Champ_Inc_base) T, T_voisin;
+  OBS_PTR(Champ_Inc_base) T, T_voisin;
   DoubleTab Tcourant, Tvois;
   double h_;
 };

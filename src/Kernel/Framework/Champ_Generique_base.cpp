@@ -313,7 +313,7 @@ const Domaine_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const
 
 const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& nom) const
 {
-  REF(Champ_Generique_base) ref_champ;
+  OBS_PTR(Champ_Generique_base) ref_champ;
 
   Motcle nom_champ;
   const Noms nom_champ_post = get_property("nom");

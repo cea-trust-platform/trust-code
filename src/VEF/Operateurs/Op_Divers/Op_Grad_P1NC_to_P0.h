@@ -38,8 +38,8 @@ public:
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
 
 protected:
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  OBS_PTR(Domaine_VEF) le_dom_vef;
+  OBS_PTR(Domaine_Cl_VEF) la_zcl_vef;
 };
 
 #endif /* Op_Grad_P1NC_to_P0_included */

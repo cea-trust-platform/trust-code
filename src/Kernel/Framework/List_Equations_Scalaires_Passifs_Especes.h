@@ -65,7 +65,7 @@ public :
 
 protected :
   LIST(OWN_PTR(Equation_base)) list_eq;
-  REF(Milieu_base) mil;
+  OBS_PTR(Milieu_base) mil;
   int complet = 0;
 };
 

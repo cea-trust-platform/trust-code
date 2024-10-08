@@ -54,8 +54,8 @@ public:
   virtual void discretiser() = 0;
 
 protected:
-  REF(Sous_Domaine) le_sous_domaine;
-  REF(Domaine_dis_base) le_dom_dis;
+  OBS_PTR(Sous_Domaine) le_sous_domaine;
+  OBS_PTR(Domaine_dis_base) le_dom_dis;
 };
 
 #endif /* Sous_domaine_dis_base_included */

@@ -56,7 +56,7 @@ enum Type_modele { TURBULENCE };
  *      U_h est l'inconnue representee par un objet "Champ_Inc"
  *      Op_i est le i-eme operateur de l'equation represente par un objet "Operateur"
  *      Sources sont les termes sources (eventuellement inexistant) de l'equation represente par des objets "Source".
- *      Une equation est lie a un probleme par une reference contenue dans le membre REF(Probleme_base) mon_probleme.
+ *      Une equation est lie a un probleme par une reference contenue dans le membre OBS_PTR(Probleme_base) mon_probleme.
  *
  *      Classe abstraite dont toutes les equations doivent deriver.
  *      Methodes abstraites:
@@ -243,10 +243,10 @@ protected :
   Nom nom_;
   OWN_PTR(Solveur_Masse_base) solveur_masse;
   Sources les_sources;
-  REF(Schema_Temps_base) le_schema_en_temps;
-  REF(Domaine_dis_base) le_dom_dis;
+  OBS_PTR(Schema_Temps_base) le_schema_en_temps;
+  OBS_PTR(Domaine_dis_base) le_dom_dis;
   OWN_PTR(Domaine_Cl_dis_base) le_dom_Cl_dis;
-  REF(Probleme_base) mon_probleme;
+  OBS_PTR(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_sources(Entree&);

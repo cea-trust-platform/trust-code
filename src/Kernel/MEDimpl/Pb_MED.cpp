@@ -285,7 +285,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
 
 const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
 {
-  REF(Champ_base) ref_champ;
+  OBS_PTR(Champ_base) ref_champ;
 
   double temps_courant = schema_temps().temps_courant();
   Motcle nom_champ;

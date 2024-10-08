@@ -65,8 +65,8 @@ private:
   IntTab faces_element_reference_old_;
   int is_polyedre_;
   // pour check_erreur_faces :
-  REF(Domaine)   ref_domaine_;
-  REF(IntTab) faces_sommets_;
-  REF(IntTab) face_elem_;
+  OBS_PTR(Domaine)   ref_domaine_;
+  OBS_PTR(IntTab) faces_sommets_;
+  OBS_PTR(IntTab) face_elem_;
 };
 #endif

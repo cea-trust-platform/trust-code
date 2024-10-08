@@ -51,9 +51,9 @@ public :
   virtual void resoudre(DoubleTab& P) =0;
 
 protected :
-  REF(Fluide_Dilatable_base) le_fluide_;
-  REF(Domaine_Cl_dis_base) le_dom_Cl;
-  REF(Domaine_VF) le_dom;
+  OBS_PTR(Fluide_Dilatable_base) le_fluide_;
+  OBS_PTR(Domaine_Cl_dis_base) le_dom_Cl;
+  OBS_PTR(Domaine_VF) le_dom;
   double M0 = -1.;// la masse totale initiale
 };
 

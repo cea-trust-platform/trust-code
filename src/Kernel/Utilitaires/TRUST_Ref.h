@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,9 +31,9 @@ class Nom;
  *   #include <TRUST_Ref.h>
  *   #include <_CLASSE_.h>
  *
- *   Creation d'un objet de type REF(_CLASSE_) :
+ *   Creation d'un objet de type OBS_PTR(_CLASSE_) :
  *
- *    REF(_CLASSE_) la_ref_;
+ *    OBS_PTR(_CLASSE_) la_ref_;
  *
  *    ou bien
  *
@@ -41,11 +41,14 @@ class Nom;
  *
  */
 
-// MACRO to replace REF(_TYPE_) by TRUST_Ref<_TYPE_*> & keep previous syntax for some developers
-#define REF(_TYPE_) TRUST_Ref<_TYPE_*>
+// MACRO to replace OBS_PTR(_TYPE_) by TRUST_Ref<_TYPE_*> & keep previous syntax for some developers
+#define REF(_TYPE_) \
+  static_assert(false, "The old REF MACRO is now deprecated. Please use OBS_PTR instead.")
+
+#define OBS_PTR(_TYPE_) TRUST_Ref<_TYPE_*>
 
 template<typename _CLASSE_>
-class TRUST_Ref
+class TRUST_Ref final
 {
   /*
    * Elie & Adrien :

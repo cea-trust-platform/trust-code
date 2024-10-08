@@ -50,8 +50,8 @@ private:
   template <typename Type_Double>
   inline void calculer_terme_source(int , Type_Double& , const DoubleVect&) const;
 
-  REF(Champ_Inc_base) vitesse_;
-  REF(Champ_Don_base) diffusivite_;
+  OBS_PTR(Champ_Inc_base) vitesse_;
+  OBS_PTR(Champ_Don_base) diffusivite_;
   DoubleTab db_diffusivite_;
   double porosite_;
 };

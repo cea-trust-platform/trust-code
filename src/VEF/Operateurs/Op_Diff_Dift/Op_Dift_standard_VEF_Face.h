@@ -29,7 +29,7 @@ private:
   void calcul_divergence(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab& ) const;
   void ajouter_cas_vectoriel(const DoubleTab&, DoubleTab&, const DoubleTab&, const DoubleTab& ) const;
 
-  REF(Champ_Inc_base) divergence_U;
+  OBS_PTR(Champ_Inc_base) divergence_U;
   int grad_Ubar = 1, nu_lu = 1, nut_lu = 1;
   int nu_transp_lu = 1, nut_transp_lu = 1, filtrer_resu = 1;
   DoubleTab grad_;

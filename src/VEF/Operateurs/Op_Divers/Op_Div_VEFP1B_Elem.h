@@ -57,8 +57,8 @@ public:
   void contribuer_au_second_membre(DoubleTab&) const override { }
 
 private:
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  OBS_PTR(Domaine_VEF) le_dom_vef;
+  OBS_PTR(Domaine_Cl_VEF) la_zcl_vef;
 
   void volumique_P0(DoubleTab&) const;
 

@@ -77,7 +77,7 @@ public:
 
 protected:
 
-  REF(Champ_base) ref_champ_;
+  OBS_PTR(Champ_base) ref_champ_;
   mutable OWN_PTR(Champ_base) ptr_champ_; /* XXX Elie Saikali : sais pas quoi faire */
 
   //temporaire voir utilite

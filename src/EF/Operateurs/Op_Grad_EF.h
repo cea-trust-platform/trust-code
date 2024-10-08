@@ -47,8 +47,8 @@ public:
 protected:
   void ajouter_bord(DoubleTab& resu,const Domaine_EF& domaine_EF,const  Domaine_Cl_EF& domaine_Cl_EF) const;
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
+  OBS_PTR(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_Cl_EF) la_zcl_EF;
   OWN_PTR(Champ_Don_base) int_P_bord_;
 
 };

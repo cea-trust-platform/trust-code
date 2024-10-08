@@ -46,9 +46,9 @@ public:
 
 protected:
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
-  REF(Champ_Uniforme) diffusivite_;
+  OBS_PTR(Domaine_VEF) le_dom_vef;
+  OBS_PTR(Domaine_Cl_VEF) la_zcl_vef;
+  OBS_PTR(Champ_Uniforme) diffusivite_;
 };
 
 #endif /* Op_Diff_P1NC_barprim_included */

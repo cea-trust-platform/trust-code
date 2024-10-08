@@ -98,7 +98,7 @@ public:
 protected:
   LIST(OWN_PTR(Champ_Generique_base)) sources_;        //Attribut qui designent les sources de "premier niveau"
   LIST(Nom) noms_sources_ref_;
-  LIST(REF(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
+  LIST(OBS_PTR(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
 };
 
 #endif

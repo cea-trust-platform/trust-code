@@ -43,7 +43,7 @@ public:
   bool iterateTimeStep(bool& converged) override;
 
 protected :
-  REF(Fluide_Dilatable_base) le_fluide_;
+  OBS_PTR(Fluide_Dilatable_base) le_fluide_;
 };
 
 #endif /* Pb_Dilatable_base_included */

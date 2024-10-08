@@ -42,8 +42,8 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Domaine_PolyMAC) ref_domaine;
-  REF(Domaine_Cl_PolyMAC) ref_zcl;
+  OBS_PTR(Domaine_PolyMAC) ref_domaine;
+  OBS_PTR(Domaine_Cl_PolyMAC) ref_zcl;
   IntTab face_voisins;
   DoubleVect porosite_surf;
 };

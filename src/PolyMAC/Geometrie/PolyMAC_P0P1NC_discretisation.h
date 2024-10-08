@@ -35,7 +35,7 @@ public:
 
   inline type_calcul_du_residu codage_du_calcul_du_residu() const override { return VIA_AJOUTER; }
 
-  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const override;
+  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const override;
 
   bool is_polymac_p0p1nc() const override { return true; }
   bool is_polymac() const override { return false; } // attention heritage !

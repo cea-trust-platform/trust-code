@@ -77,7 +77,7 @@ void Champ_Generique_Ecart_Type::completer(const Postraitement_base& post)
 
 const Champ_base& Champ_Generique_Ecart_Type::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  const REF(Champ_Generique_base)& mon_champ = integrale().le_champ();
+  const OBS_PTR(Champ_Generique_base)& mon_champ = integrale().le_champ();
   OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   Nature_du_champ nature_source = source.nature_du_champ();

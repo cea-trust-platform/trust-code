@@ -150,7 +150,7 @@ protected :
   using Octree_t::les_octrees;
   using Octree_t::pere;
 
-  REF(Domaine_t) le_dom;
+  OBS_PTR(Domaine_t) le_dom;
   OctreeLoc loc;
   int valid_, reel_ = -1;
 };

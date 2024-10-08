@@ -116,7 +116,7 @@ private :
   int nb_som_face = 0;  ///< Number of vertices per face
   IntTab_t sommets;
   IntTab_t faces_voisins;
-  REF(Domaine_t) mon_dom;
+  OBS_PTR(Domaine_t) mon_dom;
 };
 
 

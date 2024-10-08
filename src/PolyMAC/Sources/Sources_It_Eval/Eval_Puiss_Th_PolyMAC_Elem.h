@@ -33,7 +33,7 @@ public:
   inline void calculer_terme_source(const int, Type_Double&) const;
 
 protected:
-  REF(Champ_Don_base) la_puissance;
+  OBS_PTR(Champ_Don_base) la_puissance;
   DoubleTab puissance;
 };
 

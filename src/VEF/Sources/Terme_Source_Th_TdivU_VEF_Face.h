@@ -46,9 +46,9 @@ protected:
   void modifier_domaine_cl();
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 
-  REF(Equation_base) eqn_t;
+  OBS_PTR(Equation_base) eqn_t;
   OWN_PTR(Domaine_Cl_dis_base) mon_domcl_;
-  REF(Domaine_Cl_dis_base) domainecl_sa;
+  OBS_PTR(Domaine_Cl_dis_base) domainecl_sa;
   int domaine_cl_mod_ = 0;
 };
 

@@ -61,7 +61,7 @@ void Masse_PolyMAC_base::appliquer_coef(DoubleVect& coef) const
 {
   if (has_coefficient_temporel_)
     {
-      REF(Champ_base) ref_coeff;
+      OBS_PTR(Champ_base) ref_coeff;
       ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
 
       DoubleTab values;

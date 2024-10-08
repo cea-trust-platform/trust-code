@@ -39,8 +39,8 @@ public:
   DoubleVect le_point;
 
 protected:
-  REF(Champ_Don_base) la_puissance;
-  REF(Domaine) mon_dom;
+  OBS_PTR(Champ_Don_base) la_puissance;
+  OBS_PTR(Domaine) mon_dom;
   double puissance, nb_dirac;
 
   template <typename Type_Double>

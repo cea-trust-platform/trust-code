@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -154,7 +154,7 @@ const Champ_base& Loi_Fermeture_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
-bool Loi_Fermeture_base::has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const
+bool Loi_Fermeture_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }

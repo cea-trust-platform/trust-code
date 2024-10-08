@@ -238,7 +238,7 @@ void Moyenne_volumique::eval_filtre(const DoubleTab& coords, ArrOfDouble& result
  */
 int Moyenne_volumique::get_champ(const Nom& nom_pb,
                                  const Nom& nom_champ,
-                                 REF(Champ_base) & ref_champ)
+                                 OBS_PTR(Champ_base) & ref_champ)
 {
   Probleme_base& pb = ref_cast(Probleme_base, objet(nom_pb));
   // Le champ est-il defini dans les postraitements (statistiques) ?
@@ -289,8 +289,8 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
   if (nb_champs == 0)
     return;
 
-  REF(Champ_base) ref_champ;
-  REF(Domaine_VF) ref_domaine_vf;
+  OBS_PTR(Champ_base) ref_champ;
+  OBS_PTR(Domaine_VF) ref_domaine_vf;
   int i_champ;
   // ************************************
   // Calcul du nombre total de composantes et de ref_domaine_vf
@@ -460,7 +460,7 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
       return is;
     }
   Cerr << "Writing of the post-processing domain : " << nom_dom << finl;
-  REF(Champ_base) ref_champ;
+  OBS_PTR(Champ_base) ref_champ;
   get_champ(nom_pb, noms_champs[0], ref_champ);
   const double temps = ref_champ->temps();
   if (!fichier_post.non_nul())

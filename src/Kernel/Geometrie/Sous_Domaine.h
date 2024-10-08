@@ -66,7 +66,7 @@ public :
 protected :
 
   IntVect_t les_elems_;
-  REF(Domaine_t) le_dom_;
+  OBS_PTR(Domaine_t) le_dom_;
   Nom nom_;
 };
 

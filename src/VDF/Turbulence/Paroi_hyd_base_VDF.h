@@ -54,8 +54,8 @@ public:
      void calculer_u_star_avec_cisaillement(DoubleVect& tab_u_star) const ;
   */
 protected:
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  OBS_PTR(Domaine_VDF) le_dom_VDF;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
 };
 
 #endif /* Paroi_hyd_base_VDF_included */

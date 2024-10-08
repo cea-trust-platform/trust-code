@@ -63,7 +63,7 @@ public :
 
 protected :
 
-  REF(Champ_Inc_base) la_vitesse_transportante;
+  OBS_PTR(Champ_Inc_base) la_vitesse_transportante;
   Operateur_Conv terme_convectif;
   Operateur_Diff terme_diffusif;
 };

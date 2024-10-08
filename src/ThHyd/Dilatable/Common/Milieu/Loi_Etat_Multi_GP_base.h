@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ public:
 
 protected :
   void calculer_tab_mu(const DoubleTab& mu, int size);
-  LIST(REF(Champ_Inc_base)) liste_Y;
+  LIST(OBS_PTR(Champ_Inc_base)) liste_Y;
   DoubleTab masse_mol_mel;
 };
 

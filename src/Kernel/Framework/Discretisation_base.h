@@ -95,7 +95,7 @@ public :
   static void creer_champ(OWN_PTR(Champ_Don_base)& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
                           const Nom& nom_discretisation=NOM_VIDE);
 
-  virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const REF(Champ_base)& champ_supp =REF(Champ_base)()) const;
+  virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const OBS_PTR(Champ_base)& champ_supp =OBS_PTR(Champ_base)()) const;
 
   // usefull methods to detect discretization
   virtual bool is_ef() const { return false; }
@@ -109,13 +109,13 @@ public :
 protected:
   static const Motcle DEMANDE_DESCRIPTION;
   static const Nom NOM_VIDE;
-  REF(Domaine) le_domaine_;
+  OBS_PTR(Domaine) le_domaine_;
 
 private:
   void test_demande_description(const Motcle& , const Nom&) const;
   static void champ_fixer_membres_communs(Champ_base& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps);
 
-  virtual void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const ;
+  virtual void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(OBS_PTR(Champ_base))& ch_inc) const ;
 };
 
 using Discretisation = TRUST_Deriv<Discretisation_base>;

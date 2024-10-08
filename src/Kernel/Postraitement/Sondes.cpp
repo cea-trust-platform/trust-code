@@ -113,7 +113,7 @@ void Sondes::clear_cache()
   sourceNoms.reset();
 }
 
-REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_)
+OBS_PTR(Champ_base) Sondes::get_from_cache(OBS_PTR(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_)
 {
   mon_champ->fixer_identifiant_appel(nom_champ_lu_);
   int num = sourceNoms.rang(nom_champ_lu_);

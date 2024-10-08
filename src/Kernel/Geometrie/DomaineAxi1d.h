@@ -51,7 +51,7 @@ protected :
   void set_param(Param& param);
 
   OWN_PTR(Champ_base) champ_orig;
-  REF(DoubleTab_t) ref_origine_;
+  OBS_PTR(DoubleTab_t) ref_origine_;
 };
 
 using DomaineAxi1d = DomaineAxi1d_32_64<int>;

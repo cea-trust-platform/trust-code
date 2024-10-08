@@ -128,7 +128,7 @@ void Source_base::associer_champ_rho(const Champ_base& champ_rho)
  *
  */
 int Source_base::a_pour_Champ_Fonc(const Motcle& mot,
-                                   REF(Champ_base)& ch_ref) const
+                                   OBS_PTR(Champ_base)& ch_ref) const
 {
   // La classe de base ne comprend aucun motcle
   return 0;
@@ -142,7 +142,7 @@ const Champ_base& Source_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
-bool Source_base::has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const
+bool Source_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }

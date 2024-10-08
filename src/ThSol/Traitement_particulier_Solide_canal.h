@@ -34,7 +34,7 @@ public :
   void post_traitement_particulier() override =0 ;
   Entree& lire(Entree& ) override;
   inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
-  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
+  inline int a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base)& ch_ref) const  ;
   inline int comprend_champ(const Motcle& mot) const  ;
 
 protected :
@@ -52,7 +52,7 @@ protected :
 };
 
 
-inline int Traitement_particulier_Solide_canal::a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const
+inline int Traitement_particulier_Solide_canal::a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base)& ch_ref) const
 {
   return 0 ;
 }

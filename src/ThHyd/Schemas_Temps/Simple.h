@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ public :
   Simple();
   bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) override;
   void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok) override;
-  bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, int& ok) override;
+  bool iterer_eqs(LIST(OBS_PTR(Equation_base)) eqs, int compteur, int& ok) override;
 
   /* memoization de iterer_eqs: public pour que la puissance iteree de TRUST-NK puisse la partager */
   using list_of_eq_ptr_t = std::vector<intptr_t>;  // a list of pointers to equations.

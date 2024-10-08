@@ -59,7 +59,7 @@ public :
 protected:
   OWN_PTR(Champ_Inc_base) l_inco_ch;
   OWN_PTR(Domaine_Cl_dis_base) zcl_modif_;
-  REF(Fluide_Dilatable_base) le_fluide;
+  OBS_PTR(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_base_included */

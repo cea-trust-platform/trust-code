@@ -149,7 +149,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1, const No
   nom_inco1 = nom_inco;
   nom_inco2 = nom_inco;
 
-  REF(Champ_base) rch1;
+  OBS_PTR(Champ_base) rch1;
   Probleme_base& pb1 = ref_cast(Probleme_base, Interprete::objet(nompb1));
 
   if (!sub_type(Pb_Conduction, pb1))
@@ -159,7 +159,7 @@ void Champ_front_contact_VEF::creer(const Nom& nompb1, const Nom& nom1, const No
   rch1 = pb1.get_champ(nom_inco1);
   l_inconnue1 = ref_cast(Champ_Inc_base, rch1.valeur());
 
-  REF(Champ_base) rch2;
+  OBS_PTR(Champ_base) rch2;
   Probleme_base& pb2 = ref_cast(Probleme_base, Interprete::objet(nompb2));
 
   if (!sub_type(Pb_Conduction, pb2))

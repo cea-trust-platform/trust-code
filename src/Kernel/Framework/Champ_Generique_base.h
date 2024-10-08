@@ -136,7 +136,7 @@ protected:
   Nom nom_post_;
   Nom identifiant_appel_;
   Nom nom_pb_;
-  REF(Probleme_base) ref_pb_;
+  OBS_PTR(Probleme_base) ref_pb_;
 };
 
 inline int Champ_Generique_base::composante(const Nom& nom_test,const Nom& nom,const Noms& composantes, const Noms& syno)

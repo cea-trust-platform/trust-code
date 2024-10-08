@@ -30,7 +30,7 @@ const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
   throw Champs_compris_erreur();
 }
 
-bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ) const
+bool Champs_compris::has_champ(const Motcle& motcle, OBS_PTR(Champ_base)& ref_champ) const
 {
   assert(motcle!="??");
   auto item = liste_champs_.find(motcle.getString());

@@ -53,10 +53,10 @@ public:
   DoubleTab calculer_valeurs() const override;
 
 protected:
-  REF(Op_Moyenne) la_moyenne_a_;
-  REF(Op_Moyenne) la_moyenne_b_;
-  REF(Integrale_tps_Champ) integrale_tps_a_;
-  REF(Integrale_tps_Champ) integrale_tps_b_;
+  OBS_PTR(Op_Moyenne) la_moyenne_a_;
+  OBS_PTR(Op_Moyenne) la_moyenne_b_;
+  OBS_PTR(Integrale_tps_Champ) integrale_tps_a_;
+  OBS_PTR(Integrale_tps_Champ) integrale_tps_b_;
   Integrale_tps_produit_champs integrale_tps_ab_;
 };
 

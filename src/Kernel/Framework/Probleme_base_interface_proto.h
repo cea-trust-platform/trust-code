@@ -49,11 +49,11 @@ public:
   // Not the same signature as ICoCo:
   void resetTimeWithDir_impl(Probleme_base& pb, double time, std::string direname);
 
-  REF(Field_base) findInputField_impl(const Probleme_base& pb,const Nom& name) const;
-  REF(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
+  OBS_PTR(Field_base) findInputField_impl(const Probleme_base& pb,const Nom& name) const;
+  OBS_PTR(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
 
 protected:
-  LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
+  LIST(OBS_PTR(Field_base)) input_fields; // List of input fields inside this problem.
   // Flags used to control the calling order and raise exceptions
   bool initialized = false;  // true if initialize was called
   bool terminated = false;   // true if terminate was called

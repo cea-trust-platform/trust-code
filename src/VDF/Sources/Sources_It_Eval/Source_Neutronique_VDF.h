@@ -45,7 +45,7 @@ public:
 
 protected:
   OWN_PTR(Iterateur_Source_base) iter_;
-  REF(Domaine_VDF) le_dom;
+  OBS_PTR(Domaine_VDF) le_dom;
 };
 
 #endif /* Source_Neutronique_VDF_included */

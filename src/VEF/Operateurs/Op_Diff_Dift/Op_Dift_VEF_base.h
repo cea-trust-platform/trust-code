@@ -59,8 +59,8 @@ public:
   const Modele_turbulence_hyd_base& get_modele_turbulence() const { return le_modele_turbulence.valeur(); }
 
 protected:
-  REF(Modele_turbulence_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Modele_turbulence_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  OBS_PTR(Champ_base) diffusivite_;
   DoubleTab tau_tan_;
 
   double calculer_dt_stab_P1NCP1B() const;

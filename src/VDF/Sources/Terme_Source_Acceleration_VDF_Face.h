@@ -47,11 +47,11 @@ protected:
 
 private:
   // References remplies par associer_champ_rho
-  REF(Domaine_VDF)    le_dom_VDF_;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
+  OBS_PTR(Domaine_VDF)    le_dom_VDF_;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).
-  REF(Champ_base)  ref_rho_;
+  OBS_PTR(Champ_base)  ref_rho_;
 };
 
 #endif

@@ -77,7 +77,7 @@ public:
   virtual bool use_shear() const { return true; } // Generalement true sauf par exemple pour loi paroi_negligeable_XXX
 
 protected:
-  REF(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
+  OBS_PTR(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
   DoubleTab Cisaillement_paroi_;         //valeurs des contraintes tangentielles aux
   // parois calculees localement a partir de u*
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement

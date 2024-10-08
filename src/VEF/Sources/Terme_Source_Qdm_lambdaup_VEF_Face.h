@@ -47,9 +47,9 @@ protected:
   double lambda_max = 2.;
   double lambda_min = 1.e-24;
   double cible = 0.01;
-  REF(Champ_P1NC) la_vitesse;
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  OBS_PTR(Champ_P1NC) la_vitesse;
+  OBS_PTR(Domaine_VEF) le_dom_VEF;
+  OBS_PTR(Domaine_Cl_VEF) le_dom_Cl_VEF;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 };
 

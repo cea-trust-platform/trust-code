@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,13 +27,13 @@ class Champ_Fonc_Tabule_P0_VEF : public Champ_Fonc_P0_VEF
 {
   Declare_instanciable(Champ_Fonc_Tabule_P0_VEF);
 public:
-  void associer_param(const VECT(REF(Champ_base))&, const Table& );
+  void associer_param(const VECT(OBS_PTR(Champ_base))&, const Table& );
   void mettre_a_jour(double ) override;
   int initialiser(const double temps) override;
 
 protected:
-  VECT(REF(Champ_base)) les_ch_param;
-  REF(Table) la_table;
+  VECT(OBS_PTR(Champ_base)) les_ch_param;
+  OBS_PTR(Table) la_table;
 };
 
 #endif /* Champ_Fonc_Tabule_P0_VEF_included */

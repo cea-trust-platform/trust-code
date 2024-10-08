@@ -37,7 +37,7 @@ public:
   inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-  REF(Champ_Don_base) la_source_constituant;
+  OBS_PTR(Champ_Don_base) la_source_constituant;
   DoubleTab source_constituant;
   IntTab face_voisins;
   DoubleVect volumes;

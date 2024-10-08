@@ -68,7 +68,7 @@ static void TSAVEF_ajouter_liste_faces(const int premiere_face, const int dernie
                                        const DoubleVect& volumes_elements,
                                        const DoubleVect& porosite_surf,
                                        const IntTab&      face_voisins,
-                                       const REF(Champ_base) & ref_rho,
+                                       const OBS_PTR(Champ_base) & ref_rho,
                                        const DoubleTab&   terme_source,
                                        DoubleTab& s_face,
                                        DoubleTab& resu)

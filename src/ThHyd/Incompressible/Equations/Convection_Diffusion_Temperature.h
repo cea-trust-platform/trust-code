@@ -74,7 +74,7 @@ public :
 protected :
 
   OWN_PTR(Champ_Inc_base) la_temperature;
-  REF(Fluide_base) le_fluide;
+  OBS_PTR(Fluide_base) le_fluide;
 
   OWN_PTR(Champ_Fonc_base)  gradient_temperature;
   OWN_PTR(Champ_Fonc_base)  h_echange;

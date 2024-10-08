@@ -42,7 +42,7 @@ public :
   inline void post_traitement_particulier() override ;
   void en_cours_de_resolution(int , DoubleTab& ,DoubleTab& ,double) override ;
   Entree& lire(Entree& ) override;
-  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
+  virtual int a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base)& ch_ref) const ;
   virtual int comprend_champ(const Motcle& mot) const ;
 
   /////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ inline void Traitement_particulier_NS_VEF::en_cours_de_resolution(int nb_op, Dou
 }
 
 inline int Traitement_particulier_NS_VEF::a_pour_Champ_Fonc(const Motcle& mot,
-                                                            REF(Champ_base)& ch_ref) const
+                                                            OBS_PTR(Champ_base)& ch_ref) const
 {
   return 0 ;
 }

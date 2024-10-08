@@ -58,7 +58,7 @@ public:
   inline void associer_domaines_public(const Domaine_dis_base& zdis, const Domaine_Cl_dis_base& zcldis) { associer_domaines(zdis,zcldis); }
   virtual int initialiser(double temps);
   virtual void associer_champ_rho(const Champ_base& champ_rho);
-  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
+  virtual int a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base) &ch_ref) const;
   virtual void contribuer_jacobienne(Matrice_Bloc&, int) const { }
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
@@ -70,7 +70,7 @@ public:
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
+  virtual bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ public:
   inline Champs_compris& champs_compris() { return champs_compris_; }
 
   // Liste des champs des sources:
-  const LIST(REF(Champ_Don_base))& champs_don() const { return champs_don_; }
+  const LIST(OBS_PTR(Champ_Don_base))& champs_don() const { return champs_don_; }
 
 protected:
 
@@ -99,7 +99,7 @@ protected:
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
   mutable SFichier Flux;
   Champs_compris champs_compris_;
-  LIST(REF(Champ_Don_base)) champs_don_;
+  LIST(OBS_PTR(Champ_Don_base)) champs_don_;
 };
 
 #endif /* Source_base_included */

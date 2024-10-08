@@ -81,8 +81,8 @@ private:
   Motcle            localisation_;                 // localisation d interpolation elem, som
   Motcle            methode_;                      // calculer_champ_post, etc...
   Nom               nom_domaine_lu_;               // Nom du domaine lu
-  REF(Domaine)      domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
-  REF(Domaine_dis_base)  le_dom_dis;                    // rempli si domaine d'interpolation different du domaine natif. Une REF car le Domaine_dis_cache est responsable de la memoire
+  OBS_PTR(Domaine)      domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
+  OBS_PTR(Domaine_dis_base)  le_dom_dis;                    // rempli si domaine d'interpolation different du domaine natif. Une REF car le Domaine_dis_cache est responsable de la memoire
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d un domaine discretise
   int optimisation_sous_maillage_,optimisation_demande_;
   ArrOfInt renumerotation_maillage_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -164,7 +164,7 @@ protected :
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-  REF(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
+  OBS_PTR(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
   //dans le plan ou l on recupere les valeurs
 
   DoubleVect delt_dist;             //vecteur distance entre bord2 et le plan (plan1)

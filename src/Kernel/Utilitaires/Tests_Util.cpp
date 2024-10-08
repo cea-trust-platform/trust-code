@@ -18,10 +18,10 @@ int test_Ref()
 {
   Cerr << "test_Ref" << finl;
   DoubleVect x(5);
-  REF(DoubleVect) xx;                                //Constructeur par defaut.
+  OBS_PTR(DoubleVect) xx;                                //Constructeur par defaut.
   assert(xx.non_nul() == 0);                        //non_nul
-  REF(DoubleVect) yy(x);                        //Constructeur par const T&.
-  REF(DoubleVect) zz(yy);                        //Constructeur par const T&.
+  OBS_PTR(DoubleVect) yy(x);                        //Constructeur par const T&.
+  OBS_PTR(DoubleVect) zz(yy);                        //Constructeur par const T&.
   xx=x;                                        //Operateur = const T&.
   xx=yy;                                        //Operateur = const Deriv<T>&.
   assert(xx->size() == x.size());                //Operateur ->

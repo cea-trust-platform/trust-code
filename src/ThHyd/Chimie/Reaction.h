@@ -34,7 +34,7 @@ public:
   friend class Chimie;
   void completer(const Motcles& list_var,const ArrOfDouble& masse_molaire);
 
-  void reagir(VECT(REF(Champ_Inc_base))& liste_c,const double deltat) const;
+  void reagir(VECT(OBS_PTR(Champ_Inc_base))& liste_c,const double deltat) const;
   double calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDouble& C0,double deltat, double seuil, double& poroportion_directe ) const;
   void extract_coef(ArrOfDouble& coeff_recactifs,ArrOfDouble& coeff_produits,const Motcles& list_var,const ArrOfDouble& masse_molaire) const;
   double calculer_pas_de_temps() const;

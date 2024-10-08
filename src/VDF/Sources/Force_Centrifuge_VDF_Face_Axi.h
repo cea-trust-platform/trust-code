@@ -51,9 +51,9 @@ public:
 
 protected:
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF(Champ_Face_VDF) la_vitesse;
+  OBS_PTR(Domaine_VDF) le_dom_VDF;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  OBS_PTR(Champ_Face_VDF) la_vitesse;
 
   IntTab elem_faces;
   IntVect orientation;

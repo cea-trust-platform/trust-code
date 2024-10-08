@@ -72,8 +72,8 @@ protected:
   void calculer_vitesse_imposee_power_law_tbl_u_star() override;
   void rotate_imposed_velocity(DoubleTab&) override;
   DoubleTab compute_pond(const DoubleTab&, const DoubleTab&, const DoubleVect&, int&, int&) const ;
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  OBS_PTR(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_Cl_EF) le_dom_Cl_EF;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   void compute_indicateur_nodal_champ_aire() override;
 

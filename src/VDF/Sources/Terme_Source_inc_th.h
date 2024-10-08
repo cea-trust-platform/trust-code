@@ -36,9 +36,9 @@ public:
   void mettre_a_jour(double temps) { }
 
 protected :
-  REF(Navier_Stokes_std) eq_hydraulique_;
-  REF(Convection_Diffusion_Temperature) eq_thermique_;
-  REF(Champ_Don_base) beta_t_;
+  OBS_PTR(Navier_Stokes_std) eq_hydraulique_;
+  OBS_PTR(Convection_Diffusion_Temperature) eq_thermique_;
+  OBS_PTR(Champ_Don_base) beta_t_;
   int impr;
   Entree& lire_donnees(Entree& );
 };

@@ -39,8 +39,8 @@ public:
   double flux_impose(int, int) const override;
 
 protected:
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Champ_P0_VEF) pression_interne;
+  OBS_PTR(Domaine_VEF) le_dom_VEF;
+  OBS_PTR(Champ_P0_VEF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;
 };

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ public:
   inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
-  REF(Champ_Don_base) la_gravite;
+  OBS_PTR(Champ_Don_base) la_gravite;
   DoubleVect g;
 };
 

@@ -88,7 +88,7 @@ private :
 
   Nom nom;
   Faces_t les_faces;
-  REF(Domaine_t) le_dom;
+  OBS_PTR(Domaine_t) le_dom;
   ArrOfInt_t faces_virt;
   int_t num_premiere_face_ = -100;
   double aire_ = -100.;

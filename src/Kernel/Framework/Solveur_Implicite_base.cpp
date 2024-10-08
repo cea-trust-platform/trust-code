@@ -22,7 +22,7 @@ Sortie& Solveur_Implicite_base::printOn(Sortie& os) const { return os; }
 
 Entree& Solveur_Implicite_base::readOn(Entree& is) { return is; }
 
-bool Solveur_Implicite_base::iterer_eqs(LIST(REF(Equation_base)) eqs, int n, int& ok)
+bool Solveur_Implicite_base::iterer_eqs(LIST(OBS_PTR(Equation_base)) eqs, int n, int& ok)
 {
   Process::exit("Iterer_eqs non code");
   return false;

@@ -44,8 +44,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Domaine_VEF) le_dom;
-  REF(Domaine_Cl_dis_base) le_dom_Cl;
+  OBS_PTR(Domaine_VEF) le_dom;
+  OBS_PTR(Domaine_Cl_dis_base) le_dom_Cl;
   DoubleVect un_;
 };
 

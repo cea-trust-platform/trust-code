@@ -35,7 +35,7 @@ public:
   void set_param(Param& param) override;
   int reprendre(Entree& is) override { return 1; }
   int comprend_mot(const Motcle& mot) const;
-  int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
+  int a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base) &ch_ref) const;
   int comprend_champ(const Motcle& mot) const;
 
   void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
@@ -54,8 +54,8 @@ protected:
   mutable OWN_PTR(Champ_Inc_base) K_eps_sortie_;
   Nom fichier_K_eps_sortie_;
 
-  REF(Domaine_VF) le_dom_VF_;
-  REF(Domaine_Cl_dis_base) le_dom_Cl_;
+  OBS_PTR(Domaine_VF) le_dom_VF_;
+  OBS_PTR(Domaine_Cl_dis_base) le_dom_Cl_;
 };
 
 #endif /* Modele_turbulence_hyd_0_eq_base_included */

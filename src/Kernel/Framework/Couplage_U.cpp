@@ -191,9 +191,9 @@ double Couplage_U::futureTime() const
   return probleme(0).futureTime();
 }
 
-REF(Field_base) Couplage_U::findInputField(const Nom& name) const
+OBS_PTR(Field_base) Couplage_U::findInputField(const Nom& name) const
 {
-  REF(Field_base) ch;
+  OBS_PTR(Field_base) ch;
   for (int i=0; i<nb_problemes(); i++)
     {
       ch=probleme(i).findInputField(name);
@@ -202,9 +202,9 @@ REF(Field_base) Couplage_U::findInputField(const Nom& name) const
     }
   return ch;
 }
-REF(Champ_Generique_base) Couplage_U::findOutputField(const Nom& name) const
+OBS_PTR(Champ_Generique_base) Couplage_U::findOutputField(const Nom& name) const
 {
-  REF(Champ_Generique_base) ch;
+  OBS_PTR(Champ_Generique_base) ch;
   for (int i=0; i<nb_problemes(); i++)
     {
       ch=probleme(i).findOutputField(name);

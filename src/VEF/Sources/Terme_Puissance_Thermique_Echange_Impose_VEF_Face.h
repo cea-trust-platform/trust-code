@@ -47,8 +47,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  OBS_PTR(Domaine_VEF) le_dom_VEF;
+  OBS_PTR(Domaine_Cl_VEF) le_dom_Cl_VEF;
   OWN_PTR(Champ_Don_base) himp_,Text_;
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   int initialiser(double temps) override;

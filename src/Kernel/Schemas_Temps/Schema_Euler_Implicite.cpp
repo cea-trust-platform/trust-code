@@ -445,7 +445,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
               for (auto && s : resolution_monolithique_)
                 {
                   // serach all equations of this dom app
-                  LIST(REF(Equation_base)) eqs;
+                  LIST(OBS_PTR(Equation_base)) eqs;
                   for(i = 0; i < pbc.nb_problemes(); i++)
                     for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
                       {

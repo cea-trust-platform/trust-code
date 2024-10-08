@@ -39,7 +39,7 @@ public:
 
 protected:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_;
+  OBS_PTR(Domaine) ref_domaine_;
   Nom filename_="";
   Nom fieldname_="partition";
 };

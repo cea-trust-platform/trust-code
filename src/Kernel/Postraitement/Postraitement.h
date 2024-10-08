@@ -162,7 +162,7 @@ public:
   void verifie_nom_et_sources(const Champ_Generique_base& champ);
   static Nom get_nom_localisation(const Entity& loc);
 
-  int champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF(Operateur_Statistique_tps_base)&
+  int champ_fonc(Motcle& nom_champ, OBS_PTR(Champ_base)& mon_champ, OBS_PTR(Operateur_Statistique_tps_base)&
                  operateur_statistique) const;
 
   inline int& compteur_champ_stat();
@@ -174,7 +174,7 @@ public:
    * @return -1 if nothing more was written, 1 otherwise.
    */
   virtual int write_extra_mesh() { return -1; }
-  const REF(Domaine)& domaine() { return le_domaine; }
+  const OBS_PTR(Domaine)& domaine() { return le_domaine; }
   int DeprecatedKeepDuplicatedProbes=0; // Ancien format des sondes dans les .son qui autorise les sondes dupliquees
 
 protected:
@@ -204,7 +204,7 @@ protected:
   int lserie_;
   double dt_integr_serie_;
 
-  LIST(REF(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
+  LIST(OBS_PTR(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
   LIST(Nom) noms_tableaux_;
 
   OWN_PTR(Format_Post_base) format_post;
@@ -216,8 +216,8 @@ protected:
   Nom suffix_for_reset_; // Suffix appended to post base name when the method resetTime() was invoked - default to "_AFTER_RESET"
   double temps_, dernier_temps; // temps du precedent appel a postraiter()
   static Motcles formats_supportes;
-  REF(Domaine) le_domaine;
-  REF(Domaine_dis_base) domaine_dis_pour_faces;
+  OBS_PTR(Domaine) le_domaine;
+  OBS_PTR(Domaine_dis_base) domaine_dis_pour_faces;
 
 private :
 };

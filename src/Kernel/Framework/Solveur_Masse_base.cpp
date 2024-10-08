@@ -71,7 +71,7 @@ void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
       has_coefficient_temporel_=0;
       return;
     }
-  REF(Champ_base) ref_coeff;
+  OBS_PTR(Champ_base) ref_coeff;
   try
     {
       ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
@@ -91,7 +91,7 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
 {
   if (has_coefficient_temporel_)
     {
-      REF(Champ_base) ref_coeff;
+      OBS_PTR(Champ_base) ref_coeff;
       ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
 
       DoubleTab values;

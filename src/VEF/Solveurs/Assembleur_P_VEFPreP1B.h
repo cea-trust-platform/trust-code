@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ public :
 protected:
 
   int init = -1;
-  REF(Equation_base) mon_equation;
+  OBS_PTR(Equation_base) mon_equation;
   void projete_L2(DoubleTab&);
   double alpha=0., beta=0.; // Coefficients du changement de base P0+P1<->P1Bulle
 };

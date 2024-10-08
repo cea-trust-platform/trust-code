@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,8 +60,8 @@ public:
   void init_grad();
 
 protected:
-  REF(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC_P0P1NC;
-  REF(Champ_Face_PolyMAC_P0) champ_;
+  OBS_PTR(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC_P0P1NC;
+  OBS_PTR(Champ_Face_PolyMAC_P0) champ_;
 
   int is_init = 0;
   void init_ge2() const; //ordre 2 -> avec une matrice

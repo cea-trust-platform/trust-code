@@ -106,7 +106,7 @@ public :
   const Champ_base& get_champ(const Motcle&) const override;
 
 protected :
-  REF(Domaine) le_dom;
+  OBS_PTR(Domaine) le_dom;
 
   TRUST_Vector<OWN_PTR(Sous_domaine_dis_base)> les_sous_domaines_dis;
   int dist_paroi_initialisee_ = 0;

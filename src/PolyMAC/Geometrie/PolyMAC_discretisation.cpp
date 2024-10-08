@@ -310,7 +310,7 @@ void PolyMAC_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_
   ch_grad_u.changer_temps(ch_vitesse.temps());
 }
 
-void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &champs_param) const
+void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(OBS_PTR(Champ_base)) &champs_param) const
 {
   lambda_tab.typer_champ_tabule_discretise("Champ_Fonc_Tabule_Elem_PolyMAC");
   Champ_Fonc_base& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
@@ -324,7 +324,7 @@ void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domai
   ch_tab_lambda_dis.changer_temps(champs_param[0]->temps());
 }
 
-Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const
+Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const
 {
   Nom type;
   if (class_operateur == "Source")

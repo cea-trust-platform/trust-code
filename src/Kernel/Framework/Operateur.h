@@ -72,7 +72,7 @@ public :
 
 protected :
   std::string nom_inco_;
-  REF(Champ_Inc_base) le_champ_inco;
+  OBS_PTR(Champ_Inc_base) le_champ_inco;
   Motcle typ;
 };
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,8 @@ public:
   void associer_champ(const Champ_Face_VDF&, const Schema_Temps_base&);
 
 protected:
-  REF(Champ_Face_VDF) vitesse_;
-  REF(Schema_Temps_base) sch_;
+  OBS_PTR(Champ_Face_VDF) vitesse_;
+  OBS_PTR(Schema_Temps_base) sch_;
 };
 
 #endif /* Courant_maille_Champ_Face_included */

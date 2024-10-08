@@ -55,7 +55,7 @@ public :
 
 protected:
   int colw_;
-  REF(Champ_base) rho_ref;
+  OBS_PTR(Champ_base) rho_ref;
   OWN_PTR(Champ_Don_base) la_source_constituant;
 
 };

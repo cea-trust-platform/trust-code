@@ -252,7 +252,7 @@ void PolyMAC_P0P1NC_discretisation::grad_u(const Domaine_dis_base& z, const Doma
   abort();
 }
 
-Nom PolyMAC_P0P1NC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const
+Nom PolyMAC_P0P1NC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const
 {
   Nom type;
   Nom type_ch = eqn.inconnue().que_suis_je();

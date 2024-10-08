@@ -52,9 +52,9 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
-  REF(Champ_Inc_base) vitesse_;
+  OBS_PTR(Domaine_EF) le_dom_EF;
+  OBS_PTR(Domaine_Cl_EF) la_zcl_EF;
+  OBS_PTR(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent_;           // tableau qui sert pour le calcul du pas
   //de temps de stabilite

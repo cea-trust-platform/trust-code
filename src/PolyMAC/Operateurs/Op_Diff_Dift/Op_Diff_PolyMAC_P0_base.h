@@ -68,9 +68,9 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Domaine_PolyMAC_P0) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Domaine_PolyMAC_P0) le_dom_poly_;
+  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_poly_;
+  OBS_PTR(Champ_base) diffusivite_;
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
 

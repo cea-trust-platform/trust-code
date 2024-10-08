@@ -566,7 +566,7 @@ void ProblemTrio::setInputMEDDoubleField(const std::string& name, const MEDDoubl
   const unsigned int nbcomp = (int)fieldArr->getNumberOfComponents();
   std::vector<std::string> compo_names = fieldArr->getInfoOnComponents();
 
-  REF(Field_base) ch = pb->findInputField(Nom(name));
+  OBS_PTR(Field_base) ch = pb->findInputField(Nom(name));
   assert(nbcomp == (unsigned)ch->nb_comp());
   for (unsigned int i = 0; i < nbcomp; i++)
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,8 @@ public:
   void ajouter_blocs_proto(matrices_t , DoubleTab& , double , const tabs_t& , int ) const;
 
 protected:
-  REF(Solveur_Masse_base) solv_mass_;
-  REF(Domaine_VF) le_dom_;
+  OBS_PTR(Solveur_Masse_base) solv_mass_;
+  OBS_PTR(Domaine_VF) le_dom_;
 };
 
 #endif /* Solveur_Masse_Elem_proto_included */

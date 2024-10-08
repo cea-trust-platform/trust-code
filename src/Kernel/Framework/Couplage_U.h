@@ -74,8 +74,8 @@ public:
   bool updateGivenFields() override;
   double futureTime()const override;
 
-  REF(Field_base) findInputField(const Nom& name) const override;
-  REF(Champ_Generique_base) findOutputField(const Nom& name) const override;
+  OBS_PTR(Field_base) findInputField(const Nom& name) const override;
+  OBS_PTR(Champ_Generique_base) findOutputField(const Nom& name) const override;
 
   ///////////////////////////////////////////////////////////
   //                                                       //
@@ -97,7 +97,7 @@ public:
 
 private:
 
-  LIST(REF(Probleme_U)) problems;
+  LIST(OBS_PTR(Probleme_U)) problems;
 
 };
 

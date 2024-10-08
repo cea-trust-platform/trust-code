@@ -58,11 +58,11 @@ public :
 
 private :
 
-  REF(Postraitement) mon_post;
+  OBS_PTR(Postraitement) mon_post;
   Nom nom_;                                // le nom de la sonde
   int dim = -1;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
   int nbre_points1= -1,nbre_points2= -1,nbre_points3= -1;        // faire des sonde_segment,sonde_plan,etc...
-  REF(IntVect) mon_tableau;                // Le tableau sonde
+  OBS_PTR(IntVect) mon_tableau;                // Le tableau sonde
   DoubleTab les_positions_;                // les coordonnees des sondes ponctuelles
   IntVect elem_;                        // les elements contenant les sondes ponctuelles
   IntTab valeurs;                      // les valeurs de mon_tableau pour les indices donnes par elem_

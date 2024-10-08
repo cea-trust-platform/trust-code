@@ -75,7 +75,7 @@ bool Ecrire_fichier_xyz_valeur::write_field_during_current_timestep_() const
   return (ok && dt_>0);
 }
 
-bool Ecrire_fichier_xyz_valeur::getStatField_(const Nom& fname, REF(Champ_base)& field, REF(Operateur_Statistique_tps_base)& op_stat) const
+bool Ecrire_fichier_xyz_valeur::getStatField_(const Nom& fname, OBS_PTR(Champ_base)& field, OBS_PTR(Operateur_Statistique_tps_base)& op_stat) const
 {
   bool champ_stat = false;
 
@@ -161,8 +161,8 @@ void Ecrire_fichier_xyz_valeur::write_fields() const
 
   for (auto fname : fields_names_ )
     {
-      REF(Champ_base) field;
-      REF(Operateur_Statistique_tps_base) op_stat;
+      OBS_PTR(Champ_base) field;
+      OBS_PTR(Operateur_Statistique_tps_base) op_stat;
       bool champ_stat = getStatField_(fname, field, op_stat);
       if(!champ_stat)
         {

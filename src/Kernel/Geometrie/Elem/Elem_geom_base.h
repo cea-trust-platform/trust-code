@@ -82,7 +82,7 @@ public:
   virtual void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const;
 
 protected:
-  REF(Domaine_t) mon_dom;
+  OBS_PTR(Domaine_t) mon_dom;
 };
 
 /*! @brief Cree les faces de l'element du domaine specifie.

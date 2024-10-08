@@ -40,7 +40,7 @@ public:
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override { }
 
 protected:
-  REF(Probleme_base) pb_;
+  OBS_PTR(Probleme_base) pb_;
   Champs_compris champs_compris_;
 };
 

@@ -71,7 +71,7 @@ public:
 
 protected:
   OWN_PTR(Champ_Fonc_base)  conductivite_turbulente_, diffusivite_turbulente_;
-  REF(Convection_Diffusion_std) mon_equation_;
+  OBS_PTR(Convection_Diffusion_std) mon_equation_;
   OWN_PTR(Turbulence_paroi_scal_base) loipar_;
   double dt_impr_nusselt_ = DMAXFLOAT;
 

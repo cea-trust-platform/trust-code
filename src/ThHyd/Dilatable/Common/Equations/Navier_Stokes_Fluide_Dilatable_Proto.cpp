@@ -132,7 +132,7 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
     }
 
   // Get champ gradP
-  REF(Champ_base) gradient_pression;
+  OBS_PTR(Champ_base) gradient_pression;
 
   try
     {

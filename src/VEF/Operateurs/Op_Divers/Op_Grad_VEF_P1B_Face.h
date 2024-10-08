@@ -47,8 +47,8 @@ public:
   void calculer_flux_bords() const override;
 
 private:
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  OBS_PTR(Domaine_VEF) le_dom_vef;
+  OBS_PTR(Domaine_Cl_VEF) la_zcl_vef;
   mutable ArrOfDouble coeff_som_;
   mutable IntTab som_;
 };

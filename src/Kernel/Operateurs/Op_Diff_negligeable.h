@@ -67,7 +67,7 @@ public :
 
 protected :
 
-  REF(Champ_base) la_diffusivite;
+  OBS_PTR(Champ_base) la_diffusivite;
   inline void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base& ) override ;
 };
 

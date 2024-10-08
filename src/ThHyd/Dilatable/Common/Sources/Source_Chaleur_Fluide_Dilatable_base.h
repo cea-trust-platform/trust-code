@@ -47,7 +47,7 @@ public:
 
 protected:
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override =0;
-  REF(Fluide_Dilatable_base) le_fluide;
+  OBS_PTR(Fluide_Dilatable_base) le_fluide;
   DoubleVect volumes,porosites;
 };
 
