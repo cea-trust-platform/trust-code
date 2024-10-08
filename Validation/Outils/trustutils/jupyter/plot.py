@@ -643,6 +643,7 @@ class Table:  # ancien tableau
         s= self.df.to_latex()
         s = s.replace(r"\textbackslash", "")
         s = s.replace(r"\$","$")
+        s = s.replace("_",r"\_")
         s = r"\begin{center} %s \end{center}" % s
         return s
 

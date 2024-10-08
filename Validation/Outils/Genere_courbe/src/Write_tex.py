@@ -627,7 +627,8 @@ Report generated  __DATE__.'''
                         if maitre.nvellevalid==2:
                             ficTex.write_Tex(r'\clearpage')
                         else:
-                            ficTex.write_Tex('% nabil')
+                            ficTex.write_Tex('''
+''')
                         ficTex.write_Tex(r'% Inclusion des fichiers.data')
                         ficTex.write_Tex(r'\section{Data Files}')
                         ficTex.write_Tex(r'\lstdefinelanguage{triou}{morecomment=[s]{\#}{\#}, morekeywords={vefprep1b, vdf, lire, lire_fichier, domaine, dimension, postraitement, fluide_incompressible, schema_euler_explicite, pb_hydraulique_turbulent, pb_hydraulique}, sensitive=false}')
