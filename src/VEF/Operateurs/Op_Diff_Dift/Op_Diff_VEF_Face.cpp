@@ -188,14 +188,10 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
                 if(contrib)
                   {
                     double valA = viscA(num_face,j,elem,nu(elem,0),face_voisins,face_normale,inverse_volumes);
-                    Kokkos::atomic_add(&resu(num_face,0), +(valA * inconnue(j,0)));
-                    Kokkos::atomic_add(&resu(num_face,0), -(valA * inconnue(num_face,0)));
-
+                    double flux = valA * (inconnue(j,0) - inconnue(num_face,0));
+                    Kokkos::atomic_add(&resu(num_face,0), flux);
                     if(j < nb_faces) // On traite les faces reelles
-                      {
-                        Kokkos::atomic_add(&resu(j,0), +(valA * inconnue(num_face,0)));
-                        Kokkos::atomic_add(&resu(j,0), -(valA * inconnue(j,0)));
-                      }
+                      Kokkos::atomic_add(&resu(j,0), -flux);
                   }
               }
           }
