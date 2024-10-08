@@ -18,12 +18,12 @@
 #include <TRUSTTabs.h>
 #include <View_Types.h>
 
+//Unused since I ported openMP loops to Kokkos -Remi
 // Ajout d'un flag par appel a end_timer peut etre couteux (creation d'une string)
 #ifdef _OPENMP_TARGET
 static bool timer=true;
 #else
 static bool timer=false;
-#endif
 #endif
 
 namespace
@@ -788,40 +788,66 @@ template double local_operations_vect_bis_generic<double, trustIdType, TYPE_OPER
 #endif
 
 // ==================================================================================================================================
-// DEBUT code pour debug
+// BEGIN code for debug
 #ifndef NDEBUG
 // INVALID_SCALAR is used to fill arrays when values are not computed (virtual space might not be computed by operators).
 // The value below probably triggers errors on parallel test cases but does not prevent from doing "useless" computations with it.
+#ifndef LATATOOLS
+namespace
+{
+template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
+void invalidate_data_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu,
+                            const ArrOfInt& items_blocs, const int line_size, const int blocs_size)
+{
+  _TYPE_ invalid = (_TYPE_)-987654321;
+  auto resu_view= resu.template view_rw<ExecSpace>();
+  bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+
+  int i = 0;
+  for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
+    {
+      const int bloc_end = line_size * items_blocs[blocs_idx];
+      //Define Policy
+      Kokkos::RangePolicy<ExecSpace> policy(i, bloc_end);
+      //Loop
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,KOKKOS_LAMBDA(const int count)
+      {resu_view(count)=invalid;});
+      //timer
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      i = items_blocs[blocs_idx+1] * line_size;
+    }
+  const _SIZE_ bloc_end = resu.size_array(); // Process until end of vector
+  //Define Policy
+  Kokkos::RangePolicy<ExecSpace> policy(i, bloc_end);
+  //Loop
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,KOKKOS_LAMBDA(const int count)
+  {resu_view(count)=invalid;});
+  //timer
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
+}
+#endif
+
 template <typename _TYPE_, typename _SIZE_>
 void invalidate_data(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt)
 {
 #ifndef LATATOOLS
-  _TYPE_ invalid = (_TYPE_)-987654321;
-
   const MD_Vector& md = resu.get_md_vector();
   const int line_size = resu.line_size();
   if (opt == VECT_ALL_ITEMS || (!md.non_nul())) return; // no invalid values
   assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
   const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
   const int blocs_size = items_blocs.size_array();
-  int i = 0;
+
   bool kernelOnDevice = resu.checkDataOnDevice();
-  _TYPE_ *resu_ptr = computeOnTheDevice(resu, "", kernelOnDevice);
-  start_gpu_timer();
-  for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
-    {
-      const int bloc_end = line_size * items_blocs[blocs_idx];
-      #pragma omp target teams distribute parallel for if (kernelOnDevice)
-      for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
-      i = items_blocs[blocs_idx+1] * line_size;
-    }
-  const _SIZE_ bloc_end = resu.size_array(); // Process until end of vector
-  #pragma omp target teams distribute parallel for if (kernelOnDevice)
-  for (_SIZE_ count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
-  if (timer) end_gpu_timer(kernelOnDevice, "invalidate_data(x)");
+
+  if (kernelOnDevice)
+    invalidate_data_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, items_blocs, line_size, blocs_size);
+  else
+    invalidate_data_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, items_blocs, line_size, blocs_size);
 #endif
 }
-// FIN code pour debug
+//END code for debug
 // ==================================================================================================================================
 // Explicit instanciation for templates:
 template void invalidate_data<double>(TRUSTVect<double, int>& resu, Mp_vect_options opt);
