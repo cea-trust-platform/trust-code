@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.9.5_beta : Changes since version 1.9.4 :
 -------------------------------------------------------------
+08/10/24 (TRUST) Major change : No more REF MACRO. USE OBS_PTR!
+08/10/24 (TRUST) Major change : Introducing OWN_PTR macro for polymorphic class members. DERIV() can not be inherited anymore, and will disappear to move towards a logic similar to smart-pointer. Soon the end of '.valeur()'!
 07/10/24 (TRUST) New feature  : ICoCo Python interface (module 'trusticoco') now accepts MPI communicator created on the Python side via mpi4py module.
 10/09/24 (TRUST) Major change : No more classes deriving from OWN_PTR of a base classe. This should only be used in private/protected attributes. Thus no more forwarded calls
 10/09/24 (TRUST) Major change : Previous DERIV macros are now deprecated. Use OWN_PTR instead
