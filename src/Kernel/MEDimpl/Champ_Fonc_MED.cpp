@@ -194,6 +194,8 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
 
               root_um->checkGeoEquivalWith(new_um, /* levOfCheck=  */ 12, Objet_U::precision_geom, dnup1, dnup2);
               //MCAuto<DataArrayIdType> dnu1(dnup1), dnu2(dnup2);
+              if (dnup2) dnup2->decrRef();
+              if (dnup1) dnup1->decrRef();
             }
           catch(INTERP_KERNEL::Exception& e)
             {
