@@ -1,4 +1,4 @@
-pkg=pdi-1.6.0
+pkg=pdi-1.7.1
 lib=$(TRUST_ROOT)/lib/src/LIBPDI/lib64/libpdi.so
 
 all : $(lib)

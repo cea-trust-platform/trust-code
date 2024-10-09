@@ -10,6 +10,7 @@ mkdir -p $build_dir
 
 # Path to library install
 install_dir=$TRUST_ROOT/lib/src/LIBPDI
+plugin_install_dir=$install_dir/lib64
 rm -rf $install_dir
 mkdir -p $install_dir
 
@@ -31,7 +32,7 @@ fi
 
 # configuration (we use the hdf5 of TRUST)
 options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF"
-env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
+env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir -DINSTALL_PDIPLUGINDIR=$plugin_install_dir $options
 
 # make & install
 $TRUST_MAKE
