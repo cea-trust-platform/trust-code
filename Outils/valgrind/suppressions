@@ -113,7 +113,7 @@
    fun:walk_type_array
    fun:check_mem_is_defined
    fun:PMPI_Bcast
-   fun:MPI_BCAST
+   ...
    fun:__dmumps_parallel_analysis_MOD_dmumps_parmetis_ord.constprop.0
    fun:__dmumps_parallel_analysis_MOD_dmumps_ana_f_par
    fun:dmumps_ana_driver_
@@ -125,7 +125,7 @@
    fun:PCSetUp_LU
    fun:PCSetUp
    fun:KSPSetUp
-   fun:KSPSolve_Private
+   ...
 }
 
 
