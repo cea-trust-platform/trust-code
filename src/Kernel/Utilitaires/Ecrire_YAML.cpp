@@ -21,11 +21,24 @@
 void Ecrire_YAML::write_checkpoint_file(Nom fname)
 {
   if (Process::je_suis_maitre())
-    write_checkpoint_restart_file_(1 /*save*/, fname);
+    {
+      set_data_();
+      write_checkpoint_restart_file_(1 /*save*/, fname);
+    }
   Process::barrier();
 }
 
 void Ecrire_YAML::write_restart_file(Nom fname)
+{
+  if (Process::je_suis_maitre())
+    {
+      set_data_();
+      write_checkpoint_restart_file_(0 /*restart*/, fname);
+    }
+  Process::barrier();
+}
+
+void Ecrire_YAML::write_champ_fonc_restart_file(Nom fname)
 {
   if (Process::je_suis_maitre())
     write_checkpoint_restart_file_(0 /*restart*/, fname);
@@ -34,8 +47,6 @@ void Ecrire_YAML::write_restart_file(Nom fname)
 
 void Ecrire_YAML::write_checkpoint_restart_file_(int save, Nom fname)
 {
-  set_data_();
-
   std::string text = "pdi:";
 
   declare_metadata_(save, text);
@@ -270,6 +281,16 @@ void Ecrire_YAML::set_data_()
       post_base->champ_a_sauvegarder(fields_);
       post_base->scal_a_sauvegarder(scalars_);
     }
+}
+
+void Ecrire_YAML::set_field(Nom nom, int nb_dim)
+{
+  fields_[nom.getString()] = std::make_pair("double",nb_dim);
+}
+
+void Ecrire_YAML::set_scalar(Nom nom, Nom type)
+{
+  scalars_[nom.getString()] = type.getString();
 }
 
 void Ecrire_YAML::declare_array_(std::string name, std::string type, std::string size, std::string& text)

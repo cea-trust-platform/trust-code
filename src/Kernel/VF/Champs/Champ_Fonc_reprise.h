@@ -16,8 +16,11 @@
 #ifndef Champ_Fonc_reprise_included
 #define Champ_Fonc_reprise_included
 
+#include <Entree_Fichier_base.h>
 #include <Champ_Fonc_base.h>
 #include <Champ_Inc_base.h>
+#include <FichierHDFPar.h>
+#include <TRUST_Deriv.h>
 
 /*! @brief classe Champ_Fonc_reprise Cette classe permet de relire un champ sauvegarde dans un fichier xyz
  *
@@ -29,6 +32,7 @@ class Champ_Fonc_reprise: public Champ_Fonc_base
 {
   Declare_instanciable(Champ_Fonc_reprise);
 public:
+
   void mettre_a_jour(double) override;
 
   using Champ_Fonc_base::valeurs;
@@ -72,6 +76,9 @@ public:
 
 private:
   OWN_PTR(Champ_Inc_base) vrai_champ_;
+  void init_pdi(Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen);
+  void read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, Nom nom_ident,
+                            Nom nom_ident_champ_stat, int reprend_champ_moyen, Nom nom_ident_champ_keps, int reprend_modele_k_eps, int pdi_format = 0);
   inline virtual const Champ_Inc_base& le_champ() const { return vrai_champ_.valeur(); }
   inline virtual Champ_Inc_base& le_champ() { return vrai_champ_.valeur(); }
 };

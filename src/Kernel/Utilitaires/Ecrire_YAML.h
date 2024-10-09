@@ -26,6 +26,7 @@ public:
   Ecrire_YAML() : indent_(2) { }
   void write_checkpoint_file(Nom fname);
   void write_restart_file(Nom fname);
+  void write_champ_fonc_restart_file(Nom fname);
 
   void associer_pb_base(const Probleme_base& pb)
   {
@@ -36,6 +37,9 @@ public:
       }
     pb_=pb;
   }
+
+  void set_field(Nom nom, int nb_dim);
+  void set_scalar(Nom nom, Nom type);
 
 private:
   void begin_bloc_(const std::string line, std::string& text)

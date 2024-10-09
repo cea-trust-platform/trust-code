@@ -46,7 +46,7 @@ Read pb
         diffusion {  }
         # Conditions initiales sur la vitesse #
         initial_conditions {
-            vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time
+            vitesse Champ_Fonc_Reprise pdi datafile.sauv pb vitesse last_time
             /* vitesse Champ_Uniforme 2 0. 0. */
         }
         boundary_conditions {
@@ -184,7 +184,7 @@ Read pb
             }
         }
     }
-    /* sauvegarde single_hdf datafile.sauv */
+    /* sauvegarde pdi datafile.sauv */
 }
 Solve pb
 End

@@ -3,9 +3,9 @@
 cp -f $TRUST_TESTS/Reference/upwind/upwind.geo .
 trust decoupage
 
-sed "s~/\* sauvegarde single_hdf datafile.sauv \*/~sauvegarde single_hdf datafile.sauv~;
+sed "s~/\* sauvegarde pdi datafile.sauv \*/~sauvegarde pdi datafile.sauv~;
      s~/\* vitesse Champ_Uniforme 2 0. 0. \*/~vitesse Champ_Uniforme 2 0. 0.~;
-     s~vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time~/\* vitesse Champ_Fonc_Reprise single_hdf datafile.sauv pb vitesse last_time \*/~" Champ_fonc_reprise_singlehdf.data > upwind.data
+     s~vitesse Champ_Fonc_Reprise pdi datafile.sauv pb vitesse last_time~/\* vitesse Champ_Fonc_Reprise pdi datafile.sauv pb vitesse last_time \*/~" Champ_fonc_reprise_singlehdf.data > upwind.data
 
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
