@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Redistribute_Field_included
 
 #include <IJK_Field.h>
+#include <IJK_Field_vector.h>
 #include <TRUSTTabs.h>
 #include <Schema_Comm_Vecteurs.h>
 
@@ -37,9 +38,9 @@ public:
   {
     redistribute_(input_field, output_field, false);
   }
-  template<class T,int N>
-  void redistribute(const FixedVector<T, N>& input_field,
-                    FixedVector<T, N>& output_field)
+  template<class T, int N>
+  void redistribute(const IJK_Field_vector<T, N>& input_field,
+                    IJK_Field_vector<T, N>& output_field)
   {
     for (int i = 0; i < N; i++)
       redistribute_(input_field[i], output_field[i], false);
@@ -49,9 +50,9 @@ public:
   {
     redistribute_(input_field, output_field, true);
   }
-  template<class T,int N>
-  void redistribute_add(const FixedVector<T, N>& input_field,
-                        FixedVector<T, N>& output_field)
+  template<class T, int N>
+  void redistribute_add(const IJK_Field_vector<T, N>& input_field,
+                        IJK_Field_vector<T, N>& output_field)
   {
     for (int i = 0; i < N; i++)
       redistribute_(input_field[i], output_field[i], true);

@@ -191,26 +191,6 @@ void force_zero_on_walls(IJK_Field_double& vz)
     }
 }
 
-void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost, double DU)
-{
-  v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
-  v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
-  v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
-  v[0].get_shear_BC_helpler().set_dU_(DU);
-  v[1].get_shear_BC_helpler().set_dU_(0.);
-  v[2].get_shear_BC_helpler().set_dU_(0.);
-}
-
-void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost, double DU)
-{
-  v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
-  v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
-  v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
-  v[0].get_shear_BC_helpler().set_dU_(DU);
-  v[1].get_shear_BC_helpler().set_dU_(0.);
-  v[2].get_shear_BC_helpler().set_dU_(0.);
-}
-
 // Interpolate the "field" at the requested "coordinates" (array with 3 columns), and stores into "result"
 static void ijk_interpolate_implementation(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result, int skip_unknown_points, double value_for_bad_points)
 {
@@ -660,6 +640,20 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   statistiques().end_count(projection_counter_);
 }
 
+void forward_euler_update(const IJK_Field_double& dv, IJK_Field_double& v, const int k_layer, double dt_tot)
+{
+  const int imax = v.ni();
+  const int jmax = v.nj();
+  for (int j = 0; j < jmax; j++)
+    {
+      for (int i = 0; i < imax; i++)
+        {
+          double x = dv(i, j, k_layer);
+          v(i, j, k_layer) += x * dt_tot;
+        }
+    }
+}
+
 // Take the provided derivative dv and update F and the unknown v for the Runge Kutta "rk_step"
 //  (0<=rk_step<=2).
 // F is an intermediate result, from the previous rk step (overwritten at step==0), used by
@@ -800,6 +794,62 @@ void runge_kutta3_update(const DoubleTab& dvi, DoubleTab& G, DoubleTab& l,
     };
 }
 #endif
+
+void runge_kutta3_update_surfacic_fluxes(IJK_Field_double& dv, IJK_Field_double& F, const int step, const int k_layer, double dt_tot)
+{
+  const double coeff_a[3] = { 0., -5. / 9., -153. / 128. };
+  // Fk[0] = 1; Fk[i+1] = Fk[i] * a[i+1] + 1
+  const double coeff_Fk[3] = { 1., 4. / 9., 15. / 32. };
+
+  const double facteurF = coeff_a[step];
+  const double one_divided_by_Fk = 1. / coeff_Fk[step];
+  const int imax = dv.ni();
+  const int jmax = dv.nj();
+  const int ghost = dv.ghost();
+  switch(step)
+    {
+    case 0:
+      // don't read initial value of F (no performance benefit because write to F causes the
+      // processor to fetch the cache line, but we don't wand to use a potentially uninitialized value
+      for (int j = -ghost; j < jmax+ghost; j++)
+        {
+          for (int i = -ghost; i < imax+ghost; i++)
+            {
+
+              double x = dv(i, j, k_layer);
+              dv(i, j, k_layer) = x * one_divided_by_Fk;
+              F(i, j, k_layer) = x;
+            }
+        }
+      break;
+    case 1:
+      // general case, read and write F
+      for (int j = -ghost; j < jmax+ghost; j++)
+        {
+          for (int i = -ghost; i < imax+ghost; i++)
+            {
+              double x = F(i, j, k_layer) * facteurF + dv(i, j, k_layer);
+              dv(i, j, k_layer) = x * one_divided_by_Fk;
+              F(i, j, k_layer) = x;
+            }
+        }
+      break;
+    case 2:
+      // do not write F
+      for (int j = -ghost; j < jmax+ghost; j++)
+        {
+          for (int i = -ghost; i < imax+ghost; i++)
+            {
+              double x = F(i, j, k_layer) * facteurF + dv(i, j, k_layer);
+              dv(i, j, k_layer) = x * one_divided_by_Fk;
+            }
+        }
+      break;
+    default:
+      Cerr << "Error in runge_kutta_update: wrong step" << finl;
+      Process::exit();
+    };
+}
 
 // build local coordinates of discretisation nodes for the given field
 // (used in set_field_data() )
@@ -1130,7 +1180,7 @@ static void calculer_rho_harmonic_v_DIR(DIRECTION _DIR_, const IJK_Field_double&
     }
 }
 
-void calculer_rho_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_double, 3>& v, FixedVector<IJK_Field_double, 3>& rho_v)
+void calculer_rho_v(const IJK_Field_double& rho, const IJK_Field_vector3_double& v, IJK_Field_vector3_double& rho_v)
 {
   // Conditions aux limites plans: on suppose que v = 0 sur le plan, alors rho_v sera = 0,
   // donc il n'y a rien a faire.
@@ -1149,7 +1199,7 @@ void calculer_rho_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_dou
 }
 
 // On utilise la moyenne harmonique au lieu de la moyenne arithmetique.
-void calculer_rho_harmonic_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_double, 3>& v, FixedVector<IJK_Field_double, 3>& rho_v)
+void calculer_rho_harmonic_v(const IJK_Field_double& rho, const IJK_Field_vector3_double& v, IJK_Field_vector3_double& rho_v)
 {
   // Conditions aux limites plans: on suppose que v = 0 sur le plan, alors rho_v sera = 0,
   // donc il n'y a rien a faire.
@@ -1353,7 +1403,7 @@ void density_solver_with_rho(IJK_Field_double& velocity, const IJK_Field_double&
 }
 
 // fonction moyenne en temps du champs de vitesse utilise dans le cas de bulles fixes
-void update_integral_velocity(const FixedVector<IJK_Field_double, 3>& v_instant, FixedVector<IJK_Field_double, 3>& v_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp)
+void update_integral_velocity(const IJK_Field_vector3_double& v_instant, IJK_Field_vector3_double& v_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp)
 {
   const int ni = indic_tmp.ni();
   const int nj = indic_tmp.nj();

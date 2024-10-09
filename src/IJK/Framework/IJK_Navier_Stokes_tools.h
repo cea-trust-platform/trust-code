@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,11 +13,17 @@
 *
 *****************************************************************************/
 
+#ifndef IJK_Navier_Stokes_tools_included
+#define IJK_Navier_Stokes_tools_included
+
 #include <IJK_Field.h>
+#include <IJK_Field_vector.h>
 #include <TRUSTTab.h>
 #include <Multigrille_Adrien.h>
 #include <Probleme_base.h>
 #include <Boundary_Conditions_Thermique.h>
+
+#define select(a,x,y,z) ((a==0)?(x):((a==1)?(y):(z)))
 
 double compute_fractionnal_timestep_rk3(const double dt_tot, int step);
 
@@ -65,28 +71,43 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& rho,
                                       int check_divergence,
                                       Multigrille_Adrien& poisson_solver);
 
+void forward_euler_update(const IJK_Field_double& dv, IJK_Field_double& v,
+                          const int k_layer, double dt_tot);
+
 void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Field_double& v,
                          const int step, const int k_layer, double dt_tot);
 
+void runge_kutta3_update_surfacic_fluxes(IJK_Field_double& dv, IJK_Field_double& F,
+                                         const int step, const int k_layer, double dt_tot);
+
 void force_zero_on_walls(IJK_Field_double& vz);
 
-void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost, double DU=0.);
-void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost, double DU=0.);
+template<class T, int N>
+void allocate_velocity(IJK_Field_vector<T, N>& v, const IJK_Splitting& s, int ghost, double DU=0.)
+{
+  assert(static_cast<int>(N) == 3);
 
-//void allocate_cell_vector(FixedVector<IJK_Field_double, 3> & v, const IJK_Splitting & s, int ghost);
-template<int N>
-void allocate_cell_vector(FixedVector<IJK_Field_double, N>& v, const IJK_Splitting& s, int ghost)
+  v.get_ptr(0) = std::make_shared<IJK_Field_template<T,TRUSTArray<T>>>();
+  v.get_ptr(1) = std::make_shared<IJK_Field_template<T,TRUSTArray<T>>>();
+  v.get_ptr(2) = std::make_shared<IJK_Field_template<T,TRUSTArray<T>>>();
+
+  v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
+  v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
+  v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
+  v[0].get_shear_BC_helpler().set_dU_(DU);
+  v[1].get_shear_BC_helpler().set_dU_(0.);
+  v[2].get_shear_BC_helpler().set_dU_(0.);
+}
+
+template<class T, int N>
+void allocate_cell_vector(IJK_Field_vector<T, N>& v, const IJK_Splitting& s, int ghost)
 {
   for (int i=0; i<N ; i++)
-    v[i].allocate(s, IJK_Splitting::ELEM, ghost);
+    {
+      v.get_ptr(i) = std::make_shared<IJK_Field_template<T,TRUSTArray<T>>>();
+      v[i].allocate(s, IJK_Splitting::ELEM, ghost);
+    }
 }
-template<int N>
-void allocate_cell_vector(FixedVector<IJK_Field_int, N>& v, const IJK_Splitting& s, int ghost)
-{
-  for (int i=0; i<N ; i++)
-    v[i].allocate(s, IJK_Splitting::ELEM, ghost);
-}
-//void allocate_cell_vector_n(FixedVector<IJK_Field_double, int n> & v, const IJK_Splitting & s, int ghost);
 
 // GAB
 void compose_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z);
@@ -104,12 +125,12 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
                     const IJK_Field_double& input_f1,const IJK_Field_double& input_f2, const double current_time);
 
 void calculer_rho_v(const IJK_Field_double& rho,
-                    const FixedVector<IJK_Field_double, 3>& v,
-                    FixedVector<IJK_Field_double, 3>& rho_v);
+                    const IJK_Field_vector3_double& v,
+                    IJK_Field_vector3_double& rho_v);
 
 void calculer_rho_harmonic_v(const IJK_Field_double& rho,
-                             const FixedVector<IJK_Field_double, 3>& v,
-                             FixedVector<IJK_Field_double, 3>& rho_v);
+                             const IJK_Field_vector3_double& v,
+                             IJK_Field_vector3_double& rho_v);
 
 double get_channel_control_volume(IJK_Field_double& field, int local_k_layer, const ArrOfDouble_with_ghost& delta_z_local);
 
@@ -128,7 +149,7 @@ void squared_3x3(double& a11, double& a12, double& a13,
                  double& a31, double& a32, double& a33);
 
 // fonction moyenne en temps du champs de vitesse utilise dans le cas de bulles fixes
-void update_integral_velocity(const FixedVector<IJK_Field_double, 3>& v_instant,  FixedVector<IJK_Field_double, 3>& v_tmp,
+void update_integral_velocity(const IJK_Field_vector3_double& v_instant,  IJK_Field_vector3_double& v_tmp,
                               const IJK_Field_double& indic, const IJK_Field_double& indic_tmp);
 void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
                                   const IJK_Field_double& vitesse_j,
@@ -169,7 +190,8 @@ void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_doubl
 
 double calculer_tauw(const IJK_Field_double& vx, const double mu_liquide);
 
-void calculer_gradient_temperature(const IJK_Field_double& temperature, FixedVector<IJK_Field_double, 3>& grad_T);
+void calculer_gradient_temperature(const IJK_Field_double& temperature, IJK_Field_vector3_double& grad_T);
 void add_gradient_temperature(const IJK_Field_double& temperature, const double constant, IJK_Field_double& vx,
                               IJK_Field_double& vy, IJK_Field_double& vz, const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda);
 
+#endif /* IJK_Navier_Stokes_tools_included */

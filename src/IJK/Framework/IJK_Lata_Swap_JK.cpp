@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <IJK_Lata_writer.h>
 #include <FixedVector.h>
 #include <IJK_Field.h>
+#include <IJK_Field_vector.h>
 #include <IJK_Splitting.h>
 #include <IJK_Navier_Stokes_tools.h>
 
@@ -55,8 +56,8 @@ Entree& IJK_Lata_Swap_JK::interpreter(Entree& is)
 
   IJK_Splitting splitting_;
   IJK_Splitting splitting_dest_;
-  FixedVector<IJK_Field_double, 3> velocity_;
-  FixedVector<IJK_Field_double, 3> velocity_dest_;
+  IJK_Field_vector3_double velocity_;
+  IJK_Field_vector3_double velocity_dest_;
   IJK_Field_double rho, dest_rho;
   // Recuperation des donnees de maillage
   splitting_ = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name));

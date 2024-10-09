@@ -146,9 +146,9 @@ void dumplata_vector_parallele_plan(const char *filename, const char *fieldname,
     }
 }
 
-template<typename _TYPE_, typename _TYPE_ARRAY_>
+template<typename _TYPE_>
 void dumplata_cellvector(const char *filename, const char *fieldname,
-                         const FixedVector< IJK_Field_template<_TYPE_,_TYPE_ARRAY_>, 3>& v, int step)
+                         const IJK_Field_vector<_TYPE_, 3>& v, int step)
 {
   dumplata_scalar(filename,Nom(fieldname)+Nom("_X"), v[0], step);
   dumplata_scalar(filename,Nom(fieldname)+Nom("_Y"), v[1], step);

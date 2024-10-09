@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,7 +13,11 @@
 *
 *****************************************************************************/
 
+#ifndef IJK_LATA_WRITER_H
+#define IJK_LATA_WRITER_H
+
 #include <IJK_Field.h>
+#include <IJK_Field_vector.h>
 #include <LataTools.h>
 
 void dumplata_header(const char *filename);
@@ -38,9 +42,9 @@ void dumplata_vector_parallele_plan(const char *filename, const char *fieldname,
                                     const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz,
                                     int step);
 
-template<typename _TYPE_, typename _TYPE_ARRAY_>
+template<typename _TYPE_>
 void dumplata_cellvector(const char *filename, const char *fieldname,
-                         const FixedVector<IJK_Field_template<_TYPE_,_TYPE_ARRAY_>, 3>& v,
+                         const IJK_Field_vector<_TYPE_, 3>& v,
                          int step);
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
@@ -79,3 +83,5 @@ Nom dirname(const Nom& filename);
 Nom basename(const Nom& filename);
 
 #include <IJK_Lata_writer.tpp>
+
+#endif
