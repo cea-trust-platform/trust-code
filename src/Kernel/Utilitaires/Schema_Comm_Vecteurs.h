@@ -67,6 +67,8 @@ public:
   void exchange(bool bufferOnDevice=false);
   void end_comm();
 
+  static void CleanMyStaticViews();
+
 protected:
   inline void add(int pe, int size, ArrOfInt& procs, ArrOfInt& buf_sizes, int align_size);
   int check_buffers_full() const;
@@ -155,6 +157,15 @@ inline void Schema_Comm_Vecteurs::add(int pe, int size, ArrOfInt& procs, ArrOfIn
   x = ((x + align_size - 1) & (~(align_size - 1))) + size; // Padding before block
 }
 
+inline void Schema_Comm_Vecteurs::CleanMyStaticViews()
+{
+#ifdef KOKKOS //If Kokkos is defined, we can clear the views
+  tmp_area_double_.CleanMyDualView();
+  tmp_area_float_.CleanMyDualView();
+  tmp_area_int_.CleanMyDualView();
+#endif
+  return;
+}
 template<>
 inline void Schema_Comm_Vecteurs::add_send_area_template<int>(int pe, int size)
 {

@@ -33,6 +33,7 @@ static const char directory_separator = '/';
 #endif
 #include <DeviceMemory.h>
 #include <TRUSTTravPool.h>
+#include<Schema_Comm_Vecteurs.h>
 
 extern void desalloue_pwd();
 void usage()
@@ -423,6 +424,9 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,bool force_mpi)
     TRUSTTravPool<int>::ClearPool();
     TRUSTTravPool<double>::ClearPool();
     TRUSTTravPool<float>::ClearPool();
+
+    //Clean static views in Schema_Comm_Vecteurs
+    Schema_Comm_Vecteurs::CleanMyStaticViews();
   }
 
   //  pour detruire les derniers octets

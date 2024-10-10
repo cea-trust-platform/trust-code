@@ -253,6 +253,10 @@ public:
   inline virtual const Span_ get_span_tot() const { return span_; }
 
 #ifdef KOKKOS
+
+  //Clean the internal view of the Trust Array in case it is needed, if the Array is static to avoid it's destruction after Kokkos::finalize
+  inline void CleanMyDualView() {dual_view_arr_=DualViewArr<_TYPE_>();}
+
   // Kokkos accessors (brace yourself!)
 
   // Read-only
