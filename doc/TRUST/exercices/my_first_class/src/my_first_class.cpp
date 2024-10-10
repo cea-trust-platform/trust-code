@@ -92,7 +92,7 @@ Entree& my_first_class::interpreter_(Entree& is)
   for (int i=0; i<problem.nombre_d_equations(); i++)
     Cerr<<"- The equation number " << i << " is of type " << problem.equation(i).le_type() << "." << finl;
 
-  const Domaine_VF& dom_vf=ref_cast(Domaine_VF,problem.domaine_dis().valeur());
+  const Domaine_VF& dom_vf=ref_cast(Domaine_VF,problem.domaine_dis());
   const DoubleVect& control_volumes=dom_vf.volumes_entrelaces();
   Cerr << "- Control volume array size: " << control_volumes.size() << finl;
 

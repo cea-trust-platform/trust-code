@@ -2853,7 +2853,7 @@ echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -file"
 listing=`mktemp_`
 export PYTHONPATH=$PYTHONPATH:$TRUST_ROOT/bin/KSH
 python -c "from Couv import nombre_de_cas_par_classe;nombre_de_cas_par_classe()" > $listing
-rm $TRUST_ROOT/bin/KSH/Couv.pyc
+rm -f $TRUST_ROOT/bin/KSH/Couv.pyc
 # Classes non testees
 for string in `$TRUST_Awk '/ 0 0/ {print $1}' $listing | sort`
 do

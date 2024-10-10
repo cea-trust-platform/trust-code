@@ -140,6 +140,19 @@ check_src()
       echo "Utiliser nullptr au lieu de NULL"
       erreur 1
    fi
+
+   #######################
+   # Verification des NULL
+   #######################
+   res=`grep "REF(" *.cpp *.h 2>/dev/null | grep -v "#define REF(_"`
+   if [ "$res" != "" ]
+   then
+      echo $res
+      echo "Changement dans TRUST 1.9.5:"
+      echo "Remplacer REF(classe) par OBS_PTR(classe)"
+      erreur 1
+   fi
+
    #######################################
    # Verification des declare_instanciable
    #######################################

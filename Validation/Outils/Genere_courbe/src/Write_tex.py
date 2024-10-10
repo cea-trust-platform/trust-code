@@ -627,7 +627,7 @@ Report generated  __DATE__.'''
                         if maitre.nvellevalid==2:
                             ficTex.write_Tex(r'\clearpage')
                         else:
-                            ficTex.write_Tex('''
+                            ficTex.write_Tex(r'''
 ''')
                         ficTex.write_Tex(r'% Inclusion des fichiers.data')
                         ficTex.write_Tex(r'\section{Data Files}')

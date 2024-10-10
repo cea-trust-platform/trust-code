@@ -47,6 +47,13 @@ echo "#error File $file deprecated in TRUST 1.9.4. You SHOULD change the include
 file="Solveur_Implicite_Base.h"
 echo "#error File $file deprecated in TRUST 1.9.5. You SHOULD change the include to Solveur_Implicite_base.h" > backward/$file
 
+Deprecated_includes_v195="Champ Champ_Don Champ_Fonc Champ_Inc Champ_front Champs_front Domaine_Cl_dis Domaine_dis Turbulence_paroi Turbulence_paroi_scal Modele_turbulence_hyd Modele_turbulence_scal"
+for file in $Deprecated_includes_v195
+do
+  echo "#error File $file.h deprecated in TRUST 1.9.5. You SHOULD change the include. use "$file"_base.h and see TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file.h
+done
+
+
 # EOS includes in EOS if 
 if [ "$TRUST_EOS_HOME_DIR" != "" ]
 then
