@@ -432,9 +432,9 @@ void Postraitement::set_param(Param& param)
 }
 
 // XD sondes_fichier objet_lecture nul 1 Keyword to read probes from a file
-// XD   attr fichier chaine file 0 name of file
+// XD   attr fichier|file chaine file 0 name of file
 // XD definition_champs_fichier objet_lecture nul 1 Keyword to read definition_champs from a file
-// XD   attr fichier chaine file 0 name of file
+// XD   attr fichier|file chaine file 0 name of file
 
 // XD champ_a_post objet_lecture nul 0 Field to be post-processed.
 // XD   attr champ chaine champ 0 Name of the post-processed field.
