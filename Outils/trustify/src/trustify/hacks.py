@@ -51,9 +51,7 @@ def toDSToken_hack(self):
     But in this very specific case, when the class is read it is just an equation_base, but then at writing
     time, it has been typed correclty ... pfew!
     """
-    TODO
-    for v in self:
-        v._read_type = True
+    self._outputItemType = True
     return ListOfBase_Parser.toDatasetTokens(self)
 
 try:

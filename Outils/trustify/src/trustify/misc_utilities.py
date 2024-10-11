@@ -265,8 +265,9 @@ class UnitUtils:
     """
     _TRUG = { }     # The list of generated modules, as Python module objects
     _TRAD2 = {"simple": "TRAD_2_adr_simple",   # a very reduced version of a complete TRAD_2 file
-              "full"  : "TRAD2_full",          # Generated with trad2_utilities from TRUST sources
-              "genepi": "TRAD_2_GENEPI_V17"    # From GENEPI
+              "full"  : "TRAD2_full",          # Generated with trad2_utilities from TRUST sources, around v1.9.2 of TRUST
+              "genepi": "TRAD_2_GENEPI_V17",   # From GENEPI
+              "custom": "myTRAD2"
               }
 
     _NO_REGENERATE = False   # useful for debugging - avoid regenerating each time (this is a bit long with full TRAD2)
@@ -284,10 +285,13 @@ class UnitUtils:
 
         tstdir = pathlib.Path(self._test_dir)
         file_in = tstdir / "trad2" / self._TRAD2[slot]
+        file_nfo_in = tstdir / "trad2" / (self._TRAD2[slot] + ".nfo")
+        if not file_nfo_in.exists():
+            file_nfo_in = None
         file_pars = tstdir / "generated" /  (file_in.stem + '_pars.py')
         if not self._NO_REGENERATE:
             file_pyd = tstdir / "generated" /  (file_in.stem + '_pyd.py')
-            generate_pyd_and_pars(file_in, file_pyd, file_pars)
+            generate_pyd_and_pars(file_in, file_nfo_in, file_pyd, file_pars)
 
         # Import generated module (IMPORTANT: set it at class level, not instance!!)
         self.__class__._TRUG[slot] = import_generated_module(file_pars)

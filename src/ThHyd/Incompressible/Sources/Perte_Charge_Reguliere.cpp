@@ -21,20 +21,24 @@
 // XD attr zone_name chaine name_of_zone 0 Name of the sub-area occupied by the tube bundle. A Sous_Zone (Sub-area) type object called zone_name should have been previously created.
 
 // XD spec_pdcr_base objet_lecture spec_pdcr_base 0 Class to read the source term modelling the presence of a bundle of tubes in a flow. Cf=A Re-B.
-// XD   attr ch_a chaine(into=["a","cf"]) ch_a 0 Keyword to be used to set law coefficient values for the coefficient of regular pressure losses.
-// XD   attr a floattant a 0 Value of a law coefficient for regular pressure losses.
-// XD   attr ch_b chaine(into=["b"]) ch_b 1 Keyword to be used to set law coefficient values for regular pressure losses.
-// XD   attr b floattant b 1 Value of a law coefficient for regular pressure losses.
 
 // XD longitudinale spec_pdcr_base longitudinale 0 Class to define the pressure loss in the direction of the tube bundle.
 // XD   attr dir chaine(into=["x","y","z"]) dir 0 Direction.
 // XD   attr dd floattant dd 0 Tube bundle hydraulic diameter value. This value is expressed in m.
+// XD   attr ch_a chaine(into=["a","cf"]) ch_a 0 Keyword to be used to set law coefficient values for the coefficient of regular pressure losses.
+// XD   attr a floattant a 0 Value of a law coefficient for regular pressure losses.
+// XD   attr ch_b chaine(into=["b"]) ch_b 1 Keyword to be used to set law coefficient values for regular pressure losses.
+// XD   attr b floattant b 1 Value of a law coefficient for regular pressure losses.
 
 // XD transversale spec_pdcr_base transversale 0 Class to define the pressure loss in the direction perpendicular to the tube bundle.
 // XD   attr dir chaine(into=["x","y","z"]) dir 0 Direction.
 // XD   attr dd floattant dd 0 Value of the tube bundle step.
 // XD   attr chaine_d chaine(into=["d"]) chaine_d 0 Keyword to be used to set the value of the tube external diameter.
 // XD   attr d floattant d 0 Value of the tube external diameter.
+// XD   attr ch_a chaine(into=["a","cf"]) ch_a 0 Keyword to be used to set law coefficient values for the coefficient of regular pressure losses.
+// XD   attr a floattant a 0 Value of a law coefficient for regular pressure losses.
+// XD   attr ch_b chaine(into=["b"]) ch_b 1 Keyword to be used to set law coefficient values for regular pressure losses.
+// XD   attr b floattant b 1 Value of a law coefficient for regular pressure losses.
 
 
 //Add a constructor for initialization

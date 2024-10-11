@@ -78,7 +78,7 @@ class TRAD2Attr:
 
     def toTRAD2(self):
         """ Output the attribute in the 'TRAD2' format """
-        opt = 1 if self.opt else 0
+        opt = 1 if self.is_opt else 0
         if len(self.synos) == 0:
             synos = [self.nam]
         else:
@@ -250,6 +250,8 @@ class TRAD2Content:
         if tag in l:
             t = l.split(",")
             cls_nam = t[0].split("(")[1].strip()
+            if cls_nam.endswith("_32_64"):
+                cls_nam = cls_nam[:-len("_32_64")]
             v = t[1].split(")")[0].strip()
             s = v.replace('"', '')
             return cls_nam, s
@@ -481,11 +483,10 @@ class TRAD2Content:
 ###########################################################################
 if __name__ == "__main__":
     import sys
-    # mutil._log_level = 4   # Turn this to 4 to debug!
     if len(sys.argv) > 1:
         outfile = sys.argv[1]
     else:
-        outfile = "trustpy/test/myTRAD2"
+        outfile = "test/trad2/myTRAD2"
     tr = os.environ.get("TRUST_ROOT", None)
     pd = os.environ.get("project_directory", None)
     trustpy_from_trust = os.environ.get("TRUSTPY_FROM_TRUST", None)

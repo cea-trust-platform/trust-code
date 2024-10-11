@@ -811,6 +811,16 @@ no_family_names_from_group_names
                 s = ''.join(res.toDatasetTokens())
                 self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
+    def test_dim_pars(self):
+        """ Test Dimension_Parser class - output was buggy """
+        from trustify.base import Dataset_Parser
+        data_ex = "dimension # coucou # 2"
+        stream = self.import_and_gen_stream(data_ex, simplify=False)
+        res = Dataset_Parser.ReadFromTokens(stream)
+        print("tst", res.entries[0])
+        s = ''.join(res.toDatasetTokens())
+        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+
     def test_complete_dataset(self):
         """ Complete (small) dataset with foward declarations etc... """
         from trustify.base import Dataset_Parser

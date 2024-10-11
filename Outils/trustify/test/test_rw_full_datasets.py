@@ -19,11 +19,11 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
     _test_dir = os.path.abspath(os.path.dirname(__file__))
     _models = []
 
-    def generic_simple(self, data_ex, typ_nam, fnam="??"):
+    def generic_simple(self, data_ex, typ_nam, slot="full", fnam="??"):
         """ Test a single entry of a dataset """
         # Generate if needed - the full thing here!!
-        self.generate_python_and_import("full")
-        self.mod = self._TRUG["full"]
+        self.generate_python_and_import(slot)
+        self.mod = self._TRUG[slot]
         # Parse the TRUST data set provided in arg
         tp = TRUSTParser()
         tp.tokenize(data_ex)
@@ -32,8 +32,12 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         return trust_cls.ReadFromTokens(stream)
 
     def generic_test(self, data_ex, fnam="??"):
-        """ Generic test method taking an entire dataset (=several entries) and testing it. """
-        return self.generic_simple(data_ex, "Dataset", fnam=fnam)
+        """ Generic test method taking an entire dataset (=several entries) and testing it against a frozen version of the TRAD2 """
+        return self.generic_simple(data_ex, "Dataset", slot="full", fnam=fnam)
+
+    def generic_custom_test(self, data_ex, fnam="??"):
+        """ Same as above but with a . """
+        return self.generic_simple(data_ex, "Dataset", slot="custom", fnam=fnam)
 
     def load_file(self, fName):
         """ Open a test file located in subfolder 'datasets' and return its content as a string. """
@@ -231,15 +235,18 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         """ tmp single dataset """
         # self.__class__._do_not_regenerate = True
 
+        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/PCR/PCR.data"
         e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/GPU/VDF_AMGX/VDF_AMGX.data"
-        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/GPU/GPU4/GPU4.data"
+        e ="/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/Kernel_Extrusion_en20/Kernel_Extrusion_en20.data"
+        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/Pertes_d_charges_CF_VDF/Pertes_d_charges_CF_VDF.data"
+        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Verification/Part_Ss_Dom_Union_jdd2/Part_Ss_Dom_Union_jdd2.data"
         d = os.path.dirname(e)
         bas = os.path.split(d)[-1]
         fNam = os.path.join(d, bas + ".data")
         with open(fNam) as f:
             data_ex = f.read()
         # printAdrien("'" + data_ex + "'")
-        res = self.generic_test(data_ex, fnam=e)
+        res = self.generic_custom_test(data_ex, fnam=e)
         # Test write out:
         s = ''.join(res.toDatasetTokens())
         data_ex_p = mutil.prune_after_end(data_ex)
@@ -256,21 +263,21 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # Find all datasets:
         pattern = os.path.abspath(os.path.join(tst_dir, "**/*.lml.gz"))
         g = glob.glob(pattern, recursive=True)
-        # with open("/home/catA/ab205030/failed_trustify.txt") as fl:
-        #     short_lst = [s.strip() for s in fl.readlines()]
+        with open("/nfs/home/catA/ab205030/failed_trustify.txt") as fl:
+            short_lst = [s.strip() for s in fl.readlines()]
         ko = []
         for i, e in enumerate(g[:]):
-            print("%d/%d" % (i, len(g)), end="\r")
             # Extract dir name, and build dataset file name
             d = os.path.dirname(e)
             bas = os.path.split(d)[-1]
             fNam = os.path.join(d, bas + ".data")
-            # if fNam in short_lst:
-            #     continue
+            print("%d/%d -- %s" % (i+1, len(g), fNam), end="\r")
+            if fNam in short_lst:
+                continue
             with open(fNam) as f:
                 data_ex = f.read()
             try:
-                res = self.generic_test(data_ex)
+                res = self.generic_custom_test(data_ex, fnam=fNam)
                 # Test write out:
                 s = ''.join(res.toDatasetTokens())
                 data_ex_p = mutil.prune_after_end(data_ex)

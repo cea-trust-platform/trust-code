@@ -116,7 +116,7 @@ def write_pyd_block(block, pyd_file, all_blocks):
             attr_typ = "str"
             args = f'default=""'
         else:
-            message = f"unresolved type : {attr.typ}"
+            message = f"unresolved type in XD tags : '{attr.typ}' - this was found line {attr.info[1]} of file '{attr.info[0]}' - did you forget to define it?"
             logger.error(message)
             raise NotImplementedError(message)
 
@@ -179,7 +179,7 @@ def write_pars_block(block, pars_file, all_blocks):
 
     info_attr = {}
     for attr in block.attrs:
-        info_attr[attr.nam] = tuple(attr.info)
+        info_attr[valid_variable_name(attr.nam)] = tuple(attr.info)
 
     lines += [f'    _braces: int = {block.mode}']
 
@@ -204,9 +204,10 @@ def write_pars_block(block, pars_file, all_blocks):
     pars_file.write('\n'.join(lines))
     block.pars_written = True
 
-def generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename, testing=False):
+def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
+                          out_pars_filename, testing=False):
 
-    all_blocks = tu.TRAD2Content.BuildContentFromTRAD2(trad2_filename).data
+    all_blocks = tu.TRAD2Content.BuildContentFromTRAD2(trad2_filename, trad2_nfo=trad2_nfo_filename).data
 
     # add two base classes that are required and not declared in TRAD2 file
     objet_u = tu.TRAD2Block()
@@ -374,6 +375,6 @@ if __name__ == '__main__':
     trad2_filename = root_dir / "trad2" / "TRAD_2_adr_simple"
     out_pyd_filename = root_dir / "generated" / (trad2_filename.name + "_pyd.py")
     out_pars_filename = root_dir / "generated" / (trad2_filename.name + "_pars.py")
-    all_blocks = generate_pyd_and_pars(trad2_filename, out_pyd_filename, out_pars_filename)
+    all_blocks = generate_pyd_and_pars(trad2_filename, None, out_pyd_filename, out_pars_filename)
     # test_loading(out_pyd_filename, all_blocks)
 

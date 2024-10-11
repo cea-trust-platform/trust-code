@@ -40,3 +40,7 @@ listcoucou listobj nul 1 coucou 1 List of coucous.
 
 bidon toto_base bidon 1 Just to test list attribute and inherited member from toto_base
   attr ma_liste listcoucou ma_liste 0 List attribute
+
+dimension interprete dimension -1 Keyword allowing calculation dimensions to be set (2D or 3D), where dim is an integer set to 2 or 3. This instruction is mandatory.
+  attr dim entier(into=[2,3]) dim 0 Number of dimensions.
+

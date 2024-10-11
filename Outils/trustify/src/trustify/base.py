@@ -20,14 +20,14 @@ from trustify.trust_parser import TRUSTTokens
 
 class Abstract_Parser:
     """ Root class for all parsers """
-    _braces = 1           # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
-    _read_type = False    # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
-    _infoMain = []        # a tuple giving the source file and the line # where the type was defined
+    _braces = 1           #: whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
+    _read_type = False    #: whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
+    _infoMain = []        #: a tuple giving the source file and the line # where the type was defined
 
     def __init__(self, pyd_value=None):
-        self._pyd_value = pyd_value # The associated 'pydantic' or builtin value associated with this parser
+        self._pyd_value = pyd_value #: The associated 'pydantic' or builtin value associated with this parser
                                     # This is an object that lives in the pydantic schema side """
-        self._tokens = {}  # A dictionnary giving for the current instance the tokens corresponding to each bit - see override
+        self._tokens = {}  #: A dictionnary giving for the current instance the tokens corresponding to each bit - see override
                            # in ConstrainBase for a more comprehensive explanation.
         # Link pydantic value to this parser:
         if not pyd_value is None and not Builtin_Parser.IsBuiltin(pyd_value.__class__):
@@ -66,19 +66,45 @@ class Abstract_Parser:
         return err + ctx
 
     @classmethod
-    def GetRootClasses(cls, kw, stream):
+    def GetAllClassesFromSyno(cls, kw, stream):
         """ For a given keyword (which might be a synonym) give all possible original (pydantic) classes.
+        NB: TRUST is a mess!! Take 'negligeable' for example: it is a standard TRUST keyword, but is also 
+        used as a synonym in multiple places .... so we need to keep all of this ...
         """
         # Is this a (non-synonym) valid class name? If so, it has precedence over any other synonyms (e.g. 'partition' ...)
+        ret = []
         if ClassFactory.Exist(ClassFactory.ToPydName(kw)):
-            return [ClassFactory.GetPydClassFromName(kw)]
-        if not kw in ClassFactory._SYNO_ORIG_NAME:
+            ret.append(ClassFactory.GetPydClassFromName(kw))
+        if ret == [] and not kw in ClassFactory._SYNO_ORIG_NAME:
             # (neither an original keyword, nor a synonym)
             # If we arrive here we are in fact most likely to hit a point where a previous (non-brace) keyword
             # was missing an attribute, and we treat the next token (for example '}') as a class to be read ...
             err = cls.GenErr(stream, f"Invalid TRUST keyword: '{kw}' (or maybe, did you forget an attribute on the previous line?)")
             raise TrustifyException(err)
-        return ClassFactory._SYNO_ORIG_NAME[kw]
+        ret.extend(ClassFactory._SYNO_ORIG_NAME.get(kw,[]))
+        return ret
+
+    @classmethod
+    def GetOneClassFromSyno(cls, kw, stream, interp=True):
+        """ TODO doc cleanup """
+        root_cls = cls.GetAllClassesFromSyno(kw, stream)
+        ret = root_cls[0]
+        if len(root_cls) > 1:
+            ###
+            ### Ugly! Ugly! Ugly!
+            ###
+            # We can have more than one class matching ('ef' and 'convection_ef')
+            # Give precedence either to an 'interprete' (if requested) or to the non-synonym version hoping for the best ...
+            if interp:
+                interp_cls = ClassFactory.GetPydClassFromName("Interprete")
+                l = [c for c in root_cls if issubclass(c, interp_cls)]
+                assert len(l) <= 1, f"Synonym '{kw}' matches more than one Interprete keyword!!"
+                return l[0]
+            if not ClassFactory.Exist(ClassFactory.ToPydName(kw)):
+                err = cls.GenErr(stream, f"Keyword '{kw}' is an ambiguous synonym! Can not determine which class this corresponds to (but I tried hard).")
+                raise TrustifyException(err)
+            ret = ClassFactory.GetPydClassFromName(kw)
+        return ret
 
     def checkToken(self, key, expec, typ=str):
         """ Used in toDatasetTokensBuiltin() method: consider the following:
@@ -243,14 +269,14 @@ class BaseCommon_Parser(Abstract_Parser):
       ReadFromTokens() - which instanciate a class from a stream of tokens (i.e. from the .data file)
       toDatasetTokens() - inherited from parent class, which does the inverse operation and serializes the content of the instance as a stream of tokens
     """
-    _braces = 1           # whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
-    _read_type = False    # whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
+    _braces = 1           #: whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
+    _read_type = False    #: whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
                           # In the Python code generation this attribute is overloaded when hitting _base or _deriv.
-    _infoAttr = {}        # same thing for class attributes (dictionnary indexed by main attr name)
+    _infoAttr = {}        #: same thing for class attributes (dictionnary indexed by main attr name)
 
     def __init__(self, pyd_value=None):
         Abstract_Parser.__init__(self, pyd_value=pyd_value)
-        self._leafParsers = {}       # Dictionnary holding leaf attributes (which are always builtin Python types) - key: attr name, value: a parser object
+        self._leafParsers = {}       #: Dictionnary holding leaf attributes (which are always builtin Python types) - key: attr name, value: a parser object
 
     @classmethod
     def ReadFromTokens(cls, stream, pars_cls=None):
@@ -290,7 +316,7 @@ class BaseCommon_Parser(Abstract_Parser):
         # Look in base class:
         base_cls = [c for c in cls.__bases__ if c.__name__.endswith(ClassFactory._PARSER_SUFFIX)]
         assert len(base_cls) <= 1, "Too many base classes?!"
-        if len(base_cls) == 0:
+        if len(base_cls) == 0 or base_cls is Abstract_Parser:
             raise Exception("Should not happen, missing infoAttr?")
         return base_cls[0].GetInfoAttr(attr_nam)
 
@@ -308,21 +334,21 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         BaseCommon_Parser.__init__(self, pyd_value)
         opbr  = TRUSTTokens(low=["{"], orig=[" {\n"])
         clobr = TRUSTTokens(low=["}"], orig=[" \n}\n"])
-        clsnam = TRUSTTokens(low=[], orig=[" " + self.__class__.__name__])
-        self._tokens = {"{": opbr,           # For a ConstrainBase we might need opening and closing brace. By default those
+        clsnam = TRUSTTokens(low=[], orig=[" " + ClassFactory.GetPydFromParser(self.__class__).__name__])
+        self._tokens = {"{": opbr,           #: For a ConstrainBase we might need opening and closing brace. By default those
                         "}": clobr,          # are simple '{' and '}' followed by a line return. If ReadFromTokens() was
                         "cls_nam": clsnam }  # invoked to build the object this will respect the initial input (with potentially more spaces)
-        self._attrInOrder = []               # Just to save the order in which the attributes were read ...
+        self._attrInOrder = []               #: Just to save the order in which the attributes were read ...
 
     @classmethod
     def _GetAttributeList(cls):
-        """ Return all the attributes of a keyword. 
+        """ Return all the attributes of a keyword. This is very stupid, but 
         @return a list of tuples (str, type)
         """
         if cls._attributeList is None:
             cls._attributeList = []
             pyd_cls = ClassFactory.GetPydFromParser(cls)
-            # model_fields will also contain inherited fields:
+            # model_fields will also contain inherited fields, and it puts them in the logical order (base class first, derrived then)
             for k, fld_nfo in pyd_cls.model_fields.items():
                 # Use rebuild_annotation to get full original type annotation.
                 # Otherwise Annotated[List[str], 0] becomes List[str], and 0 is stored in metatdata of the field ...
@@ -486,7 +512,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         # From here, we might have a lot of fun :-) Some synonyms are duplicated.
         # For example 'moyenne' might be a 'stat_post_moyenne' or a 'champ_post_statistiques_base' ... we need context ...
         # So give a preference to the class inheriting the current 'cls' (which is given by the TRAD2)
-        for r in cls.GetRootClasses(kw, stream):  # GetRootClasses will also check if valid TRUST keyword
+        for r in cls.GetAllClassesFromSyno(kw, stream):  # GetAllClassesFromSyno will also check if valid TRUST keyword
             me_as_pyd = ClassFactory.GetPydFromParser(cls)
             if issubclass(r, me_as_pyd):
                 return r.__name__
@@ -515,13 +541,14 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         # Instanciate the parser, and link the other way around (the parser registered in the pydantic value ...)
         pars = ze_pars_cls(val)
         val._parser = pars
-        if ze_pars_cls._read_type:
+        if pars_cls._read_type:
+            # NB: not 'if ze_pars_cls._read_type' - we want the exact same condition as at the begining of the method
             pars._tokens["cls_nam"] = tok
-            cls.Dbg(f"@FUNC@ Class tokens are: {pars._tokens['cls_nam'].orig()}")
+            cls.Dbg(f"@FUNC@ Class tokens are: {pars._tokens['cls_nam'].orig()} - pars is '{pars}'")
         # The two reading modes are really different:
         if ze_pars_cls.WithBraces():
             # Here key/value pairs, order doesn't matter
-            cls.Dbg(f"@FUNC@ reading with braces")
+            cls.Dbg(f"@FUNC@ reading '{ze_pars_cls.__name__}' with braces")
             pars._readFromTokens_braces(stream)
         else:
             # Here order matters a lot
@@ -628,12 +655,16 @@ class ListOfBase_Parser(Builtin_Parser):
     """ Root class for all list-like objects. For example a list of float, or a list of Source.
     This is a child of Builtin_Parser because on the pydantic side, such an attribute will be annotated as a 'List[XXX]' 
     """
-    _comma = 0             #  1: with comma to separate items, 0: without, -1: like parent
-    _itemType = None       # The (single) pydantic type of the items in the list - overriden in (generated) derived classes
-    _itemParserType = None # The associated Parser class - will be set by readFromTokensBuiltin_impl
+    _comma = 1             #:  1: with comma to separate items, 0: without, -1: like parent
+    _itemType = None       #: The (single) pydantic type of the items in the list - overriden in (generated) derived classes
+    _itemParserType = None #: The associated Parser class - will be set by readFromTokensBuiltin_impl
 
     def __init__(self, pyd_value=None):
         Builtin_Parser.__init__(self, pyd_value)
+        self._outputItemType = False
+        """ Should we append type in front of a list item we are going to output?
+        By default always false, since the object itself outputs its type when needed.
+        But see tricky exception in hacks.py for list of equations ..."""
 
     @classmethod
     def _MustReadSize(cls):
@@ -720,7 +751,8 @@ class ListOfBase_Parser(Builtin_Parser):
         # if pars._ze_cls:    pars._ze_cls._infoMain = cls._infoMain
 
         if cls.WithBraces():
-            cls.Dbg("@FUNC@ reading list with braces ...")
+            withComma = cls._WithComma()
+            cls.Dbg(f"@FUNC@ reading list with braces, and comma flag={withComma} ...")
             cls.ConsumeBrace(stream, "{")
             self._tokens["{"] = stream.lastReadTokens()
             tok = stream.probeNextLow()
@@ -728,7 +760,7 @@ class ListOfBase_Parser(Builtin_Parser):
             while tok != '}':
                 self.parseAndAppendItem(stream, val)
                 tok = stream.probeNextLow()
-                if cls._WithComma() and tok != '}':
+                if withComma and tok != '}':
                     cls._ConsumeComma(stream)
                     # Yes, the ',' token might be different after each element (comments etc...):
                     # Build a key containing the index of the comma to discriminate between the various commas:
@@ -759,7 +791,7 @@ class ListOfBase_Parser(Builtin_Parser):
             ln = [" " + len_as_str]
         ret.extend(ln)
 
-    def getItemTokens(self, index, elem_pyd, with_type=False):
+    def getItemTokens(self, index, elem_pyd):
         """ @return tokens for an item of the list, possibly dealing with the case where item has no associated parser. """
         pars = elem_pyd._parser
         if pars is None:
@@ -771,8 +803,10 @@ class ListOfBase_Parser(Builtin_Parser):
         # Important - updated pyd_value associated with the parser with the last value from the actual Pydantic object:
         pars._pyd_value = elem_pyd
         s = []
-        if with_type and not pars_cls._read_type:
-            s.extend(pars._tokens["cls_nam"].orig())
+        if self._outputItemType:
+            toks = pars._tokens["cls_nam"].orig()
+            s.extend(toks)
+            self.Dbg(f"@FUNC@  outputing list item {pars} -> will output type with toks {toks}")
         s.extend(pars.toDatasetTokens())
         return s
 
@@ -781,14 +815,15 @@ class ListOfBase_Parser(Builtin_Parser):
         ret = []
         dft_com = TRUSTTokens(orig=[" ,\n"])
         if self._MustReadSize():  # if size must be read, it must be written out too ...
-            if isinstance(self, AbstractSizeIsDim) and len(self._pyd_value) != Dimension_Parser._DIMENSION:
-                raise TrustifyException(f"List {self._pyd_value} has a number of items which do not match problem dimension!")
+            dim = Dimension_Parser._DIMENSION
+            if isinstance(self, AbstractSizeIsDim) and len(self._pyd_value) != dim:
+                raise TrustifyException(f"List '{self._pyd_value}' has a number of items which do not match problem dimension (={dim})!")
             self.extendWithSize(ret)
         if self.WithBraces():
             br = self.getBraceTokens("{")
             ret.extend(br)
         for i, v in enumerate(self._pyd_value):
-            toks = self.getItemTokens(i, v, with_type=False)
+            toks = self.getItemTokens(i, v)
             ret.extend(toks)
             if self._WithComma() and i != len(self._pyd_value)-1:
                 # yes, the ',' token might be different after each element (comments etc...):
@@ -803,7 +838,8 @@ class ListOfBuiltin_Parser(ListOfBase_Parser):
     """ Base class for all lists with items of builtin types (like list of floats, but not list of Source) 
     For those lists we need to save the parser objects too.
     """
-    _braces = 0        # No braces for those simple lists
+    _braces = 0        #: No braces for those simple lists
+    _comma = 0         #: No comma either
 
     def __init__(self, pyd_value=None):
         ListOfBase_Parser.__init__(self, pyd_value)
@@ -822,8 +858,9 @@ class ListOfBuiltin_Parser(ListOfBase_Parser):
         self._builtin_parsers.append(item_pars)  # for builtin type, save parser too
         lst.append(item_val)
 
-    def getItemTokens(self, idx, pyd_val, with_type):
-        """ Override - TODO doc """
+    def getItemTokens(self, idx, pyd_val):
+        """ Override - for a list of builtin we use the internal dictionnary of builtin parsers since the value
+        itself (= a builting type like str or int) can not have a parser attached. """
         # If a new item is in the list:
         if idx >= len(self._builtin_parsers):
             item_pars = Builtin_Parser.InstanciateFromBuiltin(self._itemType)
@@ -976,20 +1013,22 @@ class Dimension_Parser(Interprete_Parser):
     """
     _infoMain = ['<Dimension>', -1]
     _infoAttr = {'dim': ['<builtin>', -1]}
-    _DIMENSION = -1    # The unique dimension for a TRUST dataset as defined at the begining
+    _DIMENSION = -1    #: The unique dimension for a TRUST dataset as defined at the begining
 
     @classmethod
     def ReadFromTokens(cls, stream):
-        """ Revert to default behavior from BaseCommon_Parser. """
-        return BaseCommon_Parser.ReadFromTokens(stream, pars_cls=cls)
-
-    def readFromTokens_impl(self, stream):
+        """ Override - see class doc """
         val = Interprete_Parser.ReadFromTokens(stream, pars_cls=Dimension_Parser)
-        self._pyd_val = val
         Dimension_Parser._DIMENSION = val.dim
+        cls.Dbg(f"@FUNC@ Dimension was set globally to {val.dim}")
         new_defbord_nam = f"Defbord_{val.dim}"
-        new_defbord_cls = ClassFactory.GetPydClassFromName(new_defbord_nam)
-        defs_bords = [ClassFactory.GetPydClassFromName(n) for n in ["Defbord", "Defbord_2", "Defbord_3"]]
+        # In some elementary tests (test_rw_elementary.test_dim_pars) we do not have Defbord classes yet:
+        try:
+            new_defbord_cls = ClassFactory.GetPydClassFromName(new_defbord_nam)
+            defs_bords = [ClassFactory.GetPydClassFromName(n) for n in ["Defbord", "Defbord_2", "Defbord_3"]]
+        except:
+            new_defbord_cls = None
+            defs_bords = []
         # Dynamically change all attribute types using this:
         for c in ClassFactory.GetAllConstrainBasePyd():
             for k, fld_nfo in c.model_fields.items():
@@ -998,7 +1037,22 @@ class Dimension_Parser(Interprete_Parser):
                 # do several parsing with different datasets of different dimensions in one go ...)
                 if typ_attr in defs_bords:
                     c.model_fields[k].annotation = new_defbord_cls
+                    # Also clear the cached information on the parser side!
+                    pars_cls = ClassFactory.GetParserFromPyd(c)
+                    pars_cls._attributeList = None
+                    pars_cls._attributeSyno = None
         return val
+
+    def toDatasetTokens(self):
+        """ Some tests have the bad habits of playing with the Dimension keyword.
+        They switch several times in the same dataset, see for example Kernel_Extrusion_en20.data
+        When outputing the dataset list lengths is checked, so if we are outputing a list of length 2 (read when 'dimension 2' was
+        active), and then read 'dimension 3', the check will fail. 
+        When outputing we need to tweak dimension too. 
+        """
+        Dimension_Parser._DIMENSION = self._pyd_value.dim
+        self.Dbg(f"@FUNC@ Dimension was set globally to {Dimension_Parser._DIMENSION}")
+        return Interprete_Parser.toDatasetTokens(self)
 
 ######################################################
 # Main classes to parse the dataset and forward declarations
@@ -1026,10 +1080,9 @@ class Declaration_Parser(ConstrainBase_Parser):
         decl = ClassFactory.GetPydFromParser(self.__class__)()  # a Declaration object
         # Check whether the class (=1st param of the declaration) is valid and get corresponding parser class
         kw = Chaine_Parser.ParseOneWord(stream)
-        root_cls = self.GetRootClasses(kw, stream)   # will check valid TRUST keyword
-        assert len(root_cls) == 1
-        decl.ze_type = root_cls[0]
-        self._pars_cls = ClassFactory.GetParserFromPyd(root_cls[0])
+        root_cls = self.GetOneClassFromSyno(kw, stream, interp=False)   # will check valid TRUST keyword
+        decl.ze_type = root_cls
+        self._pars_cls = ClassFactory.GetParserFromPyd(root_cls)
         self._tokens["cls_nam"] = stream.lastReadTokens()
         ident = Chaine_Parser.ParseOneWord(stream)
         # Basic checks on the identifier:
@@ -1109,8 +1162,6 @@ class Dataset_Parser(ListOfBase_Parser):
         inst._parser._pyd_value = inst
         ds.entries.append(inst)
 
-
-
     @classmethod
     def ReadFromTokens(cls, stream):
         """ Override. See BaseCommon_Parser. Read a complete TRUST dataset
@@ -1118,7 +1169,7 @@ class Dataset_Parser(ListOfBase_Parser):
         ds = ClassFactory.GetPydClassFromName("Dataset")()  # A Dataset object (pydantic)
         pars = cls(ds)   # A Dataset_Parser object
 
-        interp_cls = ClassFactory.GetParserClassFromName("Interprete")
+        interp_cls = ClassFactory.GetPydClassFromName("interprete")
         while not stream.eof():
             tok = stream.probeNextLow()
             cls.Dbg(f"@FUNC@ probing tok '{tok}'")
@@ -1129,14 +1180,13 @@ class Dataset_Parser(ListOfBase_Parser):
                 cls.Dbg(f"@FUNC@ 'read' keyword encountered")
                 read_key = pars._handle_read_instruction(stream)
 
-            # Valid class? Note this will be checked again when in ReadTokens
-            root_cls = cls.GetRootClasses(tok, stream)
-            assert len(root_cls) == 1, "Synonym with more than one matching keyword! Should not happen at this level of the dataset"
-            pars_entry_cls = ClassFactory.GetParserFromPyd(root_cls[0])
+            # Extract original Pydantic class from keyword
+            root_cls = cls.GetOneClassFromSyno(tok, stream, interp=True)
+            pars_entry_cls = ClassFactory.GetParserFromPyd(root_cls)
 
             # 'interprete' are the highest level keywords in TRUST - they perform an action. They are only allowed at top level
             # in the dataset.
-            if issubclass(pars_entry_cls, interp_cls):
+            if issubclass(pars_entry_cls, Interprete_Parser):
                 # Standard keyword instanciation
                 pars._handle_std_instanciation(tok, stream, ds, pars_entry_cls)
                 # This was a 'read' instruction, update internal declaration mapping:
@@ -1156,10 +1206,17 @@ class Dataset_Parser(ListOfBase_Parser):
         return ds
 
     def toDatasetTokens(self):
-        """ Override. """
+        """ Override. Here we don't need all the fuss around the class type. And we need to iterate on self._pyd_value.entries,
+        (which is a Dataset instance), not self._pyd_value itself ...."""
         s = []
         for i, v in enumerate(self._pyd_value.entries):
-            s.extend(self.getItemTokens(i, v, with_type=True))
+            item_pars_cls = ClassFactory.GetParserFromPyd(v.__class__)
+            # This deserves an explanation: when outputing the full dataset, we must always write out the type of the objects!
+            # (whether it is a derived class of a 'xxx_base' or not)
+            # Classes which are children of 'xxx_base' will already do so by themselves when their 'toDatasetTokens' is invoked ;
+            # but for the other ones, we must force it:
+            self._outputItemType = not item_pars_cls._read_type
+            s.extend(self.getItemTokens(i, v))
         return s
 
 ######################################################
