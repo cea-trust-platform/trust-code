@@ -232,9 +232,9 @@ public:
   inline void ensureDataOnHost();
   inline void ensureDataOnHost() const;
   inline bool isDataOnDevice() const;
-  inline bool checkDataOnDevice(std::string kernel_name="??");
-  inline bool checkDataOnDevice(std::string kernel_name="??") const;
-  inline bool checkDataOnDevice(const TRUSTArray& arr, std::string kernel_name="??");
+  inline bool checkDataOnDevice();
+  inline bool checkDataOnDevice() const;
+  inline bool checkDataOnDevice(const TRUSTArray& arr);
 
   inline virtual Span_ get_span() { return span_; }
   inline virtual Span_ get_span_tot() { return span_; }
@@ -313,8 +313,6 @@ private:
   mutable std::shared_ptr<DataLocation> data_location_;
 
 private:
-  /*! Debug */
-  inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const;
 
   template<typename _TAB_> void ref_conv_helper_(_TAB_& out) const;
 };

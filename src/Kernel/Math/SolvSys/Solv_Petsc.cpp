@@ -2087,7 +2087,7 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
 {
   // Assemblage du second membre et de la solution
   double start = Statistiques::get_time_now();
-  bool DataOnDevice = solution.checkDataOnDevice(secmem, __KERNEL_NAME__);
+  bool DataOnDevice = solution.checkDataOnDevice(secmem);
   if (gpu_ && DataOnDevice && !isViennaCLVector()) // The 2 arrays are up to date on the device and the solver is a GPU one (fastest strategy)
     {
       // We update PETSc vectors with the arrays on device:
@@ -2142,7 +2142,7 @@ void Solv_Petsc::Update_solution(DoubleVect& solution)
 {
   // Recuperation de la solution
   double start = Statistiques::get_time_now();
-  bool DataOnDevice = solution.checkDataOnDevice(__KERNEL_NAME__);
+  bool DataOnDevice = solution.checkDataOnDevice();
   if (gpu_ && DataOnDevice && !isViennaCLVector()) // solution is on the device to SolutionPetsc_ -> solution update without copy
     {
       Solv_Externe::Update_solution<Kokkos::DefaultExecutionSpace>(solution);

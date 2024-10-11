@@ -460,19 +460,6 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
 #endif
 }
 
-template <typename _TYPE_, typename _SIZE_>
-inline void printKernel(bool flag, const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string kernel_name)
-{
-  if (kernel_name!="??" && tab.size_array()>100 && clock_on)
-    {
-      std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
-      std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name
-                << " with a loop on array [" << ptrToString(tab.data()).c_str() << "] of " << tab.size_array()
-                << " elements" << std::endl ;
-    }
-}
-
-
 //
 //  Explicit template instanciations
 //
@@ -530,10 +517,6 @@ template void copyPartialToDevice<float>(TRUSTArray<float>& tab, int deb, int fi
 template void copyPartialToDevice<double>(const TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
 template void copyPartialToDevice<int>(const TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
 template void copyPartialToDevice<float>(const TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
-
-template void printKernel<double>(bool flag, const TRUSTArray<double>& tab, std::string kernel_name);
-template void printKernel<int>(bool flag, const TRUSTArray<int>& tab, std::string kernel_name);
-template void printKernel<float>(bool flag, const TRUSTArray<float>& tab, std::string kernel_name);
 
 #if INT_is_64_ == 2
 
