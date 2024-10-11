@@ -32,6 +32,7 @@
 #include <Dirichlet.h>
 #include <cmath>
 #include <Quadrature_base.h>
+#include <Champ_front_txyz.h>
 
 Implemente_instanciable( Op_Diff_DG_Elem , "Op_Diff_DG_Elem|Op_Diff_DG_var_Elem" , Op_Diff_DG_base );
 
@@ -199,7 +200,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
 
       double sur_f = domaine.face_surfaces(f);
 
-      double h_T = sqrt(std::min(domaine.carre_pas_maille(elem0), domaine.carre_pas_maille(elem1)));
+      double h_T = sqrt(std::min(domaine.carre_pas_maille(elem0), domaine.carre_pas_maille(elem1))); //TODO possibilite de prendre moyenne harmonique (stabilite)
       double invh_T = 1./h_T;
       double nu = 2*nu_(elem0)*nu_(elem1)/(nu_(elem0) + nu_(elem1));
 
@@ -315,7 +316,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
           ch.eval_grad_bfunc_on_facets(quad, elem, f, grad_fbase0);
 
           double h_T = sqrt(domaine.carre_pas_maille(elem));
-          double invh_T = 1./h_T;
+          double invh_T = 1./h_T; //TODO regarder penalisation remplacer h_T par h_F
           double nu = nu_(elem);
 
           double sur_f = domaine.face_surfaces(f);
@@ -387,7 +388,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec_(const DoubleTab& inco, Matrice_Morse& m
       double invh12=invh0*invh1;
 
 
-      double eta_F=0; // TODO: Compute the penalisation coefficient
+      double eta_F=100; // TODO: Compute the penalisation coefficient
 
       if (Objet_U::dimension == 2)
         {
@@ -579,10 +580,10 @@ void Op_Diff_DG_Elem::contribuer_a_avec_(const DoubleTab& inco, Matrice_Morse& m
   matrice.imprimer(Cout);
 
 
-// Matrice_Morse sub_part;
-// matrice.construire_sous_bloc( 0,  0,  2,  2, sub_part);
+  // Matrice_Morse sub_part;
+  // matrice.construire_sous_bloc( 0,  0,  2,  2, sub_part);
 
-// Cout << sub_part << finl;
+  // Cout << sub_part << finl;
 }
 
 void Op_Diff_DG_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
@@ -609,16 +610,222 @@ void Op_Diff_DG_Elem::contribuer_termes_croises(const DoubleTab& inco, const Pro
 
 void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
 {
-  int f=0;
+
+  const Domaine_DG& domaine = le_dom_dg_.valeur();
+
+  int nb_bords=domaine.nb_front_Cl();
+
+  const IntTab& face_voisins = domaine.face_voisins();
+  const DoubleTab& face_normales = domaine.face_normales();
+
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
-  if ((ch.fcl()(f, 0)==6)||(ch.fcl()(f, 0)==7))
+  const Quadrature_base& quad = domaine.get_quadrature(5);
+
+  const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
+  int nb_pts_int_fac = integ_points_facets.dimension(1);
+
+  const int nb_bfunc = ch.nb_bfunc();
+
+  DoubleTab fbase(nb_bfunc, nb_pts_int_fac);
+  DoubleTab grad_fbase(nb_bfunc,nb_pts_int_fac, Objet_U::dimension);
+  DoubleTab scalar_product(nb_pts_int_fac);
+
+  //Les conditions aux limites pour le second membre
+  double eta_F=1; // TODO: Compute the penalisation coefficient
+  int ind_face;
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      // Nothing to do
+      const Cond_lim& la_cl = la_zcl_dg_->les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
+      int num1f=0;
+      int num2f=le_bord.nb_faces();
+
+      if (sub_type(Dirichlet_homogene,la_cl.valeur()))
+        {
+          //On ne fait rien et c'est normal
+        }
+      else if (sub_type(Dirichlet,la_cl.valeur()))
+        {
+          const Dirichlet& dirichlet =
+            ref_cast(Dirichlet,la_cl.valeur());
+
+          double xk=0.,yk=0.,zk=0.;
+          double temps = equation().schema_temps().temps_courant();
+
+          if (sub_type(Champ_front_txyz,dirichlet.champ_front().valeur()))
+            {
+              const Champ_front_txyz& champ_front =
+                ref_cast(Champ_front_txyz,dirichlet.champ_front().valeur());
+
+              for (int ind_faceb=num1f; ind_faceb<num2f; ind_faceb++)
+                {
+
+                  ind_face = le_bord.num_face(ind_faceb);
+
+                  int elem = face_voisins(ind_face, 0); // The cell that have one facet on the boundary
+
+                  ch.eval_bfunc_on_facets(quad, elem, ind_face, fbase);
+                  ch.eval_grad_bfunc_on_facets(quad, elem, ind_face, grad_fbase);
+
+                  double sur_f = domaine.face_surfaces(ind_face);
+
+                  double h_T = sqrt(domaine.carre_pas_maille(elem));
+                  double invh_T = 1./h_T; //TODO regarder penalisation remplacer h_T par h_F
+                  double nu = nu_(elem);
+
+                  for( int i=0; i< nb_bfunc; i++)
+                    {
+                      scalar_product = 0.;
+                      for (int k = 0; k < nb_pts_int_fac ; k++)
+                        {
+                          //Coordonnees des points d'integration
+                          xk=integ_points_facets(ind_face,k,0);
+                          yk=integ_points_facets(ind_face,k,1);
+                          if (dimension ==3) zk=integ_points_facets(ind_face,k,2);
+
+                          double u_bord_k= champ_front.valeur_au_temps_et_au_point(temps,0,xk,yk,zk,0);
+                          for (int d=0; d<Objet_U::dimension; d++)
+                            scalar_product(k) -= face_normales(ind_face,d)/sur_f * grad_fbase(i, k, d)*u_bord_k;      //  \eta/H_F \int g \vvec_h
+                          scalar_product(k) += eta_F/sur_f*invh_T * u_bord_k*fbase(i, k);                              // \eta/H_F \int g \vvec_h
+                        }
+                      resu(elem,i)+=nu*quad.compute_integral_on_facet(ind_face, scalar_product);
+                    }
+                }
+            }
+        }
     }
-  else
-    {
-      throw;
-      if (ch.fcl()(f, 0)==6) // Non-homogeneous Dirichlet
-        throw;
-    }
+
+
+  //                    for(som_loc=0; som_loc<nb_som_face; som_loc++)
+  //                      {
+  //                        som=dom.get_renum_som_perio(face_sommets(face,som_loc));
+  //
+  //                        //Formule d'integration numerique exacte pour les polynomes de degre 2
+  //                        if (dimension==2) //formule de Simpson
+  //                          {
+  //                            //Coordonnees du sommet "som"
+  //                            x=coord_sommets(som,0);
+  //                            y=coord_sommets(som,1);
+  //
+  //                            //Valeur de l'inconnue au point d'integration
+  //                            for (compi=0; compi<dim_ch_; compi++)
+  //                              {
+  //                                inconnue_pt=
+  //                                  champ_front.valeur_au_temps_et_au_point(temps,som,x,y,z,compi);
+  //
+  //                                for (compj=0; compj<dimension; compj++)
+  //                                  secmem(som,compi,compj) +=
+  //                                    1./6*(2*inconnue[face*dim_ch_+compi]+inconnue_pt)
+  //                                    *face_normales(face,compj) ;
+  //                              }
+  //                          }//fin du if sur dimension==2
+  //
+  //                        else //formule exacte pour les polynomes de degre 2
+  //                          {
+  //                            //On suppose que l'element considere est un TETRAEDRE
+  //                            for (i=1; i<3; i++)
+  //                              {
+  //                                int som2=face_sommets(face,(som_loc+i)%nb_som_face);
+  //                                som2=dom.get_renum_som_perio(som2);
+  //
+  //                                //Coordonnees des points d'integration
+  //                                x=(coord_sommets(som,0)+coord_sommets(som2,0))/2.;
+  //                                y=(coord_sommets(som,1)+coord_sommets(som2,1))/2.;
+  //                                z=(coord_sommets(som,2)+coord_sommets(som2,2))/2.;
+  //
+  //                                //Vitesse au point d'integration
+  //                                for (compi=0; compi<dim_ch_; compi++)
+  //                                  {
+  //                                    inconnue_pt=
+  //                                      champ_front.valeur_au_temps_et_au_point(temps,som,x,y,z,compi);
+  //
+  //                                    for (compj=0; compj<dimension; compj++)
+  //                                      secmem(som, compi, compj) += 1./dimension*
+  //                                                                   1/2.*inconnue_pt*face_normales(face,compj) ;
+  //                                  }
+  //                              }
+  //                          }//fin du else sur la dimension
+  //
+  //                      }//fin du for sur "som_loc"
+  //
+  //                  }//fin du for sur "ind_face"
+  //
+  //              }//fin du if sur "Champ_front_txyz"
+  //            else
+  //              {
+  //                for (ind_face=num1; ind_face<num2; ind_face++)
+  //                  {
+  //                    face = le_bord.num_face(ind_face);
+  //
+  //                    for(som_loc=0; som_loc<nb_som_face; som_loc++)
+  //                      {
+  //                        som=dom.get_renum_som_perio(face_sommets(face,som_loc));
+  //
+  //                        for (compi=0; compi<dim_ch_; compi++)
+  //                          for (compj=0; compj<dimension; compj++)
+  //                            secmem(som,compi,compj) += 1./dimension*
+  //                                                       inconnue[face*dim_ch_+compi]*face_normales(face,compj) ;
+  //
+  //                      }//fin du for sur "som_loc"
+  //
+  //                  }//fin du for sur "ind_face"
+  //              }
+  //
+  //          }//fin du if sur "Dirichlet"
+  //
+  //        else if (!sub_type(Periodique,la_cl.valeur()))
+  //          {
+  //            for (ind_face=num1; ind_face<num2; ind_face++)
+  //              {
+  //                face = le_bord.num_face(ind_face);
+  //
+  //                for(som_loc=0; som_loc<nb_som_face; som_loc++)
+  //                  {
+  //                    som=dom.get_renum_som_perio(face_sommets(face,som_loc));
+  //
+  //                    for (compi=0; compi<dim_ch_; compi++)
+  //                      for (compj=0; compj<dimension; compj++)
+  //                        secmem(som,compi,compj) += 1./dimension*
+  //                                                   inconnue[face*dim_ch_+compi]*face_normales(face,compj) ;
+  //
+  //                  }//fin du for sur "som_loc"
+  //
+  //              }//fin du for sur "ind_face"
+  //
+  //          }//fin du if sur "!Periodique"
+  //
+  //      }//fin du for sur "n_bord"
+  //
+  //    secmem.echange_espace_virtuel();
+  //    Debog::verifier("OpDifP1NCP1B secmem, apres CL : ", secmem);
+  //
+  //    //Calcul de la solution du systeme a inverser
+  //    for (compi=0; compi<dim_ch_; compi++)
+  //      for (compj=0; compj<dimension; compj++)
+  //        {
+  //          for(i=0; i<nb_som_tot; i++)
+  //            {
+  //              som=dom.get_renum_som_perio(i);
+  //              secmemij(som)=secmem(som,compi,compj);
+  //            }
+  //
+  //          //Resolution du systeme
+  //          for(i=0; i<nb_som; i++)
+  //            {
+  //              som=dom.get_renum_som_perio(i);
+  //              gradij(som)=secmemij(som)/(coeff_*volume_aux_sommets(som));
+  //            }
+  //
+  //          for(i=0; i<nb_som_tot; i++)
+  //            {
+  //              som=dom.get_renum_som_perio(i);
+  //              gradient_p1_(som,compi,compj)
+  //                =gradij(som);
+  //            }
+  //        }
+  //
+  //    gradient_p1_.echange_espace_virtuel();
+  //    Debog::verifier("OpDifP1NCP1B Gradient P1 : ",gradient_p1_);
+  //
+  //    return gradient_p1_;
 }

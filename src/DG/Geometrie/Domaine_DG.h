@@ -38,7 +38,7 @@ public :
 private:
 
   std::map<int, const Quadrature_base*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
-
+// DoubleVect h_, sigma;
 };
 
 void Domaine_DG::set_quadrature(int order, const Quadrature_base* quad)

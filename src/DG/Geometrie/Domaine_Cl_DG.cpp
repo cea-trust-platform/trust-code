@@ -43,104 +43,14 @@ void Domaine_Cl_DG::completer(const Domaine_dis& )
 
 void Domaine_Cl_DG::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
-
-//  Champ_Inc_base& ch_base = ch.valeur();
-//  DoubleTab& ch_tab = ch_base.valeurs(temps);
-//  int n, N = ch_tab.line_size();
-//
-//  if (sub_type(Champ_Inc_P0_base, ch_base)) { /* Do nothing */ }
-//  else if (ch_base.nature_du_champ() == scalaire) { /* Do nothing */ }
-//  else if (sub_type(Champ_Face_DG_P0P1NC, ch_base) || sub_type(Champ_Face_DG, ch_base))
-//    {
-//      Champ_Face_base& ch_face = ref_cast(Champ_Face_base, ch_base);
-//      const Domaine_VF& mon_dom_VF = ch_face.domaine_vf();
-//      int ndeb, nfin, num_face;
-//
-//      for (int i = 0; i < nb_cond_lim(); i++)
-//        {
-//          const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
-//          if (sub_type(Periodique, la_cl))
-//            {
-//              if (N > 1) Process::exit("Periodique CLS not yet supported for multiphase pbs.");
-//
-//              if (modif_perio_fait_ == 0)
-//                {
-//                  // On fait en sorte que le champ ait la meme valeur
-//                  // sur deux faces de periodicite qui sont en face l'une de l'autre
-//                  const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
-//                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-//                  ndeb = le_bord.num_premiere_face();
-//                  nfin = ndeb + le_bord.nb_faces();
-//                  int voisine;
-//                  double moy;
-//                  for (num_face = ndeb; num_face < nfin; num_face++)
-//                    {
-//                      voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
-//                      if (ch_tab[num_face] != ch_tab[voisine])
-//                        {
-//                          moy = 0.5 * (ch_tab[num_face] + ch_tab[voisine]);
-//                          ch_tab[num_face] = moy;
-//                          ch_tab[voisine] = moy;
-//                        }
-//                    }
-//                  // Il ne faut pas le faire a la premiere cl mais une fois toutes les cl faites une fois, cas multi perio avec ci non perio
-//                  // init = 1;
-//                }
-//            }
-//          else if (sub_type(Symetrie, la_cl))
-//            {
-//              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-//              ndeb = le_bord.num_premiere_face();
-//              nfin = ndeb + le_bord.nb_faces();
-//              for (num_face = ndeb; num_face < nfin; num_face++)
-//                for (n = 0; n < N; n++)
-//                  ch_tab(num_face, n) = 0;
-//            }
-//          else if (sub_type(Dirichlet_entree_fluide, la_cl))
-//            {
-//              const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide, la_cl);
-//              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-//              ndeb = le_bord.num_premiere_face();
-//              nfin = ndeb + le_bord.nb_faces();
-//
-//              for (num_face = ndeb; num_face < nfin; num_face++)
-//                for (n = 0; n < N; n++)
-//                  {
-//                    // WEC : optimisable (pour chaque face recherche le bon temps !)
-//                    // vn
-//                    double vn = 0;
-//                    for (int d = 0; d < dimension; d++)
-//                      vn += mon_dom_VF.face_normales(num_face, d) * la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
-//                    vn /= mon_dom_VF.face_surfaces(num_face);
-//                    ch_tab(num_face, n) = vn;
-//                  }
-//            }
-//          else if (sub_type(Dirichlet_paroi_fixe, la_cl))
-//            {
-//              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-//              ndeb = le_bord.num_premiere_face();
-//              nfin = ndeb + le_bord.nb_faces();
-//              for (num_face = ndeb; num_face < nfin; num_face++)
-//                for (n = 0; n < N; n++)
-//                  ch_tab(num_face, n) = 0;
-//            }
-//          else if (sub_type(Dirichlet_paroi_defilante, la_cl))
-//            {
-//              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-//              ndeb = le_bord.num_premiere_face();
-//              nfin = ndeb + le_bord.nb_faces();
-//              for (num_face = ndeb; num_face < nfin; num_face++)
-//                for (n = 0; n < N; n++)
-//                  ch_tab(num_face, n) = 0;
-//            }
-//        }
-//      modif_perio_fait_ = 1;
-//    }
-//  else
-//    {
-//      Cerr << "Le type de Champ_Inc " << ch->que_suis_je() << " n'est pas prevu en DG family " << finl;
-//      Process::exit();
-//    }
+//  DoubleTab& ch_tab = ch.valeurs(temps);
+  if (sub_type(Champ_Inc_P0_base, ch)) { /* Do nothing */ }
+  else if (ch.nature_du_champ() == scalaire) { /* Do nothing */ }
+  else
+    {
+      Cerr << "Le type de Champ_Inc " << ch.que_suis_je() << " n'est pas prevu en DG family " << finl;
+      Process::exit();
+    }
 //  ch_tab.echange_espace_virtuel();
 //  Debog::verifier("Domaine_Cl_DG::imposer_cond_lim ch_tab", ch_tab);
 }
