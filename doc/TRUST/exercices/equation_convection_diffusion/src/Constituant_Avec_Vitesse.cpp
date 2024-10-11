@@ -52,9 +52,9 @@ const Champ_base& Constituant_Avec_Vitesse::vitesse_pour_transport()
   return vitesse_transport;
 }
 
-const Champ_Don& Constituant_Avec_Vitesse::vit_convection_constituant() const
+const Champ_Don_base& Constituant_Avec_Vitesse::vit_convection_constituant() const
 {
-  return C_;
+  return C_.valeur();
 }
 
 void Constituant_Avec_Vitesse::mettre_a_jour(double temps)

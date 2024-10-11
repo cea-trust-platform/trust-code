@@ -37,7 +37,7 @@ void Eq_Conv_Diff::associer_milieu_base(const Milieu_base& un_milieu)
 {
   Convection_Diffusion_Concentration::associer_milieu_base(un_milieu);
   const Constituant_Avec_Vitesse& un_constituant=ref_cast(Constituant_Avec_Vitesse,un_milieu);
-  if (un_constituant.vit_convection_constituant().non_nul())
+  if (un_constituant.has_vit_convection_constituant())
     associer_constituant(un_constituant);
   else
     {

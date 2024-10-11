@@ -15,6 +15,6 @@ public :
   void associer_constituant(const Constituant_Avec_Vitesse& un_constituant);
   int lire_motcle_non_standard(const Motcle& mot, Entree& is) override;
 protected :
-  REF(Constituant_Avec_Vitesse) le_constituant;
+  OBS_PTR(Constituant_Avec_Vitesse) le_constituant;
 };
 #endif
