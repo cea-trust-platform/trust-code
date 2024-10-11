@@ -1475,7 +1475,6 @@ const Nom Solv_Petsc::config()
 int Solv_Petsc::instance=-1;
 int Solv_Petsc::numero_solveur=0;
 #ifdef PETSCKSP_H
-// Attention, bug apres PETSc 3.14 le logging avec PetscLogStage est tres cher pour MatSetValues (appel MPI meme en sequentiel!). Vu sur Flica5 avec appel frequents a Update_matrix
 PetscLogStage Solv_Petsc::Create_Stage_=1;
 PetscLogStage Solv_Petsc::KSPSolve_Stage_=2;
 
@@ -1778,7 +1777,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
   double start = Statistiques::get_time_now();
-  PetscLogStagePush(Create_Stage_);
+  // Attention, bug apres PETSc 3.14 le logging avec PetscLogStage est tres cher pour MatSetValues (appel MPI meme en sequentiel!). Vu sur Flica5 avec appel frequents a Update_matrix
+  bool log_Create_Stage = false; // ToDO mettre un test plus intelligent selon taille du cas ou si parallele ?
+  if (log_Create_Stage) PetscLogStagePush(Create_Stage_);
   if (nouvelle_matrice())
     {
       // Changement de la taille de matrice, on detruit les objets dont la taille change:
@@ -1864,7 +1865,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 
   // Save the matrix and the RHS if the matrix has changed...
   if (nouvelle_matrice() && save_matrix_) SaveObjectsToFile(secmem, solution);
-  PetscLogStagePop();
+  if (log_Create_Stage) PetscLogStagePop();
   //////////////////////////
   // Solve the linear system
   //////////////////////////
