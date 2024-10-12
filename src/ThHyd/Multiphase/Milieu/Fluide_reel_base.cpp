@@ -152,7 +152,18 @@ int Fluide_reel_base::initialiser(const double temps)
   t_init_ = temps;
 
   if (is_incompressible())
-    mettre_a_jour(temps); // ne depend pas de p et T : on peut terminer l'initialisation
+    {
+      mettre_a_jour(temps); // ne depend pas de p et T : on peut terminer l'initialisation
+      Cerr << "The defined fluid_reel with T_ref = " << T_ref_ << " and P_ref = " << P_ref_ << " is equivalent to :" << finl;
+      Cerr << "fluide_incompressible" << finl;
+      Cerr << "{" << finl;
+      Cerr << "    rho     champ_uniforme 1 " << ch_rho_->valeurs()(0, 0) << finl;
+      Cerr << "    cp      champ_uniforme 1 " << ch_Cp_->valeurs()(0, 0) << finl;
+      Cerr << "    lambda  champ_uniforme 1 " << ch_lambda_->valeurs()(0, 0) << finl;
+      Cerr << "    mu      champ_uniforme 1 " << ch_mu_->valeurs()(0, 0) << finl;
+      Cerr << "    beta_th champ_uniforme 1 " << ch_beta_th_->valeurs()(0, 0) << finl;
+      Cerr << "}" << finl;
+    }
 
   if (id_composite_ == -1)
     Milieu_base::initialiser_porosite(temps);
