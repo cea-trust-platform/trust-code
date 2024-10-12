@@ -51,20 +51,12 @@ Sortie_Fichier_base::~Sortie_Fichier_base()
 
 void Sortie_Fichier_base::set_toFlush()
 {
-  char* theValue = getenv("TRIOU_FLUSHFILES");
-  // On fixe une valeur a 0 par defaut pour toFlush_
-  // Elle peut etre changee par la variable d'environnement
-  // On bufferize sur DEC pour accelerer les ecritures .lml, .lata, ...
-#ifdef DECalpha
-  toFlush_ = 0;
-#else
-  toFlush_ = 1;
-#endif
   // Les acces disques ont ete optimises depuis
   // donc par defaut on flushe a nouveau car
   // sinon les sondes pas ecrites...
   // Si lent, mettre export TRIOU_FLUSHFILES=0 dans son sub_file
   toFlush_ = 1;
+  char* theValue = getenv("TRUST_FLUSHFILES");
   if (theValue != nullptr)
     {
       toFlush_=atoi(theValue);
@@ -75,7 +67,7 @@ void Sortie_Fichier_base::set_buffer()
 {
   if (!toFlush_)
     {
-      char* theValue = getenv("TRIOU_BUFFSIZE");
+      char* theValue = getenv("TRUST_BUFFSIZE");
       // On fixe une valeur a 3000000 par defaut pour buffSize
       // Elle peut etre changee par la variable d'environnement
       int buffSize = 3000000;
@@ -88,7 +80,6 @@ void Sortie_Fichier_base::set_buffer()
           size_t internalBuffSize = buffSize;
           internalBuff_ = new char[internalBuffSize];
           ofstream_->rdbuf()->pubsetbuf(internalBuff_,internalBuffSize);
-          toFlush_ = 0;
         }
     }
 }

@@ -127,7 +127,6 @@ Sortie& Sortie::operator <<(ios& (*f)(ios&))
 
 Sortie& Sortie::flush()
 {
-  //   get_ostream().flush();
   ostream_->flush();
   return *this;
 }
@@ -143,13 +142,15 @@ Sortie& Sortie::operator<<(const Separateur& ob)
       switch (ob.get_type())
         {
         case Separateur::ENDL:
-          // On ecrit "\n" et pas endl...
-          // C'est peut-etre une mauvaise idee
-          //(*ostream_) << '\n';
+          // endl = '\n' + flush
+#if defined(__CYGWIN__) || defined(MICROSOFT)
           // GF pb sous windows avec ancienne ligne
           (*ostream_)<<endl;
-          // Flush (important pour les fichiers de log)
-          ostream_->flush();
+#else
+          (*ostream_) << '\n';
+#endif
+          // Flush eventuel (surcharge possible par Sortie_Fichier_base::flush())
+          flush();
           break;
         case Separateur::SPACE:
           (*ostream_) << ' ';
