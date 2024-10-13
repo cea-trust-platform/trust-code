@@ -23,11 +23,7 @@
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Create_domain_from_sub_domain,"Create_domain_from_sub_domain|Create_domain_from_sub_domains",Interprete_geometrique_base);
-// XD create_domain_from_sous_zone Create_domain_from_sub_domain create_domain_from_sous_zone -1 kept for backward compatibility. please use Create_domain_from_sub_domain
-
 // XD Create_domain_from_sub_domain interprete_geometrique_base Create_domain_from_sub_domain 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
-// 16/10/2017: desactivation du mot-cle par_sous_zones
-// Create_domain_from_sub_domain interprete_geometrique_base Create_domain_from_sub_domain 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone or with several subdomaines par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 
 Add_synonym(Create_domain_from_sub_domain, "Create_domain_from_sous_zone");
 
@@ -61,14 +57,10 @@ Entree& Create_domain_from_sub_domain::interpreter_(Entree& is)
   noms_sous_domaines.dimensionner(1), noms_doms.dimensionner(1);
   Param param(que_suis_je());
   param.ajouter("domaine_final",&noms_doms[0]); // XD_ADD_P ref_domaine new domain in which faces are stored
-  param.ajouter("par_sous_zone",&noms_sous_domaines[0]); // XD_ADD_P chaine a sub-area allowing to choose the elements
+  param.ajouter("par_sous_zone|par_sous_dom",&noms_sous_domaines[0]); // XD_ADD_P chaine a sub-area (a group in a MED file) allowing to choose the elements
   param.ajouter("domaine_init",&nom_dom_org,Param::REQUIRED); // XD_ADD_P ref_domaine initial domain
   param.ajouter_non_std("domaines|zones", this);
-  // 16/10/2017: desactivation du mot-cle par_sous_zones
-  //param.ajouter("par_sous_zones",&vec_nom_ssz); // listchaine several sub-domaines allowing to choose the elements
-  //param.ajouter_condition("is_read_par_sous_zone_or_is_read_par_sous_zones","Interpreter Create_domain_from_sub_domain: one of the keywords par_sous_zone or par_sous_zones must be specified.");
   param.lire_avec_accolades_depuis(is);
-
 
   if (nproc()>1)
     {
