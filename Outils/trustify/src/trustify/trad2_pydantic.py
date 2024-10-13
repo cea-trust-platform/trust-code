@@ -38,6 +38,45 @@ def format_docstring(description):
 def is_base_or_deriv(cls_nam):
     return cls_nam.endswith("_deriv") or cls_nam.endswith("_base") or cls_nam == "class_generic"
 
+def generate_attribute_synos(block, all_blocks):
+    """ Generate a dictionary containing:
+    - the synonyms for the keyword itself under the 'None' key
+    - and for **all** the attributes of a class (even the inherited ones) their synonyms.
+    Important: the keys (i.e. the attribute names) are ordered in a specific logic:
+        - attribute of the child class first
+        - and then inherited attributes from the mother class ...
+    """
+    import sys
+    assert sys.hexversion >= 0x3060000, "Need Python > 3.6 to guarantee key ordering in dictionary!"
+
+    if not block.attr_synos is None:
+        return block.attr_synos
+    # Get parent class
+    base_syn = {}
+    if block.name_base in all_blocks:
+        base_syn = generate_attribute_synos(all_blocks[block.name_base], all_blocks)
+    # Build final return value
+    # 1. First the synos of the keyword itself:
+    ret = {None: [s for s in block.synos if s != block.name]}
+    # 2. Then the attributes of the current class
+    for attr in block.attrs:
+        if attr.type != "suppress_param":
+            attr_nam = valid_variable_name(attr.name)
+            ret[attr_nam] = attr.synos[:]
+            # Append original attribute name if it was modified by valid_variable_name():
+            if attr_nam != attr.name:
+                ret[attr_nam].append(attr.name)
+        else:
+            # Remove 'suppressed' attributes from inherited part:
+            base_syn.pop(attr.name)
+    # 3. Then the attributes of the inherited class (after suppressed have been removed, and discarding None key
+    # which corresponds to the syno of the keyword itself!)
+    for k in base_syn:
+        if not k is None:
+            ret[k] =  base_syn[k]
+    block.attr_synos = ret
+    return ret
+
 def write_pyd_block(block, pyd_file, all_blocks):
     """ Write a TRAD2Block as a pydantic class, in the pyd_file
     """
@@ -46,7 +85,7 @@ def write_pyd_block(block, pyd_file, all_blocks):
     if block.pyd_written: return
 
     # dependencies must be written before self
-    dependencies = [block.name_base] + [a.typ for a in block.attrs]
+    dependencies = [block.name_base] + [a.type for a in block.attrs]
     for dependency in dependencies:
         dependency = all_blocks.get(dependency, None)
         if dependency:
@@ -57,12 +96,12 @@ def write_pyd_block(block, pyd_file, all_blocks):
     lines = [
         f'#' * 64,
         f'',
-        f'class {ClassFactory.ToPydName(block.nam)}({base_cls_n}):',
+        f'class {ClassFactory.ToPydName(block.name)}({base_cls_n}):',
     ]
     lines += format_docstring(block.desc)
 
-    syns = [s for s in block.synos if s != block.nam]
-    synonyms = {None: syns}
+    # Prepare keyword and arg synonyms:
+    synonyms = generate_attribute_synos(block, all_blocks)
 
     typ_map = {
         "entier":     ("int",             "default=0"),
@@ -79,44 +118,44 @@ def write_pyd_block(block, pyd_file, all_blocks):
 
     for attr in block.attrs:
         assert isinstance(attr, tu.TRAD2Attr)
-        args = f'default_factory=lambda: eval("{ClassFactory.ToPydName(attr.typ)}()")'
-        attr_typ = attr.typ
+        args = f'default_factory=lambda: eval("{ClassFactory.ToPydName(attr.type)}()")'
+        attr_typ = attr.type
         attr_desc = attr.desc
 
-        if attr.typ in all_blocks:
-            cls = all_blocks[attr.typ]
+        if attr.type in all_blocks:    # Complex attribute (=another TRUST class)
+            cls = all_blocks[attr.type]
             if isinstance(cls, tu.TRAD2BlockList):
-                attr_typ = f'Annotated[List["{ClassFactory.ToPydName(cls.classtype)}"], "{ClassFactory.ToPydName(attr.typ)}"]'
+                attr_typ = f'Annotated[List["{ClassFactory.ToPydName(cls.classtype)}"], "{ClassFactory.ToPydName(attr.type)}"]'
                 attr_desc = cls.desc
                 args = f'default_factory=list'
             else:
-                attr_typ = ClassFactory.ToPydName(attr.typ)
-        elif attr.typ in typ_map:
-            attr_typ, args = typ_map[attr.typ]
-        elif attr.typ.startswith("chaine(into="):
-            choices = attr.typ[13:].split("]")[0]
+                attr_typ = ClassFactory.ToPydName(attr.type)
+        elif attr.type in typ_map:
+            attr_typ, args = typ_map[attr.type]
+        elif attr.type.startswith("chaine(into="):
+            choices = attr.type[13:].split("]")[0]
             attr_typ= f'Literal[{choices}]'
             args = f'default={choices.split(",")[0]}'
-        elif attr.typ.startswith("entier(into="):
-            choices = attr.typ[13:].split("]")[0]
+        elif attr.type.startswith("entier(into="):
+            choices = attr.type[13:].split("]")[0]
             choices = [int(x.strip('"').strip("'")) for x in choices.split(",")]
             attr_typ= f'Literal{choices}'
             args = f'default={choices[0]}'
-        elif attr.typ.startswith("entier(max="):
-            max_val = int(attr.typ[11:-1])
+        elif attr.type.startswith("entier(max="):
+            max_val = int(attr.type[11:-1])
             attr_typ= "int"
             args = f'default=0, le={max_val}'
-        elif attr.typ == "suppress_param":
+        elif attr.type == "suppress_param":
             # NOTE tricky
             # hide the inherited *instance* attribute by a *class* attribute with same name
             attr_typ = "ClassVar[str]"
             attr_desc = "suppress_param"
             args = 'default="suppress_param"'
-        elif attr.typ.startswith("ref_"):
+        elif attr.type.startswith("ref_"):
             attr_typ = "str"
             args = f'default=""'
         else:
-            message = f"unresolved type in XD tags : '{attr.typ}' - this was found line {attr.info[1]} of file '{attr.info[0]}' - did you forget to define it?"
+            message = f"unresolved type in XD tags : '{attr.type}' - this was found line {attr.info[1]} of file '{attr.info[0]}' - did you forget to define it?"
             logger.error(message)
             raise NotImplementedError(message)
 
@@ -125,13 +164,7 @@ def write_pyd_block(block, pyd_file, all_blocks):
             attr_typ = f"Optional[{attr_typ}]"
             args = "default=None"  # attribute is not set by default
         # Fix attribute name:
-        attr_nam = valid_variable_name(attr.nam)
-        # Register attribute synonyms (only if attribute was not suppressed)
-        if attr_desc != "suppress_param":
-            synonyms[attr_nam] = attr.synos
-            # If attribute name was fixed, register original name as a synonym:
-            if attr_nam != attr.nam:
-                synonyms[attr_nam].append(attr.nam)
+        attr_nam = valid_variable_name(attr.name)
 
         lines.append(f'    {attr_nam}: {attr_typ} = Field(description=r"{attr_desc}", {args})')
 
@@ -151,10 +184,10 @@ def write_pars_block(block, pars_file, all_blocks):
     if block.pars_written: return
 
     # dependencies must be written before self
-    dependencies = [block.name_base] + [a.typ for a in block.attrs]
+    dependencies = [block.name_base] + [a.type for a in block.attrs]
     for dependency in dependencies:
         dependency = all_blocks.get(dependency, None)
-        if dependency and dependency.nam not in ["listobj", "listobj_impl"]:
+        if dependency and dependency.name not in ["listobj", "listobj_impl"]:
             write_pars_block(dependency, pars_file, all_blocks)
 
     # Get base class name. If void (like for Objet_U), inherit from base.ConstrainBase_Parser:
@@ -165,7 +198,7 @@ def write_pars_block(block, pars_file, all_blocks):
             base_cls_n = ClassFactory.ToParserName(block.name_base)
     else:
         base_cls_n = "base.ConstrainBase_Parser"
-    cls_nam = ClassFactory.ToParserName(block.nam)
+    cls_nam = ClassFactory.ToParserName(block.name)
     # If the class is already defined in base.py, skip it:
     if cls_nam in tb.__dict__:
         logger.debug(f"Class {cls_nam} already found in 'base' module - not generated.")
@@ -179,12 +212,12 @@ def write_pars_block(block, pars_file, all_blocks):
 
     info_attr = {}
     for attr in block.attrs:
-        info_attr[valid_variable_name(attr.nam)] = tuple(attr.info)
+        info_attr[valid_variable_name(attr.name)] = tuple(attr.info)
 
     lines += [f'    _braces: int = {block.mode}']
 
     # The XXX_base class (and similar) will need to read their type directly in the dataset, so need this:
-    if is_base_or_deriv(block.nam):
+    if is_base_or_deriv(block.name):
         lines += [f'    _read_type: bool = True']
 
     # Lists need extra information:
@@ -211,15 +244,15 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
 
     # add two base classes that are required and not declared in TRAD2 file
     objet_u = tu.TRAD2Block()
-    objet_u.nam = "objet_u"
+    objet_u.name = "objet_u"
     objet_u.mode = 1
     listobj_impl = tu.TRAD2Block()
-    listobj_impl.nam = "listobj_impl"
+    listobj_impl.name = "listobj_impl"
     listobj_impl.mode = 1
     all_blocks += [objet_u, listobj_impl]
 
     # make a dict to easily find block by name
-    all_blocks = { block.nam: block for block in all_blocks }
+    all_blocks = { block.name: block for block in all_blocks }
 
     # add two properties used during writing of blocks
     for block in all_blocks.values():
@@ -245,14 +278,46 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
             
             def __init__(self, *args, **kwargs):
                 pydantic.BaseModel.__init__(self, *args, **kwargs)
-                self._parser = None
+                self._parser = None   #: An instance of AbstractCommon_Parser that is used to build the current pydantic object 
             
             def toDatasetTokens(self):
+                """ Convert a pydantic object (self) back to a stream of tokens that can be output in a file to reproduce
+                a TRUST dataset. """
                 from trustify.misc_utilities import ClassFactory
                 if self._parser is None:
                     self._parser = ClassFactory.GetParserFromPyd(self.__class__)()
                 self._parser._pyd_value = self
                 return self._parser.toDatasetTokens()
+                
+            def __getattribute__(self, nam):
+                """ Override to allow the (scripting) user to use attribute synonyms, for 
+                example 'pb.post_processing' instead of 'pb.postraitement' ... 
+                """
+                cls = super().__getattribute__("__class__")
+                if not nam in super().__getattribute__("model_fields"):
+                    # Not very efficient, but the lists should never be too big ...
+                    while not cls is TRUSTBaseModel:
+                        for attr_nam, lst_syno in cls._synonyms.items():
+                            if not attr_nam is None and nam in lst_syno:
+                                return super().__getattribute__(attr_nam)
+                        cls = cls.__base__ # Go one level up
+                return super().__getattribute__(nam)
+
+            def __setattr__(self, nam, val):
+                """ Override to allow the (scripting) user to use attribute synonyms, for 
+                example 'pb.post_processing' instead of 'pb.postraitement' ... 
+                """
+                # Go over all base class to try to find a synonym
+                cls = self.__class__
+                if not nam in self.model_fields:
+                    # Not very efficient, but the lists should never be too big ...
+                    while not cls is TRUSTBaseModel:
+                        for attr_nam, lst_syno in cls._synonyms.items():
+                            if not attr_nam is None and nam in lst_syno:
+                                return super().__setattr__(nam, val)
+                        cls = cls.__base__ # Go one level up
+                return super().__setattr__(nam, val)
+
     '''
 
     footer_pyd = f'''
@@ -343,7 +408,7 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
         pars_file.write(textwrap.dedent(header_pars).strip())
         pars_file.write("\n" * 3)
         for block in all_blocks.values():
-            if block.nam in ["listobj", "listobj_impl"]:  # Those were directly redirected to ListOfBase_Parser
+            if block.name in ["listobj", "listobj_impl"]:  # Those were directly redirected to ListOfBase_Parser
                 continue
             write_pars_block(block, pars_file, all_blocks)
         # Register all classes in factory:

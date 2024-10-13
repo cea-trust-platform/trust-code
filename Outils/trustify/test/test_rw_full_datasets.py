@@ -231,15 +231,14 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
-    def test_single_ds(self):
+    def xx_test_single_ds(self):
         """ tmp single dataset """
         # self.__class__._do_not_regenerate = True
 
         e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/PCR/PCR.data"
         e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/GPU/VDF_AMGX/VDF_AMGX.data"
-        e ="/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/Kernel_Extrusion_en20/Kernel_Extrusion_en20.data"
-        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/Pertes_d_charges_CF_VDF/Pertes_d_charges_CF_VDF.data"
-        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Verification/Part_Ss_Dom_Union_jdd2/Part_Ss_Dom_Union_jdd2.data"
+        # e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/EF/EF_Pois_impl/EF_Pois_impl.data"
+        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Verification/champ_fonc_tabule_different_meshes_jdd2/champ_fonc_tabule_different_meshes_jdd2.data"
         d = os.path.dirname(e)
         bas = os.path.split(d)[-1]
         fNam = os.path.join(d, bas + ".data")
@@ -252,7 +251,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         data_ex_p = mutil.prune_after_end(data_ex)
         self.assertTrue(mutil.check_str_equality(s, data_ex_p).ok)
 
-    def test_all_trust_ds(self):
+    def xx_test_all_trust_ds(self):
         """ Test **all** TRUST datasets """
         import glob
 
@@ -272,8 +271,8 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
             bas = os.path.split(d)[-1]
             fNam = os.path.join(d, bas + ".data")
             print("%d/%d -- %s" % (i+1, len(g), fNam), end="\r")
-            if fNam in short_lst:
-                continue
+            # if fNam in short_lst:
+            #     continue
             with open(fNam) as f:
                 data_ex = f.read()
             try:

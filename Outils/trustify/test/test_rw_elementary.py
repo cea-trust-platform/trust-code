@@ -817,7 +817,6 @@ no_family_names_from_group_names
         data_ex = "dimension # coucou # 2"
         stream = self.import_and_gen_stream(data_ex, simplify=False)
         res = Dataset_Parser.ReadFromTokens(stream)
-        print("tst", res.entries[0])
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 

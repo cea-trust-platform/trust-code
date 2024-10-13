@@ -36,12 +36,12 @@ def convertTyp(typ):
 class TRAD2Attr:
     """ An attribute of a block in the TRAD2 logic """
     def __init__(self):
-        self.nam = ""    # Name of the attribute
-        self.typ = ""    # Type of the attribute
-        self.synos = []  # List of synonyms for the attribute
-        self.is_opt = True  # Is the attribute optional
-        self.desc = ""      # Description
-        self.info = ["", -1]  # Filename / Lineno where the attribute was declared
+        self.name = ""    #: Name of the attribute
+        self.type = ""    #: Type of the attribute
+        self.synos = []  #: List of synonyms for the attribute
+        self.is_opt = True  #: Is the attribute optional
+        self.desc = ""      #: Description
+        self.info = ["", -1]  #: Filename / Lineno where the attribute was declared
 
     @classmethod
     def BuildFromTab(cls, tab, fname, lineno, convert=False):
@@ -51,23 +51,23 @@ class TRAD2Attr:
         if len(tab) < 4:
             raise Exception(pretty_error(fname, lineno, "incomplete 'XD attr' (attribute line) instruction!!")) from None
         a = TRAD2Attr()
-        nams, _, syno, opt = [t.lower() for t in tab[:4]]
+        names, _, syno, opt = [t.lower() for t in tab[:4]]
 
         # For attributes, we accept '|' in both the first slot and the third one:
-        a.nam = nams.split("|")[0]
-        syno2 = set((nams+"|"+syno).split("|"))
-        try:    syno2.remove(a.nam)
+        a.name = names.split("|")[0]
+        syno2 = set((names+"|"+syno).split("|"))
+        try:    syno2.remove(a.name)
         except: pass
         a.synos = list(syno2)
         a.synos.sort()
 
         # Type must sometimes preserve upper case ... (chaine=into["X","Y"])
-        if tab[1].startswith("chaine="):  a.typ = tab[1]
-        else:                             a.typ = tab[1].lower()
+        if tab[1].startswith("chaine="):  a.type = tab[1]
+        else:                             a.type = tab[1].lower()
 
         # Types are different if coming from TRAD2 of from C++ ...
         if convert:
-            a.typ = convertTyp(a.typ)
+            a.type = convertTyp(a.type)
 
         a.desc = ' '.join(tab[4:])
         if opt not in ["0", "1"]:
@@ -80,24 +80,25 @@ class TRAD2Attr:
         """ Output the attribute in the 'TRAD2' format """
         opt = 1 if self.is_opt else 0
         if len(self.synos) == 0:
-            synos = [self.nam]
+            synos = [self.name]
         else:
             synos = self.synos
         synos_s = "|".join(synos)
-        s = f"  attr {self.nam} {self.typ} {synos_s} {opt} {self.desc}\n"
+        s = f"  attr {self.name} {self.type} {synos_s} {opt} {self.desc}\n"
         n = f"{self.info[0]},{self.info[1]}\n"
         return s, n
 
 class TRAD2Block:
     """ A block describing a keyword in the TRAD2 file. """
     def __init__(self):
-        self.nam = ""        # Keyword main name
-        self.name_base = ""  # Parent class for the keyword
-        self.synos = []      # List of synonyms
-        self.mode = -123     # Mode of the keyword (with braces, etc... see doc/README.md
-        self.desc = ""       # Description
-        self.info = ["", -1]  # Filename / Lineno where the keyword was defined
-        self.attrs = []  # A list of TRAD2Attr = the attributes expected for the keyword
+        self.name = ""        #: Keyword main name
+        self.name_base = ""  #: Parent class for the keyword
+        self.synos = []      #: List of synonyms
+        self.mode = -123     #: Mode of the keyword (with braces, etc... see doc/README.md
+        self.desc = ""       #: Description
+        self.info = ["", -1]    #: Filename / Lineno where the keyword was defined
+        self.attrs = []         #: A list of TRAD2Attr = the attributes expected for the keyword
+        self.attr_synos = None  #: Dictionary of (all) attribute synonyms - filled in by the trad2_pydantic module
 
     @classmethod
     def BuildFromTab(cls, tab, fname, lineno):
@@ -106,7 +107,7 @@ class TRAD2Block:
         base_nam = tab[1].lower()
         if base_nam == "listobj": b = TRAD2BlockList()
         else:                     b = TRAD2Block()
-        b.nam, b.name_base, nam2, acco_s = [t.lower() for t in tab[:4]]
+        b.name, b.name_base, nam2, acco_s = [t.lower() for t in tab[:4]]
         a = None
         try:
             a = int(acco_s)
@@ -127,7 +128,7 @@ class TRAD2Block:
     def toTRAD2(self):
         """ Output the data in the 'TRAD2' format """
         synos = "|".join(self.synos)
-        s = f"{self.nam} {self.name_base} {synos} {self.mode} {self.desc}\n"
+        s = f"{self.name} {self.name_base} {synos} {self.mode} {self.desc}\n"
         nfo = f"{self.info[0]},{self.info[1]}\n"
         for a in self.attrs:
             s2, nf2 = a.toTRAD2()
@@ -140,8 +141,8 @@ class TRAD2BlockList(TRAD2Block):
     """
     def __init__(self):
         TRAD2Block.__init__(self)
-        self.classtype = None   # the list item type
-        self.comma = -123       # Whether the list takes commas or not
+        self.classtype = None   #: the list item type
+        self.comma = -123       #: Whether the list takes commas or not
 
     def _finishBuild(self, tab):
         """ Override to extract list-relevant data """
@@ -157,7 +158,7 @@ class TRAD2BlockList(TRAD2Block):
         if len(self.attrs):
             raise Exception(pretty_error(self.info[0], self.info[1], f"list object description should not have any attribute!!")) from None
         synos = "|".join(self.synos)
-        s = f"{self.nam} {self.name_base} {synos} {self.mode} {self.classtype} {self.comma} {self.desc}\n"
+        s = f"{self.name} {self.name_base} {synos} {self.mode} {self.classtype} {self.comma} {self.desc}\n"
         nfo = f"{self.info[0]},{self.info[1]}\n"
         return s, nfo
 
@@ -166,7 +167,7 @@ class TRAD2Content:
     A TRAD2Content is made of a list of TRAD2Block, each containing a list of TRAD2Attr.
     """
     def __init__(self):
-        self.data = []  # A list of TRAD2Block
+        self.data = []  #: A list of TRAD2Block
 
     @classmethod
     def BuildContentFromTRAD2(cls, trad2, trad2_nfo=None):
@@ -366,10 +367,10 @@ class TRAD2Content:
             nam1, _, _, _ = self._parseXD_ADD_DICO(lvl_s, f_name, lin_n, tab)
             # Ensure the last attr added in the block is a 'dico':
             last_attr = curr_obj[lvl].attrs[-1]
-            typ = last_attr.typ
+            typ = last_attr.type
             if not typ.startswith("chaine(into=["):  # bof bof ...
                 raise Exception(pretty_error(f_name, lin_n, "'XD_ADD_DICO' read, but no preceding 'XD_ADD_P dico ...' instruction found!!"))
-            last_attr.typ = typ.replace(']', f'"{nam1}",]')
+            last_attr.type = typ.replace(']', f'"{nam1}",]')
 
 
     def scanOneCppFile(self, f_name):
@@ -470,7 +471,7 @@ class TRAD2Content:
         #, and complete the synonyms for the entries found there at the same time
         # (typically 'scheme_euler_explicit')
         for d in self.data:
-            nam1, nam2 = d.nam, d.synos[0]
+            nam1, nam2 = d.name, d.synos[0]
             if nam1 in lkp or nam2 in lkp:
                 # there are synonyms, put them with a '|' separator in the second slot after type:
                 key = lkp[nam1] if nam1 in lkp else lkp[nam2]

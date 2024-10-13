@@ -99,7 +99,8 @@ class Abstract_Parser:
                 interp_cls = ClassFactory.GetPydClassFromName("Interprete")
                 l = [c for c in root_cls if issubclass(c, interp_cls)]
                 assert len(l) <= 1, f"Synonym '{kw}' matches more than one Interprete keyword!!"
-                return l[0]
+                if len(l):
+                    return l[0]
             if not ClassFactory.Exist(ClassFactory.ToPydName(kw)):
                 err = cls.GenErr(stream, f"Keyword '{kw}' is an ambiguous synonym! Can not determine which class this corresponds to (but I tried hard).")
                 raise TrustifyException(err)
@@ -327,7 +328,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
     _attributeList = None
     """ List of all attributes of the class (included inherited ones) - see _GetAttributeList() """
     _attributeSynos = None
-    """ All attribute synonyms (also incl. inherited ones) - see _InvertSyno() - a dictionary giving for a synonym (str) a
+    """ All attribute synonyms (also incl. inherited ones) - see _InvertAttrSyno() - a dictionary giving for a synonym (str) a
     couple (original attribute name, type) """
 
     def __init__(self, pyd_value=None):
@@ -342,21 +343,27 @@ class ConstrainBase_Parser(BaseCommon_Parser):
 
     @classmethod
     def _GetAttributeList(cls):
-        """ Return all the attributes of a keyword. This is very stupid, but 
+        """ Return all the attributes of a keyword, even the inherited ones, in the correct order:
+        - child attributes
+        - then inherited attributes 
+        (yes, this is not very logical ...)
         @return a list of tuples (str, type)
         """
         if cls._attributeList is None:
             cls._attributeList = []
             pyd_cls = ClassFactory.GetPydFromParser(cls)
-            # model_fields will also contain inherited fields, and it puts them in the logical order (base class first, derrived then)
-            for k, fld_nfo in pyd_cls.model_fields.items():
-                # Use rebuild_annotation to get full original type annotation.
-                # Otherwise Annotated[List[str], 0] becomes List[str], and 0 is stored in metatdata of the field ...
-                cls._attributeList.append((k, fld_nfo.rebuild_annotation()))
+            # Use the _synonyms attribute which was properly polulated by trad2_pydantic to list **all** attributes (even inherited ones)
+            # in the correct order:
+            for attr_nam in pyd_cls._synonyms:
+                if not attr_nam is None:
+                    fld_nfo = pyd_cls.model_fields[attr_nam]
+                    # Use rebuild_annotation to get full original type annotation.
+                    # Otherwise Annotated[List[str], 0] becomes List[str], and 0 is stored in metatdata of the field ...
+                    cls._attributeList.append((attr_nam, fld_nfo.rebuild_annotation()))
         return cls._attributeList
 
     @classmethod
-    def _InvertSyno(cls):
+    def _InvertAttrSyno(cls):
         """ Private. Invert all attributes synonyms - returns a dict giving for each synonym (incl. the original attribute name itself)
         the real underlying attribute name and the corresponding class.
         """
@@ -417,7 +424,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         cls = self.__class__
 
         nams = cls.GetAllTrustNames()
-        invert_syno = cls._InvertSyno()
+        invert_attr_syno = cls._InvertAttrSyno()
 
         # Parse opening brace
         cls.ConsumeBrace(stream, "{")
@@ -431,8 +438,8 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         tok = stream.probeNextLow()
         while tok != "}":
             stream.validateNext()
-            if tok in invert_syno:
-                attr_nam, attr_cls = invert_syno[tok]
+            if tok in invert_attr_syno:
+                attr_nam, attr_cls = invert_attr_syno[tok]
                 self._tokens[attr_nam] = stream.lastReadTokens()
                 self._attrInOrder.append(attr_nam)
                 self._parseAndSetAttribute(stream, attr_nam, attr_cls)
@@ -460,7 +467,8 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         from trustify.trust_parser import TRUSTEndOfStreamException
         cls = self.__class__
 
-        invert_syno, ca, nams = cls._InvertSyno(), cls._GetAttributeList(), cls.GetAllTrustNames()
+        invert_attr_syno, ca, nams = cls._InvertAttrSyno(), cls._GetAttributeList(), cls.GetAllTrustNames()
+        cls.Dbg(f"@FUNC@   attribute list is '{ca}'")
         attr_idx = 0
         while attr_idx < len(ca):
             # On a given token, try as much as possible to match it against the attribute list:
