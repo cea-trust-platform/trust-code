@@ -153,7 +153,5 @@ double Multigrille_Adrien::multigrille_failure()
   set_coarse_matrix().build_matrix(set_grid_data<double>(0).get_faces_coefficients());
   coarse_solver(x, b);
   jacobi_residu(x, &b, 0, 0 /* not jacobi */, &residu);
-  double norme_residu_final = norme_ijk(residu);
-  return norme_residu_final;
-
+  return norme_ijk(residu);
 }

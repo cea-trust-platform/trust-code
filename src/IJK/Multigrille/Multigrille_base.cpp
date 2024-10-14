@@ -250,8 +250,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
         }
       else
         {
-          double norm_residue;
-          norm_residue = multigrille(ijk_x, ijk_b, ijk_residu);
+          const double norm_residue = multigrille(ijk_x, ijk_b, ijk_residu);
           if (norm_residue > seuil_)
             {
               Cerr << "Error in Multigrille_base: double precision pure multigrid solver did not converge to requested precision ("
@@ -293,11 +292,9 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
           prepare_secmem(float_b);
           //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
           if (IJK_Shear_Periodic_helpler::defilement_==0)
-            {
-              float_b.echange_espace_virtuel(float_b.ghost());
-            }
+            float_b.echange_espace_virtuel(float_b.ghost());
           float_x.shift_k_origin(needed_kshift_for_jacobi(0) - float_x.k_shift());
-          double single_precision_residue = multigrille(float_x, float_b, float_residue);
+          const double single_precision_residue = multigrille(float_x, float_b, float_residue);
 
           // Update x:
           for (int k = 0; k < nk; k++)
@@ -310,7 +307,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
 
           // Compute residue in double precision:
           jacobi_residu(ijk_x, &ijk_b, 0, 0 /* jacobi iterations */, &ijk_residu);
-          double nr = norme_ijk(ijk_residu);
+          const double nr = norme_ijk(ijk_residu);
           if (impr_)
             Cout << "Mixed precision solver iteration " << iteration
                  << " singleprecision residue= " << single_precision_residue
@@ -320,13 +317,15 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
           if (iteration > max_iter_mixed_solver_)
             {
               // Try to solve system on original grid with other solver
-              nr = multigrille_failure();
-              if (nr < seuil_)
+              const double norme_residu_gcp = multigrille_failure();
+              if (norme_residu_gcp < seuil_)
                 break;
               else
                 {
                   Cerr << "Error in Multigrille_base: mixed precision solver did not converge in "
                        << max_iter_mixed_solver_ << " iterations." << finl;
+                  Process::exit("GCP did not converge after failure!\n");
+                  Cerr << " seuil is " << seuil_ << " and the norm of the GCP residu is " << norme_residu_gcp;
                 }
             }
         }
