@@ -159,7 +159,6 @@ Read pb2
         }
     }
 
-    correlations { }
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }

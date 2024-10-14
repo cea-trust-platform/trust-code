@@ -73,8 +73,6 @@ Read pb
         Diametre_hyd_champ champ_uniforme 1 6e-3
     }
 
-    correlations { }
-
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }

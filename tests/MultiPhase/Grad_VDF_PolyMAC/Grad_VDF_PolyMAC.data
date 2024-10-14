@@ -81,7 +81,6 @@ Lire pb
             beta_th Champ_Uniforme 1 0
         }
     }
-    correlations { }
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1.e-6 alpha_res_min 5.e-7 } }
