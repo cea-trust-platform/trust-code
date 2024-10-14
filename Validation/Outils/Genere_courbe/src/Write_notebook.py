@@ -299,18 +299,13 @@ class Write_notebook:
             self.nb["cells"] += [nbf.v4.new_code_cell(code)]
             return
 
-        nbc = 0
-        if tableau.formule:
-            nbc += 1
-        # tableau.printFichierParametres()
-
         code = "from trustutils import plot \n \n"
         columns = chaine2Tex(tableau.label).split("|")
         code += f"columns={columns} \n"
         code += "tab = plot.Table(columns)\n"
 
         for ligne in tableau.listeLignes:
-            from Ligne import Ligne, Lignes
+            from Ligne import Lignes
 
             if not isinstance(ligne, Lignes) and ligne.valeurs != "Undefined":
                 valeur_f = ligne.valeurs.split()
