@@ -1,44 +1,44 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       0.348639
+Temps total                       0.338317
 
 Statistiques de resolution du probleme
 
-Temps total                       0.504079
+Temps total                       0.47907
 
 
 Timesteps                         3
-Secondes / pas de temps           0.168025
-Dont solveurs Ax=B                0.120948 71% (1 appel/pas de temps)
-Dont mettre_a_jour                0.001260  0% (1 appel/pas de temps)
-Dont operateurs convection        0.025595 15% (2 appels/pas de temps)
-Dont operateurs diffusion         0.009192  5% (2 appels/pas de temps)
-Dont operateurs gradient          0.003178  1% (2 appels/pas de temps)
-Dont operateurs divergence        0.001443  0% (2 appels/pas de temps)
-Dont operateurs source            0.001275  0% (1 appel/pas de temps)
-Dont operations postraitement     0.000934  0% (1 appel/pas de temps)
-Dont calcul dt                    0.001925  1% (4 appels/pas de temps)
-Dont calcul divers                0.003879  2% (0 appels/pas de temps)
+Secondes / pas de temps           0.159689
+Dont solveurs Ax=B                0.116393 72% (1 appel/pas de temps)
+Dont mettre_a_jour                0.001090  0% (1 appel/pas de temps)
+Dont operateurs convection        0.023946 14% (2 appels/pas de temps)
+Dont operateurs diffusion         0.009155  5% (2 appels/pas de temps)
+Dont operateurs gradient          0.002052  1% (2 appels/pas de temps)
+Dont operateurs divergence        0.001467  0% (2 appels/pas de temps)
+Dont operateurs source            0.000814  0% (1 appel/pas de temps)
+Dont operations postraitement     0.000830  0% (1 appel/pas de temps)
+Dont calcul dt                    0.001804  1% (4 appels/pas de temps)
+Dont calcul divers                0.002706  1% (0 appels/pas de temps)
 Nb echange_espace_virtuel / pas de temps 398.333
-Nb MPI_allreduce / pas de temps 283.667
+Nb MPI_allreduce / pas de temps 283
 -----------------------------------------------------------------------------------------------------------------------------------------
 Warning: The number of MPI_allreduce calls per time step is high. Contact TRUST support if you plan to run massive parallel calculation.
 -----------------------------------------------------------------------------------------------------------------------------------------
 Nb solveur / pas de temps         1
-Secondes / solveur                0.120948
+Secondes / solveur                0.116393
 Iterations / solveur              126.667
 I/O:
-Debit write seq [Mo/s] : 2396
-Communications avg        4.5 % of total time
-Communications max        5.2 % of total time
+Debit write seq [Mo/s] : 2549
+Communications avg        3.8 % of total time
+Communications max        3.9 % of total time
 Communications min        3.7 % of total time
-Network latency benchmark 4.1008e-07 s
-Network bandwidth max     5624.06 MB/s
+Network latency benchmark 4.00543e-07 s
+Network bandwidth max     6349.13 MB/s
 Total network traffic     65.8421 MB / timestep
 Average message size      40.5681 kB
-Min waiting time          0.2 % of total time
-Max waiting time          1.6 % of total time
-Avg waiting time          0.9 % of total time
+Min waiting time          0.3 % of total time
+Max waiting time          0.6 % of total time
+Avg waiting time          0.45 % of total time
 
 Timesteps = number of time steps
 Nb solveur = number of linear system resolutions
@@ -56,5 +56,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.007012
+Temps total                       0.001423
 

@@ -2,52 +2,46 @@
 # Outil de NR des performances par analyse des .TU machine specifique
 check()
 {
-   # Temps par dt
-   ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
-   new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU`
-   echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
-   err=$?
-   if [ $err != 0 ]
-   then
-      sdiff $1.TU.ref_$2 $1.TU
-      ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "================================"
-      echo "Performance is KO ($ecart > 5%) $new s ~ $ref s (reference) for $1 on $2"
-      echo "================================"
-      exit -1
-   else
-      ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "Performance is OK ($ecart) $new s ~ $ref s (reference) for $1 on $2"
-   fi
-   # Temps total
-   tot_ref=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU.ref_$2`
-   tot_new=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU`
-   echo $tot_ref $tot_new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
-   tot_err=$?
-   echo $tot_ref $tot_new | awk '// {if (($2-$1)/($1+$2)<-0.05) {exit -2}}' # On verifie qu'on ne depasse pas +5% de la performance
-   maj_ref=$?
-   if [ $tot_err != 0 ]
-   then
-      sdiff $1.TU.ref_$2 $1.TU
-      ecart=`echo $tot_ref $tot_new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "================================"
-      echo "Performance is KO ($ecart > 5%) $tot_new s ~ $tot_ref s (reference) for $1 on $2"
-      echo "================================"
-      exit -1
-   else
-      ecart=`echo $tot_ref $tot_new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "Performance is OK ($ecart) $tot_new s ~ $tot_ref s (reference) for $1 on $2"
-   fi
-   if [ $maj_ref != 0 ]
-   then
-      sdiff $1.TU.ref_$2 $1.TU
-      echo ""
-      echo "================================"
-      echo "Performance is enhanced for $1 on $2 !"
-      echo "Update $1.TU.ref_$2 in the test case folder please"
-      echo "================================"
-      exit -1
-   fi
+   for ligne in dt total
+   do
+      if [ $ligne = "dt" ]
+      then
+         # Temps par dt
+         ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
+         new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU`
+      elif [ $ligne = "total" ]
+      then
+         # Temps total
+         ref=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU.ref_$2`
+         new=`awk '/Temps total/ {t+=$NF} END {print t}' $1.TU`
+      fi
+      echo $ref $new | awk '// {err=2*($2-$1)/($1+$2);OK=(err>0.05?0:(err>-0.025?1:2));exit OK}' # On verifie qu'on ne depasse pas +5% de la performance
+      OK=$?
+      if [ $OK = 0 ]
+      then
+         sdiff $1.TU.ref_$2 $1.TU
+         echo "================================"
+         echo "Performance is KO for $1 on $2 !"
+         echo "================================"
+         exit -1
+      elif [ $OK = 1 ]
+      then
+         ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-2*($1-$2)/($1+$2)*100)}'`
+         echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
+      else
+         ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-2*($1-$2)/($1+$2)*100)}'`
+         echo "Performance reference isn't up to date ($ecart) $new s < $ref s (reference) for $1 on $2"
+         #echo "With: cp `pwd`/$1.TU `find $project_directory/tests/Reference -name $1.TU.ref_$2`"
+         if [ "$project_directory" != "" ]
+         then
+            cp `pwd`/$1.TU `find $project_directory/tests/Reference -name $1.TU.ref_$2`
+         else
+            cp `pwd`/$1.TU `find $TRUST_ROOT/tests/Reference -name $1.TU.ref_$2`
+         fi
+         echo "$1.TU.ref_$2" updated !
+         exit 0
+      fi
+   done   
 }
 # ToDo: prevoir dans le script trust un lock avant le lancement
 # On compare les performances avec le fichier jdd.TU.ref_$HOST_BUILD

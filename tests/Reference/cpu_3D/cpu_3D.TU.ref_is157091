@@ -1,27 +1,26 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       0.47227
+Temps total                       0.478145
 
 Statistiques de resolution du probleme
 
-Temps total                       0.887439
+Temps total                       0.841943
 
 
 Timesteps                         3
-Secondes / pas de temps           0.295806
-Dont solveurs Ax=B                0.188531 63% (1 appel/pas de temps)
-Dont mettre_a_jour                0.001931  0% (1 appel/pas de temps)
-Dont operateurs convection        0.067704 22% (2 appels/pas de temps)
-Dont operateurs diffusion         0.019181  6% (2 appels/pas de temps)
-Dont operateurs gradient          0.003980  1% (2 appels/pas de temps)
-Dont operateurs divergence        0.002827  0% (2 appels/pas de temps)
-Dont operateurs source            0.001538  0% (1 appel/pas de temps)
-Dont operations postraitement     0.001364  0% (1 appel/pas de temps)
-Dont calcul dt                    0.003430  1% (4 appels/pas de temps)
-Dont calcul divers                0.005320  1% (0 appels/pas de temps)
-Nb echange_espace_virtuel / pas de temps 327.333
+Secondes / pas de temps           0.280642
+Dont solveurs Ax=B                0.182214 64% (1 appel/pas de temps)
+Dont mettre_a_jour                0.001941  0% (1 appel/pas de temps)
+Dont operateurs convection        0.060773 21% (2 appels/pas de temps)
+Dont operateurs diffusion         0.019085  6% (2 appels/pas de temps)
+Dont operateurs gradient          0.003561  1% (2 appels/pas de temps)
+Dont operateurs divergence        0.002866  1% (2 appels/pas de temps)
+Dont operateurs source            0.001525  0% (1 appel/pas de temps)
+Dont operations postraitement     0.001259  0% (1 appel/pas de temps)
+Dont calcul dt                    0.003294  1% (4 appels/pas de temps)
+Dont calcul divers                0.004124  1% (0 appels/pas de temps)
 Nb solveur / pas de temps         1
-Secondes / solveur                0.188531
+Secondes / solveur                0.182214
 Iterations / solveur              103
 I/O:
 
@@ -41,5 +40,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.007922
+Temps total                       0.001759
 
