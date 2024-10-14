@@ -193,7 +193,7 @@ public:
   void associer_pb_couple(const Probleme_Couple& pbc) { pbc_ = pbc; }
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
-  LIST(REF(SFichier))& get_set_out_files() const { return out_files_ ; }
+  LIST(OBS_PTR(SFichier))& get_set_out_files() const { return out_files_ ; }
 
   const Correlation_base& get_correlation(std::string nom_correlation) const
   {
@@ -244,7 +244,7 @@ protected :
   LIST(OBS_PTR(Champ_Parametrique)) Champs_Parametriques_; //Champs parametriques a mettre a jour lorsque le calcul courant est fini
   LIST(OWN_PTR(Equation_base)) eq_opt_; //autres equations (turbulence, aire interfaciale...)
   std::map<std::string, OWN_PTR(Correlation_base)> correlations_;
-  mutable LIST(REF(SFichier)) out_files_; // Liste des SFichier a fermer (.out)
+  mutable LIST(OBS_PTR(SFichier)) out_files_; // Liste des SFichier a fermer (.out)
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

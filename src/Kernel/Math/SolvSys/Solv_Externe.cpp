@@ -204,7 +204,7 @@ void Solv_Externe::Update_solution(DoubleVect& tab_x)
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
 template void Solv_Externe::Update_lhs_rhs<Kokkos::DefaultExecutionSpace>(const DoubleVect&, DoubleVect&);
 template void Solv_Externe::Update_solution<Kokkos::DefaultExecutionSpace>(DoubleVect&);
 #endif
