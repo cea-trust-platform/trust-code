@@ -49,7 +49,8 @@ template class std::map<std::string, Matrice_Morse>;
 Implemente_instanciable_sans_constructeur(SETS, "SETS", Simpler);
 // XD sets simpler sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem. Ref : J. H. MAHAFFY, A stability-enhancing two-step method for fluid flow calculations, Journal of Computational Physics, 46, 3, 329 (1982).
 // XD attr criteres_convergence bloc_criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100
-// XD attr iter_min entier iter_min 1 Number of minimum iterations
+// XD attr iter_min entier iter_min 1 Number of minimum iterations (default value 1)
+// XD attr iter_max entier iter_max 1 Number of maximum iterations (default value 10)
 // XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
 // XD attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
 // XD attr facsec_diffusion_for_sets floattant facsec_diffusion_for_sets 1 facsec to impose on the diffusion time step in sets while the total time step stays smaller than the convection time step.

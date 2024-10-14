@@ -20,8 +20,7 @@
 #include <Param.h>
 
 Implemente_base(Source_Masse_Fluide_Dilatable_base, "Source_Masse_Fluide_Dilatable_base", Objet_U);
-
-// XD mass_source objet_u mass_source -1 Mass source used in a dilatable simulation to add/reduce a mass at the boundary (volumetric source in the first cell of a given boundary).
+// XD mass_source interprete nul 1 Mass source used in a dilatable simulation to add/reduce a mass at the boundary (volumetric source in the first cell of a given boundary).
 
 Sortie& Source_Masse_Fluide_Dilatable_base::printOn(Sortie& os) const
 {
