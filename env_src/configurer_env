@@ -2209,15 +2209,27 @@ then
 fi
 m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
 
-##########
-# OpenMP #
-##########
+#################
+# OpenMP on CPU #
+#################
 openmp=""
 if [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ]
 then
    openmp="-fopenmp"
    [ "$TRUST_USE_OPENMP" = 1 ] && echo "Error, using -openmp and -kokkos_openmp is not possible." && exit -1
-fi   
+   # Set two important environment variables for efficient Kokkos OpenMP: See http://www.hpc-carpentry.org/tuning_lammps/07-kokkos-openmp/index.html
+   m="# Set the thread affinity policy to be used for parallel regions: ";e="OMP_PROC_BIND=spread && export OMP_PROC_BIND";ecrit $m"|"$e"|"$env
+   m="# Specifies on which CPUs (or subset of cores of a CPU) the threads should be placed: ";e="OMP_PLACES=threads && export OMP_PLACES";ecrit $m"|"$e"|"$env
+fi
+
+# Dans l'environnement TRUST, on fixe OMP_NUM_THREADS=1 par defaut (no black box) car performances catastrophiques si l'utilisateur mixe MPI et OpenMP sans savoir ce qu'il fait...
+# L'utilisateur devra faire: OMP_NUM_THREADS=n $exec jdd ou utiliser le script trust qui permettra de specifier le nombre de threads, ex: trust -n 2 -m 4 jdd (2 MPI et 4 threads par task MPI)
+m="# Default, no multi-threading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$env
+
+########################
+# OpenMP-target on GPU #
+########################
+m="# TRUST will use OpenMP-target ?";e="TRUST_USE_OPENMP=\"$TRUST_USE_OPENMP\" && export TRUST_USE_OPENMP";ecrit $m"|"$e"|"$env
 openmp_target=""
 if [ "$TRUST_USE_OPENMP" = 1 ]
 then
@@ -2345,13 +2357,6 @@ fi
 #cd stream
 #./check_stream
 #cd - 1>/dev/null 2>&1
-m="# TRUST will use OpenMP ?";e="TRUST_USE_OPENMP=\"$TRUST_USE_OPENMP\" && export TRUST_USE_OPENMP";ecrit $m"|"$e"|"$env
-# Si support OpenMP, alors on fixe OMP_NUM_THREADS=1 par defaut (no black box) car performances catastrophiques si l'utilisateur mixe MPI et OpenMP sans savoir ce qu'il fait...
-# L'utilisateur devra faire: OMP_NUM_THREADS=n $exec jdd ou utiliser le script trust qui permettra de specifier le nombre de threads, ex: trust -n 2 -m 4 jdd (2 MPI et 4 threads par task MPI)
-if [ "$TRUST_USE_OPENMP" = 1 ] || [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ]
-then
-   m="# Default, no multi-threading. User should explicitly enable the number of OpenMP threads.";e="OMP_NUM_THREADS=1 && export OMP_NUM_THREADS";ecrit $m"|"$e"|"$env
-fi
 
 ############################
 # LIBCCC_USER support (CCRT)
