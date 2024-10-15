@@ -73,6 +73,7 @@ public:
   int sauvegarder(Sortie& ) const override;
   int reprendre(Entree& ) override;
   inline int is_sauvegarde_simple() const { return simple_restart_; }
+  void checkVersion(Nom nomfic);
 
   virtual const Equation_base& get_equation_by_name(const Nom&) const;
   virtual Equation_base& getset_equation_by_name(const Nom&);
