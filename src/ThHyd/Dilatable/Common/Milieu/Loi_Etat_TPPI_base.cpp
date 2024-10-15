@@ -42,7 +42,7 @@ double Loi_Etat_TPPI_base::inverser_Pth(double, double)
 
 void Loi_Etat_TPPI_base::verify_fields()
 {
-  if (le_fluide->has_viscosite_dynamique())
+  if (!le_fluide->has_viscosite_dynamique())
     {
       Cerr << "Error in Loi_Etat_TPPI_base::verify_fields() ... Mu is not read in your medium and it must be calculated by EOS/CoolProp !!!" << finl;
       Process::exit();
