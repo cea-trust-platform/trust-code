@@ -36,12 +36,12 @@ Sortie& Domaine_Cl_DG::printOn(Sortie& os) const { return os; }
 
 Entree& Domaine_Cl_DG::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(is); }
 
-void Domaine_Cl_DG::completer(const Domaine_dis& )
+void Domaine_Cl_DG::completer(const Domaine_dis_base& )
 {
   modif_perio_fait_ = 0;
 }
 
-void Domaine_Cl_DG::imposer_cond_lim(Champ_Inc& ch, double temps)
+void Domaine_Cl_DG::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
 //  DoubleTab& ch_tab = ch.valeurs(temps);
   if (sub_type(Champ_Inc_P0_base, ch)) { /* Do nothing */ }
@@ -86,10 +86,10 @@ int Domaine_Cl_DG::initialiser(double temps)
 
 Domaine_VF& Domaine_Cl_DG::domaine_vf()
 {
-  return ref_cast(Domaine_VF, domaine_dis().valeur());
+  return ref_cast(Domaine_VF, domaine_dis());
 }
 
 const Domaine_VF& Domaine_Cl_DG::domaine_vf() const
 {
-  return ref_cast(Domaine_VF, domaine_dis().valeur());
+  return ref_cast(Domaine_VF, domaine_dis());
 }

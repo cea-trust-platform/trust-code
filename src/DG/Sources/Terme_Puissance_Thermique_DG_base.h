@@ -24,7 +24,7 @@ class Terme_Puissance_Thermique_DG_base: public Terme_Puissance_Thermique, publi
   Declare_base(Terme_Puissance_Thermique_DG_base);
 public:
   Terme_Puissance_Thermique_DG_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_DG_base(iter_base) { }
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   int initialiser(double temps) override;
 };
 

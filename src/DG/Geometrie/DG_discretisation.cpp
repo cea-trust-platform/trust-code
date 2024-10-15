@@ -16,18 +16,14 @@
 #include <DG_discretisation.h>
 #include <Domaine_DG.h>
 #include <Champ_Fonc_Tabule.h>
-//#include <Champ_Fonc_Elem_DG.h>
-//#include <Champ_Fonc_Tabule_Elem_DG.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Inc.h>
+#include <Champ_Inc_base.h>
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_DG.h>
-#include <Domaine_Cl_dis.h>
 #include <Option_DG.h>
-//#include <grad_U_Champ_Face_DG.h>
 
 Implemente_instanciable(DG_discretisation, "DG", Discret_Thyd);
 // XD polymac discretisation_base polymac -1 polymac discretization (polymac discretization that is not compatible with pb_multi).
@@ -50,7 +46,7 @@ Sortie& DG_discretisation::printOn(Sortie& s) const { return s; }
  *
  */
 void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& dom_dis, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
-                                          double temps, Champ_Inc& champ, const Nom& sous_type) const
+                                          double temps, OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
 {
 //  const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, dom_dis);
 
@@ -127,7 +123,7 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
  *
  */
 void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                          Champ_Fonc& champ) const
+                                          OWN_PTR(Champ_Fonc_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -138,7 +134,7 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
  *
  */
 void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
-                                          Champ_Don& champ) const
+                                          OWN_PTR(Champ_Don_base)& champ) const
 {
   discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
@@ -154,8 +150,8 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
                                                    Objet_U& champ) const
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc, suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = dynamic_cast<Champ_Fonc*>(&champ);
-  Champ_Don * champ_don = dynamic_cast<Champ_Don*>(&champ);
+  OWN_PTR(Champ_Fonc_base) * champ_fonc = dynamic_cast<OWN_PTR(Champ_Fonc_base)*>(&champ);
+  OWN_PTR(Champ_Don_base) * champ_don = dynamic_cast<OWN_PTR(Champ_Don_base)*>(&champ);
 
   const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, z);
 
@@ -242,7 +238,7 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
     }
 }
 
-void DG_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+void DG_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   throw;
 //  Cerr << "Discretisation de la distance paroi" << finl;
@@ -257,82 +253,8 @@ void DG_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis
 //  ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void DG_discretisation::domaine_Cl_dis(Domaine_dis& z, Domaine_Cl_dis& zcl) const
-{
-  Cerr << "discretisation des conditions limites" << finl;
-  assert(z.non_nul());
-  Domaine_DG& domaine_DG = ref_cast(Domaine_DG, z.valeur());
-  zcl.typer("Domaine_Cl_DG");
-  assert(zcl.non_nul());
-  Domaine_Cl_DG& domaine_cl_DG = ref_cast(Domaine_Cl_DG, zcl.valeur());
-  domaine_cl_DG.associer(domaine_DG);
-  Cerr << "discretisation des conditions limites OK" << finl;
-}
 
-void DG_discretisation::critere_Q(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
-{
-  throw;
-#ifdef dependance
-  // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
-  // mais on ne s'en sert pas!!!
-  Cerr << "Discretisation du critere Q " << finl;
-  const Champ_Som_DG& vit = ref_cast(Champ_Som_DG,ch_vitesse.valeur());
-  const Domaine_DG& domaine_DG=ref_cast(Domaine_DG, z.valeur());
-  ch.typer("Critere_Q_Champ_Som_DG");
-  Critere_Q_Champ_Som_DG& ch_cQ=ref_cast(Critere_Q_Champ_Som_DG,ch.valeur());
-  ch_cQ.associer_domaine_dis_base(domaine_DG);
-  ch_cQ.associer_champ(vit);
-  ch_cQ.nommer("Critere_Q");
-  ch_cQ.fixer_nb_comp(1);
-  ch_cQ.fixer_nb_valeurs_nodales(domaine_DG.nb_elem());
-  ch_cQ.fixer_unite("s-2");
-  ch_cQ.changer_temps(ch_vitesse.temps());
-#endif
-}
-
-void DG_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
-{
-  throw;
-#ifdef dependance
-  Cerr << "Discretisation de y_plus" << finl;
-  const Champ_Som_DG& vit = ref_cast(Champ_Som_DG,ch_vitesse.valeur());
-  const Domaine_DG& domaine_DG=ref_cast(Domaine_DG, z.valeur());
-  const Domaine_Cl_DG& domaine_cl_DG=ref_cast(Domaine_Cl_DG, zcl.valeur());
-  ch.typer("Y_plus_Champ_Som_DG");
-  Y_plus_Champ_Som_DG& ch_yp=ref_cast(Y_plus_Champ_Som_DG,ch.valeur());
-  ch_yp.associer_domaine_dis_base(domaine_DG);
-  ch_yp.associer_domaine_Cl_dis_base(domaine_cl_DG);
-  ch_yp.associer_champ(vit);
-  ch_yp.nommer("Y_plus");
-  ch_yp.fixer_nb_comp(1);
-  ch_yp.fixer_nb_valeurs_nodales(domaine_DG.nb_elem());
-  ch_yp.fixer_unite("adimensionnel");
-  ch_yp.changer_temps(ch_vitesse.temps());
-#endif
-}
-
-void DG_discretisation::grad_T(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
-{
-  throw;
-#ifdef dependance
-  Cerr << "Discretisation de gradient_temperature" << finl;
-  const Champ_Som_DG& temp = ref_cast(Champ_Som_DG,ch_temperature.valeur());
-  const Domaine_DG& domaine_DG=ref_cast(Domaine_DG, z.valeur());
-  const Domaine_Cl_DG& domaine_cl_DG=ref_cast(Domaine_Cl_DG, zcl.valeur());
-  ch.typer("gradient_temperature_Champ_Som_DG");
-  grad_T_Champ_Som_DG& ch_gt=ref_cast(grad_T_Champ_Som_DG,ch.valeur());
-  ch_gt.associer_domaine_dis_base(domaine_DG);
-  ch_gt.associer_domaine_Cl_dis_base(domaine_cl_DG);
-  ch_gt.associer_champ(temp);
-  ch_gt.nommer("gradient_temperature");
-  ch_gt.fixer_nb_comp(dimension);
-  ch_gt.fixer_nb_valeurs_nodales(domaine_DG.nb_elem());
-  ch_gt.fixer_unite("K/m");
-  ch_gt.changer_temps(ch_temperature.temps());
-#endif
-}
-
-void DG_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void DG_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   throw;
 //  const Champ_Face_DG& vit = ref_cast(Champ_Face_DG, ch_vitesse.valeur());
@@ -371,28 +293,8 @@ void DG_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, 
 //  ch_grad_u.changer_temps(ch_vitesse.temps());
 }
 
-void DG_discretisation::h_conv(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
-{
-#ifdef dependance
-  Cerr << "Discretisation de h_conv" << finl;
-  const Champ_Som_DG& temp = ref_cast(Champ_Som_DG,ch_temperature.valeur());
-  const Domaine_DG& domaine_DG=ref_cast(Domaine_DG, z.valeur());
-  const Domaine_Cl_DG& domaine_cl_DG=ref_cast(Domaine_Cl_DG, zcl.valeur());
-  ch.typer("h_conv_Champ_Som_DG");
-  h_conv_Champ_Som_DG& ch_gt=ref_cast(h_conv_Champ_Som_DG,ch.valeur());
-  ch_gt.associer_domaine_dis_base(domaine_DG);
-  ch_gt.associer_domaine_Cl_dis_base(domaine_cl_DG);
-  ch_gt.associer_champ(temp);
-  ch_gt.temp_ref()=temp_ref;
-  ////ch_gt.nommer("h_conv");
-  ch_gt.nommer(nom);
-  ch_gt.fixer_nb_comp(1);
-  ch_gt.fixer_nb_valeurs_nodales(domaine_DG.nb_elem());
-  ch_gt.fixer_unite("W/m2.K");
-  ch_gt.changer_temps(ch_temperature.temps());
-#endif
-}
-void DG_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &champs_param) const
+
+void DG_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(OBS_PTR(Champ_base)) &champs_param) const
 {
   throw;
 //  Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
@@ -407,13 +309,13 @@ void DG_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_po
 //  ch_tab_lambda_dis.changer_temps(champs_param[0]->temps());
 }
 
-Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const
+Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const
 {
   Nom type;
   if (class_operateur == "Source")
     {
       type = type_operateur;
-      Nom champ = (eqn.inconnue()->que_suis_je());
+      Nom champ = (eqn.inconnue().que_suis_je());
       champ.suffix("Champ");
       type += champ;
       //type+="_DG";
@@ -422,7 +324,7 @@ Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const No
     }
   else if (class_operateur == "Solveur_Masse")
     {
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type_ch = "_Elem";
 
@@ -443,7 +345,7 @@ Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const No
 
   else if (class_operateur == "Operateur_Diff")
     {
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type_ch = "_Elem";
 
@@ -466,7 +368,7 @@ Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const No
       Nom tiret = "_";
       type += tiret;
       type += que_suis_je();
-      Nom type_ch = eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue().que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type += "_Elem";
       if (type_ch.debute_par("Champ_Face"))
@@ -480,11 +382,11 @@ Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const No
   return type;
 }
 
-void DG_discretisation::distance_paroi_globale(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+void DG_discretisation::distance_paroi_globale(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Fonc_base)& ch) const
 {
   Cerr << "Discretisation de distance paroi globale" << finl;
   Noms noms(1), unites(1);
   noms[0] = Nom("distance_paroi_globale");
   unites[0] = Nom("m");
-  discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms, unites, 1, 0, ch);
+  discretiser_champ(Motcle("champ_elem"), z, scalaire, noms, unites, 1, 0, ch);
 }

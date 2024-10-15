@@ -34,10 +34,10 @@ Entree& Terme_Puissance_Thermique_DG_base::readOn(Entree& s)
   return s;
 }
 
-void Terme_Puissance_Thermique_DG_base::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Puissance_Thermique_DG_base::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis)
 {
-  const Domaine_DG& zvdf = ref_cast(Domaine_DG, domaine_dis.valeur());
-  const Domaine_Cl_DG& zclvdf = ref_cast(Domaine_Cl_DG, domaine_cl_dis.valeur());
+  const Domaine_DG& zvdf = ref_cast(Domaine_DG, domaine_dis);
+  const Domaine_Cl_DG& zclvdf = ref_cast(Domaine_Cl_DG, domaine_cl_dis);
   iter_->associer_domaines(zvdf, zclvdf);
 }
 

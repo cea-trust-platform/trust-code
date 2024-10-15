@@ -19,7 +19,6 @@
 //  Cette classe porte les tableaux qui servent a mettre en oeuvre
 //  les condition aux limites dans la formulation DG
 #include <Domaine_Cl_dis_base.h>
-#include <Champ_Don.h>
 
 class Domaine_VF;
 
@@ -30,10 +29,9 @@ class Domaine_Cl_DG : public Domaine_Cl_dis_base
 
 public :
 
-  void associer(const Domaine_VF& ) { }
-  void completer(const Domaine_dis& ) override;
+  void completer(const Domaine_dis_base& ) override;
   int initialiser(double temps) override;
-  void imposer_cond_lim(Champ_Inc&, double) override;
+  void imposer_cond_lim(Champ_Inc_base&, double) override;
 
   int nb_faces_sortie_libre() const;
 

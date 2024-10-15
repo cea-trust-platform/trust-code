@@ -31,8 +31,8 @@ public:
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
 
 protected:
-  REF(Domaine_DG) le_dom_dg_;
-  REF(Domaine_Cl_DG) le_dom_Cl_dg_;
+  OBS_PTR(Domaine_DG) le_dom_dg_;
+  OBS_PTR(Domaine_Cl_DG) le_dom_Cl_dg_;
 };
 
 #endif /* Masse_DG_base_included */

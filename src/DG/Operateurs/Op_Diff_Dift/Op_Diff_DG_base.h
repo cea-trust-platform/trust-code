@@ -28,7 +28,7 @@ class Op_Diff_DG_base: public Operateur_Diff_base, public Op_Diff_Turbulent_base
 {
   Declare_base(Op_Diff_DG_base);
 public:
-  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&) override;
 
   double calculer_dt_stab() const override;
 
@@ -47,11 +47,11 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Domaine_DG) le_dom_dg_;
-  REF(Domaine_Cl_DG) la_zcl_dg_;
+  OBS_PTR(Domaine_DG) le_dom_dg_;
+  OBS_PTR(Domaine_Cl_DG) la_zcl_dg_;
   mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
 
-  REF(Champ_base) diffusivite_;
+  OBS_PTR(Champ_base) diffusivite_;
   mutable int nu_a_jour_ = 0; //si on doit mettre a jour nu
   mutable DoubleTab nu_;
 };

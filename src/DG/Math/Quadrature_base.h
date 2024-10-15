@@ -76,7 +76,7 @@ public:
 
 
 protected:
-  REF(Domaine_DG) dom_;
+  OBS_PTR(Domaine_DG) dom_;
 
   int nb_pts_integ_;
   int nb_pts_integ_facets_;

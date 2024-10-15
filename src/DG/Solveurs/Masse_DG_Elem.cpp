@@ -34,7 +34,7 @@ Entree& Masse_DG_Elem::readOn(Entree& s) { return s; }
 
 DoubleTab& Masse_DG_Elem::appliquer_impl(DoubleTab& sm) const
 {
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
 
   const Matrice_Base& invM = ch.get_inv_mass_matrix();
 
@@ -52,7 +52,7 @@ void Masse_DG_Elem::dimensionner(Matrice_Morse& matrix) const
 
   // TODO DG construire matrice bloc avec toutes les contributions des differentes inconnues
 
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
 
   matrix = mass_matrix; //Todo DG dans Equation_Base.cpp ligne 1863/1876 pourquoi avoir besoin d'additionner les matrices ?
@@ -61,7 +61,7 @@ void Masse_DG_Elem::dimensionner(Matrice_Morse& matrix) const
 
 DoubleTab& Masse_DG_Elem::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
 {
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
 
   secmem *= dt;
@@ -74,7 +74,7 @@ DoubleTab& Masse_DG_Elem::ajouter_masse(double dt, DoubleTab& secmem, const Doub
 Matrice_Base& Masse_DG_Elem::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
 
   mat *= dt;

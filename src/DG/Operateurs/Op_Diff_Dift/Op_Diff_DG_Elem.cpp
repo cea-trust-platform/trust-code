@@ -44,7 +44,7 @@ Entree& Op_Diff_DG_Elem::readOn(Entree& is) { return Op_Diff_DG_base::readOn(is)
 void Op_Diff_DG_Elem::completer()
 {
   Op_Diff_DG_base::completer();
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Domaine_DG& domaine = le_dom_dg_.valeur();
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_DG_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
@@ -58,7 +58,7 @@ void Op_Diff_DG_Elem::completer()
   throw;
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
-  const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
+  const Champ_Fonc_base& lambda_t = mod_turb.conductivite_turbulente();
   associer_diffusivite_turbulente(lambda_t);
 }
 
@@ -71,7 +71,7 @@ void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const
 
   const IntTab& face_voisins = domaine.face_voisins();
 
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   int nordre = ch.get_order();
   int nddl = Option_DG::Nb_col_from_order(nordre);
 
@@ -137,13 +137,13 @@ DoubleTab& Op_Diff_DG_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu) cons
 void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   double eta_F=1; // TODO: Compute the penalisation coefficient
-  // TODO : Ne pas multiplier les intégration par F sinon c'est pas homogène
+  // TODO : Ne pas multiplier les int��gration par F sinon c'est pas homog��ne
   update_nu();
 
   const Domaine_DG& domaine = le_dom_dg_.valeur();
   const IntTab& face_voisins = domaine.face_voisins();
 
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
 
   const Quadrature_base& quad = domaine.get_quadrature(2);
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
@@ -356,7 +356,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec_(const DoubleTab& inco, Matrice_Morse& m
   const DoubleTab& xp = domaine.xp();
   const DoubleTab& xv = domaine.xv();
 
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
 
   const Quadrature_base& quad = domaine.get_quadrature(2);
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
@@ -398,7 +398,7 @@ void Op_Diff_DG_Elem::contribuer_a_avec_(const DoubleTab& inco, Matrice_Morse& m
               int elem=face_voisins(f,i_elem);
               int ind_elem=indices_glob_elem(elem);
 
-              matrice(ind_elem, ind_elem) += eta_F; // TODO : Ne pas multiplier les intégration par F sinon c'est pas homogène
+              matrice(ind_elem, ind_elem) += eta_F; // TODO : Ne pas multiplier les int��gration par F sinon c'est pas homog��ne
 
               if (nordre == 0) continue;
 
@@ -618,7 +618,7 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
   const IntTab& face_voisins = domaine.face_voisins();
   const DoubleTab& face_normales = domaine.face_normales();
 
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Quadrature_base& quad = domaine.get_quadrature(5);
 
   const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
@@ -652,10 +652,10 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
           double xk=0.,yk=0.,zk=0.;
           double temps = equation().schema_temps().temps_courant();
 
-          if (sub_type(Champ_front_txyz,dirichlet.champ_front().valeur()))
+          if (sub_type(Champ_front_txyz,dirichlet.champ_front()))
             {
               const Champ_front_txyz& champ_front =
-                ref_cast(Champ_front_txyz,dirichlet.champ_front().valeur());
+                ref_cast(Champ_front_txyz,dirichlet.champ_front());
 
               for (int ind_faceb=num1f; ind_faceb<num2f; ind_faceb++)
                 {

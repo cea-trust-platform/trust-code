@@ -66,7 +66,7 @@ double Op_Diff_DG_base::calculer_dt_stab() const
           if (sub_type(Echange_externe_impose, la_cl))
             {
               const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose, la_cl);
-              const Champ_front_base& le_ch_front = ref_cast(Champ_front_base, la_cl_int.h_imp().valeur());
+              const Champ_front_base& le_ch_front = ref_cast(Champ_front_base, la_cl_int.h_imp());
               const DoubleVect& tab = le_ch_front.valeurs();
               if (tab.size() != 0)
                 {
@@ -86,7 +86,7 @@ double Op_Diff_DG_base::calculer_dt_stab() const
               // get the thermal conductivity
               const Equation_base& mon_eqn = le_dom_cl_dg.equation();
               const Milieu_base& mon_milieu = mon_eqn.milieu();
-              const DoubleVect& tab_lambda = mon_milieu.conductivite()->valeurs();
+              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
               double max_conductivity = local_max_vect(tab_lambda);
 
               // compute Biot number given by Bi = L*h/lambda.
@@ -287,10 +287,10 @@ int Op_Diff_DG_base::impr(Sortie& os) const
   return 1;
 }
 
-void Op_Diff_DG_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl, const Champ_Inc&)
+void Op_Diff_DG_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base&)
 {
-  le_dom_dg_ = ref_cast(Domaine_DG, domaine_dis.valeur());
-  la_zcl_dg_ = ref_cast(Domaine_Cl_DG, zcl.valeur());
+  le_dom_dg_ = ref_cast(Domaine_DG, domaine_dis);
+  la_zcl_dg_ = ref_cast(Domaine_Cl_DG, zcl);
 }
 
 DoubleTab& Op_Diff_DG_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
@@ -340,7 +340,7 @@ void Op_Diff_DG_base::update_nu() const
     {
       throw;
 
-      const DoubleTab& diffu_turb = diffusivite_turbulente()->valeurs();
+      const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
       if (equation().que_suis_je() == "Transport_K_Eps")
         {
           bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());

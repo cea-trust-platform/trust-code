@@ -19,7 +19,7 @@
 #include <Evaluateur_Source_Elem.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
-#include <Champ_Don.h>
+#include <Champ_Don_base.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Champ_Elem_DG.h>
@@ -29,20 +29,20 @@ class Eval_Puiss_Th_DG_Elem: public Evaluateur_Source_Elem
 {
 public:
   void mettre_a_jour() override { }
-  inline void associer_champs(const Champ_Don&);
+  inline void associer_champs(const Champ_Don_base&);
 
   template <typename Type_Double>
   inline void calculer_terme_source(const int, Type_Double&) const;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  OBS_PTR(Champ_Don_base) la_puissance;
   DoubleTab puissance;
 };
 
-inline void Eval_Puiss_Th_DG_Elem::associer_champs(const Champ_Don& Q)
+inline void Eval_Puiss_Th_DG_Elem::associer_champs(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q->valeurs());
+  puissance.ref(Q.valeurs());
 }
 
 template <typename Type_Double>
@@ -51,7 +51,7 @@ inline void Eval_Puiss_Th_DG_Elem::calculer_terme_source(const int e, Type_Doubl
   //  const int k = sub_type(Champ_Uniforme,la_puissance->valeur()) ? 0 : e, size = S.size_array();
   //  for (int i = 0; i < size; i++) S[i] = puissance(k, i) * volumes(e) * porosite_vol(e);
 
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, la_zcl->inconnue().valeur());
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, la_zcl->inconnue());
   const Domaine_DG& dom = ref_cast(Domaine_DG, le_dom.valeur());
 
   const Quadrature_base& quad = dom.get_quadrature(5);

@@ -15,7 +15,7 @@
 
 #include <Champ_Elem_DG.h>
 #include <TRUSTTab_parts.h>
-#include <Domaine_Cl_dis.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Domaine_DG.h>
 #include <Option_DG.h>
 #include <Matrix_tools.h>
