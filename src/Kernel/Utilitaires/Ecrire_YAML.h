@@ -77,7 +77,7 @@ private:
   void write_dtab_selection_(std::string name, int nb_dim, std::string& text);
 
   int indent_;
-  REF(Probleme_base) pb_;
+  OBS_PTR(Probleme_base) pb_;
   std::map<std::string, std::pair<std::string, int>> fields_; //fields to save/restore : fields["name_of_field"] = (type_of_the_field, dimensions_of_field)
   std::map<std::string, std::string> scalars_; //additional scalars to save/restore : scalars_["name_of_scalar"] = type of the scalar
 

@@ -439,8 +439,8 @@ int Equation_base::sauvegarder(Sortie& os) const
  */
 void Equation_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
 {
-  std::string name = inconnue()->le_nom().getString();
-  int nb_dim = inconnue()->valeurs().nb_dim();
+  std::string name = inconnue().le_nom().getString();
+  int nb_dim = inconnue().valeurs().nb_dim();
   ch[name] = std::make_pair("double",nb_dim);
 }
 

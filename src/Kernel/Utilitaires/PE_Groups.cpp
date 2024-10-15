@@ -27,7 +27,7 @@ static int max_ngroups = 100;
 const Comm_Group * PE_Groups::current_group_ = 0;
 // node group is an isolated variable from all the other groups as it is only used for IO purposes
 // and might be used throughout the code together with other groups
-static REF(Comm_Group) node_group;
+static OBS_PTR(Comm_Group) node_group;
 bool PE_Groups::node_initialized_ = false;
 
 int PE_Groups::check_current_group()
