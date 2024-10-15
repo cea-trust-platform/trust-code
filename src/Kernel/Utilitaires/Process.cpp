@@ -42,11 +42,7 @@ static Sortie        std_err_(cerr);
 // Instance de la Sortie pointant vers cout
 static Sortie        std_out_(cout);
 // Instances du fichier Journal
-// (if the journal is shared between all the procs, journal_file_ is not used
-//  and the processors' output is redirected to journal_shared_stream_ before being written in a HDF5 file)
 static SFichier     journal_file_;
-static SChaine      journal_shared_stream_;
-static int          journal_shared_;
 
 static int          journal_file_open_;
 static Nom          journal_file_name_;
@@ -317,9 +313,6 @@ void Process::exit(const Nom& message ,int i)
         }
     }
   Journal() << message << finl;
-  if( journal_shared_ && journal_file_open_)
-    end_journal(verbose_level_);
-
 
   if (exception_sur_exit)
     {
@@ -404,12 +397,7 @@ Sortie& Process::Journal(int message_level)
   if (message_level <= verbose_level_ && verbose_level_ > 0)
     {
       if (journal_file_open_)
-        {
-          if(journal_shared_)
-            return journal_shared_stream_;
-          else
-            return journal_file_;
-        }
+        return journal_file_;
       else
         return std_err_;
     }
@@ -462,38 +450,23 @@ void Process::imprimer_ram_totale(int all_process)
  * @param (file_name) si pointeur nul, tout le monde ecrit dans cerr, sinon c'est le nom du fichier (doit etre different sur chaque processeur)
  * @param (append) indique si on ouvre le fichier en mode append ou pas.
  */
-void init_journal_file(int verbose_level, int journal_shared, const char * file_name, int append)
+void init_journal_file(int verbose_level, const char * file_name, int append)
 {
-  journal_shared_ = journal_shared;
-  if( journal_shared_ )
-    {
-      if(journal_file_open_)
-        end_journal(verbose_level);
-    }
-  else
-    end_journal(verbose_level);
+  end_journal(verbose_level);
 
   if (verbose_level > 0)
     {
       if (file_name)
         {
-          if(!journal_shared_)
+          IOS_OPEN_MODE mode = ios::out;
+          if (append)
+            mode = ios::app;
+          if (!journal_file_.ouvrir(file_name, mode))
             {
-              IOS_OPEN_MODE mode = ios::out;
-              if (append)
-                mode = ios::app;
-              if (!journal_file_.ouvrir(file_name, mode))
-                {
-                  Cerr << "Fatal error in init_journal_file: cannot open journal file" << finl;
-                  Process::exit();
-                }
+              Cerr << "Fatal error in init_journal_file: cannot open journal file" << finl;
+              Process::exit();
             }
-          else
-            {
-              if(append)
-                Cerr << "Process.cpp::init_journal_file : append mode is not possible with HDF5!\n"
-                     << "If " << file_name << " already exists, it will be overwritten" << finl;
-            }
+
           journal_file_open_ = 1;
           journal_file_name_ = file_name;
         }
@@ -505,15 +478,7 @@ void end_journal(int verbose_level)
 {
   // Attention: acrobatie pour que ca "plante proprement" si le destructeur
   // ecrit dans le journal !
-  if(journal_shared_)
-    {
-      FichierHDFPar fic_hdf;
-      fic_hdf.create(journal_file_name_);
-      fic_hdf.create_and_fill_dataset_MW("/log", journal_shared_stream_);
-      fic_hdf.close();
-    }
-  else
-    journal_file_.close();
+  journal_file_.close();
   journal_file_open_ = 0;
 }
 
@@ -525,12 +490,7 @@ void end_journal(int verbose_level)
 Sortie& get_Cerr()
 {
   if (journal_file_open_ && cerr_to_journal_)
-    {
-      if(journal_shared_)
-        return journal_shared_stream_;
-      else
-        return journal_file_;
-    }
+    return journal_file_;
   else
     {
       // dans le cas ou on a pas initialise les groupes
@@ -541,12 +501,7 @@ Sortie& get_Cerr()
       if (Process::je_suis_maitre())
         return std_err_;
       else if (verbose_level_)
-        {
-          if(journal_shared_)
-            return journal_shared_stream_;
-          else
-            return journal_file_;
-        }
+        return journal_file_;
       else
         return journal_zero_;
     }
@@ -562,12 +517,7 @@ Sortie& get_Cout()
   if (Process::je_suis_maitre())
     {
       if (journal_file_open_ && cerr_to_journal_)
-        {
-          if(journal_shared_)
-            return journal_shared_stream_;
-          else
-            return journal_file_;
-        }
+        return journal_file_;
       else
         return std_out_;
     }

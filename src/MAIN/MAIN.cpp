@@ -49,8 +49,7 @@ void usage()
   Cerr << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n";
   Cerr << " -petsc=0            => disable call to PetscInitialize\n";
   Cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
-  Cerr << " -journal_master     => only master processor writes a journal (not compatible with journal_shared)\n";
-  Cerr << " -journal_shared     => each processor writes in a single log file (not compatible with journal_master)\n";
+  Cerr << " -journal_master     => only master processor writes a journal \n";
   Cerr << " -log_directory=DIR  => Writes the .log files into directory DIR\n";
   Cerr << " -disable_ieee       => Disable the detection of NaNs. The detection can also be de-activated with env variable TRUST_DISABLE_FP_EXCEPT set to non zero.\n";
   Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
@@ -88,7 +87,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,bool force_mpi)
   int nproc = -1;
   int verbose_level = -1;
   bool journal_master = false;
-  bool journal_shared = false;
+
   Nom log_directory = "";
   bool helptrust = false;
   bool ieee = true;  // true => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
@@ -172,22 +171,6 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,bool force_mpi)
         {
           journal_master = true;
           arguments_info += "-journal_master => Only the master processor will write a journal";
-          if(journal_shared)
-            {
-              journal_shared = false;
-              arguments_info += " (journal_shared is thus ignored)";
-            }
-          arguments_info += "\n";
-        }
-      else if (strcmp(argv[i], "-journal_shared") == 0)
-        {
-          journal_shared = true;
-          arguments_info += "-journal_shared => all the processors are going to write in a unique journal file";
-          if(journal_master)
-            {
-              journal_master = false;
-              arguments_info += " (journal_master is thus ignored)";
-            }
           arguments_info += "\n";
         }
       else if (strncmp(argv[i], "-log_directory=", 15) == 0)
@@ -311,7 +294,6 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,bool force_mpi)
           }
       }
 
-    // *************************  <PARALLEL_OK> *****************************
     // A partir d'ici on a le droit d'utiliser les communications entre processeurs,
     // me() etc...
     const int master = Process::je_suis_maitre();

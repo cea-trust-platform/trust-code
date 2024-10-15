@@ -40,15 +40,14 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, bool journal_master, bool journal_shared, Nom log_directory, bool apply_verification, bool disable_stop)
+mon_main::mon_main(int verbose_level, bool journal_master, Nom log_directory, bool apply_verification, bool disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
-  journal_shared_ = journal_shared;
   log_directory_ = log_directory;
   apply_verification_ = apply_verification;
   // Creation d'un journal temporaire qui ecrit dans Cerr
-  init_journal_file(verbose_level, 0, 0 /* filename = 0 => Cerr */, 0 /* append */);
+  init_journal_file(verbose_level, 0 /* filename = 0 => Cerr */, 0 /* append */);
   trio_began_mpi_=false;
   disable_stop_=disable_stop;
   change_disable_stop(disable_stop);
@@ -322,7 +321,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       }
     Process::barrier(); // Otherwise, non-master processes try to write .log file before mkdir is done
     Nom filename = log_directory_ + nom_du_cas;
-    if (Process::nproc() > 1 && !journal_shared_)
+    if (Process::nproc() > 1)
       {
         filename += "_";
         char s[20];
@@ -338,14 +337,13 @@ void mon_main::dowork(const Nom& nom_du_cas)
     // Dans le cas ou l'option "-journal" est specifiee
     if (verbose_level_ < 0)
       {
-        if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
+        if (!journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
           verbose_level_ = 0;
         else
           verbose_level_ = 1;
       }
 
-    init_journal_file(verbose_level_, journal_shared_,filename, 0 /* append=0 */);
-    if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";
+    init_journal_file(verbose_level_,filename, 0 /* append=0 */);
     Process::Journal() << "Journal logging started" << finl;
   }
 
