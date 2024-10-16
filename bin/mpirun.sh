@@ -111,11 +111,12 @@ case $Mpirun in
 		      # Attention xterm -e sur Mandriva 2008 n'accepte plus qu'une seule commande derriere -e
 		      if [ $MPI = "OPENMPI" ]
 		      then
-		         $Mpirun -np $np -d $Xterm -e $gdb
+		         #$Mpirun -np $np -d $Xterm -e $gdb
+                 $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -geometry 150x30 -hold -e $gdb -ex run --args
 		      elif [ $MPI = "MPICH" ]
 		      then
 		         #$Mpirun -np $np `echo $Xterm | awk '{print $1}'` -e $gdb
-			 $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -geometry 150x30 -hold -e $gdb -ex run --args
+                 $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -geometry 150x30 -hold -e $gdb -ex run --args
 		      fi
 		      rm -f $gdb_options $gdb
 		   else
