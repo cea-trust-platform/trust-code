@@ -13,42 +13,25 @@
 *
 *****************************************************************************/
 
-#include <Conduction.h>
-#include <Solide.h>
 #include <Discret_Thermique.h>
 #include <Frontiere_dis_base.h>
 #include <Probleme_base.h>
+#include <Conduction.h>
+#include <Solide.h>
 #include <Param.h>
-
 
 Implemente_instanciable(Conduction,"Conduction",Equation_base);
 // XD Conduction eqn_base Conduction -1 Heat equation.
 
-/*! @brief Ecrit le type de l'equation sur un flot de sortie.
- *
- * @param (Sortie& s) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Conduction::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
 }
 
-/*! @brief cf Equation_base::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws terme diffusif non specifie
- */
 Entree& Conduction::readOn(Entree& is )
 {
   Equation_base::readOn(is);
-
-  //Nom unite;
-  //if (dimension+bidim_axi==2) unite="[W/m]";
-  //else unite="[W]";
   terme_diffusif.set_fichier("Diffusion_chaleur");
-  //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
   terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
   return is;
 }
@@ -272,46 +255,52 @@ void Conduction::creer_champ(const Motcle& motlu)
       } */
 }
 
-const Champ_base& Conduction::get_champ(const Motcle& nom) const
+bool Conduction::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
-  /*
-    if (nom=="rho_cp")
-      {
-        const Champ_base& rho_cp=solide().get_rho_cp();
-        return rho_cp;
-      }
-  */
-  try
-    {
-      return Equation_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-
-    }
+  if (Equation_base::has_champ(nom))
+    return Equation_base::has_champ(nom, ref_champ);
 
   if (le_traitement_particulier.non_nul())
-    try
-      {
-        return le_traitement_particulier->get_champ(nom);
-      }
-    catch (Champs_compris_erreur&)
-      {
+    if (le_traitement_particulier->has_champ(nom))
+      return le_traitement_particulier->has_champ(nom, ref_champ);
 
-      }
+  return false; /* rien trouve */
+}
+
+bool Conduction::has_champ(const Motcle& nom) const
+{
+  if (Equation_base::has_champ(nom))
+    return true;
+
+  if (le_traitement_particulier.non_nul())
+    if (le_traitement_particulier->has_champ(nom))
+      return true;
+
+  return false; /* rien trouve */
+}
+
+const Champ_base& Conduction::get_champ(const Motcle& nom) const
+{
+  if (Equation_base::has_champ(nom))
+    return Equation_base::get_champ(nom);
+
+  if (le_traitement_particulier.non_nul())
+    if (le_traitement_particulier->has_champ(nom))
+      return le_traitement_particulier->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 
-void Conduction::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Conduction::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Equation_base::get_noms_champs_postraitables(nom,opt);
-  if (opt==DESCRIPTION)
-    Cerr<<"Conduction : "<<champs_compris_.liste_noms_compris()<<finl;
+  Equation_base::get_noms_champs_postraitables(nom, opt);
+  if (opt == DESCRIPTION)
+    Cerr << "Conduction : " << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier->get_noms_champs_postraitables(nom,opt);
+    le_traitement_particulier->get_noms_champs_postraitables(nom, opt);
 }
 
 /*! @brief Renvoie le milieu solide associe a l'equation.

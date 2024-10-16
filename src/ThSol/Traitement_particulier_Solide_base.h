@@ -33,9 +33,7 @@ class Champ_base;
 class Traitement_particulier_Solide_base : public Objet_U, public Champs_compris_interface
 {
   Declare_base(Traitement_particulier_Solide_base);
-
 public :
-
   virtual void associer_eqn(const Equation_base& );
   virtual void preparer_calcul_particulier() =0;
   virtual void post_traitement_particulier() =0;
@@ -50,12 +48,12 @@ public :
   bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
   bool has_champ(const Motcle& nom) const override;
   /////////////////////////////////////////////////////
-protected :
 
+protected :
   OBS_PTR(Conduction) mon_equation;
 
 private :
-
   Champs_compris champs_compris_;
 };
+
 #endif

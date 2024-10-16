@@ -192,12 +192,9 @@ Equation_base& Pb_MED::equation(int i)
 {
   assert(0);
   exit();
-  assert (i==0);
   //pour les compilos
   return Probleme_base::equation("bidon") ;
 }
-
-
 
 int Pb_MED::comprend_champ(const Motcle& mot) const
 {
@@ -283,10 +280,20 @@ void Pb_MED::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Pb_MED::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  Process::exit("Why you call Probleme_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) ???");
+  return false; /* rien trouve */
+}
+
+bool Pb_MED::has_champ(const Motcle& un_nom) const
+{
+  Process::exit("Why you call Probleme_base::has_champ(const Motcle& un_nom) ???");
+  return false; /* rien trouve */
+}
+
 const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
 {
-  OBS_PTR(Champ_base) ref_champ;
-
   double temps_courant = schema_temps().temps_courant();
   Motcle nom_champ;
   int ok_post=1;
@@ -297,7 +304,6 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
       nom_champ = Motcle(itr->le_nom());
       if ((nom_champ==un_nom) && (ok_post==1))
         {
-          ref_champ = itr;
           if (ch_med.temps()!=temps_courant)
             ch_med.mettre_a_jour(temps_courant);
           return ch_med.le_champ();
@@ -310,7 +316,6 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
               nom_champ = Motcle(itr->nom_compo(i));
               if ((nom_champ==un_nom) && (ok_post==1))
                 {
-                  ref_champ = itr;
                   if (ch_med.temps()!=temps_courant)
                     ch_med.mettre_a_jour(temps_courant);
                   return ch_med.le_champ();
@@ -323,8 +328,7 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
   Cerr<<"Check the field name to indicate in the post-processing set"<<finl;
   exit();
 
-  //Pour compilation
-  return ref_champ;
+  throw Champs_compris_erreur();
 }
 
 void Pb_MED::get_noms_champs_postraitables(Noms& noms,Option opt) const

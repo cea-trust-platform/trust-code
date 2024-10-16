@@ -780,136 +780,97 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 {
   domaine_dis().creer_champ(motlu, *this);
   milieu().creer_champ(motlu);
-  int nb_eq = nombre_d_equations();
-  for (int i=0; i<nb_eq; i++)
+
+  for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).creer_champ(motlu);
 
-  for (auto& itr : liste_loi_fermeture_)
-    {
-      Loi_Fermeture_base& loi=itr.valeur();
-      loi.creer_champ(motlu);
-    }
+  for (auto &itr : liste_loi_fermeture_)
+    itr->creer_champ(motlu);
 }
 
 bool Probleme_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const
 {
-// TODO FIXME
-  Process::exit("TODO FIXME - Probleme_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
-  return false;
+  if (domaine_dis().has_champ(un_nom))
+    return domaine_dis().has_champ(un_nom, ref_champ);
+
+  for (int i = 0; i < nombre_d_equations(); i++)
+    {
+      if (equation(i).has_champ(un_nom))
+        return equation(i).has_champ(un_nom, ref_champ);
+
+      if (equation(i).milieu().has_champ(un_nom))
+        return equation(i).milieu().has_champ(un_nom, ref_champ);
+    }
+
+  for (const auto &corr : correlations_)
+    if (corr.second->has_champ(un_nom))
+      return corr.second->has_champ(un_nom, ref_champ);
+
+  for (const auto &itr : liste_loi_fermeture_)
+    if (itr->has_champ(un_nom))
+      return itr->has_champ(un_nom, ref_champ);
+
+  return false; /* rien trouve */
 }
 
 bool Probleme_base::has_champ(const Motcle& un_nom) const
 {
-  Champ_base const * champ = nullptr ;
-  try
-    {
-      champ = &domaine_dis().get_champ(un_nom);
-      if (champ) return true ;
-    }
-  catch (Champs_compris_erreur&) { }
+  if (domaine_dis().has_champ(un_nom))
+    return true;
 
-  int nb_eq = nombre_d_equations();
-  for (int i=0; i<nb_eq; i++)
+  for (int i = 0; i < nombre_d_equations(); i++)
     {
-      try
-        {
-          champ = &equation(i).get_champ(un_nom);
-          if (champ) return true ;
-        }
-      catch (Champs_compris_erreur&) { }
-      try
-        {
-          champ = &equation(i).milieu().get_champ(un_nom);
-          if (champ) return true ;
-        }
-      catch (Champs_compris_erreur&) { }
+      if (equation(i).has_champ(un_nom))
+        return true;
+
+      if (equation(i).milieu().has_champ(un_nom))
+        return true;
     }
 
-  for (const auto& corr : correlations_)
-    {
-      try
-        {
-          champ = &corr.second->get_champ(un_nom);
-          if (champ) return true ;
-        }
-      catch (Champs_compris_erreur&)  { }
-    }
+  for (const auto &corr : correlations_)
+    if (corr.second->has_champ(un_nom))
+      return true;
 
-  for (const auto& itr : liste_loi_fermeture_)
-    {
-      const Loi_Fermeture_base& loi=itr.valeur();
-      try
-        {
-          champ = &loi.get_champ(un_nom);
-          if (champ) return true ;
-        }
-      catch(Champs_compris_erreur&) { }
-    }
+  for (const auto &itr : liste_loi_fermeture_)
+    if (itr->has_champ(un_nom))
+      return true;
 
-  return false;
+  return false; /* rien trouve */
 }
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
-  try
-    {
-      return domaine_dis().get_champ(un_nom);
-    }
-  catch (Champs_compris_erreur&) { }
+  if (domaine_dis().has_champ(un_nom))
+    return domaine_dis().get_champ(un_nom);
 
-  int nb_eq = nombre_d_equations();
-  for (int i=0; i<nb_eq; i++)
+  for (int i = 0; i < nombre_d_equations(); i++)
     {
-      try
-        {
-          return equation(i).get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&) { }
-      try
-        {
-          return equation(i).milieu().get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&) { }
+      if (equation(i).has_champ(un_nom))
+        return equation(i).get_champ(un_nom);
+
+      if (equation(i).milieu().has_champ(un_nom))
+        return equation(i).milieu().get_champ(un_nom);
     }
 
-  for (const auto& corr : correlations_)
-    {
-      try
-        {
-          return corr.second->get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&) { }
-    }
+  for (const auto &corr : correlations_)
+    if (corr.second->has_champ(un_nom))
+      return corr.second->get_champ(un_nom);
 
-  for (const auto& itr : liste_loi_fermeture_)
-    {
-      const Loi_Fermeture_base& loi=itr.valeur();
-      try
-        {
-          return loi.get_champ(un_nom);
-        }
-      catch(Champs_compris_erreur&) { }
-    }
+  for (const auto &itr : liste_loi_fermeture_)
+    if (itr->has_champ(un_nom))
+      return itr->get_champ(un_nom);
 
-  if (discretisation().que_suis_je()=="VDF")
-    {
-      Cerr << "\n" << un_nom << " is not available for VDF discretization" << finl;
-      exit();
-    }
+  Cerr << "The field of name " << un_nom << " do not correspond to a field understood by the problem." << finl;
+  Cerr << "It may be a field dedicated only to post-process and defined in the Definition_champs set." << finl;
+  Cerr << "1) If you have request the post-processing of " << un_nom << " in the Champs set" << finl;
+  Cerr << "please remove the localisation elem or som that you may have specified." << finl;
+  Cerr << "2) If you have used " << un_nom << " in Definition_champs, please use 'sources_reference { " << un_nom << " }'" << finl;
+  Cerr << "instead of 'source refchamp { pb_champ " << le_nom() << " " << un_nom << " }'" << finl;
+  Cerr << "3) Check reference manual." << finl;
+  Cerr << "4) Contact TRUST support." << finl;
+  Process::exit();
 
-  Cerr<<"The field of name "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
-  Cerr<<"It may be a field dedicated only to post-process and defined in the Definition_champs set."<<finl;
-  Cerr<<"1) If you have request the post-processing of "<<un_nom<<" in the Champs set"<<finl;
-  Cerr<<"please remove the localisation elem or som that you may have specified."<<finl;
-  Cerr<<"2) If you have used "<<un_nom<<" in Definition_champs, please use 'sources_reference { "<<un_nom<<" }'"<<finl;
-  Cerr<<"instead of 'source refchamp { pb_champ "<<le_nom()<<" "<<un_nom<<" }'"<<finl;
-  Cerr<<"3) Check reference manual." << finl;
-  Cerr<<"4) Contact TRUST support." << finl;
-  exit();
-
-  //Pour compilation
-  OBS_PTR(Champ_base) ref_champ;
-  return ref_champ;
+  throw Champs_compris_erreur();
 }
 
 void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const

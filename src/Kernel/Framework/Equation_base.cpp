@@ -1006,7 +1006,6 @@ bool Equation_base::updateGivenFields()
   return true;
 }
 
-
 /*! @brief Renvoie la discretisation associee a l'equation.
  *
  * @return (Discretisation_base&) a discretisation associee a l'equation
@@ -1016,8 +1015,7 @@ const Discretisation_base& Equation_base::discretisation() const
 {
   if(!mon_probleme.non_nul())
     {
-      Cerr << "Error : " << que_suis_je()
-           << "has not been associated to a problem ! " << finl;
+      Cerr << "Error : " << que_suis_je() << " has not been associated to a problem ! " << finl;
       exit();
     }
   return mon_probleme->discretisation();
@@ -1025,128 +1023,145 @@ const Discretisation_base& Equation_base::discretisation() const
 
 void Equation_base::creer_champ(const Motcle& motlu)
 {
-// pour recuperer une equation const !!!!!
-
-  const Equation_base& me_const =(*this);
-  const Nom& nom_inco=me_const.inconnue().le_nom();
+  const Equation_base& me_const = (*this); // pour recuperer une equation const !!!!!
+  const Nom& nom_inco = me_const.inconnue().le_nom();
   Nom inco(nom_inco);
   inco += "_residu";
   if (motlu == Motcle(inco))
-    {
-      if (!field_residu_.non_nul())
-        {
-          discretisation().residu(domaine_dis(),inconnue(),field_residu_);
-          champs_compris_.ajoute_champ(field_residu_);
-        }
-    }
+    if (!field_residu_.non_nul())
+      {
+        discretisation().residu(domaine_dis(), inconnue(), field_residu_);
+        champs_compris_.ajoute_champ(field_residu_);
+      }
 
-  int nb_op = nombre_d_operateurs();
-  for (int i=0; i<nb_op; i++)
-    {
-      if (operateur(i).op_non_nul())
-        operateur(i).l_op_base().creer_champ(motlu);
-    }
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    if (operateur(i).op_non_nul())
+      operateur(i).l_op_base().creer_champ(motlu);
 
-  for (auto& itr : les_sources)
+  for (auto &itr : les_sources)
     if (itr.non_nul())
       itr->creer_champ(motlu);
 }
 
-bool Equation_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+bool Equation_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
-  return champs_compris_.has_champ(nom, ref_champ);
+  Nom inco_residu(inconnue().le_nom());
+  inco_residu += "_residu";
+
+  if (nom == Motcle(inco_residu))
+    {
+      ref_champ = get_champ(nom);
+      return true;
+    }
+
+  for (const auto &itr : list_champ_combi)
+    if (itr->le_nom() == nom)
+      {
+        ref_champ = get_champ(nom);
+        return true;
+      }
+
+  if (champs_compris_.has_champ(nom))
+    return champs_compris_.has_champ(nom, ref_champ);
+
+  if (milieu().has_champ(nom))
+    return milieu().has_champ(nom, ref_champ);
+
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    if (operateur(i).op_non_nul())
+      if (operateur(i).l_op_base().has_champ(nom))
+        return operateur(i).l_op_base().has_champ(nom, ref_champ);
+
+  for (const auto &itr : les_sources)
+    if (itr.non_nul())
+      if (itr->has_champ(nom))
+        return itr->has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
 }
+
 bool Equation_base::has_champ(const Motcle& nom) const
 {
-  return champs_compris_.has_champ(nom);
+  Nom inco_residu(inconnue().le_nom());
+  inco_residu += "_residu";
+
+  if (nom == Motcle(inco_residu))
+    return true;
+
+  for (const auto &itr : list_champ_combi)
+    if (itr->le_nom() == nom)
+      return true;
+
+  if (champs_compris_.has_champ(nom))
+    return true;
+
+  if (milieu().has_champ(nom))
+    return true;
+
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    if (operateur(i).op_non_nul())
+      if (operateur(i).l_op_base().has_champ(nom))
+        return true;
+
+  for (const auto &itr : les_sources)
+    if (itr.non_nul())
+      if (itr->has_champ(nom))
+        return true;
+
+  return false; /* rien trouve */
 }
 
 const Champ_base& Equation_base::get_champ(const Motcle& nom) const
 {
-  Nom inco_residu (inconnue().le_nom());
+  Nom inco_residu(inconnue().le_nom());
   inco_residu += "_residu";
-  if(nom == Motcle(inco_residu))
+  if (nom == Motcle(inco_residu))
     {
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,field_residu_.valeur());
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, field_residu_.valeur());
       double temps_init = schema_temps().temps_init();
-      if (((ch.temps()!=inconnue().temps()) || (ch.temps()==temps_init)) && (inconnue().mon_equation_non_nul()))
-        {
-          ch.mettre_a_jour(inconnue().temps());
-        }
-    }
-  else
-    {
-      for (const auto& itr : list_champ_combi)
-        {
-          const Champ_Fonc_base& ch = itr;
-          if (ch.le_nom()==nom && ch.temps()!=inconnue().temps())
-            ref_cast_non_const( Champ_Fonc_base,ch).mettre_a_jour(inconnue().temps());
-        }
-    }
-  try
-    {
-      return champs_compris_.get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-
+      if (((ch.temps() != inconnue().temps()) || (ch.temps() == temps_init)) && (inconnue().mon_equation_non_nul()))
+        ch.mettre_a_jour(inconnue().temps());
     }
 
-  try
-    {
-      return milieu().get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-  int nb_op = nombre_d_operateurs();
-  for (int i=0; i<nb_op; i++)
-    {
-      if (operateur(i).op_non_nul())
-        try
-          {
-            return operateur(i).l_op_base().get_champ(nom);
-          }
-        catch (Champs_compris_erreur&)
-          {
+  for (const auto &itr : list_champ_combi)
+    if (itr->le_nom() == nom && itr->temps() != inconnue().temps())
+      ref_cast_non_const(Champ_Fonc_base,itr.valeur()).mettre_a_jour(inconnue().temps());
 
-          }
-    }
+  if (champs_compris_.has_champ(nom))
+    return champs_compris_.get_champ(nom);
 
-  for (const auto& itr : les_sources)
-    {
-      if (itr.non_nul())
-        try
-          {
-            return itr->get_champ(nom);
-          }
-        catch (Champs_compris_erreur&)
-          {
+  if (milieu().has_champ(nom))
+    return milieu().get_champ(nom);
 
-          }
-    }
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    if (operateur(i).op_non_nul())
+      if (operateur(i).l_op_base().has_champ(nom))
+        return operateur(i).l_op_base().get_champ(nom);
+
+  for (const auto &itr : les_sources)
+    if (itr.non_nul())
+      if (itr->has_champ(nom))
+        return itr->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 
-void Equation_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
+void Equation_base::get_noms_champs_postraitables(Noms& noms, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+  if (opt == DESCRIPTION)
+    Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
   else
     noms.add(champs_compris_.liste_noms_compris());
-  milieu().get_noms_champs_postraitables(noms,opt);
-  int nb_op = nombre_d_operateurs();
-  for (int i=0; i<nb_op; i++)
-    {
-      if (operateur(i).op_non_nul())
-        operateur(i).l_op_base().get_noms_champs_postraitables(noms,opt);
-    }
 
-  for (const auto& itr : les_sources)
+  milieu().get_noms_champs_postraitables(noms, opt);
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    if (operateur(i).op_non_nul())
+      operateur(i).l_op_base().get_noms_champs_postraitables(noms, opt);
+
+  for (const auto &itr : les_sources)
     if (itr.non_nul())
-      itr->get_noms_champs_postraitables(noms,opt);
+      itr->get_noms_champs_postraitables(noms, opt);
 }
-
 
 /*! @brief Calcul du prochain pas de temps.
  *

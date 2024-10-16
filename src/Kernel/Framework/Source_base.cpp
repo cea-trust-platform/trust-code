@@ -127,34 +127,31 @@ void Source_base::associer_champ_rho(const Champ_base& champ_rho)
  * )
  *
  */
-int Source_base::a_pour_Champ_Fonc(const Motcle& mot,
-                                   OBS_PTR(Champ_base)& ch_ref) const
+int Source_base::a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base) &ch_ref) const
 {
   // La classe de base ne comprend aucun motcle
   return 0;
-}
-
-void Source_base::creer_champ(const Motcle& motlu)
-{
 }
 
 const Champ_base& Source_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
-bool Source_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+
+bool Source_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
+
 bool Source_base::has_champ(const Motcle& nom) const
 {
   return champs_compris_.has_champ(nom);
 }
 
-void Source_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Source_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+  if (opt == DESCRIPTION)
+    Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 }

@@ -154,7 +154,7 @@ const Champ_base& Loi_Fermeture_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
-bool Loi_Fermeture_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+bool Loi_Fermeture_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
@@ -164,18 +164,10 @@ bool Loi_Fermeture_base::has_champ(const Motcle& nom) const
   return champs_compris_.has_champ(nom);
 }
 
-/*! @brief La classe de base ne comprend aucun champ supplementaire
- *
- */
-void Loi_Fermeture_base::creer_champ(const Motcle& motlu)
-{
-}
-
 void Loi_Fermeture_base::get_noms_champs_postraitables(Noms& noms, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr << que_suis_je()<<": " << champs_compris_.liste_noms_compris() << finl;
+  if (opt == DESCRIPTION)
+    Cerr << que_suis_je() << ": " << champs_compris_.liste_noms_compris() << finl;
   else
     noms.add(champs_compris_.liste_noms_compris());
-
 }

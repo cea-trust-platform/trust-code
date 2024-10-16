@@ -16,14 +16,12 @@
 #include <Traitement_particulier_Solide_base.h>
 #include <Conduction.h>
 
-Implemente_base(Traitement_particulier_Solide_base,"Traitement_particulier_Solide_base",Objet_U);
-
+Implemente_base(Traitement_particulier_Solide_base, "Traitement_particulier_Solide_base", Objet_U);
 
 Sortie& Traitement_particulier_Solide_base::printOn(Sortie& is) const
 {
   return is;
 }
-
 
 Entree& Traitement_particulier_Solide_base::readOn(Entree& is)
 {
@@ -32,7 +30,7 @@ Entree& Traitement_particulier_Solide_base::readOn(Entree& is)
 
 void Traitement_particulier_Solide_base::associer_eqn(const Equation_base& eqn)
 {
-  mon_equation = ref_cast(Conduction,eqn);
+  mon_equation = ref_cast(Conduction, eqn);
 }
 
 void Traitement_particulier_Solide_base::creer_champ(const Motcle& motlu)
@@ -44,18 +42,19 @@ const Champ_base& Traitement_particulier_Solide_base::get_champ(const Motcle& no
   return champs_compris_.get_champ(nom);
 }
 
-void Traitement_particulier_Solide_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Traitement_particulier_Solide_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr<<"Traitement_particulier_Solide_base : <<"<<champs_compris_.liste_noms_compris()<<finl;
+  if (opt == DESCRIPTION)
+    Cerr << "Traitement_particulier_Solide_base : <<" << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 }
 
-bool Traitement_particulier_Solide_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+bool Traitement_particulier_Solide_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
+
 bool Traitement_particulier_Solide_base::has_champ(const Motcle& nom) const
 {
   return champs_compris_.has_champ(nom);
