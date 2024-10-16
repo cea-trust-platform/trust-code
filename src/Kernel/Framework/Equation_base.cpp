@@ -1052,6 +1052,15 @@ void Equation_base::creer_champ(const Motcle& motlu)
       itr->creer_champ(motlu);
 }
 
+bool Equation_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
+bool Equation_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
+
 const Champ_base& Equation_base::get_champ(const Motcle& nom) const
 {
   Nom inco_residu (inconnue().le_nom());

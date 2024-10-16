@@ -290,6 +290,15 @@ double Loi_Etat_base::De_DT(double,double) const
   return 0;
 }
 
+bool Loi_Etat_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
+bool Loi_Etat_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
+
 void Loi_Etat_base::creer_champ(const Motcle& motlu)
 {
   /* Do nothing */

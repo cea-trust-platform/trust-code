@@ -63,6 +63,8 @@ public:
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
 
   // Ecriture dans un fichier separe de u_star, Cisaillement_paroi etc...
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&) const;

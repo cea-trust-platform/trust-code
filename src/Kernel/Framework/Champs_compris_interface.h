@@ -47,6 +47,8 @@ public :
   virtual const Champ_base& get_champ(const Motcle& nom) const=0;
   virtual void get_noms_champs_postraitables(Noms& nom, Option opt=NONE) const=0;
 
+  virtual bool has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const=0;
+  virtual bool has_champ(const Motcle& nom) const=0;
 
   //Pour illustrer la description des methodes faite ci-dessous, on pourra
   //se referer a leur codage dans Probleme_base, Equation_base et Navier_Stokes_std

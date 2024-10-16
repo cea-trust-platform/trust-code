@@ -37,6 +37,7 @@ public :
   virtual const Champ_base& get_champ(const Motcle& nom) const;
   // Same thing, but without raising:
   virtual bool has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const;
+  virtual bool has_champ(const Motcle& nom) const;
   virtual void ajoute_champ(const Champ_base& champ);
   virtual const Noms liste_noms_compris() const;
   void clear_champs_compris() { liste_champs_.clear(); }

@@ -314,6 +314,19 @@ void Modele_turbulence_hyd_base::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Modele_turbulence_hyd_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  // TODO FIXME
+  Process::exit("TODO FIXME - Modele_turbulence_hyd_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
+  return false;
+}
+bool Modele_turbulence_hyd_base::has_champ(const Motcle& nom) const
+{
+  // TODO FIXME
+  Process::exit("TODO FIXME - Modele_turbulence_hyd_base::has_champ(const Motcle& un_nom)");
+  return false;
+}
+
 const Champ_base& Modele_turbulence_hyd_base::get_champ(const Motcle& nom) const
 {
   try

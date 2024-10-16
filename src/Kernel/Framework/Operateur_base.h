@@ -111,7 +111,8 @@ public:
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
   void calculer_pour_post(Champ_base& espace_stockage, const Nom& option, int comp) const override;

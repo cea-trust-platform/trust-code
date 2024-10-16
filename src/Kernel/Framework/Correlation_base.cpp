@@ -35,3 +35,12 @@ void Correlation_base::associer_pb(const Probleme_base& pb)
 {
   pb_ = pb;
 }
+
+bool Correlation_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
+bool Correlation_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}

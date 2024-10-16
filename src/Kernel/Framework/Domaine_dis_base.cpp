@@ -206,6 +206,20 @@ const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom) const
   throw Champs_compris_erreur();
 }
 
+bool Domaine_dis_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+// TODO FIXME
+  Process::exit("TODO FIXME - Domaine_dis_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
+  return false;
+}
+
+bool Domaine_dis_base::has_champ(const Motcle& un_nom) const
+{
+// TODO FIXME
+  Process::exit("TODO FIXME - Domaine_dis_base::has_champ(const Motcle& un_nom)");
+  return false;
+}
+
 void Domaine_dis_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   Noms noms_compris = champs_compris_.liste_noms_compris();

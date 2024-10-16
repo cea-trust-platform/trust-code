@@ -471,6 +471,10 @@ bool Operateur_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
+bool Operateur_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
 
 void Operateur_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {

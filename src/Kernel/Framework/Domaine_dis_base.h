@@ -104,6 +104,8 @@ public :
   void creer_champ(const Motcle& motlu) override { Process::exit("No, call creer_champ(const Motcle&, const Probleme_base&)"); };
   void creer_champ(const Motcle&, const Probleme_base&);
   const Champ_base& get_champ(const Motcle&) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
 
 protected :
   OBS_PTR(Domaine) le_dom;

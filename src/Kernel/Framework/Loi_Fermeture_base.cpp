@@ -159,6 +159,11 @@ bool Loi_Fermeture_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_c
   return champs_compris_.has_champ(nom, ref_champ);
 }
 
+bool Loi_Fermeture_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
+
 /*! @brief La classe de base ne comprend aucun champ supplementaire
  *
  */

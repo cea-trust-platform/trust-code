@@ -146,6 +146,10 @@ bool Source_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) c
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
+bool Source_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
 
 void Source_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {

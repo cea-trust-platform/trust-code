@@ -97,6 +97,18 @@ void Turbulence_paroi_base::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Turbulence_paroi_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  // TODO FIXME
+  Process::exit("TODO FIXME - Turbulence_paroi_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
+  return false;
+}
+bool Turbulence_paroi_base::has_champ(const Motcle& nom) const
+{
+  // TODO FIXME
+  Process::exit("TODO FIXME - Turbulence_paroi_base::has_champ(const Motcle& un_nom)");
+  return false;
+}
 const Champ_base& Turbulence_paroi_base::get_champ(const Motcle& nom) const
 {
   if (nom == champ_u_star_.le_nom())

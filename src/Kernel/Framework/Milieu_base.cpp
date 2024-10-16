@@ -912,6 +912,15 @@ const Champ_base& Milieu_base::get_champ(const Motcle& nom) const
   return champs_compris_.get_champ(nom);
 }
 
+bool Milieu_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
+bool Milieu_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
+
 void Milieu_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   if (opt==DESCRIPTION)

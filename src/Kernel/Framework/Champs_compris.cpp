@@ -42,6 +42,15 @@ bool Champs_compris::has_champ(const Motcle& motcle, OBS_PTR(Champ_base)& ref_ch
   return false;
 }
 
+bool Champs_compris::has_champ(const Motcle& motcle) const
+{
+  assert(motcle!="??");
+  auto item = liste_champs_.find(motcle.getString());
+  if (item != liste_champs_.end())
+    return true;
+  return false;
+}
+
 const Noms Champs_compris::liste_noms_compris() const
 {
   Noms nom_compris;

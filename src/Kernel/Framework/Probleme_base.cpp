@@ -791,6 +791,13 @@ void Probleme_base::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Probleme_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+// TODO FIXME
+  Process::exit("TODO FIXME - Probleme_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
+  return false;
+}
+
 bool Probleme_base::has_champ(const Motcle& un_nom) const
 {
   Champ_base const * champ = nullptr ;

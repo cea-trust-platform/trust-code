@@ -99,6 +99,15 @@ const Champ_base& Turbulence_paroi_scal_base::get_champ(const Motcle& nom) const
   return champs_compris_.get_champ(nom);
 }
 
+bool Turbulence_paroi_scal_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  return champs_compris_.has_champ(nom, ref_champ);
+}
+bool Turbulence_paroi_scal_base::has_champ(const Motcle& nom) const
+{
+  return champs_compris_.has_champ(nom);
+}
+
 void Turbulence_paroi_scal_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
   if (opt == DESCRIPTION)
