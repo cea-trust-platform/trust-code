@@ -64,9 +64,21 @@ DoubleTab& Masse_DG_Elem::ajouter_masse(double dt, DoubleTab& secmem, const Doub
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
 
-  secmem *= dt;
+  const int nb_elem_tot = ch.valeurs().dimension_tot(0);
+  const int nb_bfunc = ch.nb_bfunc();
+  DoubleTrav coef(equation().milieu().porosite_elem());
+  coef = 1.;
+  appliquer_coef(coef);
+
+  for (int e = 0; e < nb_elem_tot; e++)
+    for (int i=0; i<nb_bfunc; i++)
+      secmem(e,i) *= dt / coef[e];
+
   mass_matrix.ajouter_multvect(inco, secmem);
-  secmem /= dt;
+
+  for (int e = 0; e < nb_elem_tot; e++)
+    for (int i=0; i<nb_bfunc; i++)
+      secmem(e,i) *= coef[e] / dt;
 
   return secmem;
 }
@@ -77,9 +89,31 @@ Matrice_Base& Masse_DG_Elem::ajouter_masse(double dt, Matrice_Base& matrice, int
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
 
-  mat *= dt;
+  const int nb_elem_tot = ch.valeurs().dimension_tot(0);
+  const int nb_bfunc = ch.nb_bfunc();
+  DoubleTrav coef(equation().milieu().porosite_elem());
+  coef = 1.;
+  appliquer_coef(coef);
+
+  int current_indice = 0;
+  for (int e = 0; e < nb_elem_tot; e++)
+    {
+      for (int i=0; i<nb_bfunc; i++)
+        for (int j=0; j<nb_bfunc; j++)
+          mat(current_indice+i, current_indice+j) *= dt/coef[e];
+      current_indice+=nb_bfunc;
+    }
+
   mat += mass_matrix;
-  mat /= dt;
+
+  current_indice = 0;
+  for (int e = 0; e < nb_elem_tot; e++)
+    {
+      for (int i=0; i<nb_bfunc; i++)
+        for (int j=0; j<nb_bfunc; j++)
+          mat(current_indice+i, current_indice+j) *= coef[e] / dt;
+      current_indice+=nb_bfunc;
+    }
 
   //todo DG for multi-component equation, adapt the mass matrix with bloc ?
 

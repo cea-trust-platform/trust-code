@@ -29,6 +29,7 @@ public:
 
   void associer_domaine_dis_base(const Domaine_dis_base& ) override;
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
+  void appliquer_coef(DoubleVect& coef) const;
 
 protected:
   OBS_PTR(Domaine_DG) le_dom_dg_;
