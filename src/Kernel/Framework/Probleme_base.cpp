@@ -796,25 +796,13 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 bool Probleme_base::has_champ(const Motcle& un_nom) const
 {
   Champ_base const * champ = nullptr ;
-
-  for (auto &&corr : correlations_)
-    {
-      try
-        {
-          champ = &corr.second->get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&)  {        }
-    }
-  if (champ) return true ;
-
   try
     {
       champ = &domaine_dis().get_champ(un_nom);
       if (champ) return true ;
     }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  catch (Champs_compris_erreur&) { }
+
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     {
@@ -823,17 +811,23 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
           champ = &equation(i).get_champ(un_nom);
           if (champ) return true ;
         }
-      catch (Champs_compris_erreur&)
-        {
-        }
+      catch (Champs_compris_erreur&) { }
       try
         {
           champ = &equation(i).milieu().get_champ(un_nom);
           if (champ) return true ;
         }
-      catch (Champs_compris_erreur&)
+      catch (Champs_compris_erreur&) { }
+    }
+
+  for (const auto& corr : correlations_)
+    {
+      try
         {
+          champ = &corr.second->get_champ(un_nom);
+          if (champ) return true ;
         }
+      catch (Champs_compris_erreur&)  { }
     }
 
   for (const auto& itr : liste_loi_fermeture_)
@@ -844,30 +838,20 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
           champ = &loi.get_champ(un_nom);
           if (champ) return true ;
         }
-      catch(Champs_compris_erreur&)
-        {
-        }
+      catch(Champs_compris_erreur&) { }
     }
+
   return false;
 }
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
-  for (auto &&corr : correlations_)
-    {
-      try
-        {
-          return corr.second->get_champ(un_nom);
-        }
-      catch (Champs_compris_erreur&) { }
-    }
   try
     {
       return domaine_dis().get_champ(un_nom);
     }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  catch (Champs_compris_erreur&) { }
+
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     {
@@ -875,16 +859,21 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         {
           return equation(i).get_champ(un_nom);
         }
-      catch (Champs_compris_erreur&)
-        {
-        }
+      catch (Champs_compris_erreur&) { }
       try
         {
           return equation(i).milieu().get_champ(un_nom);
         }
-      catch (Champs_compris_erreur&)
+      catch (Champs_compris_erreur&) { }
+    }
+
+  for (const auto& corr : correlations_)
+    {
+      try
         {
+          return corr.second->get_champ(un_nom);
         }
+      catch (Champs_compris_erreur&) { }
     }
 
   for (const auto& itr : liste_loi_fermeture_)
@@ -894,9 +883,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         {
           return loi.get_champ(un_nom);
         }
-      catch(Champs_compris_erreur&)
-        {
-        }
+      catch(Champs_compris_erreur&) { }
     }
 
   if (discretisation().que_suis_je()=="VDF")
