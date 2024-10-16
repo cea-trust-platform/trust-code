@@ -158,21 +158,25 @@ int Operateur_base::impr(Sortie& os) const
 void Operateur_base::dimensionner(Matrice_Morse& mat) const
 {
   /* on tente dimensionner_blocs() */
-  if (has_interface_blocs()) dimensionner_blocs({{ equation().inconnue().le_nom().getString(), &mat }});
-  else Process::exit(que_suis_je() + " : dimensionner() not coded!");
+  if (has_interface_blocs())
+    dimensionner_blocs( { { equation().inconnue().le_nom().getString(), &mat } });
+  else
+    Process::exit(que_suis_je() + " : dimensionner() not coded!");
 }
 
 void Operateur_base::dimensionner_bloc_vitesse(Matrice_Morse& mat) const
 {
   /* on tente dimensionner_blocs() */
-  if (has_interface_blocs()) dimensionner_blocs({{ "vitesse", &mat }});
+  if (has_interface_blocs())
+    dimensionner_blocs( { { "vitesse", &mat } });
 }
 
 void Operateur_base::dimensionner_termes_croises(Matrice_Morse& mat, const Probleme_base& autre_pb, int nl, int nc) const
 {
   if (!has_interface_blocs()) return;
   std::string nom_inco = equation().inconnue().le_nom().getString(),
-              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
+              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco :
+                    nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
   dimensionner_blocs({{ nom, &mat }}, {});
 }
 
@@ -184,11 +188,14 @@ void Operateur_base::ajouter_termes_croises(const DoubleTab& inco, const Problem
 
 void Operateur_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
-  if (!has_interface_blocs()) return;
+  if (!has_interface_blocs())
+    return;
   DoubleTrav secmem(inco); //on va le jeter
+  secmem = inco;
   std::string nom_inco = equation().inconnue().le_nom().getString(),
-              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
-  ajouter_blocs({{ nom, &matrice}}, secmem, {});
+              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco :
+                    nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
+  ajouter_blocs( { { nom, &matrice } }, secmem, { });
 }
 
 void Operateur_base::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
@@ -246,18 +253,20 @@ DoubleTab&  Operateur_base::calculer(const DoubleTab& inco, DoubleTab& secmem) c
  */
 void Operateur_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  /* on tente ajouter_blocs() */
   DoubleTrav secmem(inco); //on va le jeter
-  if (has_interface_blocs()) ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matrice }}, secmem);
-  else Process::exit(que_suis_je() + " : contribuer_a_avec() not coded!");
+  secmem = inco;
+  if (has_interface_blocs())
+    ajouter_blocs( { { equation().inconnue().le_nom().getString(), &matrice } }, secmem);
+  else
+    Process::exit(que_suis_je() + " : contribuer_a_avec() not coded!");
 }
 
 void Operateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  /* on tente ajouter_blocs() */
   if (has_interface_blocs())
     {
-      DoubleTrav secmem(equation().inconnue().valeurs()); //on va le jeter
+      DoubleTrav secmem(inco); //on va le jeter
+      secmem = inco;
       ajouter_blocs({{ "vitesse", &matrice }}, secmem);
     }
 }
