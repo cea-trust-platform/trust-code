@@ -20,7 +20,7 @@ fi
 tot=`$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_execution_time $1`
 [ $? -ne  0 ] &&  status=2
 [ $status -ne 0 ] && tot="?"
-[ ! -f $1.TU ] && tot="1e9"
+[ ! -f $1.TU ] && tot="?"
 #TU=$1.TU
 #tot=`grep "Temps total" $1.TU | awk '{printf("%f ", $NF)}' | awk '{print ($1+$2)}'`
 #echo $tot 
