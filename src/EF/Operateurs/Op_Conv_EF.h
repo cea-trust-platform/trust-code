@@ -62,6 +62,8 @@ public:
   void completer() override;
   double get_btd() const { return btd_; }
   const Champ_base& get_champ(const Motcle& nom) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
 
 protected:
   double hourglass;

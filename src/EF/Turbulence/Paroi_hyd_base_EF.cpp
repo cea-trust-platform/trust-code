@@ -51,6 +51,32 @@ void Paroi_hyd_base_EF::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Paroi_hyd_base_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (nom == champ_u_star_.le_nom())
+    {
+      ref_champ = get_champ(nom);
+      return true;
+    }
+  else
+    {
+      if (champs_compris_.has_champ(nom))
+        {
+          ref_champ = champs_compris_.get_champ(nom);
+          return true;
+        }
+      else
+        return false;
+    }
+}
+
+bool Paroi_hyd_base_EF::has_champ(const Motcle& nom) const
+{
+  if (nom == champ_u_star_.le_nom())
+    return true;
+  return champs_compris_.has_champ(nom);
+}
+
 const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();

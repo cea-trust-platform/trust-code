@@ -89,6 +89,33 @@ void Source_PDF_EF::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Source_PDF_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (nom == "u_star_ibm" || nom == "y_plus_ibm")
+    {
+      ref_champ = get_champ(nom);
+      return true;
+    }
+  else
+    {
+      if (champs_compris_.has_champ(nom))
+        {
+          ref_champ = champs_compris_.get_champ(nom);
+          return true;
+        }
+      else
+        return false;
+    }
+}
+
+bool Source_PDF_EF::has_champ(const Motcle& nom) const
+{
+  if (nom == "u_star_ibm" || nom == "y_plus_ibm")
+    return true;
+  else
+    return champs_compris_.has_champ(nom);
+}
+
 const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
 {
   if (nom=="u_star_ibm")

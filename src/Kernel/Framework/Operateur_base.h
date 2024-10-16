@@ -109,7 +109,7 @@ public:
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  void creer_champ(const Motcle& motlu) override;
+  void creer_champ(const Motcle& motlu) override { }
   const Champ_base& get_champ(const Motcle& nom) const override;
   bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
   bool has_champ(const Motcle& nom) const override;

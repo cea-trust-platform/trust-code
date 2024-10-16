@@ -486,7 +486,24 @@ void Op_Conv_EF::contribue_au_second_membre_a_la_diffusion(DoubleTab& resu ) con
 
 const Champ_base& Op_Conv_EF::get_champ(const Motcle& nom) const
 {
-  if (nom=="coefficient_correcteur_supg")
+  if (nom == "coefficient_correcteur_supg")
     return coefficient_correcteur_supg_;
   return Op_Conv_EF_base::get_champ(nom);
+}
+
+bool Op_Conv_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (nom == "coefficient_correcteur_supg")
+    {
+      ref_champ = coefficient_correcteur_supg_;
+      return true;
+    }
+  return Op_Conv_EF_base::has_champ(nom, ref_champ);
+}
+
+bool Op_Conv_EF::has_champ(const Motcle& nom) const
+{
+  if (nom == "coefficient_correcteur_supg")
+    return true;
+  return Op_Conv_EF_base::has_champ(nom);
 }

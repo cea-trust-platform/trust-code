@@ -458,28 +458,25 @@ void Operateur_base::ajouter_contribution_explicite_au_second_membre(const Champ
   ajouter(inconnue.valeurs(), derivee);
 }
 
-
-void Operateur_base::creer_champ(const Motcle& motlu)
-{
-}
-
 const Champ_base& Operateur_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
+
 bool Operateur_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
+
 bool Operateur_base::has_champ(const Motcle& nom) const
 {
   return champs_compris_.has_champ(nom);
 }
 
-void Operateur_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Operateur_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+  if (opt == DESCRIPTION)
+    Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 }

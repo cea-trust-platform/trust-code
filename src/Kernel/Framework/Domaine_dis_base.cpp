@@ -193,31 +193,38 @@ void Domaine_dis_base::creer_champ(const Motcle& motlu, const Probleme_base& pb)
       champs_compris_.ajoute_champ(mesh_numbering_);
     }
 }
+
 const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom) const
 {
-  if (un_nom=="VOLUME_MAILLE")
-    {
-      return volume_maille();
-    }
-  else if (un_nom=="MESH_NUMBERING")
-    {
-      return mesh_numbering();
-    }
+  if (un_nom == "VOLUME_MAILLE")
+    return volume_maille();
+  else if (un_nom == "MESH_NUMBERING")
+    return mesh_numbering();
+
   throw Champs_compris_erreur();
 }
 
 bool Domaine_dis_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const
 {
-// TODO FIXME
-  Process::exit("TODO FIXME - Domaine_dis_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
+  if (un_nom == "VOLUME_MAILLE")
+    {
+      ref_champ = volume_maille();
+      return true;
+    }
+  else if (un_nom == "MESH_NUMBERING")
+    {
+      ref_champ = mesh_numbering();
+      return true;
+    }
   return false;
 }
 
 bool Domaine_dis_base::has_champ(const Motcle& un_nom) const
 {
-// TODO FIXME
-  Process::exit("TODO FIXME - Domaine_dis_base::has_champ(const Motcle& un_nom)");
-  return false;
+  if (un_nom == "VOLUME_MAILLE" || un_nom == "MESH_NUMBERING")
+    return true;
+  else
+    return false;
 }
 
 void Domaine_dis_base::get_noms_champs_postraitables(Noms& nom,Option opt) const

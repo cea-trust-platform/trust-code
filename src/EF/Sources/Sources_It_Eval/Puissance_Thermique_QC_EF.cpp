@@ -52,22 +52,27 @@ void Puissance_Thermique_QC_EF::associer_pb(const Probleme_base& pb)
   eval_puis.associer_puissance(la_puissance);
 }
 
+bool Puissance_Thermique_QC_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (champs_compris_.has_champ(nom))
+    return champs_compris_.has_champ(nom, ref_champ);
+  return Terme_Source_EF_base::has_champ(nom, ref_champ);
+}
+
+bool Puissance_Thermique_QC_EF::has_champ(const Motcle& nom) const
+{
+  if (champs_compris_.has_champ(nom))
+    return true;
+  return Terme_Source_EF_base::has_champ(nom);
+}
+
 const Champ_base& Puissance_Thermique_QC_EF::get_champ(const Motcle& nom) const
 {
-  try
-    {
-      return champs_compris_.get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-  try
-    {
-      return Terme_Source_EF_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (champs_compris_.has_champ(nom))
+    return champs_compris_.get_champ(nom);
+
+  if (Terme_Source_EF_base::has_champ(nom))
+    return Terme_Source_EF_base::get_champ(nom);
 
   throw Champs_compris_erreur();
 }
