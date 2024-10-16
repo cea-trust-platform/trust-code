@@ -20,8 +20,8 @@ pip,mpi4py-4.0.0.tar.gz,,AB,BSD,https://pypi.org/project/mpi4py,https://github.c
 SKIT,SPARSKIT2.tar.gz,,SV,"LGPL ",http://www-users.cs.umn.edu/~saad/software/SPARSKIT/,https://www-users.cse.umn.edu/~saad/software/SPARSKIT/SPARSKIT2.tar.gz,"Pour la license, voir : https://launchpad.net/ubuntu/vivid/+source/sparskit/+copyright"
 tcl_tk,tk8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tk8.5.13-src.tar.gz/download,
 tcl_tk,tcl8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tcl8.5.13-src.tar.gz/download,
-Gmsh,gmsh-4.4.1-source.tgz,outil,abn,GPL,http://geuz.org/gmsh,http://gmsh.info/src/gmsh-4.4.1-source.tgz,
-Gmsh,fltk-1.3.5-source.tar.gz,,abn,LGPL,http://www.fltk.org/index.php,https://www.fltk.org/pub/fltk/1.3.5/fltk-1.3.5-source.tar.gz,
+Gmsh,gmsh-4.13.1-source.tgz,outil,abn,GPL,http://geuz.org/gmsh,http://gmsh.info/src/gmsh-4.13.1-source.tgz,
+Gmsh,fltk-a5f28b39842af9ceb20c85a2d75870eb556a2cc3.tar.gz,,abn,LGPL,http://www.fltk.org/index.php,https://github.com/fltk/fltk/archive/a5f28b39842af9ceb20c85a2d75870eb556a2cc3.tar.gz,
 MED,med-4.1.1.tar.gz,lib,AK,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.1.1.tar.gz,
 MED,hdf5-1.14.2.tar.gz,lib,ABN,BSD,http://www.hdfgroup.org/HDF5/,https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.2/src/hdf5-1.14.2.tar.gz,
 SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,,https://sourceforge.net/projects/trust-platform/files/1.8.3/extra/CurvePlot-9.4.0.tar.gz,

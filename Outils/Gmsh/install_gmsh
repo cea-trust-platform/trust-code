@@ -16,12 +16,12 @@ done
 FLTK_ROOT=$TRUST_ROOT/Outils/Gmsh/fltk
 if [ ! -d "$FLTK_ROOT" ]
 then
-   fltk_version=1.3.5
-   fltk=fltk-$fltk_version"-source.tar.gz"
+   fltk_version=a5f28b39842af9ceb20c85a2d75870eb556a2cc3 #1.3.5
+   fltk=fltk-$fltk_version".tar.gz"
    if [ ! -f $fltk ]
    then
       echo "Downloading $fltk..." 
-      wget_ http://www.fltk.org/tars/releases/$fltk || wget_ http://www.fltk.org/pub/fltk/$fltk_version/$fltk
+      wget_ https://github.com/fltk/fltk/archive/$fltk_version.tar.gz -O $fltk
       if [ $? != 0 ]
       then
          echo "No Internet access. Install yourself Gmsh."
@@ -32,31 +32,32 @@ then
    echo "Installing $fltk..." 
    echo "#########################"
    tar xfz $fltk
-   cd ${fltk%-source.tar.gz}   
+   cd ${fltk%.tar.gz}
+
+   mkdir -p fltk-build
+   cd fltk-build
+
+   CXX=$TRUST_CC
+   CC=$TRUST_cc
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      CC=$TRUST_cc_BASE_EXTP
-   else
-      CC=$TRUST_cc_BASE
-   fi  
-   env CFLAGS=-fPIC CXXFLAGS=-fPIC CC=$CC ./configure --enable-xdbe=no --prefix $FLTK_ROOT LIBS='-ldl' || exit -1
-   if [ "$TRUST_ARCH_CC" = "linux_nvc++" ]
-   then
-      for flag in -Os -Wunused -Wno-format-y2k
-      do
-         sed -i "1,$ s?$flag??g" makeinclude || exit -1
-      done
-   fi 
+      export OMPI_CXX=$TRUST_CC_BASE_EXTP
+      export OMPI_CC=$TRUST_cc_BASE_EXTP
+      export MPICH_CXX=$OMPI_CXX
+      export MPICH_CC=$OMPI_CC
+   fi
+   # -DFLTK_BACKEND_WAYLAND=OFF avoids build error on Ubuntu 22/24 if pangocairo package not installed
+   cmake -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_C_FLAGS="-fPIC" -DFLTK_BACKEND_WAYLAND=OFF -DCMAKE_SYSTEM_IGNORE_PATH=$TRUST_ROOT/exec/python/lib -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_INSTALL_PREFIX=$FLTK_ROOT ..  2>&1 || exit -1
    $TRUST_MAKE || exit -1
    make install || exit -1 
-   cd ..
+   cd ../..
    rm -r -f fltk*
 fi
 
 ########
 # GMSH #
 ########   
-gmsh_version=4.4.1
+gmsh_version=4.13.1
 gmsh=gmsh-$gmsh_version"-source.tgz"
 if [ ! -f $gmsh ]
 then
@@ -120,7 +121,7 @@ cmake $options $plugins  \
 # Si OpenGL non detecte sur Fedora: sudo dnf install mesa-libGLU-devel
 
 # Check that FLTK has been found correctly:
-grep "define HAVE_FLTK" Common/GmshConfig.h 
+grep "define HAVE_FLTK" src/common/GmshConfig.h
 if ! [ $? -eq 0 ]; then
   echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   echo Error: FLTK not correctly detected by GMSH CMake !!
@@ -129,7 +130,7 @@ if ! [ $? -eq 0 ]; then
 fi
 
 # Check that MED has been found correctly
-grep "define HAVE_MED" Common/GmshConfig.h 
+grep "define HAVE_MED" src/common/GmshConfig.h
 if ! [ $? -eq 0 ]; then
   echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
   echo Error: MED file not correctly detected by GMSH CMake !!
