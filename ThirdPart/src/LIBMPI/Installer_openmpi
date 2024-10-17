@@ -78,12 +78,14 @@ options=$options" --enable-static --disable-mpi-cxx --enable-mca-no-build=maffin
 # Ajout CUDA:
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
+    options=$options" --disable-mca-dso --with-cuda=$CUDA_ROOT"
     # Il faut le chemin vers libcuda.so (sous stubs)
     STUBS=`find $CUDA_ROOT -name libcuda.so | sort -n | tail -1 | xargs dirname`
     echo "==============================="
     echo "Finding libcuda.so under $STUBS"
     echo "==============================="
-    options=$options" --with-cuda=$CUDA_ROOT --with-cuda-libdir=$STUBS --disable-mca-dso --with-libevent=internal"
+    # Non le cas GPU_Aware_MPI plante sur 8 procs avec (cela vient $STUBS...)
+    # options=$options" --with-cuda-libdir=$STUBS --with-libevent=internal"
     # ToDo: see https://docs.open-mpi.org/en/v5.0.x/tuning-apps/networking/cuda.html#cuda
     # Utiliser UCX 1.9.0 avec support Cuda
     # ToDo: 
