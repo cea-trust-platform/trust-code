@@ -65,7 +65,7 @@ public:
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const override;
 
   bool is_dg() const override { return true; }
-  bool is_polymac_family() const override { return true; }
+  bool is_polymac_family() const override { return false; }
 
 private:
   virtual void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Objet_U& champ) const;

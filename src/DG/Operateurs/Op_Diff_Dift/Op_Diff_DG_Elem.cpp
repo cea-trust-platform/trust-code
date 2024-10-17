@@ -34,7 +34,7 @@
 #include <Quadrature_base.h>
 #include <Champ_front_txyz.h>
 
-Implemente_instanciable( Op_Diff_DG_Elem , "Op_Diff_DG_Elem|Op_Diff_DG_var_Elem" , Op_Diff_DG_base );
+Implemente_instanciable( Op_Diff_DG_Elem , "Op_Diff_DG_Elem" , Op_Diff_DG_base );
 
 Sortie& Op_Diff_DG_Elem::printOn(Sortie& os) const { return Op_Diff_DG_base::printOn(os); }
 
@@ -55,7 +55,6 @@ void Op_Diff_DG_Elem::completer()
   if (!que_suis_je().debute_par("Op_Dift"))
     return;
 
-  throw;
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
   const Champ_Fonc_base& lambda_t = mod_turb.conductivite_turbulente();
@@ -63,7 +62,7 @@ void Op_Diff_DG_Elem::completer()
 }
 
 
-void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const
+void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const //TODO a remonter dans Op_DG_Elem
 {
   const Domaine_DG& domaine = le_dom_dg_.valeur();
 
@@ -115,29 +114,38 @@ void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const
   Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, mat);
 }
 
-
-DoubleTab& Op_Diff_DG_Elem::ajouter(const DoubleTab& inco, DoubleTab& resu) const
+void Op_Diff_DG_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  // TODO:
-  Matrice_Morse matrice;
+  const std::string nom_inco = equation().inconnue().le_nom().getString();
+  if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
 
-  dimensionner(matrice);
-  contribuer_a_avec(inco, matrice);
+  init_op_ext();  // TODO DG a completer
+  int n_ext = (int)op_ext.size(); //pour la thermique monolithique
 
-  DoubleTab coeffs;
-  coeffs.copy(resu, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  std::vector<Matrice_Morse *> mat(n_ext);
+  for (int i = 0; i < n_ext; i++)
+    {
+      std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
+      if(!mat[i]) continue;
+      Matrice_Morse mat2;
+      if(i==0) dimensionner( mat2);
+      else throw; //TODO DG for dimensionner_terme_croises
 
-  matrice.ajouter_multvect(inco, coeffs);
-
-  resu -= coeffs;
-
-  return resu;
+      mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;
+    }
 }
 
-void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
+void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();;
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
+
+
   double eta_F=1; // TODO: Compute the penalisation coefficient
-  // TODO : Ne pas multiplier les int��gration par F sinon c'est pas homog��ne
+  // TODO : Ne pas multiplier les integration par F sinon c'est pas homogene
   update_nu();
 
   const Domaine_DG& domaine = le_dom_dg_.valeur();
@@ -145,9 +153,10 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
 
-  const Quadrature_base& quad = domaine.get_quadrature(2);
+  const Quadrature_base& quad = domaine.get_quadrature(2); //TODO a trouver avec Option_DG
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
   int nb_pts_integ = quad.nb_pts_integ();
+  double coeff;
 
 
   const int nb_bfunc = ch.nb_bfunc();
@@ -169,7 +178,10 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               for (int d=0; d<Objet_U::dimension; d++)
                 divergence(k) += grad_fbase_elem(i,k,d) * grad_fbase_elem(j,k,d);
 
-            matrice(ind_elem+i, ind_elem+j) += nu * quad.compute_integral_on_elem(e, divergence);
+            coeff = nu * quad.compute_integral_on_elem(e, divergence);
+            if (mat)
+              (*mat)(ind_elem+i, ind_elem+j) += coeff;
+            secmem(e,i) -= coeff * inco(e,j);
           }
     }
 
@@ -220,7 +232,10 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
                 for (int k = 0; k < nb_pts_int_fac ; k++)
                   product(k) = fbase0(i,k) * fbase0(j,k);
 
-                matrice(ind_elem+i, ind_elem+j) += nu * eta_F / sur_f* invh_T* quad.compute_integral_on_facet(f, product);
+                coeff = nu * eta_F / sur_f* invh_T* quad.compute_integral_on_facet(f, product);
+                if (mat)
+                  (*mat)(ind_elem+i, ind_elem+j) += coeff;
+                secmem(elem,i) -= coeff * inco(elem,j);
               }
         }
 
@@ -236,8 +251,14 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               product(k) = fbase0(i,k) * fbase1(j,k);
 
             double integral = quad.compute_integral_on_facet(f, product);
-            matrice(ind_elem0+i, ind_elem1+j) -= nu * eta_F/ sur_f* invh_T *integral;
-            matrice(ind_elem1+j, ind_elem0+i) -= nu * eta_F/ sur_f* invh_T *integral; //symmetry
+            coeff = nu * eta_F/ sur_f* invh_T *integral;
+            if (mat)
+              {
+                (*mat)(ind_elem0+i, ind_elem1+j) -= coeff;
+                (*mat)(ind_elem1+j, ind_elem0+i) -= coeff; //symmetry
+              }
+            secmem(elem0,i) += coeff * inco(elem1,j);
+            secmem(elem1,j) += coeff * inco(elem0,i); //symmetry
           }
 
       //****************//
@@ -262,8 +283,14 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               for (int k = 0; k < nb_pts_int_fac ; k++)
                 product(k) = scalar_product(k) * fbase0(j,k);
               double integral = quad.compute_integral_on_facet(f, product);
-              matrice(ind_elem0+i, ind_elem0+j) -= 0.5 *nu0*integral;
-              matrice(ind_elem0+j, ind_elem0+i) -= 0.5 *nu0*integral; //symmetry
+
+              if (mat)
+                {
+                  (*mat)(ind_elem0+i, ind_elem0+j) -= 0.5 *nu0*integral;
+                  (*mat)(ind_elem0+j, ind_elem0+i) -= 0.5 *nu0*integral; //symmetry
+                }
+              secmem(elem0,i) += 0.5 *nu0*integral*inco(elem0,j);
+              secmem(elem0,j) += 0.5 *nu0*integral*inco(elem0,i); //symmetry
             }
 
 
@@ -272,8 +299,13 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               for (int k = 0; k < nb_pts_int_fac ; k++)
                 product(k) = scalar_product(k) * fbase1(j,k);
               double integral = quad.compute_integral_on_facet(f, product);
-              matrice(ind_elem0+i, ind_elem1+j) += 0.5 *nu0*integral;
-              matrice(ind_elem1+j, ind_elem0+i) += 0.5 *nu1*integral; //symmetry
+              if (mat)
+                {
+                  (*mat)(ind_elem0+i, ind_elem1+j) += 0.5 *nu0*integral;
+                  (*mat)(ind_elem1+j, ind_elem0+i) += 0.5 *nu1*integral; //symmetry
+                }
+              secmem(elem0,i) -= 0.5 *nu0*integral*inco(elem1,j);
+              secmem(elem1,j) -= 0.5 *nu1*integral*inco(elem0,i); //symmetry
             }
 
           scalar_product = 0.;
@@ -286,8 +318,13 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               for (int k = 0; k < nb_pts_int_fac ; k++)
                 product(k) = scalar_product(k) * fbase1(j,k);
               double integral = quad.compute_integral_on_facet(f, product);
-              matrice(ind_elem1+i, ind_elem1+j) += 0.5 *nu1*integral;
-              matrice(ind_elem1+j, ind_elem1+i) += 0.5 *nu1*integral; //symmetry
+              if (mat)
+                {
+                  (*mat)(ind_elem1+i, ind_elem1+j) += 0.5 *nu1*integral;
+                  (*mat)(ind_elem1+j, ind_elem1+i) += 0.5 *nu1*integral; //symmetry
+                }
+              secmem(elem1,i) -= 0.5 *nu1*integral*inco(elem1,j);
+              secmem(elem1,j) -= 0.5 *nu1*integral*inco(elem1,i); //symmetry
             }
 
           for (int j=0; j<nb_bfunc; j++)
@@ -295,8 +332,13 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
               for (int k = 0; k < nb_pts_int_fac ; k++)
                 product(k) = scalar_product(k) * fbase0(j,k);
               double integral = quad.compute_integral_on_facet(f, product);
-              matrice(ind_elem1+i, ind_elem0+j) -= 0.5 *nu1*integral;
-              matrice(ind_elem0+j, ind_elem1+i) -= 0.5 *nu0*integral; //symmetry
+              if (mat)
+                {
+                  (*mat)(ind_elem1+i, ind_elem0+j) -= 0.5 *nu1*integral;
+                  (*mat)(ind_elem0+j, ind_elem1+i) -= 0.5 *nu0*integral; //symmetry
+                }
+              secmem(elem1,i) += 0.5 *nu1*integral*inco(elem0,j);
+              secmem(elem0,j) += 0.5 *nu1*integral*inco(elem1,i); //symmetry
             }
         }
     }
@@ -333,257 +375,29 @@ void Op_Diff_DG_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& ma
                   for (int k = 0; k < nb_pts_int_fac ; k++)
                     product(k) = fbase0(i, k) * fbase0(j, k);
 
-                  matrice(ind_elem+i, ind_elem+j) += nu*eta_F/sur_f * invh_T * quad.compute_integral_on_facet(f, product);
+                  coeff = nu*eta_F/sur_f * invh_T * quad.compute_integral_on_facet(f, product);
+                  if (mat)
+                    (*mat)(ind_elem+i, ind_elem+j) += coeff;
+                  secmem(elem,i) -= coeff*inco(elem,j);
 
                   for (int k = 0; k < nb_pts_int_fac ; k++)
                     product(k) = scalar_product(k) * fbase0(j, k);
 
                   double integral = quad.compute_integral_on_facet(f, product);
-                  matrice(ind_elem+i, ind_elem+j) -= nu*integral;
-                  matrice(ind_elem+j, ind_elem+i) -= nu*integral;
+                  if(mat)
+                    {
+                      (*mat)(ind_elem+i, ind_elem+j) -= nu*integral;
+                      (*mat)(ind_elem+j, ind_elem+i) -= nu*integral;
+                    }
+                  secmem(elem,i) += nu*integral*inco(elem,j);
+                  secmem(elem,j) += nu*integral*inco(elem,i);
                 }
             }
         }
     }
-}
 
-void Op_Diff_DG_Elem::contribuer_a_avec_(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
+  contribuer_au_second_membre(secmem); //TODO DG a integrer proprement dans la boucle
 
-  const Domaine_DG& domaine = le_dom_dg_.valeur();
-
-  const IntTab& face_voisins = domaine.face_voisins();
-  const DoubleTab& xp = domaine.xp();
-  const DoubleTab& xv = domaine.xv();
-
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-
-  const Quadrature_base& quad = domaine.get_quadrature(2);
-  const IntTab& indices_glob_elem = ch.indices_glob_elem();
-  int nordre = ch.get_order();
-
-  int premiere_face_int = domaine.premiere_face_int();
-
-  const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
-  int nb_pts_int_fac = integ_points_facets.dimension(1);
-  DoubleTab val_pts_integ(nb_pts_int_fac);
-  double integral;
-  const DoubleTab& face_normales = domaine.face_normales();
-
-  int elem0, elem1;
-  for (int f = premiere_face_int; f < domaine.nb_faces(); f++)
-    {
-      elem0 = face_voisins(f,0);
-      elem1 = face_voisins(f,1);
-
-      int ind_elem0 = indices_glob_elem(elem0);
-      int ind_elem1 = indices_glob_elem(elem1);
-
-      double sur_f = domaine.face_surfaces(f);
-
-      double invh0 = sqrt(1/domaine.carre_pas_maille(elem0));
-      double invh1 = sqrt(1/domaine.carre_pas_maille(elem1));
-      double invh[2]= {invh0, invh1};
-      double invh_carr[2]= {invh0*invh0, invh1*invh1} ;
-      double invh12=invh0*invh1;
-
-
-      double eta_F=100; // TODO: Compute the penalisation coefficient
-
-      if (Objet_U::dimension == 2)
-        {
-          // Mass matrix for the facets : TODO: Use the symmetry to compute just the upper side of the matrix
-          for( int i_elem = 0; i_elem<2; i_elem++)
-            {
-              int elem=face_voisins(f,i_elem);
-              int ind_elem=indices_glob_elem(elem);
-
-              matrice(ind_elem, ind_elem) += eta_F; // TODO : Ne pas multiplier les int��gration par F sinon c'est pas homog��ne
-
-              if (nordre == 0) continue;
-
-              matrice(ind_elem, ind_elem+1) += eta_F*1*invh[i_elem]*(xv(f,0) - xp(elem,0));
-              matrice(ind_elem, ind_elem+2) += eta_F*1*invh[i_elem]*(xv(f,1) - xp(elem,1));
-
-              matrice(ind_elem+1, ind_elem) += matrice(ind_elem, ind_elem+1);
-              matrice(ind_elem+2, ind_elem) += matrice(ind_elem, ind_elem+2);
-
-
-              // x x
-              for (int pts=0; pts<nb_pts_int_fac; pts++ )
-                val_pts_integ(pts)=(1./sur_f)*invh_carr[i_elem]*(integ_points_facets(f,pts,0)-xp(elem,0))*(integ_points_facets(f,pts,0)-xp(elem,0));
-              integral = quad.compute_integral_on_facet(f, val_pts_integ);
-              matrice(ind_elem+1, ind_elem+1) += eta_F*integral;
-              // y y
-              for (int pts=0; pts<nb_pts_int_fac; pts++ )
-                val_pts_integ(pts)=(1./sur_f)*invh_carr[i_elem]*(integ_points_facets(f,pts,1)-xp(elem,1))*(integ_points_facets(f,pts,1)-xp(elem,1));
-              integral = quad.compute_integral_on_facet(f, val_pts_integ);
-              matrice(ind_elem+2, ind_elem+2) += eta_F*integral;
-              // x y
-              for (int pts=0; pts<nb_pts_int_fac; pts++ )
-                val_pts_integ(pts)=(1./sur_f)*invh_carr[i_elem]*(integ_points_facets(f,pts,0)-xp(elem,0))*(integ_points_facets(f,pts,1)-xp(elem,1));
-              integral = quad.compute_integral_on_facet(f, val_pts_integ);
-              matrice(ind_elem+1, ind_elem+2) += eta_F*integral;
-              matrice(ind_elem+2, ind_elem+1) += eta_F*integral;
-
-              if (nordre == 1)
-                continue;
-            }
-
-          // Cross terms
-          matrice(ind_elem0, ind_elem1) -= eta_F*1;
-          matrice(ind_elem1, ind_elem0) = matrice(ind_elem0, ind_elem1);
-
-          if (nordre == 0) continue;
-
-          matrice(ind_elem0, ind_elem1+1) -= eta_F* 1*invh1*(xv(f,0) - xp(elem1,0)) ; // 1,x1
-          matrice(ind_elem0, ind_elem1+2) -= eta_F* 1*invh1*(xv(f,1) - xp(elem1,1)); // 1,y1
-          matrice(ind_elem1+1, ind_elem0) = matrice(ind_elem0, ind_elem1+1); // sym
-          matrice(ind_elem1+2, ind_elem0) = matrice(ind_elem0, ind_elem1+2); // sym
-
-          matrice(ind_elem1, ind_elem0+1) -= eta_F* 1*invh0*(xv(f,0) - xp(elem0,0)) ; // 1,x0
-          matrice(ind_elem1, ind_elem0+2) -= eta_F* 1*invh0*(xv(f,1) - xp(elem0,1)); // 1,y0
-          matrice(ind_elem0+1, ind_elem1) = matrice(ind_elem1, ind_elem1+1); // sym
-          matrice(ind_elem0+2, ind_elem1) = matrice(ind_elem1, ind_elem1+2); //sym
-
-          for (int pts=0; pts<nb_pts_int_fac; pts++ )
-            val_pts_integ(pts)=(1./sur_f)*invh12*(integ_points_facets(f,pts,0)-xp(elem0,0))*(integ_points_facets(f,pts,0)-xp(elem1,0));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem0+1, ind_elem1+1) -= eta_F*integral; // x0,x1
-          matrice(ind_elem1+1, ind_elem0+1) -= eta_F*integral;//sym
-
-          for (int pts=0; pts<nb_pts_int_fac; pts++ )
-            val_pts_integ(pts)=(1./sur_f)*invh12*(integ_points_facets(f,pts,0)-xp(elem0,0))*(integ_points_facets(f,pts,1)-xp(elem1,1));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem0+1, ind_elem1+2) -= eta_F*integral; //x0,y1
-          matrice(ind_elem1+2, ind_elem0+1) -= eta_F*integral;//sym
-
-          for (int pts=0; pts<nb_pts_int_fac; pts++ )
-            val_pts_integ(pts)=(1./sur_f)*invh12*(integ_points_facets(f,pts,1)-xp(elem0,1))*(integ_points_facets(f,pts,0)-xp(elem1,0));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem0+2, ind_elem1+1) -= eta_F*integral; //y0 x1
-          matrice(ind_elem1+1, ind_elem0+2) -= eta_F*integral;//sym
-
-          for (int pts=0; pts<nb_pts_int_fac; pts++ )
-            val_pts_integ(pts)=(1./sur_f)*invh12*(integ_points_facets(f,pts,1)-xp(elem0,1))*(integ_points_facets(f,pts,1)-xp(elem1,1));
-          integral = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem0+2, ind_elem1+2) -= eta_F*integral; //y0 y1
-          matrice(ind_elem1+2, ind_elem0+2) -= eta_F*integral;//sym
-
-          // Stiffness Matrix for facet terms part 1 consistency
-          matrice(ind_elem0+1,ind_elem1)+=(+1./2)*1*face_normales(f,0)/sur_f*invh0;
-          matrice(ind_elem0+1,ind_elem1+1)+=(+1./2)*1*face_normales(f,0)/sur_f*invh12*(xv(f,0) - xp(elem1,0));
-          matrice(ind_elem0+1,ind_elem1+2)+=(+1./2)*1*face_normales(f,0)/sur_f*invh12*(xv(f,1) - xp(elem1,1));
-          matrice(ind_elem0+2,ind_elem1+1)+=(+1./2)*1*face_normales(f,1)/sur_f*invh12*(xv(f,0) - xp(elem1,0));
-          matrice(ind_elem0+2,ind_elem1+2)+=(+1./2)*1*face_normales(f,1)/sur_f*invh12*(xv(f,1) - xp(elem1,1));
-          //sym
-          matrice(ind_elem1,ind_elem0+1)=matrice(ind_elem0+1,ind_elem1);
-          matrice(ind_elem1+1,ind_elem0+1)=matrice(ind_elem0+1,ind_elem1+1);
-          matrice(ind_elem1+2,ind_elem0+1)=matrice(ind_elem0+1,ind_elem1+2);
-          matrice(ind_elem1+1,ind_elem0+2)=matrice(ind_elem0+2,ind_elem1+1);
-          matrice(ind_elem1+2,ind_elem0+2)=matrice(ind_elem0+2,ind_elem1+2);
-          // Stiffness Matrix for facet terms  part 2 sym
-          matrice(ind_elem1+1,ind_elem0)+=(-1./2)*1*face_normales(f,0)/sur_f*invh1;
-          matrice(ind_elem1+1,ind_elem0+1)+=(-1./2)*1*face_normales(f,0)/sur_f*invh12*(xv(f,0) - xp(elem0,0));
-          matrice(ind_elem1+1,ind_elem0+2)+=(-1./2)*1*face_normales(f,0)/sur_f*invh12*(xv(f,1) - xp(elem0,1));
-          matrice(ind_elem1+2,ind_elem0+1)+=(-1./2)*1*face_normales(f,1)/sur_f*invh12*(xv(f,0) - xp(elem0,0));
-          matrice(ind_elem1+2,ind_elem0+2)+=(-1./2)*1*face_normales(f,1)/sur_f*invh12*(xv(f,1) - xp(elem0,1));
-
-          // symmetry
-          matrice(ind_elem0,ind_elem1+1)=matrice(ind_elem1+1,ind_elem0);
-          matrice(ind_elem0+1,ind_elem1+1)=matrice(ind_elem1+1,ind_elem0+1);
-          matrice(ind_elem0+2,ind_elem1+1)=matrice(ind_elem1+1,ind_elem0+2);
-          matrice(ind_elem0+1,ind_elem1+2)=matrice(ind_elem1+2,ind_elem0+1);
-          matrice(ind_elem0+2,ind_elem1+2)=matrice(ind_elem1+2,ind_elem0+2);
-
-          Cout << face_normales(f,0) << " " << face_normales(f, 1) << finl;
-          Cout << invh0 << " " << invh1 << finl;
-
-
-          if (nordre == 1)
-            continue;
-
-        }
-
-    }
-
-
-  /* Treatment of the boundary conditions */
-
-  for (int f = 0; f < premiere_face_int; f++) // For the boundary
-    {
-      int elem = face_voisins(f, 0); // The cell that have one facet on the boundary
-      int ind_elem = indices_glob_elem(elem);
-      double sur_f = domaine.face_surfaces(f);
-
-
-      double eta_F=0; // TODO: Compute the penalisation coefficient
-
-      double invh = sqrt(1/domaine.carre_pas_maille(elem));
-      double invh_carr = invh*invh;
-
-      double Svec2[3]= {-invh*face_normales(f,0)/sur_f, -invh*face_normales(f,1)/sur_f, 0} ;
-      double Svec[3]= {1/2*Svec2[0], 1/2*Svec2[1],0 } ;
-
-
-      if ((ch.fcl()(f, 0)==6)||(ch.fcl()(f, 0)==7))
-        {
-          matrice(ind_elem, ind_elem) += eta_F;
-
-          if (nordre == 0)
-            continue;
-          double inte1x,inte1y,inte_xx,inte_yy,inte_xy;
-
-          inte1x = 1 * invh * (xv(f, 0) - xp(elem, 0));
-          inte1y = 1 * invh * (xv(f, 1) - xp(elem, 1));
-          matrice(ind_elem, ind_elem + 1) += eta_F * inte1x;
-          matrice(ind_elem, ind_elem + 2) += eta_F * inte1y;
-          // symmetry
-          matrice(ind_elem + 1, ind_elem) +=  eta_F * inte1x;
-          matrice(ind_elem + 2, ind_elem) +=  eta_F * inte1y;
-          // x x
-          for (int pts = 0; pts < nb_pts_int_fac; pts++)
-            val_pts_integ(pts) = (1./sur_f)*invh_carr * (integ_points_facets(f, pts, 0) - xp(elem, 0)) * (integ_points_facets(f, pts, 0) - xp(elem, 0));
-          inte_xx = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem + 1, ind_elem + 1) += eta_F * inte_xx;
-          // y y
-          for (int pts = 0; pts < nb_pts_int_fac; pts++)
-            val_pts_integ(pts) = (1./sur_f)*invh_carr * (integ_points_facets(f, pts, 1) - xp(elem, 1)) * (integ_points_facets(f, pts, 1) - xp(elem, 1));
-          inte_yy = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem + 2, ind_elem + 2) += eta_F * inte_yy;
-          // x y
-          for (int pts = 0; pts < nb_pts_int_fac; pts++)
-            val_pts_integ(pts) = (1./sur_f)*invh_carr * (integ_points_facets(f, pts, 0) - xp(elem, 0)) * (integ_points_facets(f, pts, 1) - xp(elem, 1));
-          inte_xy = quad.compute_integral_on_facet(f, val_pts_integ);
-          matrice(ind_elem + 1, ind_elem + 2) += eta_F * inte_xy;
-          matrice(ind_elem + 2, ind_elem + 1) += eta_F * inte_xy;
-
-
-          // Stiffness matrix // TODO: faire des boucles sur les dimensions
-          matrice(ind_elem, ind_elem + 1) += Svec[0];
-          matrice(ind_elem, ind_elem + 2) += Svec[1];
-          matrice(ind_elem + 1, ind_elem) += Svec[0];
-          matrice(ind_elem + 2, ind_elem) += Svec[1];
-          // xx yy
-          matrice(ind_elem + 1, ind_elem + 1) += inte1x*Svec2[0];
-          matrice(ind_elem + 2, ind_elem + 2) += inte1y*Svec2[1];
-          // xy
-          matrice(ind_elem + 1, ind_elem + 2) += inte1x*Svec[1]+inte1y*Svec[0];
-          matrice(ind_elem + 2, ind_elem + 1) += inte1x*Svec[1]+inte1y*Svec[0];
-
-
-          if (nordre == 1)
-            continue;
-        }
-    }
-
-  matrice.imprimer(Cout);
-
-
-  // Matrice_Morse sub_part;
-  // matrice.construire_sous_bloc( 0,  0,  2,  2, sub_part);
-
-  // Cout << sub_part << finl;
 }
 
 void Op_Diff_DG_Elem::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
@@ -694,138 +508,4 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
             }
         }
     }
-
-
-  //                    for(som_loc=0; som_loc<nb_som_face; som_loc++)
-  //                      {
-  //                        som=dom.get_renum_som_perio(face_sommets(face,som_loc));
-  //
-  //                        //Formule d'integration numerique exacte pour les polynomes de degre 2
-  //                        if (dimension==2) //formule de Simpson
-  //                          {
-  //                            //Coordonnees du sommet "som"
-  //                            x=coord_sommets(som,0);
-  //                            y=coord_sommets(som,1);
-  //
-  //                            //Valeur de l'inconnue au point d'integration
-  //                            for (compi=0; compi<dim_ch_; compi++)
-  //                              {
-  //                                inconnue_pt=
-  //                                  champ_front.valeur_au_temps_et_au_point(temps,som,x,y,z,compi);
-  //
-  //                                for (compj=0; compj<dimension; compj++)
-  //                                  secmem(som,compi,compj) +=
-  //                                    1./6*(2*inconnue[face*dim_ch_+compi]+inconnue_pt)
-  //                                    *face_normales(face,compj) ;
-  //                              }
-  //                          }//fin du if sur dimension==2
-  //
-  //                        else //formule exacte pour les polynomes de degre 2
-  //                          {
-  //                            //On suppose que l'element considere est un TETRAEDRE
-  //                            for (i=1; i<3; i++)
-  //                              {
-  //                                int som2=face_sommets(face,(som_loc+i)%nb_som_face);
-  //                                som2=dom.get_renum_som_perio(som2);
-  //
-  //                                //Coordonnees des points d'integration
-  //                                x=(coord_sommets(som,0)+coord_sommets(som2,0))/2.;
-  //                                y=(coord_sommets(som,1)+coord_sommets(som2,1))/2.;
-  //                                z=(coord_sommets(som,2)+coord_sommets(som2,2))/2.;
-  //
-  //                                //Vitesse au point d'integration
-  //                                for (compi=0; compi<dim_ch_; compi++)
-  //                                  {
-  //                                    inconnue_pt=
-  //                                      champ_front.valeur_au_temps_et_au_point(temps,som,x,y,z,compi);
-  //
-  //                                    for (compj=0; compj<dimension; compj++)
-  //                                      secmem(som, compi, compj) += 1./dimension*
-  //                                                                   1/2.*inconnue_pt*face_normales(face,compj) ;
-  //                                  }
-  //                              }
-  //                          }//fin du else sur la dimension
-  //
-  //                      }//fin du for sur "som_loc"
-  //
-  //                  }//fin du for sur "ind_face"
-  //
-  //              }//fin du if sur "Champ_front_txyz"
-  //            else
-  //              {
-  //                for (ind_face=num1; ind_face<num2; ind_face++)
-  //                  {
-  //                    face = le_bord.num_face(ind_face);
-  //
-  //                    for(som_loc=0; som_loc<nb_som_face; som_loc++)
-  //                      {
-  //                        som=dom.get_renum_som_perio(face_sommets(face,som_loc));
-  //
-  //                        for (compi=0; compi<dim_ch_; compi++)
-  //                          for (compj=0; compj<dimension; compj++)
-  //                            secmem(som,compi,compj) += 1./dimension*
-  //                                                       inconnue[face*dim_ch_+compi]*face_normales(face,compj) ;
-  //
-  //                      }//fin du for sur "som_loc"
-  //
-  //                  }//fin du for sur "ind_face"
-  //              }
-  //
-  //          }//fin du if sur "Dirichlet"
-  //
-  //        else if (!sub_type(Periodique,la_cl.valeur()))
-  //          {
-  //            for (ind_face=num1; ind_face<num2; ind_face++)
-  //              {
-  //                face = le_bord.num_face(ind_face);
-  //
-  //                for(som_loc=0; som_loc<nb_som_face; som_loc++)
-  //                  {
-  //                    som=dom.get_renum_som_perio(face_sommets(face,som_loc));
-  //
-  //                    for (compi=0; compi<dim_ch_; compi++)
-  //                      for (compj=0; compj<dimension; compj++)
-  //                        secmem(som,compi,compj) += 1./dimension*
-  //                                                   inconnue[face*dim_ch_+compi]*face_normales(face,compj) ;
-  //
-  //                  }//fin du for sur "som_loc"
-  //
-  //              }//fin du for sur "ind_face"
-  //
-  //          }//fin du if sur "!Periodique"
-  //
-  //      }//fin du for sur "n_bord"
-  //
-  //    secmem.echange_espace_virtuel();
-  //    Debog::verifier("OpDifP1NCP1B secmem, apres CL : ", secmem);
-  //
-  //    //Calcul de la solution du systeme a inverser
-  //    for (compi=0; compi<dim_ch_; compi++)
-  //      for (compj=0; compj<dimension; compj++)
-  //        {
-  //          for(i=0; i<nb_som_tot; i++)
-  //            {
-  //              som=dom.get_renum_som_perio(i);
-  //              secmemij(som)=secmem(som,compi,compj);
-  //            }
-  //
-  //          //Resolution du systeme
-  //          for(i=0; i<nb_som; i++)
-  //            {
-  //              som=dom.get_renum_som_perio(i);
-  //              gradij(som)=secmemij(som)/(coeff_*volume_aux_sommets(som));
-  //            }
-  //
-  //          for(i=0; i<nb_som_tot; i++)
-  //            {
-  //              som=dom.get_renum_som_perio(i);
-  //              gradient_p1_(som,compi,compj)
-  //                =gradij(som);
-  //            }
-  //        }
-  //
-  //    gradient_p1_.echange_espace_virtuel();
-  //    Debog::verifier("OpDifP1NCP1B Gradient P1 : ",gradient_p1_);
-  //
-  //    return gradient_p1_;
 }

@@ -23,15 +23,16 @@ class Op_Diff_DG_Elem: public Op_Diff_DG_base
 {
   Declare_instanciable( Op_Diff_DG_Elem );
 public:
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
-  virtual void calculer_flux_bord(const DoubleTab& inco) const = delete;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  void contribuer_a_avec_(const DoubleTab&, Matrice_Morse&) const ;
+  virtual void calculer_flux_bord(const DoubleTab& inco) const = delete; //TODO DG a calculer dans interface_blocs
 
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { }
   void completer() override;
 
   void dimensionner(Matrice_Morse& mat) const override;
+
+  inline int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
   void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const override;
   void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const override;

@@ -51,7 +51,7 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   is >> ch_puissance_lu;
   const int nb_comp = ch_puissance_lu.nb_comp();
 
-  eqn.probleme().discretisation().discretiser_champ(eqn.discretisation().is_polymac_family() ? "temperature" : "champ_elem", eqn.domaine_dis(), "pp", "1",nb_comp,0., la_puissance);
+  eqn.probleme().discretisation().discretiser_champ((eqn.discretisation().is_polymac_family() || eqn.discretisation().is_dg())  ? "temperature" : "champ_elem", eqn.domaine_dis(), "pp", "1",nb_comp,0., la_puissance);
   la_puissance_lu->fixer_nb_comp(nb_comp);
   if (ch_puissance_lu.le_nom()=="anonyme") ch_puissance_lu.nommer("Puissance_volumique");
 
