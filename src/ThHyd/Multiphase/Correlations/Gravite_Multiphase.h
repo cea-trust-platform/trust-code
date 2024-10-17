@@ -28,10 +28,10 @@
 class Gravite_Multiphase : public Correlation_base
 {
   Declare_instanciable(Gravite_Multiphase);
-
 public:
-
   const Champ_base& get_champ(const Motcle& nom) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
 
 protected:
   OWN_PTR(Champ_Fonc_base)  gravite_;

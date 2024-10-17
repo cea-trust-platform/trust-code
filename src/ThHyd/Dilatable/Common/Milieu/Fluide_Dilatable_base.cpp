@@ -498,22 +498,36 @@ void Fluide_Dilatable_base::creer_champ(const Motcle& motlu)
     Fluide_base::creer_champ(motlu);
 }
 
+bool Fluide_Dilatable_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (Fluide_base::has_champ(nom))
+    return Fluide_base::has_champ(nom, ref_champ);
+
+  if (loi_etat_->has_champ(nom))
+    return loi_etat_->has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Fluide_Dilatable_base::has_champ(const Motcle& nom) const
+{
+  if (Fluide_base::has_champ(nom))
+    return true;
+
+  if (loi_etat_->has_champ(nom))
+    return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
 {
-  try
-    {
-      return Fluide_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-  try
-    {
-      return loi_etat_->get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (Fluide_base::has_champ(nom))
+    return Fluide_base::get_champ(nom);
+
+  if (loi_etat_->has_champ(nom))
+    return loi_etat_->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 

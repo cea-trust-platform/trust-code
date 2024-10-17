@@ -289,10 +289,44 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (nom == "gradient_temperature")
+    {
+      ref_champ = get_champ(nom);
+      return true;
+    }
+
+  if (h_echange.non_nul())
+    if (nom == h_echange->le_nom())
+      {
+        ref_champ = get_champ(nom);
+        return true;
+      }
+
+  if (Convection_Diffusion_std::has_champ(nom))
+    return Convection_Diffusion_std::has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom) const
+{
+  if (nom == "gradient_temperature")
+    return true;
+
+  if (h_echange.non_nul())
+    if (nom == h_echange->le_nom())
+      return true;
+
+  if (Convection_Diffusion_std::has_champ(nom))
+    return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom) const
 {
-
-
   /*  if (nom=="temperature_paroi")
       {
         double temps_init = schema_temps().temps_init();
@@ -301,39 +335,29 @@ const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom)
           ch_tp.mettre_a_jour(la_temperature->temps());
         return champs_compris_.get_champ(nom);
       } */
-  if (nom=="gradient_temperature")
+  if (nom == "gradient_temperature")
     {
       double temps_init = schema_temps().temps_init();
-      Champ_Fonc_base& ch_gt=ref_cast_non_const(Champ_Fonc_base,gradient_temperature.valeur());
-      if (((ch_gt.temps()!=la_temperature->temps()) || (ch_gt.temps()==temps_init)) && (la_temperature->mon_equation_non_nul()))
+      Champ_Fonc_base& ch_gt = ref_cast_non_const(Champ_Fonc_base, gradient_temperature.valeur());
+      if (((ch_gt.temps() != la_temperature->temps()) || (ch_gt.temps() == temps_init)) && (la_temperature->mon_equation_non_nul()))
         ch_gt.mettre_a_jour(la_temperature->temps());
       return champs_compris_.get_champ(nom);
     }
+
   if (h_echange.non_nul())
-    if (nom==h_echange->le_nom())
+    if (nom == h_echange->le_nom())
       {
         double temps_init = schema_temps().temps_init();
-        Champ_Fonc_base& ch_hconv=ref_cast_non_const(Champ_Fonc_base,h_echange.valeur());
-        if (((ch_hconv.temps()!=la_temperature->temps()) || (ch_hconv.temps()==temps_init)) && (la_temperature->mon_equation_non_nul()))
-          {
-            ch_hconv.mettre_a_jour(la_temperature->temps());
-
-          }
+        Champ_Fonc_base& ch_hconv = ref_cast_non_const(Champ_Fonc_base, h_echange.valeur());
+        if (((ch_hconv.temps() != la_temperature->temps()) || (ch_hconv.temps() == temps_init)) && (la_temperature->mon_equation_non_nul()))
+          ch_hconv.mettre_a_jour(la_temperature->temps());
         return champs_compris_.get_champ(nom);
       }
 
-  try
-    {
-      return Convection_Diffusion_std::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (Convection_Diffusion_std::has_champ(nom))
+    return Convection_Diffusion_std::get_champ(nom);
 
   throw Champs_compris_erreur();
-  OBS_PTR(Champ_base) ref_champ;
-
-  return ref_champ;
 }
 
 /*! @brief Renvoie le nom du domaine d'application de l'equation.

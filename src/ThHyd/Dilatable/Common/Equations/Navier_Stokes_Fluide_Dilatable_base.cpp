@@ -149,25 +149,48 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::vitesse_pour_transport() 
   return la_vitesse;
 }
 
-const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& nom) const
+bool Navier_Stokes_Fluide_Dilatable_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
-  if (nom=="rho_u")
-    return rho_la_vitesse();
-  try
+  if (nom == "rho_u")
     {
-      return Navier_Stokes_std::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
+      ref_champ = rho_la_vitesse();
+      return true;
     }
 
-  try
-    {
-      return milieu().get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (Navier_Stokes_std::has_champ(nom))
+    return Navier_Stokes_std::has_champ(nom, ref_champ);
+
+  if (milieu().has_champ(nom))
+    return milieu().has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Navier_Stokes_Fluide_Dilatable_base::has_champ(const Motcle& nom) const
+{
+  if (nom == "rho_u")
+    return true;
+
+  if (Navier_Stokes_std::has_champ(nom))
+    return true;
+
+  if (milieu().has_champ(nom))
+    return true;
+
+  return false; /* rien trouve */
+}
+
+const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& nom) const
+{
+  if (nom == "rho_u")
+    return rho_la_vitesse();
+
+  if (Navier_Stokes_std::has_champ(nom))
+    return Navier_Stokes_std::get_champ(nom);
+
+  if (milieu().has_champ(nom))
+    return milieu().get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 

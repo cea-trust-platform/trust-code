@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,24 +114,39 @@ void Convection_Diffusion_Temperature_Turbulent::creer_champ(const Motcle& motlu
     le_modele_turbulence->creer_champ(motlu);
 }
 
+bool Convection_Diffusion_Temperature_Turbulent::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (Convection_Diffusion_Temperature::has_champ(nom))
+    return Convection_Diffusion_Temperature::has_champ(nom, ref_champ);
+
+  if (le_modele_turbulence.non_nul())
+    if (le_modele_turbulence->has_champ(nom))
+      return le_modele_turbulence->has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Convection_Diffusion_Temperature_Turbulent::has_champ(const Motcle& nom) const
+{
+  if (Convection_Diffusion_Temperature::has_champ(nom))
+    return true;
+
+  if (le_modele_turbulence.non_nul())
+    if (le_modele_turbulence->has_champ(nom))
+      return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Convection_Diffusion_Temperature_Turbulent::get_champ(const Motcle& nom) const
 {
+  if (Convection_Diffusion_Temperature::has_champ(nom))
+    return Convection_Diffusion_Temperature::get_champ(nom);
 
-  try
-    {
-      return Convection_Diffusion_Temperature::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
   if (le_modele_turbulence.non_nul())
-    try
-      {
-        return le_modele_turbulence->get_champ(nom);
-      }
-    catch (Champs_compris_erreur&)
-      {
-      }
+    if (le_modele_turbulence->has_champ(nom))
+      return le_modele_turbulence->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 

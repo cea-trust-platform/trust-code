@@ -1441,111 +1441,168 @@ void Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hyd
   val.echange_espace_virtuel();
 }
 
+bool Navier_Stokes_std::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q" || nom == "porosite_volumique"
+      || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
+      || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
+    {
+      ref_champ = get_champ(nom);
+      return true;
+    }
+
+  if (Equation_base::has_champ(nom))
+    return Equation_base::has_champ(nom, ref_champ);
+
+  if (le_traitement_particulier.non_nul())
+    if (le_traitement_particulier->has_champ(nom))
+      return le_traitement_particulier->has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Navier_Stokes_std::has_champ(const Motcle& nom) const
+{
+  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q" || nom == "porosite_volumique"
+      || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
+      || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
+    return true;
+
+  if (Equation_base::has_champ(nom))
+    return true;
+
+  if (le_traitement_particulier.non_nul())
+    if (le_traitement_particulier->has_champ(nom))
+      return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
 {
   double temps_init = schema_temps().temps_init();
-  if (nom=="gradient_pression") postraitement_gradient_P_=1;
-  if (nom=="vorticite")
+  if (nom == "gradient_pression")
+    postraitement_gradient_P_ = 1;
+
+  if (nom == "vorticite")
     {
-      if (la_vorticite.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,la_vorticite.valeur());
-      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
+      if (la_vorticite.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, la_vorticite.valeur());
+      if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="critere_Q")
+
+  if (nom == "critere_Q")
     {
-      if (critere_Q.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,critere_Q.valeur());
-      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
+      if (critere_Q.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, critere_Q.valeur());
+      if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="porosite_volumique")
+
+  if (nom == "porosite_volumique")
     {
-      if (porosite_volumique.est_nul())  throw Champs_compris_erreur();
+      if (porosite_volumique.est_nul())
+        throw Champs_compris_erreur();
+
       double temps_courant = schema_temps().temps_courant();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,porosite_volumique.valeur());
-      if ((ch.temps()!=temps_courant) || (ch.temps()==temps_init))
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, porosite_volumique.valeur());
+      if ((ch.temps() != temps_courant) || (ch.temps() == temps_init))
         ch.mettre_a_jour(temps_courant);
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="y_plus")
+
+  if (nom == "y_plus")
     {
-      if (y_plus.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,y_plus.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if (y_plus.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, y_plus.valeur());
+      if (((ch.temps() != la_vitesse->temps()) || (ch.temps() == temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="reynolds_maille")
+
+  if (nom == "reynolds_maille")
     {
-      if (Reynolds_maille.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Reynolds_maille.valeur());
-      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
+      if (Reynolds_maille.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, Reynolds_maille.valeur());
+      if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="courant_maille")
+
+  if (nom == "courant_maille")
     {
-      if (Courant_maille.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Courant_maille.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if (Courant_maille.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, Courant_maille.valeur());
+      if (((ch.temps() != la_vitesse->temps()) || (ch.temps() == temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="taux_cisaillement")
+
+  if (nom == "taux_cisaillement")
     {
-      if (Taux_cisaillement.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Taux_cisaillement.valeur());
-      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
+      if (Taux_cisaillement.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, Taux_cisaillement.valeur());
+      if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="gradient_vitesse")
+
+  if (nom == "gradient_vitesse")
     {
-      if (grad_u.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base, grad_u.valeur());
-      if ((ch.temps()==temps_init) && (la_vitesse->mon_equation_non_nul()))
+      if (grad_u.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, grad_u.valeur());
+      if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);
     }
-  if (nom=="pression_hydrostatique")
+
+  if (nom == "pression_hydrostatique")
     {
-      if (pression_hydrostatique_.est_nul())  throw Champs_compris_erreur();
-      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,pression_hydrostatique_.valeur());
-      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+      if (pression_hydrostatique_.est_nul())
+        throw Champs_compris_erreur();
+
+      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, pression_hydrostatique_.valeur());
+      if (((ch.temps() != la_vitesse->temps()) || (ch.temps() == temps_init)) && (la_vitesse->mon_equation_non_nul()))
         {
           calculer_pression_hydrostatique(ch);
           ch.mettre_a_jour(la_vitesse->temps());
         }
       return champs_compris_.get_champ(nom);
     }
-  try
-    {
-      return Equation_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+
+  if (Equation_base::has_champ(nom))
+    return Equation_base::get_champ(nom);
 
   if (le_traitement_particulier.non_nul())
-    try
-      {
-        return le_traitement_particulier->get_champ(nom);
-      }
-    catch (Champs_compris_erreur&)
-      {
-      }
+    if (le_traitement_particulier->has_champ(nom))
+      return le_traitement_particulier->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 
-void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Equation_base::get_noms_champs_postraitables(nom,opt);
+  Equation_base::get_noms_champs_postraitables(nom, opt);
 
   if (le_traitement_particulier.non_nul())
-    le_traitement_particulier->get_noms_champs_postraitables(nom,opt);
+    le_traitement_particulier->get_noms_champs_postraitables(nom, opt);
 
   Noms noms_compris = champs_compris_.liste_noms_compris();
   noms_compris.add("vorticite");
@@ -1557,8 +1614,9 @@ void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom,Option opt) cons
   noms_compris.add("taux_cisaillement");
   noms_compris.add("pression_hydrostatique");
   noms_compris.add("gradient_vitesse");
-  if (opt==DESCRIPTION)
-    Cerr<<" Navier_Stokes_std : "<< noms_compris <<finl;
+
+  if (opt == DESCRIPTION)
+    Cerr << " Navier_Stokes_std : " << noms_compris << finl;
   else
     nom.add(noms_compris);
 }

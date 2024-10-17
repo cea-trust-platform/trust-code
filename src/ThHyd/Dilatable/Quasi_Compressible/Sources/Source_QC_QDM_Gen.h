@@ -40,6 +40,8 @@ public :
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   int impr(Sortie& os) const override;
   const Champ_base& get_champ(const Motcle& nom) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
   DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& calculer(DoubleTab& ) const override;
 

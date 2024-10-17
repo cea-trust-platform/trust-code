@@ -55,27 +55,24 @@ void Traitement_particulier_NS_base::associer_eqn(const Equation_base& eqn)
   mon_equation = ref_cast(Navier_Stokes_std,eqn);
 }
 
-void Traitement_particulier_NS_base::creer_champ(const Motcle& motlu)
-{
-}
-
 const Champ_base& Traitement_particulier_NS_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
 
-void Traitement_particulier_NS_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Traitement_particulier_NS_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+  if (opt == DESCRIPTION)
+    Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 }
 
-bool Traitement_particulier_NS_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+bool Traitement_particulier_NS_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }
+
 bool Traitement_particulier_NS_base::has_champ(const Motcle& nom) const
 {
   return champs_compris_.has_champ(nom);

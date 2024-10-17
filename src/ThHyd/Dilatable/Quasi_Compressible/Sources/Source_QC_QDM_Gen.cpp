@@ -29,14 +29,13 @@ Entree& Source_QC_QDM_Gen::readOn(Entree& is)
 {
   Nom typ_complet;
   is >> typ_complet;
-  readOn_spec( is,typ_complet);
-  Cerr<<" Source_QC_QDM_Gen Pas teste encore.... on s'arrete "<<finl;
+  readOn_spec(is, typ_complet);
+  Cerr << " Source_QC_QDM_Gen Pas teste encore.... on s'arrete " << finl;
   Process::exit();
   return is;
 }
 
-// Desciption: methode appele par les classes filles
-// pour typer le terme source
+// Desciption: methode appele par les classes filles pour typer le terme source
 Entree& Source_QC_QDM_Gen::readOn_spec(Entree& is,Nom& typ)
 {
   source_incompressible.typer_direct(typ);
@@ -78,16 +77,11 @@ void Source_QC_QDM_Gen::completer()
   source_incompressible->completer();
 }
 
-/*! @brief DOES NOTHING - to override in derived classes.
- *
- *     Mise a jour en temps du terme source.
- *
- * @param (double) le pas de temps de mise a jour
- */
 int Source_QC_QDM_Gen::impr(Sortie& os) const
 {
   return source_incompressible->impr(os);
 }
+
 DoubleTab&  Source_QC_QDM_Gen::calculer(DoubleTab& resu) const
 {
   resu=0.;
@@ -98,11 +92,12 @@ void  Source_QC_QDM_Gen::associer_domaines(const Domaine_dis_base& z ,const Doma
 {
   source_incompressible->associer_domaines_public(z,zcl);
 }
-void  Source_QC_QDM_Gen::associer_pb(const Probleme_base& pb )
+
+void Source_QC_QDM_Gen::associer_pb(const Probleme_base& pb)
 {
-  if (!sub_type(Fluide_Quasi_Compressible,pb.equation(0).milieu()))
+  if (!sub_type(Fluide_Quasi_Compressible, pb.equation(0).milieu()))
     {
-      Cerr<<que_suis_je() <<" n'est a utiliser qu'en Quasi Compressible" <<finl;
+      Cerr << que_suis_je() << " n'est a utiliser qu'en Quasi Compressible" << finl;
       Process::exit();
     }
 }
@@ -111,6 +106,7 @@ void Source_QC_QDM_Gen::creer_champ(const Motcle& motlu)
 {
   source_incompressible->creer_champ(motlu);
 }
+
 const Champ_base& Source_QC_QDM_Gen::get_champ(const Motcle& nom) const
 {
   return source_incompressible->get_champ(nom);
@@ -118,4 +114,14 @@ const Champ_base& Source_QC_QDM_Gen::get_champ(const Motcle& nom) const
 void Source_QC_QDM_Gen::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {
   source_incompressible->get_noms_champs_postraitables(nom,opt);
+}
+
+bool Source_QC_QDM_Gen::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  return source_incompressible->has_champ(nom, ref_champ);
+}
+
+bool Source_QC_QDM_Gen::has_champ(const Motcle& nom) const
+{
+  return source_incompressible->has_champ(nom);
 }

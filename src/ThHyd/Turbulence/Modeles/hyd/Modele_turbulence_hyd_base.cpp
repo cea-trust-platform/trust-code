@@ -316,39 +316,40 @@ void Modele_turbulence_hyd_base::creer_champ(const Motcle& motlu)
 
 bool Modele_turbulence_hyd_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  // TODO FIXME
-  Process::exit("TODO FIXME - Modele_turbulence_hyd_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
-  return false;
+  if (champs_compris_.has_champ(nom))
+    return champs_compris_.has_champ(nom, ref_champ);
+
+  if (loipar_.non_nul())
+    if (loipar_->has_champ(nom))
+      return loipar_->has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
 }
+
 bool Modele_turbulence_hyd_base::has_champ(const Motcle& nom) const
 {
-  // TODO FIXME
-  Process::exit("TODO FIXME - Modele_turbulence_hyd_base::has_champ(const Motcle& un_nom)");
-  return false;
+  if (champs_compris_.has_champ(nom))
+    return true;
+
+  if (loipar_.non_nul())
+    if (loipar_->has_champ(nom))
+      return true;
+
+  return false; /* rien trouve */
 }
 
 const Champ_base& Modele_turbulence_hyd_base::get_champ(const Motcle& nom) const
 {
-  try
-    {
-      return champs_compris_.get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (champs_compris_.has_champ(nom))
+    return champs_compris_.get_champ(nom);
 
   if (loipar_.non_nul())
-    {
-      try
-        {
-          return loipar_->get_champ(nom);
-        }
-      catch (Champs_compris_erreur&)
-        {
-        }
-    }
+    if (loipar_->has_champ(nom))
+      return loipar_->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
+
 void Modele_turbulence_hyd_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
   if (opt == DESCRIPTION)

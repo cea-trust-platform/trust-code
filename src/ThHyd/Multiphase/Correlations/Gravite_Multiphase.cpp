@@ -15,9 +15,7 @@
 
 #include <Gravite_Multiphase.h>
 #include <Pb_Multiphase.h>
-
 #include <Discret_Thyd.h>
-
 
 Implemente_instanciable(Gravite_Multiphase, "Gravite_Multiphase", Correlation_base);
 
@@ -44,15 +42,30 @@ Entree& Gravite_Multiphase::readOn(Entree& is)
   champs_compris_.ajoute_champ(gravite_);
 
   gravite_->affecter(gravite_don_.valeur());
-
   gravite_->valeurs().echange_espace_virtuel();
 
   return is;
 }
 
+bool Gravite_Multiphase::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (nom == "gravite")
+    return champs_compris_.has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Gravite_Multiphase::has_champ(const Motcle& nom) const
+{
+  if (nom == "gravite")
+    return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Gravite_Multiphase::get_champ(const Motcle& nom) const
 {
-  if (nom=="gravite")
+  if (nom == "gravite")
     return champs_compris_.get_champ(nom);
 
   throw Champs_compris_erreur();

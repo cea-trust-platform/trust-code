@@ -65,22 +65,38 @@ int Convection_Diffusion_Espece_Multi_base::lire_motcle_non_standard(const Motcl
     return Convection_Diffusion_Espece_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 }
 
+bool Convection_Diffusion_Espece_Multi_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom))
+    return Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom, ref_champ);
+
+  // a revoir ..... a mon avis
+  if (probleme().equation(0).has_champ(nom))
+    return probleme().equation(0).has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Convection_Diffusion_Espece_Multi_base::has_champ(const Motcle& nom) const
+{
+  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom))
+    return true;
+
+  // a revoir ..... a mon avis
+  if (probleme().equation(0).has_champ(nom))
+    return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle& nom) const
 {
-  try
-    {
-      return Convection_Diffusion_Espece_Fluide_Dilatable_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-// a revoir ..... a mon avis
-  try
-    {
-      return probleme().equation(0).get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom))
+    return Convection_Diffusion_Espece_Fluide_Dilatable_base::get_champ(nom);
+
+  // a revoir ..... a mon avis
+  if (probleme().equation(0).has_champ(nom))
+    return probleme().equation(0).get_champ(nom);
+
   throw Champs_compris_erreur();
 }

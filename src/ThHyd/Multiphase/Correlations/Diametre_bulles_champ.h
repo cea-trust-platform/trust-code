@@ -28,10 +28,10 @@
 class Diametre_bulles_champ : public Correlation_base
 {
   Declare_instanciable(Diametre_bulles_champ);
-
 public:
-
   const Champ_base& get_champ(const Motcle& nom) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
 
 protected:
   double d_bulle_=-100.;

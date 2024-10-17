@@ -119,50 +119,51 @@ void Navier_Stokes_Turbulent_QC::completer()
 int Navier_Stokes_Turbulent_QC::preparer_calcul()
 {
   return Navier_Stokes_Turbulent::preparer_calcul();
-  /*
-   // Cerr << "Navier_Stokes_Fluide_Dilatable_Proto::preparer_calcul()" << finl;
-   Equation_base::preparer_calcul();
-   //solveur_pression->assembler_QC(le_fluide->masse_volumique().valeurs());
-   assembleur_pression_->assembler_QC(le_fluide->masse_volumique().valeurs(),matrice_pression_);
+}
 
+bool Navier_Stokes_Turbulent_QC::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (nom == "rho_u")
+    {
+      ref_champ = rho_la_vitesse();
+      return true;
+    }
 
-   if (le_traitement_particulier.non_nul())
-   le_traitement_particulier.preparer_calcul_particulier();
+  if (Navier_Stokes_Turbulent::has_champ(nom))
+    return Navier_Stokes_Turbulent::has_champ(nom, ref_champ);
 
+  if (milieu().has_champ(nom))
+    return milieu().has_champ(nom, ref_champ);
 
-   la_pression.valeurs()=0.;
-   la_pression.changer_temps(schema_temps().temps_courant());
-   Cerr << "Projection of initial and boundaries conditions" << finl;
+  return false; /* rien trouve */
+}
 
-   projeter();
-   le_modele_turbulence.preparer_calcul();
+bool Navier_Stokes_Turbulent_QC::has_champ(const Motcle& nom) const
+{
+  if (nom == "rho_u")
+    return true;
 
-   return 1;*/
+  if (Navier_Stokes_Turbulent::has_champ(nom))
+    return true;
+
+  if (milieu().has_champ(nom))
+    return true;
+
+  return false; /* rien trouve */
 }
 
 const Champ_base& Navier_Stokes_Turbulent_QC::get_champ(const Motcle& nom) const
 {
-
   if (nom == "rho_u")
     return rho_la_vitesse();
-  try
-    {
-      return Navier_Stokes_Turbulent::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
 
-  try
+  if (Navier_Stokes_Turbulent::has_champ(nom))
+    return Navier_Stokes_Turbulent::get_champ(nom);
 
-    {
-      return milieu().get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (milieu().has_champ(nom))
+    return milieu().get_champ(nom);
+
   throw Champs_compris_erreur();
-
 }
 
 /*! @brief Calcule la derivee en temps de l'inconnue vitesse, i.

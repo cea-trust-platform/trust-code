@@ -46,6 +46,8 @@ public:
   inline const Champ_Inc_base& rho_la_vitesse() const override { return rho_la_vitesse_; }
   void discretiser() override;
   const Champ_base& get_champ(const Motcle& nom) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
   const Champ_Don_base& diffusivite_pour_transport() const override;
 };
 

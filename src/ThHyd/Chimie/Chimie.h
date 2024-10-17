@@ -40,6 +40,8 @@ public:
   double calculer_pas_de_temps() const;
   void discretiser(const Probleme_base&);
   virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const;
+  virtual bool has_champ(const Motcle& nom) const;
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
   int sauvegarder(Sortie& ) const override;
   int reprendre(Entree& ) override;

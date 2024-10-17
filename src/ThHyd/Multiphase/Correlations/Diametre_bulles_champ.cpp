@@ -50,9 +50,25 @@ Entree& Diametre_bulles_champ::readOn(Entree& is)
   return is;
 }
 
+bool Diametre_bulles_champ::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (nom == "diametre_bulles")
+    return champs_compris_.has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Diametre_bulles_champ::has_champ(const Motcle& nom) const
+{
+  if (nom == "diametre_bulles")
+    return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Diametre_bulles_champ::get_champ(const Motcle& nom) const
 {
-  if (nom=="diametre_bulles")
+  if (nom == "diametre_bulles")
     return champs_compris_.get_champ(nom);
 
   throw Champs_compris_erreur();

@@ -532,14 +532,42 @@ void  Chimie::mettre_a_jour(double temps)
 
 }
 
-const Champ_base& Chimie::get_champ(const Motcle& nom) const
+bool Chimie::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  int nb_reac=reactions_.size();
-  for (int i=0; i<nb_reac; i++)
+  for (int i = 0; i < reactions_.size(); i++)
     {
       Nom test("omega_");
-      test+=Nom(i);
-      if (nom==test)
+      test += Nom(i);
+      if (nom == test)
+        {
+          ref_champ = reactions_[i].get_omega();
+          return true;
+        }
+    }
+
+  return false; /* rien trouve */
+}
+
+bool Chimie::has_champ(const Motcle& nom) const
+{
+  for (int i = 0; i < reactions_.size(); i++)
+    {
+      Nom test("omega_");
+      test += Nom(i);
+      if (nom == test)
+        return true;
+    }
+
+  return false; /* rien trouve */
+}
+
+const Champ_base& Chimie::get_champ(const Motcle& nom) const
+{
+  for (int i = 0; i < reactions_.size(); i++)
+    {
+      Nom test("omega_");
+      test += Nom(i);
+      if (nom == test)
         return reactions_[i].get_omega();
     }
 
