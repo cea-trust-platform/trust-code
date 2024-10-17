@@ -1,1 +1,1 @@
-cp $TRUST_ROOT/tests/Reference/GAMELAN/dom.geom .
+cp $TRUST_ROOT/tests/Dilatable/GAMELAN/dom.geom .
