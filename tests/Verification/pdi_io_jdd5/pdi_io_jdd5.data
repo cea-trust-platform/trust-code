@@ -49,6 +49,7 @@ Read sch
     dt_max 0.004
     dt_impr 0.00001
     dt_sauv 0.02
+    # nb_sauv_max 2 #
     seuil_statio 1.e-8
 }
 
@@ -91,12 +92,21 @@ Read pb
             sonde_vit_x vitesse periode 0.05 segment 20   0.157 1.      6.123 1.
         }
         format lml
-        fields dt_post 4.0
+        fields dt_post 0.02
         {
             pression som
             pression elem
             vitesse som
             vitesse elem
+        }
+
+        Statistiques dt_post 0.02
+        {
+            t_deb 0.0 t_fin 0.12
+            moyenne vitesse
+            ecart_type vitesse
+            moyenne pression
+            ecart_type pression
         }
     }
     reprise pdi canal.sauv

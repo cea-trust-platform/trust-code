@@ -10,7 +10,7 @@ jdd_short=${jdd%".data"}
 
 # generate .zones files if parallle case
 nProcs=_TO_FILL_
-if [ "$nProcs" -gt 1 ]
+if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "$nProcs" -gt 1 ]
 then
     trust domaine.data 1>/dev/null 2>&1 || exit -1
 fi
@@ -22,6 +22,10 @@ sed -i "s/.*pdi canal.sauv/$checkpoint_format pdi canal.sauv/g" backup.data
 sed -i "s/tinit.*/tinit 0.0/g" backup.data
 sed -i "s/tmax.*/tmax 0.08/g" backup.data    
 sed -i "/nb_pas_dt_max 3/d" backup.data    
+if [ "$checkpoint_format" == "sauvegarde" ]
+then
+    sed -i "s/# nb_sauv_max 2 #/nb_sauv_max 2/g" backup.data
+fi
 
 # generate backup file
 if [ "$TRUST_DISABLE_MPI" == 1 ] && [ "$nProcs" -gt 1 ]
@@ -32,4 +36,6 @@ else
     mv backup_Channel_Flow_Rate_repr_pb_periox "$jdd_short"_Channel_Flow_Rate_repr_pb_periox
 fi
 
-
+# set init time and other variables for restart computation
+t0=_T0_
+sed -i "s/tinit.*/tinit $t0/g" $jdd

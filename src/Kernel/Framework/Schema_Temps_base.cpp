@@ -256,6 +256,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "dt_min",&dt_min_); // XD_ADD_P double Minimum calculation time step (1e-16s by default).
   param.ajouter( "dt_max",&dt_max_str_); // XD_ADD_P chaine Maximum calculation time step as function of time (1e30s by default).
   param.ajouter( "dt_sauv",&dt_sauv_); // XD_ADD_P double Save time step value (1e30s by default). Every dt_sauv, fields are saved in the .sauv file. The file contains all the information saved over time. If this instruction is not entered, results are saved only upon calculation completion. To disable the writing of the .sauv files, you must specify 0. Note that dt_sauv is in terms of physical time (not cpu time).
+  param.ajouter( "nb_sauv_max",&nb_sauv_max_); // XD_ADD_P entier Maximum number of timesteps that will be stored in backup file (10 by default). This value is only useful when doing a complete backup of the calculation with parallel PDI (as it needs to allocate the proper amount of dataspace in advance). If this number is reached (ie we already stored the data of nb_sauv_max timesteps in the file), the next checkpoints will overwrite the first ones
   param.ajouter( "dt_impr",&dt_impr_); // XD_ADD_P double Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
   param.ajouter_non_std( "facsec",(this)); // XD_ADD_P chaine Value assigned to the safety factor for the time step (1. by default). It can also be a function of time. The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
   param.ajouter( "seuil_statio",&seuil_statio_); // XD_ADD_P double Value of the convergence threshold (1e-12 by default). Problems using this type of time scheme converge when the derivatives dGi/dt NL1 of all the unknown transported values Gi have a combined absolute value less than this value. This is the keyword used to set the permanent rating threshold.
@@ -307,6 +308,7 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "seuil_statio_relatif_deconseille" << seuil_statio_relatif_deconseille_ << finl;
   os << "norm_residu" << norm_residu_ << finl;
   os << "dt_sauv " << dt_sauv_ << finl;
+  os << "nb_sauv_max " << nb_sauv_max_ << finl;
   os << "limite_cpu_sans_sauvegarde " << limite_cpu_sans_sauvegarde_ << finl;
   os << "dt_impr " << dt_impr_ << finl;
   os << "precision_impr " << precision_impr_ << finl;
@@ -355,16 +357,9 @@ Entree& Schema_Temps_base::readOn(Entree& is)
   temps_precedent_=tinit_;
   lu_=1;
   if (dt_sauv_ <= 0.)
-    {
-      Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
-      nb_sauv_max_ = 0;
-    }
+    Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
   else
-    {
-      Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
-      double tmp = (tmax_-tinit_) / dt_sauv_; //only an estimation, as it does not take into account the cpu limit without backup!!
-      nb_sauv_max_ = (int)std::ceil(tmp);
-    }
+    Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
 
   if (dt_max_str_ != Nom())
     {
@@ -511,6 +506,7 @@ Schema_Temps_base::Schema_Temps_base()
   dt_min_ = 1.e-16;
   dt_sauv_ = dt_impr_ = tmax_ = dt_max_ = tcpumax_ = 1.e30;
   nb_sauv_= 0;
+  nb_sauv_max_ = 10;
   periode_cpu_sans_sauvegarde_ = 23 * 3600; // Par defaut 23 heures
   limite_cpu_sans_sauvegarde_ = periode_cpu_sans_sauvegarde_;
   temps_cpu_ecoule_ = 0;
@@ -741,7 +737,7 @@ int Schema_Temps_base::sauvegarder(Sortie& os) const
       if(!simple_checkpoint)
         {
           if(nb_sauv_ > nb_sauv_max_)
-            Cerr << "WARNING ! Overwriting the first " << nb_sauv_ << " backups..." << finl;
+            Cerr << "WARNING ! Overwriting the first " << nb_sauv_max_ << " backups..." << finl;
           i =  nb_sauv_ % nb_sauv_max_;
           i_max = nb_sauv_max_;
         }
