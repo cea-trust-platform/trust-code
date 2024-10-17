@@ -6,10 +6,10 @@
 
 baltik_environnement_init()
 {
-	script=$0
-	bindir=`dirname $script`
-	cd `dirname $bindir`
-	pwd
+    script=$0
+    bindir=`dirname $script`
+    cd `dirname $bindir`
+    pwd
 }
 
 # initialisation de l'etat de la variable BALTIK_ROOT

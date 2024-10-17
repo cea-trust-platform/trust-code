@@ -113,7 +113,7 @@ help()
    echo "-html                         : Access to the doxygen documentation."
    echo "-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords."
    echo "-edit                         : Edit datafile."
-   echo "-trustpy                      : Check the datafile's keywords with trustpy."
+   echo "-trustify                     : Check the datafile's keywords with trustify."
    echo "-xcheck                       : Check the datafile's keywords with xdata."
    echo "-xdata                        : Check and run the datafile's keywords with xdata."
    echo "-partition                    : Partition the mesh to prepare a parallel calculation (Creation of the .Zones files)."
@@ -162,7 +162,7 @@ ici=`pwd`
 me=`whoami`
 edit=""
 xedit=""
-trustpy=""
+trustify=""
 xcheck=""
 xdata=""
 partition=""
@@ -290,9 +290,9 @@ do
    elif [ "$1" = "-xedit" ]
    then
       xedit=1
-   elif [ "$1" = "-trustpy" ]
+   elif [ "$1" = "-trustify" ]
    then
-      trustpy=1
+      trustify=1
    elif [ "$1" = "-xcheck" ]
    then
       xcheck=1
@@ -721,11 +721,11 @@ then
 fi
 
 ############################
-# Verify data with trustpy #
+# Verify data with trustify #
 ############################
-if [ "$trustpy" = 1 ]
+if [ "$trustify" = 1 ]
 then
-   $TRUST_ROOT/Outils/trustpy/check_single.sh $NOM".data"
+   $TRUST_ROOT/Outils/trustify/check_single.sh $NOM".data"
    ret=$?
    [ $ret != 0 ] && echo "Error!"
    exit $ret

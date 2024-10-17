@@ -432,13 +432,23 @@ def test_loading(out_pyd_filename, all_blocks):
             for cls in all_blocks.keys():
                 file.write(f'{trad2_filename.name}.{cls}()\n')
 
+def do_main():
+    import sys
+    if len(sys.argv) > 1:
+        trad2_file, pyd_file, pars_file = map(pathlib.Path, sys.argv[1:4])
+        # Get info file (for debug infos)
+        nfo_file = trad2_file.with_suffix(".nfo")
+    else:
+        root_dir = pathlib.Path(os.getenv("TRUST_ROOT")) / "Outils" / "trustify" / "test"
+        trad2_file = root_dir / "trad2" / "TRAD_2_adr_simple"
+        nfo_file = None
+        pyd_file = root_dir / "generated" / (trad2_filename.name + "_pyd.py")
+        pars_file = root_dir / "generated" / (trad2_filename.name + "_pars.py")
+    generate_pyd_and_pars(trad2_file, nfo_file, pyd_file, pars_file)
+    logger.info(f"Generated file: {str(pyd_file)}")
+    logger.info(f"Generated file: {str(pars_file)}")
 
 if __name__ == '__main__':
-    logger.setLevel(logging.DEBUG)
-    root_dir = pathlib.Path(os.getenv("TRUST_ROOT")) / "Outils" / "trustify" / "test"
-    trad2_filename = root_dir / "trad2" / "TRAD_2_adr_simple"
-    out_pyd_filename = root_dir / "generated" / (trad2_filename.name + "_pyd.py")
-    out_pars_filename = root_dir / "generated" / (trad2_filename.name + "_pars.py")
-    all_blocks = generate_pyd_and_pars(trad2_filename, None, out_pyd_filename, out_pars_filename)
+    #logger.setLevel(logging.DEBUG)
+    do_main()
     # test_loading(out_pyd_filename, all_blocks)
-

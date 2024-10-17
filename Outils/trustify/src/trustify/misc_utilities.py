@@ -48,6 +48,10 @@ def init_logger():
 
 logger = init_logger()
 
+def pretty_error(fname, lineno, msg):
+    """ Small handy function for error message generation """
+    return f"\n{RED}{fname}{END}:{BLUE}{lineno+1}\n{END}{msg}"
+
 ################################################################
 # Exception
 ################################################################

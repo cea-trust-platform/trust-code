@@ -42,10 +42,10 @@ then
   source $TRUST_ROOT/Outils/lata_tools/src/tools/env.sh
 fi
 
-# Chargement de trustpy
-if [ "`echo $PYTHONPATH | grep -i trustpy`" = "" ]
+# Chargement de trustify
+if [ "`echo $PYTHONPATH | grep -i trustify`" = "" ]
 then
-  source $TRUST_ROOT/Outils/trustpy/env.sh
+  source $TRUST_ROOT/Outils/trustify/env.sh
 fi
 
 

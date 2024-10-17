@@ -7,7 +7,7 @@ import unittest
 
 from test.reference_data import *
 import trustify.misc_utilities as mutil
-from trustify.misc_utilities import ClassFactory, logger
+from trustify.misc_utilities import ClassFactory, logger, check_str_equality
 from trustify.trust_parser import TRUSTParser, TRUSTStream
 
 ########################################################################################
@@ -84,7 +84,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
             self.assertEqual(exp[i], res.entries[i])
         # Test write out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_probes(self):
         """ Probes ... what a pain ... deserve their own unit test. """
@@ -101,12 +101,12 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertEqual(exp, res)
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
         # Try changing value:
         res.type.points[0].pos[1] = 0.123
         news = "sonde_pression pression periode 0.005 points 2 0.13 0.123 0.13 0.115"
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, news).ok)
+        self.assertTrue(check_str_equality(s, news).ok)
 
         # Reset dimension!
         self.setDimension(-1)
@@ -129,13 +129,13 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertEqual(exp, res)
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
         # Try changing value:
         res.nom = "bip"
         res.defbord.pos = 24.2
         news = """Bord bip X = 24.2  0. <= Y <= # up bound # 2.0"""
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, news).ok)
+        self.assertTrue(check_str_equality(s, news).ok)
         # Reset dimension
         self.setDimension(-1)
 
@@ -153,12 +153,12 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertEqual(exp, res.solveur_pression)
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
         # Try changing value:
         res.solveur_pression.option_solveur.bloc_lecture = "{  taDa tudu }"
         news = """ petsc cholesky {  taDa tudu }"""
         s = ''.join(res.solveur_pression.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, news).ok)
+        self.assertTrue(check_str_equality(s, news).ok)
 
     def test_complex_list(self):
         """ Testing complex lists - TODO duplicate of test_rw_elementary.test_complex_list?"""
@@ -171,7 +171,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         res = self.generic_simple(data_ex, "Mailler")
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
         # Try changing value (delete last item in list, and change name)
         res.bloc.pop()
         res.bloc[0].name = "toto"
@@ -181,7 +181,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
             Pave toto {  # nothing # }   {  }
         }"""
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, news).ok)
+        self.assertTrue(check_str_equality(s, news).ok)
 
 ############################################################
 ## From here on, full datasets from subfolder 'datasets'
@@ -196,7 +196,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         res = self.generic_test(data_ex)
         # Test write out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
         # # Test changing one bit:
         # tmp = res.get("pb").post_processing.sondes.pop()
         # tmp._parentAsAttribute = None
@@ -211,7 +211,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         res = self.generic_test(data_ex)
         # Test write out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_ds_diff_impl(self):
         """ Dataset: diffusion_implicite_jdd6.data """
@@ -219,7 +219,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         res = self.generic_test(data_ex)
         # Test write out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_ds_distance_paroi(self):
         """ Dataset:  distance_paroi_jdd1.data
@@ -229,7 +229,17 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         res = self.generic_test(data_ex)
         # Test write out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
+
+    def test_debug_info(self):
+        """ Check that proper reference to the C++ code (where the XD tag is put) is provided upon failure """
+        from trustify.misc_utilities import TrustifyException
+        data_ex = self.load_file("upwind_buggy.data")
+        # self.generic_test(data_ex, fnam="upwind_buggy.data")
+        self.assertRaisesRegex(TrustifyException, "Invalid float value: 'sdf'.*\n" +
+                               ".*\n.*Dataset: line 18.*upwind_buggy.*\n" +
+                               ".*Model:   line 251  in file.*src/Kernel/Framework/Schema_Temps_base.cpp",
+                               self.generic_test, data_ex, "upwind_buggy.data")
 
     def test_load_dataset(self):
         """ High-level method trustify.load_dataset() """
@@ -239,63 +249,6 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         parser = "test/generated/TRAD2_full_pars.py"
         dataset = trustify.load_dataset("test/datasets/diffusion_implicite_jdd6.data", parser)
         self.assertEqual(dataset.entries[2].obj.nb_pas_dt_max, 3)
-
-    def xx_test_single_ds(self):
-        """ tmp single dataset """
-        # self.__class__._do_not_regenerate = True
-
-        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Reference/PCR/PCR.data"
-        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/GPU/VDF_AMGX/VDF_AMGX.data"
-        # e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/EF/EF_Pois_impl/EF_Pois_impl.data"
-        e = "/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/tests/Verification/champ_fonc_tabule_different_meshes_jdd2/champ_fonc_tabule_different_meshes_jdd2.data"
-        d = os.path.dirname(e)
-        bas = os.path.split(d)[-1]
-        fNam = os.path.join(d, bas + ".data")
-        with open(fNam) as f:
-            data_ex = f.read()
-        # printAdrien("'" + data_ex + "'")
-        res = self.generic_custom_test(data_ex, fnam=e)
-        # Test write out:
-        s = ''.join(res.toDatasetTokens())
-        data_ex_p = mutil.prune_after_end(data_ex)
-        self.assertTrue(mutil.check_str_equality(s, data_ex_p).ok)
-
-    def xx_test_all_trust_ds(self):
-        """ Test **all** TRUST datasets """
-        import glob
-
-        trust_root = os.environ.get("TRUST_ROOT", None)
-        if trust_root is None:
-            raise Exception("TRUST_ROOT not defined! Have you sourced TRUST?")
-        tst_dir = os.path.join(trust_root, "tests")
-        # Find all datasets:
-        pattern = os.path.abspath(os.path.join(tst_dir, "**/*.lml.gz"))
-        g = glob.glob(pattern, recursive=True)
-        with open("/nfs/home/catA/ab205030/failed_trustify.txt") as fl:
-            short_lst = [s.strip() for s in fl.readlines()]
-        ko = []
-        for i, e in enumerate(g[:]):
-            # Extract dir name, and build dataset file name
-            d = os.path.dirname(e)
-            bas = os.path.split(d)[-1]
-            fNam = os.path.join(d, bas + ".data")
-            print("%d/%d -- %s" % (i+1, len(g), fNam), end="\r")
-            # if fNam in short_lst:
-            #     continue
-            with open(fNam) as f:
-                data_ex = f.read()
-            try:
-                res = self.generic_custom_test(data_ex, fnam=fNam)
-                # Test write out:
-                s = ''.join(res.toDatasetTokens())
-                data_ex_p = mutil.prune_after_end(data_ex)
-                self.assertTrue(mutil.check_str_equality(s, data_ex_p).ok)
-            except Exception as e:
-                ko.append(fNam)
-                print(f"   Dataset KO: {fNam}")
-                print("    -> KO :-( %s" % e)
-        print("\n".join(ko))
-        print(len(ko))
 
 if __name__ == '__main__':
     unittest.main()

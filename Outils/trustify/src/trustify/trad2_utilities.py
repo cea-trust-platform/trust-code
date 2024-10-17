@@ -14,15 +14,10 @@ Class TRAD2Content is the central piece.
 Authors: A Bruneton, C Van Wambeke
 """
 import os
-from trustify.misc_utilities import logger
+from trustify.misc_utilities import logger, pretty_error
 
 _XD_TAG = " XD "
 _XD_PARAM_TAG = " XD_ADD_P "
-
-def pretty_error(fname, lineno, msg):
-    """ Small handy function for error message generation """
-    from trustify.misc_utilities import RED, BLUE, END
-    return f"\n{RED}{fname}{END}:{BLUE}{lineno+1}\n{END}{msg}"
 
 def convertTyp(typ):
     """ Types declared in XD tags of cpp files might differ from what is officially supported in TRAD_2, so convert:
@@ -174,12 +169,14 @@ class TRAD2Content:
         """ Build content from a full TRAD2 file
         @param trad2: path to the TRAD2 file
         @param trad2_nfo: path to the auxiliary file containing debug info (declaration locations in the C++ code)
+        Might be None if this file is not existent, but in this case a warning will be emited. Use special value 
+        "SHUT_UP" to silence this warning :-) See assemble method().
         """
         trad2 = str(trad2)
         res = TRAD2Content()
         with open(trad2) as f:
             lines = f.readlines()
-        if not trad2_nfo is None:
+        if not (trad2_nfo is None or trad2_nfo == "SHUT_UP"): # See invocation in 'assemble()'
             if not os.path.exists(trad2_nfo):
                 logger.warning(f"Invalid INFO file '{trad2_nfo}' \n  -> File does not exist.")
                 trad2_nfo = None
@@ -189,6 +186,10 @@ class TRAD2Content:
                     if len(lines_nfo) != len(lines):
                         raise Exception(f"Invalid INFO file {trad2_nfo} \n  -> not the same number of line as the TRAD2!")
                     logger.info(f"Loaded debug file for TRAD2 -> {trad2_nfo}")
+        else:
+            if trad2_nfo != "SHUT_UP":
+                logger.warning(f"No INFO file provided -> references to original C++ code will not be displayed.")
+            trad2_nfo = None
         curr_obj = None
         for lin_n, l in enumerate(lines):
             if l.strip() == "": continue
@@ -462,8 +463,8 @@ class TRAD2Content:
                 lkp[vv] = k
         logger.debug("Synonyms are " + str(self.synos))
 
-        # Load TRAD2.org first ...
-        torg = TRAD2Content.BuildContentFromTRAD2(trad2org, None)
+        # Load TRAD2.org first ... (not complaining about missing .nfo file, it is not relevant here!)
+        torg = TRAD2Content.BuildContentFromTRAD2(trad2org, "SHUT_UP")
 
         # ... append results of scanning the C++ ...
         self.data = torg.data + self.data
@@ -481,8 +482,7 @@ class TRAD2Content:
                 except: pass
                 d.synos = list(syn)
 
-###########################################################################
-if __name__ == "__main__":
+def do_main():
     import sys
     if len(sys.argv) > 1:
         outfile = sys.argv[1]
@@ -490,15 +490,20 @@ if __name__ == "__main__":
         outfile = "test/trad2/myTRAD2"
     tr = os.environ.get("TRUST_ROOT", None)
     pd = os.environ.get("project_directory", None)
-    trustpy_from_trust = os.environ.get("TRUSTPY_FROM_TRUST", None)
+    trustpy_from_trust = os.environ.get("TRUSTIFY_FROM_TRUST", None)
     if tr is None:
         raise Exception("TRUST_ROOT environment variable is not defined!")
     srcs = [os.path.join(tr, "src")]
     if not pd is None and trustpy_from_trust is None:  # called from a BALTIK
-        trad2org = os.path.join(pd, "build", "trustpy", "generated", "agg_TRAD_2.org")
+        trad2org = os.path.join(pd, "build", "trustify", "generated", "agg_TRAD_2.org")
         # Append baltik sources:
         srcs.append(os.path.join(pd, "build", "src"))
     else:   # called from TRUST
         trad2org = os.path.join(tr, "Outils", "TRIOXDATA", "XTriou", "TRAD_2.org")
     tg = TRAD2Content.BuildFromOrgAndSources(trad2org, srcs)
     tg.toTRAD2(outfile)
+
+
+###########################################################################
+if __name__ == "__main__":
+    do_main()

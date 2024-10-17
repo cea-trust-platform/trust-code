@@ -9,7 +9,7 @@ import unittest
 from test.reference_data import *
 import trustify.base as base
 import trustify.misc_utilities as mutil
-from trustify.misc_utilities import ClassFactory, logger, TrustifyException
+from trustify.misc_utilities import ClassFactory, logger, TrustifyException, check_str_equality
 from trustify.trust_parser import TRUSTParser, TRUSTStream, TRUSTEndOfStreamException
 import typing
 
@@ -139,7 +139,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertTrue(stream.eof())
         # Test writing out:
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
         # Should fail:
         data_ex = "toto"
         # self.builtin_test(float, data_ex, simplify=False)
@@ -154,7 +154,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertTrue(stream.eof())
         # Test writing out:
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
         # Should fail:
         data_ex = "35.6"
         # self.builtin_test(int, data_ex, simplify=False)
@@ -169,7 +169,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertTrue(stream.eof())
         # Test writing out:
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
         # Should fail:
         data_ex = "toto"
         # self.builtin_test(int, data_ex, simplify=False)
@@ -188,7 +188,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertTrue(stream.eof())
         # Test writing out
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
         # Test inner braces in 'Chaine_Parser' (what makes 'bloc_lecture' work!)
         # In this specific situation (braces in the string), everything is kept in the resulting value, because we notably
         # want to remain case-sensitive.
@@ -203,7 +203,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertTrue(stream.eof())
         # Test writing out
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
         # Misformatted '{' should fail:
         data_ex = "} toto }"
         #self.builtin_test(str, data_ex, simplify=False)
@@ -215,7 +215,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         pars._pyd_value = "{ toto }"
         data_ex = " { toto }"
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
 
     def test_builtin_list(self, fixed=False):
         """ Test parsing simple float list, with user defined size or fixed size """
@@ -237,7 +237,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
 
         # Test writing out:
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
 
         # Changing value on the model side should change output, and not reproduce initial tokens!!
         val[1] = 39.3
@@ -311,7 +311,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
             if not simplify:
                 # Testing writing out
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Modifying data should change output!!
         res.convertalltopoly = False
@@ -325,7 +325,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
              file new/file.med
              exclude_groups 2 toto titi
           }"""
-        self.assertTrue(mutil.check_str_equality(s, new_s).ok)
+        self.assertTrue(check_str_equality(s, new_s).ok)
 
         # Ill-formed dataset - missing brace
         data_ex = """
@@ -354,7 +354,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         self.assertTrue(stream.eof())
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         data_ex += " toto"  # should still parse, 'toto' being the next keyword in the stream
         stream, res = self.generic_test(data_ex, simplify=False)
@@ -383,7 +383,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
 
         # Test writing out:
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, data_ex).ok)
+        self.assertTrue(check_str_equality(res, data_ex).ok)
 
         # Changing value on the model side should change output, and not reproduce initial tokens!!
         val[0].gravite = UF()
@@ -395,7 +395,7 @@ gravite  uniform_field 2 28.0 32.0   }   ,
         coucou { graVITe Champ_Uniforme 2 0 9.8 }
         }"""
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, expec).ok)
+        self.assertTrue(check_str_equality(res, expec).ok)
 
         # Removing an item from the list
         val.pop()
@@ -405,7 +405,7 @@ gravite  uniform_field 2 28.0 32.0   }   ,
 gravite  uniform_field 2 28.0 32.0   }
         }"""
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, expec).ok)
+        self.assertTrue(check_str_equality(res, expec).ok)
 
         # Adding an item to the list
         val.append(C())
@@ -419,7 +419,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         }"""  # Notice how the comma inside the list is output again as
               # was the initial one in the first list ...
         res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(res, expec).ok)
+        self.assertTrue(check_str_equality(res, expec).ok)
 
         # Ill formed-list missing comma
         data_ex = """{  coucou {  } coucou {  }  }"""
@@ -432,7 +432,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         stream, val, pars = self.builtin_test(Annotated[List[N], "list_nom_virgule"], data_ex, simplify=False)
         # Test writing out:
         s = ''.join(pars.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_opt_attr(self):
         """ Test attribute optionality. Missing required attribute should fail the parse. """
@@ -458,7 +458,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         self.assertTrue(stream.eof())
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_synonyms(self):
         """ Test synonyms """
@@ -479,7 +479,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
             if not simplify:
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_no_curly_br(self):
         """ Testing keywords with no curly braces """
@@ -494,7 +494,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         self.assertTrue(stream.eof())
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # The below should parse - 'toto' can be considered the next keyword in the stream
         data_ex2 = data_ex + " toto "
@@ -517,7 +517,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
             if not simplify:
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Same story with next keyword:
         data_ex2 = data_ex + " toto "
@@ -556,7 +556,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         self.assertTrue(stream.eof())
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Test changing one of the value
         res.attr_bidon.val[0] = -25
@@ -565,7 +565,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
             attr_bidon champ_uniforme 2 -25  9.8  # using attr synonyms too #
           }"""
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Settng a complete new list
         res.attr_bidon.val = [5,6,7]  # Complete new list
@@ -574,7 +574,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
             attr_bidon champ_uniforme 3 5.0 6.0 7.0  # using attr synonyms too #
           }""" # Note how the comment is attached to the closing brace...
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Seting an invalid type (pydantic should complain):
         import pydantic
@@ -586,7 +586,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
           coucou {  # using attr synonyms too #
           }"""
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Assigning a complete new object for an attribute
         res.gravite = UF()
@@ -596,7 +596,7 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
 gravite  uniform_field 2 2.0 3.0  # using attr synonyms too #
           }""" # I know indentation sucks ...
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Adding unexpected attribute should raise:
         data_ex = """ coucou { blop }"""
@@ -634,7 +634,7 @@ no_family_names_from_group_names
         # (Yes I know this is poorly indented and space after "no_fam..." needs to be kept!)
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_expected).ok)
+        self.assertTrue(check_str_equality(s, data_expected).ok)
         # Removing an attribute (setting to None):
         res.mesh = None
         data_expected = """
@@ -647,7 +647,7 @@ no_family_names_from_group_names
 no_family_names_from_group_names 
           }"""
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_expected).ok)
+        self.assertTrue(check_str_equality(s, data_expected).ok)
 
     def test_inheritance(self):
         """ Testing inheritance - gravite expects a 'field_base' of which 'champ_uniform' is a child
@@ -670,7 +670,7 @@ no_family_names_from_group_names
             if not simplify:
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Changing inherited attribute should change output:
         FB = self.mod.Field_base
@@ -680,7 +680,7 @@ no_family_names_from_group_names
           coucou {
             gravite field_base
           }"""
-        self.assertTrue(mutil.check_str_equality(s, new_s).ok)
+        self.assertTrue(check_str_equality(s, new_s).ok)
 
         # Wrong inheritance should raise:
         data_ex = """
@@ -702,7 +702,7 @@ no_family_names_from_group_names
         exp.ma_liste = []
         self.assertEqual(exp, res)
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_forward_decl_1(self):
         """ Testing forward declaration and 'read' keyword.
@@ -721,7 +721,7 @@ no_family_names_from_group_names
             if not simplify:
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
         # Test invalid decl
         data_ex = """ blop blip """
         stream = self.import_and_gen_stream(data_ex, False)
@@ -749,7 +749,7 @@ no_family_names_from_group_names
         self.assertEqual(res.entries[1], r)
         # Test writing out:
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Changing read object completely:
         f2 = UF()
@@ -759,7 +759,7 @@ no_family_names_from_group_names
         data_ex = """champ_uniforme gravite
                      # comment in the middle #
                      read    gravite 3 5.0 6.0 7.0"""
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
         # Invalid datasets
         #    Misformatted fwd decl:
@@ -809,7 +809,7 @@ no_family_names_from_group_names
             if not simplify:
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_dim_pars(self):
         """ Test Dimension_Parser class - output was buggy """
@@ -818,7 +818,7 @@ no_family_names_from_group_names
         stream = self.import_and_gen_stream(data_ex, simplify=False)
         res = Dataset_Parser.ReadFromTokens(stream)
         s = ''.join(res.toDatasetTokens())
-        self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+        self.assertTrue(check_str_equality(s, data_ex).ok)
 
     def test_complete_dataset(self):
         """ Complete (small) dataset with foward declarations etc... """
@@ -849,7 +849,7 @@ no_family_names_from_group_names
             if not simplify:
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
-                self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
+                self.assertTrue(check_str_equality(s, data_ex).ok)
 
 if __name__ == '__main__':
     unittest.main()
