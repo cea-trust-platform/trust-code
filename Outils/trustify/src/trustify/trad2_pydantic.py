@@ -268,8 +268,7 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
 
     '''
     header_pyd = header_com + f'''
-        from typing_extensions import Annotated, Literal
-        from typing import ClassVar, List, Optional, Any, Dict
+        from typing import Annotated, ClassVar, List, Literal, Optional, Any, Dict
         import pydantic
         from pydantic import ConfigDict, Field
 

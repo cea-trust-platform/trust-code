@@ -1,7 +1,7 @@
 clean:
-	@rm -rf **/*.egg-info .pytest_cache/ build/
+	@rm -rfv **/*.egg-info .pytest_cache/ build/ test/generated/*
 	@find . -name __pycache__ -exec rm -rfv {} +
-
+	
 install:
 	@pip install -e .
 

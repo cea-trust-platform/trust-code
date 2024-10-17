@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools-git-versioning>=2,<3"]
+# __legacy__ is required to have access to package during build step
+build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "trustify"
+dynamic = ["version"]
+description = "Python Parser for TRUST datasets"
+authors = [
+  {email = "trust@cea.fr"}
+]
+dependencies = [
+  "pydantic",
+]
+
+[tool.setuptools-git-versioning]
+enabled = true
+template = "{env:TRUST_VERSION}"
+dev_template = "{env:TRUST_VERSION}+{sha}"
+dirty_template = "{env:TRUST_VERSION}+{sha}"
+    
