@@ -12,7 +12,7 @@ ccache,ccache-4.8.2-linux-x86_64.tar.gz,outil,PL,GPL,https://github.com/ccache/c
 ccache,ccache-4.8.2-darwin.tar.gz,outil,PL,GPL,https://github.com/ccache/ccache,https://github.com/ccache/ccache/releases/download/v4.8.2/ccache-4.8.2-darwin.tar.gz,
 rocALUTION,rocALUTION-f72a3919b52b64.tar.gz,,PL,"MIT License",https://rocalution.readthedocs.io/en/master/,https://github.com/ROCmSoftwarePlatform/rocALUTION,
 rocALUTION,rocm-cmake-master.zip,,PL,"MIT License",https://github.com/RadeonOpenCompute/rocm-cmake/blob/develop/README.md,https://github.com/RadeonOpenCompute/rocm-cmake,
-MPI,openmpi-2.0.4.tar.gz,,GF,BSD,https://www.open-mpi.org/,https://download.open-mpi.org/release/open-mpi/v2.0/openmpi-2.0.4.tar.gz,
+MPI,openmpi-5.0.5.tar.gz,,PL,BSD,https://www.open-mpi.org/,https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.5.tar.gz,
 MPI,mpich-3.2.tar.gz,,SV,"BSD-like license",https://www.mpich.org/,http://www.mpich.org/static/downloads/3.2/mpich-3.2.tar.gz,"pour la licence, verifiez. j'ai tire l'info de http://lists.mpich.org/pipermail/discuss/2014-October/003306.html"
 MPI,mpich-3.4.2.tar.gz,,ND,"BSD-like license",https:///www.mpich.org/,http://www.mpich.org/static/downloads/3.4.2/mpich-3.4.2.tar.gz,
 MPI,osu-micro-benchmarks-3.8.tar,,SV,BSD,https://www.nersc.gov/,https://www.nersc.gov/assets/Trinity--NERSC-8-RFP/Benchmarks/July12/osu-micro-benchmarks-3.8-July12.tar,"Note : pour le site je ne sais si celui ci est mieux ou pas : https://www.nersc.gov/users/computational-systems/cori/nersc-8-procurement/trinity-nersc-8-rfp/nersc-8-trinity-benchmarks/omb-mpi-tests et pour la licence j'ai regarde sur http://mvapich.cse.ohio-state.edu/benchmarks/ "
@@ -66,7 +66,7 @@ CGNS,CGNS.tar.gz,,ES,"zlib/libpng type",http://cgns.github.io/,https://github.co
 AmgX,AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz,,PL,MIT,https://github.com/barbagroup/AmgXWrapper
 AmgX,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 AmgX,AmgX_4d1bda0016.tar.gz,,PL,,,https://github.com/NVIDIA/AMGX/archive/4d1bda0016.tar.gz,
-AmgX,libcusparse.so.11.gz,,PL,,,,
+AmgX,AmgX_69e625e99b.tar.gz,,PL,,,https://github.com/NVIDIA/AMGX/archive/69e625e99b.tar.gz,
 kokkos,kokkos-3.7.02.tgz,,PL,"Apache License v2.0 with LLVM Exceptions",https://github.com/kokkos,https://github.com/kokkos/kokkos/archive/refs/tags/3.7.02.tar.gz,
 kokkos,kokkos-4.2.00.tgz,,PL,"Apache License v2.0 with LLVM Exceptions",https://github.com/kokkos,https://github.com/kokkos/kokkos/archive/refs/tags/4.2.00.tar.gz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
