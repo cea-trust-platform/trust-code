@@ -151,6 +151,15 @@ void kokkos_self_test()
   bool check = std::is_same<decltype(a_v)::memory_space, Kokkos::CudaSpace>::value;
   assert(check);
    */
+
+  // ToDo implement reference counter for a view on tab
+  /*
+  DoubleTab tab(N);
+  DoubleArrView view = tab.ro(); 	// Data on device
+  copyFromeDevice(tab);				// Data on host !
+  // How to detect that now view is invalid and can't be used in a Kokkos region now ?
+   Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int elem) { view(elem) = 1.0; });
+   */
 #endif
 #endif
 }

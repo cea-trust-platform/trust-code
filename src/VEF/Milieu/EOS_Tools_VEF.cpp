@@ -279,7 +279,8 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       src_mass.ajouter_projection(le_fluide(),tab_dZ); // attention : tab_dZ a taille comme pression
     }
 
-  DoubleTabView tab_W_v = tab_W.view_rw();
+  CDoubleArrView dZ = static_cast<DoubleVect&>(tab_dZ).view_ro();
+  DoubleTabView W = tab_W.view_rw();
   decal=0;
   if (p_has_elem)
     {
@@ -288,7 +289,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(
                              const int elem)
       {
-        tab_W_v(elem, 0) = -coefdivelem * tab_dZ_v(elem) * volumes_v(elem);
+        W(elem, 0) = -coefdivelem * dZ(elem) * volumes_v(elem);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       decal+=nb_elem_tot;
@@ -300,7 +301,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_som_tot, KOKKOS_LAMBDA(
                              const int som)
       {
-        tab_W_v(decal + som, 0) = -coefdivsom * tab_dZ_v(decal + som) * volumes_controle_v(som);
+        W(decal + som, 0) = -coefdivsom * dZ(decal + som) * volumes_controle_v(som);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
       decal+=nb_som_tot;

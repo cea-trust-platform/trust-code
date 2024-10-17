@@ -83,6 +83,7 @@ Entree& Source_Masse_Fluide_Dilatable_VEF::readOn(Entree& is) { return Source_Ma
  */
 void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffusion_Fluide_Dilatable_base& eqn, const Fluide_Dilatable_base& fluide, const bool is_expl, DoubleVect& resu) const
 {
+  ToDo_Kokkos("critical");
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
   const DoubleTab& Y = eqn.inconnue().valeurs(),
                    &rho = fluide.masse_volumique().valeurs(),
@@ -148,6 +149,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
 
 void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
 {
+  ToDo_Kokkos("critical");
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VEF& zp1b = ref_cast(Domaine_VEF, zclb.domaine_dis());
