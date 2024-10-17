@@ -22,9 +22,6 @@ class Masse_DG_Elem: public Masse_DG_base
 {
   Declare_instanciable(Masse_DG_Elem);
 public:
-  void dimensionner(Matrice_Morse& matrix) const override;
-  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const override;
-  Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const override;
   DoubleTab& appliquer_impl(DoubleTab&) const override;
 };
 

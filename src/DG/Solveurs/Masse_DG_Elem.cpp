@@ -14,17 +14,11 @@
  *****************************************************************************/
 
 #include <Masse_DG_Elem.h>
-#include <Domaine_Cl_DG.h>
 #include <Champ_Elem_DG.h>
-#include <Domaine_DG.h>
-#include <Option_DG.h>
 #include <TRUSTTab_parts.h>
 #include <Equation_base.h>
-#include <Neumann_paroi.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <Milieu_base.h>
-#include <Conds_lim.h>
 
 Implemente_instanciable(Masse_DG_Elem, "Masse_DG_Elem", Masse_DG_base);
 
@@ -44,78 +38,4 @@ DoubleTab& Masse_DG_Elem::appliquer_impl(DoubleTab& sm) const
   invM.multvect(invSm, sm);
 
   return sm;
-}
-
-//Masse_DG_Elem est responsable des parties de la matrice n'impliquant pas la diffusion
-void Masse_DG_Elem::dimensionner(Matrice_Morse& matrix) const
-{
-
-  // TODO DG construire matrice bloc avec toutes les contributions des differentes inconnues
-
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-  const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
-
-  matrix = mass_matrix; //Todo DG dans Equation_Base.cpp ligne 1863/1876 pourquoi avoir besoin d'additionner les matrices ?
-
-}
-
-DoubleTab& Masse_DG_Elem::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
-{
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-  const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
-
-  const int nb_elem_tot = ch.valeurs().dimension_tot(0);
-  const int nb_bfunc = ch.nb_bfunc();
-  DoubleTrav coef(equation().milieu().porosite_elem());
-  coef = 1.;
-  appliquer_coef(coef);
-
-  for (int e = 0; e < nb_elem_tot; e++)
-    for (int i=0; i<nb_bfunc; i++)
-      secmem(e,i) *= dt / coef[e];
-
-  mass_matrix.ajouter_multvect(inco, secmem);
-
-  for (int e = 0; e < nb_elem_tot; e++)
-    for (int i=0; i<nb_bfunc; i++)
-      secmem(e,i) *= coef[e] / dt;
-
-  return secmem;
-}
-
-Matrice_Base& Masse_DG_Elem::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
-{
-  Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-  const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
-
-  const int nb_elem_tot = ch.valeurs().dimension_tot(0);
-  const int nb_bfunc = ch.nb_bfunc();
-  DoubleTrav coef(equation().milieu().porosite_elem());
-  coef = 1.;
-  appliquer_coef(coef);
-
-  int current_indice = 0;
-  for (int e = 0; e < nb_elem_tot; e++)
-    {
-      for (int i=0; i<nb_bfunc; i++)
-        for (int j=0; j<nb_bfunc; j++)
-          mat(current_indice+i, current_indice+j) *= dt/coef[e];
-      current_indice+=nb_bfunc;
-    }
-
-  mat += mass_matrix;
-
-  current_indice = 0;
-  for (int e = 0; e < nb_elem_tot; e++)
-    {
-      for (int i=0; i<nb_bfunc; i++)
-        for (int j=0; j<nb_bfunc; j++)
-          mat(current_indice+i, current_indice+j) *= coef[e] / dt;
-      current_indice+=nb_bfunc;
-    }
-
-  //todo DG for multi-component equation, adapt the mass matrix with bloc ?
-
-  return matrice;
 }

@@ -13,14 +13,12 @@
 *
 *****************************************************************************/
 
-#include <Schema_Euler_Implicite.h>
-#include <Op_Diff_negligeable.h>
 #include <Masse_DG_base.h>
 #include <Domaine_Cl_DG.h>
 #include <Domaine_DG.h>
-#include <TRUSTTab_parts.h>
+#include <Champ_Elem_DG.h>
 #include <Equation_base.h>
-#include <Operateur.h>
+#include <Milieu_base.h>
 
 Implemente_base(Masse_DG_base, "Masse_DG_base", Solveur_Masse_base);
 Sortie& Masse_DG_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
@@ -64,5 +62,63 @@ void Masse_DG_base::appliquer_coef(DoubleVect& coef) const
           ref_coeff->valeur_aux(nodes,values);
         }
       tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
+    }
+}
+
+void Masse_DG_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  const std::string& nom_inc = equation().inconnue().le_nom().getString();
+  if (!matrices.count(nom_inc)) return; //rien a faire
+  Matrice_Morse& mat = *matrices.at(nom_inc);
+  const DoubleTab& inco = equation().inconnue().valeurs();
+
+  const int nb_elem_tot = inco.dimension_tot(0);
+  const int nb_bfunc = inco.line_size();
+
+  IntTab indice(nb_elem_tot*nb_bfunc*nb_bfunc, 2);
+  int current_indice = 0;
+  for (int e = 0; e < nb_elem_tot; e++)
+    {
+      for (int i = 0; i < nb_bfunc; i++ )
+        for (int j = 0; j < nb_bfunc; j++ )
+          {
+            indice((e*nb_bfunc+i)*nb_bfunc+j, 0) = current_indice+i;
+            indice((e*nb_bfunc+i)*nb_bfunc+j, 1) = current_indice+j;
+          }
+      current_indice+=nb_bfunc;
+    }
+  mat.dimensionner(indice);
+}
+
+void Masse_DG_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const DoubleTab& passe = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().passe();
+  const DoubleTab& inco = equation().inconnue().valeurs();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
+
+  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
+  const Matrice_Morse& mass_matrix = ch.get_mass_matrix();
+
+
+  const int nb_elem_tot = inco.dimension_tot(0);
+  const int nb_bfunc = inco.line_size();
+
+  DoubleTrav coef(equation().milieu().porosite_elem());
+  coef = 1.;
+  appliquer_coef(coef);
+
+  int current_indice = 0;
+
+  for (int e = 0; e < nb_elem_tot; e++)
+    {
+      for (int i=0; i<nb_bfunc; i++)
+        for (int j=0; j<nb_bfunc; j++)
+          {
+            if (mat)
+              (*mat)(current_indice+i, current_indice+j) += coef[e]*mass_matrix(current_indice+i, current_indice+j) / dt;
+            secmem(e,i) += coef[e]*mass_matrix(current_indice+i, current_indice+j)*passe(e,j) / dt;
+          }
+      current_indice+=nb_bfunc;
     }
 }

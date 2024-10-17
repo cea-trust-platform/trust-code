@@ -31,6 +31,10 @@ public:
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
   void appliquer_coef(DoubleVect& coef) const;
 
+  inline int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
+
 protected:
   OBS_PTR(Domaine_DG) le_dom_dg_;
   OBS_PTR(Domaine_Cl_DG) le_dom_Cl_dg_;
