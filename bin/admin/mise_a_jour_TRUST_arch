@@ -271,7 +271,7 @@ do
       if [ "$WORKDIR" != "" ] && [ -d $WORKDIR ]
       then
          mkdir $WORKDIR/"NUIT_"$HOST 2>/dev/null
-         for binaire in `ls $ROOT/exec/$MODULE*opt 2>/dev/null`
+         for binaire in `ls $ROOT/exec/$MODULE*opt $ROOT/../Composants/triocfd/triocfd/TrioCFD_opt 2>/dev/null`
          do
             gzip -c $binaire > $WORKDIR/"NUIT_"$HOST/`basename $binaire`.$DATE.gz
             echo "Binary backup: $WORKDIR/"NUIT_"$HOST/`basename $binaire`.$DATE.gz"
@@ -1062,7 +1062,7 @@ do
                     Build=$TRUST_ROOT/build/tests/Reference;
                     [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
                     rm -rf $Build/OpenMP_Iterateur;
-                    cp -r $TRUST_ROOT/tests/Reference/OpenMP_Iterateur $Build/.;
+                    cp -r $TRUST_ROOT/tests/GPU/OpenMP_Iterateur $Build/.;
                     cd $Build/OpenMP_Iterateur;
                     rm -f check_perf.log;
                     echo "check_perf.sh for OpenMP_Iterateur script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..." >> $PERF;

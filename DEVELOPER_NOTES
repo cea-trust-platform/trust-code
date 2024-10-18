@@ -1,7 +1,7 @@
-XX/XX/24 (TRUST) Fix          : .son,.out,.lata files were not re-initialized after pb.resetTime() call during calculations run into a same directory
 -------------------------------------------------------------
 Developer notes version 1.9.5_beta : Changes since version 1.9.4 :
 -------------------------------------------------------------
+18/10/24 (TRUST) Fix          : .son,.out,.lata files were not re-initialized after pb.resetTime() call during calculations run into a same directory
 17/10/24 (TRUST) Minor change : -force_provided_openmpi use 5.0.5 instead of old 2.0.4 OpenMPI version
 08/10/24 (TRUST) Major change : No more REF MACRO. USE OBS_PTR!
 08/10/24 (TRUST) Major change : Introducing OWN_PTR macro for polymorphic class members. DERIV() can not be inherited anymore, and will disappear to move towards a logic similar to smart-pointer. Soon the end of '.valeur()'!

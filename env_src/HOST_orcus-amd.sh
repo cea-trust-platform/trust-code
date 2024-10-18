@@ -39,7 +39,7 @@ define_modules_config()
       # 02/10/2023 : Ajout module qt/5.14 pour VisIt
       #module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020 qt5/gcc_9.3.0/5.14.2" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
       #module="slurm gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312"
-      module="openmpi/gcc_13.3.0/4.1.6" # Mise a jour des modules Orcus-AMD en 08/2024
+      module="openmpi/gcc_13.3.0/4.1.6 texlive/20240312" # Mise a jour des modules Orcus-AMD en 08/2024
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"

@@ -1,8 +1,8 @@
-XX/XX/24 (TRUST) Minor change : To force C++14 build of TRUST, you should add configure option -std=c++14. Else by default, it will use C++17 as TRUST features from Kokkos (GPU, SIMD, OpenMP) are not available with C++14
-XX/XX/24 (TRUST) Fix          : .out files were not closed at the end of the calculation leaving opened file descriptors
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+18/10/24 (TRUST) Minor change : To force C++14 build of TRUST, you should add configure option -std=c++14. Else by default, it will use C++17 as TRUST features from Kokkos (GPU, SIMD, OpenMP) are not available with C++14
+18/10/24 (TRUST) Fix          : .out files were not closed at the end of the calculation leaving opened file descriptors
 17/10/24 (TRUST) GPU          : Upgrade AmgX multigrid solvers with a better performance (10-15%) noticed on benchmarks
 17/10/24 (TRUST) GPU          : When enabling GPU communications with MPI GPU-aware library, fix KSP_DIVERGED produced by PETSc GPU solvers (especially when using classical multigrid preconditioners) by using OpenMPI 5.x instead of OpenMPI 4.x
 07/10/24 (TRUST) New Keyword  : Added a new correlation for Nusselt heat flux, including Nusselt parser with Reynolds (Re) and Prandtl (Pr) number dependency.
