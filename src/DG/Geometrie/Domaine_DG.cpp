@@ -36,7 +36,7 @@
 #include <Quadrature_Ord1_Triangle.h>
 #include <Quadrature_Ord2_Triangle.h>
 #include <Quadrature_Ord5_Triangle.h>
-
+#include <Champ_Elem_DG.h>
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
 
@@ -49,7 +49,7 @@ void Domaine_DG::discretiser()
   Domaine_Poly_base::discretiser();
 
   calculer_h_carre();
-
+  compute_mesh_param();
   Quadrature_base* quad1 = new Quadrature_Ord1_Triangle(*this);
   Quadrature_base* quad2 = new Quadrature_Ord2_Triangle(*this);
   Quadrature_base* quad5 = new Quadrature_Ord5_Triangle(*this);
@@ -58,6 +58,37 @@ void Domaine_DG::discretiser()
   set_quadrature(2, quad2);
   set_quadrature(5, quad5);
 
+}
+
+void Domaine_DG::compute_mesh_param()
+{
+  int nb_elem = this->nb_elem();
+
+  DiaTri.resize(nb_elem);
+  invDiaTri.resize(nb_elem);
+  PerTri.resize(nb_elem);
+  rhoTri.resize(nb_elem);
+  sigTri.resize(nb_elem);
+
+  for (int e = 0; e < nb_elem; e++)
+    {
+      DiaTri(e) = 1 / (2 * this->volumes(e));
+      int nb_elem_face = 3; // nb_elem_faces(e)
+      for (int i_f = 1; i_f < nb_elem_face; i_f++)
+        {
+          int f = this->elem_faces(e, i_f);
+          double sur_f = this->face_surfaces(f);
+          DiaTri(e) *= sur_f;
+          PerTri(e) += sur_f; //
+        }
+    }
+
+  for (int e = 0; e < this->nb_elem(); e++)
+    {
+      invDiaTri(e) = 1. / DiaTri(e);
+      rhoTri(e) = 4. * this->volumes(e) / PerTri(e);
+      sigTri(e) = DiaTri(e) / rhoTri(e);
+    }
 }
 
 //TODO DG h_carre with diameter

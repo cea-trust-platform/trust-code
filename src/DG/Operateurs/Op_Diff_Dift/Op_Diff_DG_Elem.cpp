@@ -140,19 +140,18 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
 {
 
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();;
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
 
-  double eta_F=1; // TODO: Compute the penalisation coefficient
-  // TODO : Ne pas multiplier les integration par F sinon c'est pas homogene
+
   update_nu();
 
   const Domaine_DG& domaine = le_dom_dg_.valeur();
   const IntTab& face_voisins = domaine.face_voisins();
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-
+  const DoubleTab& eta_F = ch.get_eta_facet();  // Compute the penalisation coefficient
   const Quadrature_base& quad = domaine.get_quadrature(2); //TODO a trouver avec Option_DG
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
   int nb_pts_integ = quad.nb_pts_integ();
@@ -232,7 +231,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
                 for (int k = 0; k < nb_pts_int_fac ; k++)
                   product(k) = fbase0(i,k) * fbase0(j,k);
 
-                coeff = nu * eta_F / sur_f* invh_T* quad.compute_integral_on_facet(f, product);
+                coeff = nu * eta_F(f)* invh_T* quad.compute_integral_on_facet(f, product);
                 if (mat)
                   (*mat)(ind_elem+i, ind_elem+j) += coeff;
                 secmem(elem,i) -= coeff * inco(elem,j);
@@ -251,7 +250,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
               product(k) = fbase0(i,k) * fbase1(j,k);
 
             double integral = quad.compute_integral_on_facet(f, product);
-            coeff = nu * eta_F/ sur_f* invh_T *integral;
+            coeff = nu * eta_F(f)* invh_T *integral;
             if (mat)
               {
                 (*mat)(ind_elem0+i, ind_elem1+j) -= coeff;
@@ -267,8 +266,8 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
       ch.eval_grad_bfunc_on_facets(quad, elem0, f, grad_fbase0);
       ch.eval_grad_bfunc_on_facets(quad, elem1, f, grad_fbase1);
 
-      double nu0 = nu_(elem0);
-      double nu1 = nu_(elem1);
+//      double nu0 = nu_(elem0);
+//      double nu1 = nu_(elem1);
 
       for (int i=0; i<nb_bfunc; i++)
         {
@@ -286,11 +285,11 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
 
               if (mat)
                 {
-                  (*mat)(ind_elem0+i, ind_elem0+j) -= 0.5 *nu0*integral;
-                  (*mat)(ind_elem0+j, ind_elem0+i) -= 0.5 *nu0*integral; //symmetry
+                  (*mat)(ind_elem0+i, ind_elem0+j) -= 0.5 *nu*integral;
+                  (*mat)(ind_elem0+j, ind_elem0+i) -= 0.5 *nu*integral; //symmetry
                 }
-              secmem(elem0,i) += 0.5 *nu0*integral*inco(elem0,j);
-              secmem(elem0,j) += 0.5 *nu0*integral*inco(elem0,i); //symmetry
+              secmem(elem0,i) += 0.5 *nu*integral*inco(elem0,j);
+              secmem(elem0,j) += 0.5 *nu*integral*inco(elem0,i); //symmetry
             }
 
 
@@ -301,11 +300,11 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
               double integral = quad.compute_integral_on_facet(f, product);
               if (mat)
                 {
-                  (*mat)(ind_elem0+i, ind_elem1+j) += 0.5 *nu0*integral;
-                  (*mat)(ind_elem1+j, ind_elem0+i) += 0.5 *nu1*integral; //symmetry
+                  (*mat)(ind_elem0+i, ind_elem1+j) += 0.5 *nu*integral;
+                  (*mat)(ind_elem1+j, ind_elem0+i) += 0.5 *nu*integral; //symmetry
                 }
-              secmem(elem0,i) -= 0.5 *nu0*integral*inco(elem1,j);
-              secmem(elem1,j) -= 0.5 *nu1*integral*inco(elem0,i); //symmetry
+              secmem(elem0,i) -= 0.5 *nu*integral*inco(elem1,j);
+              secmem(elem1,j) -= 0.5 *nu*integral*inco(elem0,i); //symmetry
             }
 
           scalar_product = 0.;
@@ -320,11 +319,11 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
               double integral = quad.compute_integral_on_facet(f, product);
               if (mat)
                 {
-                  (*mat)(ind_elem1+i, ind_elem1+j) += 0.5 *nu1*integral;
-                  (*mat)(ind_elem1+j, ind_elem1+i) += 0.5 *nu1*integral; //symmetry
+                  (*mat)(ind_elem1+i, ind_elem1+j) += 0.5 *nu*integral;
+                  (*mat)(ind_elem1+j, ind_elem1+i) += 0.5 *nu*integral; //symmetry
                 }
-              secmem(elem1,i) -= 0.5 *nu1*integral*inco(elem1,j);
-              secmem(elem1,j) -= 0.5 *nu1*integral*inco(elem1,i); //symmetry
+              secmem(elem1,i) -= 0.5 *nu*integral*inco(elem1,j);
+              secmem(elem1,j) -= 0.5 *nu*integral*inco(elem1,i); //symmetry
             }
 
           for (int j=0; j<nb_bfunc; j++)
@@ -334,11 +333,11 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
               double integral = quad.compute_integral_on_facet(f, product);
               if (mat)
                 {
-                  (*mat)(ind_elem1+i, ind_elem0+j) -= 0.5 *nu1*integral;
-                  (*mat)(ind_elem0+j, ind_elem1+i) -= 0.5 *nu0*integral; //symmetry
+                  (*mat)(ind_elem1+i, ind_elem0+j) -= 0.5 *nu*integral;
+                  (*mat)(ind_elem0+j, ind_elem1+i) -= 0.5 *nu*integral; //symmetry
                 }
-              secmem(elem1,i) += 0.5 *nu1*integral*inco(elem0,j);
-              secmem(elem0,j) += 0.5 *nu1*integral*inco(elem1,i); //symmetry
+              secmem(elem1,i) += 0.5 *nu*integral*inco(elem0,j);
+              secmem(elem0,j) += 0.5 *nu*integral*inco(elem1,i); //symmetry
             }
         }
     }
@@ -375,7 +374,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
                   for (int k = 0; k < nb_pts_int_fac ; k++)
                     product(k) = fbase0(i, k) * fbase0(j, k);
 
-                  coeff = nu*eta_F/sur_f * invh_T * quad.compute_integral_on_facet(f, product);
+                  coeff = nu*eta_F(f) * invh_T * quad.compute_integral_on_facet(f, product);
                   if (mat)
                     (*mat)(ind_elem+i, ind_elem+j) += coeff;
                   secmem(elem,i) -= coeff*inco(elem,j);
@@ -445,7 +444,7 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
   DoubleTab scalar_product(nb_pts_int_fac);
 
   //Les conditions aux limites pour le second membre
-  double eta_F=1; // TODO: Compute the penalisation coefficient
+  const DoubleTab& eta_F = ch.get_eta_facet();  // Compute the penalisation coefficient
   int ind_face;
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
@@ -500,7 +499,7 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
                           double u_bord_k= champ_front.valeur_au_temps_et_au_point(temps,0,xk,yk,zk,0);
                           for (int d=0; d<Objet_U::dimension; d++)
                             scalar_product(k) -= face_normales(ind_face,d)/sur_f * grad_fbase(i, k, d)*u_bord_k;      //  \eta/H_F \int g \vvec_h
-                          scalar_product(k) += eta_F/sur_f*invh_T * u_bord_k*fbase(i, k);                              // \eta/H_F \int g \vvec_h
+                          scalar_product(k) += eta_F(ind_face)*invh_T * u_bord_k*fbase(i, k);                              // \eta/H_F \int g \vvec_h
                         }
                       resu(elem,i)+=nu*quad.compute_integral_on_facet(ind_face, scalar_product);
                     }

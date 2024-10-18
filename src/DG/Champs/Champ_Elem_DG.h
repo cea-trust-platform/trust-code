@@ -51,11 +51,15 @@ public:
   inline const Matrice_Morse& get_mass_matrix() const { return mass_matrix_; }
   inline const Matrice_Morse& get_inv_mass_matrix() const { return inv_mass_matrix_; }
 
+  inline const DoubleTab& get_eta_elem() const { return eta_elem; }
+  inline const DoubleTab& get_eta_facet() const { return eta_facet; }
+
   const Matrice_Dense eval_invMassMatrix(const Quadrature_base& quad, const int& nelem) const;
 
   /* fonctions pour reconstruire la valeur du champ selon la localisation */
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
 
+  void compute_stab_param();
 protected:
   /*! Compute the mass matrix
    */
@@ -72,6 +76,9 @@ protected:
 
   Matrice_Morse mass_matrix_;
   Matrice_Morse inv_mass_matrix_;
+
+  DoubleTab eta_elem;
+  DoubleTab eta_facet;
 
 };
 
