@@ -52,7 +52,11 @@ class Fluide_reel_base: public Fluide_base
 {
   Declare_base_sans_constructeur(Fluide_reel_base);
 public :
-  Fluide_reel_base() { converter_h_T_.set_instance(*this); }
+  Fluide_reel_base()
+  {
+    converter_H_to_T_.set_instance(*this);
+    converter_T_to_H_.set_instance(*this);
+  }
 
   bool initTimeStep(double dt) override;
   int initialiser(const double temps) override;
@@ -226,17 +230,30 @@ public:
    *    \         /   \             /   \         /
    */
 
+
   struct H_to_T
   {
     void set_instance(const Fluide_reel_base& fld) { z_fld_ = fld; }
+
     void dX_dP_T(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dP);
     void dX_dT_P(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dT);
-
   private:
     OBS_PTR(Fluide_reel_base) z_fld_;
   };
 
-  H_to_T converter_h_T_;
+  struct T_to_H
+  {
+    void set_instance(const Fluide_reel_base& fld) { z_fld_ = fld; }
+
+    void dX_dP_h(const SpanD dX_dP_T, const SpanD dX_dT_P, SpanD dX_dP);
+    void dX_dh_P(const SpanD dX_dP_T, const SpanD dX_dT_P, SpanD dX_dh);
+  private:
+    OBS_PTR(Fluide_reel_base) z_fld_;
+  };
+
+  H_to_T converter_H_to_T_;
+  T_to_H converter_T_to_H_;
+
   /* Lois en h */
   void _rho_h_(const double h, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::rho_h_>(h,P,res); }
   void _dP_rho_h_(const double h, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::dP_rho_h_>(h,P,res); }
