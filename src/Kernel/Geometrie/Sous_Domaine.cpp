@@ -975,7 +975,11 @@ Entree& Sous_Domaine_32_64<_SIZE_>::readOn(Entree& is)
       std::set<int> poly_set(les_elems_.begin(), les_elems_.end()); //to detect already present elements
       for (int i = 0; i < ssz.nb_elem_tot(); i++)
         if (!poly_set.count(ssz(i))) //only add new elements
-          les_elems_.append_array(ssz(i));
+          {
+            int_t old_size = les_elems_.size();
+            les_elems_.resize(old_size + 1);
+            les_elems_(old_size) = ssz(i);
+          }
 
       is >>motlu;
     }
