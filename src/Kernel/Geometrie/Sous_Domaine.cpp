@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -972,10 +972,14 @@ Entree& Sous_Domaine_32_64<_SIZE_>::readOn(Entree& is)
       Nom nom_ss_domaine;
       is >> nom_ss_domaine;
       const Sous_Domaine_32_64& ssz=ref_cast(Sous_Domaine_32_64, interprete().objet(nom_ss_domaine));
-      std::set<int> poly_set(les_elems_.begin(), les_elems_.end()); //to detect already present elements
+      std::set<trustIdType> poly_set(les_elems_.begin(), les_elems_.end()); //to detect already present elements
       for (int i = 0; i < ssz.nb_elem_tot(); i++)
         if (!poly_set.count(ssz(i))) //only add new elements
-          les_elems_.append_array(ssz(i));
+          {
+            int_t old_size = les_elems_.size();
+            les_elems_.resize(old_size + 1);
+            les_elems_(old_size) = ssz(i);
+          }
 
       is >>motlu;
     }

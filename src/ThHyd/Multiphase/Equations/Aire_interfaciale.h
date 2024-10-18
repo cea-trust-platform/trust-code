@@ -42,7 +42,7 @@ public :
   int impr(Sortie& os) const override;
   void mettre_a_jour(double temps) override;
 
-  int positive_unkown() override {return 1;}
+  bool positive_unkown() override { return true; }
 
   int nombre_d_operateurs() const override { return has_diff_turb_ ? 2 : 1; }
   const Operateur& operateur(int) const override;

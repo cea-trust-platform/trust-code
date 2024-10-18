@@ -273,7 +273,7 @@ bool SETS::iterer_eqn(Equation_base& eqn,
   /* equations non resolues directement : Masse_Multiphase et Aire Interfaciale (toujours), Energie_Multiphase (en ICE), Convection_Diffusion_std i.e. quantites turbulentes (en ICE) */
   if (sub_type(Masse_Multiphase, eqn) || sub_type(Aire_interfaciale, eqn) || (!sets_ && sub_type(Energie_Multiphase, eqn))|| (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
     {
-      if (eqn.positive_unkown() == 1)
+      if (eqn.positive_unkown())
         {
           DoubleTrav incr;
           incr = current;
@@ -318,7 +318,7 @@ bool SETS::iterer_eqn(Equation_base& eqn,
   solv->reinit();
   solv.resoudre_systeme(mat_pred_[nom_pb_inco], secmem, current);
 
-  if (eqn.positive_unkown() == 1)
+  if (eqn.positive_unkown())
     {
       DoubleTrav incr;
       incr = current;
@@ -622,7 +622,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current,
   if (ok && cv)
     {
       for (int i = 0; i < pb.nombre_d_equations(); i++)
-        if (pb.equation(i).positive_unkown() == 1)
+        if (pb.equation(i).positive_unkown())
           {
             std::string nom_inco = pb.equation(i).inconnue().le_nom().getString();
             unknown_positivation(inco[nom_inco]->valeurs(), *incr[nom_inco]);

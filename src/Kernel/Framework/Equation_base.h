@@ -244,7 +244,7 @@ public :
   int calculate_time_derivative() const { return calculate_time_derivative_; }
 
   void set_residuals(const DoubleTab& residual);
-  virtual int positive_unkown() {return 0;}
+  virtual bool positive_unkown() { return false; }
 
   inline void add_champs_compris(const Champ_base& ch) { champs_compris_.ajoute_champ(ch); };
 
