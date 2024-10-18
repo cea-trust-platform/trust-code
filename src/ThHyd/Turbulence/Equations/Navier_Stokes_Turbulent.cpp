@@ -305,23 +305,39 @@ void Navier_Stokes_Turbulent::mettre_a_jour(double temps)
   le_modele_turbulence->mettre_a_jour(temps);
 }
 
+bool Navier_Stokes_Turbulent::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
+{
+  if (Navier_Stokes_std::has_champ(nom))
+    return Navier_Stokes_std::has_champ(nom, ref_champ);
+
+  if (le_modele_turbulence.non_nul())
+    if (le_modele_turbulence->has_champ(nom))
+      return le_modele_turbulence->has_champ(nom, ref_champ);
+
+  return false; /* rien trouve */
+}
+
+bool Navier_Stokes_Turbulent::has_champ(const Motcle& nom) const
+{
+  if (Navier_Stokes_std::has_champ(nom))
+    return true;
+
+  if (le_modele_turbulence.non_nul())
+    if (le_modele_turbulence->has_champ(nom))
+      return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
 {
-  try
-    {
-      return Navier_Stokes_std::get_champ(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (Navier_Stokes_std::has_champ(nom))
+    return Navier_Stokes_std::get_champ(nom);
+
   if (le_modele_turbulence.non_nul())
-    try
-      {
-        return le_modele_turbulence->get_champ(nom);
-      }
-    catch (Champs_compris_erreur&)
-      {
-      }
+    if (le_modele_turbulence->has_champ(nom))
+      return le_modele_turbulence->get_champ(nom);
+
   throw Champs_compris_erreur();
 }
 

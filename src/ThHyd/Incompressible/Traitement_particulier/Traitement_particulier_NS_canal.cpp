@@ -197,14 +197,11 @@ void Traitement_particulier_NS_canal::preparer_calcul_particulier()
     }
 
   if (mon_equation->probleme().nombre_d_equations()>1)
-    try
+    if (mon_equation->probleme().equation(1).has_champ("temperature"))
       {
         Temp = mon_equation->probleme().equation(1).get_champ("temperature");
         oui_profil_Temp = 1 ;
         Nval=18;
-      }
-    catch (Champs_compris_erreur&)
-      {
       }
 
   remplir_Y(Y,compt,Ny); // renvoie vers Traitement_particulier_NS_canal_VDF ou Traitement_particulier_NS_canal_VEF

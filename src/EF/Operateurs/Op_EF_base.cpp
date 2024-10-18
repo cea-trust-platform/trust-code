@@ -538,17 +538,13 @@ int Op_EF_base::elem_contribue(const int elem) const
 
 void Op_EF_base::marque_elem(const Equation_base& eqn)
 {
-  try
+  if (eqn.has_champ("marqueur_loi_de_paroi"))
     {
-      const DoubleTab& marq=eqn.get_champ("marqueur_loi_de_paroi").valeurs();
-      int ntot=marq.dimension_tot(0);
+      const DoubleTab& marq = eqn.get_champ("marqueur_loi_de_paroi").valeurs();
+      int ntot = marq.dimension_tot(0);
       marqueur_elem_.resize_array(ntot);
-      for (int n=0; n<ntot; n++)
-        if (marq(n)>0)
-          marqueur_elem_[n]=1;
+      for (int n = 0; n < ntot; n++)
+        if (marq(n) > 0)
+          marqueur_elem_[n] = 1;
     }
-  catch  (Champs_compris_erreur&)
-    {
-    }
-
 }

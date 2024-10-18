@@ -64,21 +64,21 @@ void Solveur_Masse_base::assembler()
  */
 void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
 {
-  name_of_coefficient_temporel_=name;
-  has_coefficient_temporel_=1;
-  if (name=="no_coeff")
+  name_of_coefficient_temporel_ = name;
+  has_coefficient_temporel_ = 1;
+  if (name == "no_coeff")
     {
-      has_coefficient_temporel_=0;
+      has_coefficient_temporel_ = 0;
       return;
     }
-  OBS_PTR(Champ_base) ref_coeff;
-  try
+
+  if (equation().has_champ(name_of_coefficient_temporel_))
     {
-      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
+      /* Do nothing */
     }
-  catch (Champs_compris_erreur&)
+  else
     {
-      Cerr<< name_of_coefficient_temporel_<< " not understood by "<< equation().que_suis_je()<<finl;
+      Cerr << name_of_coefficient_temporel_ << " not understood by " << equation().que_suis_je() << finl;
       Process::exit();
     }
 }
