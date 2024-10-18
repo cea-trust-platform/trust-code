@@ -975,6 +975,13 @@ then
     fi
 fi
 
+# Installing xml2 without dependency to icu, necessary on some systems (Rocky/Fedora 34) for ld and/or mpicxx
+# see https://github.com/conda-forge/libxml2-feedstock/issues/41
+if [ "$TRUST_WITHOUT_CONDA" != "1" ] && [ "$system" = "Linux" ] && [ $model = "x86_64" ]
+then
+   make_ $TRUST_ROOT/Outils/libxml2 libxml2 $TRUST_ROOT/exec/libxml2.log
+fi
+
 # Adding utility package 'stats' and 'trustutils' in PYTHONPATH
 echo "export PYTHONPATH=\$TRUST_ROOT/Outils/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
 echo "export PYTHONPATH=\$TRUST_ROOT/Validation/Outils:\$PYTHONPATH" >> $env

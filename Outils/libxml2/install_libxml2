@@ -1,0 +1,50 @@
+#!/bin/bash
+
+[ "$TRUST_ROOT" = "" ] && echo "TRUST not sourced!" && exit 1
+[ "$TRUST_WITHOUT_CONDA" != 0 ] && echo "It seems that TRUST is installed without conda, no need to install libxml2" && exit 1
+model=`uname -m`
+system=`uname -s`
+if [ "$system" != "Linux" ] || [ $model != "x86_64" ]
+then
+   echo "No need to reinstall libxml2 if not on Linux x86_64"
+   exit 1
+fi
+
+
+export LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
+
+# Compile libxml2 from sources in a minimal fashion
+
+
+options=" -DLIBXML2_WITH_C14N=OFF \
+-DLIBXML2_WITH_CATALOG=OFF \
+-DLIBXML2_WITH_DEBUG=OFF \
+-DLIBXML2_WITH_HTML=OFF \
+-DLIBXML2_WITH_HTTP=OFF \
+-DLIBXML2_WITH_ICONV=OFF \
+-DLIBXML2_WITH_ISO8859X=OFF \
+-DLIBXML2_WITH_MODULES=OFF \
+-DLIBXML2_WITH_PROGRAMS=OFF \
+-DLIBXML2_WITH_PYTHON=OFF \
+-DLIBXML2_WITH_SAX1=OFF \
+-DLIBXML2_WITH_SCHEMAS=OFF \
+-DLIBXML2_WITH_SCHEMATRON=OFF \
+-DLIBXML2_WITH_TESTS=OFF "
+
+archive=libxml2-v2.12.7.tar.gz
+
+mkdir -p $TRUST_ROOT/build/utils
+cd $TRUST_ROOT/build/utils/
+tar xzf $TRUST_ROOT/externalpackages/utils/$archive
+src_dir=${archive%.tar.gz}
+cd $src_dir
+mkdir -p BUILD
+cd BUILD
+XML_INSTALL_DIR=$TRUST_ROOT/exec/utils/libxml2
+$TRUST_ROOT/exec/python/bin/cmake .. $options -DCMAKE_INSTALL_PREFIX=$XML_INSTALL_DIR
+make install || exit -1
+cd $TRUST_ROOT/exec/python/lib
+ln -nsf $XML_INSTALL_DIR/lib64/lib* .
+ls -l $TRUST_ROOT/exec/python/lib/libxml2*
+cd $TRUST_ROOT
+rm -rf $TRUST_ROOT/build/utils/
