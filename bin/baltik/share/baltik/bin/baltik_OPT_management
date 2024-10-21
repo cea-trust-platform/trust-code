@@ -25,7 +25,7 @@ extract_executable_name()
       
 list_type()
 {
-    echo debug optim gcov prof optim_valgrind custom semi_optim
+    echo debug optim gcov prof optim_valgrind debug_valgrind custom semi_optim
 }
 human_name_from_name()
 {
@@ -34,6 +34,7 @@ human_name_from_name()
  [ $name = "optim" ] && human="optimized"
  [ $name = "semi_optim" ] && human="semi-optimized using -g -O3"
  [ $name = "optim_valgrind" ] && human="optimized with valgrind"
+ [ $name = "debug_valgrind" ] && human="debug with valgrind"
  [ $name = "gcov" ] && human="coverage"
  [ $name = "prof" ] && human="profile"
  [ $name = "custom" ] && human="custom"
@@ -59,6 +60,9 @@ TRUST_opt_from_name()
         ;;
     optim_valgrind)
         OPT="_opt"
+        ;;
+    debug_valgrind)
+        OPT=""
         ;;
     prof)
     	OPT="_opt_pg"
