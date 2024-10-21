@@ -940,7 +940,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
-  start_gpu_timer();
+  //start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1027,7 +1027,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
             }
         }
     }
-  end_gpu_timer(0, __KERNEL_NAME__);
+  //end_gpu_timer(0, __KERNEL_NAME__);
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
   copyPartialToDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
   copyPartialToDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
