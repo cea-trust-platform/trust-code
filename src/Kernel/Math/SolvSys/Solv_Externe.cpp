@@ -163,7 +163,7 @@ void Solv_Externe::Create_lhs_rhs_onDevice()
 template<typename ExecSpace>
 void Solv_Externe::Update_lhs_rhs(const DoubleVect& tab_b, DoubleVect& tab_x)
 {
-  long unsigned int size = tab_b.size_array();
+  const unsigned int size = tab_b.size_array();
   auto x = tab_x.template view_ro<ExecSpace>();
   auto b = tab_b.template view_ro<ExecSpace>();
   auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
@@ -187,7 +187,7 @@ void Solv_Externe::Update_lhs_rhs(const DoubleVect& tab_b, DoubleVect& tab_x)
 template<typename ExecSpace>
 void Solv_Externe::Update_solution(DoubleVect& tab_x)
 {
-  long unsigned int size = tab_x.size_array();
+  const unsigned int size = tab_x.size_array();
   auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
   auto lhs = lhs_.template view_ro<ExecSpace>();
   auto x = tab_x.template view_wo<ExecSpace>();
