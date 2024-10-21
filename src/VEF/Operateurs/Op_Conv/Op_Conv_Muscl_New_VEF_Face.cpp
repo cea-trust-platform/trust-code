@@ -808,7 +808,6 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
                 flux_bords(facei,dim) = psc*val;
               }
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else if ( sub_type(Dirichlet,la_cl.valeur())
                 || sub_type(Neumann,la_cl.valeur())
@@ -828,7 +827,6 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
             for (int dim=0; dim<nb_comp; dim++)
               flux_bords(facei,dim)=psc*transporte[facei*nb_comp+dim];
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }//fin du if sur "Neumann", "Neumann_homogene", "Symetrie", "Echange_impose_base"
       else if (sub_type(Periodique,la_cl.valeur()))
         {

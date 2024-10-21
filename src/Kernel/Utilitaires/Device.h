@@ -84,6 +84,11 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
   if (init_openmp_ && timer_on)
     {
       timer_counter++;
+#ifndef NDEBUG
+      if (timer_counter>1)
+        Cerr << "[Kokkos] timer_counter=" << timer_counter << " : start_gpu_timer() not closed by end_gpu_timer() !" << finl;
+      //Process::exit("Error, start_gpu_timer() not closed by end_gpu_timer() !");
+#endif
       if (clock_on) clock_start = Statistiques::get_time_now();
       if (bytes == -1) statistiques().begin_count(gpu_kernel_counter_, false);
 #ifdef TRUST_USE_CUDA
@@ -102,7 +107,7 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
       timer_counter--;
 #ifndef NDEBUG
       if (timer_counter!=0)
-        Cerr << "[Kokkos] timer_counter=" << timer_counter << " : start_gpu_timer() not closed by end_gpu_timer() !" << finl;
+        Cerr << "[Kokkos] timer_counter=" << timer_counter << " : end_gpu_timer() not opened by start_gpu_timer() !" << finl;
       //Process::exit("Error, start_gpu_timer() not closed by end_gpu_timer() !");
 #endif
       if (onDevice)
