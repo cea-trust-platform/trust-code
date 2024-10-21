@@ -324,8 +324,8 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
                 {
                   Cerr << "Error in Multigrille_base: mixed precision solver did not converge in "
                        << max_iter_mixed_solver_ << " iterations." << finl;
-                  Process::exit("GCP did not converge after failure!\n");
                   Cerr << " seuil is " << seuil_ << " and the norm of the GCP residu is " << norme_residu_gcp;
+                  Process::exit("GCP did not converge after failure!\n");
                 }
             }
         }
