@@ -20,7 +20,15 @@ fi
 tot=`$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_execution_time $1`
 [ $? -ne  0 ] &&  status=2
 [ $status -ne 0 ] && tot="?"
-[ ! -f $1.TU ] && tot="?"
+if [ ! -f $1.TU ]
+then
+   if [ "`grep -i disable_TU $1.data 2>/dev/null`" != "" ]
+   then
+      tot="1e9"  # we set tot to 1e9 as previously
+   else
+      tot="?"
+   fi
+fi
 #TU=$1.TU
 #tot=`grep "Temps total" $1.TU | awk '{printf("%f ", $NF)}' | awk '{print ($1+$2)}'`
 #echo $tot 
@@ -30,7 +38,7 @@ cas=$1
 host=`hostname`
 sys=`uname | awk '{print $1}'`
 
-par_pdt=`grep "Secondes / pas de temps" $1.TU| awk '{print $NF}'`
+par_pdt=`grep "Secondes / pas de temps" $1.TU 2>/dev/null | awk '{print $NF}'`
 [ "$par_pdt" = "" ] && par_pdt="?"  # on accepte que l'on est pas cette info
 nb_elem=`grep -E "Nombre total d'elements|Total number of elements"  $1.err| awk '{print $NF}'`
 [ "$nb_elem" = "" ] && nb_elem="-"

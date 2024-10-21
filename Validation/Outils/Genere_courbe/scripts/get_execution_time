@@ -1,6 +1,6 @@
 #!/bin/bash
 TU=$1.TU
-tot=`grep "Temps total" $1.TU | awk '{printf("%f ", $NF)}' | awk '{print ($1+$2)}'`
+tot=`grep "Temps total" $1.TU 2>/dev/null | awk '{printf("%f ", $NF)}' | awk '{print ($1+$2)}'`
 status=$?
 echo $tot
 exit $status
