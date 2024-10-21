@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+21/10/24 (TRUST) Bug fix      : In VEF, Viscous forces on boundaries (printed in *_Contrainte_visqueuse*.out files) in incompressible Navier-Stokes equations were computed as Integral(-mu*grad(u)*ndS). It is now computed as Integral(-mu*(grad(u) +grad(u)^T)*ndS).
 18/10/24 (TRUST) Minor change : To force C++14 build of TRUST, you should add configure option -std=c++14. Else by default, it will use C++17 as TRUST features from Kokkos (GPU, SIMD, OpenMP) are not available with C++14
 18/10/24 (TRUST) Fix          : .out files were not closed at the end of the calculation leaving opened file descriptors
 17/10/24 (TRUST) GPU          : Upgrade AmgX multigrid solvers with a better performance (10-15%) noticed on benchmarks

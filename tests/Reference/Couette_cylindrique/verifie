@@ -10,7 +10,7 @@ err=0
 ##########################################################################################################################
 # Dans le probleme:
 Contrainte_visqueuse=`ls $cas*pb_Contrainte_visqueuse_moment.out`
-moment="-3.1415927e-7"
+moment="-4.75153646e-07"
 ok=`tail -1 $Contrainte_visqueuse | $TRUST_Awk -v moment=$moment '{if ( (moment*1.01<=$2) && ($2<=moment*0.99) ) print 1;else print 0}'`
 msg="Moment Mz valide dans $Contrainte_visqueuse";message $ok 1
 
