@@ -41,7 +41,7 @@ fi
 # Build sans OpenMP et avec backend host si rocm pas installe:
 SUPPORT_HIP=ON && [ "$TRUST_USE_ROCM" != 1 ]   && SUPPORT_HIP=OFF && echo "Warning, ROCm non installe donc pas de support GPU."
 SUPPORT_MPI=ON && [ "$TRUST_DISABLE_MPI" = 1 ] && SUPPORT_MPI=OFF
-# Optimisation possible sur GPU (page 73 de la doc rocALUTION). faster transfers over the PCI-Express and llows asynchronous data movement
+# Optimisation possible sur GPU (page 73 de la doc rocALUTION). faster transfers over the PCI-Express and allows asynchronous data movement
 sed -i "1,$ s?#ifdef ROCALUTION_HIP_PINNED_MEMORY?#ifndef ROCALUTION_HIP_PINNED_MEMORY?g" src/base/hip/hip_allocate_free.cpp || exit -1
 
 # Hack bientot obsolete pour compiler avec rocm ancien (5.x) sur la branche develop recente:
@@ -49,6 +49,7 @@ sed -i "1,$ s?#ifdef ROCALUTION_HIP_PINNED_MEMORY?#ifndef ROCALUTION_HIP_PINNED_
 if [ "$ROCM_PATH" = /opt/rocm-5.7.1 ]
 then
    sed -i "1,$ s?nullptr,?/* nullptr, */?g" src/base/hip/hip_sparse.cpp || exit -1
+   sed -i "1,$ s?PtrType?int32_t?g"         src/base/global_matrix.hpp  || exit -1
 fi
 
 rm -r -f build
@@ -71,13 +72,6 @@ TARGETS="" && [ "$ROCM_ARCH" != "" ] && TARGETS="-DAMDGPU_TARGETS=$ROCM_ARCH"
 
 cmake .. $BUILD_CLIENTS $TARGETS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION -DBUILD_SHARED_LIBS=$SL || exit -1
 
-# Bidouille pour ROCM anciens... (Attention Adastra (rocm 5.2.0) donc supprimer cette partie si necessaire):
-#if [ -f $ROCM_PATH/include/rocsparse.h ]
-#then
-#   echo "Creating links for old Rocm version..."
-#   mkdir -p include/rocsparse && ln -s -f $ROCM_PATH/include/rocsparse.h include/rocsparse/rocsparse.h
-#   mkdir -p include/rocblas   && ln -s -f $ROCM_PATH/include/rocblas.h   include/rocblas/rocblas.h
-#fi
 $TRUST_MAKE
 
 # Install et copie des samples
