@@ -223,8 +223,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
   if (bloc_itr.empty())
     return;
 
-  //Check where is the data to minimize memory transfer between Host and Device
-  bool kernelOnDevice = (vx.isDataOnDevice() && resu.isDataOnDevice());
+  bool kernelOnDevice = resu.checkDataOnDevice(vx);
 
   //Lauch computation with the execution space and view types as (template) parameters
   if (kernelOnDevice)

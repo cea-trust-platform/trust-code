@@ -80,7 +80,7 @@ void local_max_abs_tab(const TRUSTTab<_TYPE_,_SIZE_>& tableau, TRUSTArray<_TYPE_
   for (_SIZE_ j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
 
-  bool kernelOnDevice = tableau.isDataOnDevice();
+  bool kernelOnDevice = tableau.checkDataOnDevice();
 
   if (kernelOnDevice)
     {

@@ -888,6 +888,9 @@ DoubleVect& Matrice_Morse::ajouter_multvect_(const DoubleVect& tab_x,DoubleVect&
     }
   else
     {
+      tab_x.ensureDataOnHost();
+      tab_resu.ensureDataOnHost();
+      coeff_.ensureDataOnHost();
       // Fast CPU (old) implementation with pointer:
       const DoubleVect& x = tab_x;
       DoubleVect& resu = tab_resu;
