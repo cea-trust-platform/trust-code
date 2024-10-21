@@ -88,7 +88,7 @@ template <typename _TYPE_>
 void local_max_abs_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_colonne)
 {
   max_colonne = std::numeric_limits<_TYPE_>::min();
-  bool kernelOnDevice = tableau.isDataOnDevice();
+  bool kernelOnDevice = tableau.checkDataOnDevice();
 
   if (kernelOnDevice)
     local_max_abs_tab_kernel<Kokkos::DefaultExecutionSpace, _TYPE_>(tableau, max_colonne, kernelOnDevice);
