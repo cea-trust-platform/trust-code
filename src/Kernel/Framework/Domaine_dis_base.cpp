@@ -201,7 +201,7 @@ const Champ_base& Domaine_dis_base::get_champ(const Motcle& un_nom) const
   else if (un_nom == "MESH_NUMBERING")
     return mesh_numbering();
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + un_nom.getString() + std::string(" not found !"));
 }
 
 bool Domaine_dis_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const

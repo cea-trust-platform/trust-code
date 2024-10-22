@@ -148,7 +148,7 @@ const Champ_base& Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_champ(co
     if (le_modele_turbulence->has_champ(nom))
       return le_modele_turbulence->get_champ(nom);
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 
 void Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_noms_champs_postraitables(Noms& nom, Option opt) const

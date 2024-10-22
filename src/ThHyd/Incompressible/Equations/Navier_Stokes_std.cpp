@@ -1487,7 +1487,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "vorticite")
     {
       if (la_vorticite.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, la_vorticite.valeur());
       if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
@@ -1498,7 +1498,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "critere_Q")
     {
       if (critere_Q.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, critere_Q.valeur());
       if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
@@ -1509,7 +1509,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "porosite_volumique")
     {
       if (porosite_volumique.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       double temps_courant = schema_temps().temps_courant();
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, porosite_volumique.valeur());
@@ -1521,7 +1521,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "y_plus")
     {
       if (y_plus.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, y_plus.valeur());
       if (((ch.temps() != la_vitesse->temps()) || (ch.temps() == temps_init)) && (la_vitesse->mon_equation_non_nul()))
@@ -1532,7 +1532,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "reynolds_maille")
     {
       if (Reynolds_maille.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, Reynolds_maille.valeur());
       if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
@@ -1543,7 +1543,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "courant_maille")
     {
       if (Courant_maille.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, Courant_maille.valeur());
       if (((ch.temps() != la_vitesse->temps()) || (ch.temps() == temps_init)) && (la_vitesse->mon_equation_non_nul()))
@@ -1554,7 +1554,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "taux_cisaillement")
     {
       if (Taux_cisaillement.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, Taux_cisaillement.valeur());
       if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
@@ -1565,7 +1565,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "gradient_vitesse")
     {
       if (grad_u.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, grad_u.valeur());
       if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
@@ -1576,7 +1576,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom == "pression_hydrostatique")
     {
       if (pression_hydrostatique_.est_nul())
-        throw std::runtime_error("Field not found !");
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, pression_hydrostatique_.valeur());
       if (((ch.temps() != la_vitesse->temps()) || (ch.temps() == temps_init)) && (la_vitesse->mon_equation_non_nul()))
@@ -1594,7 +1594,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     if (le_traitement_particulier->has_champ(nom))
       return le_traitement_particulier->get_champ(nom);
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 
 void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom, Option opt) const

@@ -571,7 +571,7 @@ const Champ_base& Chimie::get_champ(const Motcle& nom) const
         return reactions_[i].get_omega();
     }
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 
 void Chimie::get_noms_champs_postraitables(Noms& nom,Option opt) const

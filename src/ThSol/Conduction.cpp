@@ -288,7 +288,7 @@ const Champ_base& Conduction::get_champ(const Motcle& nom) const
     if (le_traitement_particulier->has_champ(nom))
       return le_traitement_particulier->get_champ(nom);
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 
 void Conduction::get_noms_champs_postraitables(Noms& nom, Option opt) const

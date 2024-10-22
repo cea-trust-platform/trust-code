@@ -120,7 +120,7 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
 {
   if (nom=="u_star_ibm")
     {
-      if (!champ_u_star_ibm_.non_nul())  throw std::runtime_error("Field not found !");
+      if (!champ_u_star_ibm_.non_nul())  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
       // Initialisation a 0 du champ volumique u_star
       DoubleTab& valeurs = champ_u_star_ibm_->valeurs();
       valeurs=0;
@@ -138,7 +138,7 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
     }
   else if (nom=="y_plus_ibm")
     {
-      if (!champ_y_plus_ibm_.non_nul())  throw std::runtime_error("Field not found !");
+      if (!champ_y_plus_ibm_.non_nul())  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
       // Initialisation a 0 du champ volumique u_star
       DoubleTab& valeurs = champ_y_plus_ibm_->valeurs();
       valeurs=0;

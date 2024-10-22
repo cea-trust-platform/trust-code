@@ -191,7 +191,7 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
   if (milieu().has_champ(nom))
     return milieu().get_champ(nom);
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 
 bool Navier_Stokes_Fluide_Dilatable_base::initTimeStep(double dt)

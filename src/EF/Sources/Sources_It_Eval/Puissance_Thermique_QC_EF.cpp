@@ -74,7 +74,7 @@ const Champ_base& Puissance_Thermique_QC_EF::get_champ(const Motcle& nom) const
   if (Terme_Source_EF_base::has_champ(nom))
     return Terme_Source_EF_base::get_champ(nom);
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 void Puissance_Thermique_QC_EF::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {

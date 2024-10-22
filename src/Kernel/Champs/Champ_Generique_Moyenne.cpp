@@ -189,7 +189,7 @@ const Champ_Generique_base& Champ_Generique_Moyenne::get_champ_post(const Motcle
       return ref_champ;
     }
 
-  throw std::runtime_error("Field not found !");
+  throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
 
 int Champ_Generique_Moyenne::comprend_champ_post(const Motcle& identifiant) const

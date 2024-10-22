@@ -36,7 +36,7 @@ public:
 
   //Methodes de l interface des champs postraitables
   void creer_champ(const Motcle& motlu) override { }
-  const Champ_base& get_champ(const Motcle& nom) const override { throw std::runtime_error("Field not found !"); }
+  const Champ_base& get_champ(const Motcle& nom) const override { throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !")); }
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override { }
   bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
   bool has_champ(const Motcle& nom) const override;
