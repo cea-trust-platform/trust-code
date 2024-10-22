@@ -1143,7 +1143,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
       if (itr->has_champ(nom))
         return itr->get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 void Equation_base::get_noms_champs_postraitables(Noms& noms, Option opt) const

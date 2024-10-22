@@ -68,5 +68,5 @@ const Champ_base& Gravite_Multiphase::get_champ(const Motcle& nom) const
   if (nom == "gravite")
     return champs_compris_.get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }

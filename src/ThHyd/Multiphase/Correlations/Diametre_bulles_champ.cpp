@@ -71,5 +71,5 @@ const Champ_base& Diametre_bulles_champ::get_champ(const Motcle& nom) const
   if (nom == "diametre_bulles")
     return champs_compris_.get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }

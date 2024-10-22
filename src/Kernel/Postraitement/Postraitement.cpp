@@ -2384,7 +2384,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
     if (itr->has_champ_post(nom))
       return itr->get_champ_post(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 //Decider de ce que doit faire exactement cette methode ou la supprimer

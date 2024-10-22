@@ -380,7 +380,7 @@ const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& n
       }
   }
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 int Champ_Generique_base::comprend_champ_post(const Motcle& identifiant) const

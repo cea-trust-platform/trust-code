@@ -98,5 +98,5 @@ const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle
   if (probleme().equation(0).has_champ(nom))
     return probleme().equation(0).get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }

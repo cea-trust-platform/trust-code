@@ -27,7 +27,7 @@ const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
   assert(motcle!="??");
   auto item = liste_champs_.find(motcle.getString());
   if (item != liste_champs_.end()) return item->second;
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 bool Champs_compris::has_champ(const Motcle& motcle, OBS_PTR(Champ_base)& ref_champ) const

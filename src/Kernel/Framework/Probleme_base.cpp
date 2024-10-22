@@ -870,7 +870,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
   Cerr << "4) Contact TRUST support." << finl;
   Process::exit();
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
@@ -930,7 +930,7 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
   Cerr << "or in the list of post-processed fields above (in the block 'Reading of fields to be postprocessed')." << finl;
   Process::exit();
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 int Probleme_base::a_pour_IntVect(const Motcle&, OBS_PTR(IntVect)& ) const

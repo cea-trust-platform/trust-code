@@ -328,7 +328,7 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
   Cerr<<"Check the field name to indicate in the post-processing set"<<finl;
   exit();
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 void Pb_MED::get_noms_champs_postraitables(Noms& noms,Option opt) const

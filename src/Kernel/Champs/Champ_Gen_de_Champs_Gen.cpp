@@ -447,7 +447,7 @@ const Champ_Generique_base& Champ_Gen_de_Champs_Gen::get_champ_post(const Motcle
   if (get_source(0).has_champ_post(nom))
     return get_source(0).get_champ_post(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 int Champ_Gen_de_Champs_Gen::comprend_champ_post(const Motcle& identifiant) const

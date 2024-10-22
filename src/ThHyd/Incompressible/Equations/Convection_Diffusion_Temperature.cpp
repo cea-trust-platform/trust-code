@@ -357,7 +357,7 @@ const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom)
   if (Convection_Diffusion_std::has_champ(nom))
     return Convection_Diffusion_std::get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 /*! @brief Renvoie le nom du domaine d'application de l'equation.

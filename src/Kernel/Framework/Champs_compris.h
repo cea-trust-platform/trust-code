@@ -46,12 +46,5 @@ protected :
   std::unordered_map<std::string, OBS_PTR(Champ_base)> liste_champs_;
 };
 
-// ToDo commenter pour supprimer totalement les exceptions dans Flica5 ou TRUST:
-class Champs_compris_erreur
-{
-public:
-  inline Champs_compris_erreur() {}
-};
-
 #endif /* Champs_compris_included */
 

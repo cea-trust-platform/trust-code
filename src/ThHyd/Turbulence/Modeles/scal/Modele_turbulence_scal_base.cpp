@@ -230,7 +230,7 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
     if (loipar_->has_champ(nom))
       return loipar_->get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom, Option opt) const

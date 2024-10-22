@@ -528,7 +528,7 @@ const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
   if (loi_etat_->has_champ(nom))
     return loi_etat_->get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) const

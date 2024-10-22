@@ -163,7 +163,7 @@ const Champ_base& Navier_Stokes_Turbulent_QC::get_champ(const Motcle& nom) const
   if (milieu().has_champ(nom))
     return milieu().get_champ(nom);
 
-  throw Champs_compris_erreur();
+  throw std::runtime_error("Field not found !");
 }
 
 /*! @brief Calcule la derivee en temps de l'inconnue vitesse, i.
