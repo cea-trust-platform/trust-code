@@ -72,8 +72,8 @@ case $Mpirun in
 		   ##################
 		   # Cas de OPENMPI #
 		   ##################
-                   # Message erreur sur OpenMPI 3.x sur PCs avec pas assez de coeurs: There are not enough slots available in the system to satisfy the ...
-                   [ "`$Mpirun --help all 2>&1 | grep "\-oversubscribe"`" != "" ] && Mpirun="$Mpirun -oversubscribe" 
+		   # Message erreur sur OpenMPI 3/4/5.x sur PCs avec pas assez de coeurs: There are not enough slots available in the system to satisfy the ...
+		   Mpirun="$Mpirun -oversubscribe"
 		fi	
 			
 		#######################
