@@ -95,11 +95,13 @@ void self_test()
         assert(inco.ref_count() == 2);
         DoubleTab b(N);
 
-        const double *a_addr = mapToDevice(a, "a"); // up-to-date, so does nothing normally
-        double *b_addr = b.addr();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
+        CDoubleArrView a_v = static_cast<const ArrOfDouble&>(a).view_ro();
+        DoubleArrView b_v = static_cast<ArrOfDouble&>(b).view_wo();
+        Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i)
+        {
+          b_v[i] = a_v[i];
+        });
+        Kokkos::fence();
 
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
@@ -108,7 +110,7 @@ void self_test()
         //assert(b[5] == a[5]); // Argh double& TRUSTArray<double>::operator[](int i) appele pour a et donc repasse sur host
         // Comment detecter que operator[](int i) est utilise en read ou write ? Possible ? Non, sauf si const utilise.
         assert(a.get_data_location() == DataLocation::HostDevice);
-        assert(b.get_data_location() == DataLocation::HostOnly);
+        assert(b.get_data_location() == DataLocation::HostDevice);
         assert(inco.get_data_location() == DataLocation::HostDevice);
       }
       assert(inco.get_data_location() == DataLocation::HostDevice);
@@ -120,20 +122,22 @@ void self_test()
         assert(a.get_data_location() == DataLocation::HostDevice);
         assert(a.ref_count() == 2);
         assert(inco.ref_count() == 2);
-        const double *a_addr = mapToDevice(a, "a"); // up-to-date, so does nothing normally
 
         DoubleTab b(N);
-        double *b_addr = b.data();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
+        CDoubleArrView a_v = static_cast<const ArrOfDouble&>(a).view_ro();
+        DoubleArrView b_v = static_cast<ArrOfDouble&>(b).view_wo();
+        Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i)
+        {
+          b_v[i] = a_v[i];
+        });
+        Kokkos::fence();
 
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 1);
         assert(a.get_data_location() == DataLocation::HostDevice);
-        assert(b.get_data_location() == DataLocation::HostOnly);
+        assert(b.get_data_location() == DataLocation::HostDevice);
       }
       assert(inco.ref_count() == 1);
 
@@ -148,19 +152,21 @@ void self_test()
         assert(a.get_data_location() == DataLocation::Device);
         assert(a.ref_count() == 2);
         assert(inco.ref_count() == 2);
-        const double *a_addr = mapToDevice(a, "a"); // update
 
         DoubleTab b(N);
-        double *b_addr = b.data();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
+        CDoubleArrView a_v = static_cast<const ArrOfDouble&>(a).view_ro();
+        DoubleArrView b_v = static_cast<ArrOfDouble&>(b).view_wo();
+        Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i)
+        {
+          b_v[i] = a_v[i];
+        });
+        Kokkos::fence();
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 2);
         assert(a.get_data_location() == DataLocation::HostDevice);
-        assert(b.get_data_location() == DataLocation::HostOnly);
+        assert(b.get_data_location() == DataLocation::HostDevice);
         assert(inco.get_data_location() == DataLocation::HostDevice); // Car a ref sur inco
       }
       assert(inco.get_data_location() == DataLocation::HostDevice);
@@ -174,19 +180,21 @@ void self_test()
         assert(a.get_data_location() == DataLocation::Device);
         assert(a.ref_count() == 2);
         assert(inco.ref_count() == 2);
-        const double *a_addr = mapToDevice(a, "a"); // up-to-date
 
         DoubleTab b(N);
-        double *b_addr = b.data();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
+        CDoubleArrView a_v = static_cast<const ArrOfDouble&>(a).view_ro();
+        DoubleArrView b_v = static_cast<ArrOfDouble&>(b).view_wo();
+        Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i)
+        {
+          b_v[i] = a_v[i];
+        });
+        Kokkos::fence();
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 3);
         assert(a.get_data_location() == DataLocation::HostDevice);
-        assert(b.get_data_location() == DataLocation::HostOnly);
+        assert(b.get_data_location() == DataLocation::HostDevice);
         assert(inco.get_data_location() == DataLocation::HostDevice);
       }
       assert(inco.get_data_location() == DataLocation::HostDevice);
@@ -376,10 +384,13 @@ void self_test()
         mapToDevice(b, "b"); // Sur le device
         assert(b.get_data_location()==DataLocation::HostDevice); // b doit etre sur le device
         assert(a.get_data_location()==DataLocation::HostDevice); // a doit etre sur le device
-        double* a_ptr = computeOnTheDevice(a);
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-        for (int i=0; i<2*N; i++)
-          a_ptr[i]=2;
+
+        DoubleArrView a_v = static_cast<ArrOfDouble&>(a).view_wo();
+        Kokkos::parallel_for(2*N, KOKKOS_LAMBDA(const int i)
+        {
+          a_v[i] = 2;
+        });
+        Kokkos::fence();
         // Retour sur le device et verification que a etait completement sur le device:
         assert(a.get_data_location()==DataLocation::Device);
         assert(a(0)==2);
