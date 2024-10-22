@@ -231,6 +231,15 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(mutil.check_str_equality(s, data_ex).ok)
 
+    def test_load_dataset(self):
+        """ High-level method trustify.load_dataset() """
+        import trustify
+        dataset = trustify.load_dataset("test/datasets/diffusion_implicite_jdd6.data")
+        self.assertEqual(dataset.entries[2].obj.nb_pas_dt_max, 3)
+        parser = "test/generated/TRAD2_full_pars.py"
+        dataset = trustify.load_dataset("test/datasets/diffusion_implicite_jdd6.data", parser)
+        self.assertEqual(dataset.entries[2].obj.nb_pas_dt_max, 3)
+
     def xx_test_single_ds(self):
         """ tmp single dataset """
         # self.__class__._do_not_regenerate = True
