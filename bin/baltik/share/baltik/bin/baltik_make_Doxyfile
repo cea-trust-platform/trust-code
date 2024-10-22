@@ -1,6 +1,16 @@
 #!/bin/bash
 # pour le passage des commentaires en commentaires doxy
 [ "$project_directory" = "" ] && echo project_directory not set && exit 1
+if [ ! -d $TRUST_ROOT/doc/html/index.html ]
+then
+   echo "Doxygen (html) documentation has not been generated for TRUST, you should run:"
+   echo "    cd $TRUST_ROOT"
+   echo "    make doxygen"
+   echo "then:"
+   echo "    cd $project_directory"
+   echo "    make doxygen"
+   exit 1
+fi
 # a priori 8 differences avec make_Doxyfile
 prepare_sources()
 {

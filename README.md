@@ -194,7 +194,9 @@ TRUST offers a generic interface that can be used to calculate thermo-physical p
 
 CoolProp is an open source ([MIT License](https://github.com/CoolProp/CoolProp/blob/master/LICENSE)) library useful to compute thermo-physical properties for the masses.
 
-A pre-compiled static library of CoolProp is mandatory if a TRUST user wants to use its interface via TRUST. Here are the steps that can be followed to obtain a libcoolprop.a
+A pre-compiled static library of CoolProp is mandatory if a TRUST user wants to use its interface via TRUST.
+**Warning: On a cluster, if you want to install TRUST with CoolProp, you should install both with the same compilers.**
+Here are the steps that can be followed to obtain a libcoolprop.a
 
 ```bash
 # Get the sources archive (version 6.6.0)
