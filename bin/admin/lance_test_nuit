@@ -323,6 +323,11 @@ check_components()
                            fi
                         else
                            mode_option="--with-mode=optim"
+                           if [[ "$valgrind_machines" = *"$machine"* ]]
+                           then
+                              # passage des tests en mode valgrind debug sur F5
+                              [ "$Composant" = flica5 ] && mode_option="--with-mode=debug"
+                           fi
                         fi
                         if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
                         then

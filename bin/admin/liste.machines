@@ -11,7 +11,7 @@ linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-FLICA5   					-clang 	
 linux   rsync_ssh       tache   is157083-clang.intra.cea.fr 		-all	   -TrioCFD	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 38 GF 
 linux   rsync_ssh       tache   is234637-clang.intra.cea.fr 		-all	   -TrioCFD -FLICA5	 		   		-clang  	 -force_latest_mpich -without-pdflatex -without-visit -disable-plot2d -disable-gmsh   					# Fedora 40 GA 
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
-linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO -TrioMC    					 -without-pdflatex    							# Fedora 38 	Bat 454 LMEC titania  GF
+linux	rsync_ssh	tache	is157083-cpp14.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO -TrioMC    		-stdcpp14 			 -without-pdflatex    							# Fedora 38 	Bat 454 LMEC titania  GF
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD  -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D -TrioMC   -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
 linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda -disable-hwloc  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD 						-build_64_bit -without-doc -disable-plot2d -without-conda -disable-hwloc  						# RedHat 7.6	CEA CCRT
@@ -25,8 +25,7 @@ linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD           		 		-build_64_bit -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit   
 linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit 
-linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD  -STT -PEMFC -FLICA5    				 -disable-plot2d -disable-hwloc  		-benchmark 								# CentOS 7.6	CEA Saclay
-linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD  -FLICA5   					  -disable-plot2d -disable-hwloc  	-benchmark 								# CentOS 7.6	CEA Saclay
+linux	rsync_ssh	tache	orcus-amd.intra.cea.fr	-limited	-TrioCFD  -STT -PEMFC -FLICA5    				 -disable-plot2d -disable-hwloc  		-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD    				-build_64_bit -without-doc -disable-hwloc -disable-plot2d		 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD   			-cuda -openmp 											# Rocky 9	CEA Saclay
 linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d -disable-hwloc  	 				# Redhat 8.5	CEA Cad
