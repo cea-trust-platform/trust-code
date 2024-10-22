@@ -36,6 +36,10 @@ find_library(libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_
 #message("Utilisation de la librairie : ${libbaltik_name} " )
 #find_library(libBaltik NAMES ${libbaltik_name}.so PATHS ${project_directory}/build/src/exec${ajout}${OPT} NO_DEFAULT_PATH )
 
+#if (NOT libBaltik)
+#    message(FATAL_ERROR "Could not find BALTIK library: ${libbaltik_name}.so - did you run: make module_optim in your baltik (potentially in debug)??")
+#endif()
+
 find_package(PythonInterp 3 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
 find_package(PythonLibs 3 REQUIRED)    # ... so that TRUST Python libs are found too.
 
@@ -58,7 +62,6 @@ set(swig_file ${CMAKE_CURRENT_BINARY_DIR}/trusticoco.i)
 configure_file(trusticoco.i.in ${swig_file} @ONLY)
 
 set_source_files_properties(${swig_file} PROPERTIES CPLUSPLUS ON)
-set_source_files_properties(${swig_file} PROPERTIES SWIG_FLAGS "-py3")
 set(comp_def_)
 if(NOT $ENV{TRUST_DISABLE_MEDCOUPLING})
     list(APPEND comp_def_ "MEDCOUPLING")
