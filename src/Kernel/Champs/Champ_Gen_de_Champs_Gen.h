@@ -87,6 +87,7 @@ public:
   int get_info_type_post() const override;
 
   const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;
+  bool has_champ_post(const Motcle& nom) const override;
   int comprend_champ_post(const Motcle& identifiant) const override;
 
   //Methode pour changer t_deb et t_fin pour des reprises de statistiques

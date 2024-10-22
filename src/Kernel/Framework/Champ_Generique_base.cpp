@@ -311,6 +311,34 @@ const Domaine_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const
   throw Champ_Generique_erreur("INVALID");
 }
 
+bool Champ_Generique_base::has_champ_post(const Motcle& nom) const
+{
+  Motcle nom_champ;
+
+  const Noms nom_champ_post = get_property("nom");
+  nom_champ = Motcle(nom_champ_post[0]);
+  if (nom_champ == nom)
+    return true;
+
+  const Noms syno = get_property("synonyms");
+  for (int i = 0; i < syno.size(); i++)
+    {
+      nom_champ = Motcle(syno[i]);
+      if (nom_champ == nom)
+        return true;
+    }
+
+  const Noms composantes = get_property("composantes");
+  for (const auto &itr : composantes)
+    {
+      nom_champ = Motcle(itr);
+      if (nom_champ == nom)
+        return true;
+    }
+
+  return false; /* rien trouve */
+}
+
 const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& nom) const
 {
   OBS_PTR(Champ_Generique_base) ref_champ;

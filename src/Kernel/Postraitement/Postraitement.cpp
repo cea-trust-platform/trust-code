@@ -2369,19 +2369,21 @@ int Postraitement::comprend_champ_post(const Motcle& identifiant) const
   return 0;
 }
 
-const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) const
+bool Postraitement::has_champ_post(const Motcle& nom) const
 {
   for (const auto& itr : champs_post_complet_)
-    {
-      try
-        {
-          return itr->get_champ_post(nom);
-        }
-      catch (Champs_compris_erreur&)
-        {
-        }
-    }
-  //Cerr<<"Field " <<nom<<" not found."<< finl;
+    if (itr->has_champ_post(nom))
+      return true;
+
+  return false; /* rien trouve */
+}
+
+const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) const
+{
+  for (const auto &itr : champs_post_complet_)
+    if (itr->has_champ_post(nom))
+      return itr->get_champ_post(nom);
+
   throw Champs_compris_erreur();
 }
 

@@ -428,22 +428,24 @@ void Champ_Gen_de_Champs_Gen::lire_bidon(Entree& is) const
     }
 }
 
+bool Champ_Gen_de_Champs_Gen::has_champ_post(const Motcle& nom) const
+{
+  if (Champ_Generique_base::has_champ_post(nom))
+    return true;
+
+  if (get_source(0).has_champ_post(nom))
+    return true;
+
+  return false; /* rien trouve */
+}
+
 const Champ_Generique_base& Champ_Gen_de_Champs_Gen::get_champ_post(const Motcle& nom) const
 {
-  try
-    {
-      return Champ_Generique_base::get_champ_post(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-  try
-    {
-      return get_source(0).get_champ_post(nom);
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
+  if (Champ_Generique_base::has_champ_post(nom))
+    return Champ_Generique_base::get_champ_post(nom);
+
+  if (get_source(0).has_champ_post(nom))
+    return get_source(0).get_champ_post(nom);
 
   throw Champs_compris_erreur();
 }

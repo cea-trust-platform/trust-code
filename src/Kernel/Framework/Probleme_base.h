@@ -133,6 +133,7 @@ public:
 
   //Pour acceder a un champ de la liste portee pas le postraitement.
   virtual const Champ_Generique_base& get_champ_post(const Motcle& nom) const;
+  virtual bool has_champ_post(const Motcle& nom) const;
   virtual int comprend_champ_post(const Motcle& nom) const;
 
   // Fonctions de recherche de IntTab pour le postraitement

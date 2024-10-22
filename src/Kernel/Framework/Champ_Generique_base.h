@@ -116,6 +116,7 @@ public:
   //get_champ_post() renvoie le champ si l identifiant passe en parametre designe
   //le nom du champ ou l une de ses composantes
   virtual const Champ_Generique_base& get_champ_post(const Motcle& nom) const;
+  virtual bool has_champ_post(const Motcle& nom) const;
 
   //renvoie 1 si le champ est identifie, 0 sinon
   virtual int comprend_champ_post(const Motcle& identifiant) const;

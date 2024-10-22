@@ -65,6 +65,7 @@ public:
   void nommer_source() override;
 
   const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;
+  bool has_champ_post(const Motcle& nom) const override;
   int comprend_champ_post(const Motcle& identifiant) const override;
 
 protected:

@@ -137,6 +137,7 @@ public:
 
 
   virtual const Champ_Generique_base& get_champ_post(const Motcle& nom) const;
+  virtual bool has_champ_post(const Motcle& nom) const;
 
   Nom set_expression_champ(const Motcle& motlu1,const Motcle& motlu2,
                            const Motcle& motlu3,const Motcle& motlu4,

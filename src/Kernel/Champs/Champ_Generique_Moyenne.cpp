@@ -146,31 +146,43 @@ void Champ_Generique_Moyenne::nommer_source()
     }
 }
 
-const Champ_Generique_base& Champ_Generique_Moyenne::get_champ_post(const Motcle& nom) const
+bool Champ_Generique_Moyenne::has_champ_post(const Motcle& nom) const
 {
-  OBS_PTR(Champ_Generique_base) ref_champ;
-  try
-    {
-      return Champ_Gen_de_Champs_Gen::get_champ_post(nom) ;
-    }
-  catch (Champs_compris_erreur&)
-    {
-    }
-
-  //Nom supplementaire teste car c est le nom utilise par :
-  //Champ_Generique_Ecart_Type::completer()
-  //Champ_Generique_Correlation::completer()
+  if (Champ_Gen_de_Champs_Gen::has_champ_post(nom))
+    return true;
 
   Noms nom_source = get_source(0).get_property("nom");
   Motcle nom_champ = nom_source[0];
   Motcle nom_champ_moyenne("Moyenne_");
   nom_champ_moyenne += nom_champ;
   nom_champ_moyenne += "_";
-  nom_champ_moyenne += Nom(tstat_deb_,"%e");
+  nom_champ_moyenne += Nom(tstat_deb_, "%e");
   nom_champ_moyenne += "_";
-  nom_champ_moyenne += Nom(tstat_fin_,"%e");
+  nom_champ_moyenne += Nom(tstat_fin_, "%e");
 
-  if (nom_champ_moyenne==nom)
+  if (nom_champ_moyenne == nom)
+    return true;
+
+  return false; /* rien trouve */
+}
+
+const Champ_Generique_base& Champ_Generique_Moyenne::get_champ_post(const Motcle& nom) const
+{
+  if (Champ_Gen_de_Champs_Gen::has_champ_post(nom))
+    return Champ_Gen_de_Champs_Gen::get_champ_post(nom);
+
+  OBS_PTR(Champ_Generique_base) ref_champ;
+
+  Noms nom_source = get_source(0).get_property("nom");
+  Motcle nom_champ = nom_source[0];
+  Motcle nom_champ_moyenne("Moyenne_");
+  nom_champ_moyenne += nom_champ;
+  nom_champ_moyenne += "_";
+  nom_champ_moyenne += Nom(tstat_deb_, "%e");
+  nom_champ_moyenne += "_";
+  nom_champ_moyenne += Nom(tstat_fin_, "%e");
+
+  if (nom_champ_moyenne == nom)
     {
       ref_champ = *this;
       ref_champ->fixer_identifiant_appel(nom);

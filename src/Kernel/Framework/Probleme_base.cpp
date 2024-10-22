@@ -902,30 +902,35 @@ int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
   return 0;
 }
 
+bool Probleme_base::has_champ_post(const Motcle& nom) const
+{
+  for (const auto &itr : postraitements())
+    if (sub_type(Postraitement, itr.valeur()))
+      {
+        const Postraitement& post = ref_cast(Postraitement, itr.valeur());
+        if (post.has_champ_post(nom))
+          return true;
+      }
+
+  return false; /* rien trouve */
+}
+
 const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) const
 {
-  OBS_PTR(Champ_Generique_base) ref_champ;
-
   for (const auto &itr : postraitements())
-    {
-      if (sub_type(Postraitement, itr.valeur()))
-        {
-          const Postraitement& post = ref_cast(Postraitement, itr.valeur());
-          try
-            {
-              return post.get_champ_post(un_nom);
-            }
-          catch (Champs_compris_erreur&) { }
-        }
-    }
-  Cerr<<" "<<finl;
-  Cerr<<"The field named "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
-  Cerr<<"Check the name of the field indicated into the postprocessing block of the data file " << finl;
-  Cerr<<"or in the list of post-processed fields above (in the block 'Reading of fields to be postprocessed')."<<finl;
+    if (sub_type(Postraitement, itr.valeur()))
+      {
+        const Postraitement& post = ref_cast(Postraitement, itr.valeur());
+        if (post.has_champ_post(un_nom))
+          return post.get_champ_post(un_nom);
+      }
+
+  Cerr << "The field named " << un_nom << " do not correspond to a field understood by the problem." << finl;
+  Cerr << "Check the name of the field indicated into the postprocessing block of the data file " << finl;
+  Cerr << "or in the list of post-processed fields above (in the block 'Reading of fields to be postprocessed')." << finl;
   Process::exit();
 
-  //Pour compilation
-  return ref_champ;
+  throw Champs_compris_erreur();
 }
 
 int Probleme_base::a_pour_IntVect(const Motcle&, OBS_PTR(IntVect)& ) const
