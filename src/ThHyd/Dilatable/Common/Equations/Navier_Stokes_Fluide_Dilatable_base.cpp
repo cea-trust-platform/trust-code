@@ -157,11 +157,11 @@ bool Navier_Stokes_Fluide_Dilatable_base::has_champ(const Motcle& nom, OBS_PTR(C
       return true;
     }
 
-  if (Navier_Stokes_std::has_champ(nom))
-    return Navier_Stokes_std::has_champ(nom, ref_champ);
+  if (Navier_Stokes_std::has_champ(nom, ref_champ))
+    return true;
 
-  if (milieu().has_champ(nom))
-    return milieu().has_champ(nom, ref_champ);
+  if (milieu().has_champ(nom, ref_champ))
+    return true;
 
   return false; /* rien trouve */
 }
@@ -185,11 +185,13 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
   if (nom == "rho_u")
     return rho_la_vitesse();
 
-  if (Navier_Stokes_std::has_champ(nom))
-    return Navier_Stokes_std::get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
 
-  if (milieu().has_champ(nom))
-    return milieu().get_champ(nom);
+  if (Navier_Stokes_std::has_champ(nom, ref_champ))
+    return ref_champ;
+
+  if (milieu().has_champ(nom, ref_champ))
+    return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }

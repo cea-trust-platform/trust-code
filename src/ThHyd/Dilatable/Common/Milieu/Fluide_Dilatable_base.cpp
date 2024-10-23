@@ -500,11 +500,11 @@ void Fluide_Dilatable_base::creer_champ(const Motcle& motlu)
 
 bool Fluide_Dilatable_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  if (Fluide_base::has_champ(nom))
-    return Fluide_base::has_champ(nom, ref_champ);
+  if (Fluide_base::has_champ(nom, ref_champ))
+    return true;
 
-  if (loi_etat_->has_champ(nom))
-    return loi_etat_->has_champ(nom, ref_champ);
+  if (loi_etat_->has_champ(nom, ref_champ))
+    return true;
 
   return false; /* rien trouve */
 }
@@ -522,11 +522,13 @@ bool Fluide_Dilatable_base::has_champ(const Motcle& nom) const
 
 const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
 {
-  if (Fluide_base::has_champ(nom))
-    return Fluide_base::get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
 
-  if (loi_etat_->has_champ(nom))
-    return loi_etat_->get_champ(nom);
+  if (Fluide_base::has_champ(nom, ref_champ))
+    return ref_champ;
+
+  if (loi_etat_->has_champ(nom, ref_champ))
+    return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }

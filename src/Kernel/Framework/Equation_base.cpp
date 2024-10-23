@@ -1050,32 +1050,32 @@ bool Equation_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ)
 
   if (nom == Motcle(inco_residu))
     {
-      ref_champ = get_champ(nom);
+      ref_champ = Equation_base::get_champ(nom);
       return true;
     }
 
   for (const auto &itr : list_champ_combi)
     if (itr->le_nom() == nom)
       {
-        ref_champ = get_champ(nom);
+        ref_champ = Equation_base::get_champ(nom);
         return true;
       }
 
-  if (champs_compris_.has_champ(nom))
-    return champs_compris_.has_champ(nom, ref_champ);
+  if (champs_compris_.has_champ(nom, ref_champ))
+    return true;
 
-  if (milieu().has_champ(nom))
-    return milieu().has_champ(nom, ref_champ);
+  if (milieu().has_champ(nom, ref_champ))
+    return true;
 
   for (int i = 0; i < nombre_d_operateurs(); i++)
     if (operateur(i).op_non_nul())
-      if (operateur(i).l_op_base().has_champ(nom))
-        return operateur(i).l_op_base().has_champ(nom, ref_champ);
+      if (operateur(i).l_op_base().has_champ(nom, ref_champ))
+        return true;
 
   for (const auto &itr : les_sources)
     if (itr.non_nul())
-      if (itr->has_champ(nom))
-        return itr->has_champ(nom, ref_champ);
+      if (itr->has_champ(nom, ref_champ))
+        return true;
 
   return false; /* rien trouve */
 }
@@ -1127,21 +1127,23 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     if (itr->le_nom() == nom && itr->temps() != inconnue().temps())
       ref_cast_non_const(Champ_Fonc_base,itr.valeur()).mettre_a_jour(inconnue().temps());
 
-  if (champs_compris_.has_champ(nom))
-    return champs_compris_.get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
 
-  if (milieu().has_champ(nom))
-    return milieu().get_champ(nom);
+  if (champs_compris_.has_champ(nom, ref_champ))
+    return ref_champ;
+
+  if (milieu().has_champ(nom, ref_champ))
+    return ref_champ;
 
   for (int i = 0; i < nombre_d_operateurs(); i++)
     if (operateur(i).op_non_nul())
-      if (operateur(i).l_op_base().has_champ(nom))
-        return operateur(i).l_op_base().get_champ(nom);
+      if (operateur(i).l_op_base().has_champ(nom, ref_champ))
+        return ref_champ;
 
   for (const auto &itr : les_sources)
     if (itr.non_nul())
-      if (itr->has_champ(nom))
-        return itr->get_champ(nom);
+      if (itr->has_champ(nom, ref_champ))
+        return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }

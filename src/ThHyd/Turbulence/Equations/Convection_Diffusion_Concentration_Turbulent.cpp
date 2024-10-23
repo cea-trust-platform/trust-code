@@ -127,12 +127,12 @@ void Convection_Diffusion_Concentration_Turbulent::creer_champ(const Motcle& mot
 
 bool Convection_Diffusion_Concentration_Turbulent::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  if (Convection_Diffusion_Concentration::has_champ(nom))
-    return Convection_Diffusion_Concentration::has_champ(nom, ref_champ);
+  if (Convection_Diffusion_Concentration::has_champ(nom, ref_champ))
+    return true;
 
   if (le_modele_turbulence.non_nul())
-    if (le_modele_turbulence->has_champ(nom))
-      return le_modele_turbulence->has_champ(nom, ref_champ);
+    if (le_modele_turbulence->has_champ(nom, ref_champ))
+      return true;
 
   return false; /* rien trouve */
 }
@@ -151,12 +151,14 @@ bool Convection_Diffusion_Concentration_Turbulent::has_champ(const Motcle& nom) 
 
 const Champ_base& Convection_Diffusion_Concentration_Turbulent::get_champ(const Motcle& nom) const
 {
-  if (Convection_Diffusion_Concentration::has_champ(nom))
-    return Convection_Diffusion_Concentration::get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
+
+  if (Convection_Diffusion_Concentration::has_champ(nom, ref_champ))
+    return ref_champ;
 
   if (le_modele_turbulence.non_nul())
-    if (le_modele_turbulence->has_champ(nom))
-      return le_modele_turbulence->get_champ(nom);
+    if (le_modele_turbulence->has_champ(nom, ref_champ))
+      return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }

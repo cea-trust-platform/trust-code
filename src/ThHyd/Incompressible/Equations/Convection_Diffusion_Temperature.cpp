@@ -293,14 +293,14 @@ bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom, OBS_PTR(Cham
 {
   if (nom == "gradient_temperature")
     {
-      ref_champ = get_champ(nom);
+      ref_champ = Convection_Diffusion_Temperature::get_champ(nom);
       return true;
     }
 
   if (h_echange.non_nul())
     if (nom == h_echange->le_nom())
       {
-        ref_champ = get_champ(nom);
+        ref_champ = Convection_Diffusion_Temperature::get_champ(nom);
         return true;
       }
 
@@ -354,8 +354,10 @@ const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom)
         return champs_compris_.get_champ(nom);
       }
 
-  if (Convection_Diffusion_std::has_champ(nom))
-    return Convection_Diffusion_std::get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
+
+  if (Convection_Diffusion_std::has_champ(nom, ref_champ))
+    return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }

@@ -99,16 +99,23 @@ void Turbulence_paroi_base::creer_champ(const Motcle& motlu)
 
 bool Turbulence_paroi_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  // TODO FIXME
-  Process::exit("TODO FIXME - Turbulence_paroi_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ)");
-  return false;
+  if (nom == champ_u_star_.le_nom())
+    {
+      ref_champ = Turbulence_paroi_base::get_champ(nom);
+      return true;
+    }
+  else
+    return champs_compris_.has_champ(nom, ref_champ);
 }
+
 bool Turbulence_paroi_base::has_champ(const Motcle& nom) const
 {
-  // TODO FIXME
-  Process::exit("TODO FIXME - Turbulence_paroi_base::has_champ(const Motcle& un_nom)");
-  return false;
+  if (nom == champ_u_star_.le_nom())
+    return true;
+  else
+    return champs_compris_.has_champ(nom);
 }
+
 const Champ_base& Turbulence_paroi_base::get_champ(const Motcle& nom) const
 {
   if (nom == champ_u_star_.le_nom())

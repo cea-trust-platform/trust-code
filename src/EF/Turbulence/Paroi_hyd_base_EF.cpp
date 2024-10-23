@@ -55,19 +55,13 @@ bool Paroi_hyd_base_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_ch
 {
   if (nom == champ_u_star_.le_nom())
     {
-      ref_champ = get_champ(nom);
+      ref_champ = Paroi_hyd_base_EF::get_champ(nom);
       return true;
     }
+  else if (champs_compris_.has_champ(nom, ref_champ))
+    return true;
   else
-    {
-      if (champs_compris_.has_champ(nom))
-        {
-          ref_champ = champs_compris_.get_champ(nom);
-          return true;
-        }
-      else
-        return false;
-    }
+    return false;
 }
 
 bool Paroi_hyd_base_EF::has_champ(const Motcle& nom) const

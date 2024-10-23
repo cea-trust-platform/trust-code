@@ -1447,16 +1447,16 @@ bool Navier_Stokes_std::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_ch
       || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
       || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
     {
-      ref_champ = get_champ(nom);
+      ref_champ = Navier_Stokes_std::get_champ(nom);
       return true;
     }
 
-  if (Equation_base::has_champ(nom))
-    return Equation_base::has_champ(nom, ref_champ);
+  if (Equation_base::has_champ(nom, ref_champ))
+    return true;
 
   if (le_traitement_particulier.non_nul())
-    if (le_traitement_particulier->has_champ(nom))
-      return le_traitement_particulier->has_champ(nom, ref_champ);
+    if (le_traitement_particulier->has_champ(nom, ref_champ))
+      return true;
 
   return false; /* rien trouve */
 }
@@ -1587,12 +1587,14 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
       return champs_compris_.get_champ(nom);
     }
 
-  if (Equation_base::has_champ(nom))
-    return Equation_base::get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
+
+  if (Equation_base::has_champ(nom, ref_champ))
+    return ref_champ;
 
   if (le_traitement_particulier.non_nul())
-    if (le_traitement_particulier->has_champ(nom))
-      return le_traitement_particulier->get_champ(nom);
+    if (le_traitement_particulier->has_champ(nom, ref_champ))
+      return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }

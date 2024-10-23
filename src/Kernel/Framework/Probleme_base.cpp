@@ -840,25 +840,27 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
-  if (domaine_dis().has_champ(un_nom))
-    return domaine_dis().get_champ(un_nom);
+  OBS_PTR(Champ_base) ref_champ;
+
+  if (domaine_dis().has_champ(un_nom, ref_champ))
+    return ref_champ;
 
   for (int i = 0; i < nombre_d_equations(); i++)
     {
-      if (equation(i).has_champ(un_nom))
-        return equation(i).get_champ(un_nom);
+      if (equation(i).has_champ(un_nom, ref_champ))
+        return ref_champ;
 
-      if (equation(i).milieu().has_champ(un_nom))
-        return equation(i).milieu().get_champ(un_nom);
+      if (equation(i).milieu().has_champ(un_nom, ref_champ))
+        return ref_champ;
     }
 
   for (const auto &corr : correlations_)
-    if (corr.second->has_champ(un_nom))
-      return corr.second->get_champ(un_nom);
+    if (corr.second->has_champ(un_nom, ref_champ))
+      return ref_champ;
 
   for (const auto &itr : liste_loi_fermeture_)
-    if (itr->has_champ(un_nom))
-      return itr->get_champ(un_nom);
+    if (itr->has_champ(un_nom, ref_champ))
+      return ref_champ;
 
   Cerr << "The field of name " << un_nom << " do not correspond to a field understood by the problem." << finl;
   Cerr << "It may be a field dedicated only to post-process and defined in the Definition_champs set." << finl;
@@ -886,7 +888,6 @@ void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
       const Loi_Fermeture_base& loi=itr.valeur();
       loi.get_noms_champs_postraitables(noms,opt);
     }
-
 }
 
 int Probleme_base::comprend_champ_post(const Motcle& un_nom) const

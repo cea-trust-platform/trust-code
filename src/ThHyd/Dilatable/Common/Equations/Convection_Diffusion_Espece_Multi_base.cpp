@@ -67,12 +67,12 @@ int Convection_Diffusion_Espece_Multi_base::lire_motcle_non_standard(const Motcl
 
 bool Convection_Diffusion_Espece_Multi_base::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom))
-    return Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom, ref_champ);
+  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom, ref_champ))
+    return true;
 
   // a revoir ..... a mon avis
-  if (probleme().equation(0).has_champ(nom))
-    return probleme().equation(0).has_champ(nom, ref_champ);
+  if (probleme().equation(0).has_champ(nom, ref_champ))
+    return true;
 
   return false; /* rien trouve */
 }
@@ -91,12 +91,14 @@ bool Convection_Diffusion_Espece_Multi_base::has_champ(const Motcle& nom) const
 
 const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle& nom) const
 {
-  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom))
-    return Convection_Diffusion_Espece_Fluide_Dilatable_base::get_champ(nom);
+  OBS_PTR(Champ_base) ref_champ;
+
+  if (Convection_Diffusion_Espece_Fluide_Dilatable_base::has_champ(nom, ref_champ))
+    return ref_champ;
 
   // a revoir ..... a mon avis
-  if (probleme().equation(0).has_champ(nom))
-    return probleme().equation(0).get_champ(nom);
+  if (probleme().equation(0).has_champ(nom, ref_champ))
+    return ref_champ;
 
   throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
 }
