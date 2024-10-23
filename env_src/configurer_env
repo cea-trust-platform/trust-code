@@ -1043,7 +1043,20 @@ TRUST_VERSION_GNU=`print_GNU_VERSION`
 # Verification que les compilateurs ont ete trouves.
 ####################################################
 compiler_found=1
-[ "$TRUST_CC_BASE" = "" ] && echo "Error! No $TRUST_STDCPP compiler found." && compiler_found=0
+if [ "$TRUST_CC_BASE" = "" ]
+then
+   if [ "$TRUST_STDCPP" = c++14 ]
+   then
+      echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0"
+   elif [ "$TRUST_STDCPP" = c++17 ]
+   then
+      echo "Error! No C++17 compiler found. For a GNU compiler, you would need a version>=7.0"
+      echo "       or configure for a C++14 compiler with: ./configure -std=c++14 (For GNU compilers, version>=5.0 needed)"
+   else
+     echo "Error! -std=$TRUST_STDCPP is not supported."
+   fi
+   compiler_found=0
+fi
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
 if [ "$compiler_found" = 0 ] ; then

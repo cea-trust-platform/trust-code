@@ -1,7 +1,7 @@
 #!/bin/bash
 # pour le passage des commentaires en commentaires doxy
 [ "$project_directory" = "" ] && echo project_directory not set && exit 1
-if [ ! -d $TRUST_ROOT/doc/html/index.html ]
+if [ ! -f $TRUST_ROOT/doc/html/index.html ]
 then
    echo "Doxygen (html) documentation has not been generated for TRUST, you should run:"
    echo "    cd $TRUST_ROOT"
