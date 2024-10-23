@@ -28,6 +28,8 @@ do
    # Hack configure (libgd from conda was found but not correctly linked to gnuplot):
    sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib -liconv ?g" ./configure || exit -1
 
+   # Vu sur fedora 40 et avec gcc>=14, erreur -Wimplicit-function-declaration au build de gnuplot 5.2.7 (qui n'arrive pas avec gnuplot 6.0.1)
+   [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=14)}'`" = 1 ] && export CFLAGS="-Wno-implicit-function-declaration"
    # configure:
    ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --disable-wxwidgets --without-lua --without-tutorial --with-readline=builtin --with-gd=$libgd 2>&1 || exit -1
 
