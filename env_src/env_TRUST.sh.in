@@ -23,6 +23,9 @@ else
       echo ". $0"
       exit -1
    fi
+   # Sauvegarde de l'ancien TRUST_ROOT si existant
+   [ "$TRUST_ROOT" != "" ] && PREV_TRUST_ROOT=$TRUST_ROOT
+
    # GF on revient a TRUST_ROOT en dur sinon pb avec chemin relatif 
    #TRUST_ROOT=path_to_trio
    # ND on detecte TRUST_ROOT de maniere interactive
@@ -31,6 +34,18 @@ else
    # PL: Pourquoi -L lien ? -f suffit
    [ -f $DIR/env_TRUST.sh ] && TRUST_ROOT=$DIR || TRUST_ROOT=$(cd $DIR/..; pwd)
    export TRUST_ROOT
+
+   # Si TRUST_ROOT a change, on reinitialise les variables d'environnement
+   if [ "$PREV_TRUST_ROOT" != "" ] && [ "$PREV_TRUST_ROOT" != "$TRUST_ROOT" ]
+   then
+      export PATH="`echo $PATH | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+      export LD_LIBRARY_PATH="`echo $LD_LIBRARY_PATH | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+      export LD_LIBRARY64_PATH="`echo $LD_LIBRARY64_PATH | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+      export MANPATH="`echo $MANPATH | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+      export LIBPATH="`echo $LIBPATH | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+      export SHLIB_PATH="`echo $SHLIB_PATH | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+      export TEXINPUTS="`echo $TEXINPUTS | sed "s/:/:\n/g" | sort -u | grep -v $PREV_TRUST_ROOT | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g'`"
+   fi
 
    #################################
    # Print some infos on the version
