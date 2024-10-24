@@ -14,6 +14,17 @@ TRUST_environnement_error() {
     exit 1
 }
 
+project_cfg_error() {
+    echo "-----------------------------------------"
+    echo "ERROR: Unknown keyword \"$1\" in the $2 section of project.cfg!"
+    echo "       List of authorized keys is:"
+    echo "           $3"
+    echo "       Fix your project.cfg or contact TRUST support team."
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
 TRUST_64bits_environnement_error() {
     echo "-----------------------------------------"
     echo "ERROR : TRUST needs to be reconfigured with option -with-64-bit-indices"

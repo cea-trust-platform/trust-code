@@ -21,3 +21,10 @@ extract_field() {
         cut -d : -f 2
 }
 
+extract_section_fields() {
+    echo $@ |
+      sed "s/:/:\n/g" |
+        sed "s/ /\n/g" |
+          grep : |
+            sed "s/://g"
+}
