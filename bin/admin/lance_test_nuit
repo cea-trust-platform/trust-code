@@ -89,8 +89,6 @@ check_components()
                   make_option="make check_all_optim"
                fi
             fi
-            # Fait desormais via un post_configure dans Test_Baltik:
-            #[ "$Composant" = Test_Baltik ] && echo "We call ./Configure_Tests for Test_Baltik from `pwd`" && ./Configure_Tests
             $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
             make optim module_optim debug module_debug &&
             $make_option && echo "$Composant OK" && COMPOSANT_OK=1
@@ -646,7 +644,7 @@ echo "Call to "$TRUST_ROOT"/configure"
 echo "  See $config_log"
 echo "TRUST configuration on $HOST the `date` ...">$config_log
 echo>>$config_log
-./configure -force_provided_mpich 1>>$config_log || exit -1
+./configure -force_provided_mpich -std=c++14 1>>$config_log || exit -1
 #grep -i error $config_log
 grep KO $config_log
 tail -n24 $config_log | head -n1
@@ -1125,7 +1123,7 @@ echo "###############################################"
            fi
         fi
         echo "Call to configure $vue version in `pwd`"
-        ./configure -force_provided_mpich 1>/dev/null 2>&1
+        ./configure -force_provided_mpich -std=c++14 1>/dev/null 2>&1
         source env_TRUST.sh 1>/dev/null 2>&1
         echo "TRUST_ROOT=$TRUST_ROOT"
         echo "TRUST_VERSION=$TRUST_VERSION"

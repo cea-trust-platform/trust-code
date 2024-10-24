@@ -75,6 +75,21 @@ fi
 # extraction de la section de description du fichier de configuration
 project_description=`extract_section "$project_configuration_file" description`
 
+# verification des mots cles mis dans la description, si un pas autorise : exit
+allowed_fields=`echo $project_description | sed 's/ /\n/g' | grep ':' | cut -f1 -d':'`
+for f in $allowed_fields
+do
+  case $f in
+      name|author|executable|kernel|cpp_flags|ld_flags) continue ;;
+      *) echo "";
+         echo "Error: Unknown key $f in the [description] section of project.cfg!" ;
+         echo "       List of authorized keys is:" ;
+         echo "           name, author, executable, kernel, cpp_flags and ld_flags" ;
+         echo "       Fix your project.cfg or contact TRUST support team."
+         exit -1 ;;
+  esac
+done
+
 # extraction du nom du projet
 project_name=`extract_field "$project_description" name`
 
@@ -326,6 +341,20 @@ do
  prerequis_description=`extract_section "$project_dep_configuration_file" prerequisite$number`
  if  [ "$prerequis_description" != "" ]
  then
+    # verification des mots cles
+    allowed_fields=`echo $prerequis_description | sed 's/ /\n/g' | grep ':' | cut -f1 -d':'`
+    for f in $allowed_fields
+    do
+       case $f in
+          name|prog_test|librairies_flag|configure_flag) continue ;;
+          *) echo "";
+             echo "Error: Unknown key $f in the [prerequisite1] section of project.cfg!" ;
+             echo "       List of authorized keys:" ;
+             echo "           name, prog_test, librairies_flag and configure_flag" ;
+             echo "       Fix your project.cfg or contact TRUST support team."
+             exit -1 ;;
+       esac
+    done
     # extraction du nom du projet
     prerequis_name=`extract_field "$prerequis_description" name`
     echo $number prerequis found : $prerequis_name

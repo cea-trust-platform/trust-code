@@ -405,6 +405,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustpy" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-trustpy"
 # no openblas (add it for fedora 38)
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-openblas" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-openblas"
+# disable gnuplot
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gnuplot" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-gnuplot"
 # c++ standard
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-stdcpp14" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -std=c++14"
 

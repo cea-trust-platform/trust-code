@@ -59,7 +59,7 @@ define_modules_config()
       module="$romio_hints gnu/11 mpi/openmpi/4.1.4 mkl/20.0.0"
    fi
    # 2024/01/15: cmake 3.20.2 not able to install petsc, minimum version 3.21.0
-   module="cmake/3.22.2 python3/3.8.10 swig/4.0.2 $module"
+   module="cmake/3.22.2 python3/3.8.10 swig/4.0.2 gnuplot $module"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null 2>/dev/null" >> $env
