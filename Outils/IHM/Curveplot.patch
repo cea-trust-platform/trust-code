@@ -1,0 +1,61 @@
+diff -r -u CurvePlot/src/python/views/CurveView.py CurvePlot_mod/src/python/views/CurveView.py
+--- CurvePlot/src/python/views/CurveView.py	2019-11-06 15:22:42.000000000 +0100
++++ CurvePlot/src/python/views/CurveView.py	2024-10-24 19:14:32.092060853 +0200
+@@ -39,7 +39,7 @@
+     self._mplAxes = axes
+         
+   def erase(self):
+-    self._mplAxes.lines.remove(self._mplLines[0])
++    self._mplLines[0].remove()
+     self._mplLines = None
+     
+   def draw(self):
+diff -r -u CurvePlot/src/python/views/XYView.py CurvePlot_mod/src/python/views/XYView.py
+--- CurvePlot/src/python/views/XYView.py	2019-11-06 15:22:42.000000000 +0100
++++ CurvePlot/src/python/views/XYView.py	2024-10-24 19:13:47.035847741 +0200
+@@ -106,6 +106,8 @@
+     self._axisXSciNotation = False
+     self._axisYSciNotation = False
+     self._prevTitle = None
++    
++    self._isGridOn = False
+ 
+   def __repaintOK(self):
+     """ To be called inside XYView each time a low-level expansive matplotlib methods is to be invoked.
+@@ -276,14 +278,14 @@
+   def dumpView(self):
+     # Choice of the view backup file
+     filters = []
+-    for form in ["IMAGES_FILES", "PDF_FILES", "POSTSCRIPT_FILES", "ENCAPSULATED_POSTSCRIPT_FILES"]:
++    for form in ["IMAGES_FILES"]:
+       filters.append(trQ(form))
+     fileName = self._sgPyQt.getFileName(self._sgPyQt.getDesktop(),
+                                         "",
+                                         filters,
+                                         trQ("DUMP_VIEW_FILE"),
+                                         False )
+-    name = str(fileName)
++    name = str(fileName[0]) + ".png"
+     if name != "":
+       self._mplAxes.figure.savefig(name)
+     pass
+@@ -481,7 +483,7 @@
+     dlg.titleEdit.setText(self._mplAxes.get_title())
+     dlg.axisXTitleEdit.setText(self._mplAxes.get_xlabel())
+     dlg.axisYTitleEdit.setText(self._mplAxes.get_ylabel())
+-    dlg.gridCheckBox.setChecked(self._mplAxes.xaxis._gridOnMajor)  # could not find a relevant API to check this
++    dlg.gridCheckBox.setChecked(self._isGridOn) 
+     dlg.axisXSciCheckBox.setChecked(self._axisXSciNotation)
+     dlg.axisYSciCheckBox.setChecked(self._axisYSciNotation)
+     xmin, xmax = self._mplAxes.get_xlim()
+@@ -540,8 +542,10 @@
+       # Grid
+       if dlg.gridCheckBox.isChecked() :
+         self._mplAxes.grid(True)
++        self._isGridOn = True
+       else :
+         self._mplAxes.grid(False)
++        self._isGridOn = False
+       # Legend
+       if  dlg.showLegendCheckBox.isChecked():
+         self._actionLegend.setChecked(True)

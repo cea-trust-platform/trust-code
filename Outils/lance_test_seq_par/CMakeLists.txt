@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4.7 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 # Pour avoir lance_test_seq_par et compare_sonde sous visual
 
 

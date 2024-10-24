@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.10 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 INCLUDE(CMakeDependentOption)
 
 PROJECT(SalomeTRUST_PLOT2D C CXX)
@@ -45,6 +45,12 @@ ENDIF()
 # Mandatory products
 FIND_PACKAGE(SalomePythonInterp    REQUIRED)
 FIND_PACKAGE(SalomePythonLibs    REQUIRED)
+
+# Necessary to set these two variables to be able to set
+# python version in env.sh when calling:
+# configure_file(env.sh.in env.sh @ONLY
+SET(PYTHON_VERSION_MAJOR "${PYTHON_VERSION_MAJOR}")
+SET(PYTHON_VERSION_MINOR "${PYTHON_VERSION_MINOR}")
 
 # Qt5
 FIND_PACKAGE(SalomeQt5 REQUIRED COMPONENTS QtCore QtGui)

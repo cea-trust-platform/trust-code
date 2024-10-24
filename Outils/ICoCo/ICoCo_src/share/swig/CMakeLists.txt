@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.18)
 
 set(ATELIER  ON)
 include(../../build/src/CMakeLists.txt.trust)      # Needs to be put before "project()" (it tweaks compiler)

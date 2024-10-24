@@ -30,6 +30,9 @@ echo patching $file
 sed -i "s/FIND_PACKAGE(SalomeSIP REQUIRED)//" $file
 diff $file $file.sa
 
+echo "Applying patch for CURVEPLOT ..."
+(cd CURVEPLOT; patch -p1 < $TRUST_ROOT/Outils/IHM/Curveplot.patch )
+
 # Building and installing
 STANDALONE=ON
 export  CONFIGURATION_ROOT_DIR=$PWD/CONFIGURATION

@@ -402,14 +402,14 @@ class DirScanWidget(QDockWidget):
                 with open(statusFile, "r") as f:
                     val = f.readlines()[-1]
                 if len(val):
-                    val = min(max(int(val), 0), 100)
+                    val = min(max(float(val), 0.0), 100.0)
         except IOError:
             val = None
 
         if not val is None:
             self.progressBar.setEnabled(True)
             self.progressBar.setFormat("%p%")
-            self.progressBar.setValue(val)
+            self.progressBar.setValue(int(val))
         else:
             self.progressBar.setEnabled(False)
             self.progressBar.setValue(0)
