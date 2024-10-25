@@ -253,13 +253,13 @@ protected :
  *
  * @param (Nom& name) le nom a donner au probleme
  */
-inline void Probleme_base::nommer(const Nom& name) { nom=name; }
+inline void Probleme_base::nommer(const Nom& name) { nom_=name; }
 
 /*! @brief surcharge Objet_U::le_nom() Renvoie le nom du probleme
  *
  * @return (Nom&) le nom du probleme
  */
-inline const Nom& Probleme_base::le_nom() const { return nom; }
+inline const Nom& Probleme_base::le_nom() const { return nom_; }
 
 /*! @brief Renvoie la discretisation associee au probleme
  *

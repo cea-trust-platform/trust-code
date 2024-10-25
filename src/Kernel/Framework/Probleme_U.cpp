@@ -24,25 +24,19 @@
 #include <vt_user.h>
 #endif
 
-
 #include <Champ_Generique_base.h>
 #include <Convert_ICoCoTrioField.h>
-
 
 Implemente_base(Probleme_U,"Probleme_U",Objet_U);
 
 using ICoCo::WrongArgument;
 using ICoCo::TrioField;
 
-/*! @brief A surcharger.
- */
 Sortie& Probleme_U::printOn(Sortie& os) const
 {
   return os;
 }
 
-/*! @brief A surcharger.
- */
 Entree& Probleme_U::readOn(Entree& is)
 {
   return is ;
@@ -604,7 +598,6 @@ void Probleme_U::setInputDoubleValue(const Nom& name, const double val)
   chip->setDoubleValue(val);
 }
 
-
 std::string Probleme_U::getOutputStringValue(const std::string& name)
 {
   if(str_params_.count(name) == 0)
@@ -614,14 +607,13 @@ std::string Probleme_U::getOutputStringValue(const std::string& name)
   return str_params_[name];
 }
 
-
 void Probleme_U::setInputIntValue(const Nom& name, const int& val)
 {
   // add value in ICoCoScalarRegister
-  reg.setInputIntValue(name, val);
+  reg_.setInputIntValue(name, val);
 }
 
 int Probleme_U::getOutputIntValue(const Nom& name) const
 {
-  return reg.getOutputIntValue(name);
+  return reg_.getOutputIntValue(name);
 }

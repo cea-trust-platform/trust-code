@@ -91,29 +91,15 @@ public :
 
   virtual OBS_PTR(Field_base) findInputField(const Nom& name) const;
   virtual OBS_PTR(Champ_Generique_base) findOutputField(const Nom& name) const;
-  // Methodes d'acces aux membres :
 
-  inline void nommer(const Nom&) override;
-  inline const Nom& le_nom() const override;
-
+  inline void nommer(const Nom& name) override { nom_ = name; }
+  inline const Nom& le_nom() const override { return nom_; }
 
 protected :
-
-  Nom nom;
-  ScalarRegister reg;
+  Nom nom_;
+  ScalarRegister reg_;
   std::map<std::string, std::string> str_params_;
 
 };
 
-
-inline void Probleme_U::nommer(const Nom& name)
-{
-  nom=name;
-}
-
-inline const Nom& Probleme_U::le_nom() const
-{
-  return nom;
-}
-
-#endif
+#endif /* Probleme_U_included */
