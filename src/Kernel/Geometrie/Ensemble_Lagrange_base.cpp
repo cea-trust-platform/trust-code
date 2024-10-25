@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,6 @@
 #include <Sous_Domaine.h>
 #include <Domaine.h>
 #include <communications.h>
-#include <StdFunction.h>
 Implemente_base_sans_constructeur(Ensemble_Lagrange_base,"Ensemble_Lagrange_base",Objet_U);
 
 Ensemble_Lagrange_base::Ensemble_Lagrange_base()

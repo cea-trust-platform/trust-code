@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,16 +15,19 @@
 #ifndef PNode_included
 #define PNode_included
 
-
+enum PNode_type { NOTHING=-1, OP=1, VALUE=2, FUNCTION=3, VAR=4, PARAMETER=5 };
 class PNode
 {
 public :
+  // static variables are on host, enum are constant expressions available host&device
+  /*
   static const int NOTHING;
   static const int OP;
   static const int VALUE;
   static const int FUNCTION;
   static const int VAR;
   static const int PARAMETER;
+   */
 
   PNode* left;
   PNode* right;
@@ -34,23 +37,9 @@ public :
 
   PNode();
   PNode(PNode*);
-
-
-
   void replace(PNode*);
 
-
-
-
-
 private :
-
-
-
-
 };
-
-
-
 
 #endif

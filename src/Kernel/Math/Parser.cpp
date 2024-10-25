@@ -14,15 +14,10 @@
 *****************************************************************************/
 
 #include <StringTokenizer.h>
-#include <StdFunction.h>
 #include <algorithm>
 #include <Parser.h>
 
 void debug(StringTokenizer*);
-
-Constante Parser::c_pi;
-LIST(OWN_PTR(UnaryFunction)) Parser::unary_func;
-LIST(Constante) Parser::les_cst;
 
 /* Les identificateurs suivants doivent etre definis de maniere unique pour chaque fonction */
 
@@ -83,54 +78,38 @@ Parser::Parser(std::string& s,int n)
   les_var = new Variable*[maxvar];
 }
 
+// FUNCTION start at 1, cause 0 is needed
+enum FUNCTION { SIN=1, ASIN, COS, ACOS, TAN, ATAN, LN, EXP, SQRT, INT, ERF, RND, COSH,  SINH, TANH, ATANH, NOT, ABS, SGN };
 
+KOKKOS_FUNCTION
 void Parser::init_parser()
 {
   srand48(1);
-  if (unary_func.size()==0)
-    {
-      Sin SIN;
-      Asin ASIN;
-      Cos COS;
-      Acos ACOS;
-      Tan TAN;
-      Atan ATAN;
-      Ln LN;
-      Exp EXP;
-      Sqrt SQRT;
-      Int INT;
-      Erf ERF;
-      Rnd RND;
-      Cosh COSH;
-      Sinh SINH;
-      Tanh TANH;
-      Atanh ATANH;
-      Not NOT;
-      Abs ABS;
-      Sgn SGN;
-      addFunc(SIN);
-      addFunc(ASIN);
-      addFunc(COS);
-      addFunc(ACOS);
-      addFunc(TAN);
-      addFunc(ATAN);
-      addFunc(LN);
-      addFunc(EXP);
-      addFunc(SQRT);
-      addFunc(INT);
-      addFunc(ERF);
-      addFunc(RND);
-      addFunc(COSH);
-      addFunc(SINH);
-      addFunc(TANH);
-      addFunc(NOT);
-      addFunc(ABS);
-      addFunc(SGN);
-      addFunc(ATANH);
-      c_pi.nommer(Nom("PI"));
-      c_pi.setValue(2*asin(1.));
-      addCst(c_pi);
-    }
+  map_function_["SIN"] = FUNCTION::SIN;
+  map_function_["ASIN"] = FUNCTION::ASIN;
+  map_function_["COS"] = FUNCTION::COS;
+  map_function_["ACOS"] = FUNCTION::ACOS;
+  map_function_["TAN"] = FUNCTION::TAN;
+  map_function_["ATAN"] = FUNCTION::ATAN;
+  map_function_["LN"] = FUNCTION::LN;
+  map_function_["EXP"] = FUNCTION::EXP;
+  map_function_["SQRT"] = FUNCTION::SQRT;
+  map_function_["INT"] = FUNCTION::INT;
+  map_function_["ERF"] = FUNCTION::ERF;
+  map_function_["RND"] = FUNCTION::RND;
+  map_function_["COSH"] = FUNCTION::COSH;
+  map_function_["Sinh"] = FUNCTION::SINH;
+  map_function_["TANH"] = FUNCTION::TANH;
+  map_function_["NOT"] = FUNCTION::NOT;
+  map_function_["ABS"] = FUNCTION::ABS;
+  map_function_["SGN"] = FUNCTION::SGN;
+  map_function_["ATANH"] = FUNCTION::ATANH;
+#ifndef _OPENMP
+  // ToDo Kokkos replace Nom by char[20] in Constante
+  c_pi.nommer(Nom("PI"));
+  c_pi.setValue(2*asin(1.));
+  addCst(c_pi);
+#endif
 }
 
 
@@ -203,27 +182,90 @@ void Parser::parseString()
   root = (PNode*) *st_ob.getBase();
 }
 
+KOKKOS_FUNCTION
 double Parser::evalFunc(PNode* node)
 {
   /* OC : Nouvelle version : */
   if (node->value<=0)
     {
-      UnaryFunction& f = unary_func[-node->value-1]; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
+      int unary_function = -node->value-1; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
       // afin de distinguer operateur binaire (>0) et fonctions unaires (<0>
       // Il est donc necessaire de prendre -node->value ici pour referencer un element de la liste
       // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
-      return f.eval(eval(node->left));
+      double x = eval(node->left);
+      switch (unary_function)
+        {
+        case SIN:
+          return sin(x);
+        case ASIN:
+          return asin(x);
+        case COS:
+          return cos(x);
+        case ACOS:
+          return acos(x);
+        case TAN:
+          return tan(x);
+        case ATAN:
+          return atan(x);
+        case LN:
+          if (x <= 0)
+            {
+              std::stringstream err;
+              err << "x=" << x << " for LN(x) function used.\nCheck your data file.";
+              Process::exit(err.str());
+            }
+          return log(x);
+        case EXP:
+          return exp(x);
+        case SQRT:
+          if (x < 0)
+            {
+              std::stringstream err;
+              err << "x=" << x << " for SQRT(x) function used.\nCheck your data file.";
+              Process::exit(err.str());
+            }
+          return sqrt(x);
+        case INT:
+          return (int) x;
+        case ERF:
+#ifndef MICROSOFT
+          return erf(x);
+#else
+          Process::exit("erf(x) fonction not implemented on Windows version.");
+          return eval(x);
+#endif
+        case RND:
+          return x*drand48();
+        case COSH:
+          return cosh(x);
+        case SINH:
+          return sinh(x);
+        case TANH:
+          return tanh(x);
+        case ATANH:
+          return atanh(x);
+        case NOT:
+          if (x == 0) return 1;
+          else return 0;
+        case ABS:
+          return std::fabs(x);
+        case SGN:
+          return (x > 0) - (x < 0);
+        default:
+          Process::exit("method evalFunc : Unknown function for this node !!!");
+          return 0;
+        }
     }
   else
     {
-      Cerr << "method evalFunc : Unknown func !!!" << finl;
-      Process::exit();
+      Process::exit("method evalFunc : Unknown func !!!");
       return -1;
     }
 }
 
 // Ne pas inliner car sinon Parser::eval(PNode* node) plus souvent appelee encore
 // ne sera peut etre pas inlinee...
+KOKKOS_FUNCTION
 double Parser::evalOp(PNode* node)
 {
   // PL 12/11/2010, reecriture avec switch pour optimisation
@@ -240,15 +282,15 @@ double Parser::evalOp(PNode* node)
     case 3: // DIVIDE
       if (y==0)
         {
-          Cerr << "Error in the Parser: x/y calculated with y equals 0. You are using a formulae with a division per 0." << finl;
-          Process::exit();
+          Process::exit("Error in the Parser: x/y calculated with y equals 0. You are using a formulae with a division per 0.");
         }
       return x/y;
     case 4: // POWER
       if (y != (int)(y) && x<0)
         {
-          Cerr << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )" << finl;
-          Process::exit();
+          std::stringstream err;
+          err << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )";
+          Process::exit(err.str());
         }
       return pow(x,y);
     case 5: // LT
@@ -274,8 +316,9 @@ double Parser::evalOp(PNode* node)
     case 15: // NEQ
       return (x != y);
     default:
-      Cerr << "Method evalOp : Unknown op " << (int)node->value << "!!!" << finl;
-      Process::exit();
+      std::stringstream err;
+      err << "Method evalOp : Unknown op " << (int)node->value << "!!!";
+      Process::exit(err.str());
       return 0;
     }
 }
@@ -333,7 +376,7 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
       if (trouv>-1)
         {
           PNode *node = new PNode();
-          node->type = PNode::VAR;
+          node->type = PNode_type::VAR;
           node->value = trouv;
           ob->push(node);
           state = 2;
@@ -353,7 +396,7 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               if (trouv>=0)
                 {
                   PNode *node = new PNode();
-                  node->type = PNode::VALUE;
+                  node->type = PNode_type::VALUE;
                   node->nvalue = les_cst(trouv).getValue();
                   ob->push(node);
                   state = 2;
@@ -382,8 +425,8 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
     {
       PNode* node;
       node = new PNode();
-      node->type = PNode::VALUE;
-      //Cout << "NODE NUMBER = " << PNode::VALUE << finl;
+      node->type = PNode_type::VALUE;
+      //Cout << "NODE NUMBER = " << PNode_type::VALUE << finl;
       node->nvalue = tokenizer->getNValue();
       ob->push(node);
       state = 2;
@@ -393,7 +436,7 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
       PNode* node;
       op->push(StringTokenizer::ADD);
       node = new PNode();
-      node->type = PNode::VALUE;
+      node->type = PNode_type::VALUE;
       node->nvalue = 0.;
       ob->push(node);
       state = 1;
@@ -403,7 +446,7 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
       PNode* node;
       op->push(StringTokenizer::SUBTRACT);
       node = new PNode();
-      node->type = PNode::VALUE;
+      node->type = PNode_type::VALUE;
       node->nvalue = 0.;
       ob->push(node);
       state = 1;
@@ -426,7 +469,7 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
         {
           //Cerr << "variable = " << trouv << " " << tokenizer->getSValue() << finl;
           PNode *node = new PNode();
-          node->type = PNode::VAR;
+          node->type = PNode_type::VAR;
           node->value = trouv;
           ob->push(node);
           state = 2;
@@ -446,7 +489,7 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               if (trouv>=0)
                 {
                   PNode *node = new PNode();
-                  node->type = PNode::VALUE;
+                  node->type = PNode_type::VALUE;
                   node->nvalue = les_cst(trouv).getValue();
                   ob->push(node);
                   state = 2;
@@ -469,7 +512,7 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
   else if (tokenizer->type == StringTokenizer::NUMBER )
     {
       PNode* node = new PNode();
-      node->type = PNode::VALUE;
+      node->type = PNode_type::VALUE;
       node->nvalue = tokenizer->getNValue();
       ob->push(node);
       state = 2;
@@ -516,7 +559,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   PNode* deux = (PNode*) ob->pop();
                   PNode* un = (PNode*) ob->pop();
                   PNode* node = new PNode();
-                  node->type = PNode::OP;
+                  node->type = PNode_type::OP;
                   node->value=tmp;
                   node->left = un;
                   node->right = deux;
@@ -526,7 +569,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                 {
                   PNode* un = (PNode*) ob->pop();
                   PNode* node = new PNode();
-                  node->type=PNode::FUNCTION;
+                  node->type=PNode_type::FUNCTION;
                   node->value=tmp;
                   node->left = un;
                   node->right=nullptr;
@@ -562,7 +605,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   PNode* deux = (PNode*) ob->pop();
                   PNode* un = (PNode*) ob->pop();
                   PNode* node = new PNode();
-                  node->type = PNode::OP;
+                  node->type = PNode_type::OP;
                   node->value=tmp;
                   node->left = un;
                   node->right=deux;
@@ -572,7 +615,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                 {
                   PNode* un = (PNode*) ob->pop();
                   PNode* node = new PNode();
-                  node->type=PNode::FUNCTION;
+                  node->type=PNode_type::FUNCTION;
                   node->value=tmp;
                   node->left = un;
                   node->right=nullptr;
@@ -606,7 +649,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               PNode* deux = (PNode*) ob->pop();
               PNode* un = (PNode*) ob->pop();
               PNode* node = new PNode();
-              node->type = PNode::OP;
+              node->type = PNode_type::OP;
               node->value=tmp;
               node->left = un;
               node->right=deux;
@@ -616,7 +659,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
             {
               PNode* un = (PNode*) ob->pop();
               PNode* node = new PNode();
-              node->type=PNode::FUNCTION;
+              node->type=PNode_type::FUNCTION;
               node->value=tmp;
               node->left = un;
               node->right=nullptr;
@@ -682,40 +725,20 @@ int Parser::searchCst(const std::string& v)
 }
 
 
-int Parser::searchFunc(const std::string& v)
+int Parser::searchFunc(const std::string& f)
 {
-  int i=0;
-  Nom nv(v);
-  nv.majuscule();
-  for (auto& itr : unary_func)
-    {
-      UnaryFunction& f = itr.valeur();
-      Nom n2(f.getName());
-      n2.majuscule();
-      if (nv == n2) return i+1 ; // OC: pour ne pas utiliser le zero car sinon conflit avec la nouvelle numerotation des operateurs binaires.
-      i++;
-    }
-  return -1;
+  std::string function_name(f);
+  std::transform(function_name.begin(), function_name.end(), function_name.begin(), ::toupper);
+  auto it = map_function_.find(function_name);
+  if (it != map_function_.end())
+    return it->second + 1; // OC: pour ne pas utiliser le zero car sinon conflit avec la nouvelle numerotation des operateurs binaires.
+  else
+    return -1;
 }
 
 void Parser::addCst(const Constante& cst)
 {
   les_cst.add(cst);
-}
-
-void Parser::addFunc(const UnaryFunction& f)
-{
-  int size = unary_func.size();
-  for (int i=0; i<size; i++)
-    {
-      if (unary_func[i]->getName() == f.getName())
-        {
-          Cerr << "Function " <<  f.getName() << " has already been defined !" << finl;
-          Process::exit();
-        }
-    }
-  OWN_PTR(UnaryFunction)& df = unary_func.add(OWN_PTR(UnaryFunction)());
-  df = f;
 }
 
 void debug(StringTokenizer * t)
@@ -729,5 +752,6 @@ void debug(StringTokenizer * t)
   else
     Cout << "OP : " << (int)t->type << finl;
 }
+
 
 

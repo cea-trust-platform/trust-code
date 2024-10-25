@@ -269,8 +269,12 @@ void Process::exit(int i)
   message+=jddLine;
   exit(message,i);
 }
-void Process::exit(const Nom& message ,int i)
+KOKKOS_FUNCTION void Process::exit(const Nom& message ,int i)
 {
+#ifdef _OPENMP
+  // ToDo test some exit !
+  Kokkos::abort(message.getChar());
+#else
   if (exception_sur_exit == 2)
     {
       ::exit(-1); // ND 11/01/23 utilisation d'un second ::exit(-1) dans TRUST car si pas droits d'ecriture appel recursif a Process::exit()
@@ -359,6 +363,7 @@ void Process::exit(const Nom& message ,int i)
   // On force exit();
   if (i==0) i=-1;
   ::exit(i); //Seul ::exit utilise dans le code jusqu'a 01/23. second ajoute car appel recursif a Process::exit si droits ecriture dossier etude manquants
+#endif
 }
 
 /*! @brief Routine de sortie de Trio-U sur une erreur abort()
