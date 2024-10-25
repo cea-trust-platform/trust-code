@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -167,8 +167,7 @@ inline _TYPE_& TRUSTList<_TYPE_>::operator[](int i)
 
   if (i != -1)
     {
-      Cerr << "Overflow list " << finl;
-      Process::exit();
+      Process::exit("Overflow list ");
     }
   return curseur.valeur();
 }
@@ -181,8 +180,7 @@ inline const _TYPE_& TRUSTList<_TYPE_>::operator[](int i) const
 
   if (i != -1)
     {
-      Cerr << "Overflow list " << finl;
-      Process::exit();
+      Process::exit("Overflow list ");
     }
   return curseur.valeur();
 }
