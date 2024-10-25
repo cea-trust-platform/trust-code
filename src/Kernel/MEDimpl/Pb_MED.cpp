@@ -121,6 +121,9 @@ Entree& Pbc_MED::readOn(Entree& is )
  */
 Entree& Pb_MED::readOn(Entree& is )
 {
+  // On commence par ca car assoscier de Pb_base est jamais appele
+  save_restart_.assoscier_pb_base(*this);
+
   dis_bidon.typer("VF_inst");
   la_discretisation_=dis_bidon.valeur();
   is >> nom_fic;
