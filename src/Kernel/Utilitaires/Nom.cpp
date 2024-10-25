@@ -19,21 +19,11 @@
 #include <math.h>
 #include <algorithm>
 #include <cmath>
-
-int Nom::nb_noms=0;
+#include <kokkos++.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Nom,"Nom",Objet_U);
 // XD nom objet_u nom 0 Class to name the TRUST objects.
 // XD attr mot chaine mot 1 Chain of characters.
-
-
-int Nom::check_case_non_sensitive_=1;
-
-
-void Nom::sed_check_case_non_sensitive(int i)
-{
-  check_case_non_sensitive_=i;
-}
 
 /*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture d'un Nom sur un flot de sortie
  *
@@ -76,7 +66,6 @@ Entree& Nom::readOn(Entree& s)
  */
 Nom::Nom()
 {
-  nb_noms++;
   nom_ = "??";
 }
 
@@ -86,7 +75,6 @@ Nom::Nom()
  */
 Nom::Nom(char c)
 {
-  nb_noms++;
   nom_=c;
 }
 
@@ -99,7 +87,6 @@ Nom::Nom(char c)
  */
 Nom::Nom(True_int i)
 {
-  nb_noms++;
   nom_ = "";
   // 22 caracteres suffisent pour stocker n'importe quel entier
   char chaine[22];
@@ -109,7 +96,6 @@ Nom::Nom(True_int i)
 
 Nom::Nom(long i)
 {
-  nb_noms++;
   nom_ = "";
   // 22 caracteres suffisent pour stocker n'importe quel entier
   char chaine[22];
@@ -133,12 +119,10 @@ Nom::Nom(long long i)
  */
 Nom::Nom(const char* nom) : nom_(nom)
 {
-  nb_noms++;
 }
 
 Nom::Nom(const std::string& nom) : nom_(nom)
 {
-  nb_noms++;
 }
 
 
@@ -148,7 +132,6 @@ Nom::Nom(const std::string& nom) : nom_(nom)
  */
 Nom::Nom(const Nom& nom) : Objet_U(nom), nom_(nom.nom_)
 {
-  nb_noms++;
 }
 
 /*! @brief Construction d'un nom a partir d'un flottant La chaine cree est la representation du nombre reel (snprintf)
@@ -157,7 +140,6 @@ Nom::Nom(const Nom& nom) : Objet_U(nom), nom_(nom.nom_)
  */
 Nom::Nom(double le_reel)
 {
-  nb_noms++;
   nom_ = "";
   char la_chaine[80];
   snprintf(la_chaine,80,"%f",le_reel);
@@ -187,7 +169,6 @@ Nom::Nom(double le_reel, const char* format)
 #endif
   nom_ =  la_chaine;
   //delete[] la_chaine;
-  nb_noms++;
 }
 
 
@@ -196,7 +177,6 @@ Nom::Nom(double le_reel, const char* format)
  */
 Nom::~Nom()
 {
-  nb_noms--;
 }
 
 /*! @brief Transforme le nom en majuscules Seules les lettres 'a'-'z' sont modifiees
@@ -223,6 +203,7 @@ int Nom::longueur() const
  * Modif BM pour que nom puisse pointer sur une sous-partie de nom_
  *
  */
+KOKKOS_FUNCTION
 Nom& Nom::operator=(const char* const nom)
 {
   nom_=nom;
@@ -234,6 +215,7 @@ Nom& Nom::operator=(const char* const nom)
  * @param (const Nom& nom) le nom a copier
  * @return (Nom&) reference sur this qui represente la chaine du Nom nom
  */
+KOKKOS_FUNCTION
 Nom& Nom::operator=(const Nom& nom)
 {
   nom_ = nom.nom_;
@@ -540,30 +522,18 @@ Nom::operator const char*() const
  * @param (const char* const un_autre)
  * @return (int) 1 si les noms sont egaux, 0 sinon
  */
+KOKKOS_FUNCTION
 int operator ==(const Nom& un_nom, const char* const un_autre)
 {
   int res_actu=(un_nom.nom_.compare(un_autre)==0);
-#ifndef NDEBUG
-  if ((!res_actu) && (Nom::check_case_non_sensitive_==1))
-    {
-      Nom toto(un_autre);
-      if (toto.majuscule().nom_.compare(un_nom.getChar()) == 0)
-        {
-          Cerr << "Warning: " << un_nom << " and " << un_autre << " are they really different ?" << finl;
-          Cerr << "A test in the code on a string of characters does not seem to take account of the case." << finl;
-          Cerr << "Contact TRUST support by sending your data file of this calculation." << finl;
-          Cerr << finl;
-        }
-    }
-#endif
   return res_actu;
 }
-
+KOKKOS_FUNCTION
 int operator ==(const Nom& un_nom, const Nom& un_autre)
 {
   return (un_nom==un_autre.getChar());
 }
-
+KOKKOS_FUNCTION
 int operator ==(const char* const un_autre, const Nom& un_nom)
 {
   return (un_nom == un_autre);
