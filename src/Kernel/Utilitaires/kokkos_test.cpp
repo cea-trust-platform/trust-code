@@ -17,6 +17,7 @@
 #include <TRUSTTab.h>
 #include <iostream>
 #include <Device.h>
+#include <Parser.h>
 
 /*! Teste les methodes de l'interface Kokkos utilisees dans TRUST
  */
@@ -144,6 +145,50 @@ void kokkos_self_test()
     //printf("Provisoire OpenMP device after: [%p]\n", (void*)addrOnDevice(tab));
     CDoubleTabView tab_v2 = tab.view_ro();
     assert(tab_v2.data()==addrOnDevice(tab)); // Meme adresse
+  }
+  // C++ object in Kokkos region
+  {
+    class Object
+    {
+    public:
+      double val = 2;
+      Nom name = "toto";
+    };
+    ArrOfDouble f(nb_elem);
+    f=0;
+    Object MyObject;
+    DoubleArrView f_v = f.view_rw();
+    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
+    {
+      //if (MyObject.name=="toto") // No std::strinf not supported on GPU! Undefined reference to '_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc' i
+      f_v(i) = MyObject.val;   // Ok
+    });
+  }
+  // Parser
+  {
+    ArrOfDouble f(nb_elem);
+    f=0;
+    std::string expr("2*x+2");
+    Parser parser(expr, 1);
+    parser.addVar("x");
+    parser.parseString();
+    DoubleArrView f_v = f.view_rw();
+    //Kokkos::RangePolicy<Kokkos::DefaultExecutionSpace> gpu(0, nb_elem);
+    Kokkos::RangePolicy<Kokkos::DefaultHostExecutionSpace> cpu(0, nb_elem);
+    Kokkos::parallel_for(cpu, KOKKOS_LAMBDA(const int i)
+    {
+      double x = (double)i;
+      f_v(i) = x;
+      //  Parser parser_(parser); // Local copy cause Pasrer object is passed by value (so const) into lambda
+      //  parser_.setVar(0, x);   // setVar(string) not possible on GPU
+      //  f_v(i) += parser_.eval();
+
+      // Provisoire:
+      // std::vector<double> vec(5, 0.); // no warning here
+      // f_v(i) = vec[3]; // or here for calling a non-KOKKOS_FUNCTION
+    });
+    assert(f(0)==2);
+    assert(f(nb_elem-1)==2*nb_elem);
   }
   // Some check:
   /*
