@@ -98,7 +98,7 @@ public :
   inline void setString(const Nom& nom) ;
   inline void addCst(const Constante& cst);
   inline void setImpulsion(double tinit, double periode);
-  inline void addFunc(const UnaryFunction& f);
+
 
 
 
@@ -207,11 +207,6 @@ inline void Parser_U::setString(const Nom& nom)
 inline void Parser_U::addCst(const Constante& cst)
 {
   parser->addCst(cst);
-}
-
-inline void Parser_U::addFunc(const UnaryFunction& f)
-{
-  parser->addFunc(f);
 }
 
 inline void Parser_U::setImpulsion(double tinit, double periode)
