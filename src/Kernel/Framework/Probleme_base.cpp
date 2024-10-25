@@ -750,25 +750,25 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 
 bool Probleme_base::has_champ(const Motcle& un_nom, OBS_PTR(Champ_base) &ref_champ) const
 {
-  if (domaine_dis().has_champ(un_nom))
-    return domaine_dis().has_champ(un_nom, ref_champ);
+  if (domaine_dis().has_champ(un_nom, ref_champ))
+    return true;
 
   for (int i = 0; i < nombre_d_equations(); i++)
     {
-      if (equation(i).has_champ(un_nom))
-        return equation(i).has_champ(un_nom, ref_champ);
+      if (equation(i).has_champ(un_nom, ref_champ))
+        return true;
 
-      if (equation(i).milieu().has_champ(un_nom))
-        return equation(i).milieu().has_champ(un_nom, ref_champ);
+      if (equation(i).milieu().has_champ(un_nom, ref_champ))
+        return true;
     }
 
   for (const auto &corr : correlations_)
-    if (corr.second->has_champ(un_nom))
-      return corr.second->has_champ(un_nom, ref_champ);
+    if (corr.second->has_champ(un_nom, ref_champ))
+      return true;
 
   for (const auto &itr : liste_loi_fermeture_)
-    if (itr->has_champ(un_nom))
-      return itr->has_champ(un_nom, ref_champ);
+    if (itr->has_champ(un_nom, ref_champ))
+      return true;
 
   return false; /* rien trouve */
 }
