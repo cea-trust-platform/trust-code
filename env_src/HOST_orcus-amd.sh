@@ -85,9 +85,7 @@ define_soumission_batch()
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
-   # normal 	20 		2 jours
    # test   	40		1 heure		40
-   # long 	10		14 jours	200
    # visu	20		18 heures
    # 1jour      30              1 jour
    # 2jour      20              2 jours
@@ -97,7 +95,7 @@ define_soumission_batch()
    # debug      70              4 heures
    if [ "$prod" = 1 ] || [ "$NB_PROCS" -gt 40 ]
    then
-      qos=normal && cpu=2880 && node=1 # exclusive
+      qos=2jour && cpu=2880 && node=1 # exclusive
    else
       qos=test	 && cpu=60   && node=0 
    fi
