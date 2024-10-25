@@ -29,6 +29,8 @@
 
 #if defined(NO_HIP) || defined(LATATOOLS)
 #undef KOKKOS
+#define KOKKOS_FUNCTION
+#define KOKKOS_INLINE_FUNCTION inline
 #else
 #define KOKKOS
 #include <Kokkos_Core.hpp>
