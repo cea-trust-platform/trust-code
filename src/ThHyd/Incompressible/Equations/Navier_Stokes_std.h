@@ -168,7 +168,7 @@ protected:
   OBS_PTR(Fluide_base) le_fluide;
 
   OWN_PTR(Champ_Inc_base) la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;
-  OWN_PTR(Champ_Fonc_base)  la_vorticite, grad_u, critere_Q, pression_hydrostatique_, porosite_volumique, combinaison_champ;
+  OWN_PTR(Champ_Fonc_base)  la_vorticite, grad_u, critere_Q, pression_hydrostatique_, combinaison_champ;
   OWN_PTR(Champ_Fonc_base)  distance_paroi_globale, y_plus, Reynolds_maille, Courant_maille, Taux_cisaillement;
 
   Operateur_Conv terme_convectif;

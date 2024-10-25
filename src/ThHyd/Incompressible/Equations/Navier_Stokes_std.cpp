@@ -1443,7 +1443,7 @@ void Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hyd
 
 bool Navier_Stokes_std::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q" || nom == "porosite_volumique"
+  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q"
       || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
       || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
     {
@@ -1463,7 +1463,7 @@ bool Navier_Stokes_std::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_ch
 
 bool Navier_Stokes_std::has_champ(const Motcle& nom) const
 {
-  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q" || nom == "porosite_volumique"
+  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q"
       || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
       || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
     return true;
@@ -1503,18 +1503,6 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
       Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, critere_Q.valeur());
       if ((ch.temps() == temps_init) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
-      return champs_compris_.get_champ(nom);
-    }
-
-  if (nom == "porosite_volumique")
-    {
-      if (porosite_volumique.est_nul())
-        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
-
-      double temps_courant = schema_temps().temps_courant();
-      Champ_Fonc_base& ch = ref_cast_non_const(Champ_Fonc_base, porosite_volumique.valeur());
-      if ((ch.temps() != temps_courant) || (ch.temps() == temps_init))
-        ch.mettre_a_jour(temps_courant);
       return champs_compris_.get_champ(nom);
     }
 
@@ -1609,7 +1597,6 @@ void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom, Option opt) con
   Noms noms_compris = champs_compris_.liste_noms_compris();
   noms_compris.add("vorticite");
   noms_compris.add("critere_Q");
-  noms_compris.add("porosite_volumique");
   noms_compris.add("y_plus");
   noms_compris.add("reynolds_maille");
   noms_compris.add("courant_maille");
