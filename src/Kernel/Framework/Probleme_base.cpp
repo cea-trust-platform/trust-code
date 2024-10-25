@@ -903,13 +903,13 @@ int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
   return 0;
 }
 
-bool Probleme_base::has_champ_post(const Motcle& nom) const
+bool Probleme_base::has_champ_post(const Motcle& un_nom) const
 {
   for (const auto &itr : postraitements())
     if (sub_type(Postraitement, itr.valeur()))
       {
         const Postraitement& post = ref_cast(Postraitement, itr.valeur());
-        if (post.has_champ_post(nom))
+        if (post.has_champ_post(un_nom))
           return true;
       }
 
