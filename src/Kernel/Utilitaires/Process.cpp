@@ -31,6 +31,7 @@
 #include <FichierHDFPar.h>
 #include <EChaineJDD.h>
 #include <DeviceMemory.h>
+#include <kokkos++.h>
 
 // Chacun des fichiers Cerr, Cout et Journal(i)
 // peut etre redirige vers l'un des quatre fichiers suivants:
@@ -216,7 +217,22 @@ bool Process::mp_and(bool b)
   return y == 1;
 }
 
-/*! @brief Routine de sortie de Trio-U sur une erreur Sauvegarde la memoire et le hierarchie dans les fichiers "memoire.
+/*! @brief Routine de sortie de TRUST dans une region Kokkos
+ *
+ */
+KOKKOS_FUNCTION
+void Process::Kokkos_exit(const char* str)
+{
+#ifdef _OPENMP
+  // ToDo Kokkos: try to exit more properly on device...
+  Kokkos::abort(str);
+  //Kokkos::finalize();
+#else
+  Process::exit(str);
+#endif
+}
+
+/*! @brief Routine de sortie de TRUST sur une erreur Sauvegarde la memoire et le hierarchie dans les fichiers "memoire.
  *
  * dump" et "hierarchie.dump"
  *
@@ -228,12 +244,8 @@ void Process::exit(int i)
   message+=jddLine;
   exit(message,i);
 }
-KOKKOS_FUNCTION void Process::exit(const Nom& message ,int i)
+void Process::exit(const Nom& message ,int i)
 {
-#ifdef _OPENMP
-  // ToDo test some exit !
-  Kokkos::abort(message.getChar());
-#else
   if (exception_sur_exit == 2)
     {
       ::exit(-1); // ND 11/01/23 utilisation d'un second ::exit(-1) dans TRUST car si pas droits d'ecriture appel recursif a Process::exit()
@@ -327,7 +339,6 @@ KOKKOS_FUNCTION void Process::exit(const Nom& message ,int i)
   // On force exit();
   if (i==0) i=-1;
   ::exit(i); //Seul ::exit utilise dans le code jusqu'a 01/23. second ajoute car appel recursif a Process::exit si droits ecriture dossier etude manquants
-#endif
 }
 
 /*! @brief Routine de sortie de Trio-U sur une erreur abort()
