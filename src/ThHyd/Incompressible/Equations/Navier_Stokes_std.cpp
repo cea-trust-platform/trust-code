@@ -1443,9 +1443,55 @@ void Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hyd
 
 bool Navier_Stokes_std::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
-  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q"
-      || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
-      || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
+  if (nom == "gradient_pression")
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "vorticite" && la_vorticite.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "critere_Q" && critere_Q.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "y_plus" && y_plus.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "reynolds_maille" && Reynolds_maille.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "courant_maille" && Courant_maille.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "taux_cisaillement" && Taux_cisaillement.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "gradient_vitesse" && grad_u.non_nul())
+    {
+      ref_champ = Navier_Stokes_std::get_champ(nom);
+      return true;
+    }
+
+  if (nom == "pression_hydrostatique" && pression_hydrostatique_.non_nul())
     {
       ref_champ = Navier_Stokes_std::get_champ(nom);
       return true;
@@ -1463,9 +1509,31 @@ bool Navier_Stokes_std::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_ch
 
 bool Navier_Stokes_std::has_champ(const Motcle& nom) const
 {
-  if (nom == "gradient_pression" || nom == "vorticite" || nom == "critere_Q"
-      || nom == "y_plus" || nom == "reynolds_maille" || nom == "courant_maille" || nom == "taux_cisaillement"
-      || nom == "gradient_vitesse" || nom == "pression_hydrostatique")
+  if (nom == "gradient_pression")
+    return true;
+
+  if (nom == "vorticite" && la_vorticite.non_nul())
+    return true;
+
+  if (nom == "critere_Q" && critere_Q.non_nul())
+    return true;
+
+  if (nom == "y_plus" && y_plus.non_nul())
+    return true;
+
+  if (nom == "reynolds_maille" && Reynolds_maille.non_nul())
+    return true;
+
+  if (nom == "courant_maille" && Courant_maille.non_nul())
+    return true;
+
+  if (nom == "taux_cisaillement" && Taux_cisaillement.non_nul())
+    return true;
+
+  if (nom == "gradient_vitesse" && grad_u.non_nul())
+    return true;
+
+  if (nom == "pression_hydrostatique" && pression_hydrostatique_.non_nul())
     return true;
 
   if (Equation_base::has_champ(nom))
