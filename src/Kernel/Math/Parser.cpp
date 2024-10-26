@@ -16,6 +16,7 @@
 #include <StringTokenizer.h>
 #include <algorithm>
 #include <Parser.h>
+#include <queue>
 
 void debug(StringTokenizer*);
 
@@ -27,61 +28,49 @@ Parser::Parser()
   state=0;
   root=nullptr;
   str= new std::string("0");
-  maxvar=1;
-  ivar=0;
-  les_var = new Variable*[maxvar];
   impuls_tn = -1.;
   impuls_T = 1.;
   impuls_t0 = 0.;
   impuls_tempo = 0.;
+  setNbVar(1);
 }
 
 Parser::Parser(const Parser& p)
 {
   init_parser();
+  state=p.state;
+  root=nullptr;
+  str= new std::string(*p.str);
   impuls_tn = p.impuls_tn;
   impuls_T = p.impuls_T;
   impuls_t0 = p.impuls_t0;
   impuls_tempo = p.impuls_tempo;
-
-  state=p.state;
-  maxvar=p.maxvar;
+  setNbVar(p.maxvar);
   ivar=p.ivar;
-
-  root=nullptr;
-
-  str= new std::string(*p.str);
-
-  les_var = new Variable*[maxvar];
   for (int i = 0; i < ivar; i++)
     {
-      les_var[i] = new Variable(*(p.les_var[i]));
+      les_var[i] = p.les_var[i];
+      les_var_names[i] = p.les_var_names[i];
     }
-
   parseString();
 }
 
-
-Parser::Parser(std::string& s,int n)
+Parser::Parser(std::string& s, int n)
 {
   init_parser();
+  state=0;
+  root=nullptr;
+  str= new std::string(s);
   impuls_tn = -1.;
   impuls_T = 1.;
   impuls_t0 = 0.;
   impuls_tempo = 0.;
-
-  state=0;
-  root=nullptr;
-  str= new std::string(s);
-  maxvar=n;
-  ivar=0;
-  les_var = new Variable*[maxvar];
+  setNbVar(n);
 }
 
 // FUNCTION start at 1, cause 0 is needed
 enum FUNCTION { SIN=1, ASIN, COS, ACOS, TAN, ATAN, LN, EXP, SQRT, INT, ERF, RND, COSH,  SINH, TANH, ATANH, NOT, ABS, SGN };
 
-KOKKOS_FUNCTION
 void Parser::init_parser()
 {
   srand48(1);
@@ -104,14 +93,10 @@ void Parser::init_parser()
   map_function_["ABS"] = FUNCTION::ABS;
   map_function_["SGN"] = FUNCTION::SGN;
   map_function_["ATANH"] = FUNCTION::ATANH;
-#ifndef _OPENMP
-  // ToDo Kokkos replace Nom by char[20] in Constante
   c_pi.nommer(Nom("PI"));
   c_pi.setValue(2*asin(1.));
   addCst(c_pi);
-#endif
 }
-
 
 void destroy(PNode* p)
 {
@@ -127,22 +112,15 @@ void destroy(PNode* p)
 Parser::~Parser()
 {
   if (root !=nullptr) destroy(root);
-  for (int i =0; i<ivar; i++)
-    delete les_var[i];
   delete str;
-  delete[] les_var;
 }
-
 
 void Parser::setNbVar(int nvar)
 {
-  if (ivar>0)
-    for (int i =0; i<ivar; i++)
-      delete les_var[i];
-  delete[] les_var;
   maxvar=nvar;
   ivar=0;
-  les_var = new Variable*[maxvar];
+  les_var.resize(maxvar);
+  les_var_names.dimensionner_force(maxvar);
 }
 
 void Parser::parseString()
@@ -156,9 +134,7 @@ void Parser::parseString()
       Cerr << "Expression " << *str << " does not contain the same number of opening and closing parenthesis." << finl;
       Process::exit();
     }
-
   state = 0;
-
   while ( (tok.nextToken()) != StringTokenizer::EOS)
     {
       switch (state)
@@ -180,149 +156,81 @@ void Parser::parseString()
     }
   parserState2(&tok,&st_ob,&st_op);
   root = (PNode*) *st_ob.getBase();
-}
 
-KOKKOS_FUNCTION
-double Parser::evalFunc(PNode* node)
-{
-  /* OC : Nouvelle version : */
-  if (node->value<=0)
+  // Conversion
+  PNodes.clear();
+  std::unordered_map<PNode*, int> nodeToIndex;
+  std::queue<PNode*> queue;
+  int currentIndex = 0;
+
+  // Start the traversal from the root
+  queue.push(root);
+  nodeToIndex[root] = currentIndex++;
+
+  while (!queue.empty())
     {
-      int unary_function = -node->value-1; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
-      // afin de distinguer operateur binaire (>0) et fonctions unaires (<0>
-      // Il est donc necessaire de prendre -node->value ici pour referencer un element de la liste
-      // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
-      double x = eval(node->left);
-      switch (unary_function)
+      PNode* current = queue.front();
+      queue.pop();
+
+      // Create a PNodePod from the current PNode
+      PNodePod pod;
+      pod.type = current->type;
+      pod.value = current->value;
+      pod.nvalue = current->nvalue;
+
+      // Process the left child
+      if (current->left)
         {
-        case SIN:
-          return sin(x);
-        case ASIN:
-          return asin(x);
-        case COS:
-          return cos(x);
-        case ACOS:
-          return acos(x);
-        case TAN:
-          return tan(x);
-        case ATAN:
-          return atan(x);
-        case LN:
-          if (x <= 0)
+          if (nodeToIndex.find(current->left) == nodeToIndex.end())
             {
-              std::stringstream err;
-              err << "x=" << x << " for LN(x) function used.\nCheck your data file.";
-              Process::exit(err.str());
+              nodeToIndex[current->left] = currentIndex++;
+              queue.push(current->left);
             }
-          return log(x);
-        case EXP:
-          return exp(x);
-        case SQRT:
-          if (x < 0)
+          pod.left = nodeToIndex[current->left];
+        }
+      else
+        {
+          pod.left = -1; // Indicate no child
+        }
+
+      // Process the right child
+      if (current->right)
+        {
+          if (nodeToIndex.find(current->right) == nodeToIndex.end())
             {
-              std::stringstream err;
-              err << "x=" << x << " for SQRT(x) function used.\nCheck your data file.";
-              Process::exit(err.str());
+              nodeToIndex[current->right] = currentIndex++;
+              queue.push(current->right);
             }
-          return sqrt(x);
-        case INT:
-          return (int) x;
-        case ERF:
-#ifndef MICROSOFT
-          return erf(x);
-#else
-          Process::exit("erf(x) fonction not implemented on Windows version.");
-          return eval(x);
-#endif
-        case RND:
-          return x*drand48();
-        case COSH:
-          return cosh(x);
-        case SINH:
-          return sinh(x);
-        case TANH:
-          return tanh(x);
-        case ATANH:
-          return atanh(x);
-        case NOT:
-          if (x == 0) return 1;
-          else return 0;
-        case ABS:
-          return std::fabs(x);
-        case SGN:
-          return (x > 0) - (x < 0);
-        default:
-          Process::exit("method evalFunc : Unknown function for this node !!!");
-          return 0;
+          pod.right = nodeToIndex[current->right];
         }
-    }
-  else
-    {
-      Process::exit("method evalFunc : Unknown func !!!");
-      return -1;
-    }
-}
-
-// Ne pas inliner car sinon Parser::eval(PNode* node) plus souvent appelee encore
-// ne sera peut etre pas inlinee...
-KOKKOS_FUNCTION
-double Parser::evalOp(PNode* node)
-{
-  // PL 12/11/2010, reecriture avec switch pour optimisation
-  double x = (node->left  != nullptr ? eval(node->left)  : 0);
-  double y = (node->right != nullptr ? eval(node->right) : 0);
-  switch (node->value)
-    {
-    case 0: // ADD
-      return x + y;
-    case 1: // SUBTRACT
-      return  x - y;
-    case 2: // MULTIPLY
-      return x * y;
-    case 3: // DIVIDE
-      if (y==0)
+      else
         {
-          Process::exit("Error in the Parser: x/y calculated with y equals 0. You are using a formulae with a division per 0.");
+          pod.right = -1; // Indicate no child
         }
-      return x/y;
-    case 4: // POWER
-      if (y != (int)(y) && x<0)
-        {
-          std::stringstream err;
-          err << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )";
-          Process::exit(err.str());
-        }
-      return pow(x,y);
-    case 5: // LT
-      return (x<y)?1:0;
-    case 6: // GT
-      return (x>y)?1:0;
-    case 7: // LE
-      return (x<=y)?1:0;
-    case 8: // GE
-      return (x>=y)?1:0;
-    case 9: // MOD
-      return ((int)(x))%((int)(y));
-    case 10: // MAX
-      return (x>y)?x:y;
-    case 11: // MIN
-      return (x<y)?x:y;
-    case 12: // AND
-      return x && y;
-    case 13: // OR
-      return x || y;
-    case 14: // EQ
-      return (x == y);
-    case 15: // NEQ
-      return (x != y);
-    default:
-      std::stringstream err;
-      err << "Method evalOp : Unknown op " << (int)node->value << "!!!";
-      Process::exit(err.str());
-      return 0;
-    }
-}
 
+      PNodes.push_back(pod);
+    }
+  // Quick check
+  /*
+  Cerr << "Provisoire ======" << finl;
+  PNode* p = root;
+  PNodePod q = PNodes[0];
+  while (p!=nullptr)
+    {
+      if ((p->type != q.type) || (p->value != q.value))
+        Process::exit("error");
+      if (p->right!=nullptr)
+        {
+          p = p->right;
+          q = PNodes[q.right];
+        }
+      else
+        {
+          p = p->left;
+          q = PNodes[q.left];
+        }
+    } */
+}
 
 int Parser::precedence(int op)
 {
@@ -409,18 +317,14 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   // permet d avoir 0 erreur valgrind avec cppunit
                   root=(PNode*) *(ob->getBase());
                   Cerr << "List of known var "<<finl;
-                  for (int i=0; i<ivar; i++)
-                    Cerr<<les_var[i]->getString()<< " ";
+                  for (auto name : les_var_names)
+                    Cerr<<name<< " ";
                   Cerr<<finl;
                   Process::exit();
                 }
-
             }
-
         }
-
     }
-
   else if (tokenizer->type == StringTokenizer::NUMBER)
     {
       PNode* node;
@@ -462,9 +366,7 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
 {
   if (tokenizer->type == StringTokenizer::STRING)
     {
-
       int trouv = searchVar(tokenizer->getSValue());
-
       if (trouv>-1)
         {
           //Cerr << "variable = " << trouv << " " << tokenizer->getSValue() << finl;
@@ -500,12 +402,11 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   Cerr << *str << "\n";
                   Cerr << " identifier " << func << " unknown !! " << finl;
                   Cerr << "List of known var "<<finl;
-                  for (int i=0; i<ivar; i++)
-                    Cerr<<les_var[i]->getString()<< " ";
+                  for (auto name : les_var_names)
+                    Cerr<<name<< " ";
                   Cerr<<finl;
                   Process::exit();
                 }
-
             }
         }
     }
@@ -527,16 +428,12 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
       Cerr << "state 1 error !! " << finl;
       Process::exit();
     }
-
 }
-
-
 
 int Parser::test_op_binaire(int type)
 {
   return ((type == StringTokenizer::ADD )||( type == StringTokenizer::SUBTRACT )||( type == StringTokenizer::MULTIPLY )||( type == StringTokenizer::DIVIDE )||( type == StringTokenizer::POWER )||( type == StringTokenizer::LT )||( type == StringTokenizer::GT )||( type == StringTokenizer::LE )||( type == StringTokenizer::GE )||( type == StringTokenizer::MOD) || ( type == StringTokenizer::MAX) || ( type == StringTokenizer::MIN) || ( type == StringTokenizer::AND)||( type == StringTokenizer::OR)||( type == StringTokenizer::EQ)||( type == StringTokenizer::NEQ));
 }
-
 
 void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(int)* op)
 {
@@ -584,7 +481,6 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   Process::exit();
                   break;
                 }
-
               if (!op->isEmpty()) tmpi =  op->peek();
               else break ;
             }
@@ -636,7 +532,6 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
             }
         }
       state = 2;
-
     }
   else if (tokenizer->type == StringTokenizer::EOS)
     {
@@ -701,7 +596,13 @@ void Parser::addVar(const char *vv)
         }
     }
   if (ivar<maxvar)
-    les_var[ivar++] = new Variable(vv);
+    {
+      Nom s(vv);
+      s.majuscule();
+      les_var.resize(ivar+1);
+      les_var_names[ivar] = s;
+      ivar++;
+    }
   else
     {
       Cerr << "Maximum " << maxvar << " variables !! " << finl;
@@ -753,5 +654,157 @@ void debug(StringTokenizer * t)
     Cout << "OP : " << (int)t->type << finl;
 }
 
+/* double Parser::evalFunc(PNode* node)
+{
+  return const_cast<const Parser*>(this)->evalFunc(node);
+} */
 
+double Parser::evalFunc(const PNodePod& node)
+{
+  /* OC : Nouvelle version : */
+  if (node.value<=0)
+    {
+      int unary_function = -node.value-1; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
+      // afin de distinguer operateur binaire (>0) et fonctions unaires (<0>
+      // Il est donc necessaire de prendre -node->value ici pour referencer un element de la liste
+      // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
+      double x = eval(PNodes[node.left]);
+      switch (unary_function)
+        {
+        case SIN:
+          return sin(x);
+        case ASIN:
+          return asin(x);
+        case COS:
+          return cos(x);
+        case ACOS:
+          return acos(x);
+        case TAN:
+          return tan(x);
+        case ATAN:
+          return atan(x);
+        case LN:
+          if (x <= 0)
+            Process::Kokkos_exit("Negative value x for LN(x) function used.\nCheck your data file.");
+          return log(x);
+        case EXP:
+          return exp(x);
+        case SQRT:
+          if (x < 0)
+            Process::Kokkos_exit("Negative value x for SQRT(x) function used.\nCheck your data file.");
+          return sqrt(x);
+        case INT:
+          return (int) x;
+        case ERF:
+#ifndef MICROSOFT
+          return erf(x);
+#else
+          Process::exit("erf(x) fonction not implemented on Windows version.");
+          return eval(x);
+#endif
+        case RND:
+#ifdef _OPENMP
+          // ToDo Kokkos: cuRAND and hipRAND
+          Process::Kokkos_exit("Rnd function is not available yet for TRUST GPU version.");
+          return 0;
+#else
+          return x*drand48();
+#endif
+        case COSH:
+          return cosh(x);
+        case SINH:
+          return sinh(x);
+        case TANH:
+          return tanh(x);
+        case ATANH:
+          return atanh(x);
+        case NOT:
+          if (x == 0) return 1;
+          else return 0;
+        case ABS:
+          return std::fabs(x);
+        case SGN:
+          return (x > 0) - (x < 0);
+        default:
+          Process::Kokkos_exit("method evalFunc : Unknown function for this node !!!");
+          return 0;
+        }
+    }
+  else
+    {
+      Process::Kokkos_exit("method evalFunc : Unknown func !!!");
+      return -1;
+    }
+}
+
+/*
+double Parser::evalOp(PNode* node)
+{
+  return const_cast<const Parser*>(this)->evalOp(node);
+} */
+
+// Ne pas inliner car sinon Parser::eval(PNode* node) plus souvent appelee encore
+// ne sera peut etre pas inlinee...
+double Parser::evalOp(const PNodePod& node)
+{
+  // PL 12/11/2010, reecriture avec switch pour optimisation
+  double x = (node.left  != -1 ? eval(PNodes[node.left])  : 0);
+  double y = (node.right != -1 ? eval(PNodes[node.right]) : 0);
+  switch (node.value)
+    {
+    case 0: // ADD
+      return x + y;
+    case 1: // SUBTRACT
+      return  x - y;
+    case 2: // MULTIPLY
+      return x * y;
+    case 3: // DIVIDE
+      if (y==0)
+        {
+          Process::Kokkos_exit("Error in the Parser: x/y calculated with y equals 0. You are using a formulae with a division per 0.");
+        }
+      return x/y;
+    case 4: // POWER
+      if (y != (int)(y) && x<0)
+        {
+#ifdef _OPENMP
+          Process::Kokkos_exit("Error in the Parser: x^y calculated with negative value for x !");
+#else
+          Cerr << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )" << finl;
+          Process::exit();
+#endif
+        }
+      return pow(x,y);
+    case 5: // LT
+      return (x<y)?1:0;
+    case 6: // GT
+      return (x>y)?1:0;
+    case 7: // LE
+      return (x<=y)?1:0;
+    case 8: // GE
+      return (x>=y)?1:0;
+    case 9: // MOD
+      return ((int)(x))%((int)(y));
+    case 10: // MAX
+      return (x>y)?x:y;
+    case 11: // MIN
+      return (x<y)?x:y;
+    case 12: // AND
+      return x && y;
+    case 13: // OR
+      return x || y;
+    case 14: // EQ
+      return (x == y);
+    case 15: // NEQ
+      return (x != y);
+    default:
+#ifdef _OPENMP
+      Process::Kokkos_exit("Method evalOp : Unknown operation during expression parsing!");
+#else
+      Cerr << "Method evalOp : Unknown op " << (int)node.value << "!!!" << finl;
+      Process::exit();
+#endif
+      return 0;
+    }
+}
 

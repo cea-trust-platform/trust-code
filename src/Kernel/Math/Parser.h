@@ -20,12 +20,12 @@
 #include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 #include <Constante.h>
-#include <Variable.h>
 #include <algorithm>
 #include <Stack.h>
 #include <math.h>
 #include <string>
-#include <kokkos++.h>
+#include <Noms.h>
+#include <TRUSTArray.h>
 
 class StringTokenizer;
 
@@ -43,7 +43,7 @@ public :
    */
   Parser();
   Parser(const Parser&);
-  ~Parser();
+  virtual ~Parser();
 
   /**
    * Construit un objet Parser avec une chaine specifiee et un nb max de variables a indiquer avec la methode addVar.
@@ -58,12 +58,13 @@ public :
   /**
    * Construit l'arbre correspondant a la chaine de caracteres. Cet arbre doit etre construit une seule fois et la chaine de caractere est evaluee en parcourant cet arbre par la methode eval() autant de fois qu'on le souhaite.
    */
-  void parseString();
+  virtual void parseString();
 
   /**
    * Sert a evaluer l'expression mathematique correspondante a la chaine de caracteres. Poru cela il faut avant toute chose construire l'arbre par la methode parseString().
    */
-  double eval() { return eval(root); }
+  //inline double eval() const { return eval(root); }
+  inline double eval() { return eval(PNodes[0]); }
 
   /**
    * Fixe la valeur de la variable representee par une chaine sv.
@@ -78,23 +79,23 @@ public :
   /**
   * Fixe la valeur de la variable de numero specifie. Ce numero correspondt a l'ordre de l'ajout des variables par la methode addVar().
   */
-  KOKKOS_INLINE_FUNCTION void setVar(int i, double val)
+  inline void setVar(int i, double val)
   {
+    //Cerr << "Provisoire ivar=" << ivar << " " << les_var.size_array() << finl;
     assert(i>-1 && i<ivar);
-    les_var[i]->setValue(val);
+    les_var[i] = val;
   }
 
   /**
    * Fixe le nombre max de variables a indiquer avec la methode addVar.
    */
-  void setNbVar(int nvar);
+  virtual void setNbVar(int nvar);
 
   /**
    * permet d'ajouter une variable en specifiant sa chaine representative (par ex. : x, y1 etc...)
    */
   void addVar(const char *);
 
-  inline Variable** getVar() { return les_var; }
   inline int getmaxVar()     { return maxvar; }
   inline int getNbVar()      { return ivar; }
   inline std::string& getString() { return *str; }
@@ -116,18 +117,38 @@ public :
     impuls_tempo = impuls_t0;
   }
 
-private:
+protected:
   int test_op_binaire(int type);
 
   static int precedence(int);
-  KOKKOS_INLINE_FUNCTION double eval(PNode* node);
-  double evalOp(PNode*);
-  KOKKOS_INLINE_FUNCTION double evalVar(PNode* node) { return les_var[node->value]->getValue(); }
-  double evalFunc(PNode*);
+  inline double eval(const PNodePod& node)
+  {
+#ifndef _OPENMP
+    assert(node!=nullptr);
+#endif
+    switch(node.type)
+      {
+      case 1 :
+        return evalOp(node);  // PNode_type::OP
+      case 2 :
+        return node.nvalue;  // PNode_type::VALUE
+      case 3 :
+        return evalFunc(node);// PNode_type::FUNCTION
+      case 4 :
+        return les_var[node.value]; // PNode_type::VAR
+      default:
+        Process::exit("method eval : Unknown type for this node !!!");
+        return 0;
+      }
+  }
+  //double evalOp(PNode*) const;
+  double evalOp(const PNodePod&);
+  //double evalFunc(PNode*) const;
+  double evalFunc(const PNodePod&);
   void parserState0(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState1(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState2(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
-  inline int searchVar(const std::string&);
+  inline int searchVar(const std::string& s) { return searchVar(s.c_str()); }
   inline int searchVar(const char*);
   int searchCst(const std::string& v);
   int searchFunc(const std::string& v);
@@ -139,50 +160,20 @@ private:
   double impuls_tempo;
 
   PNode* root;
+  std::vector<PNodePod> PNodes;
   std::string* str;
-  Variable** les_var;
+  ArrOfDouble les_var;
+  Noms les_var_names;
   LIST(Constante) les_cst;
   std::map<std::string, int> map_function_;
   int maxvar,ivar;
 };
 
-KOKKOS_INLINE_FUNCTION double Parser::eval(PNode* node)
-{
-#ifndef _OPENMP
-    assert(node!=nullptr);
-#endif
-    switch(node->type)
-    {
-        case 1 :
-            return evalOp(node);  // PNode_type::OP
-        case 2 :
-            return node->nvalue;  // PNode_type::VALUE
-        case 3 :
-            return evalFunc(node);// PNode_type::FUNCTION
-        case 4 :
-            return evalVar(node); // PNode_type::VAR
-        default:
-            Process::exit("method eval : Unknown type for this node !!!");
-            return 0;
-    }
-}
-
 inline int Parser::searchVar(const char * sv)
 {
   std::string s(sv);
   std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-  for (int i=0; i<ivar; i++)
-    if ((les_var[i]->getString()).compare(s) == 0 ) return i;
-  return -1;
-}
-
-inline int Parser::searchVar(const std::string& v)
-{
-  std::string s(v);
-  std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-  for (int i=0; i<ivar; i++)
-    if ((les_var[i]->getString()).compare(s) == 0 ) return i;
-  return -1;
+  return les_var_names.rang(s.c_str());
 }
 
 #endif
