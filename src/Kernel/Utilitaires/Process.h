@@ -113,6 +113,7 @@ public:
   static int check_int_overflow(trustIdType);
 
   static int je_suis_maitre();
+  static void Kokkos_exit(const char*);
   static void exit(const Nom& message, int exit_code = -1);
   static bool is_sequential(); // serial ?
   static void barrier();
