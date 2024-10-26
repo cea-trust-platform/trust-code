@@ -42,4 +42,20 @@ public :
 private :
 };
 
+class PNodePod
+{
+public :
+  int left;
+  int right;
+  int type;
+  int value;
+  double nvalue = -100.;
+
+//    PNodePod();
+//    PNodePod(PNodePod*);
+//  void replace(PNodePod*);
+
+private :
+};
+
 #endif

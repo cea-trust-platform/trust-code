@@ -17,10 +17,54 @@
 #include <TRUSTTab.h>
 #include <iostream>
 #include <Device.h>
-#include <Parser.h>
+#include <ParserView.h>
 
 /*! Teste les methodes de l'interface Kokkos utilisees dans TRUST
  */
+class Object
+{
+public:
+  virtual ~Object() {}
+  Object() {}
+  virtual void setSize(int i) { les_var.resize(i); }
+  void setVar(int i, double val) { les_var[i] = val; }
+  double eval() { return 2*les_var[0]+2; }
+private:
+
+protected:
+  ArrOfDouble les_var;
+};
+class ObjectView : public Object
+{
+public:
+  ObjectView()
+  {
+    Object();
+  }
+  virtual void setSize(int i) override
+  {
+    Object::setSize(i);
+    les_var_view = les_var.view_rw();
+  }
+  // Les methodes sur le device sont const
+  KOKKOS_FUNCTION
+  void setVar(int i, double val) const { les_var_view[i] = val; }
+  KOKKOS_FUNCTION
+  double eval() const { return 2*les_var_view[0]+2; }
+private:
+  DoubleArrView les_var_view;
+};
+template<typename ExecSpace>
+void kernel(ArrOfDouble& f, ObjectView& MyObjectDevice)
+{
+  int nb_elem = f.size_array();
+  DoubleArrView f_v = f.view_rw();
+  Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
+  {
+    MyObjectDevice.setVar(0, 0.);
+    f_v(i) = MyObjectDevice.eval();
+  });
+}
 void kokkos_self_test()
 {
 #ifndef NDEBUG
@@ -148,56 +192,68 @@ void kokkos_self_test()
   }
   // C++ object in Kokkos region
   {
-    class Object
-    {
-    public:
-      double val = 2;
-      Nom name = "toto";
-    };
     ArrOfDouble f(nb_elem);
     f=0;
-    Object MyObject;
-    DoubleArrView f_v = f.view_rw();
-    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
-    {
-      //if (MyObject.name=="toto") // No std::strinf not supported on GPU! Undefined reference to '_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareEPKc' i
-      f_v(i) = MyObject.val;   // Ok
-    });
+    // Kernel host
+    Object MyObjectHost;
+    MyObjectHost.setSize(nb_elem);
+    MyObjectHost.setVar(0, 0.);
+    assert(MyObjectHost.eval()==2.);
+
+    // Kernel host or host
+    ObjectView MyObjectDevice;
+    MyObjectDevice.setSize(nb_elem);
+    assert(!f.isDataOnDevice());
+    kernel<Kokkos::DefaultHostExecutionSpace>(f, MyObjectDevice);
+    assert(f(0)==2);
+    mapToDevice(f); // envoi de f sur le device
+    assert(f.isDataOnDevice());
+    kernel<Kokkos::DefaultExecutionSpace>(f, MyObjectDevice);
+    assert(f(0)==2);
   }
-  // Parser
+  // Parser sur le host:
   {
     ArrOfDouble f(nb_elem);
-    f=0;
+    f = 0;
     std::string expr("2*x+2");
     Parser parser(expr, 1);
     parser.addVar("x");
     parser.parseString();
-    DoubleArrView f_v = f.view_rw();
-    //Kokkos::RangePolicy<Kokkos::DefaultExecutionSpace> gpu(0, nb_elem);
-    Kokkos::RangePolicy<Kokkos::DefaultHostExecutionSpace> cpu(0, nb_elem);
-    Kokkos::parallel_for(cpu, KOKKOS_LAMBDA(const int i)
-    {
-      double x = (double)i;
-      f_v(i) = x;
-      //  Parser parser_(parser); // Local copy cause Pasrer object is passed by value (so const) into lambda
-      //  parser_.setVar(0, x);   // setVar(string) not possible on GPU
-      //  f_v(i) += parser_.eval();
-
-      // Provisoire:
-      // std::vector<double> vec(5, 0.); // no warning here
-      // f_v(i) = vec[3]; // or here for calling a non-KOKKOS_FUNCTION
-    });
-    assert(f(0)==2);
-    assert(f(nb_elem-1)==2*nb_elem);
+    for (int i = 0; i < nb_elem; i++)
+      {
+        double x = (double) i;
+        f(i) = 2 * x + 2;
+      }
+    assert(f(0) == 2);
   }
-  // Some check:
+  {
+    ArrOfDouble f(nb_elem);
+    f = 0;
+    std::string expr("2*x+2");
+    // Parser sur le device:
+    ParserView parser(expr, 1);
+    parser.addVar("x");
+    parser.parseString();
+    DoubleArrView f_v = f.view_rw();
+    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(
+                           const int i)
+    {
+      double x = (double) i;
+      parser.setVar(0, x);
+      f_v(i) = 0;
+      //f_v(i) = parser.eval();
+    });
+    assert(f(0) == 2);
+    assert(f(nb_elem - 1) == 2 * nb_elem);
+  }
+// Some check:
   /*
   assert(a_v.is_allocated());
   bool check = std::is_same<decltype(a_v)::memory_space, Kokkos::CudaSpace>::value;
   assert(check);
    */
 
-  // ToDo implement reference counter for a view on tab
+// ToDo implement reference counter for a view on tab
   /*
   DoubleTab tab(N);
   DoubleArrView view = tab.ro(); 	// Data on device
