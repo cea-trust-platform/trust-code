@@ -1,35 +1,35 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       12.851
+Temps total                       11.9994
 
 Statistiques de resolution du probleme
 
-Temps total                       3.73627
+Temps total                       3.70411
 
 
 Timesteps                         3
-Secondes / pas de temps           1.24541
-Dont solveurs Ax=B                0.739397 59% (2 appels/pas de temps)
-Dont solveur diffusion_implicite  0.024939  2% (4 appels/pas de temps)
-Dont assemblage matrice_implicite 0.064119  5% (4 appels/pas de temps)
-Dont mettre_a_jour                0.094671  7% (4 appels/pas de temps)
-Dont operateurs convection        0.040946  3% (6 appels/pas de temps)
-Dont operateurs diffusion         0.024031  1% (18 appels/pas de temps)
-Dont operateurs gradient          0.007694  0% (5 appels/pas de temps)
-Dont operateurs divergence        0.005035  0% (5.66667 appels/pas de temps)
+Secondes / pas de temps           1.23469
+Dont solveurs Ax=B                0.741281 60% (2 appels/pas de temps)
+Dont solveur diffusion_implicite  0.024381  1% (4 appels/pas de temps)
+Dont assemblage matrice_implicite 0.062668  5% (4 appels/pas de temps)
+Dont mettre_a_jour                0.091141  7% (4 appels/pas de temps)
+Dont operateurs convection        0.040833  3% (6 appels/pas de temps)
+Dont operateurs diffusion         0.022357  1% (18 appels/pas de temps)
+Dont operateurs gradient          0.007558  0% (5 appels/pas de temps)
+Dont operateurs divergence        0.005022  0% (5.66667 appels/pas de temps)
 Dont operateurs source            0.000881  0% (4 appels/pas de temps)
-Dont operations postraitement     0.216093 17% (1 appel/pas de temps)
-Dont calcul dt                    0.006736  0% (6 appels/pas de temps)
-Dont calcul divers                0.020869  1% (0 appels/pas de temps)
+Dont operations postraitement     0.212434 17% (1 appel/pas de temps)
+Dont calcul dt                    0.005719  0% (6 appels/pas de temps)
+Dont calcul divers                0.020415  1% (0 appels/pas de temps)
 Nb solveur / pas de temps         2
-Secondes / solveur                0.369698
+Secondes / solveur                0.37064
 Iterations / solveur              200
 GPU statistics per time step (experimental):
-Libraries: 0.739227 s 59.4%  2.0 calls
-Kernels  : 0.146062 s 11.7% 812.0 calls
-Copy H2D : 0.023810 s  1.9% 105.0 calls 10.2 GB/s
-Copy D2H : 0.015612 s  1.3% 82.7 calls  6.8 GB/s
-GPU: 71% Copy H<->D: 3.1% Comm: 0% CPU & Others: 25.7%
+Libraries: 0.741105 s 60.0%  2.0 calls
+Kernels  : 0.142178 s 11.5% 816.0 calls
+Copy H2D : 0.021337 s  1.7% 105.0 calls 11.4 GB/s
+Copy D2H : 0.014820 s  1.2% 82.7 calls  7.1 GB/s
+GPU: 71.5% Copy H<->D: 2.9% Comm: 0% CPU & Others: 25.5%
 I/O:
 
 Timesteps = number of time steps
@@ -48,5 +48,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.102865
+Temps total                       0.171035
 
