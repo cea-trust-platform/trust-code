@@ -47,13 +47,14 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
  * @param (Domaine_dis_base& domaine) domaine
  * @param (Domaine_Cl_dis_base& domaine_cl) domaine cl
  */
-void  EOS_Tools_VEF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis_base& domaine_cl)
+void EOS_Tools_VEF::associer_domaines(const Domaine_dis_base& dds, const Domaine_Cl_dis_base& domaine_cl)
 {
   le_dom = ref_cast(Domaine_VEF,dds);
   le_dom_Cl = domaine_cl;
   if (!un_.get_md_vector().non_nul())
     {
       le_dom->creer_tableau_faces(un_, RESIZE_OPTIONS::NOCOPY_NOINIT);
+      mapToDevice(un_); // Copy on device this constant array
       un_ = 1.;
     }
 }

@@ -354,12 +354,17 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             for (int i = 0; i < nb_comp; i++)
               for (int j = 0; j < nb_comp; j++)
                 {
-                  double flux = ori * face_normales_v(num_face, j) * (nu_elem * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
+                  double grad_ij = grad_v(elem, i, j);
+                  double grad_ji = grad_v(elem, j, i);
+                  double fn = face_normales_v(num_face, j);
+                  double flux = ori * fn * (nu_elem * grad_ij  /* + Re(elem, i, j) */ );
                   Kokkos::atomic_sub(&resu_v(num_face, i), flux);
 
-                  double flux_bord = ori * face_normales_v(num_face, j) * (nu_elem * (grad_v(elem, i, j) + grad_v(elem, j, i)) );
                   if (num_face < nb_faces_bord)
-                    Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux_bord);
+                    {
+                      double flux_bord = ori * fn * (nu_elem * (grad_ij + grad_ji));
+                      Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux_bord);
+                    }
                 }
           }
       }
