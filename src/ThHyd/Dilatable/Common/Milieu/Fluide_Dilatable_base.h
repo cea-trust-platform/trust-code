@@ -125,6 +125,8 @@ public :
   inline void divu_discvit(DoubleTab& secmem1, DoubleTab& secmem2) { eos_tools_->divu_discvit(secmem1,secmem2); }
   inline double moyenne_vol(const DoubleTab& A) const { return eos_tools_->moyenne_vol(A); }
 
+  bool is_dilatable() const override { return true; }
+
 protected :
   virtual void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) = 0;
   void completer_edo(const Probleme_base& );

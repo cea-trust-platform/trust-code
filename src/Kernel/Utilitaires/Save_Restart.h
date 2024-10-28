@@ -35,7 +35,8 @@ public:
   inline bool& reprise_effectuee() { return restart_done_; }
   inline bool reprise_effectuee() const { return restart_done_; }
 
-  int file_size_xyz() const;
+  void preparer_calcul() ;
+
   void sauver_xyz(int) const;
 
   bool is_restart_in_progress() const { return restart_in_progress_; }
@@ -45,7 +46,10 @@ public:
   int sauver() const;
   void finir();
 
-protected:
+private:
+
+  void lire_reprise(Entree& is, Motcle& motlu) ;
+  void lire_sauvegarde(Entree& is, Motcle& motlu) ;
 
   OBS_PTR(Probleme_base) pb_base_;
 

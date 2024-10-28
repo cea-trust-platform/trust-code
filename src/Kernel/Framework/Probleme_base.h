@@ -100,7 +100,7 @@ public:
   Domaine& domaine();
   const Domaine_dis_base& domaine_dis() const;
   Domaine_dis_base& domaine_dis();
-  int is_dilatable() const;
+  bool is_dilatable() const;
 
   inline const Discretisation_base& discretisation() const;
   inline Postraitements& postraitements() { return les_postraitements_; }

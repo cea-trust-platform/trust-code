@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-#include <EcritureLectureSpecial.h>
 #include <Discretisation_base.h>
 #include <Domaine_Cl_dis_base.h>
 #include <Loi_Fermeture_base.h>
@@ -204,18 +203,29 @@ Entree& Probleme_base::lire_equations(Entree& is, Motcle& mot)
 {
   const int nb_eq = nombre_d_equations();
   is >> mot;
-  if (nb_eq == 0) return is;
-  Cerr << "Reading of the equations" << finl;
-  bool already_read;
-  if (mot == "correlations") lire_correlations(is), already_read = false;
-  else already_read = true;
+  if (nb_eq == 0)
+    return is;
 
-  for(int i = 0; i < nb_eq; i++, already_read = false)
+  Cerr << "Reading of the equations" << finl;
+  bool already_read = true;
+
+  if (mot == "correlations")
     {
-      if (!already_read) is >> mot;
-      is >> getset_equation_by_name(mot);
+      lire_correlations(is);
+      already_read = false;
     }
+
+  for (int i = 0; i < nb_eq; i++)
+    {
+      if (!already_read)
+        is >> mot;
+
+      is >> getset_equation_by_name(mot);
+      already_read = false;
+    }
+
   read_optional_equations(is, mot);
+
   return is;
 }
 
@@ -951,8 +961,7 @@ void Probleme_base::preparer_calcul()
   for (int i = 0; i < nombre_d_equations(); i++) /* on peut maintenant remplir les champs conserves */
     equation(i).mettre_a_jour_champs_conserves(temps);
 
-  if (schema_temps().file_allocation() && EcritureLectureSpecial::Active)
-    save_restart_.file_size_xyz();
+  save_restart_.preparer_calcul();
 
   for (auto& itr : liste_loi_fermeture_)
     {
@@ -994,20 +1003,17 @@ void Probleme_base::postraiter_interfaces(const Nom& nomfich, Sortie& s, const N
   // exit();
 }
 
-// En attendant de mieux poser les equations
-int Probleme_base::is_dilatable() const
+bool Probleme_base::is_dilatable() const
 {
-  return (milieu().que_suis_je()=="Fluide_Quasi_Compressible" || milieu().que_suis_je()=="Fluide_Weakly_Compressible");
+  return milieu().is_dilatable();
 }
-
 
 /*! @brief Verifie que la place necessaire existe sur le disque dur.
  *
  */
 void Probleme_base::allocation() const
 {
-  if(schema_temps().file_allocation() && EcritureLectureSpecial::Active)        // Permet de tester l'allocation d'espace disque
-    save_restart_.allocation();
+  save_restart_.allocation();
 }
 
 /*! @brief Si force=1, effectue le postraitement sans tenir compte des frequences de postraitement.

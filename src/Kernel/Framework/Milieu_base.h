@@ -131,6 +131,8 @@ public:
   // Liste des champs des milieux:
   const LIST(OBS_PTR(Champ_Don_base))& champs_don() const { return champs_don_; }
 
+  virtual bool is_dilatable() const { return false; }
+
 protected:
   OBS_PTR(Domaine_dis_base) zdb_;
   OWN_PTR(Champ_base) ch_rho_; //peut etre un OWN_PTR(Champ_Don_base) ou un Champ_Inc
