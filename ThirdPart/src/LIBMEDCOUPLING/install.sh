@@ -61,9 +61,7 @@ build_and_test_mc()
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
     echo "Applying patch for const pointer in IKDEC ..."
-    (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
-    echo "Applying patch for crackAlong ..."
-    (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/crack_along.patch )
+    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
 
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
