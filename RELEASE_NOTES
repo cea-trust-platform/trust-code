@@ -1,7 +1,7 @@
-XX/XX/24 (TRUST) Build        : TRUST is now configured by default with Kokkos SIMD (if C++17) backend enabled
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+28/10/24 (TRUST) Build        : TRUST is now configured by default with Kokkos SIMD (if C++17) backend enabled
 21/10/24 (TRUST) Bug fix      : In VEF, Viscous forces on boundaries (printed in *_Contrainte_visqueuse*.out files) in incompressible Navier-Stokes equations were computed as Integral(-mu*grad(u)*ndS). It is now computed as Integral(-mu*(grad(u) +grad(u)^T)*ndS).
 18/10/24 (TRUST) Minor change : To force C++14 build of TRUST, you should add configure option -std=c++14. Else by default, it will use C++17 as TRUST features from Kokkos (GPU, SIMD, OpenMP) are not available with C++14
 18/10/24 (TRUST) Fix          : .out files were not closed at the end of the calculation leaving opened file descriptors
