@@ -46,9 +46,7 @@ bool Champs_compris::has_champ(const Motcle& motcle) const
 {
   assert(motcle!="??");
   auto item = liste_champs_.find(motcle.getString());
-  if (item != liste_champs_.end())
-    return true;
-  return false;
+  return item != liste_champs_.end();
 }
 
 const Noms Champs_compris::liste_noms_compris() const
