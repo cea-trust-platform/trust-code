@@ -1,0 +1,54 @@
+#!/bin/bash
+package=$1
+ROOT=`pwd`
+path_package=$TRUST_ROOT/externalpackages/$package.tar.gz
+[ ! -f $path_package ] && echo "$path_package not found! Update your makefile." && exit -1
+
+build_root=$TRUST_TMP/build/lib
+mkdir -p $build_root
+cd $build_root
+gunzip -c $path_package > $package.tar
+tar xf $package.tar
+rm -f $package.tar
+Vc_dir=`ls | grep Vc 2>/dev/null`
+[ "$Vc_dir" = "" ] && echo "Vc dir not found." && exit -1
+
+install_dir=$TRUST_ROOT/lib/src/LIBVC
+build_dir=$build_root/Vc_build
+mkdir -p $build_dir
+cd $build_dir
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   CXX=$TRUST_CC_BASE_EXTP
+   CC=$TRUST_cc_BASE_EXTP
+else
+   CXX=$TRUST_CC
+   CC=$TRUST_cc
+fi
+cmake ../$package -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX || exit -1
+ 
+# Compilation
+$TRUST_MAKE || exit -1
+
+# Installation
+make install
+
+status=$?
+if [ $status -ne 0 ]; then
+    echo "[ERROR] Installation of Vc failed. You can disable it with ./configure -disable-vc"
+    exit -1
+fi
+
+# menage
+rm -rf $build_root/$package
+
+# test
+cd $ROOT
+if [ "$TRUST_CC_BASE_EXTP" = "" ]
+then
+   make test
+   exit 0
+else
+   # On ne test pour non GNU:
+   exit 0
+fi

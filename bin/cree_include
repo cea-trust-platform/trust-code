@@ -106,17 +106,15 @@ else
 fi
 [ "`diff CoolProp/coolprop++.h $TRUST_TMP/coolprop++.h.tmp 1>/dev/null 2>&1; echo $?`" != 0 ] && cat $TRUST_TMP/coolprop++.h.tmp > CoolProp/coolprop++.h && rm -f $TRUST_TMP/coolprop++.h.tmp
 
-# Kokkos SIMD tag:
+# Kokkos tag:
 kokkos_hdr=$TRUST_ROOT/src/Kernel/Utilitaires/kokkos++.h
-cp $kokkos_hdr $TRUST_TMP/kokkos++.h
-if [ "$TRUST_USE_KOKKOS_SIMD" = "1" ]; then
-    sed -i 's/#undef _KOKKOS_AVX/#define _KOKKOS_AVX/' $TRUST_TMP/kokkos++.h
+if [ "$TRUST_USE_KOKKOS" = "1" ]; then
+    echo "#define KOKKOS_" > $TRUST_TMP/kokkos++.h
 else
-    sed -i 's/#define _KOKKOS_AVX/#undef _KOKKOS_AVX/' $TRUST_TMP/kokkos++.h
+    echo "#undef KOKKOS_" > $TRUST_TMP/kokkos++.h
 fi
-# Update only if different than existing to avoid re-compilation at each configure:
-update=`diff $kokkos_hdr $TRUST_TMP/kokkos++.h 1>/dev/null`
-if [ ! -f $kokkos_hdr ] || $update; then
+#    Update only if different than existing to avoid re-compilation at each configure:
+if [ ! -f $kokkos_hdr ] || diff $kokkos_hdr $TRUST_TMP/kokkos++.h 1>/dev/null; then
     cat $TRUST_TMP/kokkos++.h > $kokkos_hdr
 fi
 rm $TRUST_TMP/kokkos++.h
