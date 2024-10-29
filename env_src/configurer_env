@@ -1039,6 +1039,7 @@ TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
 m="# Machine-compiler architecture";e="TRUST_ARCH_CC=$TRUST_ARCH_CC && export TRUST_ARCH_CC";ecrit $m"|"$e"|"$env
 m="# Path to Fortran compiler";e="`cherche_file TRUST_F77_BASE $TRUST_F77_BASE`";ecrit $m"|"$e"|"$env;eval $e
 TRUST_VERSION_GNU=`print_GNU_VERSION`
+m="# C++ standard to use to build TRUST (c++17 by default)";e="TRUST_STDCPP=$TRUST_STDCPP && export TRUST_STDCPP";ecrit $m"|"$e"|"$env;eval $e
 ####################################################
 # Verification que les compilateurs ont ete trouves.
 ####################################################
@@ -2075,6 +2076,7 @@ m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRU
 if [ "$TRUST_INT64" = "1" ]
 then
    echo '#include <iostream>
+#include <cstdint>
 using namespace std;
 int main() {
    cout<<"Size of int is "<<sizeof(int)<<" bytes"<<endl;
