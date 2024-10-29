@@ -49,7 +49,7 @@ void kokkos_self_test()
     Kokkos::fence();
     assert(b(0, 0) == 4); // Retour sur le host et verification
   }
-  // Check const DoubleTabView:
+  // Check CDoubleTabView:
   {
     CDoubleTabView a_v = a.view_ro();
     Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)

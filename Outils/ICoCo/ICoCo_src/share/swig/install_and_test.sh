@@ -10,7 +10,7 @@ echo Sourcing MEDCoupling
 
 cd build
 
-CXXFLAGS="-Wno-error" cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig
+CXXFLAGS="-Wno-error" cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install
 
 #VERBOSE=1 make -j install || exit -1
 make -j install || exit -1
