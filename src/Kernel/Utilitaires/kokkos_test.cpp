@@ -51,7 +51,7 @@ void kokkos_self_test()
   }
   // Check const DoubleTabView:
   {
-    const DoubleTabView a_v = a.view_ro();
+    CDoubleTabView a_v = a.view_ro();
     Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
     {
       assert(a_v(i, 0) == 1);
@@ -63,7 +63,7 @@ void kokkos_self_test()
   {
     a = 1;
     b = 2;
-    const DoubleTabView a_v = a.view_ro();
+    CDoubleTabView a_v = a.view_ro();
     DoubleTabView b_v = b.view_rw();
     Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(
                            const int i)
@@ -120,7 +120,7 @@ void kokkos_self_test()
     for (int i=0; i<nb_elem; i++)
       for (int j=0; j<2; j++)
         tab(i,j) = i + 0.1*j;
-    const DoubleTabView tab_v = tab.view_ro();
+    CDoubleTabView tab_v = tab.view_ro();
     // La creation de la vue fait une copie de u sur le device:
     //printf("Provisoire OpenMP adresse host: [%p] device: [%p]\n",(void*)tab.data(), (void*)addrOnDevice(tab));
     assert(a.data() != addrOnDevice(a));
@@ -136,13 +136,13 @@ void kokkos_self_test()
     for (int i=0; i<nb_elem; i++)
       for (int j=0; j<2; j++)
         tab(i,j) = i + 0.1*j;
-    const DoubleTabView tab_v = tab.view_ro();
+    CDoubleTabView tab_v = tab.view_ro();
     assert(tab_v.data()==addrOnDevice(tab)); // Meme adresse
     //printf("Provisoire OpenMP device before: [%p]\n", (void*)addrOnDevice(tab));
     deleteOnDevice(tab);
     allocateOnDevice(tab);
     //printf("Provisoire OpenMP device after: [%p]\n", (void*)addrOnDevice(tab));
-    const DoubleTabView tab_v2 = tab.view_ro();
+    CDoubleTabView tab_v2 = tab.view_ro();
     assert(tab_v2.data()==addrOnDevice(tab)); // Meme adresse
   }
   // Some check:
