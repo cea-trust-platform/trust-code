@@ -25,10 +25,20 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
   if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
 
+  /*
+   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
+   */
+
   DoubleTab& xi = eqn.inconnue().valeurs(), &xip1 = eqn.inconnue().futur();
+
+  // Boundary conditions applied on Un+1:
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+
   DoubleTrav present(xi), qi(xi);
   present = xi;
   qi = xi;
+
+  eqn.inconnue().avancer(); // XXX
 
   for (int i = 0; i < NB_PTS; i++)
     {
@@ -39,6 +49,8 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
       // on fait ca : x_i = x_{i-1} + b_i * q_i
       xi.ajoute(get_b<_ORDRE_,NB_PTS>()[i], qi);
     }
+
+  eqn.inconnue().reculer(); // XXX
 
   xip1 = xi;
   xi -= present;
@@ -66,7 +78,16 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   static constexpr int NB_PTS = IS_DEUX ? 2 : ( IS_TROIS ? 3 : 4);
   static constexpr int NB_BUTCHER = IS_DEUX ? 0 : ( IS_TROIS ? 1 : ( IS_QUATRE ? 2 : 3 ));
 
-  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
+  /*
+   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
+   */
+
+  DoubleTab& present = eqn.inconnue().valeurs(); // Un
+  DoubleTab& futur = eqn.inconnue().futur();   // Un+1
+
+  // Boundary conditions applied on Un+1:
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+
   if (ki_.size()!=NB_PTS)
     {
       ki_.resize(NB_PTS);
@@ -76,6 +97,8 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
 
   DoubleTrav sauv(present);
   sauv = present; // sauv = y0
+
+  eqn.inconnue().avancer(); // XXX
 
   // Step 1
   eqn.derivee_en_temps_inco(ki_[0]); // ki[0] = f(y0)
@@ -89,6 +112,8 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
       eqn.derivee_en_temps_inco(ki_[step]);
       ki_[step] *= dt_;
     }
+
+  eqn.inconnue().reculer(); // XXX
 
   futur = sauv; // futur = y1 = y0
   for (int i = 0; i < NB_PTS; i++) futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki_[i]);

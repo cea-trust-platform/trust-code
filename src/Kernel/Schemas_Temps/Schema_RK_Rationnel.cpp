@@ -44,7 +44,14 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 
   const double b1 = 2.0, b2 = -1, c2 = 0.5;
 
-  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
+  /*
+   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
+   */
+  DoubleTab& present = eqn.inconnue().valeurs(); // Un
+  DoubleTab& futur = eqn.inconnue().futur();   // Un+1
+
+  // Boundary conditions applied on Un+1:
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
   // g1=futur=f(y0)
   DoubleTrav g1(present), g2(present); // just for initializing the array structure ...
@@ -52,6 +59,8 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   // sauv=y0
   DoubleTrav sauv(present);
   sauv = present;
+
+  eqn.inconnue().avancer(); // XXX
 
   eqn.derivee_en_temps_inco(g1);
 
@@ -63,6 +72,8 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 
   // g2=futur=f(y0+c2g1)
   eqn.derivee_en_temps_inco(g2);
+
+  eqn.inconnue().reculer(); // XXX
 
   // g2=b2"g2"
   g2 *= (b2 * dt_);
