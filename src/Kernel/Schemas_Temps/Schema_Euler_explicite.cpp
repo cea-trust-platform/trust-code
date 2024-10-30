@@ -32,15 +32,23 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   DoubleTab& futur = eqn.inconnue().futur();   // Un+1
   DoubleTrav dudt(futur); // just for initializing the array structure ... Trav is highly recommanded!! Otherwise we allocate at each time step!!
 
+  /*
+   * The strategy done in the explicit schemes is to prescribe CL at time n+1
+   *  at the begining of the time step, turning the wheel (avancer/reculer) to use
+   *  it in derivee_en_temps_inco (so that valeurs() points to futur() only for BC).
+   *
+   * It influences only two cases
+   *     - Time dependent BCs (champ_fonc_txyz ou ICoCo) or function (champ_fonc_fonction) => Here it only shifts the
+   *        applied BC by one time step, but does not change the order of the scheme
+   *
+   *     - Coupled cases (paroi contact) => Here it is mandatory to have the equality of the fluxes at the coupled boundary
+   *
+   *     See the out files of docond/docond_vef
+   */
+
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
-  // At this point, the inconnue() is in the following state:
-  //   present(): holds the current value, but updates for the BC have already been done (line just above)
-  //   future(): holds the present value, unmodified yet (this was initialized by initTimeStep() which set all the 'future' slots
-  //             of the unknown to the 'present' value).
-  // So we turn the wheel to get an unmodified version of 'present' for the derivee_en_temps_inco() computation (full explicit scheme):
-  // (commenting those lines will trigger failure for cases with variable BC)
   eqn.inconnue().avancer();
   eqn.derivee_en_temps_inco(dudt);
   eqn.inconnue().reculer();
