@@ -96,28 +96,21 @@ int Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
   // sert pour la pression et les couplages
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
 
-  DoubleTab dudt(futur);
-  /*
-    if (nb_pas_dt() > nb_pas_dt_seuil())
-      {
-        Cout <<"Use of "<<que_suis_je()<<" scheme"<<finl;
-      }
-    else
-      {
-        Cout <<"Use of explicit Euler scheme for time step "<<nb_pas_dt()<<" in "<<que_suis_je()<<" scheme"<<finl;
-      } */
+  DoubleTrav dudt(futur);
 
   // Compute du/dt
+  eqn.inconnue().avancer(); // XXX
   eqn.derivee_en_temps_inco(dudt);
+  eqn.inconnue().reculer(); // XXX
 
   //Contribution de l'inconnue au temps n
   futur = dudt;
   futur *= time_step;
   futur += present;
 
-  dudt=futur;
-  dudt-=present;
-  dudt*=inv_time_step;
+  dudt = futur;
+  dudt -= present;
+  dudt *= inv_time_step;
 
   Debog::verifier("Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base, dudt",dudt);
 
