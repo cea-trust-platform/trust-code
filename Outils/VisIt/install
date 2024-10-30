@@ -91,7 +91,7 @@ then
    [ `uname -s` = Darwin ]                                                      && os=arm64 && version=3_3_1
 
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
-   if [ "$TRUST_WITHOUT_HOST" = 1 ] || [ "${HOST#cea-dm2s}" != "$HOST" ]
+   if [ "$TRUST_WITHOUT_HOST" = 1 ]
    then
       [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
    fi

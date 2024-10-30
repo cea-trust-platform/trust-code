@@ -633,7 +633,7 @@ then
        TRUST_DISABLE_JUPYTER=1 # sur CCRT, jupyter desactive car ~30k inodes
    fi
    # TRUST_DISABLE_CHECK_SRC=1 sur clusters (machine de production parfois lente a compiler):
-   [ "$TRUST_WITHOUT_HOST" = 0 ] && [ "$HOST" != "cea-dm2s" ] && TRUST_DISABLE_CHECK_SRC=1
+   [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_CHECK_SRC=1
    echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling (set by user or since TRUST_WITHOUT_HOST=0)" >> configure.env
    echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build." >> configure.env
    . ./configure.env

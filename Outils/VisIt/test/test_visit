@@ -28,7 +28,7 @@ then
    # Loop: sequential test than parallel test of VisIt #
    #####################################################
    tests=sequential
-   if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ] && [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ] && [ "${HOST#cea-dm2s}" = "$HOST" ]
+   if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ] && [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
    then
       tests=$tests" parallel"
    fi
