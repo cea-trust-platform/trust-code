@@ -45,8 +45,8 @@ Entree& Testeur_cppunit::readOn( Entree& is )
 }
 Entree& Testeur_cppunit::interpreter(Entree& is)
 {
-  //int save_mode=Process::exception_sur_exit;
-  //Process::exception_sur_exit=1;
+  int save_mode=Process::exception_sur_exit;
+  Process::exception_sur_exit=1;
   // on test cppunit
 #ifdef cppunit_
   CPPUNIT_NS::Test *suite = CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest();
@@ -90,7 +90,7 @@ Entree& Testeur_cppunit::interpreter(Entree& is)
 #endif
   //
 
-  //Process::exception_sur_exit=save_mode;
+  Process::exception_sur_exit=save_mode;
 
   return is;
 }
