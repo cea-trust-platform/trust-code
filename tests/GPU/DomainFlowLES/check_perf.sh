@@ -23,7 +23,7 @@ check()
       echo "=========================================="
    else
       echo "Performance is OK ($ecart%) $new s < $ref s (reference) for $1 on $2"
-      [ `echo "$ecart<-0.5" | bc -l` = 1 ] && echo "Performance is improved so $1.TU.ref_$2 is updated !" && cp $TU $1.TU.ref_$2
+      [ `echo "$ecart<-0.99" | bc -l` = 1 ] && echo "Performance is improved so $1.TU.ref_$2 is updated !" && cp $TU $1.TU.ref_$2
    fi
 }
 run()

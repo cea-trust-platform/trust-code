@@ -9,6 +9,7 @@ SDK_VERSION=22.1 && CUDA_VERSION=11.5 && installer=nvhpc_2022_221_Linux_x86_64_c
 
 # On passe a 23.5 pour tout le monde (permet de mieux suivre la correction des bugs du compilateur)
 SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi && installer_md5sum=4748dd45561d22cac5dfe5238e7eaf16 # 12.1, 11.8, 11.0
+SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_$CUDA_VERSION && installer_md5sum=eff38d63c4d08ca5c2962dad049a6833 # 12.1
 # ! 23.9 : nvc++ -std=c++17 crashe sur TRUSTArray.cpp (omp target dans template ?) ToDo: signaler a NVidia
 #SDK_VERSION=23.9 && CUDA_VERSION=12.1 && installer=nvhpc_2023_239_Linux_x86_64_cuda_multi # 12.2, 11.8, 11.0
 #SDK_VERSION=24.1 && CUDA_VERSION=12.3 && installer=nvhpc_2024_221_Linux_x86_64_cuda_multi # 12.3, 11.8
@@ -17,7 +18,7 @@ INSTALL=$TRUST_ROOT/env/gpu/install
 NVHPC=$INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
 if [ ! -f $NVHPC/bin/nvc++ ]
 then
-   echo "It may take some minutes to download NVidia HPC SDK $SDK_VERSION..."
+   echo "It may take some minutes to download NVidia HPC SDK $SDK_VERSION ($installer) ..."
    (
    if [ ! -f $TRUST_TMP/$installer.tar.gz ]
    then
