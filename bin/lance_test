@@ -675,6 +675,10 @@ then
       rep_tests=MonoDir$OPT/src
    else # Baltik
       name=`$TRUST_Awk '/^executable / && /:/ {print $3}' $project_directory/project.cfg`
+      if [ "$name" = "" ]
+      then
+         name=`$TRUST_Awk '/^name / && /:/ {print $3}' $project_directory/project.cfg | head -1`
+      fi
       OPT=`basename $exec` && OPT=${OPT#$name} && cd $project_directory/build/src/exec$OPT || exit -1
       rep_tests=build/src/exec$OPT
    fi
