@@ -170,7 +170,7 @@ void Solv_Externe::Update_lhs_rhs(const DoubleVect& tab_b, DoubleVect& tab_x)
   auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
   auto lhs = lhs_.template view_wo<ExecSpace>();
   auto rhs = rhs_.template view_wo<ExecSpace>();
-  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
+  Kokkos::RangePolicy<ExecSpace> policy(0, size);
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
                          const int i)
   {
@@ -192,7 +192,7 @@ void Solv_Externe::Update_solution(DoubleVect& tab_x)
   auto index = static_cast<const ArrOfInt&>(index_).template view_ro<ExecSpace>();
   auto lhs = lhs_.template view_ro<ExecSpace>();
   auto x = tab_x.template view_wo<ExecSpace>();
-  Kokkos::RangePolicy<ExecSpace> policy({0}, {size});
+  Kokkos::RangePolicy<ExecSpace> policy(0, size);
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
                          const int i)
   {
