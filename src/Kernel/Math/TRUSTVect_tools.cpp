@@ -873,7 +873,7 @@ void local_prodscal_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_
         const int resu_idx = begin_bloc + i ;
         local_sum += vx_view(resu_idx)*vy_view(resu_idx);
       }
-      ,bloc_sum); //Reduce in bloc_sum
+      , Kokkos::Sum<_TYPE_>(bloc_sum)); //Reduce in bloc_sum
 
       //timer
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;

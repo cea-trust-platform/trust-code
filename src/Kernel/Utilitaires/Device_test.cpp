@@ -44,6 +44,27 @@ void self_test()
       Process::exit("omp_target_is_present buggy. TRUST can't work on multi-gpu.");
   }
 #endif
+  {
+    // local_operations_vect_bis_generic
+    // Cas test unitaire critique:
+    {
+      DoubleTab a(2);
+      a(0) = 1;
+      a(1) = 2;
+      mapToDevice(a, "a");
+      double mp = mp_norme_vect(a);
+      double sol = sqrt(Process::nproc() * 5);
+      if (mp != sol)
+        {
+          Cerr << "What! " << mp << " != " << sol << finl;
+          Cerr
+              << "Weird bug seen during a sum reduction with Kokkos::parallel_reduce for TRUST production build on Cuda 11.6. Fixed with Cuda 12.1 (or before...)."
+              << finl;
+          Cerr << "Update Cuda please !" << finl;
+          Process::exit();
+        }
+    }
+  }
 #ifndef NDEBUG
   if (Objet_U::computeOnDevice)
     {
@@ -299,15 +320,6 @@ void self_test()
         assert(const_a[a.size()-1] == 20);
         assert(const_b[0] == -10);
         assert(const_b[b.size()-1] == -10);
-      }
-      // local_operations_vect_bis_generic
-      {
-        DoubleTab a(2);
-        a(0)=1;
-        a(1)=2;
-        mapToDevice(a, "a");
-        assert(est_egal(mp_norme_vect(a),sqrt(Process::nproc()*5)));
-        assert(a.get_data_location() == DataLocation::HostDevice); // Operation faite sur le device
       }
       // DoubleTrav
       {
