@@ -116,12 +116,15 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
 
   eqn.inconnue().reculer(); // XXX
 
+  // XXX Elie Saikali : residu should be calculated like that
+  ki[NB_PTS-1] /= dt_;
+  update_critere_statio(ki[NB_PTS-1], eqn);
+  ki[NB_PTS-1] *= dt_;
+
   futur = sauv; // futur = y1 = y0
 
   for (int i = 0; i < NB_PTS; i++)
     futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki[i]);
-
-  update_critere_statio(futur, eqn);
 
   // Update boundary condition on futur:
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
