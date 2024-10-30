@@ -33,7 +33,13 @@ build_and_test_mc()
 
     [ ! -f $archive_mc ] && echo $archive_mc no such file && exit 1
     [ ! -f $archive_conf ] && echo $archive_conf no such file && exit 1
-    tar zxf $archive_mc
+    if [ ! -e $src_dir_rel ]; then
+      tar zxf $archive_mc
+      echo "Applying patch for const pointer in IKDEC ..."
+      (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
+      echo "Applying patch for OverlapDEC accessors in Python ..."
+      (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/py_odec_accessors.patch )
+    fi
     tar zxf $archive_conf
     
     echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
@@ -58,10 +64,6 @@ build_and_test_mc()
        export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
-    echo "Applying patch for const pointer in IKDEC ..."
-    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
-    echo "Applying patch for OverlapDEC accessors in Python ..."
-    (cd $src_dir; patch -p1 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/py_odec_accessors.patch )
 
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
