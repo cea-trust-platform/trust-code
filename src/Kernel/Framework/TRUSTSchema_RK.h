@@ -129,7 +129,6 @@ private:
   // DANGER : SHOULD NOT GO HERE
   template<Ordre_RK _O_ = _ORDRE_> std::enable_if_t<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // From VTABLE
-  DoubleTabs ki_;
 };
 
 // XXX : CAN BE REMOVED WHEN WE PASS TO C++17

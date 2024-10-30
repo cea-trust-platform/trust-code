@@ -88,12 +88,12 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
-  if (ki_.size()!=NB_PTS)
-    {
-      ki_.resize(NB_PTS);
-      // just for initializing the array structure ...
-      for (int i = 0; i < NB_PTS; i++) ki_[i] = present;
-    }
+  TRUST_Vector<TRUSTTrav<double>> ki;
+
+  ki.resize(NB_PTS);
+  // just for initializing the array structure ...
+  for (int i = 0; i < NB_PTS; i++)
+    ki[i] = present;
 
   DoubleTrav sauv(present);
   sauv = present; // sauv = y0
@@ -101,22 +101,25 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   eqn.inconnue().avancer(); // XXX
 
   // Step 1
-  eqn.derivee_en_temps_inco(ki_[0]); // ki[0] = f(y0)
-  ki_[0] *= dt_; // ki[0] = h * f(y0)
+  eqn.derivee_en_temps_inco(ki[0]); // ki[0] = f(y0)
+  ki[0] *= dt_; // ki[0] = h * f(y0)
 
   for (int step = 1; step < NB_PTS; step++ ) // ATTENTION : ne touche pas !
     {
       present = sauv; // back to y0
-      for (int i = 0; i < step; i++) present.ajoute(get_butcher_coeff<_ORDRE_,NB_PTS-1>().at(step-1).at(i), ki_[i]); // Et ouiiiiiiii :-)
+      for (int i = 0; i < step; i++)
+        present.ajoute(get_butcher_coeff<_ORDRE_,NB_PTS-1>().at(step-1).at(i), ki[i]); // Et ouiiiiiiii :-)
 
-      eqn.derivee_en_temps_inco(ki_[step]);
-      ki_[step] *= dt_;
+      eqn.derivee_en_temps_inco(ki[step]);
+      ki[step] *= dt_;
     }
 
   eqn.inconnue().reculer(); // XXX
 
   futur = sauv; // futur = y1 = y0
-  for (int i = 0; i < NB_PTS; i++) futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki_[i]);
+
+  for (int i = 0; i < NB_PTS; i++)
+    futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki[i]);
 
   update_critere_statio(futur, eqn);
 
