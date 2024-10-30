@@ -1812,9 +1812,6 @@ m="# Using an SCM ?";e="TRUST_SCM=\"$TRUST_SCM\" && export TRUST_SCM";ecrit $m"|
 [ "$TRUST_SCM" != 1 ] && SHARE_LIBS=0
 export SHARE_LIBS
 m="# Shared libs activated ?";e="SHARE_LIBS=\"$SHARE_LIBS\" && export SHARE_LIBS";ecrit $m"|"$e"|"$env
-# Apache ?
-UTILISE_APPACHE=0 && [ $TRUST_ARCH = linux ] && UTILISE_APPACHE=1
-m="# Apache server activated ?";e="UTILISE_APPACHE=\"$UTILISE_APPACHE\" && export UTILISE_APPACHE";ecrit $m"|"$e"|"$env
 # Bloquage parfois sur linux ....
 #echo "Press return if necessary..."
 # Questions possibles :
@@ -1966,7 +1963,7 @@ case $TRUST_ARCH_CC in
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
 	flag_optim="-O3 -fp-model=strict" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
-	CppFlags="$flag_optim -std=$TRUST_STDCPP -fPIC -unroll -Wno-unknown-pragmas"
+	CppFlags="$flag_optim -std=$TRUST_STDCPP -fPIC -funroll-loops -Wno-unknown-pragmas -Wno-undefined-var-template "
 	LIB_INTEL=`dirname $TRUST_F77_BASE`
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib
@@ -1976,7 +1973,7 @@ case $TRUST_ARCH_CC in
 	#SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -lstdc++ -liomp5"
 	SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -liomp5"
 	F77Flags="$flag_optim -fPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
-	ccFLAGS="$flag_optim -fPIC -unroll"
+	ccFLAGS="$flag_optim -fPIC -funroll-loops"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
