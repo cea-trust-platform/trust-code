@@ -142,62 +142,27 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
               // par la masse volumique discretisee aux faces pour que lorsqu'on integre sur la surface,
               // on obtienne bien un debit massique et non pas un debit volumique.
               const DoubleTab& tab_rho_face = is_dilatable ? ref_cast(Fluide_Dilatable_base,equation().milieu()).rho_discvit() : velocity.valeurs() /* tableau de meme format mais non utilise */;
-              if (getenv("TRUST_KOKKOS_REDUCTION_WEIRD"))
-                {
-                  ToDo_Kokkos("critical reduction mais ecarts en optimise pas en debug, pourquoi?");
-                  CDoubleArrView rho_face = static_cast<const DoubleVect&>(tab_rho_face).view_ro();
-                  CDoubleTabView face_normales = domaine_VF.face_normales().view_ro();
-                  CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
-                  CDoubleTabView vitesse = velocity.valeurs().view_ro();
-                  Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
-                                          Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(
-                                            const int num_face, double& debit)
+              CDoubleArrView rho_face = static_cast<const DoubleVect&>(tab_rho_face).view_ro();
+              CDoubleTabView face_normales = domaine_VF.face_normales().view_ro();
+              CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
+              CDoubleTabView vitesse = velocity.valeurs().view_ro();
+              Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
+                                      Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(
+                                        const int num_face, double& debit)
+              {
+                double debit_face = 0;
+                if (axe >= 0)
+                  debit_face += porosite_face(num_face) * vitesse(num_face, axe) *
+                                std::fabs(face_normales(num_face, axe));
+                else
                   {
-                    double debit_face = 0;
-                    if (axe >= 0)
-                      debit_face += porosite_face(num_face) * vitesse(num_face, axe) *
-                                    std::fabs(face_normales(num_face, axe));
-                    else
-                      {
-                        for (int i = 0; i < dim; i++)
-                          debit_face += porosite_face(num_face) * vitesse(num_face, i) *
-                                        face_normales(num_face, i);
-                      }
-                    debit += (is_dilatable ? rho_face(num_face) : 1) * debit_face;
-                    //printf("Provisoire %d %f \n",num_face,debit_face);
-                  }, Kokkos::Sum<double>(debit_e));
-                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-                  //Cerr << "Provisoire GPU debit_e=" << debit_e << finl;
-                }
-              else
-                {
-                  // PL: On utilise des copies partielles en attendant...
-                  const DoubleTab& face_normales = domaine_VF.face_normales();
-                  const DoubleVect& porosite_face = equation().milieu().porosite_face();
-                  const DoubleTab& vitesse = velocity.valeurs();
-                  copyPartialFromDevice(face_normales, ndeb*dimension, nfin*dimension, "face_normales on boundary");
-                  copyPartialFromDevice(porosite_face, ndeb, nfin, "porosite_face on boundary");
-                  copyPartialFromDevice(tab_rho_face, ndeb, nfin, "tab_rho_face on boundary");
-                  copyPartialFromDevice(vitesse,       ndeb*dimension, nfin*dimension, "vitesse on boundary");
-                  for (int num_face = ndeb; num_face < nfin; num_face++)
-                    {
-                      double debit_face = 0;
-                      if (axe >= 0)
-                        debit_face += porosite_face(num_face) * vitesse(num_face, axe) *
-                                      std::fabs(face_normales(num_face, axe));
-                      else
-                        {
-                          for (int i = 0; i < dim; i++)
-                            debit_face += porosite_face(num_face) * vitesse(num_face, i) * face_normales(num_face, i);
-                        }
-                      debit_e += (is_dilatable ? tab_rho_face(num_face) : 1) * debit_face;
-                    }
-                  copyPartialToDevice(face_normales, ndeb*dimension, nfin*dimension, "face_normales on boundary");
-                  copyPartialToDevice(porosite_face, ndeb, nfin, "porosite_face on boundary");
-                  copyPartialToDevice(tab_rho_face, ndeb, nfin, "tab_rho_face on boundary");
-                  copyPartialToDevice(vitesse,       ndeb*dimension, nfin*dimension, "vitesse on boundary");
-                  //Cerr << "Provisoire CPU debit_e=" << debit_e << finl;
-                }
+                    for (int i = 0; i < dim; i++)
+                      debit_face += porosite_face(num_face) * vitesse(num_face, i) *
+                                    face_normales(num_face, i);
+                  }
+                debit += (is_dilatable ? rho_face(num_face) : 1) * debit_face;
+              }, Kokkos::Sum<double>(debit_e));
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
         }
     }
