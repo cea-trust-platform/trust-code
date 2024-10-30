@@ -1,6 +1,6 @@
 #!/bin/bash
 # Verification des performances d'un cas VEF:
-compare_TU $1
+[ "$TRUST_USE_GPU" != 1 ] && compare_TU $1
 
 # Verification du fichier de decoupage sur veymont
 if [ -f decoupage.metis ] && [ -f Cx.metis ]
