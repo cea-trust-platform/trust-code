@@ -12,7 +12,7 @@ nb_som=`eval $som   | tee for_som  | wc -l`
 
 nb=`echo "$nb_elem+$nb_face+$nb_som" | bc -l`
 kokkos=`grep -Ri KOKKOS_LAMBDA $src | tee for_kokkos | wc -l`
-ompt=`grep -Ri "omp target" $src | tee for_ompt | wc -l`
+ompt=`grep -Ri "omp target teams" $src | tee for_ompt | wc -l`
 
 echo "TRUST $dis: (Kernel=boucle sur un item du maillage: elem, face ou som)"
 echo "------------------"
