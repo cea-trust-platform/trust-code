@@ -1283,7 +1283,7 @@ then
       [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
    done
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
-   
+
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
    ecrit $m"|"$e"|"$env;eval $e
@@ -1453,7 +1453,7 @@ else
       then
          MPI_BIN=`dirname $mpiCC` # Variable temporaire utile ensuite
 	 # On a besoin de specifier le compilateur utilise par mpiCC
-	 if [ "`$mpiCC -show | grep -i openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi | grep -v intel-compilers`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ]
+	 if [ "`$mpiCC -show | grep -i openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi | grep -v intel-compilers`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ] || [ "`$mpiCC -show | grep hpcx`" != "" ]
 	 then
             m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC"  && ecrit $m"|"$e"|"$env;eval $e
@@ -1705,7 +1705,7 @@ else
      elif [ "$TRUST_FORCE_MPI_GPU_AWARE" = 1 ]
      then
         echo "You ask for a MPI GPU-Aware but $MPI_ROOT is not!" && exit -1
-     fi   
+     fi
    fi
    m="# MPI GPU-Aware ?"; e="TRUST_MPI_GPU_AWARE=\"$TRUST_MPI_GPU_AWARE\" && export TRUST_MPI_GPU_AWARE"; ecrit $m"|"$e"|"$env
    m="# COMM variable"; e="COMM=\"$COMM\" && export COMM"; ecrit $m"|"$e"|"$env
@@ -1921,7 +1921,7 @@ case $TRUST_ARCH_CC in
         then
            TRUST_STDCPP="c++17"   # For Kokkos 4.x
            CppFlags=$CppFlags" --offload-arch=$ROCM_ARCH"
-        fi   
+        fi
         CppFlags=$CppFlags" -O3 -fPIC -std=$TRUST_STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Wno-undefined-var-template -Wno-gpu-maybe-wrong-side -Werror"
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
         #[ "$TRUST_CC_BASE_EXTP" != "" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
@@ -2132,9 +2132,9 @@ int main() {
    $TRUST_F77_BASE $F77Flags_64b -o test_integer test_integer.f && ./test_integer
    if [ $? != 64 ]
    then
-      echo "Error ! F77Flags_64b=$F77Flags_64b is not enough to convert Fortran integer type to 64 bits integer." 
+      echo "Error ! F77Flags_64b=$F77Flags_64b is not enough to convert Fortran integer type to 64 bits integer."
       exit -1
-   fi  
+   fi
    rm -f test_integer.f test_integer
 fi
 
@@ -2367,7 +2367,7 @@ if [ "$TRUST_ROCALUTION" = 0 ]
 then
    echo "unset TRUST_ROCALUTION" >> $env
    rm -r -f $TRUST_ROOT/lib/src/LIBROCALUTION
-else   
+else
    [ "$TRUST_ROCALUTION" = 1 ] && TRUST_ROCALUTION=\""\$TRUST_ROOT/lib/src/LIBROCALUTION"\"
    m="# PATH to rocALUTION";e="TRUST_ROCALUTION=$TRUST_ROCALUTION && export TRUST_ROCALUTION";ecrit $m"|"$e"|"$env
    echo "ADD_LD_LIBRARY_PATH $TRUST_ROCALUTION/lib" >> $env
