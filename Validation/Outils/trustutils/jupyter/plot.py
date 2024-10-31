@@ -79,7 +79,7 @@ def read_csv(data, **kwargs):
         name of the file we want to save. 
     comment : char, default = "#"
         Character indicating that the remainder of line should not be parsed.
-    delim_whitespace : bool, default = True
+    delim_whitespace : bool, default = True. Deprecated since version 2.2.0 -> Use sep="\\s+" instead.
         Specifies whether or not whitespace (e.g. ' ' or '\t') will be used as the sep delimiter.
     kwargs : dictionary
         additional properties available in pandas.read_csv() options
