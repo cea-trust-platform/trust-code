@@ -1678,7 +1678,7 @@ else
    # Ecriture des variables
    m="# Path to MPI"; e="MPI_ROOT=\"$MPI_ROOT\" && export MPI_ROOT"; ecrit $m"|"$e"|"$env;eval $e
    m="# Path to MPI includes directory"; e="MPI_INCLUDE=\"$MPI_INCLUDE\" && export MPI_INCLUDE"; ecrit $m"|"$e"|"$env;eval $e
-   if [ "`basename $MPI_ROOT`" = openmpi ]
+   if [ "`basename $MPI_ROOT`" = openmpi ] && [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ]
    then
       m="# needed if TRUST relocated"; e="OPAL_PREFIX=\$MPI_ROOT && export OPAL_PREFIX"; ecrit $m"|"$e"|"$env;eval $e
    fi
