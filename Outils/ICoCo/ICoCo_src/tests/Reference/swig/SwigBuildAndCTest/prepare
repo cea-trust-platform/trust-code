@@ -15,5 +15,5 @@ rm -rf install build
 mkdir -p build
 
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Release -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig
+cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Release
 make -j install
