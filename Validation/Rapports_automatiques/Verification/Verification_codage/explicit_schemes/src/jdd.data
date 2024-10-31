@@ -5,15 +5,12 @@ $sch sch
 Read sch
 {
     tinit 0.
-    tmax 35.
+    tmax 5.
     dt_min 1e-5
-    dt_max 0.050
-    dt_impr 0.1
-    dt_sauv 400.
-    seuil_statio -1.e+20
+    dt_max 0.2
+    dt_impr 1e-5
     diffusion_implicite $diff
-    nb_pas_dt_max 100
-    # facsec $fsc #
+    facsec $fsc
 }
 
 Pb_conduction pb1
@@ -115,14 +112,10 @@ Read pb1
     Conduction
     {
         diffusion { }
-        initial_conditions {
-            temperature Champ_Uniforme 1 30.
-        }
+        initial_conditions { temperature Champ_Uniforme 1 30. }
         boundary_conditions {
-            paroi_a_40 paroi_temperature_imposee
-            Champ_Front_Uniforme 1 40.
-            paroi_a_20 paroi_temperature_imposee
-            Champ_Front_Uniforme 1 20.
+            paroi_a_40 paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+            paroi_a_20 paroi_temperature_imposee Champ_Front_Uniforme 1 20.
             Paroi_echange paroi_contact pb2 Paroi_echange
         }
     }
@@ -130,18 +123,16 @@ Read pb1
     {
         Probes
         {
-            sonde_tsol temperature periode 1. points 2
-            0.15 0.55
-            0.55 0.15
-            sonde_segs temperature periode 5. segment 10
-            0. 0.75 0.3 0.75
+            SOL1 temperature periode 5. segment 100 0.15 0.0 0.15 1.0
+            SOL2 temperature periode 5. segment 100 0.0 0.15 1.0 0.15
         }
+        format cgns
+        fichier pb1
         fields dt_post 300.
         {
             temperature elem
         }
     }
-    sauvegarde formatte solide.rep
 }
 
 Read pb2
@@ -162,14 +153,10 @@ Read pb2
         convection { amont }
         diffusion { }
         sources { boussinesq_temperature { T0 30. } }
-        initial_conditions {
-            vitesse Champ_Uniforme 2 0. 0.
-        }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
         boundary_conditions {
-            Entree frontiere_ouverte_vitesse_imposee
-            Champ_front_Uniforme 2 0. -0.01
-            Sortie frontiere_ouverte_vitesse_imposee
-            Champ_front_Uniforme 2 0.01 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 0. -0.01
+            Sortie frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 0.01 0.
             Paroi	paroi_fixe
             Paroi_echange	paroi_fixe
         }
@@ -180,13 +167,10 @@ Read pb2
         convection { amont }
         boundary_conditions
         {
-            Entree frontiere_ouverte_temperature_imposee
-            Champ_front_Uniforme 1 20.
-            Sortie frontiere_ouverte_temperature_imposee
-            Champ_front_Uniforme 1 20.
+            Entree frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Sortie frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
             Paroi_echange paroi_contact pb1 Paroi_echange
-            Paroi paroi_temperature_imposee
-            Champ_Front_Uniforme 1 20.
+            Paroi paroi_temperature_imposee Champ_Front_Uniforme 1 20.
         }
         initial_conditions { Temperature Champ_Uniforme 1 30. }
     }
@@ -194,15 +178,11 @@ Read pb2
     {
         Probes
         {
-            sonde_pression pression periode 1. points 1
-            0.55 0.55
-            sonde_vitesse vitesse periode 1. points 1
-            0.55 0.55
-            sonde_tflu temperature periode 1. points 1
-            0.55 0.55
-            sonde_segf temperature periode 5. segment 10
-            0.3 0.75 1.0 0.75
+            FL1 temperature periode 5. segment 100 0.3 0.65 1.0 0.65
+            FL2 temperature periode 5. segment 100 0.65 0.3 0.65 1.0
         }
+        format cgns
+        fichier pb2
         fields dt_post 300.
         {
             pression elem
@@ -211,6 +191,6 @@ Read pb2
         }
     }
 }
-Imprimer_flux dom_fluide { Paroi Entree }
+# Imprimer_flux dom_fluide { Paroi Entree } #
 Solve pbc
 End
