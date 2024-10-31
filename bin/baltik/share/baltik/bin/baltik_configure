@@ -321,87 +321,90 @@ cmake_flags="$cmake_flags %% %% set(CMAKE_LIBRARY_PATH ${OLD_CMAKE_LIBRARY_PATH}
 
 if [ "$1" != "-noprerequis" ]
 then  
-total_path=""
-distrib_path=""
-while read name path
-do
-total_path=${total_path}" "$path
-distrib_path=${distrib_path}" "$name:$path
-echo "Verify prerequies project "$name
-project_directory_dep=$path
-project_dep_configuration_file=$path/project.cfg
-for number in `seq 1 20`
-do
- # extraction de la section de description du fichier de configuration
- prerequis_description=`extract_section "$project_dep_configuration_file" prerequisite$number`
- if  [ "$prerequis_description" != "" ]
- then
-    # verification des mots cles mis dans la section [prerequisite], si un pas autorise : exit
-    all_fields=`extract_section_fields "$prerequis_description"`
-    for f in $all_fields
-    do
-       case $f in
-          name|prog_test|librairies_flag|configure_flag) continue ;;
-          *) project_cfg_error $f "[prerequisite]" "name|prog_test|librairies_flag|configure_flag"
-       esac
-    done
+   total_path=""
+   distrib_path=""
+   while read name path
+   do
+      total_path=${total_path}" "$path
+      distrib_path=${distrib_path}" "$name:$path
+      echo "Verify prerequies project "$name
+      project_directory_dep=$path
+      project_dep_configuration_file=$path/project.cfg
+      for number in `seq 1 20`
+      do
+         # extraction de la section de description du fichier de configuration
+         prerequis_description=`extract_section "$project_dep_configuration_file" prerequisite$number`
+         if  [ "$prerequis_description" != "" ]
+         then
+            # verification des mots cles mis dans la section [prerequisite], si un pas autorise : exit
+            all_fields=`extract_section_fields "$prerequis_description"`
+            for f in $all_fields
+            do
+               case $f in
+                  name|prog_test|librairies_flag|configure_flag) continue ;;
+                  *) project_cfg_error $f "[prerequisite]" "name|prog_test|librairies_flag|configure_flag"
+               esac
+            done
 
-    # extraction du nom du projet
-    prerequis_name=`extract_field "$prerequis_description" name`
-    echo $number prerequis found : $prerequis_name
-    prog_test=`extract_field "$prerequis_description" prog_test`
-    if [ "$prog_test" = "" ] || [ "$prerequis_name" = "" ]
-    then
-	    echo "Error in definiton of prerequisite$number"
-	    exit 1
-    fi
+            # extraction du nom du projet
+            prerequis_name=`extract_field "$prerequis_description" name`
+            echo $number prerequis found : $prerequis_name
+            prog_test=`extract_field "$prerequis_description" prog_test`
+            if [ "$prog_test" = "" ] || [ "$prerequis_name" = "" ]
+            then
+               echo "Error in definiton of prerequisite$number"
+               exit 1
+            fi
 
-    libraires_flag=`extract_field "$prerequis_description" librairies_flag`
-    configure_flag=`extract_field "$prerequis_description" configure_flag`
-    export configure_flag
-    includes_add="$includes_add -I${project_directory}/local/${prerequis_name}/include"
-    librairies_add="$librairies_add -L${project_directory}/local/${prerequis_name}/lib/ $libraires_flag"
-    export includes_add
-    export librairies_add
-    cmake_flags="$cmake_flags %% include_directories(${project_directory}/local/${prerequis_name}/include) "
-    for lib0 in $libraires_flag
-    do
-       lib=`echo $lib0| sed "s?-l??"`
-       libs="lib${lib}.a" # Force l'utilisation de librairie statique pour les prerequis
-       [ "$lib" = "dl" ] && libs=""
+            libraires_flag=`extract_field "$prerequis_description" librairies_flag`
+            configure_flag=`extract_field "$prerequis_description" configure_flag`
+            export configure_flag
+            includes_add="$includes_add -I${project_directory}/local/${prerequis_name}/include"
+            librairies_add="$librairies_add -L${project_directory}/local/${prerequis_name}/lib/ $libraires_flag"
+            export includes_add
+            export librairies_add
+            cmake_flags="$cmake_flags %% include_directories(${project_directory}/local/${prerequis_name}/include) "
+            for lib0 in $libraires_flag
+            do
+               lib=`echo $lib0| sed "s?-l??"`
+               libs="lib${lib}.a" # Force l'utilisation de librairie statique pour les prerequis
+               [ "$lib" = "dl" ] && libs=""
 
-       cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} PATHS ${project_directory}/local/${prerequis_name}/lib NO_DEFAULT_PATH)"
-       cmake_flags="$cmake_flags %% if (${lib} STREQUAL ${lib}-NOTFOUND)%% find_library( ${lib} NAMES ${libs} ${lib} ) %% endif()"
-       cmake_flags="$cmake_flags  %% set(libdeps  \${libdeps} \${${lib}} )"
-    done
-    export cmake_flags
+               cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} PATHS ${project_directory}/local/${prerequis_name}/lib NO_DEFAULT_PATH)"
+               cmake_flags="$cmake_flags %% if (${lib} STREQUAL ${lib}-NOTFOUND)%% find_library( ${lib} NAMES ${libs} ${lib} ) %% endif()"
+               cmake_flags="$cmake_flags  %% set(libdeps  \${libdeps} \${${lib}} )"
+            done
+            export cmake_flags
    
-    cd  ${project_build_directory}
-    arcdir=${project_directory_dep}/share/archives
-    file=${arcdir}/$prerequis_name.tar.gz
-    [ ! -f ${file} ] &&  arcdir=${project_directory_dep}/archives;file=${arcdir}/$prerequis_name.tar.gz
-    [ ! -f ${file} ] && echo $prerequis_name.tar.gz not found in ${project_directory_dep}/share/archives or in ${arcdir} && exit -2
-    ${BALTIK_ROOT}/bin/baltik_compil_prerequis $prerequis_name ${arcdir}//$prerequis_name.tar.gz  ${arcdir}/${prog_test} ${project_directory}/local/${prerequis_name} > ${project_build_directory}/$prerequis_name.LOG 2>&1
-    status=$?
-    if [ $status -ne 0 ]
-    then
-      echo "error with prerequisite ${prerequis_name}"
-      echo "see ${project_build_directory}/$prerequis_name.LOG"
-      rm -f $project_makefile
-      exit $status
-    fi
-    cd  ${project_directory}
-  fi
-done
+            cd  ${project_build_directory}
+            arcdir=${project_directory_dep}/share/archives
+            file=${arcdir}/$prerequis_name.tar.gz
+            [ ! -f ${file} ] &&  arcdir=${project_directory_dep}/archives;file=${arcdir}/$prerequis_name.tar.gz
+            [ ! -f ${file} ] && echo $prerequis_name.tar.gz not found in ${project_directory_dep}/share/archives or in ${arcdir} && exit -2
+            ${BALTIK_ROOT}/bin/baltik_compil_prerequis $prerequis_name ${arcdir}//$prerequis_name.tar.gz  ${arcdir}/${prog_test} ${project_directory}/local/${prerequis_name} > ${project_build_directory}/$prerequis_name.LOG 2>&1
+            status=$?
+            if [ $status -ne 0 ]
+            then
+               echo "error with prerequisite ${prerequis_name}"
+               echo "see ${project_build_directory}/$prerequis_name.LOG"
+               rm -f $project_makefile
+               exit $status
+            fi
+            cd  ${project_directory}
+         fi
+      done
 
-makefile=${project_build_directory}/make.include.atelier
-add_dependencies_to_makefile $makefile
+      makefile=${project_build_directory}/make.include.atelier
+      add_dependencies_to_makefile $makefile
 
-echo "includes_add=\"$includes_add\"" > ${project_build_directory}/prerequis.sh
-echo "librairies_add=\"$librairies_add\"" >> ${project_build_directory}/prerequis.sh
-done < $dependencies_file
-echo "Done."
+      echo "includes_add=\"$includes_add\"" > ${project_build_directory}/prerequis.sh
+      echo "librairies_add=\"$librairies_add\"" >> ${project_build_directory}/prerequis.sh
+   done < $dependencies_file
+   echo "Done."
+else
+   makefile=${project_build_directory}/make.include.atelier
 fi
+
 echo "project_directory =${project_directory} " >> $makefile
 
 echo ""
