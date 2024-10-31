@@ -1,0 +1,57 @@
+#!/bin/bash
+
+mkdir -p VAHL_DAVIS_VEFPreP1B
+mkdir -p VAHL_DAVIS_VDF
+
+cd VAHL_DAVIS_VEFPreP1B
+
+cp ../VAHL_DAVIS_impl.data VAHL_DAVIS_VEFPreP1B_piso.data
+sed "s/Piso/Implicite/" VAHL_DAVIS_VEFPreP1B_piso.data > VAHL_DAVIS_VEFPreP1B_implicite.data
+sed "s/Piso/Simple/" VAHL_DAVIS_VEFPreP1B_piso.data > VAHL_DAVIS_VEFPreP1B_simple.data
+sed "s/seuil_convergence_solveur 1.e-8/seuil_convergence_solveur 1.e-8 relax_pression 0.1/" VAHL_DAVIS_VEFPreP1B_simple.data > VAHL_DAVIS_VEFPreP1B_simple_tmp.data
+mv  VAHL_DAVIS_VEFPreP1B_simple_tmp.data VAHL_DAVIS_VEFPreP1B_simple.data
+
+sed "s/facsec_max 30/facsec_max 500/" VAHL_DAVIS_VEFPreP1B_piso.data > VAHL_DAVIS_VEFPreP1B_piso_facsecmax500.data
+sed "s/facsec_max 30/facsec_max 500/" VAHL_DAVIS_VEFPreP1B_implicite.data > VAHL_DAVIS_VEFPreP1B_implicite_facsecmax500.data
+sed "s/facsec_max 30/facsec_max 500/" VAHL_DAVIS_VEFPreP1B_simple.data > VAHL_DAVIS_VEFPreP1B_simple_facsecmax500.data
+sed "s/relax_pression 0.1/relax_pression 0.01/" VAHL_DAVIS_VEFPreP1B_simple_facsecmax500.data > VAHL_DAVIS_VEFPreP1B_simple_facsecmax500_tmp.data
+mv VAHL_DAVIS_VEFPreP1B_simple_facsecmax500_tmp.data VAHL_DAVIS_VEFPreP1B_simple_facsecmax500.data
+
+sed "s/relax_pression 0.1/relax_pression 0.2/" VAHL_DAVIS_VEFPreP1B_simple.data > VAHL_DAVIS_VEFPreP1B_simple_relax0.2.data
+sed "s/relax_pression 0.1/relax_pression 0.01/" VAHL_DAVIS_VEFPreP1B_simple.data > VAHL_DAVIS_VEFPreP1B_simple_relax0.01.data
+sed "s/relax_pression 0.1/relax_pression 0.001/" VAHL_DAVIS_VEFPreP1B_simple.data > VAHL_DAVIS_VEFPreP1B_simple_relax0.001.data
+
+sed "s/seuil_convergence_solveur 1.e-8/seuil_convergence_solveur 1.e-8 nb_corrections_max 2/"  VAHL_DAVIS_VEFPreP1B_piso.data > VAHL_DAVIS_VEFPreP1B_piso_nb_proj2.data 
+
+cp VAHL_DAVIS_VEFPreP1B_piso.data VAHL_DAVIS_VEFPreP1B_explicite.data
+sed "s/Associate pb sch_imp/Associate pb sch/" VAHL_DAVIS_VEFPreP1B_explicite.data > VAHL_DAVIS_VEFPreP1B_explicite_tmp.data
+mv VAHL_DAVIS_VEFPreP1B_explicite_tmp.data VAHL_DAVIS_VEFPreP1B_explicite.data
+
+
+cd ../VAHL_DAVIS_VDF
+cp ../VAHL_DAVIS_VEFPreP1B/VAHL_DAVIS_VEFPreP1B_piso.data VAHL_DAVIS_VDF_piso.data
+sed "s/Nombre_de_Noeuds 21 21/Nombre_de_Noeuds 51 51/"  VAHL_DAVIS_VDF_piso.data > VAHL_DAVIS_VDF_piso_tmp.data
+sed "s/Trianguler_H dom//"  VAHL_DAVIS_VDF_piso_tmp.data > VAHL_DAVIS_VDF_piso.data
+sed "s/VEFPreP1B dis/VDF dis/"  VAHL_DAVIS_VDF_piso.data > VAHL_DAVIS_VDF_piso_tmp.data
+mv VAHL_DAVIS_VDF_piso_tmp.data VAHL_DAVIS_VDF_piso.data
+
+sed "s/Piso/Implicite/" VAHL_DAVIS_VDF_piso.data > VAHL_DAVIS_VDF_implicite.data
+sed "s/Piso/Simple/" VAHL_DAVIS_VDF_piso.data > VAHL_DAVIS_VDF_simple.data
+sed "s/seuil_convergence_solveur 1.e-8/seuil_convergence_solveur 1.e-8 relax_pression 0.1/" VAHL_DAVIS_VDF_simple.data > VAHL_DAVIS_VDF_simple_tmp.data
+mv  VAHL_DAVIS_VDF_simple_tmp.data VAHL_DAVIS_VDF_simple.data
+
+sed "s/facsec_max 30/facsec_max 500/" VAHL_DAVIS_VDF_piso.data > VAHL_DAVIS_VDF_piso_facsecmax500.data
+sed "s/facsec_max 30/facsec_max 500/" VAHL_DAVIS_VDF_implicite.data > VAHL_DAVIS_VDF_implicite_facsecmax500.data
+sed "s/facsec_max 30/facsec_max 500/" VAHL_DAVIS_VDF_simple.data > VAHL_DAVIS_VDF_simple_facsecmax500.data
+sed "s/relax_pression 0.1/relax_pression 0.01/" VAHL_DAVIS_VDF_simple_facsecmax500.data > VAHL_DAVIS_VDF_simple_facsecmax500_tmp.data
+mv VAHL_DAVIS_VDF_simple_facsecmax500_tmp.data VAHL_DAVIS_VDF_simple_facsecmax500.data
+
+sed "s/relax_pression 0.1/relax_pression 0.2/" VAHL_DAVIS_VDF_simple.data > VAHL_DAVIS_VDF_simple_relax0.2.data
+sed "s/relax_pression 0.1/relax_pression 0.01/" VAHL_DAVIS_VDF_simple.data > VAHL_DAVIS_VDF_simple_relax0.01.data
+sed "s/relax_pression 0.1/relax_pression 0.001/" VAHL_DAVIS_VDF_simple.data > VAHL_DAVIS_VDF_simple_relax0.001.data
+
+sed "s/seuil_convergence_solveur 1.e-8/seuil_convergence_solveur 1.e-8 nb_corrections_max 2/" VAHL_DAVIS_VDF_piso.data > VAHL_DAVIS_VDF_piso_nb_proj2.data 
+
+cp VAHL_DAVIS_VDF_piso.data VAHL_DAVIS_VDF_explicite.data
+sed "s/Associate pb sch_imp/Associate pb sch/" VAHL_DAVIS_VDF_explicite.data > VAHL_DAVIS_VDF_explicite_tmp.data
+mv VAHL_DAVIS_VDF_explicite_tmp.data VAHL_DAVIS_VDF_explicite.data
