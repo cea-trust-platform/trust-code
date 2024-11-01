@@ -204,6 +204,8 @@ inline static double ToReal(const tbuff theBuff, const int theSize, const bool t
 #ifdef WNT
   // disable all floating point exceptions
   unsigned int oldx87mask = _control87(MCW_EM, MCW_EM);
+#elif defined(__APPLE__)
+ feclearexcept(FE_ALL_EXCEPT);
 #else
   fedisableexcept(FE_ALL_EXCEPT);
 #endif
@@ -228,11 +230,15 @@ inline static double ToReal(const tbuff theBuff, const int theSize, const bool t
       int* i = (int*)&aResult;
       *i = InverseInt(*j);
 #ifndef WNT
+#if defined(__APPLE__)
+      if (!isnan(aResult) && !isinf(aResult))
+#else
       // Verification performed for Linux platform only because isnan method works
       // with float and double on this platform. On WNT _isnan method works with double
       // argument only. In this case assignement NAN float calue to double leads exception.
       // To avoid this GUITHARE mask floating point exceptions.
       if (!__isnanf(aResult) && !__isinf(aResult))
+#endif
 #endif
         aRes = aResult;
     }
@@ -389,7 +395,7 @@ void ReaderFORT21::parse()
 void ReaderFORT21::fix_bad_times()
 {
   double told=-1;
-  double repair=false;
+  bool repair=false;
   unsigned int i=0;
   for (; i<getTimes().size(); i++)
   {

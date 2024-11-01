@@ -25,19 +25,20 @@
 #include <vector>
 
 #ifdef WNT
-
-#define file_pos_t __int64
-#define open_file fopen
-#define get_file_pos _ftelli64
-#define set_file_pos _fseeki64
-
+  #define file_pos_t __int64
+  #define open_file fopen
+  #define get_file_pos _ftelli64
+  #define set_file_pos _fseeki64
+#elif defined( __APPLE__)
+  #define set_file_pos fseeko
+  #define open_file fopen
+  #define file_pos_t __int64_t
+  #define get_file_pos ftello
 #else
-
-#define open_file fopen64
-#define file_pos_t __off64_t
-#define get_file_pos ftello64
-#define set_file_pos fseeko64
-
+  #define open_file fopen64
+  #define file_pos_t __off64_t
+  #define get_file_pos ftello64
+  #define set_file_pos fseeko64
 #endif
 
 /*
