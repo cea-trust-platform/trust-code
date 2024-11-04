@@ -18,13 +18,14 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Array_base.h>
+#include <MD_Vector.h>
 #include <ArrOfBit.h>
 #include <array>
 #include <map>
 
 class MD_Vector_renumber;
-class MD_Vector;
 class Domaine_VF;
+class Echange_EV_Options;
 
 //format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()
 typedef std::map<std::array<int, 2>, int> extra_item_t;
@@ -57,6 +58,21 @@ public:
   static void dump_vector_with_md(const DoubleVect&, Sortie&);
   static void restore_vector_with_md(DoubleVect&, Entree&);
 
+  static void CleanMyStatics() { last_md.detach(); }
+
+private:
+  template <typename _TYPE_>
+  static void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt);
+  template<typename _TYPE_>
+  static void echange_espace_virtuel1_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt);
+  template<typename _TYPE_>
+  static void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt);
+
+  static Schema_Comm_Vecteurs comm;
+  static MD_Vector last_md;
+  static int last_isdouble;
+  static int last_linesize;
+  static Echange_EV_Options last_opt;
 };
 
 #endif /* MD_Vector_tools_included */

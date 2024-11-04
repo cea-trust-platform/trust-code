@@ -18,6 +18,7 @@
 #include <Device.h>
 #include <sstream>
 
+#ifndef LATATOOLS
 template<typename ExecSpace, typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
 void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, TRUSTArray<_TYPE_>& buffer)
 {
@@ -74,6 +75,7 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
     }
   end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
+#endif
 
 template<typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
 void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)
@@ -91,6 +93,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
       if (nb_elems>0)
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
+
           assert(nb_elems == buffer.size_array());
           assert(idx_end_of_list <= list.get_data().size_array());
           bool kernelOnDevice = vect.checkDataOnDevice();
@@ -123,6 +126,14 @@ template void vect_items_generic<trustIdType, VECT_ITEMS_TYPE::ADD>(const int li
 template void vect_items_generic<trustIdType, VECT_ITEMS_TYPE::MAX>(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, TRUSTArray<trustIdType>& vect, Schema_Comm_Vecteurs& buffers);
 #endif
 
+
+#ifndef LATATOOLS
+template<typename ExecSpace, typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
+void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, TRUSTArray<_TYPE_>& buffer)
+{
+
+}
+#endif
 
 template<typename _TYPE_, VECT_BLOCS_TYPE _ITEM_TYPE_>
 void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, const ArrOfInt& nb_items_par_voisin, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)

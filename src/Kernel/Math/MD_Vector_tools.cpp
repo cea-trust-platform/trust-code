@@ -26,13 +26,11 @@
 #include <vector>
 #include <typeindex>
 
-static Schema_Comm_Vecteurs comm;
-
-// Optimizing initialisation of echange_espace_virtuel - see method echange_espace_virtuel_() below:
-static MD_Vector last_md;
-static std::type_index last_type_idx(typeid(void *));  // love this one ;-)
-static int last_linesize = 0;
-static Echange_EV_Options last_opt;
+Schema_Comm_Vecteurs MD_Vector_tools::comm;
+MD_Vector MD_Vector_tools::last_md;
+std::type_index MD_Vector_tools::last_type_idx(typeid(void *));  // love this one ;-)
+int MD_Vector_tools::last_linesize = 0;
+Echange_EV_Options MD_Vector_tools::last_opt;
 
 
 class MD_Vector_renumber
@@ -208,7 +206,7 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
 
 
 template <typename _TYPE_>
-void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt = echange_ev_opt_default)
+void MD_Vector_tools::echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt)
 {
   const MD_Vector_base& mdv = md.valeur();
   const std::type_index type_idx(typeid(_TYPE_));
@@ -236,7 +234,7 @@ void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Ec
 }
 
 template<typename _TYPE_>
-void echange_espace_virtuel1_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
+void MD_Vector_tools::echange_espace_virtuel1_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
 {
   switch(opt)
     {
@@ -263,7 +261,7 @@ void echange_espace_virtuel1_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, MD_Vect
 }
 
 template<typename _TYPE_>
-inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
+inline void MD_Vector_tools::call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
 {
   const MD_Vector& md = v.get_md_vector();
   if (md.non_nul() && Process::is_parallel())
