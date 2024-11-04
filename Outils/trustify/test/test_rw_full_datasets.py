@@ -178,7 +178,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         news = """
         dom_solide
         {
-            Pave toto {  # nothing # }   {  }
+            Pave # coucou # toto {  # nothing # }   {  }
         }"""
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(check_str_equality(s, news).ok)
@@ -197,6 +197,13 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # Test write out:
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(check_str_equality(s, data_ex).ok)
+
+
+        res.entries[10].obj.postraitement.sondes[1].nom_sonde = "CHANGED"
+        change = ''.join(res.toDatasetTokens())
+        expect = s.replace("sonde_vitesse", "CHANGED")
+        self.assertEqual(change, expect)
+
         # # Test changing one bit:
         # tmp = res.get("pb").post_processing.sondes.pop()
         # tmp._parentAsAttribute = None

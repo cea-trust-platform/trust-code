@@ -1253,19 +1253,14 @@ class AbstractChaine_Parser(Builtin_Parser):
             # Important! put a space to start with, otherwise the string will be stuck to the previous token!
             # (The parser include all spaces, comments, etc. before the actual token ...
             ret = [" " + str(self._pyd_value)]
-            ## [ABN] - below is useless since Str are immutable ??
             # Try as much as possible to keep comments etc ... around string value:
-            # if "val" in self._tokens:
-            #   low, up = self._tokens["val"]
-            #   f = list(filter(lambda s: s == "", low))
-            #   if len(f) == 1:
-            #     idx = low.index(f[0])
-            #     # Now inside the token itself, replace string (preserving spaces, line returns around it)
-            #     l = up[idx].lower()
-            #     j = l.find(low[idx])
-            #     low[idx] = low[:idx] + str(self).lower() + low[idx:]
-            #     up[idx] = up[:idx] + str(self) + up[idx:]
-            #     ret = up
+            if "val" in self._tokens:
+                low = self._tokens["val"].low()
+                ori = self._tokens["val"].orig()
+                not_empty = list(filter(lambda s: s != "", low))
+                if len(not_empty) == 1:
+                    idx = low.index(not_empty[0])
+                    ret = ori[:idx] + ret + ori[idx+1:]
             return ret
 
 class Chaine_Parser(AbstractChaine_Parser):
