@@ -16,7 +16,7 @@ else
   ze_file=""
   if [[ "$1" == *.ipynb ]]; then           ze_file=$1;              fi
   if ls $1/*.ipynb 1>/dev/null 2>&1; then  ze_file=`ls $1/*.ipynb`; fi
-  if [ $ze_file != "" ]; then
+  if [ "$ze_file" != "" ]; then
     # Uses Run but only for 'prepare' phase:
     $DIR/../Run $* -prepare_only 1>/dev/null
     # Make sure we build/execute in the proper dir! A potential '-dest' option is passed in the JUPYTER_RUN_OPTIONS variable:

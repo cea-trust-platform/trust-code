@@ -598,11 +598,21 @@ do
       export TRUST_COOLPROP_HOME_DIR=${1#-with-coolprop=}
       if [ ! -f $TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a ]
       then
-         echo "You specified to use the CoolProp library in your TRUST configuration. However, we can not find the static library (libCoolProp.a) in the path $TRUST_COOLPROP_HOME_DIR/build !!"
+         echo "You specified to use the CoolProp library in your TRUST configuration. However, we can not find the static library $TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a !!"
          echo "Either verify your CoolProp installation or re-configure TRUST without the option -with-coolprop=$TRUST_COOLPROP_HOME_DIR ... "
          exit -1
       fi
-
+      if [ "`echo $* | grep force_even_unsupported 2>/dev/null`" = "" ]
+      then
+         CoolpropVersionFile=$TRUST_COOLPROP_HOME_DIR/include/cpversion.h
+         cpversion=`grep version $CoolpropVersionFile 2>/dev/null | cut -f 2 -d'"'`
+         if [ "$cpversion" != "6.6.0" ] && [ "$cpversion" != "6.5.0dev" ]
+         then
+            echo "Error: you are trying to link TRUST with non tested CoolProp version ($cpversion)"
+            echo "       install CoolProp 6.6.0 (see $TRUST_ROOT/README.md) or add -force_even_unsupported configure option."
+            exit -1
+         fi
+     fi
    elif [ "${1#-with-refprop}" != "$1" ]
    then
       export TRUST_USE_REFPROP=1
