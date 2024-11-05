@@ -543,14 +543,14 @@ void debug_device_view(const ViewTab<_TYPE_> view_tab, TRUSTTab<_TYPE_,_SIZE_>& 
   });
   Cout << "Tab size=" << tab.size_array() << finl;
   assert((int)view_tab.size()==tab.size_array());
-  nb_compo = tab.dimension(1);
-  _TYPE_ *ptr = tab.data();
-  #pragma omp target teams distribute parallel for
-  for (int i=0; i<size; i++)
-    {
-      for (int j=0; j<nb_compo; j++)
-        printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
-    }
+//  nb_compo = tab.dimension(1);
+//  _TYPE_ *ptr = tab.data();
+//  #pragma omp target teams distribute parallel for
+//  for (int i=0; i<size; i++)
+//    {
+//      for (int j=0; j<nb_compo; j++)
+//        printf("[OpenMP]: %p [%d,%d]=%e\n", (void*)ptr,  i, j, ptr[i*nb_compo+j]);
+//    }
 }
 #endif
 #endif

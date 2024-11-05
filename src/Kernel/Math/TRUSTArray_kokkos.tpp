@@ -181,10 +181,10 @@ void debug_device_view(const ViewArr<_TYPE_> view_tab, TRUSTArray<_TYPE_,_SIZE_>
   });
   Cout << "Tab size=" << tab.size_array() << finl;
   assert(view_tab.size()==tab.size_array());
-  _TYPE_ *ptr = tab.data();
-  #pragma omp target teams distribute parallel for
-  for (_SIZE_ i=0; i<size; i++)
-    printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
+//  _TYPE_ *ptr = tab.data();
+//  #pragma omp target teams distribute parallel for
+//  for (_SIZE_ i=0; i<size; i++)
+//    printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
 }
 #endif
 #endif
