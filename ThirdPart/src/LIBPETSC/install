@@ -448,6 +448,7 @@ add_package metis
 # STRUMPACK #
 #############
 TRUST_USE_STRUMPACK=1
+[ "$TRUST_USE_GPU" = 1 ] && TRUST_USE_STRUMPACK=0 # Trop de soucis avec le build GPU... Attendre montee de version PETSc
 if [ "$TRUST_USE_STRUMPACK" = 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" = 0 ]
 then
    add_package zfp

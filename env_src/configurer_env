@@ -1259,7 +1259,7 @@ then
    fi
    if [ "$TRUST_CUDA_CC" = "" ]
    then
-      TRUST_CUDA_CC=`nvidia-smi --query-gpu=compute_cap --format=csv | tail -1 | awk '{gsub("\\.","",$1);print $1}'`
+      TRUST_CUDA_CC=`nvidia-smi --query-gpu=compute_cap --format=csv 2>/dev/null | tail -1 | awk '{gsub("\\.","",$1);print $1}'`
       # nvidia-smi trop anciens ne supporte pas query-gpu=compute_cap:
       [ "$TRUST_CUDA_CC" = "" ] && [ "`nvidia-smi 2>&1 | grep -e A[123456]000`" != "" ] && TRUST_CUDA_CC=86 # Cartes A3000-A6000
    fi
@@ -1294,6 +1294,9 @@ then
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
    ecrit $m"|"$e"|"$env;eval $e
+   # PL: Comprends rien... Fixer NVHPC_CUDA_HOME met le bazar pour AmgX...
+   #e="NVHPC_CUDA_HOME=\"$CUDA_ROOT\" && export NVHPC_CUDA_HOME";
+   #ecrit $m"|"$e"|"$env;eval $e
    e="CUDA_INC_PATH=\"$CUDA_INC_PATH\" && export CUDA_INC_PATH";
    ecrit $m"|"$e"|"$env;eval $e
    [ "$CUDA_ROOT" != /usr ] && echo "ADD_PATH \$CUDA_ROOT/bin" >> $env # Ne pas ajouter /usr/bin au PATH car sinon python, conda pris sont ceux du systeme !
@@ -1948,8 +1951,9 @@ case $TRUST_ARCH_CC in
            CppFlags="-cuda" # nvc++ compile cuda code to avoid use of "nvcc -ccbin=nvc++"
            #TRUST_USE_UVM=1 # Provisoire
            [ "$TRUST_USE_UVM" = 1 ]  && CppFlags=$CppFlags" -gpu=managed" && Defines=$Defines" -DTRUST_USE_UVM"
-           # Si CUDA_VERSION est specifie explicitement dans le HOST:
-           [ "$CUDA_VERSION" != "" ] && CppFlags=$CppFlags" -gpu=cuda$CUDA_VERSION"
+           # Si CUDA_VERSION est specifie explicitement dans le HOST sinon on prend le SDK:
+           [ "$CUDA_VERSION" = "" ] && CUDA_VERSION=`ls $CUDA_ROOT | grep "[0-9]\.[0-9]"`
+           CppFlags=$CppFlags" -gpu=cuda$CUDA_VERSION"
            # Attention -mp=gpu -gpu=nordc ne marche pas sur le GPU !!! Voir: https://forums.developer.nvidia.com/t/openmp-offload-w-cuda-interop-undefined-reference-to-fatbinwrap-nv-module-id/253051
            # Donc on active Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON au niveau de Kokkos
            TRUST_STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
@@ -2258,7 +2262,7 @@ then
      if [ "$TRUST_USE_CUDA" = 1 ]
      then
         # A partir de HPC SDK 21.3 et necessite compute_capability 70 !
-        openmp_target="-target=gpu $march -gpu=cc$TRUST_CUDA_CC" # Desormais detecte
+        openmp_target="-target=gpu $march -gpu=cc$TRUST_CUDA_CC -gpu=cuda$CUDA_VERSION" # Desormais detecte
         #openmp_target="-target=gpu $march" # ToDo OpenMP -gpu=cc86 pour a5000/a6000, detecter nvidia-smi ou autre et pour cluster mettre dans HOST.sh. Gain limite: 1% sur petra ?
         # Sur cluster pour compiler sur la frontale (pas de carte):
         # https://forums.developer.nvidia.com/t/compile-error-for-openmp-code-with-target-offloading-in-nvhpc-20-11/164188
