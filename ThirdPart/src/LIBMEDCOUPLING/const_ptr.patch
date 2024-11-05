@@ -1,21 +1,8 @@
-diff --git a/src/ParaMEDMEM/CommInterface.hxx b/src/ParaMEDMEM/CommInterface.hxx
-index 01691c61..3d52fe9a 100644
---- a/src/ParaMEDMEM/CommInterface.hxx
-+++ b/src/ParaMEDMEM/CommInterface.hxx
-@@ -106,7 +106,7 @@ namespace MEDCoupling
- 
-     int send(void* buffer, int count, MPI_Datatype datatype, int target, int tag, MPI_Comm comm) const { return MPI_Send(buffer,count, datatype, target, tag, comm); }
-     int recv(void* buffer, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status* status) const { return MPI_Recv(buffer,count, datatype, source, tag, comm, status); }
--    int sendRecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, 
-+    int sendRecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
-                  int dest, int sendtag, void* recvbuf, int recvcount, 
-                  MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm,
-                  MPI_Status* status) { return MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm,status); }
 diff --git a/src/ParaMEDMEM/ElementLocator.cxx b/src/ParaMEDMEM/ElementLocator.cxx
-index 31d7033c..cc2a90cd 100644
+index 31d7033cd..ee9d4d0c8 100644
 --- a/src/ParaMEDMEM/ElementLocator.cxx
 +++ b/src/ParaMEDMEM/ElementLocator.cxx
-@@ -267,12 +267,12 @@ namespace MEDCoupling
+@@ -267,30 +267,31 @@ namespace MEDCoupling
      distant_mesh_tmp->resizeForUnserialization(tinyInfoDistant,v1Distant,v2Distant,unusedTinyDistantSts);
      mcIdType nbLocalElems=0;
      mcIdType nbDistElem=0;
@@ -30,7 +17,14 @@ index 31d7033c..cc2a90cd 100644
        }
      if(v1Distant)
        {
-@@ -285,12 +285,12 @@ namespace MEDCoupling
+         nbDistElem=v1Distant->getNbOfElems();
+         ptDist=v1Distant->getPointer();
+       }
+-    comm_interface.sendRecv(ptLocal, (int)nbLocalElems, MPI_ID_TYPE,
++    mcIdType * ptLocalNonConst = const_cast<mcIdType *>(ptLocal);
++    comm_interface.sendRecv(ptLocalNonConst, (int)nbLocalElems, MPI_ID_TYPE,
+                             iprocdistant_in_union, 1111,
+                             ptDist, (int)nbDistElem, MPI_ID_TYPE,
                              iprocdistant_in_union,1111,
                              *comm, &status);
      nbLocalElems=0;
@@ -45,98 +39,13 @@ index 31d7033c..cc2a90cd 100644
        }
      nbDistElem=0;
      if(v2Distant)
-diff --git a/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx b/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx
-index fb2b339e..9f12434d 100644
---- a/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx
-+++ b/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx
-@@ -36,6 +36,7 @@ class ParaMEDMEMTest : public CppUnit::TestFixture
-   CPPUNIT_TEST(testMPIProcessorGroup_rank);         // >=2 procs
-   CPPUNIT_TEST(testBlockTopology_constructor);      // >=2 procs
-   CPPUNIT_TEST(testBlockTopology_serialize);        // 1 proc
-+  CPPUNIT_TEST(testInterpKernelDEC_ext_coords);     // 1 procs
-   CPPUNIT_TEST(testInterpKernelDEC_1D);             // 5 procs
-   CPPUNIT_TEST(testInterpKernelDEC_2DCurve);        // 5 procs
-   CPPUNIT_TEST(testInterpKernelDEC_2D);             // 5 procs
-@@ -104,6 +105,7 @@ public:
-   void testMPIProcessorGroup_rank();
-   void testBlockTopology_constructor();
-   void testBlockTopology_serialize();
-+  void testInterpKernelDEC_ext_coords();
-   void testInterpKernelDEC_1D();
-   void testInterpKernelDEC_2DCurve();
-   void testInterpKernelDEC_2D();
-diff --git a/src/ParaMEDMEMTest/ParaMEDMEMTest_InterpKernelDEC.cxx b/src/ParaMEDMEMTest/ParaMEDMEMTest_InterpKernelDEC.cxx
-index 781c4ed8..9cb3069d 100644
---- a/src/ParaMEDMEMTest/ParaMEDMEMTest_InterpKernelDEC.cxx
-+++ b/src/ParaMEDMEMTest/ParaMEDMEMTest_InterpKernelDEC.cxx
-@@ -70,6 +70,70 @@ void ParaMEDMEMTest::testInterpKernelDEC_2DP0P1()
-   //testInterpKernelDEC_2D_("P0","P1");
- }
- 
-+/*! Dummy test to check that we can pass a mesh with a coordinate array not owned by the mesh
-+ * as a source for the InterpKernelDEC.
-+ */
-+void ParaMEDMEMTest::testInterpKernelDEC_ext_coords()
-+{
-+  using namespace MEDCoupling;
-+
-+  int size;
-+  int rank;
-+  MPI_Comm_size(MPI_COMM_WORLD,&size);
-+  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-+
-+  if (size != 2) return;
-+
-+  set<int> src_procs;
-+  set<int> dest_procs;
-+  src_procs.insert(0);
-+  dest_procs.insert(1);
-+  //
-+  MCAuto<MEDCouplingUMesh> mesh(MEDCouplingUMesh::New("Source mesh Proc0",1));
-+  ParaMESH *paramesh=0;
-+  ParaFIELD *parafieldP0=0;
-+  CommInterface interface;
-+  ProcessorGroup* src_group = new MEDCoupling::MPIProcessorGroup(interface,src_procs);
-+  ProcessorGroup* dest_group = new MEDCoupling::MPIProcessorGroup(interface,dest_procs);
-+
-+  double coords[4]={0.3,0.7, 0.9,1.0};
-+  mcIdType conn[4]={0,1,2,3};
-+  mesh->allocateCells(2);
-+  mesh->insertNextCell(INTERP_KERNEL::NORM_SEG2,2,conn);
-+  mesh->insertNextCell(INTERP_KERNEL::NORM_SEG2,2,conn+2);
-+  mesh->finishInsertingCells();
-+  MCAuto<DataArrayDouble> myCoords(DataArrayDouble::New());
-+  mesh->setCoords(myCoords);
-+
-+  if (rank == 0)  // the one with an external array for coords
-+    {
-+      myCoords->useArray(coords, false, DeallocType::CPP_DEALLOC, 4, 1);
-+      paramesh=new ParaMESH(mesh,*src_group,"source mesh");
-+    }
-+  else
-+    {
-+      myCoords->alloc(4,1);
-+      std::copy(coords, coords+4, myCoords->rwBegin());
-+      paramesh=new ParaMESH(mesh,*dest_group,"source mesh");
-+    }
-+
-+  MEDCoupling::ComponentTopology comptopo;
-+  parafieldP0 = new ParaFIELD(ON_CELLS,NO_TIME,paramesh, comptopo);
-+  double *valueP0=parafieldP0->getField()->getArray()->getPointer();
-+  parafieldP0->getField()->setNature(IntensiveMaximum);
-+
-+  MEDCoupling::InterpKernelDEC dec(*src_group, *dest_group);
-+  dec.setMethod("P0");
-+  dec.attachLocalField(parafieldP0);
-+  // Was crashing here, because of a non const pointer in ElementLocator:
-+  dec.synchronize();
-+
-+  delete parafieldP0;
-+  delete paramesh;
-+  delete src_group;
-+  delete dest_group;
-+}
-+
- void ParaMEDMEMTest::testInterpKernelDEC_1D()
- {
-   int size;
+@@ -298,7 +299,8 @@ namespace MEDCoupling
+         nbDistElem=v2Distant->getNbOfElems();
+         ptDist2=v2Distant->getPointer();
+       }
+-    comm_interface.sendRecv(ptLocal2, (int)nbLocalElems, MPI_DOUBLE,
++    double * ptLocal2NonConst = const_cast<double *>(ptLocal2);
++    comm_interface.sendRecv(ptLocal2NonConst, (int)nbLocalElems, MPI_DOUBLE,
+                             iprocdistant_in_union, 1112,
+                             ptDist2, (int)nbDistElem, MPI_DOUBLE,
+                             iprocdistant_in_union, 1112, 
