@@ -57,3 +57,5 @@ done
 # Liste des machines:
 [ "$1" = -nsys ] && run -nsys
 [ $HOST = is157091 ] && run a6000
+# clean
+rm -f *.sauv *.lml *.sqlite *.nsys-rep
