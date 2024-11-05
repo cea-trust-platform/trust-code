@@ -759,7 +759,7 @@ void Domaine_32_64<_SZ_>::calculer_centres_gravite_aretes(DoubleTab_t& xa) const
 template<typename _SZ_>
 void Domaine_32_64<_SZ_>::rang_elems_sommet(SmallArrOfTID_t& elems, double x, double y, double z) const
 {
-  const OctreeRoot_t octree = construit_octree();
+  const OctreeRoot_t& octree = construit_octree();
   octree.rang_elems_sommet(elems, x, y, z);
 }
 
