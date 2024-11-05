@@ -39,16 +39,14 @@ Entree& RRK2::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::r
  */
 int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
-  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
-
-  const double b1 = 2.0, b2 = -1, c2 = 0.5;
-
   /*
    * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
    */
+
+  const double b1 = 2.0, b2 = -1, c2 = 0.5;
+
   DoubleTab& present = eqn.inconnue().valeurs(); // Un
-  DoubleTab& futur = eqn.inconnue().futur();   // Un+1
+  DoubleTab& futur = eqn.inconnue().futur(); // Un+1
 
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());

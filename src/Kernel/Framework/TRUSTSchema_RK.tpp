@@ -20,16 +20,13 @@ template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
 std::enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
 TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
 {
-  static constexpr int NB_PTS = (_ORDRE_ == Ordre_RK::DEUX_WILLIAMSON) ? 2 : 3;
-
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
-  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
-
   /*
    * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
    */
+  static constexpr int NB_PTS = (_ORDRE_ == Ordre_RK::DEUX_WILLIAMSON) ? 2 : 3;
 
-  DoubleTab& xi = eqn.inconnue().valeurs(), &xip1 = eqn.inconnue().futur();
+  DoubleTab& xi = eqn.inconnue().valeurs(); // Un
+  DoubleTab& xip1 = eqn.inconnue().futur(); // Un+1
 
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
@@ -71,19 +68,16 @@ template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
 std::enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
 TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
 {
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
-  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
+  /*
+   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
+   */
 
   static constexpr bool IS_DEUX = (_O_ == Ordre_RK::DEUX_CLASSIQUE) , IS_TROIS = (_O_ == Ordre_RK::TROIS_CLASSIQUE), IS_QUATRE = (_O_ == Ordre_RK::QUATRE_CLASSIQUE);
   static constexpr int NB_PTS = IS_DEUX ? 2 : ( IS_TROIS ? 3 : 4);
   static constexpr int NB_BUTCHER = IS_DEUX ? 0 : ( IS_TROIS ? 1 : ( IS_QUATRE ? 2 : 3 ));
 
-  /*
-   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
-   */
-
   DoubleTab& present = eqn.inconnue().valeurs(); // Un
-  DoubleTab& futur = eqn.inconnue().futur();   // Un+1
+  DoubleTab& futur = eqn.inconnue().futur(); // Un+1
 
   // Boundary conditions applied on Un+1:
   eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());

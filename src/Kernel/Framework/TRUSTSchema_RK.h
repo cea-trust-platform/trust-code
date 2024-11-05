@@ -53,15 +53,6 @@ class TRUSTSchema_RK : public Schema_Temps_base
   friend class RK3_FT; // pour trio
   int faire_un_pas_de_temps_eqn_base(Equation_base& eq) override { return faire_un_pas_de_temps_eqn_base_generique<_ORDRE_>(eq); } // SFINAE :-)
 
-protected:
-  static constexpr int NW = 100;
-
-  inline void print_warning(const int nw)
-  {
-    Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps) ****" << finl;
-    Cerr << "You are using Runge Kutta schema ! If you wish to increase the time step, try facsec between 1 and 2/3/4 (depends on the order of the scheme)." << finl;
-  }
-
 private:
   static constexpr double SQRT2 = 1.4142135623730950488016887242096980785696718753769480731766797, SQRT2_2 = SQRT2 / 2.;
 
