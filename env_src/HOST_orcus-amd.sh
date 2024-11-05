@@ -17,7 +17,7 @@ define_modules_config()
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         module="nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
+         #module="nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
          module="gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
          CUDA_VERSION=12.1 # Kokkos prend par defaut 12.1 et au link nvlink prend 11.0 donc on met tout au meme niveau...
       else

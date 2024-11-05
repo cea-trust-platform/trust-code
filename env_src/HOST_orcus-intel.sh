@@ -15,7 +15,7 @@ define_modules_config()
 
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/21.2 texlive/2020"
+      echo "Not supported on this frontale." && exit -1
    else
       #module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de facon bizarre sur cette machine...
       #module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020"
