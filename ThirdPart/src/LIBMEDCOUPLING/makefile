@@ -5,7 +5,7 @@ env_file=$(TRUST_MEDCOUPLING_ROOT)/env.sh
 
 all : $(env_file)
 
-$(env_file) : makefile install.sh $(archive_mc) $(archive_conf) $(TRUST_MED_ROOT)/include/med.h
+$(env_file) : makefile install.sh $(archive_mc) $(archive_conf) $(TRUST_MED_ROOT)/include/med.h const_ptr.patch
 	make clean
 	rm -f $(env_file)
 	./install.sh $(archive_mc) $(archive_conf)

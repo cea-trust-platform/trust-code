@@ -302,7 +302,7 @@ echo " "
 echo -e "\033[1m\033[4mLinking with external Thermo-Physical Properties libraries\033[0m"
 echo " "
 echo "   -with-eos=<path_to_eos>           Compiles TRUST and links with an external static EOS library."
-echo "   -with-coolprop=<path_to_coolprop> Compiles TRUST and links with an external static CoolProp library. The python CoolProp package will be also installed."
+echo "   -with-coolprop=<path_to_coolprop> Compiles TRUST and links with an external static CoolProp library. The python CoolProp package will be also installed. (EXPERIMENTAL)"
 echo "   -with-refprop=<path_to_refprop>   Path towards your local RefProp library installation (dynamic library will be opened via the CoolProp interface if requested)."
 
 echo " "

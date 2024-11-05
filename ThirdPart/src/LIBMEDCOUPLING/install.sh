@@ -42,8 +42,6 @@ build_and_test_mc()
     
     OPTIONS=""
     USE_MPI=ON && [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
-    # NO_CXX1 pour cygwin
-    OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
     CXX=$TRUST_CC
     CC=$TRUST_cc
     if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "`basename $TRUST_CC_BASE`" != crayCC ] # Sur adastra GNU ici ne marche pas...
