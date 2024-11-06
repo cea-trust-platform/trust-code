@@ -13,71 +13,47 @@
 *
 *****************************************************************************/
 
-#include <Cond_lim_utilisateur_base.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Probleme_Couple.h>
-#include <Entree_complete.h>
-#include <Probleme_base.h>
+#include <Paroi_Temperature_imposee.h>
+#include <Discretisation_base.h>
 #include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Interprete.h>
-#include <SFichier.h>
 
-Implemente_base(Cond_lim_utilisateur_base, "Cond_lim_utilisateur_base", Cond_lim_base);
+Implemente_instanciable(Paroi_Temperature_imposee, "Paroi_Temperature_imposee", Cond_lim_utilisateur_base);
+// XD paroi_temperature_imposee dirichlet paroi_temperature_imposee 0 Imposed temperature condition at the wall called bord (edge).
+// XD attr ch front_field_base ch 0 Boundary field type.
 
-Sortie& Cond_lim_utilisateur_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Sortie& Paroi_Temperature_imposee::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-Entree& Cond_lim_utilisateur_base::readOn(Entree& s) { return s; }
+Entree& Paroi_Temperature_imposee::readOn(Entree& s ) { return s; }
 
-void Cond_lim_utilisateur_base::ecrire(const Nom& ajout)
+void Paroi_Temperature_imposee::complement(Nom& ajout)
 {
-  if (je_suis_maitre())
+  int rayo = is_pb_rayo();
+  Nom Nrayo;
+  if (rayo == 1)
+    Nrayo = "_rayo_semi_transp";
+  if (rayo == 2)
+    Nrayo = "_rayo_transp";
+  if (mon_equation->discretisation().is_vdf())
     {
-      SFichier conv("convert_jdd", ios::app);
-      conv << (*this) << " # " << ajout << finl;
+      ajout = "paroi_echange_externe_impose";
+      if (rayo)
+        ajout += Nrayo;
+      Nom cl(" h_imp champ_front_uniforme ");
+      const int N = mon_equation->inconnue().valeurs().dimension(1);
+      cl += N;
+      for (int n = 0; n < N; n++)
+        cl += " 1e10";
+      cl += " t_ext";
+      ajout += cl;
     }
-}
-
-void Cond_lim_utilisateur_base::lire(Entree& s, Equation_base& mon_eq, const Nom& nom_bord)
-{
-  nom_bord_ = nom_bord;
-  mon_equation = mon_eq;
-  la_cl_ = new Cond_lim;
-  Nom ajout("");
-  complement(ajout);
-#ifndef NDEBUG
-  ecrire(ajout);
-#endif
-  Entree_complete s_complete(ajout, s);
-
-  s_complete >> *(la_cl_);
-  Cerr << "end reading cond lim util" << finl;
-}
-
-Cond_lim& Cond_lim_utilisateur_base::la_cl()
-{
-  return *(la_cl_);
-}
-
-void Cond_lim_utilisateur_base::complement(Nom&)
-{
-  Cerr << "Cond_lim_utilisateur_base::complement(Nom& ) does nothing" << finl;
-}
-
-/*! @brief renvoit 0 si le pb n'est pas rayonnant 1 si il est semi_transp
- *
- *                      2 si il est transparent
- *
- */
-int Cond_lim_utilisateur_base::is_pb_rayo()
-{
-  Probleme_base& pb = mon_equation->probleme();
-  Milieu_base& milieu = ref_cast(Milieu_base, pb.milieu());
-
-  if (milieu.is_rayo_transp())
-    return 2;
-  else if (milieu.is_rayo_semi_transp())
-    return 1;
   else
-    return 0;
+    {
+      ajout = "temperature_imposee_paroi";
+      if (rayo)
+        {
+          ajout = "paroi_temperature_imposee";
+          ajout += Nrayo;
+        }
+
+    }
 }

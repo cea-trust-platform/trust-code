@@ -13,71 +13,65 @@
 *
 *****************************************************************************/
 
-#include <Cond_lim_utilisateur_base.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Probleme_Couple.h>
-#include <Entree_complete.h>
+#include <Paroi_contact_fictif_rayo.h>
+#include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Interprete.h>
-#include <SFichier.h>
 
-Implemente_base(Cond_lim_utilisateur_base, "Cond_lim_utilisateur_base", Cond_lim_base);
+Implemente_instanciable(Paroi_contact_fictif_rayo, "paroi_contact_fictif_rayo", Cond_lim_utilisateur_base);
 
-Sortie& Cond_lim_utilisateur_base::printOn(Sortie& s) const { return s << que_suis_je(); }
-
-Entree& Cond_lim_utilisateur_base::readOn(Entree& s) { return s; }
-
-void Cond_lim_utilisateur_base::ecrire(const Nom& ajout)
+Sortie& Paroi_contact_fictif_rayo::printOn(Sortie& s) const
 {
-  if (je_suis_maitre())
+  return s << que_suis_je() << " " << nom_autre_pb << " " << nom_autre_bord << " " << conduct_fictif << " " << ep_fictif << " " << type_rayo;
+}
+
+Entree& Paroi_contact_fictif_rayo::readOn(Entree& s)
+{
+  s >> nom_autre_pb;
+  s >> nom_autre_bord;
+  s >> conduct_fictif;
+  s >> ep_fictif;
+  s >> type_rayo; /* pour l'autre probleme */
+
+  if (type_rayo != "TRANSP" && type_rayo != "SEMI_TRANSP")
     {
-      SFichier conv("convert_jdd", ios::app);
-      conv << (*this) << " # " << ajout << finl;
+      Cerr << "type_rayo should be TRANSP or SEMI_TRANSP and not " << type_rayo << finl;
+      Process::exit();
+    }
+
+  return s;
+}
+
+void Paroi_contact_fictif_rayo::complement(Nom& ajout)
+{
+  int rayo = is_pb_rayo();
+  if (!rayo)
+    {
+      if (type_rayo == "TRANSP")
+        rayo = 2;
+      else if (type_rayo == "SEMI_TRANSP")
+        rayo = 1;
+      else
+        throw;
+    }
+
+  if (mon_equation->discretisation().is_vdf())
+    {
+      if (rayo == 2)
+        ajout = "Echange_contact_Rayo_transp_VDF ";
+      if (rayo == 1)
+        ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";
+
+      ajout += nom_autre_pb;
+      ajout += " ";
+      ajout += nom_autre_bord;
+      ajout += " temperature ";
+      ajout += Nom(conduct_fictif / ep_fictif, "%e");
+    }
+  else
+    {
+      Cerr << que_suis_je() << "coded only in non-radiating in VEF/PolyMAC_P0P1NC" << finl;
+      Process::exit();
     }
 }
 
-void Cond_lim_utilisateur_base::lire(Entree& s, Equation_base& mon_eq, const Nom& nom_bord)
-{
-  nom_bord_ = nom_bord;
-  mon_equation = mon_eq;
-  la_cl_ = new Cond_lim;
-  Nom ajout("");
-  complement(ajout);
-#ifndef NDEBUG
-  ecrire(ajout);
-#endif
-  Entree_complete s_complete(ajout, s);
-
-  s_complete >> *(la_cl_);
-  Cerr << "end reading cond lim util" << finl;
-}
-
-Cond_lim& Cond_lim_utilisateur_base::la_cl()
-{
-  return *(la_cl_);
-}
-
-void Cond_lim_utilisateur_base::complement(Nom&)
-{
-  Cerr << "Cond_lim_utilisateur_base::complement(Nom& ) does nothing" << finl;
-}
-
-/*! @brief renvoit 0 si le pb n'est pas rayonnant 1 si il est semi_transp
- *
- *                      2 si il est transparent
- *
- */
-int Cond_lim_utilisateur_base::is_pb_rayo()
-{
-  Probleme_base& pb = mon_equation->probleme();
-  Milieu_base& milieu = ref_cast(Milieu_base, pb.milieu());
-
-  if (milieu.is_rayo_transp())
-    return 2;
-  else if (milieu.is_rayo_semi_transp())
-    return 1;
-  else
-    return 0;
-}

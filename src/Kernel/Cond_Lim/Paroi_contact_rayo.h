@@ -13,44 +13,19 @@
 *
 *****************************************************************************/
 
-#ifndef Cond_lim_utilisateur_base_included
-#define Cond_lim_utilisateur_base_included
+#ifndef Paroi_contact_rayo_included
+#define Paroi_contact_rayo_included
 
-#include <Cond_lim_base.h>
-#include <Motcle.h>
+#include <Cond_lim_utilisateur_base.h>
 
-class Cond_lim;
-
-/*! @brief classe Cond_lim_utilisateur_base: Les classes heritant de cette classe sont des classes utilisaturs
- *
- *     elles vont transformer le jdd
- *     la cl_utilisateur est typee est passe dans la methode complement(ajout)
- *    Dans le jdd on aviat bord cl_util champ....
- *    tout se passe comme si on n avait pas cl_util mais ajout champ...
- *
- */
-class Cond_lim_utilisateur_base  : public Cond_lim_base
+class Paroi_contact_rayo: public Cond_lim_utilisateur_base
 {
-  Declare_base(Cond_lim_utilisateur_base);
+  Declare_instanciable(Paroi_contact_rayo);
 public:
-  void lire(Entree&,Equation_base&,const Nom& nom_bord);
-  virtual void complement(Nom&);
-
-  inline int compatible_avec_eqn(const Equation_base&) const override
-  {
-    Cerr<<"we should not be here"<<(int)__LINE__<<__FILE__ <<finl;
-    Process::exit();
-    return 0;
-  }
-
-  Cond_lim& la_cl();
-  int is_pb_rayo();
-
-  virtual void ecrire(const Nom&);
-protected :
-  Cond_lim* la_cl_ = nullptr;
-  OBS_PTR(Equation_base) mon_equation;
-  Nom nom_bord_;
+  void complement(Nom& nom) override;
+private:
+  Nom nom_autre_pb, nom_autre_bord;
+  Motcle type_rayo;
 };
 
-#endif /* Cond_lim_utilisateur_base_included */
+#endif /* Paroi_contact_rayo_included */

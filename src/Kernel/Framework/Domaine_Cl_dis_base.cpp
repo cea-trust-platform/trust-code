@@ -13,29 +13,19 @@
 *
 *****************************************************************************/
 
+#include <Cond_lim_utilisateur_base.h>
 #include <Domaine_Cl_dis_base.h>
-#include <Equation_base.h>
 #include <Frontiere_dis_base.h>
 #include <Schema_Temps_base.h>
-#include <Cond_lim_utilisateur_base.h>
+#include <Equation_base.h>
 #include <Probleme_base.h>
 
 Implemente_base(Domaine_Cl_dis_base,"Domaine_Cl_dis_base",Objet_U);
 
-
-/*! @brief Surcharge Objet_U::printOn(Sortie&) NE FAIT RIEN
- *
- *     A surcharger dans les classes derivees.
- *     Imprime les conditions aux limites discretisees sur un flot de sortie
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Domaine_Cl_dis_base::printOn(Sortie& os) const
 {
   return os;
 }
-
 
 /*! @brief Surcharge Objet_U::readOn(Sortie&) Lit les conditions aux limites discretisees a partir d'un flot d'entree
  *
@@ -117,8 +107,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
           //les_conditions_limites(rang)=(*sa);
           delete sa;
         }
-      les_conditions_limites(rang)->
-      associer_fr_dis_base(domaine_dis().frontiere_dis(rang));
+      les_conditions_limites(rang)->associer_fr_dis_base(domaine_dis().frontiere_dis(rang));
 
       //Test pour empecher l utilisation de 'Raccord_distant_homogene' en calcul sequentiel
       const Frontiere& frontiere=ledomaine.frontiere(rang);
@@ -152,7 +141,6 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
   return is;
 }
 
-
 /*! @brief Renvoie 1 si l'objet contient une condition aux limites du Nom specifie.
  *
  *     Renvoie 0 sinon.
@@ -167,7 +155,6 @@ int Domaine_Cl_dis_base::contient_Cl(const Nom& type)
   return 0;
 }
 
-
 /*! @brief Renvoie une reference sur le domaine discretisee associee aux conditions aux limites.
  *
  * Cette Domaine_dis est associee au travers de l'equation
@@ -179,7 +166,6 @@ Domaine_dis_base& Domaine_Cl_dis_base::domaine_dis()
 {
   return equation().domaine_dis();
 }
-
 
 /*! @brief Renvoie une reference sur le domaine discretisee associee aux conditions aux limites.
  *
@@ -193,7 +179,6 @@ const Domaine_dis_base& Domaine_Cl_dis_base::domaine_dis() const
 {
   return equation().domaine_dis();
 }
-
 
 /*! @brief Change le i-eme temps futur de toutes les CLs.
  *
@@ -268,7 +253,6 @@ void Domaine_Cl_dis_base::mettre_a_jour_ss_pas_dt(double temps)
     }
 }
 
-
 /*! @brief Initialise les CLs Contrairement aux methodes mettre_a_jour, les methodes
  *
  *     initialiser des CLs ne peuvent pas dependre de l'exterieur
@@ -280,8 +264,6 @@ int Domaine_Cl_dis_base::initialiser(double temps)
 {
   return les_conditions_limites_.initialiser(temps);
 }
-
-
 
 /*! @brief Calcul des coefficients d'echange pour les problemes couples thermiques
  *
@@ -322,7 +304,6 @@ const Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_face_reelle(int
   assert(0); // la face ne porte pas de CL
   return les_conditions_limites(0).valeur(); // Pour compilo
 }
-
 
 /*! @brief Renvoie la condition limite associee a une face virtuelle donnee.
  *
@@ -383,8 +364,6 @@ const Cond_lim_base& Domaine_Cl_dis_base::condition_limite_de_la_frontiere(Nom f
   return les_conditions_limites(0).valeur(); // Pour compilo
 }
 
-
-
 /*! @brief Calcule le taux d'accroissement des CLs instationnaires entre t1 et t2.
  *
  */
@@ -396,7 +375,6 @@ void Domaine_Cl_dis_base::calculer_derivee_en_temps(double t1, double t2)
       if (champ.instationnaire()) champ.calculer_derivee_en_temps(t1,t2);
     }
 }
-
 
 /*! @brief Renvoie la i-ieme condition aux limites.
  *
@@ -410,7 +388,6 @@ const Cond_lim& Domaine_Cl_dis_base::les_conditions_limites(int i) const
   return les_conditions_limites_[i];
 }
 
-
 /*! @brief Renvoie la i-ieme condition aux limites.
  *
  * @param (int i) le rang de la i-ieme condition aux limites
@@ -421,7 +398,6 @@ Cond_lim& Domaine_Cl_dis_base::les_conditions_limites(int i)
   return les_conditions_limites_[i];
 }
 
-
 /*! @brief Renvoie le tableaux des conditions aux limites.
  *
  * @return (Conds_lim&) le tableau des conditions aux limites
@@ -430,7 +406,6 @@ Conds_lim& Domaine_Cl_dis_base::les_conditions_limites()
 {
   return les_conditions_limites_;
 }
-
 
 /*! @brief Renvoie le tableaux des conditions aux limites.
  *
@@ -442,7 +417,6 @@ const Conds_lim& Domaine_Cl_dis_base::les_conditions_limites() const
 {
   return les_conditions_limites_;
 }
-
 
 /*! @brief Renvoie le nombre de conditions aux limites.
  *

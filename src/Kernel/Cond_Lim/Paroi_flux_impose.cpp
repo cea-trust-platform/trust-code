@@ -13,71 +13,30 @@
 *
 *****************************************************************************/
 
-#include <Cond_lim_utilisateur_base.h>
-#include <Domaine_Cl_dis_base.h>
-#include <Probleme_Couple.h>
-#include <Entree_complete.h>
-#include <Probleme_base.h>
+#include <Discretisation_base.h>
+#include <Paroi_flux_impose.h>
 #include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Interprete.h>
-#include <SFichier.h>
 
-Implemente_base(Cond_lim_utilisateur_base, "Cond_lim_utilisateur_base", Cond_lim_base);
+Implemente_instanciable(Paroi_flux_impose, "paroi_flux_impose", Cond_lim_utilisateur_base);
+// XD paroi_flux_impose condlim_base paroi_flux_impose 0 Normal flux condition at the wall called bord (edge). The surface area of the flux (W.m-1 in 2D or W.m-2 in 3D) is imposed at the boundary according to the following convention: a positive flux is a flux that enters into the domain according to convention.
+// XD attr ch front_field_base ch 0 Boundary field type.
 
-Sortie& Cond_lim_utilisateur_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Sortie& Paroi_flux_impose::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-Entree& Cond_lim_utilisateur_base::readOn(Entree& s) { return s; }
+Entree& Paroi_flux_impose::readOn(Entree& s ) { return s; }
 
-void Cond_lim_utilisateur_base::ecrire(const Nom& ajout)
+void Paroi_flux_impose::complement(Nom& ajout)
 {
-  if (je_suis_maitre())
+  int rayo = is_pb_rayo();
+  if (rayo == 1)
     {
-      SFichier conv("convert_jdd", ios::app);
-      conv << (*this) << " # " << ajout << finl;
+      if (mon_equation->discretisation().is_vdf())
+        ajout = "paroi_flux_impose_rayo_semi_transp_VDF";
+      else
+        ajout = "paroi_flux_impose_rayo_semi_transp_VEF";
     }
-}
-
-void Cond_lim_utilisateur_base::lire(Entree& s, Equation_base& mon_eq, const Nom& nom_bord)
-{
-  nom_bord_ = nom_bord;
-  mon_equation = mon_eq;
-  la_cl_ = new Cond_lim;
-  Nom ajout("");
-  complement(ajout);
-#ifndef NDEBUG
-  ecrire(ajout);
-#endif
-  Entree_complete s_complete(ajout, s);
-
-  s_complete >> *(la_cl_);
-  Cerr << "end reading cond lim util" << finl;
-}
-
-Cond_lim& Cond_lim_utilisateur_base::la_cl()
-{
-  return *(la_cl_);
-}
-
-void Cond_lim_utilisateur_base::complement(Nom&)
-{
-  Cerr << "Cond_lim_utilisateur_base::complement(Nom& ) does nothing" << finl;
-}
-
-/*! @brief renvoit 0 si le pb n'est pas rayonnant 1 si il est semi_transp
- *
- *                      2 si il est transparent
- *
- */
-int Cond_lim_utilisateur_base::is_pb_rayo()
-{
-  Probleme_base& pb = mon_equation->probleme();
-  Milieu_base& milieu = ref_cast(Milieu_base, pb.milieu());
-
-  if (milieu.is_rayo_transp())
-    return 2;
-  else if (milieu.is_rayo_semi_transp())
-    return 1;
+  else if (rayo == 2)
+    ajout = "paroi_flux_impose_rayo_transp";
   else
-    return 0;
+    ajout = "Neumann_Paroi";
 }
