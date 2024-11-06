@@ -266,32 +266,32 @@ public:
     dual_view_4_=DualView<_TYPE_,4>();
   }
 
-  // Kokkos accessors (brace yourself!)
+  // Kokkos accessors (brace yourself!) Default value of shape is 1.
 
   // Read-only
-  template <int SHAPE, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  template <int SHAPE = 1, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_,SHAPE> >
   view_ro() const;
 
-  template <int SHAPE, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  template <int SHAPE = 1, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,SHAPE> >
   view_ro() const;
 
   // Write-only
-  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  template <int SHAPE = 1, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,SHAPE> >
   view_wo();
 
-  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  template <int SHAPE = 1, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,SHAPE> >
   view_wo();
 
   // Read-write
-  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  template <int SHAPE = 1, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,SHAPE> >
   view_rw();
 
-  template <int SHAPE, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
+  template <int SHAPE = 1, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,SHAPE> >
   view_rw();
 

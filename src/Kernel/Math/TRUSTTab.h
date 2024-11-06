@@ -238,6 +238,56 @@ public:
   inline void reset() override;
   inline void resize_tab(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) override;
 
+#ifdef KOKKOS
+
+  //Overriden accessors from TRUSTArray. The default shape is 2 for tabs, then calls the Vect accessor
+
+  // Read-only
+  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_, SHAPE>>
+                                                                                    view_ro() const
+  {
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<SHAPE, EXEC_SPACE>();
+  }
+
+  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_, SHAPE>>
+                                                                                     view_ro() const
+  {
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<SHAPE, EXEC_SPACE>();
+  }
+
+  // Write-only
+  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, SHAPE>>
+                                                                               view_wo()
+  {
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<SHAPE, EXEC_SPACE>();
+  }
+
+  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, SHAPE>>
+                                                                                view_wo()
+  {
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<SHAPE, EXEC_SPACE>();
+  }
+
+  // Read-write
+  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, SHAPE>>
+                                                                               view_rw()
+  {
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<SHAPE, EXEC_SPACE>();
+  }
+
+  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, SHAPE>>
+                                                                                view_rw()
+  {
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<SHAPE, EXEC_SPACE>();
+  }
+
+#endif
 private:
   static constexpr int MAXDIM_TAB = 4;
   // Nombre de dimensions du tableau (nb_dim_>=1)
