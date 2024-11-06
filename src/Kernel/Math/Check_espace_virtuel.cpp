@@ -73,37 +73,61 @@ void assert_invalide_items_non_calcules(DoubleVect& v, double valeur)
 #endif
 }
 
+#ifndef LATATOOLS
+namespace
+{
+template <typename ExecSpace, typename _TYPE_>
+void remplir_items_non_calcules_kernel_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur, const ArrOfInt& blocs, const int sz, const int line_size)
+{
+  auto v_view= v.template view_wo<ExecSpace>();
+
+  int j = 0;
+
+  for (int i = 0; i <= sz; i++)
+    {
+
+      // Fill the elemns until the beginning of the bloc
+      // If i ==sz, fill the elems between the end of the last block and the end of the vect
+      // (<=sz instead of <sz + extra loop: small) Hack from Remi B to avoid re-writing the loop two times
+
+      const int j_fin = i==sz ? v.size_array() : blocs[i*2] * line_size;
+      assert(j >= 0 && j_fin <= v.size_array());
+
+      Kokkos::RangePolicy<ExecSpace> policy(j, j_fin);
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,
+      KOKKOS_LAMBDA(const int k) {v_view[k]=valeur;});
+
+      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+
+      // Sauter a la fin du bloc
+      if (i<sz) j = blocs[i*2+1] * line_size;
+    }
+}
+}
+#endif
+
 template <typename _TYPE_>
 void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
 {
+#ifndef LATATOOLS
   if (v.get_md_vector().non_nul() && Process::is_parallel()) // Checking virtual items in sequential is meaningless
     {
       const ArrOfInt& blocs = v.get_md_vector()->get_items_to_compute();
       const int sz = blocs.size_array() / 2, line_size = v.line_size();
-      int j = 0;
-      // Ne pas passer par operator[], sinon plantage si la valeur actuelle est invalide
+
       bool kernelOnDevice = v.checkDataOnDevice();
-      _TYPE_ *ptr = computeOnTheDevice(v, "", kernelOnDevice);
-      start_gpu_timer();
-      for (int i = 0; i < sz; i++)
-        {
-          // remplir les elements jusqu'au debut du bloc:
-          const int j_fin = blocs[i*2] * line_size;
-          assert(j >= 0 && j_fin <= v.size_array());
-          #pragma omp target teams distribute parallel for if (kernelOnDevice)
-          for (int k=j; k < j_fin; k++)
-            ptr[k] = valeur;
-          // Sauter a la fin du bloc
-          j = blocs[i*2+1] * line_size;
-        }
-      // Remplir les elements entre la fin du dernier bloc et la fin du vecteur
-      const int j_fin = v.size_array();
-      #pragma omp target teams distribute parallel for if (kernelOnDevice)
-      for (int k=j; k < j_fin; k++)
-        ptr[k] = valeur;
-      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+
+      if (kernelOnDevice)
+        remplir_items_non_calcules_kernel_<Kokkos::DefaultExecutionSpace, _TYPE_>(v, valeur, blocs, sz, line_size);
+      else
+        remplir_items_non_calcules_kernel_<Kokkos::DefaultHostExecutionSpace, _TYPE_>(v, valeur, blocs, sz, line_size);
     }
+#else
+  return
+#endif
 }
+
 // Explicit instanciation
 template void remplir_items_non_calcules_<double>(TRUSTVect<double>& v, double valeur);
 template void remplir_items_non_calcules_<int>(TRUSTVect<int>& v, int valeur);
