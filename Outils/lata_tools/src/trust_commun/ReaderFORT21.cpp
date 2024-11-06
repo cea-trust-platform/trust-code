@@ -585,7 +585,7 @@ template <typename _TYPE_> void ReaderFORT21::getValuesVarField(const std::strin
   else
     throw std::invalid_argument("field type not implemented");
 
-  int aSizeOfRecordLength = fieldinfo.size() * sizeof(_TYPE_);
+  size_t aSizeOfRecordLength = fieldinfo.size() * sizeof(_TYPE_);
   file_pos_t fp = getOffsetVarField(name_stack,name_field,id_time_field) ; //offset_a_time_.at(id_time) + eleminfo.offset_rel_time_.at(id_time_field) + fieldinfo.offset_rel_stack_;
   set_file_pos(myField.getFile(), fp, SEEK_SET);
   if (fread(data.data(), aSizeOfRecordLength, 1, myField.getFile()) != 1)
