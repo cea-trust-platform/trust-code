@@ -20,22 +20,14 @@ template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
 std::enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
 TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
 {
-  /*
-   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
-   */
   static constexpr int NB_PTS = (_ORDRE_ == Ordre_RK::DEUX_WILLIAMSON) ? 2 : 3;
 
   DoubleTab& xi = eqn.inconnue().valeurs(); // Un
   DoubleTab& xip1 = eqn.inconnue().futur(); // Un+1
 
-  // Boundary conditions applied on Un+1:
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
-
   DoubleTrav present(xi), qi(xi);
   present = xi;
   qi = xi;
-
-  eqn.inconnue().avancer(); // XXX
 
   for (int i = 0; i < NB_PTS; i++)
     {
@@ -46,8 +38,6 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
       // on fait ca : x_i = x_{i-1} + b_i * q_i
       xi.ajoute(get_b<_ORDRE_,NB_PTS>()[i], qi);
     }
-
-  eqn.inconnue().reculer(); // XXX
 
   xip1 = xi;
   xi -= present;
@@ -68,19 +58,12 @@ template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
 std::enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
 TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
 {
-  /*
-   * XXX To understand the strategy done here, see the comments in Schema_Euler_explicite.cpp
-   */
-
   static constexpr bool IS_DEUX = (_O_ == Ordre_RK::DEUX_CLASSIQUE) , IS_TROIS = (_O_ == Ordre_RK::TROIS_CLASSIQUE), IS_QUATRE = (_O_ == Ordre_RK::QUATRE_CLASSIQUE);
   static constexpr int NB_PTS = IS_DEUX ? 2 : ( IS_TROIS ? 3 : 4);
   static constexpr int NB_BUTCHER = IS_DEUX ? 0 : ( IS_TROIS ? 1 : ( IS_QUATRE ? 2 : 3 ));
 
   DoubleTab& present = eqn.inconnue().valeurs(); // Un
   DoubleTab& futur = eqn.inconnue().futur(); // Un+1
-
-  // Boundary conditions applied on Un+1:
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
   TRUST_Vector<TRUSTTrav<double>> ki;
 
@@ -91,8 +74,6 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
 
   DoubleTrav sauv(present);
   sauv = present; // sauv = y0
-
-  eqn.inconnue().avancer(); // XXX
 
   // Step 1
   eqn.derivee_en_temps_inco(ki[0]); // ki[0] = f(y0)
@@ -107,8 +88,6 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
       eqn.derivee_en_temps_inco(ki[step]);
       ki[step] *= dt_;
     }
-
-  eqn.inconnue().reculer(); // XXX
 
   // XXX Elie Saikali : residu should be calculated like that
   ki[NB_PTS-1] /= dt_;

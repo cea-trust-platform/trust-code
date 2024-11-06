@@ -92,16 +92,10 @@ int Schema_Explicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
 
   // Un+1
   DoubleTab& futur   = eqn.inconnue().futur();
-
-  // sert pour la pression et les couplages
-  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-
   DoubleTrav dudt(futur);
 
   // Compute du/dt
-  eqn.inconnue().avancer(); // XXX
   eqn.derivee_en_temps_inco(dudt);
-  eqn.inconnue().reculer(); // XXX
 
   //Contribution de l'inconnue au temps n
   futur = dudt;
