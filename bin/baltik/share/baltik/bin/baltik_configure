@@ -660,7 +660,7 @@ printf "trustify_check : trustify\n"                               >> $project_m
 printf "\t@echo \"##########################################\"\n"  >> $project_makefile
 printf "\t@echo \"# Checking datasets with trustify module #\"\n"  >> $project_makefile
 printf "\t@echo \"##########################################\"\n"  >> $project_makefile
-printf "\t@source $env_file; $TRUST_ROOT/Outils/trustify/check_all.sh \n" >> $project_makefile
+printf "\t@source $env_file; $TRUST_ROOT/Outils/trustify/tools/check_all.sh \n" >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help trustify_doc \t: Build baltik keyword documentation using trustify\n" >> $project_makefile
@@ -668,7 +668,7 @@ printf "trustify_doc : trustify\n"                               >> $project_mak
 printf "\t@echo \"######################################\"\n"  >> $project_makefile
 printf "\t@echo \"# Building keyword doc with trustify #\"\n"  >> $project_makefile
 printf "\t@echo \"######################################\"\n"  >> $project_makefile
-printf "\t@source $env_file; $TRUST_ROOT/Outils/trustify/gen_doc.sh \n" >> $project_makefile
+printf "\t@source $env_file; $TRUST_ROOT/Outils/trustify/tools/gen_doc.sh \n" >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 

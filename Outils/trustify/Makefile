@@ -6,10 +6,10 @@ install: install.sh
 	@env TRUSTIFY_FROM_TRUST=1 ./install.sh
 
 check:
-	@env TRUSTIFY_FROM_TRUST=1 ./check_all.sh
+	@env TRUSTIFY_FROM_TRUST=1 ./tools/check_all.sh
 	
 doc:
-	@env TRUSTIFY_FROM_TRUST=1 ./gen_doc.sh
+	@env TRUSTIFY_FROM_TRUST=1 ./tools/gen_doc.sh
 
 clean:
 	@rm -rfv **/*.egg-info .pytest_cache/ build/ test/generated/* install/
@@ -27,7 +27,7 @@ test_debug:
 
 help:
 	@echo The following make targets are available
-	@echo    - all: will clean, install and finally execute 0check target.
+	@echo    - all: will clean, install and finally execute the check target.
 	@echo    - install: install the 'trustify' package
 	@echo    - check: check all TRUST datasets
 	@echo    - doc: generate documentation for keywords

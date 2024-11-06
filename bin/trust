@@ -725,7 +725,7 @@ fi
 ############################
 if [ "$trustify" = 1 ]
 then
-   $TRUST_ROOT/Outils/trustify/check_single.sh $NOM".data"
+   $TRUST_ROOT/Outils/trustify/tools/check_single.sh $NOM".data"
    ret=$?
    [ $ret != 0 ] && echo "Error!"
    exit $ret

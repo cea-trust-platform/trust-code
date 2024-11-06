@@ -263,6 +263,13 @@ class Builtin_Parser(Abstract_Parser):
         """
         return f"<builtin-{cls.__name__}>"
 
+    def getFormattedType(self):
+        """ @return a string describing the current type as a nicely formatted string (useful for keyword documentation)
+        e.g. for IntConstrained_Parser, returns 'int in [2,3]'
+        """
+        print(self.__class__)
+        raise NotImplementedError
+
 class BaseCommon_Parser(Abstract_Parser):
     """ Abstract base class containing all the methods relevant to TRUST data model parsing
     logic for high level types (keywords, not base types such as strings, int, etc.)
@@ -707,6 +714,11 @@ class ListOfBase_Parser(Builtin_Parser):
             err = cls.GenErr(stream, f"Keyword '{nams}' expected a comma (',') to separate list items")
             raise TrustifyException(err)
         stream.validateNext()
+
+    def getFormattedType(self):
+        """ Override """
+        it = self._itemType.__name__
+        return f"list of {it}"
 
     def readListSize(self, stream):
         """ Return size of the list - overriden in ListOfFloatDim """
@@ -1271,6 +1283,10 @@ class Chaine_Parser(AbstractChaine_Parser):
         AbstractChaine_Parser.__init__(self, pyd_value)
         self._isBloc = False     # Whether this chain is a full bloc with '{ }'
 
+    def getFormattedType(self):
+        """ Override """
+        return "string"
+
     @classmethod
     def ParseOneWord(cls, stream):
         pars = cls()
@@ -1338,6 +1354,10 @@ class ChaineConstrained_Parser(AbstractChaine_Parser):
         AbstractChaine_Parser.__init__(self, pyd_value)
         self._allowedValues = []    # Allowed value for this string
 
+    def getFormattedType(self):
+        """ Override """
+        return f"string into {self._allowedValues}"
+
     def validateValue(self, val, stream):
         if val not in self._allowedValues:
             err = self.GenErr(stream, f"Invalid value: '{val}', not in allowed list: '%s'" % str(self._allowedValues))
@@ -1355,6 +1375,10 @@ class Fin_Parser(Interprete_Parser):
 
 class Int_Parser(Builtin_Parser):
     """ Base class for all (constrained or not) integers """
+
+    def getFormattedType(self):
+        """ Override """
+        return "int"
 
     def validateValue(self, val, stream):
         """ To be overriden in derived class. Should raise if value is not allowed. """
@@ -1388,6 +1412,10 @@ class IntConstrained_Parser(Int_Parser):
         Int_Parser.__init__(self, pyd_value)
         self._allowedValues = []    # Allowed value for this int
 
+    def getFormattedType(self):
+        """ Override """
+        return f"int into {self._allowedValues}"
+
     def validateValue(self, val, stream):
         try:
             i = int(val)
@@ -1399,6 +1427,10 @@ class IntConstrained_Parser(Int_Parser):
             raise TrustifyException(err)
 
 class Float_Parser(Builtin_Parser):
+    def getFormattedType(self):
+        """ Override """
+        return "float"
+
     def readFromTokensBuiltin_impl(self, stream):
         """ Parse a single float """
         s = stream.nextLow()
@@ -1422,6 +1454,9 @@ class Float_Parser(Builtin_Parser):
 class Flag_Parser(Builtin_Parser):
     """ Boolean flags are of type 'rien' in the TRAD_2 file ... when they are present, they correspond to a True value
     when absent, False. """
+    def getFormattedType(self):
+        """ Override """
+        return "flag"
 
     def readFromTokensBuiltin_impl(self, stream):
         """Override. If we call this method it means the flag has been read (as an attribute name!), 

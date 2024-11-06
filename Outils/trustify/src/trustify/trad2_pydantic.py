@@ -334,7 +334,7 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
         """
         identifier: str = Field(description='Identifier of the class being read. Must match a previous forward Declaration.', default="??")
         obj       : Objet_u = Field(description='The object being read.', default=None)
-        _synonyms: ClassVar[dict] = {{None: ['lire'], 'a_object': [], 'bloc': []}}
+        _synonyms: ClassVar[dict] = {{None: ['lire'], 'identifier': [], 'obj': []}}
 
     class Dataset(Objet_u):
         """ A full TRUST dataset! It is an ordered list of objects. """
