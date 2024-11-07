@@ -67,7 +67,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
 
       bool flag = z_class->get_modele_turbulence().calcul_tenseur_Re(tab_nu_turb, grad_, Re_);
       CDoubleTabView nu_turb = tab_nu_turb.view_ro();
-      DoubleTabView3 Re = Re_.view3_rw();
+      DoubleTabView3 Re = Re_.view_rw<3>();
       if (flag)
         {
           Cerr << "On utilise une diffusion turbulente non lineaire dans NS" << finl;
@@ -82,7 +82,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
         }
       else
         {
-          CDoubleTabView3 grad = grad_.view3_ro();
+          CDoubleTabView3 grad = grad_.view_ro<3>();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                                Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
                                  const int elem)
@@ -121,8 +121,8 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();;
   CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();;
   CDoubleTabView nu = tab_nu.view_ro();
-  CDoubleTabView3 Re = Re_.view3_ro();
-  CDoubleTabView3 grad = grad_.view3_ro();
+  CDoubleTabView3 Re = Re_.view_ro<3>();
+  CDoubleTabView3 grad = grad_.view_ro<3>();
   DoubleTabView flux_bords = tab_flux_bords.view_rw();
   DoubleTabView resu = tab_resu.view_rw();
   for (int n_bord = 0; n_bord < nb_cl; n_bord++)
@@ -182,8 +182,8 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& tab_inconn
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
   CDoubleArrView nu = static_cast<const ArrOfDouble&>(tab_nu).view_ro();
-  CDoubleTabView3 grad = grad_.view3_ro();
-  CDoubleTabView3 Re = Re_.view3_ro();
+  CDoubleTabView3 grad = grad_.view_ro<3>();
+  CDoubleTabView3 Re = Re_.view_ro<3>();
   DoubleTabView resu = tab_resu.view_rw();
   // PL: collapsing loops even with an atomic is x2-3 faster than no collapsing (seen on DomainFlowLES_BENCH)
   bool collapse_loops = true;

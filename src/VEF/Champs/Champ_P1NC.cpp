@@ -80,7 +80,7 @@ void Champ_P1NC::cal_rot_ordre1(DoubleTab& tab_vorticite) const
   const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
   DoubleTrav tab_gradient_elem(nb_elem_tot, dimension, dimension);
   gradient(tab_gradient_elem);
-  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view_ro<3>();
   switch(dimension)
     {
     case 2:
@@ -193,7 +193,7 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
   CDoubleTabView variable = tab_variable.view_ro();
   CIntArrView est_face_bord = tab_est_face_bord.view_ro();
-  DoubleTabView3 gradient_elem = tab_gradient_elem.view3_rw();
+  DoubleTabView3 gradient_elem = tab_gradient_elem.view_rw<3>();
 
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();
@@ -363,7 +363,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& tab_Critere_Q) const
   const DoubleTab& vitesse = valeurs();
   Champ_P1NC::calcul_gradient(vitesse, tab_gradient_elem, domaine_Cl_VEF);
 
-  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view_ro<3>();
   DoubleArrView Critere_Q = tab_Critere_Q.view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        range_1D(0, nb_elem), KOKKOS_LAMBDA(
@@ -836,7 +836,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& tab_gij, const DoubleTab& 
           CDoubleTabView tau_tan = tab_tau_tan.view_ro();
           CDoubleArrView nu = static_cast<const ArrOfDouble&>(tab_nu).view_ro();
           CDoubleArrView nu_turb = static_cast<const ArrOfDouble&>(tab_nu_turb).view_ro();
-          DoubleTabView3 gij = tab_gij.view3_rw();
+          DoubleTabView3 gij = tab_gij.view_rw<3>();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int fac)
           {
             double P[3][3] {};
@@ -910,7 +910,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
   Champ_P1NC::calcul_gradient(la_vitesse, duidxj, domaine_Cl_VEF);
 
   int dim = Objet_U::dimension;
-  CDoubleTabView3 duidxj_v = duidxj.view3_ro();
+  CDoubleTabView3 duidxj_v = duidxj.view_ro<3>();
   DoubleArrView SMA_barre_v = SMA_barre.view_wo();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
                          const int elem)

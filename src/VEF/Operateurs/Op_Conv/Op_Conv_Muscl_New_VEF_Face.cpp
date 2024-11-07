@@ -129,8 +129,8 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
   //
   //Calcul des coefficients de l'operateur
   //
-  CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view3_ro();
-  CDoubleTabView3 facette_normales_Cl = domaine_Cl_VEF.normales_facettes_Cl().view3_ro();
+  CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view_ro<3>();
+  CDoubleTabView3 facette_normales_Cl = domaine_Cl_VEF.normales_facettes_Cl().view_ro<3>();
   CIntArrView rang_elem_non_std = domaine_VEF.rang_elem_non_std().view_ro();
   CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
   CDoubleTabView velocity = tab_velocity.view_ro();
@@ -142,7 +142,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
   DoubleTabView Cij = tab_Cij.view_wo();
   DoubleTabView Sij = tab_Sij.view_wo();
   DoubleTabView Sij2 = tab_Sij2.view_wo();
-  DoubleTabView3 Kij = tab_Kij.view3_rw();
+  DoubleTabView3 Kij = tab_Kij.view_rw<3>();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(
                          const int elem)
   {
@@ -305,16 +305,16 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CIntArrView rang_elem_non_std = tab_rang_elem_non_std.view_ro();
   CIntTabView elem_faces = tab_elem_faces.view_ro();
   CIntTabView KEL = tab_KEL.view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
   CDoubleTabView Cij = tab_Cij.view_ro();
   CDoubleTabView Sij = tab_Sij.view_ro();
   CDoubleTabView Sij2 = tab_Sij2.view_ro();
   CDoubleTabView transporteVect = tab_transporte.view_ro();
-  CDoubleTabView4 vecteur_face_facette = tab_vecteur_face_facette.view4_ro();
-  CDoubleTabView4 vecteur_face_facette_Cl = tab_vecteur_face_facette_Cl.view4_ro();
+  CDoubleTabView4 vecteur_face_facette = tab_vecteur_face_facette.view_ro<4>();
+  CDoubleTabView4 vecteur_face_facette_Cl = tab_vecteur_face_facette_Cl.view_ro<4>();
   CDoubleTabView coord_sommets = tab_coord_sommets.view_ro();
   CDoubleTabView xv = tab_xv.view_ro();
-  DoubleTabView4 Fij = tab_Fij.view4_wo();
+  DoubleTabView4 Fij = tab_Fij.view_wo<4>();
   CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro(); //Gradient elem declare plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissee ici
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
@@ -877,7 +877,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
   {
     CIntTabView KEL = domaine_VEF.type_elem().KEL().view_ro();
     CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
-    CDoubleTabView4 Fij = tab_Fij.view4_ro();
+    CDoubleTabView4 Fij = tab_Fij.view_ro<4>();
     DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
     Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                          Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
@@ -911,7 +911,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
     {
       CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
       CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
-      CDoubleTabView3 Kij = tab_Kij.view3_ro();
+      CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
       CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
       DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
@@ -955,7 +955,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
           CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
           CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
           CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
-          CDoubleTabView3 Kij = tab_Kij.view3_ro();
+          CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
           CDoubleTabView val_ext = la_sortie_libre.val_ext().view_ro();
           DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
@@ -1009,8 +1009,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_diffusion(const DoubleTab& tab_Kij,const Dou
   //Pour les faces internes
   CIntTabView KEL=domaine_VEF.type_elem().KEL().view_ro();
   CIntTabView elem_faces=domaine_VEF.elem_faces().view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
-  CDoubleTabView4 Fij = tab_Fij.view4_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
+  CDoubleTabView4 Fij = tab_Fij.view_ro<4>();
   DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
@@ -1096,8 +1096,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& tab_Kij, c
   CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
   CIntTabView face_voisins=domaine_VEF.face_voisins().view_ro();
   CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
-  CDoubleTabView4 Fij = tab_Fij.view4_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
+  CDoubleTabView4 Fij = tab_Fij.view_ro<4>();
   CIntArrView is_dirichlet_faces = is_dirichlet_faces_.view_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
@@ -1198,8 +1198,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& tab_Kij, c
   CDoubleArrView transporteV = static_cast<const DoubleVect&>(tab_transporte).view_ro();
   CIntTabView face_voisins=domaine_VEF.face_voisins().view_ro();
   CIntTabView num_fac_loc = domaine_VEF.get_num_fac_loc().view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
-  CDoubleTabView4 Fij = tab_Fij.view4_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
+  CDoubleTabView4 Fij = tab_Fij.view_ro<4>();
   CIntArrView is_dirichlet_faces = is_dirichlet_faces_.view_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(tab_resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),

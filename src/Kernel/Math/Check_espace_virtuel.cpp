@@ -79,7 +79,7 @@ namespace
 template <typename ExecSpace, typename _TYPE_>
 void remplir_items_non_calcules_kernel_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur, const ArrOfInt& blocs, const int sz, const int line_size)
 {
-  auto v_view= v.template view_wo<ExecSpace>();
+  auto v_view= v.template view_wo<1, ExecSpace>();
 
   int j = 0;
 

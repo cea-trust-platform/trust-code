@@ -119,11 +119,11 @@ void cells_to_faces_kernel(const Domaine_VF& domaine_vf, const DoubleTab& tabHe,
   static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
   int nb_elem_tot  = domaine_vf.nb_elem_tot();
   int nb_face_elem = domaine_vf.elem_faces().dimension(1);
-  auto elem_faces  = domaine_vf.elem_faces().template view_ro<ExecSpace>();
-  auto volumes     = domaine_vf.volumes().template view_ro<ExecSpace>();
-  auto He_v        = static_cast<const ArrOfDouble&>(tabHe).template view_ro<ExecSpace>();
-  auto vol_tot     = static_cast<ArrOfDouble&>(tab_vol_tot).template view_rw<ExecSpace>();
-  auto Hf_v        = static_cast<ArrOfDouble&>(tabHf).template view_rw<ExecSpace>();
+  auto elem_faces  = domaine_vf.elem_faces().template view_ro<2, ExecSpace>();
+  auto volumes     = domaine_vf.volumes().template view_ro<1, ExecSpace>();
+  auto He_v        = static_cast<const ArrOfDouble&>(tabHe).template view_ro<1, ExecSpace>();
+  auto vol_tot     = static_cast<ArrOfDouble&>(tab_vol_tot).template view_rw<1, ExecSpace>();
+  auto Hf_v        = static_cast<ArrOfDouble&>(tabHf).template view_rw<1, ExecSpace>();
   Kokkos::MDRangePolicy<ExecSpace, Kokkos::Rank<2>> policy({0, 0}, {nb_elem_tot, nb_face_elem});
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int ele, const int s)
   {

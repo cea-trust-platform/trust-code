@@ -374,8 +374,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   int dim = dimension;
                   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
                   CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
-                  CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro();
-                  DoubleTabView3 gradient_face = gradient_face_.view3_wo();
+                  CDoubleTabView3 gradient_elem = gradient_elem_.view_ro<3>();
+                  DoubleTabView3 gradient_face = gradient_face_.view_wo<3>();
                   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_1D(num1, num2), KOKKOS_LAMBDA(const int fac)
                   {
                     int elem1 = face_voisins(fac, 0);
@@ -411,8 +411,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
           CIntArrView traitement_pres_bord = traitement_pres_bord_.view_ro();
           CIntArrView faces_doubles = domaine_VEF.faces_doubles().view_ro();
-          CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro();
-          DoubleTabView3 gradient = tab_gradient.view3_wo();
+          CDoubleTabView3 gradient_elem = gradient_elem_.view_ro<3>();
+          DoubleTabView3 gradient = tab_gradient.view_wo<3>();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_1D(0, nb_faces), KOKKOS_LAMBDA(const int fac)
           {
             if (faces_doubles[fac] /* face perio */ || fac>=premiere_face_int /* face interne */)
@@ -476,23 +476,23 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           CDoubleArrView porosite_elem_v = porosite_elem.view_ro();
           CDoubleTabView coord_sommets_v = coord_sommets.view_ro();
           CIntTabView les_elems_v = les_elems.view_ro();
-          CDoubleTabView3 facette_normales_v = facette_normales.view3_ro();
+          CDoubleTabView3 facette_normales_v = facette_normales.view_ro<3>();
           CIntArrView est_une_face_de_dirichlet_v = est_une_face_de_dirichlet_.view_ro();
           // ToDo suppress one day: Domaine_VEF::vecteur_face_facette() -20% in RAM
           // and implement a vecteur_face_fa7(poly, face, dir) method
-          //CDoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view4_ro();
+          //CDoubleTabView4 vecteur_face_facette_v = vecteur_face_facette.view_ro<4>();
           CDoubleTabView xp_v = domaine_VEF.xp().view_ro();
           CDoubleTabView xv_v = xv.view_ro();
           CIntArrView type_elem_Cl_v = type_elem_Cl_.view_ro();
           CIntArrView traitement_pres_bord_v = traitement_pres_bord_.view_ro();
           CIntTabView KEL_v = type_elemvef.KEL().view_ro();
-          CDoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view3_ro();
-          CDoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view4_ro();
+          CDoubleTabView3 normales_facettes_Cl_v = normales_facettes_Cl.view_ro<3>();
+          CDoubleTabView4 vecteur_face_facette_Cl_v = vecteur_face_facette_Cl.view_ro<4>();
 
           CDoubleTabView vitesse_v = la_vitesse.valeurs().view_ro();
           CDoubleTabView vitesse_face_absolue_v = vitesse_face_absolue.view_ro();
           CDoubleTabView transporte_face_v = transporte_face.view_ro();
-          CDoubleTabView3 gradient_v = tab_gradient.view3_ro();
+          CDoubleTabView3 gradient_v = tab_gradient.view_ro<3>();
 
           DoubleTabView resu_v = resu.view_rw();
           DoubleTabView flux_b_v = flux_b.view_rw();
@@ -1463,8 +1463,8 @@ void Op_Conv_VEF_Face::remplir_fluent() const
       int dim = dimension;
       CIntArrView rang_elem_non_std = domaine_VEF.rang_elem_non_std().view_ro();
       CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
-      CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view3_ro();
-      CDoubleTabView3 normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl().view3_ro();
+      CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view_ro<3>();
+      CDoubleTabView3 normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl().view_ro<3>();
       CIntTabView KEL = type_elemvef.KEL().view_ro();
       CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
       CDoubleArrView porosite_elem = equation().milieu().porosite_elem().view_ro();

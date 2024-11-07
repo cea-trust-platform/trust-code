@@ -337,7 +337,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
   CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView vitesse = tab_vitesse.view_ro();
-  DoubleTabView3 Kij = tab_Kij.view3_rw();
+  DoubleTabView3 Kij = tab_Kij.view_rw<3>();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
                          const int elem)
@@ -794,7 +794,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& tab_Kij, con
 
   CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
   CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
@@ -834,7 +834,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& tab_Kij, const Doub
 
   CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
   CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
   CDoubleArrView alpha_tab = alpha_tab_.view_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
@@ -886,7 +886,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
   CDoubleArrView transporteV = static_cast<const DoubleVect&>(transporte).view_ro();
   CDoubleArrView alpha_tab = alpha_tab_.view_ro();
   CDoubleArrView beta = beta_.view_ro();
-  CDoubleTabView3 Kij = tab_Kij.view3_ro();
+  CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(

@@ -69,7 +69,7 @@ Champ_Fonc_base& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulen
   int dim = Objet_U::dimension;
 
   CDoubleArrView l = l_.view_ro();
-  CDoubleTabView3 duidxj = tab_duidxj.view3_ro();
+  CDoubleTabView3 duidxj = tab_duidxj.view_ro<3>();
   DoubleArrView visco_turb = static_cast<DoubleVect&>(tab_visco_turb).view_rw();
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
