@@ -284,6 +284,11 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
                 pydantic.BaseModel.__init__(self, *args, **kwargs)
                 self._parser = None   #: An instance of AbstractCommon_Parser that is used to build the current pydantic object 
             
+            def self_validate(self):
+                """ Validate an instance to see if it complies with the pydantic schema """
+                dmp = self.__class__.model_dump(self, warnings=False, serialize_as_any=True)
+                self.__class__.model_validate(dmp)
+            
             def toDatasetTokens(self):
                 """ Convert a pydantic object (self) back to a stream of tokens that can be output in a file to reproduce
                 a TRUST dataset. """

@@ -15,7 +15,6 @@ VDF dis
 Schema_euler_explicite sch
 Read sch
 {
-    tinit 0
     tmax 2.5
     /* dt_min identique au dt_max alors dt=dt_min=dt_max */
     dt_min 5.e-3

@@ -1,8 +1,7 @@
-* validate moodel_dump(serialize_as_any=True)
-* WTF 'ef' / 'convection_ef' both syno 'ef' -> see commments/method in base.GetOneClassFromSyno() 
-* WTF2: GetAttributeList: I have to put members from base class after the ones from current class!! Not logical. perte_charge_reguliere / longitudinale needs this...
 * optim/perf
 
 TODO once TRIOXDATA is dead:
 * better formatting of XD tags (support multi-lines)
 * revert to default ordering of attributes? inherited first, then the rest
+    * WTF 'ef' / 'convection_ef' both syno 'ef' -> see commments/method in base.GetOneClassFromSyno() 
+    * WTF2: GetAttributeList: I have to put members from base class after the ones from current class!! Not logical. perte_charge_reguliere / longitudinale needs this...

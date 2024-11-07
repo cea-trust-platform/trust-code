@@ -820,6 +820,7 @@ no_family_names_from_group_names
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(check_str_equality(s, data_ex).ok)
 
+
     def test_complete_dataset(self):
         """ Complete (small) dataset with foward declarations etc... """
         from trustify.base import Dataset_Parser
@@ -850,6 +851,23 @@ no_family_names_from_group_names
                 # Test writing out:
                 s = ''.join(res.toDatasetTokens())
                 self.assertTrue(check_str_equality(s, data_ex).ok)
+
+    def test_validate(self):
+        """ Test validate functionality """
+        from trustify.base import Dataset_Parser
+        from pydantic import ValidationError
+        data_ex = data_ex = """
+        # Some stupid test #
+        champ_uniforme gravite
+        read gravite 2 28 32   # Keyword with no brace #
+        """
+        stream = self.import_and_gen_stream(data_ex, False)
+        res = Dataset_Parser.ReadFromTokens(stream)
+        g = res.get("gravite")
+        g.val[0] = "sdfs"  # a str instead of a float! Forbidden, but can not be seen at assignation time!
+        self.assertRaisesRegex(ValidationError,
+                               "Input should be a valid number, unable to parse string as a number",
+                               g.self_validate)
 
 if __name__ == '__main__':
     unittest.main()
