@@ -473,6 +473,8 @@ template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SI
 template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SINGLE::MULT_>(TRUSTVect<double, trustIdType>& resu, const double x, Mp_vect_options opt);
 template void operator_vect_single_generic<float, trustIdType, TYPE_OPERATOR_SINGLE::MULT_>(TRUSTVect<float, trustIdType>& resu, const float x, Mp_vect_options opt);
 
+template void operator_vect_single_generic<double, trustIdType, TYPE_OPERATOR_SINGLE::DIV_>(TRUSTVect<double, trustIdType>& resu, const double x, Mp_vect_options opt);
+
 
 #endif
 

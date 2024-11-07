@@ -18,19 +18,49 @@
 #include <Interprete_geometrique_base.h>
 #include <Connectivite_som_elem.h>
 #include <Domaine_forward.h>
+#include <Domaine_bord.h>
+#include <Octree_Double.h>
+#include <ArrOfBit.h>
 
 /*! @brief Cet interprete doit etre utilise en sequentiel (avant decoupage) si les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.
  *
- *   (cas de certains maillages tetra si le mailleur est trop contraint par la cao).
+ *   (cas de certains maillages tetra si le mailleur est trop contraint par la CAO).
  *   Il tente de deplacer les sommets pour les aligner.
  *
+ *  Cet interprete permet de corriger les frontieres periodiques pour etre conformes aux besoins de TRUST:
+ *    - reordonner les faces du bord periodique pour que la face i+n/2 soit en face de la face i,
+ *      et toutes les faces [0 .. n/2-1] du meme cote et [n/2 .. n-1] de l'autre cote
+ *    - deplacer les sommets des faces periodiques si besoin (si la CAO est fausse)
+ *  Syntaxe:
+ *   Corriger_frontiere_periodique {
+ *      domaine NOMDOMAINE
+ *      bord    NOMBORDPERIO
+ *      [ direction DIMENSION dx dy [ dz ] ]
+ *      [ fichier_post BASENAME ]
+ *   }
  */
-class Corriger_frontiere_periodique : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Corriger_frontiere_periodique_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Corriger_frontiere_periodique);
+  Declare_instanciable_32_64(Corriger_frontiere_periodique_32_64);
 public:
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using ArrOfDouble_t = ArrOfDouble_T<_SIZE_>;
+
+  using ArrOfBit_t = ArrOfBit_32_64<_SIZE_>;
+  using Octree_Double_t = Octree_Double_32_64<_SIZE_>;
+  using Bord_t = Bord_32_64<_SIZE_>;
+  using Domaine_bord_t = Domaine_bord_32_64<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree& is) override;
-  static void corriger_coordonnees_sommets_perio(Domaine& dom, const Nom& nom_bord, const ArrOfDouble& vecteur_perio, const Nom& nom_fichier_post);
+  static void corriger_coordonnees_sommets_perio(Domaine_t& dom, const Nom& nom_bord, const ArrOfDouble& vecteur_perio, const Nom& nom_fichier_post);
 };
+
+using Corriger_frontiere_periodique = Corriger_frontiere_periodique_32_64<int>;
+using Corriger_frontiere_periodique_64 = Corriger_frontiere_periodique_32_64<trustIdType>;
 
 #endif

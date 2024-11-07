@@ -28,7 +28,8 @@
 class Reordonner_faces_periodiques : public Interprete_geometrique_base
 {
 public:
-  static int reordonner_faces_periodiques(const Domaine& domaine, IntTab& faces, const ArrOfDouble& direction_perio, const double epsilon);
+  template <typename _SIZE_>
+  static int reordonner_faces_periodiques(const Domaine_32_64<_SIZE_>& domaine, IntTab_T<_SIZE_>& faces, const ArrOfDouble& direction_perio, const double epsilon);
 
   template <typename _SIZE_>
   static int check_faces_periodiques(const Frontiere_32_64<_SIZE_>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur,
@@ -38,7 +39,8 @@ public:
   static void renum_som_perio(const Domaine_32_64<_SIZE_>& dom, const Noms& liste_bords_periodiques,
                               ArrOfInt_T<_SIZE_>& renum_som_perio, bool calculer_espace_virtuel);
 
-  static void chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord);
+  template <typename _SIZE_>
+  static void chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<_SIZE_>& dom, const Nom& bord);
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,30 +15,33 @@
 #include <Domaine_bord.h>
 #include <Hexaedre.h>
 
-Implemente_instanciable(Domaine_bord,"Domaine_bord",Domaine);
+Implemente_instanciable_32_64(Domaine_bord_32_64,"Domaine_bord",Domaine_32_64<_T_>);
 
 /*! @brief pour l'instant exit()
  *
  */
-Entree& Domaine_bord::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Domaine_bord_32_64<_SIZE_>::readOn(Entree& is)
 {
-  exit();
+  this->exit();
   return is;
 }
 
 /*! @brief pour l'instant exit()
  *
  */
-Sortie& Domaine_bord::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Domaine_bord_32_64<_SIZE_>::printOn(Sortie& os) const
 {
-  exit();
+  this->exit();
   return os;
 }
 
 /*! @brief construit le domaine en appelant extraire_domaine_bord()
  *
  */
-void Domaine_bord::construire_domaine_bord(const Domaine& source, const Nom& nom_bord)
+template <typename _SIZE_>
+void Domaine_bord_32_64<_SIZE_>::construire_domaine_bord(const Domaine_bord_32_64<_SIZE_>::Domaine_t& source, const Nom& nom_bord)
 {
   domaine_source_ = source;
   bord_source_ = nom_bord;
@@ -48,7 +51,8 @@ void Domaine_bord::construire_domaine_bord(const Domaine& source, const Nom& nom
 /*! @brief renvoie une reference au domaine source
  *
  */
-const Domaine& Domaine_bord::get_domaine_source() const
+template <typename _SIZE_>
+const Domaine_32_64<_SIZE_>& Domaine_bord_32_64<_SIZE_>::get_domaine_source() const
 {
   return domaine_source_;
 }
@@ -56,7 +60,8 @@ const Domaine& Domaine_bord::get_domaine_source() const
 /*! @brief renvoie le nom du bord source
  *
  */
-const Nom& Domaine_bord::get_nom_bord_source() const
+template <typename _SIZE_>
+const Nom& Domaine_bord_32_64<_SIZE_>::get_nom_bord_source() const
 {
   return bord_source_;
 }
@@ -64,7 +69,8 @@ const Nom& Domaine_bord::get_nom_bord_source() const
 /*! @brief renvoie renum_som (pour chaque sommet du domaine_bord, indice du meme sommet dans le domaine)
  *
  */
-const ArrOfInt& Domaine_bord::get_renum_som() const
+template <typename _SIZE_>
+const ArrOfInt_T<_SIZE_>& Domaine_bord_32_64<_SIZE_>::get_renum_som() const
 {
   return renum_som_;
 }
@@ -72,7 +78,8 @@ const ArrOfInt& Domaine_bord::get_renum_som() const
 /*! @brief methode pour convertir un type de face en type d'element (a deplacer dans la classe Faces ?)
  *
  */
-void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& type_face, Motcle& type_elem_face)
+template <typename _SIZE_>
+void type_face_to_type_elem(const Elem_geom_base_32_64<_SIZE_>& type_elem, const Type_Face& type_face, Motcle& type_elem_face)
 {
   switch(type_face)
     {
@@ -112,10 +119,11 @@ void type_face_to_type_elem(const Elem_geom_base& type_elem, const Type_Face& ty
  *   suit: renum_som[i] est l'indice dans le domaine "src" du sommet i du domaine "dest".
  *
  */
-void Domaine_bord::extraire_domaine_bord(const Domaine& src,
-                                         const Nom& nom_bord,
-                                         Domaine& dest,
-                                         ArrOfInt& renum_som)
+template <typename _SIZE_>
+void Domaine_bord_32_64<_SIZE_>::extraire_domaine_bord(const Domaine_t& src,
+                                                       const Nom& nom_bord,
+                                                       Domaine_t& dest,
+                                                       ArrOfInt_t& renum_som)
 {
   if (Process::is_parallel())
     {
@@ -134,24 +142,23 @@ void Domaine_bord::extraire_domaine_bord(const Domaine& src,
   dest.type_elem().typer(type_elem);
   dest.type_elem()->associer_domaine(dest);
 
-  const Frontiere& front = src.frontiere(nom_bord);
-  const int nb_faces = front.faces().nb_faces();
+  const Frontiere_t& front = src.frontiere(nom_bord);
+  const int_t nb_faces = front.faces().nb_faces();
   const int nb_som_face = front.faces().nb_som_faces();
-  const IntTab& faces_src = front.faces().les_sommets();
-  IntTab& elem_dest = dest.les_elems();
+  const IntTab_t& faces_src = front.faces().les_sommets();
+  IntTab_t& elem_dest = dest.les_elems();
   elem_dest.resize(nb_faces, nb_som_face);
   renum_som.reset();
 
   // renum_inverse: pour chaque sommet du domaine source, son indice dans le domaine destination:
-  ArrOfInt renum_inverse(src.nb_som());
+  ArrOfInt_t renum_inverse(src.nb_som());
   renum_inverse= -1;
-  int nb_som_dest = 0;
-  int i, j;
-  for (i = 0; i < nb_faces; i++)
+  int_t nb_som_dest = 0;
+  for (int_t i = 0; i < nb_faces; i++)
     {
-      for (j = 0; j < nb_som_face; j++)
+      for (int j = 0; j < nb_som_face; j++)
         {
-          const int som = faces_src(i, j);
+          const int_t som = faces_src(i, j);
           // Si le sommet n'a pas encore ete rencontre, lui donner un indice dans le domaine dest:
           if (renum_inverse[som] < 0)
             {
@@ -162,17 +169,23 @@ void Domaine_bord::extraire_domaine_bord(const Domaine& src,
         }
     }
   // Copie des sommets utilises dans le domaine destination
-  DoubleTab& som_dest = dest.les_sommets();
-  const DoubleTab& som_src = src.les_sommets();
-  const int dim = som_src.dimension(1);
+  DoubleTab_t& som_dest = dest.les_sommets();
+  const DoubleTab_t& som_src = src.les_sommets();
+  const int dim = static_cast<int>(som_src.dimension(1));
   som_dest.resize(nb_som_dest, dim);
-  for (i = 0; i < nb_som_dest; i++)
+  for (int_t i = 0; i < nb_som_dest; i++)
     {
-      const int som = renum_som[i];
-      for (j = 0; j < dim; j++)
+      const int_t som = renum_som[i];
+      for (int j = 0; j < dim; j++)
         som_dest(i, j) = som_src(som, j);
     }
 
   // A faire si besoin: initialiser le joint des sommets pour avoir les items communs,
   //  et autres si necessaire.
 }
+
+template class Domaine_bord_32_64<int>;
+#if INT_is_64_ == 2
+template class Domaine_bord_32_64<trustIdType>;
+#endif
+

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,31 +20,20 @@
 #include <ArrOfBit.h>
 #include <Param.h>
 
-Implemente_instanciable(Corriger_frontiere_periodique,"Corriger_frontiere_periodique",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Corriger_frontiere_periodique_32_64,"Corriger_frontiere_periodique",Interprete_geometrique_base_32_64<_T_>);
 
-Entree& Corriger_frontiere_periodique::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Corriger_frontiere_periodique_32_64<_SIZE_>::readOn(Entree& is)
 {
   return is;
 }
 
-Sortie& Corriger_frontiere_periodique::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Corriger_frontiere_periodique_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return os;
 }
 
-/*! @brief Cet interprete permet de corriger les frontieres periodiques pour etre conformes aux besoins de TRUST:
- *
- *    - reordonner les faces du bord periodique pour que la face i+n/2 soit en face de la face i,
- *      et toutes les faces [0 .. n/2-1] du meme cote et [n/2 .. n-1] de l'autre cote
- *    - deplacer les sommets des faces periodiques si besoin (si la CAO est fausse)
- *  Syntaxe:
- *   Corriger_frontiere_periodique {
- *      domaine NOMDOMAINE
- *      bord    NOMBORDPERIO
- *      [ direction DIMENSION dx dy [ dz ] ]
- *      [ fichier_post BASENAME ]
- *   }
- */
 // XD corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 The Corriger_frontiere_periodique keyword is mandatory to first define the periodic boundaries, to reorder the faces and eventually fix unaligned nodes of these boundaries. Faces on one side of the periodic domain are put first, then the faces on the opposite side, in the same order. It must be run in sequential before mesh splitting.
 //  XD attr domaine chaine domaine 0 Name of domain.
 //  XD attr bord chaine bord 0 the name of the boundary (which must contain two opposite sides of the domain)
@@ -52,27 +41,28 @@ Sortie& Corriger_frontiere_periodique::printOn(Sortie& os) const
 //  XD attr fichier_post chaine fichier_post 1 .
 
 
-Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Corriger_frontiere_periodique_32_64<_SIZE_>::interpreter_(Entree& is)
 {
-  if (nproc() > 1)
+  if (this->nproc() > 1)
     {
       Cerr << "Error in Corriger_frontiere_periodique::interpreter():\n"
            << " this function must be run in sequential before mesh splitting." << finl;
-      barrier();
-      exit();
+      this->barrier();
+      this->exit();
     }
   Nom nom_bord;
   ArrOfDouble direction_perio;
   Nom nom_dom, nom_fichier_post;
-  Param param(que_suis_je());
+  Param param(this->que_suis_je());
   param.ajouter("domaine", &nom_dom, Param::REQUIRED);
   param.ajouter("bord", &nom_bord, Param::REQUIRED);
   param.ajouter("direction", &direction_perio);
   param.ajouter("fichier_post", &nom_fichier_post);
   param.lire_avec_accolades_depuis(is);
-  associer_domaine(nom_dom);
-  Domaine& dom = domaine();
-  const int dim = dom.coord_sommets().dimension(1);
+  this->associer_domaine(nom_dom);
+  Domaine_t& dom = this->domaine();
+  const int_t dim = dom.coord_sommets().dimension(1);
   int direction_perio_set;
   if (direction_perio.size_array() == 0)
     {
@@ -87,14 +77,14 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
         {
           Cerr << "Error in Corriger_frontiere_periodique::interpreter: direction should be of size "
                << dim << finl;
-          exit();
+          this->exit();
         }
     }
   Cerr << "Searching and moving periodicity nodes for domain " << nom_dom << " boundary "
        << nom_bord << finl;
   corriger_coordonnees_sommets_perio(dom, nom_bord, direction_perio, nom_fichier_post);
-  Bord& bord = dom.bord(nom_bord);
-  IntTab& faces = bord.faces().les_sommets();
+  Bord_t& bord = dom.bord(nom_bord);
+  IntTab_t& faces = bord.faces().les_sommets();
   const double epsilon = Objet_U::precision_geom;
   const int ok = Reordonner_faces_periodiques::reordonner_faces_periodiques(dom, faces, direction_perio, epsilon);
   if (!ok)
@@ -105,7 +95,7 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
         Cerr << "May be you could use the DIRECTION option to specify the vector of periodicity" << finl;
       Cerr << "for the keyword:" << finl;
       Cerr << "Corriger_frontiere_periodique { Domaine " << nom_dom << " Bord " << nom_bord << " } " << finl;
-      exit();
+      this->exit();
     }
   return is;
 }
@@ -122,24 +112,25 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
  * @param (vecteur_perio) un vecteur de taille "dimension" qui contient le delta entre deux sommets periodiques associes (voir methode chercher_direction_perio())
  * @param (nom_fichier_post) si different de "??", on cree un fichier de postraitement contenant les faces du bord initial et un vecteur qui indique le deplacement applique aux sommets.
  */
-void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& dom,
-                                                                       const Nom& nom_bord,
-                                                                       const ArrOfDouble& vecteur_perio,
-                                                                       const Nom& nom_fichier_post)
+template <typename _SIZE_>
+void Corriger_frontiere_periodique_32_64<_SIZE_>::corriger_coordonnees_sommets_perio(Domaine_t& dom,
+                                                                                     const Nom& nom_bord,
+                                                                                     const ArrOfDouble& vecteur_perio,
+                                                                                     const Nom& nom_fichier_post)
 {
-  if (nproc() > 1)
+  if (Process::nproc() > 1)
     {
       Cerr << "Error in Reordonner_faces_periodiques::corriger_coordonnees_sommets_perio\n"
            << " this algorithm is sequential (use it before Decouper)" << finl;
-      barrier();
-      exit();
+      Process::barrier();
+      Process::exit();
     }
 
-  Domaine_bord domaine_bord;
+  Domaine_bord_t domaine_bord;
   domaine_bord.construire_domaine_bord(dom, nom_bord);
-  const ArrOfInt& renum_som = domaine_bord.get_renum_som();
-  const DoubleTab& som_bord = domaine_bord.les_sommets();
-  Octree_Double octree;
+  const ArrOfInt_t& renum_som = domaine_bord.get_renum_som();
+  const DoubleTab_t& som_bord = domaine_bord.les_sommets();
+  Octree_Double_t octree;
   octree.build_nodes(som_bord, 0 /* do not include virtual nodes */);
 
   const double epsilon_initial = dom.epsilon();
@@ -147,31 +138,31 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
     {
       Cerr << "Error in Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio\n"
            << " dom.epsilon = 0." << finl;
-      exit();
+      Process::exit();
     }
 
   int error_flag = 0;
 
-  const int nb_som_bord = som_bord.dimension(0);
-  const int dim = som_bord.dimension(1);
+  const int_t nb_som_bord = som_bord.dimension(0);
+  const int dim = static_cast<int>(som_bord.dimension(1));
   // Un tableau contenant le deplacement applique aux sommets (pour postraitement)
-  DoubleTab delta(nb_som_bord, dim);
+  DoubleTab_t delta(nb_som_bord, dim);
   // Un tableau pour detecter les erreurs de periodicite: sommets associes plusieurs fois
-  ArrOfBit marker(nb_som_bord);
+  ArrOfBit_t marker(nb_som_bord);
   marker = 0;
   // Tableau temporaire pour l'octree:
-  ArrOfInt nodes_list;
+  ArrOfInt_t nodes_list;
 
-  DoubleTab& sommets_src = dom.les_sommets();
+  DoubleTab_t& sommets_src = dom.les_sommets();
   ArrOfDouble coord(dim);
-  for (int som = 0; som < nb_som_bord; som++)
+  for (int_t som = 0; som < nb_som_bord; som++)
     {
       if (marker.testsetbit(som))
         continue; // Sommet deja traite
 
       // Cherche le sommet oppose dans les deux directions (-1. et +1.)
       double facteur;
-      int som2 = -1;
+      int_t som2 = -1;
       // Recherche du sommet dans un rayon de plus en plus grand en commencant par epsilon:
       double epsilon = epsilon_initial;
       do
@@ -202,10 +193,10 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
       else
         {
           // On deplace le sommet vers lequel pointe vecteur_perio:
-          const int som_ref = som;
-          const int som_deplace = som2;
+          const int_t som_ref = som;
+          const int_t som_deplace = som2;
           // Indice du sommet a deplacer dans le domaine source:
-          const int s = renum_som[som_deplace];
+          const int_t s = renum_som[som_deplace];
           // Deplacement
           for (int i = 0; i < dim; i++)
             {
@@ -219,6 +210,13 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
 
   if (nom_fichier_post != "??")
     {
+      if (!std::is_same<_SIZE_, int>::value)
+        {
+          Cerr << "Corriger_frontiere_periodique_64 - option 'fichier_post' is not implemented yet for 64b domains!" << finl;
+          Cerr << "Remove the attribute or contact TRUST support." << finl;
+          Process::exit(-1);
+        }
+#if INT_is_64_ != 2
       //Domaine dom2;
       Cerr << "Writing node displacement into file: " << nom_fichier_post << finl;
       OWN_PTR(Format_Post_base) fichier_post;
@@ -242,11 +240,18 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
                         "vitesse", domaine_bord.le_nom(), "SOM","vector", delta);
       int fin=1;
       post.finir(fin);
+#endif
     }
+
   Cerr << "Max of node displacement (m): " << max_abs_array(delta) << finl;
   if (error_flag)
     {
       Cerr << "Could not correct node coordinates. Aborting." << finl;
-      exit();
+      Process::exit();
     }
 }
+
+template class Corriger_frontiere_periodique_32_64<int>;
+#if INT_is_64_ == 2
+template class Corriger_frontiere_periodique_32_64<trustIdType>;
+#endif

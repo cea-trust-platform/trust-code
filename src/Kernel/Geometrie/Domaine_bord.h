@@ -21,25 +21,38 @@
  *   On construit ce domaine par la methode construire_domaine_bord()
  *
  */
-class Domaine_bord : public Domaine
+template <typename _SIZE_>
+class Domaine_bord_32_64 : public Domaine_32_64<_SIZE_>
 {
-  Declare_instanciable(Domaine_bord);
+  Declare_instanciable_32_64(Domaine_bord_32_64);
 public:
-  virtual void construire_domaine_bord(const Domaine& source, const Nom& nom_bord);
-  virtual const Domaine&   get_domaine_source() const;
-  virtual const Nom&       get_nom_bord_source() const;
-  virtual const ArrOfInt& get_renum_som() const;
+  using int_t = _SIZE_;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
-  static void extraire_domaine_bord(const Domaine& src,
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
+  virtual void construire_domaine_bord(const Domaine_t& source, const Nom& nom_bord);
+  virtual const Domaine_t&   get_domaine_source() const;
+  virtual const Nom&       get_nom_bord_source() const;
+  virtual const ArrOfInt_t& get_renum_som() const;
+
+  static void extraire_domaine_bord(const Domaine_t& src,
                                     const Nom& nom_bord,
-                                    Domaine& dest,
-                                    ArrOfInt& renum_som);
+                                    Domaine_t& dest,
+                                    ArrOfInt_t& renum_som);
 protected:
   // Reference au domaine source:
-  OBS_PTR(Domaine) domaine_source_;
+  OBS_PTR(Domaine_t) domaine_source_;
   // Nom du bord dans le domaine source:
   Nom bord_source_;
   // Pour chaque sommet de ce domaine, indice du meme sommet dans le domaine source:
-  ArrOfInt renum_som_;
+  ArrOfInt_t renum_som_;
 };
+
+using Domaine_bord = Domaine_bord_32_64<int>;
+using Domaine_bord_64 = Domaine_bord_32_64<trustIdType>;
+
 #endif

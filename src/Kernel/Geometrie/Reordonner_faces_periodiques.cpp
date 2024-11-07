@@ -49,10 +49,12 @@ inline void calculer_vecteur_2faces(const DoubleTab_T<_SIZE_>& coord,
 }
 
 
-double local_norme_vect(const DoubleVect& dv)
+template <typename _SIZE_>
+double local_norme_vect(const DoubleVect_T<_SIZE_>& dv)
 {
+  using int_t = _SIZE_;
   double x=0.0;
-  for(int i=0; i< dv.size_reelle(); i++)
+  for(int_t i=0; i< dv.size_reelle(); i++)
     x += dv(i)*dv(i);
   x = sqrt(x);
   return x;
@@ -81,31 +83,37 @@ void build_trad_space(const Domaine_32_64<trustIdType>& domaine, IntTab_T<trustI
 
 }
 
-void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord)
+template<typename _SIZE_>
+void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<_SIZE_>& dom, const Nom& bord)
 {
-  const DoubleTab& sommets = dom.coord_sommets();
-  const int dim = sommets.dimension(1);
+  using int_t = _SIZE_;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using ArrOfDouble_t = ArrOfDouble_T<_SIZE_>;
+  using Frontiere_t = Frontiere_32_64<_SIZE_>;
+
+  const DoubleTab_t& sommets = dom.coord_sommets();
+  const int dim = static_cast<int>(sommets.dimension(1));
   direction_perio.resize_array(dim);
   direction_perio = 0.;
-  const Frontiere& front = dom.frontiere(bord);
-  const int nb_faces = front.nb_faces();
+  const Frontiere_t& front = dom.frontiere(bord);
+  const int_t nb_faces = front.nb_faces();
   if (nb_faces == 0)
     return;
-  const IntTab& faces = front.faces().les_sommets();
-  const int nb_som_face = faces.dimension(1);
-  DoubleTab normale(1, dim);
-  IntTab une_face(1, nb_som_face);
-  int i;
-  for (i = 0; i < nb_som_face; i++)
+  const IntTab_t& faces = front.faces().les_sommets();
+  const int nb_som_face = static_cast<int>(faces.dimension(1));
+  DoubleTab_t normale(1, dim);
+  IntTab_t une_face(1, nb_som_face);
+  for (int i = 0; i < nb_som_face; i++)
     une_face(0, i) = faces(0, i);
   dom.type_elem()->calculer_normales(une_face, normale);
-  normale /= local_norme_vect(normale);
+  normale /= local_norme_vect<_SIZE_>(normale);
 
-  ArrOfDouble delta(nb_faces);
+  ArrOfDouble_t delta(nb_faces);
   ArrOfDouble vect(dim);
-  for (i = 1; i < nb_faces; i++)
+  for (int_t i = 1; i < nb_faces; i++)
     {
-      calculer_vecteur_2faces(sommets, faces, (int)0, i, vect);
+      calculer_vecteur_2faces<_SIZE_>(sommets, faces, 0, i, vect);
       double x = 0.;
       for (int j = 0; j < dim; j++)
         x += vect[j] * normale(0,j);
@@ -114,7 +122,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
   const double min = min_array(delta);
   const double max = max_array(delta);
   double facteur = (std::fabs(min) > std::fabs(max)) ? min : max;
-  for (i = 0; i < dim; i++)
+  for (int i = 0; i < dim; i++)
     direction_perio[i] = normale(0, i) * facteur;
   Cerr << "Periodicity direction for " << dom.le_nom() << "/" << bord << " " << direction_perio;
 }
@@ -127,27 +135,34 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
  * @param (direction_perio) le vecteur qui separe le centre d'une face au centre de la face opposee
  * @param (faces) le tableau des faces (pour chaque face, indices de ses sommets) a reordonner Valeur de retour: 1 si ok, 0 si on n'a pas trouve de face jumelle a une face a precision_geom pres.
  */
-int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& domaine,
-                                                               IntTab& faces,
+template<typename _SIZE_>
+int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine_32_64<_SIZE_>& domaine,
+                                                               IntTab_T<_SIZE_>& faces,
                                                                const ArrOfDouble& direction_perio,
                                                                const double epsilon)
 {
   // Modif B.M. 04/06/2010: j'autorise l'operation en parallele car c'est utilise par
   // l'interprete MaillerParallel...
   // PL 18/11/2010: Je deplace neanmoins l'interdiction de l'utilisation de l'interprete en // dans le jeu de donnees (voir ::interpreter_)
-  const int nb_faces = faces.dimension(0);
-  const int nb_som_faces = faces.dimension(1);
-  const int dim = domaine.les_sommets().dimension(1);
+  using int_t = _SIZE_;
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using DoubleTab_t = DoubleTab_T<_SIZE_>;
+  using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
+  using Octree_Double_t = Octree_Double_32_64<_SIZE_>;
+
+  const int_t nb_faces = faces.dimension(0);
+  const int nb_som_faces = static_cast<int>(faces.dimension(1));
+  const int dim = static_cast<int>(domaine.les_sommets().dimension(1));
   // Calcul des coordonnees des centres des faces:
-  DoubleTab centres(nb_faces, 3);
+  DoubleTab_t centres(nb_faces, 3);
   {
-    const DoubleTab& coord = domaine.les_sommets();
+    const DoubleTab_t& coord = domaine.les_sommets();
     const double inv_nb_som = 1. / (double) nb_som_faces;
-    for (int i = 0; i < nb_faces; i++)
+    for (int_t i = 0; i < nb_faces; i++)
       {
         for (int j = 0; j < nb_som_faces; j++)
           {
-            const int sommet = faces(i, j);
+            const int_t sommet = faces(i, j);
             for (int k = 0; k < dim; k++)
               centres(i, k) += coord(sommet, k) * inv_nb_som;
           }
@@ -155,26 +170,26 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
   }
 
   // Construction d'un octree contenant les centres des faces:
-  Octree_Double octree;
+  Octree_Double_t octree;
   octree.build_nodes(centres, 0 /* do not include virtual nodes */);
 
   // Pour chaque face, on cherche sa face periodique associee (dont le centre
   // est decale de direction_perio).
 
   // Pour chaque face, son nouvel indice dans le tableau des faces
-  ArrOfInt renum_faces(nb_faces);
+  ArrOfInt_t renum_faces(nb_faces);
   renum_faces= -1;
-  ArrOfInt nodes_list;
+  ArrOfInt_t nodes_list;
 
   ArrOfDouble coord(dim);
   int count = 0;
-  for (int i_face = 0; i_face < nb_faces; i_face++)
+  for (int_t i_face = 0; i_face < nb_faces; i_face++)
     {
       if (renum_faces[i_face] >= 0)
         continue; // Face deja traitee, on passe
       // Cherche la face opposee dans les deux directions (-1. et +1.)
       double facteur;
-      int i_face2 = -1;
+      int_t i_face2 = -1;
       for (facteur = -1.; facteur < 1.5; facteur += 2.)
         {
           for (int i = 0; i < dim; i++)
@@ -197,8 +212,8 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
               Cerr << "Possible problem: the boundary is not periodic. Check your mesh." << finl;
               return 0;
             }
-          int f0 = (facteur > 0.) ? i_face : i_face2;
-          int f1 = (facteur > 0.) ? i_face2: i_face;
+          int_t f0 = (facteur > 0.) ? i_face : i_face2;
+          int_t f1 = (facteur > 0.) ? i_face2: i_face;
           renum_faces[f0] = count;
           renum_faces[f1] = count + nb_faces / 2;
           count++;
@@ -213,10 +228,10 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
         }
     }
   // Reordonner les faces:
-  const IntTab oldfaces(faces);
-  for (int i = 0; i < nb_faces; i++)
+  const IntTab_t oldfaces(faces);
+  for (int_t i = 0; i < nb_faces; i++)
     {
-      const int new_i = renum_faces[i];
+      const int_t new_i = renum_faces[i];
       for (int j = 0; j < nb_som_faces; j++)
         faces(new_i, j) = oldfaces(i, j);
     }
@@ -405,10 +420,14 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine_32_64<_SIZE_>& 
 }
 
 // Explicit instanciations
+template int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine_32_64<int>& domaine, IntTab_T<int>& faces, const ArrOfDouble& direction_perio, const double epsilon);
+template void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<int>& dom, const Nom& bord);
 template int Reordonner_faces_periodiques::check_faces_periodiques<int>(const Frontiere_32_64<int>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, bool verbose);
 template void Reordonner_faces_periodiques::renum_som_perio<int>(const Domaine_32_64<int>& dom, const Noms& liste_bords_periodiques, ArrOfInt_T<int>& renum_som_perio, bool calculer_espace_virtuel);
 
 #if INT_is_64_ == 2
+template int Reordonner_faces_periodiques::reordonner_faces_periodiques<trustIdType>(const Domaine_32_64<trustIdType>& domaine, IntTab_T<trustIdType>& faces, const ArrOfDouble& direction_perio, const double epsilon);
+template void Reordonner_faces_periodiques::chercher_direction_perio<trustIdType>(ArrOfDouble& direction_perio, const Domaine_32_64<trustIdType>& dom, const Nom& bord);
 template int Reordonner_faces_periodiques::check_faces_periodiques<trustIdType>(const Frontiere_32_64<trustIdType>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, bool verbose);
 template void Reordonner_faces_periodiques::renum_som_perio<trustIdType>(const Domaine_32_64<trustIdType>& dom, const Noms& liste_bords_periodiques, ArrOfInt_T<trustIdType>& renum_som_perio, bool calculer_espace_virtuel);
 #endif

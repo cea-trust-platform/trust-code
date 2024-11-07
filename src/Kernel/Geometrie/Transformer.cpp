@@ -51,6 +51,8 @@ Entree& Transformer_32_64<_SIZE_>::interpreter_(Entree& is)
     is >> les_fcts[i];
 
   transformation_complete(les_fcts);
+
+
   return is;
 }
 
