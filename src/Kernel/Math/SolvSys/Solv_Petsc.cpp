@@ -21,6 +21,7 @@
 #ifdef PETSC_HAVE_HYPRE
 #include <HYPRE_config.h>
 #endif
+#include <cfenv>
 #include <tuple>
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
@@ -1773,6 +1774,8 @@ PetscErrorCode MyKSPMonitor(KSP SolveurPetsc, PetscInt it, PetscReal residu, voi
 int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVect& secmem, DoubleVect& solution)
 {
 #ifdef PETSCKSP_H
+  std::fenv_t fenv;
+  std::feholdexcept(&fenv);
   // Si on utilise un solver petsc on le signale pour les stats finales
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
@@ -1912,6 +1915,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         }
     }
   if (solution.isDataOnDevice() && !amgx_) mapToDevice(solution, "solution after solve PETSc");
+  std::fesetenv(&fenv);
   return nbiter;
 #else
   return -1;
