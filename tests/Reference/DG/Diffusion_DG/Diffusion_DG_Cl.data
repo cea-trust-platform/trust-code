@@ -51,13 +51,12 @@ Scheme_euler_explicit sch_expl
 Read sch_expl
 {
     tinit 0
-    nb_pas_dt_max 200
+		nb_pas_dt_max 200
     tmax 300.
-    facsec 1
-    # dt_min 0.00000001 # 
-    dt_max 0.01
+		facsec 0.01
+    dt_max 0.1
     dt_impr 1.e-8
-    seuil_statio 1.e-6
+    seuil_statio 1.e-8
 }
 
 Schema_euler_implicite sch_impl
@@ -71,15 +70,15 @@ Read sch_impl
 }
 
 Associate pb dom
-Associate pb sch_impl
+Associate pb sch_expl
 Discretize pb dis
 
 Read pb
 {
 
     solide {
-        rho Champ_Uniforme 1 1.
-        lambda Champ_Uniforme 1 0.01
+        rho Champ_Uniforme 1 2.
+        lambda Champ_Uniforme 1 0.1
         Cp Champ_Uniforme 1 1.
     }
 
@@ -87,16 +86,16 @@ Read pb
     {
         diffusion { }
         initial_conditions {
-            temperature Champ_Fonc_xyz dom 1 sin(2*pi*x)*sin(2*pi*y)
+            temperature Champ_Uniforme 1 1
         }
          sources {
-        Puissance_thermique champ_fonc_xyz dom 1 0.08*pi*pi*sin(2.*pi*x)*sin(2.*pi*y)
+        Puissance_thermique champ_fonc_xyz dom 1 0.4*pi*pi*sin(2.*pi*x) 
         }  
         boundary_conditions {
-            Bas temperature_imposee_paroi Champ_Front_Uniforme 1 0. 
-            Haut temperature_imposee_paroi Champ_Front_Uniforme 1 0. 
-            Droit temperature_imposee_paroi Champ_Front_Uniforme 1 0. 
-            Gauche temperature_imposee_paroi Champ_Front_Uniforme 1 0. 
+            Bas temperature_imposee_paroi Champ_front_fonc_txyz 1 sin(2*pi*x)
+            Haut temperature_imposee_paroi Champ_front_fonc_txyz 1 sin(2*pi*x) 
+            Droit temperature_imposee_paroi Champ_front_fonc_txyz 1 sin(2*pi*x)
+            Gauche temperature_imposee_paroi Champ_front_fonc_txyz 1 sin(2*pi*x)
         }
     }
 
@@ -107,7 +106,7 @@ Read pb
     	    {
 						solution transformation {
 							Localisation ELEM
-							methode formule expression 1 sin(2*pi*x)*sin(2*pi*y)
+							methode formule expression 1 sin(2*pi*x)
 						}
     	      
 						erreur transformation
@@ -145,13 +144,12 @@ Read pb
 
 
     	    format LATA
-    	    fields dt_post 30.
+    	    fields dt_post 1e-8
     	    {
     		      temperature ELEM
     	        solution ELEM
     	        erreur ELEM
-							Puissance_volumique ELEM 
-							rho_cp_elem ELEM 
+							# Puissance_volumique ELEM #  
     	    }
 		}
 }
