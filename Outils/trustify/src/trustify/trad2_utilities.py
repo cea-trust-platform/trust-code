@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
 
 """ Take a look at doc/README_dev.md
 
 Module to handle parsing, loading and writing of
-    - the XD tags found in the code
+    - the XD tags found in the C++ code
     - the TRAD2.org file
     - the loading/writing of the TRAD2 file
 
@@ -375,7 +374,7 @@ class TRAD2Content:
 
 
     def scanOneCppFile(self, f_name):
-        """ Scan one cpp file for the XD tags. Also extract the synonyms given by the
+        """ Scan one C++ file for the XD tags. Also extract the synonyms given by the
         'add_synonym' macro, and extend 'self.synos'
         """
         impl = {}
@@ -483,6 +482,10 @@ class TRAD2Content:
                 d.synos = list(syn)
 
 def do_main():
+    """ Main method generating:
+    - the final aggregated TRAD2 file
+    - potentially the file containing the debug info indicating for each line in the TRAD2 the corresponding source line in the C++ code 
+    """
     import sys
     if len(sys.argv) > 1:
         outfile = sys.argv[1]

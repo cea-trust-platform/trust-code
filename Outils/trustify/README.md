@@ -2,68 +2,83 @@
 
 ## Presentation
 
-`trustify` is a python package based on `pydantic`. Its main purpose is to generate, from the TRUST C++ source code (or one of the TRUST-based project - like GENEPI/PPGP), a  Python module describing the data model of a TRUST dataset.
-This generated Python module then provides:
-- all the scripting tools (in Python) to load, manipulate/modify, and write back a TRUST dataset (.data file).
-- the base information for automatic generation of Graphical User Interfaces compliant with this data model.
+`trustify` is a python package based on the Python library `pydantic`. Its main purpose is to generate, from the TRUST C++ source code (or one of the TRUST-based project - like GENEPI/PPGP), a Python module describing the data model of a TRUST dataset.
+
+
+Each TRUST keyword is mapped to a Python class with the same name, and whose attributes are the attributes of the TRUST keyword itself. For example `read_med` becomes a Python class with attributes `fichier`, `mesh` etc. This class can then be used in a Python script or another application.
+
+
+Thus, the generated Python modules provide:
+- all the scripting tools to load, manipulate/modify, and write back a TRUST dataset (i.e. a `.data` file).
+- the basis for the automatic generation of Graphical User Interfaces compliant with this data model.
+
+
+If you seek more information on the syntax to be used inside the C++ source code to document a keyword take a look at doc/README_user.md
+
+
+If you need to develop or fix a bug in `trustify` itself, take a look at `doc/README_dev.md`
 
 
 ## Quick start / hello world
 
-The best thing to start is to look at the example Jupyter-Notebook provided in the folder examples/hello_world:
+From a user perspective, the tool can be used to check that a dataset complies with the TRUST grammar using the command:
+
+```bash
+trust -trustify /path/to/toto.data
+```
+
+or
+
+```bash
+trust -trustify titi
+```
+
+if `titi` is a registered test case.
+
+
+Next, the best thing to start using the tool programmatically is to look at the example Jupyter-Notebook provided in the folder `doc/examples/hello_world`.
+To have this notebook working properly you need to source the relevant environment first:
 
 ```bash
 source $TRUST_ROOT/env_for_python.sh
-cd $TRUST_ROOT/
-
 ```
 
+or more specifically:
 
-You can also go to [Launch Python unit-tests](#py-unittest) if you want to see it in action quickly.
+```bash
+source $TRUST_ROOT/Outils/trustify/env.sh
+```
 
-If you want to know how to properly document your C++ code, checkout the `README_user.md` file in the `doc` subfolder.
+(the former includes the latter). And then launch Jupyter:
 
-If you want more detailed explanations on the process, check out [Detailed explanations](#details)
-
-More specific documentation (notably developper's doc) can be found in the `doc` subfolder. 
+```bash
+jupyter-notebook
+```
 
 
 ## Launch python unit tests
 
-The package comes with a set of Python unit-tests. You need to have the environment properly loaded for them to work.
+The package comes with a set of Python unit-tests. You need to have the environment properly loaded for them to work (see above)
 Tests are located in the `test` subfolder and are named with the pattern `test_*.py`.
 
-### Individual test launch
-Tests can be launched individually :
+Once the package has been properly installed with
 
 ```bash
-cd ${trustify_ROOT_DIR}/trustify/test
-
-# launch one file python unittest
-./test_200_classmethod.py
-./test_500_Triou_All.py
-./test_504_read_write_data.py
+make install
 ```
 
-### Launch some/all tests
 
-You can use 
+they can be launched with
+
 
 ```bash
 make test
 ```
 
-or 
+Look at the makefile to see the exact Python `unittest` command used to launch the tests.
 
-```bash
-make test_debug
-```
+Note that the environment variable `TRUSTIFY_DEBUG=1` can be set to debug the tool itself (warning: this is very verbose!)
 
-To launch a single test, you can use:
-
-```bash
-python -m unittest test.test_rw_elementary.TestCase.test_builtin
-```
 
 ## Miscellaneous
 ### More information about `pydantic`
@@ -73,34 +88,19 @@ More info on can be found here:
 
 [https://docs.pydantic.dev/latest](https://docs.pydantic.dev/latest)
 
+### TRUST daily checks
 
-<a id="details"></a>
+In the daily checks of TRUST itself, this process is used to check that the documentation for each keyword is coherent with what is found in all the test cases:
+- the `trustify` Python modules are generated from the C++ sources
+- all the TRUST test datasets are parsed, loaded inside `trustify` and written back.
+
+If the output differs from the original input, it means that something is wrong either with the dataset itself (but this is very unlikely, since this dataset runs in the NR tests daily), or that something is wrong with the documentation of the keyword in the code itself. The latter is what we really intend to check here.
+
 
 ### Known limitations / bugs
-Dataset with repeated keywords are most of the time perfectly fine for TRUST, but not for `trustify`. The check process wich reads and writes back a dataset notably expects only a single instance of a given keyword, or of a given option in any part of the dataset.
+Dataset with repeated keywords are most of the time perfectly fine for TRUST, but not for `trustify`. The check process wich reads and writes back a dataset  expects only a single instance of a given keyword, or of a given option in any part of the dataset.
 
-So for example repeating `dt_max 32` twice in the time scheme block will be OK for the reading part (only the last instance will be kept); but when writing back the dataset, only this single instance of the keyword will be written. This is hard to work around, since I don't want the whole `trustify`logic to be able to deal with multiple instances of the same option/keyword.
+So for example repeating `dt_max 32` twice in the time scheme block will be OK for the reading part (only the last instance will be kept); but when writing back the dataset, only this single instance of the keyword will be written. This is hard to work around, since I don't want the whole `trustify` logic to be able to deal with multiple instances of the same option/keyword.
 
 Work in progress to see if this behaviour should be forbidden in TRUST too.
-
-### Detailed explanations on the process
-
-In `trustify` each TRUST keyword is mapped to a generated `pydantic` Python class. Each of this class is generated in such a way that its (Python) members correspond to the attributes that the TRUST keyword expects.
-
-For example, the keyword `Read_MED` becomes the class `Read_med` (notice all lower case except first letter), and its members are `file` (of type `str`) , `mesh` (also of type `str`, etc.) correponding at the various attributes that the `Read_MED` keyword expects in an actual TRUST dataset.
-
-In more details:
-- the C++ TRUST source code is instrumented with specific comments (XD tags) indicating for each TRUST keyword:
-    - its type ;
-    - a short description ;
-    - and also all the attributes expected by the keyword (for example, reading a 'medium', one has to specify its thermic conductivity 'lambda').
-- the module `trad2_utilities.py` parses all the C++ sources to gather all those tags. Those entries are appended to what is manually entered in `$TRUST_ROOT/Outils/TRIOXDATA/XTriou/TRAD_2.org` to produce a single file: `TRAD_2`
-- the module `trad2_pydantic.py` is then used to generate (from this `TRAD_2`) two (big) Python modules usually called:
-    - `trustify_generated_pyd.py`. This module contains one `pydantic` class per keyword, with the list of members of the class corresponding to the various attributes that the keyword expects. For example the class `Fluide_incompressible` representing the keyword `fluide_incompressible` has a `beta_th` attribute, of type `Field_base`, corresponding to the dilatability coefficient of the fluid. Note how each attribute is this file has a type annotation (from the standard `typing` Python module).
-    - `trustify_generated_pars.py`. This second module has one parser class per keyword. Each parser class holds information allowing the parsing process to work properly (e.g. : does the keyword expect curly braces '{' and '}', or for a list, should items be separated by commas, etc.)
-- those two modules (along with `base.py`) can be used to programmatically (= with a script) load a TRUST dataset (a .data file) and modify it (see an example in `test_rw_full_datasets.py` test case `test_ds_upwind`). The dataset can be modified with standard Python instructions like 
-```python
-
-```
-- the modified dataset can be written back with its modifications, the rest being preserved;
 

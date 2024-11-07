@@ -1,6 +1,8 @@
 """ From a TRAD2 file, generates:
  - the Pydantic schema (as a generated Python file containing one Pydantic class per TRUST keyword) 
  - the parsing classes (as a generated Python file, containing one Python class per TRUST keyword)
+ 
+Authors: G Sutra, A Bruneton
 """
 
 import pathlib
@@ -12,7 +14,8 @@ from trustify.misc_utilities import logger, ClassFactory, TrustifyException
 ################################################################
 
 def valid_variable_name(s):
-    """ Make a valid variable name from any str. """
+    """ Make a valid variable name from any str. Useful to avoid variable name colinding with Python 
+    keywords ('lambda' for example ...) """
     import re
     import keyword
 
@@ -36,11 +39,12 @@ def format_docstring(description):
     return docstring
 
 def is_base_or_deriv(cls_nam):
+    """ The TRUST keywords ending with _base or _deriv usually needs to have their type explicitely read in the dataset """
     return cls_nam.endswith("_deriv") or cls_nam.endswith("_base") or cls_nam == "class_generic"
 
 def generate_attribute_synos(block, all_blocks):
     """ Generate a dictionary containing:
-    - the synonyms for the keyword itself under the 'None' key
+    - under the 'None' key : the list of synonyms for the keyword itself ;
     - and for **all** the attributes of a class (even the inherited ones) their synonyms.
     Important: the keys (i.e. the attribute names) are ordered in a specific logic:
         - attribute of the child class first
@@ -239,6 +243,7 @@ def write_pars_block(block, pars_file, all_blocks):
 
 def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
                           out_pars_filename, testing=False):
+    """ Generate both modules (pydantic and parsing ones) """
 
     all_blocks = tu.TRAD2Content.BuildContentFromTRAD2(trad2_filename, trad2_nfo=trad2_nfo_filename).data
 

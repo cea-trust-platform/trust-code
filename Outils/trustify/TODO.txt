@@ -1,47 +1,8 @@
-* GENEPI:
-    clotaire
-    bouilleur
-    economiseur
-* model_dump(serialize_as_any=True)
-* check TODO pour info de debug
-* doc + doc TRUSTIFY_DEBUG env var
-* test info de debug sur cas complet
-* factorize inheritance extraction (everytime we use __base__ ...)
-* attribute doc as docstring
-* WTF 'ef' / 'convection_ef' both syno 'ef'
+* validate moodel_dump(serialize_as_any=True)
+* WTF 'ef' / 'convection_ef' both syno 'ef' -> see commments/method in base.GetOneClassFromSyno() 
 * WTF2: GetAttributeList: I have to put members from base class after the ones from current class!! Not logical. perte_charge_reguliere / longitudinale needs this...
 * optim/perf
 
-    @classmethod
-    def _GetAttributeList(cls):
-        """ Return all the attributes of a keyword. This is very stupid, but 
-        @return a list of tuples (str, type)
-        """
-        if cls._attributeList is None:
-            cls._attributeList = []
-            # Recursion termination
-            if cls is ConstrainBase_Parser:
-                return cls._attributeList
-            pyd_cls = ClassFactory.GetPydFromParser(cls)
-            # model_fields will also contain inherited fields, and it puts them in the logical order (base class first, derrived then)
-            # but **unfortunately** TRUST / TRAD2 wants them in the opposite order (base class at the end .... pffff)
-            # see for example perte_charge_reguliere / longitudinale
-            base_cls = [c for c in cls.__bases__ if c.__name__.endswith(ClassFactory._PARSER_SUFFIX)]
-            assert len(base_cls) == 1
-            # Recurse:
-            base_attr_list = base_cls[0]._GetAttributeList()
-            base_attr_dict = dict(base_attr_list)
-            for k, fld_nfo in pyd_cls.model_fields.items():
-                # Skip inherited, they will be added at the end:
-                if k in base_attr_dict:
-                    continue
-                # Use rebuild_annotation to get full original type annotation.
-                # Otherwise Annotated[List[str], 0] becomes List[str], and 0 is stored in metatdata of the field ...
-                cls._attributeList.append((k, fld_nfo.rebuild_annotation()))
-            # Now append inherited attr:
-            cls._attributeList.extend(base_attr_list)
-        return cls._attributeList
-
-        
-           
-        
+TODO once TRIOXDATA is dead:
+* better formatting of XD tags (support multi-lines)
+* revert to default ordering of attributes? inherited first, then the rest

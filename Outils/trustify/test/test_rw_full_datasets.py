@@ -244,9 +244,19 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         data_ex = self.load_file("upwind_buggy.data")
         # self.generic_test(data_ex, fnam="upwind_buggy.data")
         self.assertRaisesRegex(TrustifyException, "Invalid float value: 'sdf'.*\n" +
-                               ".*\n.*Dataset: line 18.*upwind_buggy.*\n" +
+                               ".*\n.*Dataset: line 17.*upwind_buggy.*\n" +
                                ".*Model:   line 251  in file.*src/Kernel/Framework/Schema_Temps_base.cpp",
                                self.generic_test, data_ex, "upwind_buggy.data")
+
+    def test_debug_info_list(self):
+        """ Check that proper reference to the C++ code (where the XD tag is put) is provided upon failure """
+        from trustify.misc_utilities import TrustifyException
+        data_ex = self.load_file("upwind_buggy2.data")
+        # self.generic_test(data_ex, fnam="upwind_buggy2.data")
+        self.assertRaisesRegex(TrustifyException, "Invalid float value: 'sdf'.*\n" +
+                               ".*\n.*Dataset: line 32.*upwind_buggy.*\n" +
+                               ".*Model:   line 22  in file.*src/Kernel/Champs/Champs_Don/Champ_Uniforme.cpp",
+                               self.generic_test, data_ex, "upwind_buggy2.data")
 
     def test_load_dataset(self):
         """ High-level method trustify.load_dataset() """

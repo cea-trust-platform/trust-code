@@ -1,10 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+""" Main module containing the set of root classes allowing to parse a TRUST dataset.
 
-""" Main module for the set of classes allowing to parse a TRUST dataset.
 This module is a bit long, but its logic can be well understood by reading first
   - classes Abstract_Parser and BaseCommon_Parser
-  - and then its most important child Dataset, representing a full TRUST dataset
+  - and then its most important child Dataset_Parser, containing the top logic to load a TRUST dataset into the generated Pydantic
+  model.
 
 Authors: A Bruneton, C Van Wambeke, G Sutra
 """
@@ -13,23 +12,22 @@ import trustify.misc_utilities as mutil
 from trustify.misc_utilities import ClassFactory, TrustifyException
 from trustify.trust_parser import TRUSTTokens
 
-########################################################
-# Customized classes that will sit at the top of the inheritance
-# tree for all the other generated parser classes.
-########################################################
+########################################################################
 
 class Abstract_Parser:
-    """ Root class for all parsers """
-    _braces = 1           #: whether we expect braces when reading the class - see doc_TRAD2 - by default, expect braces.
+    """ Root class for all parsers 
+    The main instance attribute is self._pyd_value which stores the actual value being parsed.
+    """
+    _braces = 1           #: whether we expect braces when reading the class - see doc of TRAD2 format - by default, expect braces.
     _read_type = False    #: whether to read the actual type before instanciating the class (typically for *_base or *_deriv classes) - By default we do *not* read the type
-    _infoMain = []        #: a tuple giving the source file and the line # where the type was defined
+    _infoMain = []        #: a tuple giving the C++ source file and the line where the type was defined
 
     def __init__(self, pyd_value=None):
         self._pyd_value = pyd_value #: The associated 'pydantic' or builtin value associated with this parser
-                                    # This is an object that lives in the pydantic schema side """
+                                    # This is an object that lives in the pydantic schema side
         self._tokens = {}  #: A dictionnary giving for the current instance the tokens corresponding to each bit - see override
-                           # in ConstrainBase for a more comprehensive explanation.
-        # Link pydantic value to this parser:
+                           # in ConstrainBase_Parser for a more comprehensive explanation.
+        # Link pydatic value to this parser:
         if not pyd_value is None and not Builtin_Parser.IsBuiltin(pyd_value.__class__):
             self._pyd_value._parser = self
 
@@ -48,7 +46,7 @@ class Abstract_Parser:
         """ Useful method to generate nice error message when an exception is raised.
         It provides the file name and line number of:
           - the faulty dataset (.data file)
-          - the point in the source code (or in the TRAD2.org) where the concerned grammar element
+          - the point in the C++ source code (or in the TRAD2.org) where the concerned grammar element
           was defined.
         """
         err = "\n" + mutil.RED + msg + mutil.END + "\n"
@@ -86,7 +84,7 @@ class Abstract_Parser:
 
     @classmethod
     def GetOneClassFromSyno(cls, kw, stream, interp=True):
-        """ TODO doc cleanup """
+        """ Same as GetAllClassesFromSyno but selecting the most likely keyword ... this is ugly and to be fixed once TRIOXDATA is dead. """
         root_cls = cls.GetAllClassesFromSyno(kw, stream)
         ret = root_cls[0]
         if len(root_cls) > 1:
@@ -153,7 +151,7 @@ class Abstract_Parser:
 
     @classmethod
     def Dbg(cls, msg):
-        """ Handy debug printing """
+        """ Handy debug printing - only prints something if debug level is lower than logging.DEBUG """
         from trustify.misc_utilities import logger
         import logging
         # The 'inspect' module is very costly - so skip if not in highest logging level:
@@ -188,12 +186,22 @@ class Abstract_Parser:
                 return c.WithBraces()
         raise Exception("Internal error")
 
+########################################################################
 
 class Builtin_Parser(Abstract_Parser):
-    """ Base class for all the parsers handling builtin Python types: str, int, float, etc. 
+    """ Base class for all the parsers handling builtin Python types: str, int, float, list, etc.
+    For builtin types the logic is a bit different than for the rest, mostly because we can not attach a parser to the type
+    itself (it is forbidden in Python to add an attribute to 'str' or 'int'!!)
+    So the work-around is to store in BaseCommon_Parser a list of sub-parsers for the attributes having builtin types.
+    See member _leafParsers in BaseCommon_Parser.
+    
+    Main method here is InstanciateFromBuiltin() generating those parsers.
     """
     def readFromTokensBuiltin(self, stream):
-        """ todo doc """
+        """ Similar to Abstract_Parser.ReadFromTokens()
+        
+        For builtin types, the reading process is not a class method (compare with Abstract_Parser.ReadFromTokens()), because the parser 
+        is instanciated first, and then the parsing process is invoked. """
         val = self.readFromTokensBuiltin_impl(stream)
         self._pyd_value = val
         return val
@@ -208,7 +216,7 @@ class Builtin_Parser(Abstract_Parser):
     @classmethod
     def InstanciateFromBuiltin(cls, builtin_cls):
         """ From a builtin Python class, return a proper instance of a builtin parser.
-        It needs to return an instance (not a class) because of constrained values.
+        It needs to return an instance (not a class) because of constrained values (int in [2,3] for example).
         @param builtin_cls a type as defined in 'typing' module, e.g. 'str', or 'List[float]'
         @return a instance of a child of Builtin_Parser class (careful, this is in the *Parser hierarchy, not the pydantic one!)
         """
@@ -263,16 +271,23 @@ class Builtin_Parser(Abstract_Parser):
         """
         return f"<builtin-{cls.__name__}>"
 
+    def validateValue(self, value, stream):
+        """ Used when outputing tokens (toDatasetTokens) 
+        Should raise if the value is not valid (like having a string instead of an int)
+        """
+        raise NotImplementedError
+
     def getFormattedType(self):
         """ @return a string describing the current type as a nicely formatted string (useful for keyword documentation)
         e.g. for IntConstrained_Parser, returns 'int in [2,3]'
         """
-        print(self.__class__)
         raise NotImplementedError
+
+########################################################################
 
 class BaseCommon_Parser(Abstract_Parser):
     """ Abstract base class containing all the methods relevant to TRUST data model parsing
-    logic for high level types (keywords, not base types such as strings, int, etc.)
+    logic for high level types : keywords or lists of objects (not builtin types such as strings, int, etc.)
     By far the two most important methods are:
       ReadFromTokens() - which instanciate a class from a stream of tokens (i.e. from the .data file)
       toDatasetTokens() - inherited from parent class, which does the inverse operation and serializes the content of the instance as a stream of tokens
@@ -288,7 +303,13 @@ class BaseCommon_Parser(Abstract_Parser):
 
     @classmethod
     def ReadFromTokens(cls, stream, pars_cls=None):
-        """ TODO doc """
+        """ Override - see doc in base class
+        By default, to read a piece of dataset we:
+        - instanciate the parser
+        - invoke 'readFromTokens_impl' to handle the logic specific to the keyword (see method doc)
+        - register the parsed value inside the parser
+        - and finally return the parsed value.
+        """
         pars_cls = pars_cls or cls
         pars = pars_cls()
         pars._pyd_value = pars.readFromTokens_impl(stream)
@@ -297,6 +318,8 @@ class BaseCommon_Parser(Abstract_Parser):
         return pars._pyd_value
 
     def readFromTokens_impl(self, stream):
+        """ Virtual method overriden in derived classes actually producing the (pydantic) value from the stream of tokens passed.
+        """
         raise NotImplementedError
 
     @classmethod
@@ -329,8 +352,7 @@ class BaseCommon_Parser(Abstract_Parser):
         return base_cls[0].GetInfoAttr(attr_nam)
 
 class ConstrainBase_Parser(BaseCommon_Parser):
-    """
-    Class representing any type/keyword for which the attribute types are to be checked.
+    """ Class representing any complex type/keyword having attributes.
     """
     _attributeList = None
     """ List of all attributes of the class (included inherited ones) - see _GetAttributeList() """
@@ -397,7 +419,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         return cls._attributeSynos
 
     def _parseAndSetAttribute(self, stream, attr_nam, attr_cls, flavor=""):
-        """ Private. TODO doc """
+        """ Private. Parse an attribute value from the stream and registers it in self._pyd_value """
         cls = self.__class__
         cls.Dbg(f"@FUNC@ attr_nam '{attr_nam}' attr_cls: '{str(attr_cls)}' {flavor}")
         if Builtin_Parser.IsBuiltin(attr_cls):
@@ -405,8 +427,8 @@ class ConstrainBase_Parser(BaseCommon_Parser):
             pars_attr = Builtin_Parser.InstanciateFromBuiltin(attr_cls)
             # Temporarily load debug instruction from current class on the child attribute type.
             # This is useful for builtin types which are actually not defined anywhere in the
-            # TRAD2 (like ints, floats, strings, etc...). Thus we can for example display an error message
-            # saying that '3.5' is not an 'int', and provide the actual TRAD2 entry for the attribute itself, not for float ....
+            # TRAD2 or in the C++ (like ints, floats, strings, etc...). Thus we can for example display an error message
+            # saying that '3.5' is not an 'int', and provide the actual TRAD2 entry for the attribute itself, not for 'int' ....
             pars_attr.__class__._infoMain = cls.GetInfoAttr(attr_nam)
             # Parse builtin attribute
             val_attr = pars_attr.readFromTokensBuiltin(stream)
@@ -516,7 +538,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
     def _ReadClassName(cls, stream):
         """ Read the class name.
         This method is invoked by all the keywords where the actual class name should be read (_read_type = True). For example all keyword accepting as an
-        attribute a field_base, might recieve a champ_uniforme, or a champ_fonc_med, etc.. So type must actually be read.
+        attribute a field_base, might receive a champ_uniforme, or a champ_fonc_med, etc.. So type must actually be read.
         """
         # Parse one token to identify real class being read:
         kw = Chaine_Parser.ParseOneWord(stream)
@@ -592,7 +614,8 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         return []
 
     def _extendWithAttrTokens(self, tok_lst, attr_nam, attr_val):
-        """ TODO doc builtin oupa """
+        """ Complete the output tokens with the content coming from a specific attribute. This is where
+        we potentially use back what is stored inside self._leafParsers if the attribute is a builtin (like an int or a str) """
         attr_cls = attr_val.__class__
         if Builtin_Parser.IsBuiltin(attr_cls):
             # Is this a new attr?
@@ -614,7 +637,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         tok_lst.extend(attr_pars.toDatasetTokens())
 
     def _toDatasetTokens_braces(self):
-        """ TODO doc """
+        """ Method used to output a keyword with braces and names key/value pairs """
         s = []
         pyd_val = self._pyd_value
         # class name
@@ -655,6 +678,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         return s
 
     def _toDatasetTokens_no_braces(self):
+        """ Method used to output a keyword without braces """
         s = []
         s.extend(self._getClsTokens())  # Class name
         for attr_nam, _ in self._GetAttributeList():
@@ -667,11 +691,12 @@ class ConstrainBase_Parser(BaseCommon_Parser):
 ## List-like types
 ######################################################
 class ListOfBase_Parser(Builtin_Parser):
-    """ Root class for all list-like objects. For example a list of float, or a list of Source.
-    This is a child of Builtin_Parser because on the pydantic side, such an attribute will be annotated as a 'List[XXX]' 
+    """ Root class for all list-like objects. For example a list of float, or a list of 'Source'.
+    This is a child of Builtin_Parser because on the pydantic side, such an attribute will be annotated as a standard 
+    Python list 'List[XXX]' 
     """
     _comma = 1             #:  1: with comma to separate items, 0: without, -1: like parent
-    _itemType = None       #: The (single) pydantic type of the items in the list - overriden in (generated) derived classes
+    _itemType = None       #: The (single) pydantic (or builtin) type of the items in the list - overriden in derived classes
     _itemParserType = None #: The associated Parser class - will be set by readFromTokensBuiltin_impl
 
     def __init__(self, pyd_value=None):
@@ -735,21 +760,21 @@ class ListOfBase_Parser(Builtin_Parser):
         return n
 
     def initItemParserType(self):
-        """ TODO doc """
+        """ Initialize the type of parser that will be used to parse items in the list. 
+        This is overriden for list of builtins.
+        """
         # Class level variable - so setting it once, at the first time a list containing this
         # type of objects is encountered is enough:
         if self.__class__._itemParserType is None:
             self.__class__._itemParserType = ClassFactory.GetParserFromPyd(self._itemType)
 
     def parseAndAppendItem(self, stream, lst):
-        """ TODO doc 
-        Override in ListOfBuiltin_Parser """
+        """ Append an item to the current list. Overriden in ListOfBuiltin_Parser """
         item_val = self._itemParserType.ReadFromTokens(stream)
         lst.append(item_val)
 
     def readFromTokensBuiltin_impl(self, stream):
-        """
-        Override. Read N objects from the input. N (an integer) must be the first token found.
+        """ Override. Read N objects from the input. N (an integer) must be the first token found.
         This override only works for single-type list.
         """
         cls = self.__class__
@@ -764,11 +789,6 @@ class ListOfBase_Parser(Builtin_Parser):
         elif not cls.WithBraces():
             err = cls.GenErr(stream, f"Internal error: Can not read list with no brace and no size info.")
             raise Exception(err)
-
-        # If allowed class is a base type with no debug information, take the one from current
-        # (list) class (which itself might have been set in ReadFromTokens_braces / no_braces)
-        # TODO
-        # if pars._ze_cls:    pars._ze_cls._infoMain = cls._infoMain
 
         if cls.WithBraces():
             withComma = cls._WithComma()
@@ -794,9 +814,6 @@ class ListOfBase_Parser(Builtin_Parser):
             cls.Dbg(f"@FUNC@ reading list **without** braces (exp size is {n}) ...")
             for cnt in range(n):
                 self.parseAndAppendItem(stream, val)
-
-        # Reset debug info: TODO
-        # if ret._ze_cls._TODOplainType: ret._ze_cls._infoMain = []
 
         return val
 
@@ -856,7 +873,7 @@ class ListOfBase_Parser(Builtin_Parser):
 
 class ListOfBuiltin_Parser(ListOfBase_Parser):
     """ Base class for all lists with items of builtin types (like list of floats, but not list of Source) 
-    For those lists we need to save the parser objects too.
+    For those lists we need to save the parser objects too since they can not be attached to the values themselves.
     """
     _braces = 0        #: No braces for those simple lists
     _comma = 0         #: No comma either
@@ -872,9 +889,18 @@ class ListOfBuiltin_Parser(ListOfBase_Parser):
         pass
 
     def parseAndAppendItem(self, stream, lst):
-        """ Override. For builtin types, we need to store the pasers for each item too. """
+        """ Override. For builtin types, we need to store the parsers for each item too. """
         item_pars = Builtin_Parser.InstanciateFromBuiltin(self._itemType)
+
+        # Attach debug information of the list itself to the (builtin) item type
+        # For a list of int (or float, etc.), in case of error, this will return the point in the C++ source where the attribute is defined:
+        item_pars.__class__._infoMain = self._infoMain
+
         item_val = item_pars.readFromTokensBuiltin(stream)
+
+        # Reset debug info:
+        item_pars.__class__._infoMain = []
+
         self._builtin_parsers.append(item_pars)  # for builtin type, save parser too
         lst.append(item_val)
 
@@ -945,19 +971,20 @@ class ListIntDim_Parser(ListInt_Parser, AbstractSizeIsDim):
 # Class Interprete
 ######################################################
 class Interprete_Parser(ConstrainBase_Parser):
-    """ Class 'interprete' has nothing special in itself, except that it needs
-    to be known early, so that the Dataset class can test whether a given class
-    is a child of 'interprete'
+    """ Class 'Interprete_Parser' has nothing special in itself, except that it needs
+    to be known early, so that the Read_Parser class can be defined.
     So force its definition here, and hence avoid its automatic generation from the
     TRAD2 file.
     """
-    _braces = 0   # By default, 'interprete' does not need braces
+    _braces = 0   #: By default, 'interprete' does not need braces
 
 class Read_Parser(Interprete_Parser):
-    """ TODO doc """
-    _braces = 0       # The 'Read' keyword behaves like an object expecting no braces: "read <identifier> <obj>" where 'identifier' and 'obj' are two mandatory attr
+    """ Class to parse the 'read' keyword.
+    Its main specificity is to turn off the type reading of the object that will be read, since the type was provided in the forward declaration. 
+    """
+    _braces = 0       #: The 'Read' keyword behaves like an object expecting no braces: "read <identifier> <obj>" where 'identifier' and 'obj' are two mandatory attr
     _read_type = True
-    _ze_type = None   # The actual (parser) class that the 'read' instruction will parse. This is set in Dataset_Parser._Handle_Read_instruction()
+    _ze_type = None   #: The actual (parser) class that the 'read' instruction will parse. This is set in Dataset_Parser._Handle_Read_instruction()
     _infoMain = ["<trustify builtin>", -1]
     _infoAttr = {"identifier": ["<trustify builtin>", -1],
                  "obj": ["<trustify builtin>", -1]}
@@ -968,7 +995,10 @@ class Read_Parser(Interprete_Parser):
         return BaseCommon_Parser.ReadFromTokens(stream, pars_cls=cls)
 
     def readFromTokens_impl(self, stream):
-        """ TODO doc """
+        """ Override - see base doc.
+        Parse the identifier and the full object passed to the 'read' keyword.
+        Making sure that the identifier is valid is checked before arriving here, in Dataset_Parser.
+        """
         cls = self.__class__
         val = ClassFactory.GetPydFromParser(cls)()
 
@@ -991,7 +1021,7 @@ class Read_Parser(Interprete_Parser):
         return val
 
     def toDatasetTokens(self):
-        """ TODO doc """
+        """ Override - see base doc """
         s = []
 
         # Output 'read' keyword
@@ -1089,7 +1119,7 @@ class Declaration_Parser(ConstrainBase_Parser):
 
     def __init__(self, pyd_value=None):
         ConstrainBase_Parser.__init__(self, pyd_value)
-        self._pars_cls = None
+        self._pars_cls = None  #: The actual type that will be read after the identifier. This is set by Dataset_Parser
 
     @classmethod
     def ReadFromTokens(cls, stream):
@@ -1097,6 +1127,7 @@ class Declaration_Parser(ConstrainBase_Parser):
         return BaseCommon_Parser.ReadFromTokens(stream, pars_cls=cls)
 
     def readFromTokens_impl(self, stream):
+        """ Override - see base class documentation """
         decl = ClassFactory.GetPydFromParser(self.__class__)()  # a Declaration object
         # Check whether the class (=1st param of the declaration) is valid and get corresponding parser class
         kw = Chaine_Parser.ParseOneWord(stream)
@@ -1136,19 +1167,20 @@ class Declaration_Parser(ConstrainBase_Parser):
 
 class Dataset_Parser(ListOfBase_Parser):
     """ Class used to parse a complete TRUST dataset.
-    A TRUST dataset is a list of 'Objet_u', with allowed classes
+    A TRUST dataset is a list of 'Objet_u', with the following allowed classes:
       - Declaration, representing forward declarations like 'Pb_conduction pb'
       - or any child of ConstrainBase, representing all TRUST interprets like 'lire_med { file ... }'
       
-    Warning: contrary to other children of ListOfBase_Parser, the corresponding pydantic object (Dataset) is not directly
+    WARNING: contrary to other children of ListOfBase_Parser, the corresponding pydantic object (Dataset) is not directly
     a Python list. This the more complex 'Dataset' class, in which the member 'entries' is the actual list of objects in 
-    the dataset. 
+    the dataset. This 'Dataset' class is generated by the 'trad2_pydantic' module.
     
     We still inherit from ListOfBase_Parser here to benefit from useful methods like getItemTokens(). 
     """
-    def _handle_read_instruction(self, stream):
-        """ 
-        TODO
+
+    def _prepare_read_instruction(self, stream):
+        """ Private. When encountering a read instruction we set the internal '_pars_cls' class attribute of Declaration_Parser
+        to prepare the proper parsing of the keyword. 
         """
         stream.save("READ_INSTR")
         stream.nextLow()           # 'read' keyword itelf
@@ -1165,8 +1197,9 @@ class Dataset_Parser(ListOfBase_Parser):
         stream.restore("READ_INSTR")
         return identif
 
-    def _handle_std_instanciation(self, tok, stream, ds, pars_cls):
-        """ Private. """
+    def _handle_interprete(self, tok, stream, ds, pars_cls):
+        """ Private. Invoke the ReadFromTokens method for a TRUST keyword triggering the parsing of the corresponding block in 
+        the dataset. """
         # In a dataset the type must **always** be read - so it is just a matter to know if the keyword
         # itself reads it, or if it is the Dataset that reads it:
         if pars_cls._read_type:
@@ -1184,7 +1217,7 @@ class Dataset_Parser(ListOfBase_Parser):
 
     @classmethod
     def ReadFromTokens(cls, stream):
-        """ Override. See BaseCommon_Parser. Read a complete TRUST dataset
+        """ Override. See BaseCommon_Parser. Reads a complete TRUST dataset
         """
         ds = ClassFactory.GetPydClassFromName("Dataset")()  # A Dataset object (pydantic)
         pars = cls(ds)   # A Dataset_Parser object
@@ -1198,7 +1231,7 @@ class Dataset_Parser(ListOfBase_Parser):
             is_read = tok in ["read", "lire"]
             if is_read:
                 cls.Dbg(f"@FUNC@ 'read' keyword encountered")
-                read_key = pars._handle_read_instruction(stream)
+                read_key = pars._prepare_read_instruction(stream)
 
             # Extract original Pydantic class from keyword
             root_cls = cls.GetOneClassFromSyno(tok, stream, interp=True)
@@ -1208,7 +1241,7 @@ class Dataset_Parser(ListOfBase_Parser):
             # in the dataset.
             if issubclass(pars_entry_cls, Interprete_Parser):
                 # Standard keyword instanciation
-                pars._handle_std_instanciation(tok, stream, ds, pars_entry_cls)
+                pars._handle_interprete(tok, stream, ds, pars_entry_cls)
                 # This was a 'read' instruction, update internal declaration mapping:
                 if is_read:
                     assert read_key in ds._declarations
@@ -1244,9 +1277,6 @@ class Dataset_Parser(ListOfBase_Parser):
 ######################################################
 class AbstractChaine_Parser(Builtin_Parser):
     """ Base class for all (constrained or not) strings """
-    def validateValue(self, value, stream):
-        """ To be overriden in derived class. Should raise if value is not allowed. """
-        raise NotImplementedError
 
     def readFromTokensBuiltin_impl(self, stream):
         """ Override. See Builtin_Parser.
@@ -1276,8 +1306,9 @@ class AbstractChaine_Parser(Builtin_Parser):
             return ret
 
 class Chaine_Parser(AbstractChaine_Parser):
-    """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found
-    See readFromTokensbelow ..
+    """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found.
+    This is the case for 'bloc_lecture' objects for example.
+    See readFromTokens below ..
     """
     def __init__(self, pyd_value=None):
         AbstractChaine_Parser.__init__(self, pyd_value)
@@ -1289,13 +1320,15 @@ class Chaine_Parser(AbstractChaine_Parser):
 
     @classmethod
     def ParseOneWord(cls, stream):
+        """ Parse a single word (=token) from the stream and returns it """
         pars = cls()
         return pars.readFromTokensBuiltin(stream)
 
     def readFromTokensBuiltin_impl(self, stream):
-        """ Read a 'chaine' : this can be:
+        """ Reads a 'chaine' : this can be:
         - either a single token 'toto' (in which case, just take one token)
         - or a full block, like '{ toto { tata } }' (in which case take all tokens until closed brace)
+        
         WARNING: in this last case, the original version (not lower case) of the tokens are kept even
         to build the string value of the Chaine. This is because in bloc_lecture (like for PETSc), we
         need to preserve case-sensitivity.
@@ -1338,7 +1371,8 @@ class Chaine_Parser(AbstractChaine_Parser):
         return s
 
     def toDatasetTokens(self):
-        """ todo doc when bloc give back as parsed , no check """
+        """ Override - see base class doc.
+        See also WARNING in readFromTokensBuiltin_impl() above. """
         if self._isBloc:
             v = self._pyd_value
             if not v[0] in [" ", "\n", "\t"]:
@@ -1364,9 +1398,6 @@ class ChaineConstrained_Parser(AbstractChaine_Parser):
             raise TrustifyException(err)
 
 class Fin_Parser(Interprete_Parser):
-    ##
-    ## TODO sure?
-    ##
     """ The 'end' keyword at the end of the dataset. It is an 'interprete'.
     It has its own class because the main parsing loop in Dataset needs to spot it specifically :-)
     """
@@ -1417,6 +1448,7 @@ class IntConstrained_Parser(Int_Parser):
         return f"int into {self._allowedValues}"
 
     def validateValue(self, val, stream):
+        """ Override - check that this is really an int! """
         try:
             i = int(val)
         except:
@@ -1464,6 +1496,7 @@ class Flag_Parser(Builtin_Parser):
         return True
 
     def toDatasetTokens(self):
-        """ Override. """
+        """ Override. Nothing to output! A flag is either set in which case the attribute name will be output 
+        or it is not. In either case the flag value itself is irrelevant. """
         return ['']
 

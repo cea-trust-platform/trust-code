@@ -2,7 +2,7 @@
 
 Let's pretend you want to document keyword `the_kw` which inherits from `base_kw`. Imagine also that this keyword takes an attribute `tutu` which is a double.
 
-C++ code should be annotated with `// XD` tags as follows:
+The C++ source code implementing this keyword should be annotated with `// XD` tags as follows:
 
 
 ```

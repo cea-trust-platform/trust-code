@@ -146,15 +146,14 @@ def check_str_equality(s1, s2, print_on_diff=True):
     return BoolWithMsg(True, "Strings are equal")
 
 ##################################################################
-## Class factory to register and get back all generated classes
-## be it pydantic classes (the ones from the data model) or Parser classes.
-##################################################################
 class ClassFactory:
-    # TODO un peu le bazar cette classe ...
+    """ Class factory to register and get back all generated classes
+        be it pydantic classes (the ones from the data model) or Parser classes.
+    """
 
-    _PARSER_SUFFIX = "_Parser"
-    _ALL_CLASSES = {}
-    _SYNO_ORIG_NAME = {}  # Dict providing for a synonym (like 'lire_med') the **list** of original names ('read_med')
+    _PARSER_SUFFIX = "_Parser" #: Suffix for all classes belonging to the parsing hierarchy
+    _ALL_CLASSES = {}     #: All registered classes in the factory
+    _SYNO_ORIG_NAME = {}  #: Dict providing for a synonym (like 'lire_med') the **list** of original names ('read_med')
                           # Why a list? Because some synonyms are duplicated! Example: 'negligeable' might refer to original
                           # class 'convection_negligeable' or 'diffusion_negligeable'
                           # See method ConstrainBase_Parser._ReadClassName() and ClassFactory.BuildSynonymMap()
@@ -169,7 +168,6 @@ class ClassFactory:
 
     @classmethod
     def RegisterClass(cls, cls_nam, cls_obj):
-        # print("reg", cls_nam, cls_obj)
         if cls_nam not in cls._ALL_CLASSES:
             cls._ALL_CLASSES[cls_nam] = cls_obj
 
@@ -348,6 +346,8 @@ def break_type(typ):
     return opt, typs, ann
 
 def strip_optional(typ):
+    """ Returns the typ but without the 'Optional' part.
+    """
     from typing import get_origin, get_args, Union
 
     orig = get_origin(typ)
