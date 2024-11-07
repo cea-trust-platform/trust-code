@@ -278,7 +278,7 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
         from pydantic import ConfigDict, Field
 
         class TRUSTBaseModel(pydantic.BaseModel):
-            model_config = ConfigDict(validate_assignment=True)
+            model_config = ConfigDict(validate_assignment=True, protected_namespaces=())
             
             def __init__(self, *args, **kwargs):
                 pydantic.BaseModel.__init__(self, *args, **kwargs)

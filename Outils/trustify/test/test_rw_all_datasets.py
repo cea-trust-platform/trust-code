@@ -104,8 +104,8 @@ class TestCase(unittest.TestCase, UnitUtils):
             return True
         except Exception as e:
             print(e)
-            #logger.error(f"   Dataset KO: {data_nam}\n\n\n\n\n")
-            sys.exit(-1)
+            if not TestCase.SINGLE_JDD is None:
+                sys.exit(-1)
             return False
 
     def test_all(self):
