@@ -62,7 +62,7 @@ class TestCase(unittest.TestCase, UnitUtils):
     def single_test(self, lml_or_data_nam, verbose=False):
         """ Test a single data set - this method is called also from tst_rw_all_datasets.py """
         from trustify.trust_parser import TRUSTParser, TRUSTStream
-        from trustify.misc_utilities import ClassFactory, prune_after_end, check_str_equality
+        from trustify.misc_utilities import ClassFactory, prune_after_end, check_str_equality, TrustifyException
 
         # Extract dir name, and build dataset file name
         data_nam = lml_or_data_nam
@@ -102,7 +102,7 @@ class TestCase(unittest.TestCase, UnitUtils):
               raise Exception
             if verbose: logger.info(" --> OK")
             return True
-        except Exception as e:
+        except TrustifyException as e:
             print(e)
             if not TestCase.SINGLE_JDD is None:
                 sys.exit(-1)
@@ -124,6 +124,7 @@ class TestCase(unittest.TestCase, UnitUtils):
             if self.single_test(e):
                 print("OK")
             else:
+                print("")
                 ok = False
         self.assertTrue(ok)
 

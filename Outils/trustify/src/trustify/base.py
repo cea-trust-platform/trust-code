@@ -9,7 +9,7 @@ Authors: A Bruneton, C Van Wambeke, G Sutra
 """
 
 import trustify.misc_utilities as mutil
-from trustify.misc_utilities import ClassFactory, TrustifyException
+from trustify.misc_utilities import ClassFactory, TrustifyException, get_single_parser_base
 from trustify.trust_parser import TRUSTTokens
 
 ########################################################################
@@ -58,7 +58,11 @@ class Abstract_Parser:
         if len(cls._infoMain) > 0:  # automatic classes (like base types int, float...) do not have debug info
             s =  "   Model:   line %d  in file  '%s'\n" % (cls._infoMain[1], cls._infoMain[0])
         if not attr is None:
-            fnam, lineno = cls._infoAttr[attr]
+            ze_cls = cls
+            while not (attr in ze_cls._infoAttr or ze_cls is BaseCommon_Parser):
+                ze_cls = get_single_parser_base(ze_cls)
+            if attr in ze_cls._infoAttr:
+                fnam, lineno = ze_cls._infoAttr[attr]
             s = f"   Model:   line {lineno}  in file  '{fnam}'\n"
         ctx += s + mutil.END
         return err + ctx
@@ -345,11 +349,10 @@ class BaseCommon_Parser(Abstract_Parser):
         if attr_nam in cls._infoAttr:
             return cls._infoAttr[attr_nam]
         # Look in base class:
-        base_cls = [c for c in cls.__bases__ if c.__name__.endswith(ClassFactory._PARSER_SUFFIX)]
-        assert len(base_cls) <= 1, "Too many base classes?!"
-        if len(base_cls) == 0 or base_cls is Abstract_Parser:
+        base_cls = get_single_parser_base(cls)
+        if base_cls is Abstract_Parser:
             raise Exception("Should not happen, missing infoAttr?")
-        return base_cls[0].GetInfoAttr(attr_nam)
+        return base_cls.GetInfoAttr(attr_nam)
 
 class ConstrainBase_Parser(BaseCommon_Parser):
     """ Class representing any complex type/keyword having attributes.
@@ -413,9 +416,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
             one_cls = cls
             while one_cls is not ConstrainBase_Parser:
                 append_synos(cls._attributeSynos, one_cls)
-                base_cls = [c for c in one_cls.__bases__ if c.__name__.endswith(ClassFactory._PARSER_SUFFIX)]
-                assert len(base_cls) <= 1, "Too many base classes?!"
-                one_cls = base_cls[0]
+                one_cls = get_single_parser_base(one_cls)
         return cls._attributeSynos
 
     def _parseAndSetAttribute(self, stream, attr_nam, attr_cls, flavor=""):

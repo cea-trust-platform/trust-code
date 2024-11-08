@@ -257,6 +257,12 @@ class ClassFactory:
             for s in c._synonyms[None]:  # None is the key for the synonym of the class itself (not its attributes)
                 cls._SYNO_ORIG_NAME.setdefault(s, []).append(c)
 
+def get_single_parser_base(cls):
+    """ Return parent class in the Parser hierarchy - there should be only one parent """
+    base_cls = [c for c in cls.__bases__ if c.__name__.endswith(ClassFactory._PARSER_SUFFIX)]
+    assert len(base_cls) <= 1, "Too many base classes?!"
+    return base_cls[0]
+
 ##################################################################
 ## Various unit tests utils
 ##################################################################
