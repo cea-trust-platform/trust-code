@@ -38,7 +38,7 @@ Read sch
 	nb_pas_dt_max 3
     dt_max 1e-2
     dt_impr 1e-10
-    seuil_statio 1e-8
+    seuil_statio 1e-6
     solveur ice
     {
         criteres_convergence { alpha 1e-5 }
@@ -79,7 +79,7 @@ Read pb
         boundary_conditions { wall symetrie }
         sources
         {
-            DP_Impose { dp_regul { DP0 1e2 deb 5 eps 0.001*(t>0.1) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
+            DP_Impose { dp_regul { DP0 100 deb 5 eps 0.5*(t>1) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
         }
     }
     Masse_Multiphase
