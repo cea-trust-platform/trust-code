@@ -265,8 +265,8 @@ int Process::check_int_overflow(trustIdType v)
 KOKKOS_FUNCTION
 void Process::Kokkos_exit(const char* str)
 {
-#ifdef _OPENMP
-    // ToDo Kokkos: try to exit more properly on device...
+#ifdef _OPENMP_TARGET
+  // ToDo Kokkos: try to exit more properly on device...
   Kokkos::abort(str);
   //Kokkos::finalize();
 #else

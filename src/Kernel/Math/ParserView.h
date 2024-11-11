@@ -32,14 +32,11 @@
 class ParserView : public Parser
 {
 public:
-  ParserView(std::string& expr, int n =1) : Parser(expr,n)
-  {
-    setNbVar(n); // ToDo fix virtual call in constructor !
-  }
-  void setNbVar(int nvar) override
+  // ToDo Kokkos constructor par copie d'un parser host + specifie nbThreads lors du parseString
+  ParserView(std::string& expr, int nvar, int numThreads) : Parser(expr,nvar)
   {
     Parser::setNbVar(nvar);
-    les_var_view = les_var.view_rw();
+    les_var_view = Kokkos::View<double**>("les_vars", nvar, numThreads);
   }
   void parseString() override
   {
@@ -52,31 +49,128 @@ public:
     // Copy host mirror to device
     Kokkos::deep_copy(PNodes_view, host_PNodes_view);
   }
-  KOKKOS_INLINE_FUNCTION void setVar(int i, double val) const
+  KOKKOS_INLINE_FUNCTION void setVar(int i, double val, int threadId) const
   {
     assert(i>=0 && i<ivar);
-    les_var_view[i] = val;
+    les_var_view(i, threadId) = val;
   }
-  KOKKOS_INLINE_FUNCTION double eval() const { return eval(PNodes_view[0]); }
+  KOKKOS_INLINE_FUNCTION double eval(int threadId) const { return eval(PNodes_view[0], threadId); }
 private:
-  KOKKOS_INLINE_FUNCTION double eval(const PNodePod& node) const
+  struct StackEntry
   {
-    switch(node.type)
+    int node_idx;    // Index in PNodes_view array
+    double result;
+    int state;       // 0: new, 1: need right, 2: done
+    bool is_root;    // To identify if this is the root node passed by reference
+  };
+  KOKKOS_INLINE_FUNCTION double eval(const PNodePod& node, int threadId) const
+  {
+    // Direct evaluation for simple cases of the input node
+    if (node.type == 2) return node.nvalue;         // VALUE
+    if (node.type == 4) return les_var_view(node.value, threadId); // VAR
+
+    // Define a small stack structure for the device
+    const int MAX_STACK = 64; // Adjust size as needed
+    StackEntry stack[MAX_STACK];
+
+    // Initialize stack with the input node state
+    int stack_ptr = 0;
+    stack[stack_ptr] = {0, 0.0, 0, true};  // Mark as root node
+
+    while (stack_ptr >= 0)
       {
-      case 1 :
-        return const_cast<ParserView*>(this)->evalOp(node);  // PNode_type::OP
-      case 2 :
-        return node.value;  // PNode_type::VALUE
-      case 3 :
-        return const_cast<ParserView*>(this)->evalFunc(node);// PNode_type::FUNCTION
-      case 4 :
-        return les_var_view[node.value]; // PNode_type::VAR
-      default:
-        Process::Kokkos_exit("method eval : Unknown type for this node !!!");
-        return 0;
+        StackEntry& current = stack[stack_ptr];
+        const PNodePod& current_node = current.is_root ? node : PNodes_view[current.node_idx];
+
+        switch (current_node.type)
+          {
+          case 2: // VALUE
+            current.result = current_node.nvalue;
+            stack_ptr--;
+            break;
+
+          case 4: // VAR
+            current.result = les_var_view(current_node.value, threadId);
+            stack_ptr--;
+            break;
+
+          case 1: // OP
+            switch (current.state)
+              {
+              case 0: // Need to evaluate left
+                if (current_node.left != -1)
+                  {
+                    current.state = 1;
+                    stack_ptr++;
+                    stack[stack_ptr] = {current_node.left, 0.0, 0, false};
+                  }
+                else
+                  {
+                    current.result = 0.0;
+                    current.state = 1;
+                  }
+                break;
+
+              case 1: // Need to evaluate right
+                {
+                  double left_result = (stack_ptr < MAX_STACK-1) ? stack[stack_ptr + 1].result : 0.0;
+                  if (current_node.right != -1)
+                    {
+                      current.state = 2;
+                      stack[stack_ptr].result = left_result; // Save left result
+                      stack_ptr++;
+                      stack[stack_ptr] = {current_node.right, 0.0, 0, false};
+                    }
+                  else
+                    {
+                      current.result = const_cast<ParserView*>(this)->evalOp(current_node, left_result, 0.0);
+                      stack_ptr--;
+                    }
+                }
+                break;
+
+              case 2: // Both sides evaluated
+                {
+                  double right_result = stack[stack_ptr + 1].result;
+                  current.result = const_cast<ParserView*>(this)->evalOp(current_node, current.result, right_result);
+                  stack_ptr--;
+                }
+                break;
+              }
+            break;
+
+          case 3: // FUNCTION
+            if (current.state == 0)
+              {
+                if (current_node.value <= 0 && current_node.left != -1)
+                  {
+                    current.state = 1;
+                    stack_ptr++;
+                    stack[stack_ptr] = {current_node.left, 0.0, 0, false};
+                  }
+                else
+                  {
+                    current.result = const_cast<ParserView*>(this)->evalFunc(current_node, 0.0);
+                    stack_ptr--;
+                  }
+              }
+            else
+              {
+                double arg = stack[stack_ptr + 1].result;
+                current.result = const_cast<ParserView*>(this)->evalFunc(current_node, arg);
+                stack_ptr--;
+              }
+            break;
+
+          default:
+            Process::Kokkos_exit("method eval : Unknown type for this node !!!");
+            return 0;
+          }
       }
+
+    return stack[0].result;
   }
-  DoubleArrView les_var_view;
+  Kokkos::View<double**> les_var_view;
   Kokkos::View<PNodePod*> PNodes_view;
 };
 #endif

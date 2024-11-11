@@ -63,7 +63,6 @@ public :
   /**
    * Sert a evaluer l'expression mathematique correspondante a la chaine de caracteres. Poru cela il faut avant toute chose construire l'arbre par la methode parseString().
    */
-  //inline double eval() const { return eval(root); }
   inline double eval() { return eval(PNodes[0]); }
 
   /**
@@ -81,7 +80,6 @@ public :
   */
   inline void setVar(int i, double val)
   {
-    //Cerr << "Provisoire ivar=" << ivar << " " << les_var.size_array() << finl;
     assert(i>-1 && i<ivar);
     les_var[i] = val;
   }
@@ -123,17 +121,18 @@ protected:
   static int precedence(int);
   inline double eval(const PNodePod& node)
   {
-#ifndef _OPENMP
-    assert(node!=nullptr);
-#endif
+    double x,y;
     switch(node.type)
       {
       case 1 :
-        return evalOp(node);  // PNode_type::OP
+        x = (node.left  != -1 ? eval(PNodes[node.left])  : 0);
+        y = (node.right != -1 ? eval(PNodes[node.right]) : 0);
+        return evalOp(node, x, y);  // PNode_type::OP
       case 2 :
         return node.nvalue;  // PNode_type::VALUE
       case 3 :
-        return evalFunc(node);// PNode_type::FUNCTION
+        x = node.value<=0 ? eval(PNodes[node.left]) : 0;
+        return evalFunc(node, x);// PNode_type::FUNCTION
       case 4 :
         return les_var[node.value]; // PNode_type::VAR
       default:
@@ -141,10 +140,8 @@ protected:
         return 0;
       }
   }
-  //double evalOp(PNode*) const;
-  double evalOp(const PNodePod&);
-  //double evalFunc(PNode*) const;
-  double evalFunc(const PNodePod&);
+  KOKKOS_FUNCTION double evalOp(const PNodePod&, double x, double y);
+  KOKKOS_FUNCTION double evalFunc(const PNodePod&, double x);
   void parserState0(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState1(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState2(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
@@ -159,8 +156,8 @@ protected:
   double impuls_tn;
   double impuls_tempo;
 
-  PNode* root;
-  std::vector<PNodePod> PNodes;
+  PNode* root;                      // Liste chainee de PNode
+  std::vector<PNodePod> PNodes;     // Vecteur de PNodePod
   std::string* str;
   ArrOfDouble les_var;
   Noms les_var_names;
