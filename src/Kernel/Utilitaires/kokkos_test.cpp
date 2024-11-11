@@ -222,16 +222,34 @@ void kokkos_self_test()
     for (int i = 0; i < nb_elem; i++)
       {
         double x = (double) i;
-        f(i) = 2 * x + 2;
+        parser.setVar(0, x);
+        f(i) = parser.eval();
       }
     assert(f(0) == 2);
+    assert(f(nb_elem - 1) == 2 * nb_elem);
   }
   {
+    /*
+    class toto
+    {
+    public:
+    void setVar(int i, double val) const { x[i] = val; }
+    double getVar(int i) const { return x[i]; }
+    private:
+    mutable double x[3];
+    };
+    toto t;
+    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(
+                         const int i)
+    {
+    t.setVar(0, (double)i);
+    Kokkos::printf("Provisoire %d %f \n",i,t.getVar(0));
+    }); */
     ArrOfDouble f(nb_elem);
     f = 0;
     std::string expr("2*x+2");
-    // Parser sur le device:
-    ParserView parser(expr, 1);
+    // Parser sur le device;
+    ParserView parser(expr, 1, nb_elem);
     parser.addVar("x");
     parser.parseString();
     DoubleArrView f_v = f.view_rw();
@@ -239,9 +257,8 @@ void kokkos_self_test()
                            const int i)
     {
       double x = (double) i;
-      parser.setVar(0, x);
-      f_v(i) = 0;
-      //f_v(i) = parser.eval();
+      parser.setVar(0, x, i);
+      f_v(i) = parser.eval(i);
     });
     assert(f(0) == 2);
     assert(f(nb_elem - 1) == 2 * nb_elem);

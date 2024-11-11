@@ -210,26 +210,6 @@ void Parser::parseString()
 
       PNodes.push_back(pod);
     }
-  // Quick check
-  /*
-  Cerr << "Provisoire ======" << finl;
-  PNode* p = root;
-  PNodePod q = PNodes[0];
-  while (p!=nullptr)
-    {
-      if ((p->type != q.type) || (p->value != q.value))
-        Process::exit("error");
-      if (p->right!=nullptr)
-        {
-          p = p->right;
-          q = PNodes[q.right];
-        }
-      else
-        {
-          p = p->left;
-          q = PNodes[q.left];
-        }
-    } */
 }
 
 int Parser::precedence(int op)
@@ -654,12 +634,7 @@ void debug(StringTokenizer * t)
     Cout << "OP : " << (int)t->type << finl;
 }
 
-/* double Parser::evalFunc(PNode* node)
-{
-  return const_cast<const Parser*>(this)->evalFunc(node);
-} */
-
-double Parser::evalFunc(const PNodePod& node)
+KOKKOS_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
 {
   /* OC : Nouvelle version : */
   if (node.value<=0)
@@ -668,7 +643,6 @@ double Parser::evalFunc(const PNodePod& node)
       // afin de distinguer operateur binaire (>0) et fonctions unaires (<0>
       // Il est donc necessaire de prendre -node->value ici pour referencer un element de la liste
       // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
-      double x = eval(PNodes[node.left]);
       switch (unary_function)
         {
         case SIN:
@@ -703,7 +677,7 @@ double Parser::evalFunc(const PNodePod& node)
           return eval(x);
 #endif
         case RND:
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
           // ToDo Kokkos: cuRAND and hipRAND
           Process::Kokkos_exit("Rnd function is not available yet for TRUST GPU version.");
           return 0;
@@ -745,11 +719,9 @@ double Parser::evalOp(PNode* node)
 
 // Ne pas inliner car sinon Parser::eval(PNode* node) plus souvent appelee encore
 // ne sera peut etre pas inlinee...
-double Parser::evalOp(const PNodePod& node)
+KOKKOS_FUNCTION double Parser::evalOp(const PNodePod& node, double x, double y)
 {
   // PL 12/11/2010, reecriture avec switch pour optimisation
-  double x = (node.left  != -1 ? eval(PNodes[node.left])  : 0);
-  double y = (node.right != -1 ? eval(PNodes[node.right]) : 0);
   switch (node.value)
     {
     case 0: // ADD
@@ -767,7 +739,7 @@ double Parser::evalOp(const PNodePod& node)
     case 4: // POWER
       if (y != (int)(y) && x<0)
         {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
           Process::Kokkos_exit("Error in the Parser: x^y calculated with negative value for x !");
 #else
           Cerr << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )" << finl;
@@ -798,7 +770,7 @@ double Parser::evalOp(const PNodePod& node)
     case 15: // NEQ
       return (x != y);
     default:
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
       Process::Kokkos_exit("Method evalOp : Unknown operation during expression parsing!");
 #else
       Cerr << "Method evalOp : Unknown op " << (int)node.value << "!!!" << finl;

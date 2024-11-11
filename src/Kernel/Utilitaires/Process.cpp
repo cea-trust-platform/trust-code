@@ -223,7 +223,7 @@ bool Process::mp_and(bool b)
 KOKKOS_FUNCTION
 void Process::Kokkos_exit(const char* str)
 {
-#ifdef _OPENMP
+#ifdef _OPENMP_TARGET
   // ToDo Kokkos: try to exit more properly on device...
   Kokkos::abort(str);
   //Kokkos::finalize();
