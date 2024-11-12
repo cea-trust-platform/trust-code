@@ -1,5 +1,5 @@
 # Printing on the boundaries of the equation Convection_Diffusion_Chaleur_Turbulent_QC of the problem pb_dom
 # Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) [W] if SI units used
 #            Time            Inlet           Outlet              Top           Bottom           Perioz           Perioz            Total
-   5.40000000e-03   2.72046384e+09  -2.72046384e+09   0.00000000e+00   0.00000000e+00   5.96517291e-03  -5.96517291e-03   3.70543003e-01
-   5.40000000e-02   2.70381166e+09  -2.69906113e+09   0.00000000e+00   0.00000000e+00  -1.81508506e-01   1.81508506e-01   4.75052620e+06
+   5.40000000e-03   2.72046459e+09  -2.72046459e+09   0.00000000e+00   0.00000000e+00   0.00000000e+00   0.00000000e+00   3.70543480e-01
+   5.40000000e-02   2.70381240e+09  -2.73872233e+09   0.00000000e+00   0.00000000e+00  -2.82195953e-14   2.82195953e-14  -3.49099314e+07
