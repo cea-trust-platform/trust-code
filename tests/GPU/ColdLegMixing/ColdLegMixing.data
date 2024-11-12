@@ -23,6 +23,21 @@ Mailler dom
     }
 }
 Tetraedriser_homogene dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
 
 VEFPreP1B dis
 lire dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_div_face_dirichlet 0 }
@@ -96,36 +111,61 @@ lire pb
         }
     }
 
-    liste_postraitements
-    {
-        postraitement NR
-        {
-            fichier ColdLegMixing
-            champs dt_post 1e8 { pression som }
-        }
-        postraitement IMAGES
-        {
-            fichier IMAGES
-            format lata
-            champs binaire dt_post 0.005
-            {
-                temperature som
-                vitesse som
-            }
-        }
-        postraitement INST
-        {
-            definition_champs	{
-                Vmin	reduction_0D { methode min source refChamp { pb_champ pb vitesse } }
-                Vmax	reduction_0D { methode max source refChamp { pb_champ pb vitesse } }
-                Tmin	reduction_0D { methode min source refChamp { pb_champ pb temperature } }
-                Tmax	reduction_0D { methode max source refChamp { pb_champ pb temperature } }
-            }
-            sondes			{
-                Vmin	Vmin	periode 1e-6 numero_elem_sur_maitre 0
-                Vmax	Vmax	periode 1e-6 numero_elem_sur_maitre 0
-                Tmin	Tmin	periode 1e-6 numero_elem_sur_maitre 0
-                Tmax	Tmax	periode 1e-6 numero_elem_sur_maitre 0
+	liste_postraitements
+	{
+	        postraitement NR
+		{
+			fichier ColdLegMixing
+			definition_champs	{
+						REV_1_COLD_LEG_SET_yplus_mean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
+						REV_1_COLD_LEG_SET_yplus_sd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
+						REV_1_COLD_LEG_SET_Cmean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
+						REV_1_COLD_LEG_SET_Csd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
+						REV_1_COLD_LEG_SET_Umean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
+						REV_1_COLD_LEG_SET_Usd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
+						REV_1_COLD_LEG_SET_Ufluct		transformation	{
+													methode formule expression 1 V-Vmean
+													localisation faces
+													sources	{
+														refChamp { Pb_champ pb vitesse nom_source V } ,
+														moyenne { t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
+														}
+													}
+						REV_1_COLD_LEG_SET_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_Ufluct } }
+						REV_1_COLD_LEG_SET_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_Ufluct } }
+						REV_1_COLD_LEG_SET_uprime_vprime	transformation	{
+													methode formule
+													expression 1 REV_1_COLD_LEG_SET_uprime*REV_1_COLD_LEG_SET_vprime
+													localisation faces
+													sources_reference { REV_1_COLD_LEG_SET_uprime , REV_1_COLD_LEG_SET_vprime }
+													}
+						REV_1_COLD_LEG_SET_Restress		moyenne		{ t_deb 0. t_fin 16.38 sources_reference { REV_1_COLD_LEG_SET_uprime_vprime } }
+					}
+			champs dt_post 1e8
+					{
+				pression som
+				REV_1_COLD_LEG_SET_yplus_mean
+				REV_1_COLD_LEG_SET_yplus_sd
+				REV_1_COLD_LEG_SET_Cmean 		elem
+				REV_1_COLD_LEG_SET_Csd		elem
+				REV_1_COLD_LEG_SET_Umean		elem
+				REV_1_COLD_LEG_SET_Usd		elem
+				REV_1_COLD_LEG_SET_Restress	som
+					}
+		}
+		postraitement INST
+			{
+			definition_champs	{
+						Vmin	reduction_0D { methode min source refChamp { pb_champ pb vitesse } }
+						Vmax	reduction_0D { methode max source refChamp { pb_champ pb vitesse } }
+						Tmin	reduction_0D { methode min source refChamp { pb_champ pb temperature } }
+						Tmax	reduction_0D { methode max source refChamp { pb_champ pb temperature } }
+						}
+			sondes			{
+						Vmin	Vmin	periode 1e-6 numero_elem_sur_maitre 0
+						Vmax	Vmax	periode 1e-6 numero_elem_sur_maitre 0
+						Tmin	Tmin	periode 1e-6 numero_elem_sur_maitre 0
+						Tmax	Tmax	periode 1e-6 numero_elem_sur_maitre 0
 
                 vitesse_axe_1			vitesse periode 1 segment 1500 -0.5  0.000 0 1  0.000 0
                 vitesse_axe_2			vitesse periode 1 segment 1500 -0.5  0.013 0 1  0.013 0
