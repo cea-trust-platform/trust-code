@@ -18,13 +18,13 @@ Mailler dom
     }
 }
 
-runge_kutta_ordre_2 sch
+$sch sch
 Read sch
 {
     tinit	0.
     tmax	5.
     dt_min	1.e-10
-    dt_max 1.e0
+    dt_max $dtmax
     dt_impr 1.
     dt_sauv 15.
     seuil_statio 1.e-12
@@ -36,14 +36,11 @@ Discretize pb dis
 
 Read pb
 {
-
-
     solide {
         rho champ_uniforme 1  1
         cp  champ_uniforme 1 1
         lambda champ_uniforme 1 0.01
     }
-
 
     Conduction
     {
@@ -52,7 +49,7 @@ Read pb
         boundary_conditions
         {
             Haut		paroi_echange_global_impose h_imp champ_front_uniforme 1 1 t_ext  Champ_Front_Uniforme 1 50.
-            Bas		Symetrie
+            Bas		    Symetrie
             Gauche		Symetrie
             Droit		Symetrie
         }
@@ -61,10 +58,21 @@ Read pb
 
     Post_processing
     {
-        Definition_champs {
-            erreur_temp Transformation {
-                methode formule expression 1 abs(temp/(50+50*exp(-t))-1)
-                source refChamp {
+        Definition_champs 
+        {
+            erreur_temp Transformation 
+            {
+                methode formule expression 1 abs(temp-(50+50*exp(-t)))  # abs(temp/(50+50*exp(-t))-1) #
+                source refChamp 
+                {
+                    Pb_Champ pb temperature nom_source temp
+                }
+            }
+            exact_temp Transformation 
+            {
+                methode formule expression 1 (50+50*exp(-t))  # abs(temp/(50+50*exp(-t))-1) #
+                source refChamp 
+                {
                     Pb_Champ pb temperature nom_source temp
                 }
             }
@@ -73,15 +81,16 @@ Read pb
         {
             temperature		grav	temperature	periode 1.e-6 point   1  0.45 0.95
             erreur_temperature	grav	erreur_temp	periode 1.e-6 point   1  0.45 0.95
+            exact_temperature	grav	exact_temp	periode 1.e-6 point   1  0.45 0.95
         }
-        fields dt_post 1.
+        fields dt_post 5.
         {
             temperature	elem
             erreur_temp	elem
+            exact_temp elem
         }
     }
 }
 
 Solve pb
 End
-
