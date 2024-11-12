@@ -23,6 +23,21 @@ Mailler dom
         }
 }
 Tetraedriser_homogene dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
 
 VEFPreP1B dis
 lire dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_div_face_dirichlet 0 }
@@ -100,19 +115,44 @@ lire pb
 	{
 	        postraitement NR
 		{
-		        fichier ColdLegMixing 
-			champs dt_post 1e8 { pression som }
+			fichier ColdLegMixing 
+			definition_champs	{
+						REV_1_COLD_LEG_SET_yplus_mean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
+						REV_1_COLD_LEG_SET_yplus_sd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
+						REV_1_COLD_LEG_SET_Cmean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
+						REV_1_COLD_LEG_SET_Csd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
+						REV_1_COLD_LEG_SET_Umean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
+						REV_1_COLD_LEG_SET_Usd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
+						REV_1_COLD_LEG_SET_Ufluct		transformation	{
+													methode formule expression 1 V-Vmean
+													localisation faces
+													sources	{
+														refChamp { Pb_champ pb vitesse nom_source V } ,
+														moyenne { t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
+														}
+													}
+						REV_1_COLD_LEG_SET_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_Ufluct } }
+						REV_1_COLD_LEG_SET_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_Ufluct } }
+						REV_1_COLD_LEG_SET_uprime_vprime	transformation	{
+													methode formule
+													expression 1 REV_1_COLD_LEG_SET_uprime*REV_1_COLD_LEG_SET_vprime
+													localisation faces
+													sources_reference { REV_1_COLD_LEG_SET_uprime , REV_1_COLD_LEG_SET_vprime }
+													}
+						REV_1_COLD_LEG_SET_Restress		moyenne		{ t_deb 0. t_fin 16.38 sources_reference { REV_1_COLD_LEG_SET_uprime_vprime } }
+					}
+			champs dt_post 1e8
+					{
+				pression som
+				REV_1_COLD_LEG_SET_yplus_mean
+				REV_1_COLD_LEG_SET_yplus_sd
+				REV_1_COLD_LEG_SET_Cmean 		elem
+				REV_1_COLD_LEG_SET_Csd		elem
+				REV_1_COLD_LEG_SET_Umean		elem
+				REV_1_COLD_LEG_SET_Usd		elem
+				REV_1_COLD_LEG_SET_Restress	som
+					}
 		}
-		postraitement IMAGES
-			{
-			fichier IMAGES
-			format lata
-			champs binaire dt_post 0.005
-						{
-						temperature som
-						vitesse som
-						}
-			}
 		postraitement INST
 			{
 			definition_champs	{

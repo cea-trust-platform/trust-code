@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <Domaine_VF.h>
 #include <TRUSTTabs.h>
-
+#include <ParserView.h>
 
 #include <Discretisation_base.h>
 #include <Interprete.h>
@@ -465,6 +465,7 @@ void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domain
   int nb_v= valeurs_espace.dimension(0);
   assert(nb_v==zvf.nb_elem());
   assert(val_source.dimension(1)==Objet_U::dimension);
+  ToDo_Kokkos("critical");
   for (int i=0; i<nb_v; i++)
     {
       Vecteur3 v1,v2,normal,val;
@@ -507,24 +508,23 @@ const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(O
 }
 const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-  ToDo_Kokkos("critical");
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
   OWN_PTR(Champ_Fonc_base)  es_tmp;
 
   espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
   DoubleTab& valeurs_espace = espace_stockage->valeurs();
-  //Construction du tableau positions qui contient les coordonnees
-  //des points (support) ou vont etre evaluees les valeurs de l espace
-  //de stockage
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
-  DoubleTab positions;
-  int nb_pos;
   int nb_elem_tot = zvf.nb_elem_tot();
   int nb_som_tot = get_ref_domain().nb_som_tot();
   const Motcle directive = get_directive_pour_discr();
   bool champ_normal_faces = 0;
   if (get_source(0).get_discretisation().is_vdf() || get_source(0).get_discretisation().is_polymac_family())
     champ_normal_faces = 1;
+
+  //Construction du tableau positions qui contient les coordonnees
+  //des points (support) ou vont etre evaluees les valeurs de l espace
+  //de stockage
+  DoubleTrav positions;
   if (localisation_ == "elem")
     {
       if (zvf.xp().nb_dim() != 2) /* xp() non initialise */
@@ -547,6 +547,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
       int dim = som.dimension(1);
       positions = zvf.xp();
       positions.resize(nb_elem_tot+nb_som_tot,dim);
+      ToDo_Kokkos("critical loop");
       for (int i1=nb_elem_tot; i1<nb_elem_tot+nb_som_tot; i1++)
         for (int i2=0; i2<dim; i2++)
           positions(i1,i2) = som(i1-nb_elem_tot,i2);
@@ -561,12 +562,10 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
   //Interpolation des valeurs des sources sur le support retenu et stockage dans sources_val
 
   int nb_sources = get_nb_sources();
-  nb_pos = positions.dimension(0);
+  int nb_pos = positions.dimension(0);
   assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale")||(methode_=="vecteur"));
-  double x=0;
-  double y=0;
-  double z=0;
-  DoubleTabs sources_val(nb_sources);
+  using DoubleTravs = TRUST_Vector<DoubleTrav>; // remplace VECT(DoubleTrav)
+  DoubleTravs sources_val(nb_sources);
   IntVect nb_comps(nb_sources);
   Noms nom_source(nb_sources);
   int dim_compo = 2*dimension;
@@ -596,7 +595,6 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
 
       //Si VDF et traitement d un produit scalaire ou d une norme alors on interpole
       //pour recuperer un tableau avec autant de composantes que la dimension du probleme
-
       if (directive!=directive_so)
         {
           sources_val[so].resize(nb_pos,nb_compso);
@@ -609,8 +607,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
             {
               int nn=source_so_val.dimension_tot(0);
               sources_val[so].resize(nn,1);
-              for (int i_loc=0; i_loc<nn; i_loc++)
-                sources_val[so](i_loc,0) = source_so_val(i_loc);
+              sources_val[so] = source_so_val;
             }
           else
             sources_val[so] = source_so_val;
@@ -633,6 +630,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
   if ((Motcle(methode_)=="produit_scalaire") || (Motcle(methode_)=="norme"))
     {
       Parser_U& f = fxyz[0];
+      ToDo_Kokkos("critical loop");
       for (int i=0; i<nb_pos; i++)
         {
           for (int so=0; so<nb_sources; so++)
@@ -653,13 +651,12 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
 
       if ((champ_normal_faces) && (localisation_=="faces"))
         {
+          ToDo_Kokkos("critical parser");
           for (int i=0; i<nb_pos; i++)
             {
-              x = positions(i,0);
-              y = positions(i,1);
-              z = 0;
-              if (dimension>2)
-                z = positions(i,2);
+              double x = positions(i,0);
+              double y = positions(i,1);
+              double z = (dimension>2 ? positions(i,2) : 0);
               valeurs_espace(i) = 0;
               for (int j=0; j<nb_comp_; j++)
                 {
@@ -677,13 +674,12 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
         }
       else
         {
+          ToDo_Kokkos("critical parser");
           for (int i=0; i<nb_pos; i++)
             {
-              x = positions(i,0);
-              y = positions(i,1);
-              z = 0;
-              if (dimension>2)
-                z = positions(i,2);
+              double x = positions(i,0);
+              double y = positions(i,1);
+              double z = (dimension>2 ? positions(i,2) : 0);
 
               for (int j=0; j<nb_comp_; j++)
                 {
@@ -714,81 +710,87 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           exit();
         }
 
-      const DoubleTab& source_so_val = sources_val[0];
+      CDoubleTabView source_so_val = sources_val[0].view_ro();
+      DoubleArrView v = static_cast<ArrOfDouble&>(valeurs_espace).view_wo();
       if ((champ_normal_faces) && (localisation_=="faces"))
         {
-          for (int i=0; i<nb_pos; i++)
-            valeurs_espace(i) = source_so_val(i,0) * zvf.face_normales(i, num_compo) / zvf.surface(i);
+          CDoubleTabView face_normales = zvf.face_normales().view_ro();
+          CDoubleArrView surface = zvf.face_surfaces().view_ro();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
+          {
+            v(i) = source_so_val(i, 0) * face_normales(i, num_compo) / surface(i);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         {
-          for (int i=0; i<nb_pos; i++)
-            valeurs_espace(i) = source_so_val(i,num_compo);
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
+          {
+            v(i) = source_so_val(i, num_compo);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
     }
   else if (Motcle(methode_)=="formule")
     {
       //Evaluation des valeurs de l espace de stockage en fonction de la fonction (les_fct)
-      Parser_U& f = fxyz[0];
-      f.setVar("t",temps);
+      ParserView parser(fxyz[0]);
+      parser.parseString();
       int special=0;
-      if ((nb_pos==0)&&(valeurs_espace.dimension_tot(0)!=0))
+      if (nb_pos==0 && valeurs_espace.dimension_tot(0)!=0)
         {
-          special=1;
-          nb_pos=valeurs_espace.dimension(0);
-          x=1e38;
-          y=1e38;
-          z=1e38;
-          f.setVar(0,x);
-          f.setVar(1,y);
-          f.setVar(2,z);
+          special = 1;
+          nb_pos = valeurs_espace.dimension(0);
         }
-
-      for (int i=0; i<nb_pos; i++)
+      int line_size = valeurs_espace.line_size();
+      const int max_nb_sources = 10;
+      int dim = dimension;
+      int nb_comp = nb_comp_;
+      if (nb_sources>max_nb_sources)
         {
-          if (!special)
-            {
-              x = positions(i,0);
-              y = positions(i,1);
-              z = 0;
-              if (dimension>2)
-                z = positions(i,2);
-              f.setVar(0,x);
-              f.setVar(1,y);
-              f.setVar(2,z);
-            }
-          /* Plus rapide que de passer par:
-             f.setVar("x",x);
-             f.setVar("y",y);
-             f.setVar("z",z);
-          */
-          if (valeurs_espace.line_size() == 1)
-            {
-              for (int so=0; so<nb_sources; so++)
-                f.setVar(so+4,sources_val[so](i,0));
-              valeurs_espace(i) = f.eval();
-            }
-          else // line_size > 1
-            {
-              for (int j=0; j<nb_comp_; j++)
-                {
-                  for (int so=0; so<nb_sources; so++)
-                    {
-                      int nbcomp_loc = nb_comps(so);
-                      if (nbcomp_loc == nb_comp_)
-                        f.setVar(so+4,sources_val[so](i,j));
-                      else if (nbcomp_loc == 1)
-                        f.setVar(so+4,sources_val[so](i,0));
-                      else
-                        {
-                          Cerr << "The arrays of values don't have compatibles dimensions in "<<que_suis_je()<< finl;
-                          exit();
-                        }
-                    }
-                  valeurs_espace(i,j) = f.eval();
-                }
-            }
+          Cerr << "Increase max_nb_sources to " << nb_sources << " in Champ_base& Champ_Generique_Transformation::get_champ() !" << finl;
+          Process::exit();
         }
+      Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
+      for (int so=0; so<nb_sources; so++)
+        sources[so] = sources_val[so].view_ro();
+      CDoubleTabView pos = positions.view_ro();
+      CIntArrView nb_comp_sources = nb_comps.view_ro();
+      DoubleTabView valeurs = valeurs_espace.view_wo();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
+      {
+        double x = special ? 1e38 : pos(i,0);
+        double y = special ? 1e38 : pos(i,1);
+        double z = special ? 1e38 : (dim>2 ? pos(i,2) : 0);
+        parser.setVar(0,x);
+        parser.setVar(1,y);
+        parser.setVar(2,z);
+        parser.setVar(3,temps);
+        if (line_size == 1)
+          {
+            for (int so=0; so<nb_sources; so++)
+              parser.setVar(so+4,sources[so](i,0));
+            valeurs(i, 0) = parser.eval();
+          }
+        else // line_size > 1
+          {
+            for (int j=0; j<nb_comp; j++)
+              {
+                for (int so=0; so<nb_sources; so++)
+                  {
+                    int nbcomp_loc = nb_comp_sources(so);
+                    if (nbcomp_loc == nb_comp)
+                      parser.setVar(so+4,sources[so](i,j));
+                    else if (nbcomp_loc == 1)
+                      parser.setVar(so+4,sources[so](i,0));
+                    else
+                      Process::Kokkos_exit("The arrays of values don't have compatibles dimensions in Champ_Generique_Transformation::get_champ()");
+                  }
+                valeurs(i,j) = parser.eval();
+              }
+          }
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   // PL: Suppression d'une synchronisation couteuse tres souvent inutile
   // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel
