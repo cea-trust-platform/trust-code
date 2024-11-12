@@ -206,20 +206,17 @@ Read pb_dom
 {
 
 # Water defined in the domain #
-    Fluide_Quasi_Compressible
-    {
-        # mu	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.00035256+(val>350)*(0.08592868*exp(-0.01655538*val)+0.00010423) #
-        mu Champ_Fonc_xyz dom 1 0.00035256
-        # lambda	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.66804898+(val>350)*(-0.00000558*val^2+0.00452611*val-0.23453427) #
-        lambda Champ_Fonc_xyz dom 1 0.66804898
+   Fluide_Quasi_Compressible 
+	{
+    mu	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.00035256+(val>350)*(0.08592868*exp(-0.01655538*val)+0.00010423)
+    lambda	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.66804898+(val>350)*(-0.00000558*val^2+0.00452611*val-0.23453427)
         pression   1e6
         gravite Champ_Uniforme 3 -9.81 0 0
         loi_etat rhoT_gaz_parfait_QC
         {
             Cp 	4401.93904833
-            # rho_t 	(T<350)*972.22597063+(T>350)*(-0.00223416*T^2+0.94964965*T+915.49055601) #
+            rho_t 	(T<350)*972.22597063+(T>350)*(-0.00223416*T^2+0.94964965*T+915.49055601)
             Prandtl 2.323104558709490064
-            rho_xyz Champ_Fonc_xyz dom 1 972.22597063
         }
         Traitement_Pth constant
         traitement_rho_gravite moins_rho_moyen
