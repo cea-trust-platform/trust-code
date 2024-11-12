@@ -17,6 +17,7 @@
 #include <Loi_Etat_rhoT_GP_QC.h>
 #include <TRUSTTab.h>
 #include <Param.h>
+#include <ParserView.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_Gaz_Parfait_QC", Loi_Etat_GP_base ) ;
 // XD rhoT_gaz_parfait_QC loi_etat_gaz_parfait_base rhoT_gaz_parfait_QC -1 Class for perfect gas used with a quasi-compressible fluid where the state equation is defined as rho = f(T).
@@ -150,16 +151,26 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  double Pth = le_fluide->pression_th();
   int n=tab_rho.size();
   if (is_exp_)
     {
-      ToDo_Kokkos("critical but not easy to port (virtual function)");
-      for (int i = 0; i < n; i++)
-        {
-          tab_rho_np1(i) = calculer_masse_volumique(Pth, tab_ICh(i, 0), i);
-          tab_rho(i, 0) = 0.5 * (tab_rho_n(i) + tab_rho_np1(i));
-        }
+      double TMIN = TMIN_;
+      ParserView parser(parser_.getString(), 1, is_exp_ ? n : 0);
+      parser.addVar("T");
+      parser.parseString();
+      CDoubleTabView ICh = tab_ICh.view_ro();
+      CDoubleArrView rho_n = static_cast<const DoubleVect&>(tab_rho_n).view_ro();
+      DoubleArrView rho_np1 = static_cast<DoubleVect&>(tab_rho_np1).view_wo();
+      DoubleTabView rho = tab_rho.view_wo();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), n, KOKKOS_LAMBDA(const int i)
+      {
+        double T = ICh(i, 0);
+        if (T<=TMIN) Process::Kokkos_exit("Dumb temperature in Loi_Etat_rhoT_GP_QC::calculer_masse_volumique !");
+        parser.setVar(0, T, i);
+        rho_np1(i) = parser.eval(i);
+        rho(i, 0) = 0.5 * (rho_n(i) + rho_np1(i));
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else
     {
