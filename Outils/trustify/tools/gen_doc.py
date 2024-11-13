@@ -107,10 +107,10 @@ class TRUSTDocGenerator:
         if len(c._synonyms[None]):
             syno = c._synonyms[None]
             s += "**Synonyms:** %s\n\n" % ", ".join(syno)
-        # Inheritance (if not parent)
-        if not c is parent and parent.__name__ != "Objet_u":
-            par = ":ref:`%s`" % parent.__name__.lower()
-            s += "**Inherits from:** %s \n\n" % par
+        # # Inheritance (if not parent)
+        # if not c is parent and parent.__name__ != "Objet_u":
+        #     par = ":ref:`%s`" % parent.__name__.lower()
+        #     s += "**Inherits from:** %s \n\n" % par
 
         # Core description
         core_doc = self.process_input_clauses(nam, c.__doc__)
