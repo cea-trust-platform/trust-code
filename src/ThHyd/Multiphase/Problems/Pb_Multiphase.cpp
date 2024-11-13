@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Schema_Euler_Implicite.h>
+#include <Schema_Euler_explicite.h>
 #include <Discretisation_base.h>
 #include <Loi_Fermeture_base.h>
 #include <Milieu_composite.h>
@@ -62,12 +63,7 @@ Entree& Pb_Multiphase::readOn(Entree& is)
 Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
 {
   // Verify that user choosed adapted time scheme/solver
-  if (!sub_type(Schema_Euler_Implicite, le_schema_en_temps_.valeur()))
-    {
-      Cerr << "Error: for Pb_Multiphase, you can only use Scheme_euler_implicit time scheme with sets/ice solver" << finl;
-      Process::exit();
-    }
-  else if (sub_type(Schema_Euler_Implicite, le_schema_en_temps_.valeur()))
+  if (sub_type(Schema_Euler_Implicite, le_schema_en_temps_.valeur()))
     {
       Schema_Euler_Implicite& schm_imp = ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur());
       if (!sub_type(SETS, schm_imp.solveur().valeur()))
@@ -75,6 +71,11 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
           Cerr << "Error: for Pb_Multiphase, you can only use Scheme_euler_implicit time scheme with sets/ice solver" << finl;
           Process::exit();
         }
+    }
+  else if (!sub_type(Schema_Euler_explicite, le_schema_en_temps_.valeur()))
+    {
+      Cerr << "Error: Pb_Multiphase can only be used with Scheme_euler_implicit time scheme with sets/ice solver OR Schema_Euler_Explicite" << finl;
+      Process::exit();
     }
 
   bool already_read {true};
@@ -221,7 +222,7 @@ void Pb_Multiphase::preparer_calcul()
 
 double Pb_Multiphase::calculer_pas_de_temps() const
 {
-  if (sub_type(ICE, ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur()).solveur().valeur()))
+  if (sub_type(Schema_Euler_explicite, le_schema_en_temps_.valeur()) || sub_type(ICE, ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur()).solveur().valeur()))
     return Pb_Fluide_base::calculer_pas_de_temps();
   else if (ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps_.valeur()).solveur().valeur()).facsec_diffusion_for_sets() < 0.)
     return Pb_Fluide_base::calculer_pas_de_temps();

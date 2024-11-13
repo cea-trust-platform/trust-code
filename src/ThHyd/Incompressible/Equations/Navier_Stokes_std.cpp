@@ -77,7 +77,7 @@ Sortie& Navier_Stokes_std::printOn(Sortie& is) const
 Entree& Navier_Stokes_std::readOn(Entree& is)
 {
   Equation_base::readOn(is);
-  if (est_egal(seuil_projection,0.) && (sub_type(solv_iteratif,solveur_pression_.valeur())))
+  if (solveur_pression_.non_nul() && est_egal(seuil_projection,0.) && (sub_type(solv_iteratif,solveur_pression_.valeur())))
     {
       solv_iteratif& solv_iter = ref_cast(solv_iteratif,solveur_pression_.valeur());
       seuil_projection = solv_iter.get_seuil();
@@ -102,7 +102,7 @@ void Navier_Stokes_std::set_param(Param& param)
   param.ajouter_non_std("convection",(this));
   param.ajouter_condition("is_read_diffusion","The diffusion operator must be read, select negligeable type if you want to neglect it.");
   param.ajouter_condition("is_read_convection","The convection operator must be read, select negligeable type if you want to neglect it.");
-  param.ajouter_non_std("solveur_pression",(this),Param::REQUIRED); // XD attr solveur_pression solveur_sys_base solveur_pression 1 Linear pressure system resolution method.
+  param.ajouter_non_std("solveur_pression",(this)); // XD attr solveur_pression solveur_sys_base solveur_pression 1 Linear pressure system resolution method.
   param.ajouter_non_std("dt_projection",(this));  // XD attr dt_projection deuxmots dt_projection 1 nb value : This keyword checks every nb time-steps the equality of velocity divergence to zero. value is the criteria convergency for the solver used.
   param.ajouter_non_std("Traitement_particulier",(this)); // XD attr traitement_particulier traitement_particulier traitement_particulier 1 Keyword to post-process particular values.
   param.ajouter_non_std("Erreur_max_DivU",(this));
@@ -737,38 +737,41 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
     }
 
   // Set print of the linear system solve according to dt_impr:
-  solveur_pression_->fixer_schema_temps_limpr(schema_temps().limpr());
+  if (solveur_pression_.non_nul()) solveur_pression_->fixer_schema_temps_limpr(schema_temps().limpr());
 
   const bool is_ALE = ( sub_type(Op_Conv_ALE, terme_convectif.valeur()) );
 
-  if (assembleur_pression_->get_resoudre_increment_pression())
+  if (solveur_pression_.non_nul())
     {
-      if( is_ALE )
+      if (assembleur_pression_->get_resoudre_increment_pression())
         {
-          // we don't want to have domaine_ale object here
-          div_ale_derivative( deriveeALE, timestep, derivee, secmemP );
+          if( is_ALE )
+            {
+              // we don't want to have domaine_ale object here
+              div_ale_derivative( deriveeALE, timestep, derivee, secmemP );
+            }
+          // Solve B M-1 Bt Cp = M-1(F - BtP)
+          DoubleTrav Cp(tab_pression);
+          solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, Cp);
+
+          // P(n+1) = P(n) + Cp
+          tab_pression += Cp;
+          assembleur_pression_->modifier_solution(tab_pression);
+
+          // M-1 Bt P(n+1)
+          solveur_masse->appliquer(gradP);
+          derivee += gradP; // M-1 F
         }
-      // Solve B M-1 Bt Cp = M-1(F - BtP)
-      DoubleTrav Cp(tab_pression);
-      solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, Cp);
-
-      // P(n+1) = P(n) + Cp
-      tab_pression += Cp;
-      assembleur_pression_->modifier_solution(tab_pression);
-
-      // M-1 Bt P(n+1)
-      solveur_masse->appliquer(gradP);
-      derivee += gradP; // M-1 F
-    }
-  else
-    {
-      // Solve B M-1 Bt P(n+1) = B M-1 F
-      solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, tab_pression);
-      assembleur_pression_->modifier_solution(tab_pression);
-      // It is not done anymore cause:
-      // Iterative solvers are less accurate
-      // Time converges in O(sqrt(dt)) and not O(dt)
-      // See: http://www.sciencedirect.com/science/article/pii/S0021999108004518
+      else
+        {
+          // Solve B M-1 Bt P(n+1) = B M-1 F
+          solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmemP, tab_pression);
+          assembleur_pression_->modifier_solution(tab_pression);
+          // It is not done anymore cause:
+          // Iterative solvers are less accurate
+          // Time converges in O(sqrt(dt)) and not O(dt)
+          // See: http://www.sciencedirect.com/science/article/pii/S0021999108004518
+        }
     }
 
   // (BM) gradient operator requires updated virtual space in source vector

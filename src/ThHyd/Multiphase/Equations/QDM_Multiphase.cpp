@@ -236,8 +236,9 @@ void QDM_Multiphase::discretiser_vitesse()
 
 void QDM_Multiphase::discretiser_grad_p()
 {
-// Ne fait rien ! Est appele par defaut dans Navier_Stokes_std.discretiser() mais pas requis en Pb_Multiphase
-// La dicretisation par dans le QDM_Multiphase.creer_champ()
+  const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+  dis.gradient_P(schema_temps(), domaine_dis(), gradient_P);
+  champs_compris_.ajoute_champ(gradient_P);
 }
 
 const Champ_Don_base& QDM_Multiphase::diffusivite_pour_transport() const
