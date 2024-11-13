@@ -14,9 +14,11 @@ then
    [ ! -f $TRUST_ROOT/Outils/VisIt/test/test.tar.gz ] && echo "test.tar.gz not found!" && exit -1
    cp -f $TRUST_ROOT/Outils/VisIt/test/*.med .
    gunzip -f -c $TRUST_ROOT/Outils/VisIt/test/test.tar.gz | tar -xf -
-   lata=`ls -rt *.lata`
+   lata=`ls -rt Cx*.lata`
    echo -e "OpenDatabase(\"$lata\", 0)\nAddPlot(\"Mesh\", \"dom\", 1, 1)\nDrawPlots()\nSaveWindow()\nquit()" > quit.py
-   cp -f quit.py LATA.py
+   cp -f quit.py LATA_VEF.py
+   lata=`ls -rt Obstacle*.lata`
+   echo -e "OpenDatabase(\"$lata\", 0)\nAddPlot(\"Mesh\", \"dom\", 1, 1)\nDrawPlots()\nSaveWindow()\nquit()" > LATA_VDF.py
    echo -e "OpenDatabase(\"mesh.med\", 0)\nAddPlot(\"Mesh\", \"dom\", 1, 1)\nDrawPlots()\nSaveWindow()\nquit()" > MED.py
    visit=$TRUST_ROOT/exec/VisIt/bin/visit
 
@@ -41,32 +43,32 @@ then
       timeout=120
       np="" && [ $test = parallel ] && np="-np 2"
       # -noconfig evite de charger le fichier de configuration du login
-      # et permet ainsi d'eviter un blocage potentiel si le fichier est mal configure 
+      # et permet ainsi d'eviter un blocage potentiel si le fichier est mal configure
       # Filtrage des problemes de display
       rm -f visit0000.png;echo 1 > err
       ($visit $np -debug 5 -cli -nowin -noconfig -s quit.py 1>visit.log 2>&1;[ -f visit0000.png ] && echo 0 > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
-	 echo "VisIt has blocked on the test and has been killed after $timeout seconds. See `pwd`/visit.log" 
-	 echo "You may give a try with: export HWLOC_COMPONENTS=-pci"
-	 # test // bloque sur qq pc Ub20 (carte graphique?), contournement possible: export HWLOC_COMPONENTS=-pci
-	 # cf https://lists.mpich.org/pipermail/discuss/2020-September/006035.html
-	 exit -1
+         echo "VisIt has blocked on the test and has been killed after $timeout seconds. See `pwd`/visit.log"
+         echo "You may give a try with: export HWLOC_COMPONENTS=-pci"
+         # test // bloque sur qq pc Ub20 (carte graphique?), contournement possible: export HWLOC_COMPONENTS=-pci
+         # cf https://lists.mpich.org/pipermail/discuss/2020-September/006035.html
+         exit -1
       elif [ "`cat err 2>/dev/null`" = 0 ] && [ "`grep abnormally visit.log`" = "" ] && [ "`grep -i error visit.log`" = "" ]
       then
-	 echo "VisIt $test installation is OK."
+         echo "VisIt $test installation is OK."
       else
-	 echo "Problem when running VisIt. See $tmp_visit/visit.log"	 
-	 echo "and VisIt debug files *.vlog under $tmp_visit." 
-	 if [ "`grep SIGSEGV $tmp_visit/*.5.vlog 2>/dev/null`" != "" ] && [ "$test" = parallel ]
-	 then
+         echo "Problem when running VisIt. See $tmp_visit/visit.log"
+         echo "and VisIt debug files *.vlog under $tmp_visit."
+         if [ "`grep SIGSEGV $tmp_visit/*.5.vlog 2>/dev/null`" != "" ] && [ "$test" = parallel ]
+         then
             echo "It seems that on some platforms, parallel VisIt built with OpenMPI crashes."
-	    echo "It you REALLY need a parallel version of VisIt then contact"
-	    echo "TRUST support and consider rebuilding TRUST with MPICH." 
-	 fi
-	 cat $tmp_visit/visit.log
-	 exit -1
+            echo "It you REALLY need a parallel version of VisIt then contact"
+            echo "TRUST support and consider rebuilding TRUST with MPICH."
+         fi
+         cat $tmp_visit/visit.log
+         exit -1
       fi
    done
 
@@ -78,28 +80,38 @@ then
    options=-nowin && $TRUST_ROOT/Outils/VisIt/check_visit 1>/dev/null 2>&1 && options=$options" -win"
    for option in $options
    do
-      for FORMAT in LATA `[ "$new" = 1 ] && echo MED`
+      for FORMAT in LATA_VEF LATA_VDF `[ "$new" = 1 ] && echo MED`
       do
       rm -f visit0000.png;echo 1 > err
       ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s $FORMAT.py 1>$FORMAT.log 2>&1;[ -f visit0000.png ] && echo 0 > err) &
       wait_for $! $timeout
       if [ $? != 0 ]
       then
-	 echo "VisIt has blocked on the $FORMAT test with $option option and has been killed after $timeout seconds. See `pwd`/$FORMAT.log" 
-	 exit -1
+         if [ "$FORMAT" = "MED" ]
+         then
+            echo "VisIt has blocked on the $FORMAT test with $option option and has been killed after $timeout seconds. See `pwd`/$FORMAT.log"
+         else
+            echo "VisIt has blocked on the LATA test with $option option and has been killed after $timeout seconds. See `pwd`/$FORMAT.log"
+         fi
+         exit -1
       elif [ "`cat err 2>/dev/null`" != 0 ] || [ "`grep 'invalid file' $FORMAT.log 2>/dev/null`" != "" ] || [ "`grep abnormally $FORMAT.log 2>/dev/null`" != "" ]
       then
-	 echo "VisIt does not read a $FORMAT file with $option option for the plateform:"
-	 uname -a
-	 echo "Compiler used for the $FORMAT plugin: "`$TRUST_cc -v 2>&1 | grep version`
-	 echo "Compiler used to build VisIt: "
-	 #find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
-	 echo "See $tmp_visit/$FORMAT.log"
-	 echo "and VisIt debug files *.vlog under $tmp_visit." 
-	 cat $tmp_visit/visit.log
-	 exit -1
+         echo "VisIt does not read a $FORMAT file with $option option for the plateform:"
+         uname -a
+         echo "Compiler used for the $FORMAT plugin: "`$TRUST_cc -v 2>&1 | grep version`
+         echo "Compiler used to build VisIt: "
+         #find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
+         echo "See $tmp_visit/$FORMAT.log"
+         echo "and VisIt debug files *.vlog under $tmp_visit."
+         cat $tmp_visit/visit.log
+         exit -1
       else
-	 echo "VisIt + $FORMAT plugin are OK with $option option."
+         if [ "$FORMAT" = "MED" ]
+         then
+            echo "VisIt + $FORMAT plugin are OK with $option option."
+         else
+            echo "VisIt + LATA plugin are OK with $option option (for ${FORMAT#LATA_} discretization)."
+         fi
       fi
       done
    done
