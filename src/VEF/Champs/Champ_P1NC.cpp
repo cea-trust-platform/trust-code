@@ -390,13 +390,10 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
   // on n'a qu'a supprimer les valeurs negatives et n'apparaissent
   // que les valeurs aux parois.
 
-  int ndeb, nfin, l_unif; // DOUBT: bool l_unif?
+  int ndeb, nfin, l_unif;
   double visco0 = -1.;
   y_plus = -1.;
 
-  const Champ_P1NC& vit = *this;
-
-  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur(); // DOUBT: use domaine_Cl_VEF?
   const Equation_base& eqn_hydr = equation();
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
@@ -412,9 +409,9 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
     }
   else
     l_unif = 0;
- 
+
   if ((!l_unif) && (tab_visco.local_min_vect() < DMINFLOAT))
-  // GF on ne doit pas changer tab_visco ici !
+    // GF on ne doit pas changer tab_visco ici !
     {
       Cerr << " visco <=0 ?" << finl;
       exit();
@@ -448,49 +445,51 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
           int dim = Objet_U::dimension;
-          CDoubleTabView xp = domaine_VEF.xp().view_ro(); // DOUBT: Why defined inside the for loop?
-          CDoubleTabView xv = domaine_VEF.xv().view_ro();
-          CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
-          CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();  
-          CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
-          CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();
+          int nfac = domaine_vef().domaine().nb_faces_elem();
+          CDoubleTabView xp = domaine_vef().xp().view_ro(); // DOUBT: Why defined inside the for loop?
+          CDoubleTabView xv = domaine_vef().xv().view_ro();
+          CDoubleTabView face_normale = domaine_vef().face_normales().view_ro();
+          CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();
+          CIntTabView face_voisins = domaine_vef().face_voisins().view_ro();
+          CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();  // DOUBT: Is this correct? Original assignment was `const Champ_P1NC& vit = *this;`
           CDoubleArrView visco = static_cast<const DoubleVect&>(tab_visco).view_ro();
-          CDoubleTabView yp_faces = static_cast<const DoubleVect&>(yplus_faces).view_ro(); 
+          CDoubleArrView yp_faces = static_cast<const DoubleVect&>(yplus_faces).view_ro();
+          DoubleArrView y_plus_view = y_plus.view_rw();
 
-      	  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
-	  {
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+          {
             int num[3] {};
-	    int elem = face_voisins(num_face, 0);
+            double val[3] {};
+            int elem = face_voisins(num_face, 0);
 
-	    if (yplus_already_computed)
+            if (yplus_already_computed)
               {
-	        // y+ is only defined on faces so we take the face value to put in the element
-                // DOUBT: What View to create from y_plus? 
-	        y_plus(elem) = yp_faces(num_face);
-	      }
-	    else
-	      {
+                // y+ is only defined on faces so we take the face value to put in the element
+                y_plus_view(elem) = yp_faces(num_face);
+              }
+            else
+              {
                 int fac = 0;
                 for (int i = 0; i < dim; i++)
                   {
                     num[i] = elem_faces(elem, fac);
-                    if (num[i] == num_face) num[i] = elem_faces(elem, dim); // DOUBT 
+                    if (num[i] == num_face) num[i] = elem_faces(elem, dim); // DOUBT
                     fac++;
                   }
-                
+
                 double dist = distance(dim, num_face, elem, xp, xv, face_normale);
                 dist *= (dim + 1.) / dim; // pour se ramener a distance paroi / milieu de num[0]-num[1]
-                double norm_v = norm_vit1(dim, vit, num_face, nfac, num, face_normale, val); 
+                double norm_v = norm_vit1(dim, vit, num_face, nfac, num, face_normale, val);
                 double d_visco = l_unif ? visco0:visco[elem];
-                
+
                 // PQ : 01/10/03 : corrections par rapport a la version premiere
                 double norm_tau = d_visco * norm_v / dist;
                 double u_etoile = sqrt(norm_tau);
-                y_plus(elem) = dist * u_etoile / d_visco;
+                y_plus_view(elem) = dist * u_etoile / d_visco;
 
               } // else yplus already computed
 
-	  }); // loop on faces
+          }); // loop on faces
           end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
         } // Fin de paroi fixe
@@ -507,7 +506,7 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
   gradient_elem = 0.;
 
   calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, gradient_elem);
- 
+
   CDoubleTabView3 gradelem = gradient_elem.view3_ro();
   DoubleTabView gradu = grad_u.view_wo();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int elem)
@@ -522,7 +521,7 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
 
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-  
+
 }
 
 void Champ_P1NC::calcul_grad_T(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& grad_T) const
@@ -661,15 +660,14 @@ void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
 static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
 {
   const int nb_faces = domaine_VEF.nb_faces();
-  int i = 0;
   double norme = 0;
   int nb_compo_ = u.line_size();
- 
+
   CDoubleArrView volumes = domaine_VEF.volumes_entrelaces().view_ro(); // DOUBT: reference?
-  CDoubleTabView uview = u.view_ro(); // DOUBT: How to name this variable? 
-  
-  Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_faces, 
-  KOKKOS_LAMBDA (const int i, double s)
+  CDoubleTabView uview = u.view_ro(); // DOUBT: How to name this variable?
+
+  Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_faces,
+                          KOKKOS_LAMBDA (const int i, double s)
   {
     for (int j = 0; j < nb_compo_; j++)
       s += uview(i, j) * uview(i, j);
@@ -695,17 +693,16 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
 {
   const Domaine& mon_dom = domaine_vef().domaine();
 
-  double dnorme_H1, norme_H1_comp, int_grad_elem, norme_grad_elem;
+  double dnorme_H1;
   // DOUBT: dimension?
   const int nb_elem = mon_dom.nb_elem();
   const int nb_faces_elem = mon_dom.nb_faces_elem();
-  CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();  
+  CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();
   CDoubleTabView face_normales = domaine_vef().face_normales().view_ro();
-  CDoubleTabView oriente_normale = domaine_vef().oriente_normale().view_ro();
+  CIntTabView face_voisins = domaine_vef().face_voisins().view_ro();
+  // CDoubleTabView oriente_normale = domaine_vef().oriente_normale().view_ro();
   CDoubleArrView volumes = domaine_vef().volumes().view_ro();
-  DoubleTab& tab = valeurs();
-
-  int face_globale;
+  const DoubleTab& tab = valeurs();
 
   //On va calculer la norme H1 d'une inconnue P1NC.
   //L'algorithme tient compte des contraintes suivantes:
@@ -715,19 +712,19 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
   //ATTENTION: les prismes ne sont pas supportes.
   dnorme_H1 = 0.;
   Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_comp(), //cas scalaire ou vectoriel
-  KOKKOS_LAMBDA (const int composante, double norme_H1_comp)
+                          KOKKOS_LAMBDA (const int composante, double norme_H1_comp)
   {
     for (int K = 0; K < nb_elem; K++) //boucle sur les elements
       {
-        norme_grad_elem = 0.; //pour eviter les accumulations
+        double norme_grad_elem = 0.; //pour eviter les accumulations
         for (int i = 0; i < dimension; i++) //boucle sur la dimension du pb
           {
-            int_grad_elem = 0.; //pour eviter les accumulations
+            double int_grad_elem = 0.; //pour eviter les accumulations
             for (int face = 0; face < nb_faces_elem; face++) //boucle sur les faces d'un "K"
               {
-                face_globale = elem_faces(K, face);
+                int face_globale = elem_faces(K, face);
 
-                int_grad_elem += tab(face_globale, composante) * face_normales(face_globale, i) * oriente_normale(face_globale, K);
+                int_grad_elem += tab(face_globale, composante) * face_normales(face_globale, i) * oriente_normale(face_globale, K, face_voisins);
               } //fin du for sur "face"
 
             norme_grad_elem += int_grad_elem * int_grad_elem;
