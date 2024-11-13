@@ -109,7 +109,7 @@ define_soumission_batch()
       binding="--map-by numa --bind-to core"
       mpirun="mpirun $binding -n \$SLURM_NTASKS"
    else
-      mpirun="srun -n \$SLURM_NTASKS"
+      mpirun="srun --mpi=pmix -n \$SLURM_NTASKS"
    fi
    sub=SLURM
 }
