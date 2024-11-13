@@ -19,8 +19,8 @@ def valid_variable_name(s):
     import re
     import keyword
 
-    # replace invalid characters with underscores
-    s = re.sub(r'[^0-9a-zA-Z_]', '_', s)
+    # remove invalid char at begining of string:
+    s = re.sub(r'[^0-9a-zA-Z_]', '', s)
     # prefix leading number with 'i'
     s = re.sub(r'^([0-9])', r'i\1', s)
     # suffix reserved keywords with '_'
