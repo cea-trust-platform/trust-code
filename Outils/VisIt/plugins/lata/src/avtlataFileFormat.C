@@ -629,12 +629,11 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
             const int dim = geom.coord_.size();
             ArrOfInt ncoord(3);
             ncoord = 1;
-            int i;
-            for (i = 0; i < dim; i++)
+            for (int i = 0; i < dim; i++)
                 ncoord[i] = geom.coord_[i].size_array();
             sgrid->SetDimensions(ncoord[0], ncoord[1], ncoord[2]);
 
-            for (i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 float *data;
                 vtkFloatArray *c;
                 c = vtkFloatArray::New();
@@ -678,7 +677,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                 ghostcells->SetNumberOfTuples(ncells);
                 unsigned char *dat = (unsigned char *) ghostcells->GetVoidPointer(0);
 
-                for (trustIdType ii = 0; ii < ncells; i++)
+                for (trustIdType ii = 0; ii < ncells; ii++)
                     dat[ii] = realVal;
 
                 if (n > 0) {
@@ -691,11 +690,11 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
 
                 // ghost cells
                 trustIdType ij = 1;
-                for (i = 0; i < dim-1; i++)
+                for (int i = 0; i < dim-1; i++)
                     ij *= ncoord[i]-1;
                 if (geom.virtual_layer_begin_) {
                     // first layer of cells is ghost
-                    for (i = 0; i < ij * geom.virtual_layer_begin_; i++)
+                    for (int i = 0; i < ij * geom.virtual_layer_begin_; i++)
                         dat[i] += ghost;
                 }
                 if (geom.virtual_layer_end_) {

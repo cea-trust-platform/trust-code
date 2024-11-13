@@ -79,7 +79,11 @@ if [ ! -d ${Build} ]; then
       export MPICH_CXX=$OMPI_CXX
       export MPICH_CC=$OMPI_CC
    fi
+   
+   ## To compile VisIt plugin in Debug, use:
+   #cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Debug
    cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_STANDARD=14
+   
    [ ! -f Makefile ] && echo "Echec du construction du Makefile par CMake dans ${Build}_plugin" && exit -1
 
    cd ..
