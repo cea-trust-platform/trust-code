@@ -18,53 +18,13 @@
 #include <iostream>
 #include <Device.h>
 #include <ParserView.h>
+#define KOKKOS_IMPL_PUBLIC_INCLUDE
+#include <Kokkos_UnorderedMap.hpp>
+#include <Kokkos_UniqueToken.hpp>
+#include <TRUSTTrav.h>
 
 /*! Teste les methodes de l'interface Kokkos utilisees dans TRUST
  */
-class Object
-{
-public:
-  virtual ~Object() {}
-  Object() {}
-  virtual void setSize(int i) { les_var.resize(i); }
-  void setVar(int i, double val) { les_var[i] = val; }
-  double eval() { return 2*les_var[0]+2; }
-private:
-
-protected:
-  ArrOfDouble les_var;
-};
-class ObjectView : public Object
-{
-public:
-  ObjectView()
-  {
-    Object();
-  }
-  virtual void setSize(int i) override
-  {
-    Object::setSize(i);
-    les_var_view = les_var.view_rw();
-  }
-  // Les methodes sur le device sont const
-  KOKKOS_FUNCTION
-  void setVar(int i, double val) const { les_var_view[i] = val; }
-  KOKKOS_FUNCTION
-  double eval() const { return 2*les_var_view[0]+2; }
-private:
-  DoubleArrView les_var_view;
-};
-template<typename ExecSpace>
-void kernel(ArrOfDouble& f, ObjectView& MyObjectDevice)
-{
-  int nb_elem = f.size_array();
-  DoubleArrView f_v = f.view_rw();
-  Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
-  {
-    MyObjectDevice.setVar(0, 0.);
-    f_v(i) = MyObjectDevice.eval();
-  });
-}
 void kokkos_self_test()
 {
 #ifndef NDEBUG
@@ -193,63 +153,10 @@ void kokkos_self_test()
   // C++ object in Kokkos region
   {
     ArrOfDouble f(nb_elem);
-    f=0;
-    // Kernel host
-    Object MyObjectHost;
-    MyObjectHost.setSize(nb_elem);
-    MyObjectHost.setVar(0, 0.);
-    assert(MyObjectHost.eval()==2.);
-
-    // Kernel host or host
-    ObjectView MyObjectDevice;
-    MyObjectDevice.setSize(nb_elem);
-    assert(!f.isDataOnDevice());
-    kernel<Kokkos::DefaultHostExecutionSpace>(f, MyObjectDevice);
-    assert(f(0)==2);
-    mapToDevice(f); // envoi de f sur le device
-    assert(f.isDataOnDevice());
-    kernel<Kokkos::DefaultExecutionSpace>(f, MyObjectDevice);
-    assert(f(0)==2);
-  }
-  // Parser sur le host:
-  {
-    ArrOfDouble f(nb_elem);
-    f = 0;
-    std::string expr("2*x+2");
-    Parser parser(expr, 1);
-    parser.addVar("x");
-    parser.parseString();
-    for (int i = 0; i < nb_elem; i++)
-      {
-        double x = (double) i;
-        parser.setVar(0, x);
-        f(i) = parser.eval();
-      }
-    assert(f(0) == 2);
-    assert(f(nb_elem - 1) == 2 * nb_elem);
-  }
-  {
-    /*
-    class toto
-    {
-    public:
-    void setVar(int i, double val) const { x[i] = val; }
-    double getVar(int i) const { return x[i]; }
-    private:
-    mutable double x[3];
-    };
-    toto t;
-    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(
-                         const int i)
-    {
-    t.setVar(0, (double)i);
-    Kokkos::printf("Provisoire %d %f \n",i,t.getVar(0));
-    }); */
-    ArrOfDouble f(nb_elem);
     f = 0;
     std::string expr("2*x+2");
     // Parser sur le device;
-    ParserView parser(expr, 1, nb_elem);
+    ParserView parser(expr, 1);
     parser.addVar("x");
     parser.parseString();
     DoubleArrView f_v = f.view_rw();
@@ -257,11 +164,33 @@ void kokkos_self_test()
                            const int i)
     {
       double x = (double) i;
-      parser.setVar(0, x, i);
-      f_v(i) = parser.eval(i);
+      parser.setVar(0, x);
+      f_v(i) = parser.eval();
     });
     assert(f(0) == 2);
     assert(f(nb_elem - 1) == 2 * nb_elem);
+  }
+  {
+    // How to use VECT of TRUSTArray in Kokkos region ?
+    using DoubleTravs = TRUST_Vector<DoubleTrav>;
+    const int nb = 5;
+    DoubleTravs tab(nb);
+    Kokkos::Array<CDoubleTabView, nb> tabs;
+    for (int n=0; n<nb; n++)
+      {
+        tab[n].resize(nb_elem);
+        tab[n] = (double)n; // Initialize on host
+        auto tab_view = tab[n].view_ro(); // Copy on the device
+        tabs[n] = tab_view;
+      }
+    Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int i)
+    {
+      for (int n=0; n<nb; n++)
+        {
+          auto tab_v = tabs[n];
+          assert(tab_v(i,0)==n);
+        }
+    });
   }
 // Some check:
   /*
