@@ -98,7 +98,7 @@ public :
   inline void setString(const Nom& nom) ;
   inline void addCst(const Constante& cst);
   inline void setImpulsion(double tinit, double periode);
-
+  Parser& getParser() { return *parser; }
 
 
 

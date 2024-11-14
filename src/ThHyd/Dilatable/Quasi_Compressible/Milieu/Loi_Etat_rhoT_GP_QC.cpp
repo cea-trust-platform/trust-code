@@ -155,8 +155,7 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
   if (is_exp_)
     {
       double TMIN = TMIN_;
-      ParserView parser(parser_.getString(), 1, is_exp_ ? n : 0);
-      parser.addVar("T");
+      ParserView parser(parser_);
       parser.parseString();
       CDoubleTabView ICh = tab_ICh.view_ro();
       CDoubleArrView rho_n = static_cast<const DoubleVect&>(tab_rho_n).view_ro();
@@ -166,8 +165,8 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
       {
         double T = ICh(i, 0);
         if (T<=TMIN) Process::Kokkos_exit("Dumb temperature in Loi_Etat_rhoT_GP_QC::calculer_masse_volumique !");
-        parser.setVar(0, T, i);
-        rho_np1(i) = parser.eval(i);
+        parser.setVar(0, T);
+        rho_np1(i) = parser.eval();
         rho(i, 0) = 0.5 * (rho_n(i) + rho_np1(i));
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);

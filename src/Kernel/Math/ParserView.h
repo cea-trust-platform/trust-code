@@ -16,7 +16,7 @@
 #ifndef ParserView_included
 #define ParserView_included
 
-#include <Parser.h>
+#include <Parser_U.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_List.h>
 #include <Constante.h>
@@ -28,19 +28,24 @@
 #include <Noms.h>
 #include <TRUSTArray.h>
 #include <kokkos++.h>
+#define KOKKOS_IMPL_PUBLIC_INCLUDE
+#include <Kokkos_UniqueToken.hpp>
 
 class ParserView : public Parser
 {
 public:
-  // ToDo Kokkos constructor par copie d'un parser host + specifie nbThreads lors du parseString
-  ParserView(std::string& expr, int nvar, int numThreads) : Parser(expr,nvar)
-  {
-    Parser::setNbVar(nvar);
-    les_var_view = Kokkos::View<double**>("les_vars", nvar, numThreads);
-  }
+  /**
+  * Constructors (generally by copy of a ParserU)
+  */
+  ParserView(Parser_U& p) : Parser(p.getParser()) {}
+  ParserView(std::string& expr, int nvar) : Parser(expr,nvar) {}
+  /**
+  * Parse string
+  */
   void parseString() override
   {
     Parser::parseString();
+    les_var_view = Kokkos::View<double**>("les_vars", getNbVar(), token.size());
     PNodes_view = Kokkos::View<PNodePod*>("PNodes device", PNodes.size());
     // Copy data from std::vector to the host mirror of the Kokkos View
     auto host_PNodes_view = Kokkos::create_mirror_view(PNodes_view);
@@ -49,13 +54,22 @@ public:
     // Copy host mirror to device
     Kokkos::deep_copy(PNodes_view, host_PNodes_view);
   }
-  KOKKOS_INLINE_FUNCTION void setVar(int i, double val, int threadId) const
+  KOKKOS_INLINE_FUNCTION void setVar(int i, double val) const
   {
     assert(i>=0 && i<ivar);
+    int threadId = token.acquire();
     les_var_view(i, threadId) = val;
+    token.release(threadId);
   }
-  KOKKOS_INLINE_FUNCTION double eval(int threadId) const { return eval(PNodes_view[0], threadId); }
+  KOKKOS_INLINE_FUNCTION double eval() const
+  {
+    int threadId = token.acquire();
+    double val = eval(PNodes_view[0], threadId);
+    token.release(threadId);
+    return val;
+  }
 private:
+  Kokkos::Experimental::UniqueToken<Kokkos::DefaultExecutionSpace> token;
   struct StackEntry
   {
     int node_idx;    // Index in PNodes_view array
