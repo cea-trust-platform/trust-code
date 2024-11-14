@@ -87,6 +87,7 @@ void Domaine_DG::discretiser()
 
 void Domaine_DG::compute_mesh_param()
 {
+  /*
   int nb_elem = this->nb_elem();
 
   DiaTri.resize(nb_elem);
@@ -114,6 +115,7 @@ void Domaine_DG::compute_mesh_param()
       rhoTri(e) = 4. * this->volumes(e) / PerTri(e);
       sigTri(e) = DiaTri(e) / rhoTri(e);
     }
+    */
 }
 
 //TODO DG h_carre with diameter
