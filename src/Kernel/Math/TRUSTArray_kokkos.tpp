@@ -19,7 +19,7 @@
 #include <TRUSTArray.h>
 #ifdef KOKKOS
 
-/*! Access the correct dual view member, according to SHAPE
+/*! Access the correct dual view member, according to _SHAPE_
  */
 // get_dual_view for _SHAPE_ == 1
 template<typename _TYPE_, typename _SIZE_>
@@ -62,7 +62,7 @@ template<typename _TYPE_, typename _SIZE_>
 template<int _SHAPE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
 
   const auto& dual_view = get_dual_view<_SHAPE_>();
 
@@ -120,7 +120,7 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
   // Init if necessary
   this->template init_view<_SHAPE_>();
   auto& view = get_dual_view<_SHAPE_>();
@@ -142,7 +142,7 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
 
   return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), this->dimension_tot(0),
                                        1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
@@ -157,7 +157,7 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
 
   // Init if necessary
   this->template init_view<_SHAPE_>();
@@ -178,7 +178,7 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
 
   return HostView<_TYPE_,_SHAPE_>(this->addr(), this->dimension_tot(0),
                                   1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
@@ -193,7 +193,7 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
 
   // Init if necessary
   this->template init_view<_SHAPE_>();
@@ -215,7 +215,7 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong shape
+  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
 
   return HostView<_TYPE_,_SHAPE_>(this->addr(), this->dimension_tot(0),
                                   1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,

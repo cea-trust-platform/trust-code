@@ -240,51 +240,51 @@ public:
 
 #ifdef KOKKOS
 
-  //Overriden accessors from TRUSTArray. The default shape is 2 for tabs, then calls the Vect accessor
+  //Overriden accessors from TRUSTArray. The default _SHAPE_ is 2 for tabs, then calls the Vect accessor
 
   // Read-only
-  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_, SHAPE>>
+  template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_, _SHAPE_>>
                                                                                     view_ro() const
   {
-    return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<SHAPE, EXEC_SPACE>();
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<_SHAPE_, EXEC_SPACE>();
   }
 
-  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_, SHAPE>>
+  template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_, _SHAPE_>>
                                                                                      view_ro() const
   {
-    return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<SHAPE, EXEC_SPACE>();
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<_SHAPE_, EXEC_SPACE>();
   }
 
   // Write-only
-  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, SHAPE>>
+  template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, _SHAPE_>>
                                                                                view_wo()
   {
-    return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<SHAPE, EXEC_SPACE>();
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<_SHAPE_, EXEC_SPACE>();
   }
 
-  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, SHAPE>>
+  template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, _SHAPE_>>
                                                                                 view_wo()
   {
-    return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<SHAPE, EXEC_SPACE>();
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<_SHAPE_, EXEC_SPACE>();
   }
 
   // Read-write
-  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, SHAPE>>
+  template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, _SHAPE_>>
                                                                                view_rw()
   {
-    return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<SHAPE, EXEC_SPACE>();
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<_SHAPE_, EXEC_SPACE>();
   }
 
-  template <int SHAPE = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, SHAPE>>
+  template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
+  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, _SHAPE_>>
                                                                                 view_rw()
   {
-    return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<SHAPE, EXEC_SPACE>();
+    return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<_SHAPE_, EXEC_SPACE>();
   }
 
 #endif
