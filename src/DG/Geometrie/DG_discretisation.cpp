@@ -155,6 +155,7 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
 
   const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, z);
 
+
   Motcles motcles(8);
   motcles[0] = "pression";    // Choix standard pour la pression
   motcles[1] = "temperature"; // Choix standard pour la temperature
@@ -168,13 +169,20 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
   Nom type;
   int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
   int rang = motcles.search(directive);
+  const Nom& type_elem_geom = domaine_DG.domaine().type_elem()->que_suis_je();
+  int nb_pts_integ=-1;
+  if (type_elem_geom == "Triangle")
+    nb_pts_integ = 7;
+  else if (type_elem_geom == "Quadrangle")
+    nb_pts_integ=16;
+
 //  const int order_DG = Option_DG::Get_order_for(directive);
   switch(rang)
     {
     case 0:
     case 1:
       type = "Champ_Fonc_P1_DG";
-      default_nb_comp = 7; //Option_DG::Nb_col_from_order(order_DG);;
+      default_nb_comp = nb_pts_integ; //Option_DG::Nb_col_from_order(order_DG);;
       break;
     case 2:
     case 3:

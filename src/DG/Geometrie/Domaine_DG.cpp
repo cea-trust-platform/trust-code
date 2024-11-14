@@ -36,6 +36,9 @@
 #include <Quadrature_Ord1_Triangle.h>
 #include <Quadrature_Ord2_Triangle.h>
 #include <Quadrature_Ord5_Triangle.h>
+#include <Quadrature_Ord1_Quadrangle.h>
+#include <Quadrature_Ord3_Quadrangle.h>
+#include <Quadrature_Ord5_Quadrangle.h>
 #include <Champ_Elem_DG.h>
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
@@ -50,13 +53,35 @@ void Domaine_DG::discretiser()
 
   calculer_h_carre();
   compute_mesh_param();
-  Quadrature_base* quad1 = new Quadrature_Ord1_Triangle(*this);
-  Quadrature_base* quad2 = new Quadrature_Ord2_Triangle(*this);
-  Quadrature_base* quad5 = new Quadrature_Ord5_Triangle(*this);
+  // if triangle elem
 
-  set_quadrature(1, quad1);
-  set_quadrature(2, quad2);
-  set_quadrature(5, quad5);
+  const Nom& type_elem_geom = domaine().type_elem()->que_suis_je();
+
+  if (type_elem_geom == "Triangle")
+    {
+      Quadrature_base* quad1 = new Quadrature_Ord1_Triangle(*this);
+      Quadrature_base* quad2 = new Quadrature_Ord2_Triangle(*this);
+      Quadrature_base* quad5 = new Quadrature_Ord5_Triangle(*this);
+      // association of the quads with the dom
+      set_quadrature(1, quad1);
+      set_quadrature(2, quad2);
+      set_quadrature(5, quad5);
+    }
+  else if (type_elem_geom == "Quadrangle")
+    {
+      // If Quadrangle elem
+      Quadrature_base* quad1 = new Quadrature_Ord1_Quadrangle(*this);
+      Quadrature_base* quad2 = new Quadrature_Ord3_Quadrangle(*this);  // yes 3, who can do the most can do the least
+      Quadrature_base* quad5 = new Quadrature_Ord5_Quadrangle(*this);
+      // association of the quads with the dom
+      set_quadrature(1, quad1);
+      set_quadrature(2, quad2);
+      set_quadrature(5, quad5);
+    }
+  else
+    {
+      Process::exit("This geometry is not yet covered in DG");
+    }
 
 }
 

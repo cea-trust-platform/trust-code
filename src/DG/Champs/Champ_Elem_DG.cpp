@@ -71,7 +71,7 @@ void Champ_Elem_DG::build_mass_matrix()
 
   int current_indice = 0;
 
-  const Quadrature_base& quad = domaine.get_quadrature(2);
+  const Quadrature_base& quad = domaine.get_quadrature(5);
   int nb_pts_integ = quad.nb_pts_integ();
 
   DoubleTab fbase(nb_bfunc_, nb_pts_integ);
@@ -408,7 +408,6 @@ Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
 
   for (int num_elem = 0; num_elem < nb_elem_tot; num_elem++)
     {
-
       eval_bfunc(quad, num_elem, fbase);
 
       for (int fb = 0; fb < nb_bfunc_; fb++)
