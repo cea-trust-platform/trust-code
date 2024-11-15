@@ -628,20 +628,29 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
   //Calcul des valeurs de l espace de stockage en fonction de methode_ selectionne
   if ((Motcle(methode_)=="produit_scalaire") || (Motcle(methode_)=="norme"))
     {
-      Parser_U& f = fxyz[0];
-      ToDo_Kokkos("critical loop");
-      for (int i=0; i<nb_pos; i++)
+      ParserView parser(fxyz[0]);
+      parser.parseString();
+      const int max_nb_sources = 10;
+      int dim = dimension;
+      //int nb_comp = nb_comp_;
+      if (nb_sources>max_nb_sources)
         {
-          for (int so=0; so<nb_sources; so++)
-            {
-              const DoubleTab& source_so_val = sources_val[so];
-              for (int j=0; j<dimension; j++)
-                f.setVar(so*dimension+j,source_so_val(i,j));
-              // Optimisation plus rapide que:
-              //f.setVar(compo[so*dimension+j],source_so_val(i,j));
-            }
-          valeurs_espace(i) = f.eval();
+          Cerr << "Increase max_nb_sources to " << nb_sources
+               << " in Champ_base& Champ_Generique_Transformation::get_champ() !" << finl;
+          Process::exit();
         }
+      Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
+      for (int so=0; so<nb_sources; so++)
+        sources[so] = sources_val[so].view_ro();
+      DoubleArrView valeurs = static_cast<ArrOfDouble&>(valeurs_espace).view_wo();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
+      {
+        for (int so=0; so<nb_sources; so++)
+          for (int j=0; j<dim; j++)
+            parser.setVar(so*dim+j,sources[so](i,j));
+        valeurs(i) = parser.eval();
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else if (Motcle(methode_)=="vecteur")
     {
