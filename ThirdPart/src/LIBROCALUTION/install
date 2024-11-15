@@ -50,6 +50,7 @@ if [ "$ROCM_PATH" = /opt/rocm-5.7.1 ]
 then
    sed -i "1,$ s?nullptr,?/* nullptr, */?g" src/base/hip/hip_sparse.cpp || exit -1
    sed -i "1,$ s?PtrType?int32_t?g"         src/base/global_matrix.hpp  || exit -1
+   sed -i "1,$ s?PtrType?int32_t?g"         src/base/local_matrix.hpp  || exit -1
 fi
 
 rm -r -f build
