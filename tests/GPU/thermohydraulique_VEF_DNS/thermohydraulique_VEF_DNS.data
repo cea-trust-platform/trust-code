@@ -46,7 +46,7 @@ runge_kutta_ordre_3 sch_ex
 Read sch_ex
 {
 nb_pas_dt_max 10
-        tinit 0.0
+        tinit 120.
         tmax 10000
         dt_min 1.e-11
         # dt_max 5. #
@@ -429,15 +429,15 @@ Lire pb
                                                         STAT_MOY_vitesse elem
                                                         STAT_EC_vitesse elem
                                                         STAT_MOY_temperature elem
-                                                        STAT_EC_temperature elem
-							STAT_MOY_yplus elem
-							STAT_EC_yplus elem
+                                                        # STAT_EC_temperature elem # # ecart optimise - debug ! #
+                                                        STAT_MOY_yplus elem
+                                                        STAT_EC_yplus elem
                                                      	epsilon elem
                                                         TKE elem
-							FLUCT_vitesse elem
+                                                        FLUCT_vitesse elem
                                                      	TaylorScale elem
                                                         KolmogorovScale elem
-							IntegralScale elem
+                                                        IntegralScale elem
                                                         BatchelorScale elem
                                                         volume_maille
                                                         }
