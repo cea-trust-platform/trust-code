@@ -49,9 +49,9 @@ protected:
     assert(verifie_LINE_SIZE());
     if (TRUSTVect<_TYPE_,_SIZE_>::nproc() > 1 && TRUSTVect<_TYPE_,_SIZE_>::get_md_vector().non_nul())
       Process::exit("Error in TRUSTTab::printOn: try to print a parallel vector");
-    os << nb_dim_ << finl;
+    os << this->nb_dim_ << finl;
     assert(dimensions_[0] == dimension_tot_0_);
-    if (nb_dim_ > 0) os.put(dimensions_, nb_dim_, nb_dim_);
+    if (this->nb_dim_ > 0) os.put(dimensions_, this->nb_dim_, this->nb_dim_);
 
     const _SIZE_ sz = TRUSTVect<_TYPE_,_SIZE_>::size_array();
     os << sz << finl;
@@ -73,20 +73,20 @@ protected:
     if (TRUSTVect<_TYPE_,_SIZE_>::get_md_vector().non_nul())
       Process::exit("Error in TRUSTTab::readOn: vector has a parallel structure");
 
-    is >> nb_dim_;
-    if (nb_dim_ < 1 || nb_dim_ > MAXDIM_TAB)
+    is >> this->nb_dim_;
+    if (this->nb_dim_ < 1 || this->nb_dim_ > MAXDIM_TAB)
       {
-        Cerr << "Error in TRUSTTab::readOn: wrong nb_dim_ = " << nb_dim_ << finl;
+        Cerr << "Error in TRUSTTab::readOn: wrong this->nb_dim_ = " << this->nb_dim_ << finl;
         Process::exit();
       }
-    is.get(dimensions_, nb_dim_);
+    is.get(dimensions_, this->nb_dim_);
     if (dimensions_[0] < 0)
       {
         Cerr << "Error in TRUSTTab::readOn: wrong dimension(0) = " << dimensions_[0] << finl;
         Process::exit();
       }
     int l_size = 1;
-    for (int i = 1; i < nb_dim_; i++)
+    for (int i = 1; i < this->nb_dim_; i++)
       {
         if (dimensions_[i] < 0)
           {
@@ -112,25 +112,29 @@ public:
   // Useful for from_tid_to_int() method implementation.
   friend TRUSTTab<int, int>;
 
-  TRUSTTab() : nb_dim_(1), dimension_tot_0_(0)
+  TRUSTTab() : dimension_tot_0_(0)
   {
+    this->nb_dim_=1;
     init_dimensions(dimensions_);
     dimensions_[0] = 0;
   }
 
-  TRUSTTab(const TRUSTTab& dbt): TRUSTVect<_TYPE_,_SIZE_>(dbt), nb_dim_(dbt.nb_dim_), dimension_tot_0_(dbt.dimension_tot_0_)
+  TRUSTTab(const TRUSTTab& dbt): TRUSTVect<_TYPE_,_SIZE_>(dbt), dimension_tot_0_(dbt.dimension_tot_0_)
   {
+    this->nb_dim_=dbt.nb_dim_;
     for (int i = 0; i < MAXDIM_TAB; i++) dimensions_[i] = dbt.dimensions_[i];
   }
 
-  TRUSTTab(_SIZE_ n) : TRUSTVect<_TYPE_,_SIZE_>(n), nb_dim_(1), dimension_tot_0_(n)
+  TRUSTTab(_SIZE_ n) : TRUSTVect<_TYPE_,_SIZE_>(n), dimension_tot_0_(n)
   {
+    this->nb_dim_=1;
     init_dimensions(dimensions_);
     dimensions_[0] = n;
   }
 
-  TRUSTTab(_SIZE_ n1, int n2): TRUSTVect<_TYPE_,_SIZE_>(n1*n2), nb_dim_(2), dimension_tot_0_(n1)
+  TRUSTTab(_SIZE_ n1, int n2): TRUSTVect<_TYPE_,_SIZE_>(n1*n2), dimension_tot_0_(n1)
   {
+    this->nb_dim_=2;
     assert(n1 >= 0 && n2 >= 0);
     if (std::is_same<_TYPE_,int>::value && (long)n1*(long)n2 > (long)std::numeric_limits<int>::max())
       {
@@ -143,8 +147,10 @@ public:
     TRUSTVect<_TYPE_,_SIZE_>::set_line_size_(n2);
   }
 
-  TRUSTTab(_SIZE_ n1, int n2, int n3) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2*n3), nb_dim_(3), dimension_tot_0_(n1)
+  TRUSTTab(_SIZE_ n1, int n2, int n3) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2*n3), dimension_tot_0_(n1)
   {
+
+    this->nb_dim_=3;
     assert(n1 >= 0 && n2 >= 0 && n3 >= 0);
     if (std::is_same<_TYPE_,int>::value && (long)n1*(long)n2*(long)n3 > (long)std::numeric_limits<int>::max())
       {
@@ -158,8 +164,9 @@ public:
     TRUSTVect<_TYPE_,_SIZE_>::set_line_size_(n2*n3);
   }
 
-  TRUSTTab(_SIZE_ n1, int n2, int n3, int n4) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2*n3*n4), nb_dim_(4), dimension_tot_0_(n1)
+  TRUSTTab(_SIZE_ n1, int n2, int n3, int n4) : TRUSTVect<_TYPE_,_SIZE_>(n1*n2*n3*n4), dimension_tot_0_(n1)
   {
+    this->nb_dim_=4;
     assert(n1 >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0);
     if (std::is_same<_TYPE_,int>::value && (long)n1*(long)n2*(long)n3*(long)n4 > (long)std::numeric_limits<int>::max())
       {
@@ -190,7 +197,7 @@ public:
   _SIZE_ dimension(int d) const;
   int dimension_int(int d) const;
 
-  inline int nb_dim() const { return nb_dim_; }
+  inline int nb_dim() const { return this->nb_dim_; }
 
   // See same method in TRUSTArray - CAREFUL, this is not an override because arg types are different (tab vs arr)
   inline void from_tid_to_int(TRUSTTab<int, int>& out) const;
@@ -245,14 +252,14 @@ public:
   // Read-only
   template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_, _SHAPE_>>
-                                                                                    view_ro() const
+                                                                                      view_ro() const
   {
     return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<_SHAPE_, EXEC_SPACE>();
   }
 
   template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_, _SHAPE_>>
-                                                                                     view_ro() const
+  inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_, _SHAPE_>>
+                                                                                                   view_ro() const
   {
     return TRUSTVect<_TYPE_, _SIZE_>::template view_ro<_SHAPE_, EXEC_SPACE>();
   }
@@ -260,14 +267,14 @@ public:
   // Write-only
   template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, _SHAPE_>>
-                                                                               view_wo()
+                                                                                 view_wo()
   {
     return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<_SHAPE_, EXEC_SPACE>();
   }
 
   template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, _SHAPE_>>
-                                                                                view_wo()
+  inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, _SHAPE_>>
+                                                                                              view_wo()
   {
     return TRUSTVect<_TYPE_, _SIZE_>::template view_wo<_SHAPE_, EXEC_SPACE>();
   }
@@ -275,14 +282,14 @@ public:
   // Read-write
   template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
   inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_, _SHAPE_>>
-                                                                               view_rw()
+                                                                                 view_rw()
   {
     return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<_SHAPE_, EXEC_SPACE>();
   }
 
   template <int _SHAPE_ = 2, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, _SHAPE_>>
-                                                                                view_rw()
+  inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_, _SHAPE_>>
+                                                                                              view_rw()
   {
     return TRUSTVect<_TYPE_, _SIZE_>::template view_rw<_SHAPE_, EXEC_SPACE>();
   }
@@ -290,10 +297,7 @@ public:
 #endif
 private:
   static constexpr int MAXDIM_TAB = 4;
-  // Nombre de dimensions du tableau (nb_dim_>=1)
-  int nb_dim_; //Now Also in TrustArray
-
-  /*! Dimensions "reelles" (dimensions_[0] * line_size() = size_reelle()) : line_size() est egal au produit des dimensions_[i] pour 1 <= i < nb_dim_
+  /*! Dimensions "reelles" (dimensions_[0] * line_size() = size_reelle()) : line_size() est egal au produit des dimensions_[i] pour 1 <= i < this->nb_dim_
    *  Everything is stored as _SIZE_ but higher dims (>=1) should fit in an int. See line_size().
    */
   _SIZE_ dimensions_[MAXDIM_TAB];
@@ -313,7 +317,7 @@ private:
 
   inline bool verifie_LINE_SIZE() const
   {
-    return ((TRUSTVect<_TYPE_,_SIZE_>::line_size() == ((nb_dim_ > 1) ? dimensions_[1] : 1) * ((nb_dim_ > 2) ? dimensions_[2] : 1) * ((nb_dim_ > 3) ? dimensions_[3] : 1))
+    return ((TRUSTVect<_TYPE_,_SIZE_>::line_size() == ((this->nb_dim_ > 1) ? dimensions_[1] : 1) * ((this->nb_dim_ > 2) ? dimensions_[2] : 1) * ((this->nb_dim_ > 3) ? dimensions_[3] : 1))
             && (TRUSTVect<_TYPE_,_SIZE_>::line_size() * dimension_tot_0_ == TRUSTVect<_TYPE_,_SIZE_>::size_array()));
   }
 
