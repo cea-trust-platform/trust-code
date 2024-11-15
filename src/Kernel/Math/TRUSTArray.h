@@ -31,21 +31,21 @@
 //Booleans for checking if an execution space is host or device
 #ifndef LATATOOLS
 
-//Checking if ExecSpace is Device (Kokkos::DefaultExecutionSpace) or Host (DefaultHostExecutionSpace)
 //When compiled on CPU, DefaultExecutionSpace=DefaultHostExecutionSpace = serial or OpenMP
 //When compiled on GPU, DefaultExecutionSpace=Cuda, DefaultHostExecutionSpace=serial or OpenMP
 
 //Checking if ExecSpace is Kokkos::DefaultExecutionSpace
-//CPU or GPU, true if ExecSpace=Device
+//GPU compiled: True if Exec=Device
+//CPU compiled: Always true
 template <typename EXEC_SPACE >
 constexpr bool is_default_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultExecutionSpace>::value;
 
-//Checking if ExecSpace is Kokkos::DefaultHostExecutionSpace
-//GPU: !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value; true is Exec=Host
-//CPU: !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value; false, always false
+//Checking if GPU enabled, and if so, checking if ExecSpace is Kokkos::DefaultExecutionSpace
+//GPU compiled: true is Exec=Host
+//CPU compiled: Always false
 template <typename EXEC_SPACE >
-constexpr bool is_host_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value &&
-                                    !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value;
+constexpr bool gpu_enabled_is_host_exec_space = std::is_same<EXEC_SPACE, Kokkos::DefaultHostExecutionSpace>::value &&
+                                                !std::is_same<Kokkos::DefaultHostExecutionSpace, Kokkos::DefaultExecutionSpace>::value;
 #endif
 
 /*! @brief Represents a an array of int/int64/double/... values.
@@ -91,6 +91,9 @@ protected:
   Sortie& printOn(Sortie& os) const override;
   Entree& readOn(Entree& is) override;
 
+  //From TRUSTTab.h; now here
+  int nb_dim_ = 1;
+
 public:
   using Value_type_ = _TYPE_;
   using int_t = _SIZE_;
@@ -99,7 +102,7 @@ public:
   using Span_ = tcb::span<_TYPE_>;
 
   // Tests can inspect whatever they want:
-  friend class TestTRUSTArray;
+  friend class TRUSTArrayKokkos;
 
   // One instanciation with given template parameter may see all other template versions (useful in ref_as_big())
   template<typename _TYPE2_, typename _SIZE2_> friend class TRUSTArray;
@@ -189,6 +192,10 @@ public:
   /*! Returns the number of owners of the data, i.e. the number of Arrays pointing to the same underlying data */
   inline int ref_count() const;
 
+#ifdef TRUST_GTEST
+  inline int nb_dim() const;
+#endif
+
   /*! Add a slot at the end of the array and store it valeur -> similar to vector<>::push_back */
   inline void append_array(_TYPE_ valeur);
 
@@ -257,6 +264,9 @@ public:
 
 #ifdef KOKKOS
 
+  template<int _SHAPE_>
+  inline bool check_flattened() const;
+
   //Clean the internal view of the Trust Array in case it is needed, if the Array is static to avoid it's destruction after Kokkos::finalize
   inline void CleanMyDualView()
   {
@@ -274,7 +284,7 @@ public:
   view_ro() const;
 
   template <int _SHAPE_ = 1, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,_SHAPE_> >
+  inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,_SHAPE_> >
   view_ro() const;
 
   // Write-only
@@ -283,7 +293,7 @@ public:
   view_wo();
 
   template <int _SHAPE_ = 1, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
+  inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
   view_wo();
 
   // Read-write
@@ -292,7 +302,7 @@ public:
   view_rw();
 
   template <int _SHAPE_ = 1, typename EXEC_SPACE=Kokkos::DefaultExecutionSpace>
-  inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
+  inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
   view_rw();
 
 #endif
@@ -315,10 +325,6 @@ protected:
 #endif
 
 private:
-
-  //From TRUSTArray.h, now also here
-  static constexpr int MAXDIM_TAB = 4;
-  int nb_dim_ = 1;
 
   /*! Shared pointer to the actual underlying memory block:
    *   - shared_ptr because data can be shared between several owners -> see ref_array()

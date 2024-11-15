@@ -17,6 +17,7 @@
 #define TRUSTArr_kokkos_TPP_included
 
 #include <TRUSTArray.h>
+
 #ifdef KOKKOS
 
 /*! Access the correct dual view member, according to _SHAPE_
@@ -62,7 +63,8 @@ template<typename _TYPE_, typename _SIZE_>
 template<int _SHAPE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
+  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
+  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
   const auto& dual_view = get_dual_view<_SHAPE_>();
 
@@ -70,7 +72,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
   if(dual_view.h_view.is_allocated() &&
       dual_view.h_view.data() == this->data() &&
       dual_view.view_device().data() == addrOnDevice(*this) &&
-      (long) dual_view.extent(0) == this->dimension_tot(0) &&
+      (long) dual_view.extent(0) == dimension_tot_0 &&
       (_SHAPE_ >= 2 && (long) dual_view.extent(1) == this->dimension_tot(1)) &&
       (_SHAPE_ >= 3 && (long) dual_view.extent(2) == this->dimension_tot(2)) &&
       (_SHAPE_ >= 4 && (long) dual_view.extent(3) == this->dimension_tot(3))    )
@@ -86,7 +88,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
   using t_host = typename DualView<_TYPE_,_SHAPE_>::t_host;  // Host type
   using t_dev = typename DualView<_TYPE_,_SHAPE_>::t_dev;    // Device type
 
-  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), this->dimension_tot(0),
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dimension_tot_0,
                             1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                             2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                             3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
@@ -94,7 +96,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
 #ifdef _OPENMP_TARGET
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view()");
-  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), this->dimension_tot(0),
+  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dimension_tot_0,
                       1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                       2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                       3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
@@ -112,18 +114,41 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
   mutable_dual_view.template modify<host_mirror_space>();
 
 }
+//Check if the internal value of nb_dim_ (that can be >1 if the Array is a Tab) is compatible with the _SHAPE_
+//argument of the accessors. Morevover, it returns true if you are trying to flatten a Tab into an array, or false otherwise
+template<typename _TYPE_, typename _SIZE_>
+template<int _SHAPE_>
+bool TRUSTArray<_TYPE_,_SIZE_>::check_flattened() const
+{
+  //nb_dim_=1 -> TRUSTArray
+  //Trying to represent a 1D TRUSTArray with a multi-D View
+#ifdef DEBUG
+  bool is_array = std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos;
+  assert(not(is_array && _SHAPE_>1));
+#endif
+
+  //nb_dim_>1 -> TRUSTTab
+  //Mismatch in Tab dimension and accessor _SHAPE_ value !
+  assert((not(this->nb_dim_>1 && _SHAPE_>1 && _SHAPE_ != this->nb_dim_)));
+
+  // The Tab accessor can sometime be called with _SHAPE_ == 1.
+  // For instance, this can happen when an Tab is casted (flattened) into an Array through function calls.
+  // In this case, we want the View to be flattened with the first dimension as the total size of the tab
+  // Otherwise, this would give a 1D View of dimension equal to the first dimension of the Tab (typically <)
+  return ((this->nb_dim_> 1 && _SHAPE_==1));
+}
 
 ///////////// Read-Only ////////////////////////////
-//// Device version
+// Device version (GPU / CPU compiled)
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, ConstView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
   // Init if necessary
   this->template init_view<_SHAPE_>();
-  auto& view = get_dual_view<_SHAPE_>();
+
+  auto& view = this->get_dual_view<_SHAPE_>();
 #ifdef _OPENMP_TARGET
   mapToDevice(*this, "Kokkos TRUSTTab::view_ro()");
 #else
@@ -136,32 +161,34 @@ TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
   return view.view_device();
 }
 
-// Host version
+// GPU compiled, host view version
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<int _SHAPE_, typename EXEC_SPACE>
-inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,_SHAPE_> >
+inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
+  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
 
-  return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), this->dimension_tot(0),
+  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+
+  return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), dimension_tot_0,
                                        1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                        2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                        3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
 }
 
+
 //////////// Write-only ////////////////////////////
-// Device version
+// Device version (GPU / CPU compiled)
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
-
   // Init if necessary
   this->template init_view<_SHAPE_>();
-  auto& view = get_dual_view<_SHAPE_>();
+  auto& view = this->get_dual_view<_SHAPE_>();
+
 #ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_,_SIZE_>::view_wo()"); // ToDo allouer sans copie ?
 #else
@@ -172,32 +199,33 @@ TRUSTArray<_TYPE_,_SIZE_>::view_wo()
   return view.view_device();
 }
 
-// Host version
+// GPU compiled, host view version
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<int _SHAPE_, typename EXEC_SPACE>
-inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
+inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
+  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
 
-  return HostView<_TYPE_,_SHAPE_>(this->addr(), this->dimension_tot(0),
+  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+
+  return HostView<_TYPE_,_SHAPE_>(this->addr(), dimension_tot_0,
                                   1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                   2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                   3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
 }
 
 //////////// Read-Write ////////////////////////////
-// Device version
+// Device version (GPU / CPU compiled)
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<is_default_exec_space<EXEC_SPACE>, View<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
-
   // Init if necessary
   this->template init_view<_SHAPE_>();
-  auto& view = get_dual_view<_SHAPE_>();
+  auto& view = this->get_dual_view<_SHAPE_>();
+
 #ifdef _OPENMP_TARGET
   computeOnTheDevice(*this, "Kokkos view_rw()");
 #else
@@ -209,15 +237,17 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
   // return *device* view:
   return view.view_device();
 }
-// Host version
+// GPU compiled, host view version
 template<typename _TYPE_, typename _SIZE_>  // this one first!!
 template<int _SHAPE_, typename EXEC_SPACE>
-inline std::enable_if_t<is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
+inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
-  assert(nb_dim_==_SHAPE_); //The accessors should never be called with the wrong _SHAPE_
+  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
 
-  return HostView<_TYPE_,_SHAPE_>(this->addr(), this->dimension_tot(0),
+  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+
+  return HostView<_TYPE_,_SHAPE_>(this->addr(), dimension_tot_0,
                                   1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                   2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                   3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);

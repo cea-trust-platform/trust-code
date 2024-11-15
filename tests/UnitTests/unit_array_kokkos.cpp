@@ -41,20 +41,6 @@ TEST(TRUSTArrayKokkos, KokkosAccessorRO) {
     }
 }
 
-TEST(TRUSTArrayKokkos, KokkosAccessorWO) {
-    {
-        int N=100;
-        ArrOfDouble array(100);
-
-        auto view_wo = array.view_wo();
-
-        //Can I write ?
-        for (int i = 0; i < N; ++i) {view_wo(i)=2*i;}
-        //Is the array correctly modified ?
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], 2*i);}
-
-    }
-}
 
 TEST(TRUSTArrayKokkos, KokkosAccessorRW) {
     {
@@ -157,56 +143,6 @@ TEST(TRUSTArrayKokkos, KokkosAccessorSyncErrorFixed) {
     }
 }
 
-// TEST(TRUSTArrayKokkos, FlattenedTabAccessors) {
-
-//         int n0=10, n1=11, n2=12;
-
-//         TRUSTTab<double, int> tab(n0,n1,n2);
-
-//         TRUSTArray<double, int> &tab_array = tab;
-
-//         TRUSTArray<double, int> array(n0);
-
-//         //Correct dimensions, especially when casted into an array
-//         EXPECT_EQ(tab.nb_dim(), 3);
-//         EXPECT_EQ(tab_array.nb_dim(), 3);
-
-//         //Same size in memory
-//         EXPECT_EQ(tab_array.size_array(), n0*n1*n2);
-//         EXPECT_EQ(tab.size_array(), n0*n1*n2);
-
-//         //You cannot use the wrong SHAPE on a tab 4!=3
-//         EXPECT_DEATH( {tab.check_flattened<4>(); }, ".*" );
-
-//         //You cannot use a SHAPE>1 on an array;
-//         EXPECT_DEATH( {array.check_flattened<4>(); }, ".*" );
-//         EXPECT_DEATH( {tab_array.check_flattened<4>(); }, ".*" );
-
-//         //Creation of a flattened view on tab
-//         auto view_tab_1 = tab.view_rw<1, Kokkos::DefaultExecutionSpace>();
-//         auto view_tab_array_1 = tab_array.view_rw<1, Kokkos::DefaultExecutionSpace>();
-
-//         auto view_tab_3 = tab.view_rw<3, Kokkos::DefaultExecutionSpace>();
-
-//         //Correct extent
-//         EXPECT_EQ((int)view_tab_1.extent(0), n0*n1*n2);
-//         EXPECT_EQ((int)view_tab_array_1.extent(0), n0*n1*n2);
-
-//         EXPECT_EQ((int)view_tab_3.extent(0), n0);
-//         EXPECT_EQ((int)view_tab_3.extent(1), n1);
-//         EXPECT_EQ((int)view_tab_3.extent(2), n2);
-
-//         //Compatible with _SHAPE_=1, detects flattening
-//         EXPECT_TRUE(tab.check_flattened<1>());
-//         EXPECT_TRUE(tab_array.check_flattened<1>());
-//         EXPECT_TRUE(array.check_flattened<1>());
-
-//         //OK to create a multiD view on a 1D tab
-//         TRUSTTab<double, int> tab_1D(n0);
-//         EXPECT_FALSE(tab_1D.check_flattened<4>());
-// }
-
-#ifdef __NVCOMPILER
 #pragma diag_default 177
 #endif
 

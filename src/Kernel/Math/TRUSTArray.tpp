@@ -198,6 +198,14 @@ inline int TRUSTArray<_TYPE_, _SIZE_>::ref_count() const
   return mem_ ? (int)mem_.use_count() : -1;
 }
 
+#ifdef TRUST_GTEST
+template <typename _TYPE_, typename _SIZE_>
+inline int TRUSTArray<_TYPE_, _SIZE_>::nb_dim() const
+{
+  return this->nb_dim_;
+}
+#endif
+
 /**  Ajoute une case en fin de tableau et y stocke la "valeur"
  * Precondition:
  *  Le tableau ne doit pas etre "ref_data",
