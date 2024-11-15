@@ -45,20 +45,20 @@ VEFPreP1B dis
 runge_kutta_ordre_3 sch_ex
 Read sch_ex
 {
-    nb_pas_dt_max 10
-    tinit 0.0
-    tmax 10000
-    dt_min 1.e-11
-    # dt_max 5. #
-    # dt_max 2. #
-    dt_max 1.e-2
-    dt_impr 1.e-2
-    dt_sauv 1.
-    dt_start dt_calc
-    seuil_statio 1.e-8
-    facsec 1
-    diffusion_implicite 1
-    tcpumax 20		/* Le calcul s'arretera proprement apres n heures */
+nb_pas_dt_max 10
+        tinit 120.
+        tmax 10000
+        dt_min 1.e-11
+        # dt_max 5. #
+        # dt_max 2. #
+        dt_max 1.e-2
+        dt_impr 1.e-2
+        dt_sauv 1.
+        dt_start dt_calc
+        seuil_statio 1.e-8
+        facsec 1
+        diffusion_implicite 1
+	tcpumax 20		/* Le calcul s'arretera proprement apres n heures */
 }
 
 
@@ -423,24 +423,24 @@ Lire pb
             } # fin sondes #
 
 
-            Format lml
-            Fichier thermohydraulique_VEF_DNS
-            Champs dt_post 1e6      {
-                STAT_MOY_vitesse elem
-                STAT_EC_vitesse elem
-                STAT_MOY_temperature elem
-                STAT_EC_temperature elem
-                STAT_MOY_yplus elem
-                STAT_EC_yplus elem
-                epsilon elem
-                TKE elem
-                FLUCT_vitesse elem
-                TaylorScale elem
-                KolmogorovScale elem
-                IntegralScale elem
-                BatchelorScale elem
-                volume_maille
-            }
+                          	Format lml
+                                Fichier thermohydraulique_VEF_DNS
+                                Champs dt_post 1e6      {
+                                                        STAT_MOY_vitesse elem
+                                                        STAT_EC_vitesse elem
+                                                        STAT_MOY_temperature elem
+                                                        # STAT_EC_temperature elem # # ecart optimise - debug ! #
+                                                        STAT_MOY_yplus elem
+                                                        STAT_EC_yplus elem
+                                                     	epsilon elem
+                                                        TKE elem
+                                                        FLUCT_vitesse elem
+                                                     	TaylorScale elem
+                                                        KolmogorovScale elem
+                                                        IntegralScale elem
+                                                        BatchelorScale elem
+                                                        volume_maille
+                                                        }
 
         } # fin ptraitement STATS #
 
