@@ -510,31 +510,29 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
     } // Fin boucle sur les bords
 }
 
-void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& grad_u) const
+void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_grad_u) const
 {
   const DoubleTab& u = valeurs();
   const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
 
-  DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
-  gradient_elem = 0.;
-
-  calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, gradient_elem);
+  DoubleTrav tab_gradient_elem(nb_elem_tot, dimension, dimension);
+  calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, tab_gradient_elem);
   int dim = dimension;
-  CDoubleTabView3 gradelem = gradient_elem.view3_ro();
-  DoubleTabView gradu = grad_u.view_wo();
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int elem)
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
+  DoubleTabView grad_u = tab_grad_u.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(const int elem)
   {
     int comp = 0;
     for (int i = 0; i < dim; i++)
-      for (int j = 0; j < dim; j++)
-        {
-          gradu(elem, comp) = gradelem(elem, i, j);
-          comp++;
-        }
-
+      {
+        for (int j = 0; j < dim; j++)
+          {
+            grad_u(elem, comp) = gradient_elem(elem, i, j);
+            comp++;
+          }
+      }
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-
 }
 
 void Champ_P1NC::calcul_grad_T(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& grad_T) const
