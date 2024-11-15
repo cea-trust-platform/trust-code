@@ -3,7 +3,7 @@
 # chauffage puissance volumique , perte de charge reguliere #
 
 # PARALLEL OK #
-
+# OPENMP NOT # # RND in Parser not supported yet on GPU #
 dimension 3
 
 Domaine dom_boite
