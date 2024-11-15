@@ -908,7 +908,7 @@ then
    then
       sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'
       # metriques GPU en plus mais necessite d'etre sudo
-      trace=$trace" --gpu-metrics-device all"
+      trace=$trace" --gpu-metrics-devices all"
       # nsight="sudo " # Mais attention fichiers ecrits root !
    else
       nsight=""
