@@ -103,6 +103,10 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
 
   # Clean build folder
   (cd .. ; rm -rf med*)
+
+  # patch MEDFileConfig.cmake to not have absolute paths for HDF5 and MPI inside it
+  sed -i "s@$TRUST_ROOT@\${PACKAGE_PREFIX_DIR}/../../../..@g" $actual_install_dir/share/cmake/medfile-4.1.1/MEDFileConfig.cmake || exit -1
+
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_MED" ]; then
     echo "Variable TRUST_USE_EXTERNAL_MED has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_MED"
