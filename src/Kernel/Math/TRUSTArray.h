@@ -276,7 +276,21 @@ public:
     dual_view_4_=DualView<_TYPE_,4>();
   }
 
-  // Kokkos accessors (brace yourself!) Default value of _SHAPE_ is 1.
+  // Kokkos accessors (brace yourself!)
+  // See implementation in TRUSTArray_kokkos.h
+
+  // ** Informations for Arrays **
+  // Default value of _SHAPE_ is 1.
+  // You can only use  use _SHAPE_ = 1 on a TRUSTArray
+
+  // ** Informations for Tabs **
+  // It is not allowed to have a multi-D view of different shape than a multi-D tab
+  // It is allowed to have a 1D view on a multi-D tab. In this case, the view is flattened
+  // It is allowed to have a multi-D View on a 1D Tab (type: tab, nb_dim_=1)
+  // This last case happens in Op_Conv_VEF_Face.cpp where a default constructed tab (nb_dim=1)
+  // Is pointed to other tabs and used in kokkos (weird case)
+
+  //See test/UnitTests/unit_array_kokkos.cpp for examples
 
   // Read-only
   template <int _SHAPE_ = 1, typename EXEC_SPACE = Kokkos::DefaultExecutionSpace>

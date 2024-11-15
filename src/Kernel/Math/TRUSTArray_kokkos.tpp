@@ -68,14 +68,17 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
 
   const auto& dual_view = get_dual_view<_SHAPE_>();
 
+  //Useful when casting a 1D Tab into a multi-D View !
+  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+
   // change of alloc or resize triggers re-init (for now - resize could be done better)
   if(dual_view.h_view.is_allocated() &&
       dual_view.h_view.data() == this->data() &&
       dual_view.view_device().data() == addrOnDevice(*this) &&
-      (long) dual_view.extent(0) == dimension_tot_0 &&
-      (_SHAPE_ >= 2 && (long) dual_view.extent(1) == this->dimension_tot(1)) &&
-      (_SHAPE_ >= 3 && (long) dual_view.extent(2) == this->dimension_tot(2)) &&
-      (_SHAPE_ >= 4 && (long) dual_view.extent(3) == this->dimension_tot(3))    )
+      (long) dual_view.extent(0) == dims[0] &&
+      (_SHAPE_ >= 2 && (long) dual_view.extent(1) == dims[1]) &&
+      (_SHAPE_ >= 3 && (long) dual_view.extent(2) == dims[2]) &&
+      (_SHAPE_ >= 4 && (long) dual_view.extent(3) == dims[3])    )
     return;
 
   // Re-use data already allocated on host to create host-view:
@@ -88,18 +91,19 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
   using t_host = typename DualView<_TYPE_,_SHAPE_>::t_host;  // Host type
   using t_dev = typename DualView<_TYPE_,_SHAPE_>::t_dev;    // Device type
 
-  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dimension_tot_0,
-                            1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                            2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                            3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  t_host host_view = t_host(const_cast<_TYPE_ *>(this->data()), dims[0],
+                            1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                            2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                            3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
   t_dev device_view;
 #ifdef _OPENMP_TARGET
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view()");
-  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dimension_tot_0,
-                      1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                      2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                      3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0],
+                      1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                      2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                      3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+
 #else
   device_view = create_mirror_view_and_copy(Kokkos::DefaultExecutionSpace::memory_space(), host_view);
 #endif
@@ -112,7 +116,6 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
 
 // Mark data modified on host so it will be sync-ed to device later on:
   mutable_dual_view.template modify<host_mirror_space>();
-
 }
 //Check if the internal value of nb_dim_ (that can be >1 if the Array is a Tab) is compatible with the _SHAPE_
 //argument of the accessors. Morevover, it returns true if you are trying to flatten a Tab into an array, or false otherwise
@@ -120,22 +123,21 @@ template<typename _TYPE_, typename _SIZE_>
 template<int _SHAPE_>
 bool TRUSTArray<_TYPE_,_SIZE_>::check_flattened() const
 {
-  //nb_dim_=1 -> TRUSTArray
-  //Trying to represent a 1D TRUSTArray with a multi-D View
-#ifdef DEBUG
-  bool is_array = std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos;
+  //Trying to represent a TRUSTArray with a multi-D View
+#ifndef NDEBUG
+  bool is_array = std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos;;
   assert(not(is_array && _SHAPE_>1));
 #endif
 
-  //nb_dim_>1 -> TRUSTTab
-  //Mismatch in Tab dimension and accessor _SHAPE_ value !
+  //Mismatch in multi-D Tab dimension and accessor _SHAPE_ value !
   assert((not(this->nb_dim_>1 && _SHAPE_>1 && _SHAPE_ != this->nb_dim_)));
 
   // The Tab accessor can sometime be called with _SHAPE_ == 1.
-  // For instance, this can happen when an Tab is casted (flattened) into an Array through function calls.
+  // For instance, this can happen when a vect operation is called on a Tab
   // In this case, we want the View to be flattened with the first dimension as the total size of the tab
   // Otherwise, this would give a 1D View of dimension equal to the first dimension of the Tab (typically <)
-  return ((this->nb_dim_> 1 && _SHAPE_==1));
+  // When true is returned, we do a 1D view with dimension size_array(). This is always what we want with _SHAPE_=1
+  return (_SHAPE_==1);
 }
 
 ///////////// Read-Only ////////////////////////////
@@ -171,10 +173,13 @@ TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 
   int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
-  return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), dimension_tot_0,
-                                       1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                       2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                       3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  //Useful when casting a 1D Tab into a multi-D View !
+  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+
+  return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
+                                       1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
 }
 
 
@@ -209,10 +214,13 @@ TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 
   int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
-  return HostView<_TYPE_,_SHAPE_>(this->addr(), dimension_tot_0,
-                                  1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  //Useful when casting a 1D Tab into a multi-D View !
+  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+
+  return HostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
+                                  1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                  2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                  3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
 }
 
 //////////// Read-Write ////////////////////////////
@@ -247,10 +255,13 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 
   int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
-  return HostView<_TYPE_,_SHAPE_>(this->addr(), dimension_tot_0,
-                                  1 < _SHAPE_ ? this->dimension_tot(1) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  2 < _SHAPE_ ? this->dimension_tot(2) : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  3 < _SHAPE_ ? this->dimension_tot(3) : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  //Useful when casting a 1D Tab into a multi-D View !
+  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+
+  return HostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
+                                  1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                  2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                  3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
 }
 
 // Methode de debug
