@@ -8,7 +8,7 @@ install: install.sh
 check:
 	@env TRUSTIFY_FROM_TRUST=1 ./tools/check_all.sh
 	
-doc:
+doc: install
 	@env TRUSTIFY_FROM_TRUST=1 ./tools/gen_doc.sh
 
 clean:

@@ -51,14 +51,16 @@ def generate_attribute_synos(block, all_blocks):
         - and then inherited attributes from the mother class ...
     """
     import sys
+    from copy import deepcopy
     assert sys.hexversion >= 0x3060000, "Need Python > 3.6 to guarantee key ordering in dictionary!"
 
     if not block.attr_synos is None:
-        return block.attr_synos
+        return deepcopy(block.attr_synos) # Important: should deep copy because we pop from this dict later on
     # Get parent class
     base_syn = {}
     if block.name_base in all_blocks:
         base_syn = generate_attribute_synos(all_blocks[block.name_base], all_blocks)
+
     # Build final return value
     # 1. First the synos of the keyword itself:
     ret = {None: [s for s in block.synos if s != block.name]}
@@ -72,13 +74,19 @@ def generate_attribute_synos(block, all_blocks):
                 ret[attr_nam].append(attr.name)
         else:
             # Remove 'suppressed' attributes from inherited part:
-            base_syn.pop(attr.name)
+            if not attr.name in base_syn:
+                logger.error(f"Invalid 'suppress_param' directive - line {block.info[1]} of file '{block.info[0]}'")
+                raise Exception
+            else:
+                base_syn.pop(attr.name)
+
     # 3. Then the attributes of the inherited class (after suppressed have been removed, and discarding None key
     # which corresponds to the syno of the keyword itself!)
     for k in base_syn:
         if not k is None:
             ret[k] =  base_syn[k]
     block.attr_synos = ret
+
     return ret
 
 def get_list_type_from_block(block, all_blocks):

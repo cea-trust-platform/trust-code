@@ -86,13 +86,15 @@ class TRUSTDocGenerator:
         """
         for match in self.re_img.finditer(doc):
             g0, g1 = match.group(0), match.group(1)
-            fil_nam = os.path.join("images", f"{g1}.png")
+            fil_nam = os.path.join("images", f"{g1}.jpeg")
             s = f"""
-      .. image:: {fil_nam}
-          :alt: {fil_nam}
-          :scale: 150%
-          :align: center
-      """
+
+.. image:: {fil_nam}
+  :alt: {fil_nam}
+  :scale: 150%
+  :align: center
+
+"""
             doc = doc.replace(g0, s)
         return doc
 
@@ -178,19 +180,19 @@ class TRUSTDocGenerator:
             for i, c in enumerate(lst):
                 if i != 0:
                     # Horizontal line
-                    s += "\n----\n\n"
+                    s += "\n\n----\n\n"
                 else:
                     # At first iteration, generate parent class doc, if not there already
                     if p not in lst:
                         s += self.doc_single(p, p)
-                        s += "\n----\n\n"
+                        s += "\n\n----\n\n"
                 s += self.doc_single(c, p)
             fname = os.path.join(out_dir, par + ".rst")
             with open(fname, "w") as f:
                 f.write(s)
             if j != 0:
                 # Horizontal line
-                single_s += "\n----\n\n"
+                single_s += "\n\n----\n\n"
             single_s += s
 
         # One big file with everything:

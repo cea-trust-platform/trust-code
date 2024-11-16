@@ -12,16 +12,16 @@ Read_MED {
     file domaine_glob.med
 }
 Read_file domaine_glob_ssz.geo ;
-Create_domain_from_sous_zone
+Create_domain_from_sub_domain
 {
     domaine_final domaine1
-    par_sous_zone sous_zone_dom1
+    par_sous_dom sous_zone_dom1
     domaine_init domaine_glob
 }
-Create_domain_from_sous_zone
+Create_domain_from_sub_domain
 {
     domaine_final domaine2
-    par_sous_zone sous_zone_dom2
+    par_sous_dom sous_zone_dom2
     domaine_init domaine_glob
 }
 

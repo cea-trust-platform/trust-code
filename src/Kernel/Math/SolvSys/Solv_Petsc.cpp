@@ -46,11 +46,126 @@
 #include <functional>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",Solv_Externe);
-// XD petsc solveur_sys_base petsc 0 Solver via Petsc API NL2 \input{{solvpetsc}}
-// XD attr solveur chaine solveur 0 not_set
-// XD attr option_solveur bloc_lecture option_solveur 0 not_set
-// XD attr atol floattant atol 1 Absolute threshold for convergence (same as seuil option)
-// XD attr rtol floattant rtol 1 Relative threshold for convergence
+
+// XD petsc solveur_sys_base petsc 0 Solver via Petsc API
+// XD   attr solveur solveur_petsc_deriv solveur 0 solver type and options
+
+// XD solveur_petsc_deriv objet_u solveur_petsc_deriv -1 Additional information is available in the PETSC documentation: https://petsc.org/release/manual/
+// XD   attr seuil floattant seuil 1 corresponds to the iterative solver convergence value. The iterative solver converges when the Euclidean residue standard ||Ax-B|| is less than seuil.
+// XD   attr quiet rien quiet 1 is a keyword which is used to not displaying any outputs of the solver.
+// XD   attr impr rien impr 1 used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+// XD   attr rtol floattant rtol 1 not_set
+// XD   attr atol floattant atol 1 not_set
+// XD   attr save_matrix_mtx_format rien save_matrix_mtx_format 1 not_set
+
+// XD solveur_petsc_lu solveur_petsc_deriv lu -1 Several solvers through PETSc API are available. NL2 TIPS: NL2 NL2 NL2 A) Solver for symmetric linear systems (e.g: Pressure system from Navier-Stokes equations): NL2 -The CHOLESKY parallel solver is from MUMPS library. It offers better performance than all others solvers if you have enough RAM for your calculation. A parallel calculation on a cluster with 4GBytes on each processor, 40000 cells/processor seems the upper limit. Seems to be very slow to initialize above 500 cpus/cores. NL2 -When running a parallel calculation with a high number of cpus/cores (typically more than 500) where preconditioner scalabilty is the key for CPU performance, consider BICGSTAB with BLOCK_JACOBI_ICC(1) as preconditioner or if not converges, GCP with BLOCK_JACOBI_ICC(1) as preconditioner. NL2 -For other situations, the first choice should be GCP/SSOR. In order to fine tune the solver choice, each one of the previous list should be considered. Indeed, the CPU speed of a solver depends of a lot of parameters. You may give a try to the OPTIMAL solver to help you to find the fastest solver on your study. NL2 NL2 B) Solver for non symmetric linear systems (e.g.: Implicit schemes): NL2 The BICGSTAB/DIAG solver seems to offer the best performances.
+
+// XD solveur_petsc_Cholesky_superlu solveur_petsc_deriv Cholesky_superlu -1 Parallelized Cholesky from SUPERLU_DIST library (less CPU and RAM, efficient than the previous one)
+
+// XD solveur_petsc_Cholesky_pastix solveur_petsc_deriv Cholesky_pastix -1  Parallelized Cholesky from PASTIX library.
+
+// XD solveur_petsc_Cholesky_umfpack solveur_petsc_deriv Cholesky_umfpack -1 Sequential Cholesky from UMFPACK library (seems fast).
+
+// XD solveur_petsc_Cholesky_out_of_core solveur_petsc_deriv Cholesky_out_of_core -1 Same as the previous one but with a written LU decomposition of disk (save RAM memory but add an extra CPU cost during Ax=B solve).
+
+// XD solveur_petsc_cholesky solveur_petsc_deriv cholesky -1 Parallelized version of Cholesky from MUMPS library. This solver accepts an option to select a different ordering than the automatic selected one by MUMPS (and printed by using the impr option). The possible choices are Metis, Scotch, PT-Scotch or Parmetis. The two last options can only be used during a parallel calculation, whereas the two first are available for sequential or parallel calculations. It seems that the CPU cost of A=LU factorization but also of the backward/forward elimination steps may sometimes be reduced by selecting a different ordering (Scotch seems often the best for b/f elimination) than the default one. NL2 Notice that this solver requires a huge amont of memory compared to iterative methods. To know how much RAM you will need by core, then use the impr option to have detailled informations during the analysis phase and before the factorisation phase (in the following output, you will learn that the largest memory is taken by the zeroth CPU with 108MB): NL2 Rank of proc needing largest memory in IC facto :  0  NL2 Estimated corresponding MBYTES for IC facto : 108 NL2 Thanks to the following graph, you read that in order to solve for instance a flow on a mesh with 2.6e6 cells, you will need to run a parallel calculation on 32 CPUs if you have cluster nodes with only 4GB/core (6.2GB*0.42~2.6GB) : NL2 \includepng{{petscgraph.png}}{{10}}
+// XD   attr save_matrice|save_matrix rien save_matrix 1 not_set
+// XD   attr save_matrix_petsc_format rien save_matrix_petsc_format 1 not_set
+// XD   attr reduce_ram rien reduce_ram 1 not_set
+// XD   attr cli_quiet solveur_petsc_option_cli cli_quiet 1 not_set
+// XD   attr cli solveur_petsc_option_cli cli 1 not_set
+
+// XD solveur_petsc_cholesky_mumps_blr solveur_petsc_deriv cholesky_mumps_blr -1 solver
+// XD   attr reduce_ram rien reduce_ram 1 not_set
+// XD   attr dropping_parameter floattant dropping_parameter 1 not_set
+// XD   attr cli solveur_petsc_option_cli cli 1 not_set
+
+// XD solveur_petsc_option_cli bloc_lecture nul -1 solver
+
+// XD solveur_petsc_cli solveur_petsc_deriv cli 0  Command Line Interface. Should be used only by advanced users, to access the whole solver/preconditioners from the PETSC API. To find all the available options, run your calculation with the -ksp_view -help options: NL2 trust datafile [N] --ksp_view --help NL2 -pc_type Preconditioner:(one of) none jacobi pbjacobi bjacobi sor lu shell mg eisenstat ilu icc cholesky asm ksp composite redundant nn mat fieldsplit galerkin openmp spai hypre tfs (PCSetType) NL2 HYPRE preconditioner options: NL2 -pc_hypre_type pilut (choose one of) pilut parasails boomeramg NL2 HYPRE ParaSails Options NL2 -pc_hypre_parasails_nlevels 1: Number of number of levels (None) NL2 -pc_hypre_parasails_thresh 0.1: Threshold (None) NL2 -pc_hypre_parasails_filter 0.1: filter (None) NL2 -pc_hypre_parasails_loadbal 0: Load balance (None) NL2 -pc_hypre_parasails_logging: FALSE Print info to screen (None) NL2 -pc_hypre_parasails_reuse: FALSE Reuse nonzero pattern in preconditioner (None) NL2 -pc_hypre_parasails_sym nonsymmetric (choose one of) nonsymmetric SPD nonsymmetric,SPD NL2 NL2 Krylov Method (KSP) Options NL2 -ksp_type Krylov method:(one of) cg cgne stcg gltr richardson chebychev gmres tcqmr bcgs bcgsl cgs tfqmr cr lsqr preonly qcg bicg fgmres minres symmlq lgmres lcd (KSPSetType) NL2 -ksp_max_it 10000: Maximum number of iterations (KSPSetTolerances) NL2 -ksp_rtol 0: Relative decrease in residual norm (KSPSetTolerances) NL2 -ksp_atol 1e-12: Absolute value of residual norm (KSPSetTolerances) NL2 -ksp_divtol 10000: Residual norm increase cause divergence (KSPSetTolerances) NL2 -ksp_converged_use_initial_residual_norm: Use initial residual residual norm for computing relative convergence NL2 -ksp_monitor_singular_value stdout: Monitor singular values (KSPMonitorSet) NL2 -ksp_monitor_short stdout: Monitor preconditioned residual norm with fewer digits (KSPMonitorSet) NL2 -ksp_monitor_draw: Monitor graphically preconditioned residual norm (KSPMonitorSet) NL2 -ksp_monitor_draw_true_residual: Monitor graphically true residual norm (KSPMonitorSet) NL2 NL2 Example to use the multigrid method as a solver, not only as a preconditioner: NL2 Solveur_pression Petsc CLI {-ksp_type richardson -pc_type hypre -pc_hypre_type boomeramg -ksp_atol 1.e-7 }
+// XD   attr seuil suppress_param seuil 1 corresponds to the iterative solver convergence value. The iterative solver converges when the Euclidean residue standard  is less than seuil.
+// XD   attr quiet suppress_param quiet 1 is a keyword which is used to not displaying any outputs of the solver.
+// XD   attr impr suppress_param impr 1 impress or not
+// XD   attr rtol suppress_param rtol 1 not_set
+// XD   attr atol suppress_param atol 1 not_set
+// XD   attr save_matrix_mtx_format suppress_param save_matrix_mtx_format 1 not_set
+// XD   attr cli_bloc bloc_lecture cli_bloc 0 bloc
+
+// XD solveur_petsc_cli_quiet solveur_petsc_deriv cli_quiet 0 solver
+// XD   attr seuil suppress_param seuil 1 corresponds to the iterative solver convergence value. The iterative solver converges when the Euclidean residue standard is less than seuil.
+// XD   attr quiet suppress_param quiet 1 is a keyword which is used to not displaying any outputs of the solver.
+// XD   attr impr suppress_param impr 1 impress or not
+// XD   attr rtol suppress_param rtol 1 not_set
+// XD   attr atol suppress_param atol 1 not_set
+// XD   attr save_matrix_mtx_format suppress_param save_matrix_mtx_format 1 not_set
+// XD   attr cli_quiet_bloc bloc_lecture cli_quiet_bloc 0 bloc
+
+// XD solveur_petsc_IBICGSTAB solveur_petsc_deriv IBICGSTAB -1 Improved version of previous one for massive parallel computations (only a single global reduction operation instead of the usual 3 or 4).
+// XD   attr precond preconditionneur_petsc_deriv precond 1 not_set
+
+// XD solveur_petsc_BICGSTAB solveur_petsc_deriv BICGSTAB -1 Stabilized Bi-Conjugate Gradient
+// XD   attr precond preconditionneur_petsc_deriv precond 1 not_set
+
+// XD solveur_petsc_gmres solveur_petsc_deriv gmres -1 Generalized Minimal Residual
+// XD   attr precond preconditionneur_petsc_deriv precond 1 not_set
+// XD   attr reuse_preconditioner_nb_it_max entier reuse_preconditioner_nb_it_max 1 not_set
+// XD   attr save_matrix_petsc_format rien save_matrix_petsc_format 1 not_set
+// XD   attr nb_it_max entier nb_it_max 1 In order to specify a given number of iterations instead of a condition on the residue with the keyword seuil. May be useful when defining a PETSc solver for the implicit time scheme where convergence is very fast: 5 or less iterations seems enough.
+
+// XD solveur_petsc_gcp solveur_petsc_deriv gcp -1 Preconditioned Conjugate Gradient
+// XD   attr precond preconditionneur_petsc_deriv precond 1 preconditioner
+// XD   attr precond_nul rien precond_nul 1 No preconditioner used, equivalent to precond null { }
+// XD   attr rtol floattant rtol 1 not_set
+// XD   attr reuse_preconditioner_nb_it_max entier reuse_preconditioner_nb_it_max 1 not_set
+// XD   attr cli solveur_petsc_option_cli cli 1 not_set
+// XD   attr reorder_matrix entier reorder_matrix 1 not_set
+// XD   attr read_matrix rien read_matrix 1 save_matrix|read_matrix are the keywords to save|read into a file the constant matrix A of the linear system Ax=B solved (eg: matrix from the pressure linear system for an incompressible flow). It is useful when you want to minimize the MPI communications on massive parallel calculation. Indeed, in VEF discretization, the overlapping width (generaly 2, specified with the largeur_joint option in the partition keyword partition) can be reduced to 1, once the matrix has been properly assembled and saved. The cost of the MPI communications in TRUST itself (not in PETSc) will be reduced with length messages divided by 2. So the strategy is: NL2 I) Partition your VEF mesh with a largeur_joint value of 2 NL2 II) Run your parallel calculation on 0 time step, to build and save the matrix with the save_matrix option. A file named Matrix_NBROWS_rows_NCPUS_cpus.petsc will be saved to the disk (where NBROWS is the number of rows of the matrix and NCPUS the number of CPUs used). NL2 III) Partition your VEF mesh with a largeur_joint value of 1 NL2 IV) Run your parallel calculation completly now and substitute the save_matrix option by the read_matrix option. Some interesting gains have been noticed when the cost of linear system solve with PETSc is small compared to all the other operations.
+// XD   attr save_matrice|save_matrix rien save_matrix 1 see read_matrix
+// XD   attr petsc_decide entier petsc_decide 1 not_set
+// XD   attr pcshell chaine pcshell 1 not_set
+// XD   attr aij rien aij 1 not_set
+
+// XD solveur_petsc_PIPECG solveur_petsc_deriv PIPECG -1 Pipelined Conjugate Gradient (possible reduced CPU cost during massive parallel calculation due to a single non-blocking reduction per iteration, if TRUST is built with a MPI-3 implementation)... no example in TRUST
+
+
+// XD preconditionneur_petsc_deriv objet_u preconditionneur_petsc_deriv -1 Preconditioners available with petsc solvers
+
+// XD preconditionneur_petsc_diag preconditionneur_petsc_deriv diag -1 Diagonal (Jacobi) preconditioner.
+
+// XD preconditionneur_petsc_c_amg preconditionneur_petsc_deriv c-amg -1 preconditionner
+
+// XD preconditionneur_petsc_sa_amg preconditionneur_petsc_deriv sa-amg -1 preconditionner
+
+// XD preconditionneur_petsc_BLOCK_JACOBI_ICC preconditionneur_petsc_deriv BLOCK_JACOBI_ICC -1 Incomplete Cholesky factorization for symmetric matrix with the PETSc implementation.
+// XD   attr level entier level 1 factorization level (default value, 1). In parallel, the factorization is done by block (one per processor by default).
+// XD   attr ordering chaine(into=["natural","rcm"]) ordering 1  The ordering of the local matrix is natural by default, but rcm ordering, which reduces the bandwith of the local matrix, may interestingly improves the quality of the decomposition and reduces the number of iterations.
+
+// XD preconditionneur_petsc_boomeramg preconditionneur_petsc_deriv boomeramg -1 Multigrid preconditioner (no option is available yet, look at CLI command and Petsc documentation to try other options).
+
+// XD preconditionneur_petsc_null preconditionneur_petsc_deriv null -1 No preconditioner used
+
+// XD preconditionneur_petsc_lu preconditionneur_petsc_deriv lu -1 preconditionner
+
+// XD preconditionneur_petsc_jacobi preconditionneur_petsc_deriv jacobi -1 preconditionner
+
+// XD preconditionneur_petsc_EISENTAT preconditionneur_petsc_deriv EISENTAT -1 SSOR version with Eisenstat trick which reduces the number of computations and thus CPU cost...
+// XD   attr omega floattant omega 1 relaxation factor
+
+// XD preconditionneur_petsc_ssor preconditionneur_petsc_deriv ssor -1 Symmetric Successive Over Relaxation algorithm.
+// XD   attr omega floattant omega 1 relaxation factor (default value, 1.5)
+
+// XD preconditionneur_petsc_block_jacobi_ilu preconditionneur_petsc_deriv block_jacobi_ilu -1 preconditionner
+// XD   attr level entier level 1 not_set
+
+// XD preconditionneur_petsc_spai preconditionneur_petsc_deriv spai -1  Spai Approximate Inverse algorithm from Parasails Hypre library.
+// XD   attr level entier level 1 first parameter
+// XD   attr epsilon floattant epsilon 1 second parameter
+
+// XD preconditionneur_petsc_pilut preconditionneur_petsc_deriv pilut -1 Dual Threashold Incomplete LU factorization.
+// XD   attr level entier level 1 factorization level
+// XD   attr epsilon floattant epsilon 1 drop tolerance
+
+
 
 // printOn
 Sortie& Solv_Petsc::printOn(Sortie& s ) const

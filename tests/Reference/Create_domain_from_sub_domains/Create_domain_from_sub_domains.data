@@ -33,15 +33,15 @@ END SCATTER #
 /*
 # Creation d un domaine avec sous-zones disjointes #
 domaine new
-Create_domain_from_sous_zone { domaine_final new par_sous_zones 2 G_3D_93 G_3D_91 domaine_init dom }
+Create_domain_from_sub_domain { domaine_final new par_sous_zones 2 G_3D_93 G_3D_91 domaine_init dom }
 # Creation d un domaine avec sous-zones jointes au niveau d un bord commun #
 domaine newdom
 supprime_bord dom { F_2D_34 }
-Create_domain_from_sous_zone { domaine_final newdom par_sous_zones 2 G_3D_2 G_3D_91 domaine_init dom }
+Create_domain_from_sub_domain { domaine_final newdom par_sous_zones 2 G_3D_2 G_3D_91 domaine_init dom }
  */
 /* test temporaire avec une seule sous-zone */
 domaine newdom
-Create_domain_from_sous_zone { domaine_final newdom par_sous_zone G_3D_2 domaine_init dom }
+Create_domain_from_sub_domain { domaine_final newdom par_sous_zone G_3D_2 domaine_init dom }
 
 discretiser_domaine newdom
 postraiter_domaine { domaines { dom newdom } fichier mesh format lata }

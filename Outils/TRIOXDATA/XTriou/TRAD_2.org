@@ -26,8 +26,6 @@ entierfloat objet_lecture nul 0 An integer and a real.
   attr the_int entier the_int 0 Integer.
   attr the_float floattant the_float 0 Real.
 class_generic objet_u class_generic -1 not_set
-stat_post_deriv objet_lecture stat_post_deriv 0 not_set
-list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
 listchamp_generique listobj nul 1 champ_generique_base 1 XXX
 list_list_nom listobj nul 1 list_un_pb 1 pour les groupes
 darcy source_base darcy 0 Class for calculation in a porous media with source term of Darcy -nu/K*V. This keyword must be used with a permeability model. For the moment there are two models : permeability constant or Ergun\'s law. Darcy source term is available for quasi compressible calculation. A new keyword is aded for porosity (porosite).

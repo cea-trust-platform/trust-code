@@ -463,29 +463,33 @@ void Postraitement::set_param(Param& param)
 // XD   attr period chaine period 0 Value of the period which can be like (2.*t).
 // XD   attr fichier chaine file 0 name of file
 
-// XD stats_serie_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
+// XD stats_serie_posts objet_lecture nul 0 This keyword is used to set the statistics. Average on dt_integr time interval is post-processed every dt_integr seconds. \input{{statistiquesseries}}
 // XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
 // XD   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
 // XD   attr stat list_stat_post stat 0 not_set
 
-// XD stats_serie_posts_fichier objet_lecture nul 0 Serial_statistics read from a file. \input{{statistiquesseries}}
+// XD stats_serie_posts_fichier objet_lecture nul 0 This keyword is used to set the statistics read from a file. Average on dt_integr time interval is post-processed every dt_integr seconds. \input{{statistiquesseries}}
 // XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
 // XD   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
 // XD   attr fichier chaine file 0 name of file
 
-// XD stat_post_t_deb stat_post_deriv t_deb 0 not_set
+// XD stat_post_deriv objet_lecture stat_post_deriv 0 not_set
+// XD list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
+
+
+// XD stat_post_t_deb stat_post_deriv t_deb 0 Start of integration time
 // XD   attr val floattant val 0 not_set
-// XD stat_post_t_fin stat_post_deriv t_fin 0 not_set
+// XD stat_post_t_fin stat_post_deriv t_fin 0 End of integration time
 // XD   attr val floattant val 0 not_set
-// XD stat_post_moyenne stat_post_deriv moyenne 0 not_set
-// XD   attr field chaine field 0 not_set
+// XD stat_post_moyenne stat_post_deriv moyenne 0 to calculate the average of the field over time
+// XD   attr field chaine field 0 name of the field on which statistical analysis will be performed. Possible keywords are Vitesse (velocity), Pression (pressure), Temperature, Concentration, ...
 // XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
-// XD stat_post_ecart_type stat_post_deriv ecart_type 0 not_set
-// XD   attr field chaine field 0 not_set
+// XD stat_post_ecart_type stat_post_deriv ecart_type 0 to calculate the standard deviation (statistic rms) of the field
+// XD   attr field chaine field 0 name of the field on which statistical analysis will be performed. Possible keywords are Vitesse (velocity), Pression (pressure), Temperature, Concentration, ...
 // XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
-// XD stat_post_correlation stat_post_deriv correlation 0 not_set
-// XD   attr first_field chaine first_field 0 not_set
-// XD   attr second_field chaine second_field 0 not_set
+// XD stat_post_correlation stat_post_deriv correlation 0 correlation between the two fields
+// XD   attr first_field chaine first_field 0 first field
+// XD   attr second_field chaine second_field 0 second field
 // XD   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)

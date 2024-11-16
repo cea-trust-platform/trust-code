@@ -21,8 +21,7 @@
 #include <Param.h>
 #include <Domaine_dis_cache.h>
 
-Implemente_instanciable_sans_constructeur(Champ_Generique_Interpolation,"Interpolation",Champ_Gen_de_Champs_Gen);
-Add_synonym(Champ_Generique_Interpolation,"Champ_Post_Interpolation");
+Implemente_instanciable_sans_constructeur(Champ_Generique_Interpolation,"Champ_Post_Interpolation|Interpolation",Champ_Gen_de_Champs_Gen);
 
 /*! @brief voir reset()
  *
