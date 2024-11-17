@@ -81,6 +81,24 @@ def generate_attribute_synos(block, all_blocks):
     block.attr_synos = ret
     return ret
 
+def get_list_type_from_block(block, all_blocks):
+    """ From a TRAD2 block get the relevant type that should be used in the Pydantic class for lists.
+    This also handles nested lists. 
+    Assumption: terminal type is always a complex type (=another TRUST keyword) in case of nested lists.
+    This is checked with an assert. 
+    """
+    assert isinstance(block, tu.TRAD2BlockList)
+    it_typ = block.itemtype
+    assert it_typ in all_blocks, "List item type is not another TRUST class! Not implemented."
+    nam = block.name
+    it_blk = all_blocks[it_typ]
+    if isinstance(it_blk, tu.TRAD2BlockList):
+        s_typ, most_nested_type = get_list_type_from_block(it_blk, all_blocks)  # Recurse
+    else:
+        s_typ = ClassFactory.ToPydName(it_blk.name)
+        most_nested_type = it_blk
+    return f'Annotated[List[{s_typ}], "{ClassFactory.ToPydName(block.name)}"]', most_nested_type
+
 def write_pyd_block(block, pyd_file, all_blocks):
     """ Write a TRAD2Block as a pydantic class, in the pyd_file
     """
@@ -88,12 +106,12 @@ def write_pyd_block(block, pyd_file, all_blocks):
 
     if block.pyd_written: return
 
-    # dependencies must be written before self
+    # dependencies must be written before self (see down below for list items)
     dependencies = [block.name_base] + [a.type for a in block.attrs]
-    for dependency in dependencies:
-        dependency = all_blocks.get(dependency, None)
-        if dependency:
-            write_pyd_block(dependency, pyd_file, all_blocks)
+    for dpy in dependencies:
+        dpy_block = all_blocks.get(dpy, None)
+        if dpy_block:
+            write_pyd_block(dpy_block, pyd_file, all_blocks)
 
     # Get base class name. If void (like for Objet_U), inherit from TRUSTBaseModel:
     base_cls_n = ClassFactory.ToPydName(block.name_base) or "TRUSTBaseModel"
@@ -129,7 +147,9 @@ def write_pyd_block(block, pyd_file, all_blocks):
         if attr.type in all_blocks:    # Complex attribute (=another TRUST class)
             cls = all_blocks[attr.type]
             if isinstance(cls, tu.TRAD2BlockList):
-                attr_typ = f'Annotated[List["{ClassFactory.ToPydName(cls.classtype)}"], "{ClassFactory.ToPydName(attr.type)}"]'
+                attr_typ, most_nested_typ = get_list_type_from_block(cls, all_blocks)
+                # Make sure list item type is written before the list itself:
+                write_pyd_block(most_nested_typ, pyd_file, all_blocks)
                 attr_desc = cls.desc
                 args = f'default_factory=list'
             else:
@@ -178,6 +198,7 @@ def write_pyd_block(block, pyd_file, all_blocks):
     lines.append('\n')
     # actual file writing
     pyd_file.write('\n'.join(lines))
+    # make sure we won't write the same block again:
     block.pyd_written = True
 
 def write_pars_block(block, pars_file, all_blocks):
@@ -197,7 +218,11 @@ def write_pars_block(block, pars_file, all_blocks):
     # Get base class name. If void (like for Objet_U), inherit from base.ConstrainBase_Parser:
     if block.name_base != "":
         if block.name_base == "listobj":
-            base_cls_n = "base.ListOfBase_Parser"
+            assert(isinstance(block, tu.TRAD2BlockList))
+            if block.itemtype.startswith("list"): # yes, list of lists might exist!!
+                base_cls_n = "base.ListOfBuiltin_Parser"
+            else:
+                base_cls_n = "base.ListOfBase_Parser"
         else:
             base_cls_n = ClassFactory.ToParserName(block.name_base)
     else:
@@ -228,7 +253,7 @@ def write_pars_block(block, pars_file, all_blocks):
     if block.name_base == "listobj":
         assert isinstance(block, tu.TRAD2BlockList)
         lines += [f'    _comma: int = {block.comma}',
-                  f'    _itemType: Objet_u = {ClassFactory.ToPydName(block.classtype)}']
+                  f'    _itemType: Objet_u = {ClassFactory.ToPydName(block.itemtype)}']
 
     lines += [
         f'    _infoMain: list = {block.info}',
@@ -380,7 +405,7 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
         g = globals()
         for nam in list(g):
             val = g[nam]
-            if isinstance(val, type) and (issubclass(val, Abstract_Parser) or issubclass(val, Objet_u)):
+            if isinstance(val, type) and (issubclass(val, Abstract_Parser) or issubclass(val, TRUSTBaseModel)):
                 ClassFactory.RegisterClass(nam, val)
         
         ################################################################

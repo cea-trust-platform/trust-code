@@ -434,6 +434,57 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         s = ''.join(pars.toDatasetTokens())
         self.assertTrue(check_str_equality(s, data_ex).ok)
 
+    def test_list_of_lists(self):
+        """ Test nested lists ... used in coupled pbs for example """
+        from typing import List, Annotated
+        data_ex = """  { 
+        # first list # 
+            { # here # pb1 , pb2 } 
+        # and 2nd list # , 
+            { # there # pb3 } 
+        }"""
+        stream, val, pars = self.builtin_test(Annotated[List[List[str]], "list_list_nom"], data_ex, simplify=False)
+        # Test writing out:
+        s = ''.join(pars.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, data_ex).ok)
+        # Test appending:
+        un_pb = self.mod.Un_pb()
+        un_pb.mot = "toto"
+        val[0].append(un_pb)
+        exp= """  { 
+        # first list # 
+            { # here # pb1 , pb2 ,
+ toto } 
+        # and 2nd list # , 
+            { # there # pb3 } 
+        }"""
+        s = ''.join(pars.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, exp).ok)
+        # Test deleting:
+        val[0].pop()
+        val[0].pop()
+        exp= """  { 
+        # first list # 
+            { # here # pb1 } 
+        # and 2nd list # , 
+            { # there # pb3 } 
+        }"""
+        s = ''.join(pars.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, exp).ok)
+        # Deleting a full sub-list
+        del val[0]
+        exp= """  { 
+        # first list # 
+            { # there # pb3 } 
+        }""" # funny thing from the way tokens are checked: first comment is preserved ...
+        s = ''.join(pars.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, exp).ok)
+        # List of lists as an attribute of a keyword:
+        data_ex = """ bidon2 {   nested  { { pb1 , pb2 } , { pb3 } }   }"""
+        stream, res = self.generic_test(data_ex, simplify=False)
+        s = ''.join(res.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, data_ex).ok)
+
     def test_opt_attr(self):
         """ Test attribute optionality. Missing required attribute should fail the parse. """
         data_ex = """

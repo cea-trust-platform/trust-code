@@ -244,6 +244,7 @@ class Builtin_Parser(Abstract_Parser):
         # Retrieve parser class:
         pars_cls = typ_map.get(key)
         if pars_cls is None:
+            Listobj_impl_cls = ClassFactory.GetPydClassFromName("listobj_impl")  # will always exist
             # Is it a Literal?
             if typs[0] is tp.Literal:
                 # Read first constrained value to see if str or int ...
@@ -259,9 +260,10 @@ class Builtin_Parser(Abstract_Parser):
                 # Read the corresponding parser class from the type annotation
                 pars_cls_nam = ann
                 assert not ann is None, "Complex list types should be annotated!"
-                if not ClassFactory.Exist(ClassFactory.ToParserName(pars_cls_nam)):
-                    raise Exception(f"The list parser type '{pars_cls_nam}' was not found! Should never happen.")
+                assert ClassFactory.Exist(ClassFactory.ToParserName(pars_cls_nam)), f"The list parser type '{pars_cls_nam}' was not found! Should never happen."
                 pars = ClassFactory.GetParserClassFromName(pars_cls_nam)()
+            elif issubclass(typs[0], Listobj_impl_cls):
+                pars = ClassFactory.GetParserFromPyd(typs[0])()
             else:
                 raise TrustifyException(f"Builtin type '{str(builtin_cls)}' not supported!")
             return pars
@@ -771,6 +773,7 @@ class ListOfBase_Parser(Builtin_Parser):
 
     def parseAndAppendItem(self, stream, lst):
         """ Append an item to the current list. Overriden in ListOfBuiltin_Parser """
+        self.Dbg(f"@FUNC@ parseAndAppendItem BASE ...")
         item_val = self._itemParserType.ReadFromTokens(stream)
         lst.append(item_val)
 
@@ -779,6 +782,7 @@ class ListOfBase_Parser(Builtin_Parser):
         This override only works for single-type list.
         """
         cls = self.__class__
+        cls.Dbg(f"@FUNC@ about to read list ...")
         val = []
 
         self.initItemParserType()
@@ -891,6 +895,7 @@ class ListOfBuiltin_Parser(ListOfBase_Parser):
 
     def parseAndAppendItem(self, stream, lst):
         """ Override. For builtin types, we need to store the parsers for each item too. """
+        self.Dbg(f"@FUNC@ parseAndAppendItem BUILTIN ...")
         item_pars = Builtin_Parser.InstanciateFromBuiltin(self._itemType)
 
         # Attach debug information of the list itself to the (builtin) item type

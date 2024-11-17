@@ -103,7 +103,10 @@ class TestCase(unittest.TestCase, UnitUtils):
             if verbose: logger.info(" --> OK")
             return True
         except TrustifyException as e:
-            print(e)
+            if os.getenv("TRUSTIFY_DEBUG") == "1":
+                raise e from None
+            else:
+                print(e)
             if not TestCase.SINGLE_JDD is None:
                 sys.exit(-1)
             return False

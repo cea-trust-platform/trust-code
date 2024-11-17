@@ -44,3 +44,10 @@ bidon toto_base bidon 1 Just to test list attribute and inherited member from to
 dimension interprete dimension -1 Keyword allowing calculation dimensions to be set (2D or 3D), where dim is an integer set to 2 or 3. This instruction is mandatory.
   attr dim entier(into=[2,3]) dim 0 Number of dimensions.
 
+un_pb objet_u nul 0 un unique pb
+  attr mot chaine mot 0 the string
+list_un_pb listobj nul 1 un_pb 1 une liste de pbs
+list_list_nom listobj nul 1 list_un_pb 1 pour les groupes
+
+bidon2 toto_base bidon2 1 To test a list of list as attr
+  attr nested list_list_nom nested 0 bla list of lists used as attr 

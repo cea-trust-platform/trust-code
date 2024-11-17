@@ -135,12 +135,12 @@ class TRAD2BlockList(TRAD2Block):
     """
     def __init__(self):
         TRAD2Block.__init__(self)
-        self.classtype = None   #: the list item type
+        self.itemtype = None    #: the list item type
         self.comma = -123       #: Whether the list takes commas or not
 
     def _finishBuild(self, tab):
         """ Override to extract list-relevant data """
-        self.classtype = tab[0].lower()
+        self.itemtype = tab[0].lower()
         if tab[1] not in ["-1", "0", "1"]:
             raise Exception(pretty_error(self.info[0], self.info[1],
                             f"option for comma (for a list) should be -1, 0 or 1, not '{tab[1]}'!!")) from None
@@ -152,7 +152,7 @@ class TRAD2BlockList(TRAD2Block):
         if len(self.attrs):
             raise Exception(pretty_error(self.info[0], self.info[1], f"list object description should not have any attribute!!")) from None
         synos = "|".join(self.synos)
-        s = f"{self.name} {self.name_base} {synos} {self.mode} {self.classtype} {self.comma} {self.desc}\n"
+        s = f"{self.name} {self.name_base} {synos} {self.mode} {self.itemtype} {self.comma} {self.desc}\n"
         nfo = f"{self.info[0]},{self.info[1]}\n"
         return s, nfo
 
