@@ -564,6 +564,12 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
   int nb_pos = positions.dimension(0);
   assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale")||(methode_=="vecteur"));
   using DoubleTravs = TRUST_Vector<DoubleTrav>; // remplace VECT(DoubleTrav)
+  const int max_nb_sources = 10;
+  if (nb_sources>max_nb_sources)
+    {
+      Cerr << "Increase max_nb_sources to " << nb_sources << " in Champ_base& Champ_Generique_Transformation::get_champ() !" << finl;
+      Process::exit();
+    }
   DoubleTravs sources_val(nb_sources);
   IntVect nb_comps(nb_sources);
   Noms nom_source(nb_sources);
@@ -630,55 +636,68 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
     {
       ParserView parser(fxyz[0]);
       parser.parseString();
-      const int max_nb_sources = 10;
       int dim = dimension;
-      //int nb_comp = nb_comp_;
-      if (nb_sources>max_nb_sources)
-        {
-          Cerr << "Increase max_nb_sources to " << nb_sources
-               << " in Champ_base& Champ_Generique_Transformation::get_champ() !" << finl;
-          Process::exit();
-        }
       Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
       for (int so=0; so<nb_sources; so++)
         sources[so] = sources_val[so].view_ro();
       DoubleArrView valeurs = static_cast<ArrOfDouble&>(valeurs_espace).view_wo();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
       {
+        int threadId = parser.acquire();
         for (int so=0; so<nb_sources; so++)
           for (int j=0; j<dim; j++)
-            parser.setVar(so*dim+j,sources[so](i,j));
-        valeurs(i) = parser.eval();
+            parser.setVar(so*dim+j,sources[so](i,j), threadId);
+        valeurs(i) = parser.eval(threadId);
+        parser.release(threadId);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }
   else if (Motcle(methode_)=="vecteur")
     {
-      for (int j=0; j<nb_comp_; j++)
-        fxyz[j].setVar("t",temps);
-
       if ((champ_normal_faces) && (localisation_=="faces"))
         {
-          ToDo_Kokkos("critical parser");
-          for (int i=0; i<nb_pos; i++)
-            {
-              double x = positions(i,0);
-              double y = positions(i,1);
-              double z = (dimension>2 ? positions(i,2) : 0);
-              valeurs_espace(i) = 0;
-              for (int j=0; j<nb_comp_; j++)
-                {
-                  fxyz[j].setVar(0,x);
-                  fxyz[j].setVar(1,y);
-                  fxyz[j].setVar(2,z);
-                  for (int so=0; so<nb_sources; so++)
-                    {
-                      const DoubleTab& source_so_val = sources_val[so];
-                      fxyz[j].setVar(so+4,source_so_val(i,0));
-                    }
-                  valeurs_espace(i) += fxyz[j].eval() * zvf.face_normales(i, j) / zvf.surface(i);
-                }
-            }
+          assert(nb_comp_==dimension);
+          int dim = dimension;
+          ParserView fxyz0(fxyz[0]);
+          ParserView fxyz1(fxyz[1]);
+          ParserView fxyz2(fxyz[dim-1]); // Trick to support 2D/3D
+          fxyz0.parseString();
+          fxyz1.parseString();
+          if (dim==3) fxyz2.parseString();
+          Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
+          for (int so=0; so<nb_sources; so++)
+            sources[so] = sources_val[so].view_ro();
+          CDoubleTabView face_normales = zvf.face_normales().view_ro();
+          CDoubleArrView surface = zvf.face_surfaces().view_ro();
+          CDoubleTabView pos = positions.view_ro();
+          CIntArrView nb_comp_sources = nb_comps.view_ro();
+          DoubleArrView valeurs = static_cast<ArrOfDouble&>(valeurs_espace).view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
+          {
+            int threadId = fxyz0.acquire();
+            for (int j=0; j<dim; j++)
+              {
+                double pos_i_j = pos(i, j);
+                fxyz0.setVar(j, pos_i_j, threadId);
+                fxyz1.setVar(j, pos_i_j, threadId);
+                if (dim==3) fxyz2.setVar(j, pos_i_j, threadId);
+              }
+            fxyz0.setVar(3, temps, threadId);
+            fxyz1.setVar(3, temps, threadId);
+            if (dim==3) fxyz2.setVar(3, temps, threadId);
+            for (int so=0; so<nb_sources; so++)
+              {
+                double var = sources[so](i,0);
+                fxyz0.setVar(so+4,var, threadId);
+                fxyz1.setVar(so+4,var, threadId);
+                if (dim==3) fxyz2.setVar(so+4,var, threadId);
+              }
+            valeurs(i)  = fxyz0.eval(threadId) * face_normales(i, 0) / surface(i);
+            valeurs(i) += fxyz1.eval(threadId) * face_normales(i, 1) / surface(i);
+            if (dim==3) valeurs(i) += fxyz2.eval(threadId) * face_normales(i, 2) / surface(i);
+            fxyz0.release(threadId);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else
         {
@@ -694,6 +713,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
                   fxyz[j].setVar(0,x);
                   fxyz[j].setVar(1,y);
                   fxyz[j].setVar(2,z);
+                  fxyz[j].setVar(3,temps);
                   for (int so=0; so<nb_sources; so++)
                     {
                       const DoubleTab& source_so_val = sources_val[so];
@@ -751,14 +771,8 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           nb_pos = valeurs_espace.dimension(0);
         }
       int line_size = valeurs_espace.line_size();
-      const int max_nb_sources = 10;
       int dim = dimension;
       int nb_comp = nb_comp_;
-      if (nb_sources>max_nb_sources)
-        {
-          Cerr << "Increase max_nb_sources to " << nb_sources << " in Champ_base& Champ_Generique_Transformation::get_champ() !" << finl;
-          Process::exit();
-        }
       Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
       for (int so=0; so<nb_sources; so++)
         sources[so] = sources_val[so].view_ro();
