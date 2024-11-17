@@ -18,12 +18,66 @@
 #include <Device.h>
 #include <sstream>
 
-template<typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
-void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)
+template<typename ExecSpace, typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
+void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, TRUSTArray<_TYPE_>& buffer)
 {
   static constexpr bool IS_READ = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::READ), IS_WRITE = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::WRITE),
                         IS_ADD = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::ADD), IS_MAX = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::MAX);
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
 
+  const int bloc_size = 1;
+  const int n = line_size * bloc_size;
+  Kokkos::RangePolicy<ExecSpace> policy(idx, idx_end_of_list);
+  auto items_to_process_view = list.get_data().template view_ro<ExecSpace>();
+  if (IS_READ)
+    {
+      auto buffer_view = buffer.template view_wo<ExecSpace>();
+      auto vect_view = vect.template view_ro<ExecSpace>();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+                             const int item)
+      {
+        // Indice de l'item geometrique a copier (ou du premier item du bloc)
+        int premier_item_bloc = items_to_process_view[item];
+        // Adresse des elements a copier dans le vecteur
+        for (int j = 0; j < n; j++)
+          {
+            int ii = (item - idx) * n + j;
+            int jj = premier_item_bloc * line_size + j;
+            buffer_view[ii] = vect_view[jj];
+          }
+      });
+    }
+  else
+    {
+      auto buffer_view = buffer.template view_ro<ExecSpace>();
+      auto vect_view = vect.template view_rw<ExecSpace>();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+                             const int item)
+      {
+        // Indice de l'item geometrique a copier (ou du premier item du bloc)
+        int premier_item_bloc = items_to_process_view[item];
+        // Adresse des elements a copier dans le vecteur
+        for (int j = 0; j < n; j++)
+          {
+            int ii = (item - idx) * n + j;
+            int jj = premier_item_bloc * line_size + j;
+            if (IS_WRITE) vect_view[jj] = buffer_view[ii];
+            else if (IS_ADD) vect_view[jj] += buffer_view[ii];
+            else if (IS_MAX)
+              {
+                _TYPE_ dest = vect_view[jj];
+                _TYPE_ src = buffer_view[ii];
+                vect_view[jj] = (dest > src) ? dest : src;
+              }
+          }
+      });
+    }
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
+
+template<typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
+void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)
+{
   assert(line_size > 0);
   const ArrOfInt& index = list.get_index();
   const int nb_voisins = list.get_nb_lists();
@@ -38,66 +92,15 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
           assert(nb_elems == buffer.size_array());
-          _TYPE_ *buffer_addr = buffer.data();
           assert(idx_end_of_list <= list.get_data().size_array());
-          const int * items_to_process_addr;
-          _TYPE_ *vect_addr;
           bool kernelOnDevice = vect.checkDataOnDevice();
+          // ToDo the location of the buffer should be set in Schema_Comm_Vecteurs::get_next_area_template
+          // It needs probably to change Schema_Comm_Vecteurs API with an attribute bufferOnDevice_ initiated during begin_comm(...)
+          buffer.set_data_location(kernelOnDevice ? DataLocation::Device : DataLocation::HostOnly);
           if (kernelOnDevice)
-            {
-              items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
-              if (IS_READ)
-                {
-                  const TRUSTArray<_TYPE_>& const_vect = vect;
-                  vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
-                }
-              else
-                vect_addr = computeOnTheDevice(vect, "vect");
-            }
+            vect_items_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _ITEM_TYPE_>(line_size, idx, idx_end_of_list, list, vect, buffer);
           else
-            {
-              items_to_process_addr = list.get_data().addr();
-              vect_addr = vect.addr();
-            }
-          // ToDo OpenMP collapse(2) possible car n constant ?
-          const int bloc_size = 1;
-          const int n = line_size * bloc_size;
-          std::stringstream message;
-          message << "vect_items_generic IS_READ= " << IS_READ << " on voisin " << voisins[i_voisin] << " and loop with " << idx_end_of_list - idx << "*" << n << " items";
-          start_gpu_timer();
-          #pragma omp target teams distribute parallel for if (kernelOnDevice)
-          for (int item = idx; item < idx_end_of_list; item++)
-            {
-              // Indice de l'item geometrique a copier (ou du premier item du bloc)
-              int premier_item_bloc = items_to_process_addr[item];
-              // Adresse des elements a copier dans le vecteur
-#ifndef _OPENMP_TARGET
-              assert(premier_item_bloc >= 0 && bloc_size > 0 &&
-                     (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
-#endif
-              for (int j = 0; j < n; j++)
-                {
-                  int ii = (item - idx) * n + j;
-                  int jj = premier_item_bloc * line_size + j;
-                  if (IS_READ) buffer_addr[ii] = vect_addr[jj];
-                  else if (IS_WRITE) vect_addr[jj] = buffer_addr[ii];
-                  else if (IS_ADD) vect_addr[jj] += buffer_addr[ii];
-                  else if (IS_MAX)
-                    {
-                      _TYPE_ dest = vect_addr[jj];
-                      _TYPE_ src = buffer_addr[ii];
-                      vect_addr[jj] = (dest > src) ? dest : src;
-                    }
-#ifndef _OPENMP_TARGET
-                  else
-                    {
-                      Cerr << "Unknown VECT_ITEMS_TYPE enum !" << finl;
-                      throw;
-                    }
-#endif
-                }
-            }
-          end_gpu_timer(kernelOnDevice, message.str());
+            vect_items_generic_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _ITEM_TYPE_>(line_size, idx, idx_end_of_list, list, vect, buffer);
         }
     }
 }

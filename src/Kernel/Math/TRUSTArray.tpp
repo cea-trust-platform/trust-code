@@ -90,6 +90,8 @@ inline void TRUSTArray<_TYPE_, _SIZE_>::ref_data(_TYPE_* ptr, _SIZE_ size)
   assert(storage_type_ != STORAGE::TEMP_STORAGE);  // Not a Trav!
   detach_array(); // ToDo OpenMP revenir en arriere sur TRUSTArray.h
   span_ = Span_(ptr, size);
+  // By default, the memory is allocated only on the host:
+  data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);
 }
 
 /** Make the current array point to the data of another existing array. Ownership of the data is hence shared.
