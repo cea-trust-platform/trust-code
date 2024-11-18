@@ -449,6 +449,15 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         cls.Dbg(f"@FUNC@ setting {flavor} attribute '{attr_nam}' with val '{str(val_attr)}'")
         setattr(self._pyd_value, attr_nam, val_attr)
 
+    def handleUnexpectedAttribute(self, stream, tok, nams):
+        """ What should happen when we encounter an unexpected attribute.
+        This is overriden in some very weird cases, like Front Tracking where we can 
+        have in the datasets blocks/attributes which are directly named with an equation label.  
+        By default, raise an error.
+        """
+        err = self.GenErr(stream, f"Unexpected attribute '{tok}' in keyword '{nams}'")
+        raise TrustifyException(err) from None
+
     def _readFromTokens_braces(self, stream):
         """ Read from a stream of tokens using the key/value syntax of TRUST keyword, i.e. keywords
         using opening and closing braces.
@@ -463,10 +472,10 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         self._tokens["{"] = stream.lastReadTokens()
 
         # Identify mandatory attributes:
-        attr_ok = {}
+        self._attr_ok = {}
         for attr_nam, _ in cls._GetAttributeList():
             if not cls.IsOptional(attr_nam):
-                attr_ok[attr_nam] = False  # False="was not read yet"
+                self._attr_ok[attr_nam] = False  # False="was not read yet"
         tok = stream.probeNextLow()
         while tok != "}":
             stream.validateNext()
@@ -475,14 +484,13 @@ class ConstrainBase_Parser(BaseCommon_Parser):
                 self._tokens[attr_nam] = stream.lastReadTokens()
                 self._attrInOrder.append(attr_nam)
                 self._parseAndSetAttribute(stream, attr_nam, attr_cls)
-                if attr_nam in attr_ok:
-                    attr_ok[attr_nam] = True
+                if attr_nam in self._attr_ok:
+                    self._attr_ok[attr_nam] = True
             else:
-                err = cls.GenErr(stream, f"Unexpected attribute '{tok}' in keyword '{nams}'")
-                raise TrustifyException(err) from None
+                self.handleUnexpectedAttribute(stream, tok, nams)
             tok = stream.probeNextLow()
         # Have we parsed all mandatory attributes?
-        for k, v in attr_ok.items():
+        for k, v in self._attr_ok.items():
             if not v:
                 err = cls.GenErr(stream, f"Attribute '{k}' is mandatory for keyword '{nams}' and was not read", attr=k)
                 raise TrustifyException(err) from None
@@ -625,7 +633,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
             if not attr_nam in self._leafParsers:
                 # Retrieve initial type for this attribute (do not use attr_val.__class__ which might be a simple
                 # Python builtin type like 'list' instead of List[float] for example!!
-                att_dict = dict(self._GetAttributeList())
+                att_dict = dict(self.__class__._GetAttributeList())
                 attr_cls = att_dict[attr_nam]
                 pars = Builtin_Parser.InstanciateFromBuiltin(attr_cls)
                 pars._pyd_value = attr_val
@@ -773,7 +781,6 @@ class ListOfBase_Parser(Builtin_Parser):
 
     def parseAndAppendItem(self, stream, lst):
         """ Append an item to the current list. Overriden in ListOfBuiltin_Parser """
-        self.Dbg(f"@FUNC@ parseAndAppendItem BASE ...")
         item_val = self._itemParserType.ReadFromTokens(stream)
         lst.append(item_val)
 
@@ -895,7 +902,6 @@ class ListOfBuiltin_Parser(ListOfBase_Parser):
 
     def parseAndAppendItem(self, stream, lst):
         """ Override. For builtin types, we need to store the parsers for each item too. """
-        self.Dbg(f"@FUNC@ parseAndAppendItem BUILTIN ...")
         item_pars = Builtin_Parser.InstanciateFromBuiltin(self._itemType)
 
         # Attach debug information of the list itself to the (builtin) item type

@@ -60,7 +60,7 @@ class TestCase(unittest.TestCase, UnitUtils):
         return ret
 
     def single_test(self, lml_or_data_nam, verbose=False):
-        """ Test a single data set - this method is called also from tst_rw_all_datasets.py """
+        """ Test a single data set. """
         from trustify.trust_parser import TRUSTParser, TRUSTStream
         from trustify.misc_utilities import ClassFactory, prune_after_end, check_str_equality, TrustifyException
 
@@ -99,7 +99,7 @@ class TestCase(unittest.TestCase, UnitUtils):
             if verbose: logger.info("About to compare with original dataset ...")
             if not check_str_equality(s, data_ex_p).ok:
               logger.info("   -> This might come from a duplicated instruction in your dataset...")
-              raise Exception
+              raise TrustifyException
             if verbose: logger.info(" --> OK")
             return True
         except TrustifyException as e:
@@ -122,14 +122,23 @@ class TestCase(unittest.TestCase, UnitUtils):
 
         # Let's go for all the tests now:
         ok = True
+        cnt, cnt_ok = 0, 0
         for i, e in enumerate(all_data):
+            cnt = cnt+1
             print("Testing data set %s ..."  % e, end='')
             if self.single_test(e):
                 print("OK")
+                cnt_ok += 1
             else:
                 print("")
                 ok = False
-        self.assertTrue(ok)
+        print("")
+        if ok:
+            logger.info(f"Summary: {cnt_ok}/{cnt} test(s) passed successfully.")
+        else:
+            logger.warning(f"Summary: {cnt_ok}/{cnt} test(s) passed successfully.")
+        print("")
+        return ok
 
 if __name__ == "__main__":
     from pathlib import Path
@@ -140,7 +149,8 @@ if __name__ == "__main__":
     TestCase.MODULE_NAME = Path(mod)
     if len(sys.argv) > 1:
         TestCase.SINGLE_JDD = sys.argv.pop()
-        t = TestCase()
-        t.test_all()
-    else:
-        unittest.main()
+    t = TestCase()
+    ok = t.test_all()
+    # Avoid standard unit test failure message:
+    if not ok:
+        sys.exit(-1)

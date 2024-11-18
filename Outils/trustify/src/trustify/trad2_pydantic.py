@@ -300,10 +300,18 @@ def generate_pyd_and_pars(trad2_filename, trad2_nfo_filename, out_pyd_filename,
     header_pyd = header_com + f'''
         from typing import Annotated, ClassVar, List, Literal, Optional, Any, Dict
         import pydantic
-        from pydantic import ConfigDict, Field
+        from pydantic import ConfigDict, Field, create_model
 
         class TRUSTBaseModel(pydantic.BaseModel):
             model_config = ConfigDict(validate_assignment=True, protected_namespaces=())
+            
+            @classmethod
+            def with_fields(cls, **field_definitions):
+                """ Overriding this classmethod allows to dynamically create new pydantic models 
+                with fields added dynamically. This is used in hacks.py for FT problems ...
+                See https://github.com/pydantic/pydantic/issues/1937
+                """
+                return create_model(cls.__name__, __base__=cls, **field_definitions)
             
             def __init__(self, *args, **kwargs):
                 pydantic.BaseModel.__init__(self, *args, **kwargs)

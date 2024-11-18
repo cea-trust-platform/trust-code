@@ -238,6 +238,19 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(check_str_equality(s, data_ex).ok)
 
+    def test_ds_ftd(self):
+        """ Dataset : FTD_oscillating_bubble.data - test for specific hack for Front Tracking
+        """
+        data_ex = self.load_file("FTD_oscillating_bubble.data")
+        res = self.generic_test(data_ex)
+        l_eq = res.get("pb").liste_equations
+        self.assertEqual(len(l_eq), 2)
+        self.assertTrue(isinstance(l_eq[0], self.mod.Navier_stokes_ft_disc))
+        self.assertTrue(isinstance(l_eq[1], self.mod.Transport_interfaces_ft_disc))
+        # Test write out:
+        s = ''.join(res.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, data_ex).ok)
+
     def test_debug_info(self):
         """ Check that proper reference to the C++ code (where the XD tag is put) is provided upon failure """
         from trustify.misc_utilities import TrustifyException
