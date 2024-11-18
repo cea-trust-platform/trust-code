@@ -469,17 +469,20 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
               }
             else
               {
-                int fac = 0;
+                bool ok = false;
                 for (int i = 0; i < dim; i++)
                   {
-                    num[i] = elem_faces(elem, fac);
-                    if (num[i] == num_face) num[i] = elem_faces(elem, dim); // DOUBT
-                    fac++;
+                    num[i] = elem_faces(elem, i);
+                    if (num[i] == num_face && !ok)
+                      {
+                        num[i] = elem_faces(elem, dim);
+                        ok = true;
+                      }
                   }
 
                 double dist = distance(dim, num_face, elem, xp, xv, face_normale);
                 dist *= (dim + 1.) / dim; // pour se ramener a distance paroi / milieu de num[0]-num[1]
-                double norm_v = norm_vit1(dim, vit, num_face, nfac, num, face_normale, val);
+                double norm_v = norm_vit1_lp(dim, vit, num_face, nfac, num, face_normale, val);
                 double d_visco = l_unif ? visco0:visco[elem];
 
                 // PQ : 01/10/03 : corrections par rapport a la version premiere
@@ -506,14 +509,14 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
   gradient_elem = 0.;
 
   calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, gradient_elem);
-
+  int dim = dimension;
   CDoubleTabView3 gradelem = gradient_elem.view3_ro();
   DoubleTabView gradu = grad_u.view_wo();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int elem)
   {
     int comp = 0;
-    for (int i = 0; i < dimension; i++)
-      for (int j = 0; j < dimension; j++)
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
         {
           gradu(elem, comp) = gradelem(elem, i, j);
           comp++;
@@ -695,14 +698,14 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
 
   double dnorme_H1;
   // DOUBT: dimension?
+  int dim = dimension;
   const int nb_elem = mon_dom.nb_elem();
   const int nb_faces_elem = mon_dom.nb_faces_elem();
   CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();
   CDoubleTabView face_normales = domaine_vef().face_normales().view_ro();
   CIntTabView face_voisins = domaine_vef().face_voisins().view_ro();
-  // CDoubleTabView oriente_normale = domaine_vef().oriente_normale().view_ro();
+  CDoubleTabView tab = valeurs().view_ro();
   CDoubleArrView volumes = domaine_vef().volumes().view_ro();
-  const DoubleTab& tab = valeurs();
 
   //On va calculer la norme H1 d'une inconnue P1NC.
   //L'algorithme tient compte des contraintes suivantes:
@@ -717,7 +720,7 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
     for (int K = 0; K < nb_elem; K++) //boucle sur les elements
       {
         double norme_grad_elem = 0.; //pour eviter les accumulations
-        for (int i = 0; i < dimension; i++) //boucle sur la dimension du pb
+        for (int i = 0; i < dim; i++) //boucle sur la dimension du pb
           {
             double int_grad_elem = 0.; //pour eviter les accumulations
             for (int face = 0; face < nb_faces_elem; face++) //boucle sur les faces d'un "K"

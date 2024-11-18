@@ -164,4 +164,49 @@ double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
 
   return norm_vit;
 }
+
+KOKKOS_INLINE_FUNCTION
+double norm_vit1_lp(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
+                    CDoubleTabView face_normale,
+                    double* val)
+{
+  // fac numero de la face a paroi fixe
+  double r[3] {};
+  double norme = 0;
+  double c[] = {1., 1., 1.};
+  double c_sum = 0;
+  for (int i=0; i<dim; i++)
+    {
+      r[i] = face_normale(fac, i);
+      norme += r[i] * r[i];
+      c_sum += c[i];
+    }
+  norme = sqrt(norme);
+  for(int i = 0; i < dim; i++)
+    r[i] /= norme;
+
+  double v[3] {};
+  for (int i=0; i<dim; i++)
+    {
+      v[i] = 0;
+      for (int j = 0; j < dim; j++)
+        v[i] += c[i] * vit(num[j], i);
+      v[i] /= c_sum;
+    }
+
+  double sum_carre=0;
+  double psc=0;
+  for (int i=0; i<dim; i++)
+    {
+      sum_carre += carre(v[i]);
+      psc += v[i] * r[i];
+    }
+  double norm_vit = sqrt(std::fabs(sum_carre-carre(psc)));
+
+  // val1,val2 val3 sont les vitesses tangentielles
+  for (int i=0; i<dim; i++)
+    val[i]=(v[i] - psc*r[i])/(norm_vit + DMINFLOAT);
+
+  return norm_vit;
+}
 #endif
