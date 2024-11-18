@@ -79,6 +79,8 @@ then
             PETSC_L=$PETSC_L" cudart cublas cublasLt cufft cusparse cusolver curand"
             # -lnvToolsExt: ajoute suite undefined reference sur cobalt:
             PETSC_L=$PETSC_L" nvToolsExt"
+            # -lnvJitLink : ajout necessaire sur JeanZay si MPI GPU-Aware:
+            PETSC_L=$PETSC_L" nvJitLink"
             # En statique:
             [ "$LINK_CUDA" = _static ] && PETSC_L=$PETSC_L" cublasLt_static culibos rt"
          elif [ "$TRUST_USE_ROCM" = 1 ]
