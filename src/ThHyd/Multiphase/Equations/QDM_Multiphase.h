@@ -72,6 +72,7 @@ public :
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
   double alpha_res() const ;
+  DoubleTab& corriger_derivee_impl(DoubleTab& ) override;
 
 protected:
   Entree& lire_cond_init(Entree&) override; //pour lire la pression
