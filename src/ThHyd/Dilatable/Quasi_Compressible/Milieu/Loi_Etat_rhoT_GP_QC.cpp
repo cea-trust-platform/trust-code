@@ -165,9 +165,11 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
       {
         double T = ICh(i, 0);
         if (T<=TMIN) Process::Kokkos_exit("Dumb temperature in Loi_Etat_rhoT_GP_QC::calculer_masse_volumique !");
-        parser.setVar(0, T);
-        rho_np1(i) = parser.eval();
+        int threadId = parser.acquire();
+        parser.setVar(0, T, threadId);
+        rho_np1(i) = parser.eval(threadId);
         rho(i, 0) = 0.5 * (rho_n(i) + rho_np1(i));
+        parser.release(threadId);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }

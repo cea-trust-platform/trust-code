@@ -759,18 +759,19 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
       DoubleTabView valeurs = valeurs_espace.view_wo();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
       {
+        int threadId = parser.acquire();
         double x = special ? 1e38 : pos(i,0);
         double y = special ? 1e38 : pos(i,1);
         double z = special ? 1e38 : (dim>2 ? pos(i,2) : 0);
-        parser.setVar(0,x);
-        parser.setVar(1,y);
-        parser.setVar(2,z);
-        parser.setVar(3,temps);
+        parser.setVar(0,x,threadId);
+        parser.setVar(1,y,threadId);
+        parser.setVar(2,z,threadId);
+        parser.setVar(3,temps,threadId);
         if (line_size == 1)
           {
             for (int so=0; so<nb_sources; so++)
-              parser.setVar(so+4,sources[so](i,0));
-            valeurs(i, 0) = parser.eval();
+              parser.setVar(so+4,sources[so](i,0),threadId);
+            valeurs(i, 0) = parser.eval(threadId);
           }
         else // line_size > 1
           {
@@ -780,15 +781,16 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
                   {
                     int nbcomp_loc = nb_comp_sources(so);
                     if (nbcomp_loc == nb_comp)
-                      parser.setVar(so+4,sources[so](i,j));
+                      parser.setVar(so+4,sources[so](i,j),threadId);
                     else if (nbcomp_loc == 1)
-                      parser.setVar(so+4,sources[so](i,0));
+                      parser.setVar(so+4,sources[so](i,0),threadId);
                     else
                       Process::Kokkos_exit("The arrays of values don't have compatibles dimensions in Champ_Generique_Transformation::get_champ()");
                   }
-                valeurs(i,j) = parser.eval();
+                valeurs(i,j) = parser.eval(threadId);
               }
           }
+        parser.release(threadId);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }

@@ -10,6 +10,11 @@ check()
       exit -1
    fi
    TU=$1.TU
+   # Non regression faiblement testee sur le nombre d'iterations des solveurs
+   ref=`awk '/Iterations/ && /solveur/ {print $NF}' $1.TU.ref_$2`
+   new=`awk '/Iterations/ && /solveur/ {print $NF}' $TU`
+   [ $ref != $new ] && echo "Solver convergence is different ($ref != $new) ! Possible regression..." && exit -1
+
    ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
    new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $TU`
    echo $ref $new | awk '// {if (2*($2-$1)/($1+$2)>0.05) {exit 1}}' # On verifie qu'on ne depasse pas +5% de la performance
