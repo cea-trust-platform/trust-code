@@ -39,14 +39,20 @@ do
    source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 # LD_LIBRARY_PATH
    # https://stackoverflow.com/questions/20657816/how-do-i-check-if-a-terminal-is-available-through-my-gnuplot-script
    # echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
-   echo "if (strstrt(GPVAL_TERMINALS, 'pngcairo') > 0) {
+   for exec in $TRUST_ROOT/exec/gnuplot/bin/gnuplot /usr/bin/gnuplot
+   do
+      [ ! -f $exec ] && echo "$exec not found! Install gnuplot." && exit -1
+      echo -e "Testing PNG for $exec ...\c"
+      echo "if (strstrt(GPVAL_TERMINALS, 'pngcairo') > 0) {
     set terminal pngcairo size 800,600
 } else {
     set terminal png large
-}" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
-
-   [ $? -ne 0 ] && exit -1
-   cd ..
+}" | $exec 1>/dev/null 2>&1
+      [ $? -eq 0 ] && echo "OK" && break
+      echo "KO" 
+      (cd $TRUST_ROOT/Outils/gnuplot && make clean)
+   done
+   cd $TRUST_ROOT/Outils/gnuplot
    rm -r -f ${package%.tar.gz}
 done
 # on retire les liens 
@@ -57,8 +63,10 @@ do
 done
 
 # Pour avoir la meme palette que gnuplot 4:
-gnuplotrc=`ls $TRUST_ROOT/exec/gnuplot/share/gnuplot/*/gnuplotrc 2>/dev/null`
-[ "$gnuplotrc" = "" ] && echo "Erreur, gnuplotrc not found!" && exit -1
-echo "set colors classic # Meme palette que gnuplot 4" >> $gnuplotrc
-
+if [ -d $TRUST_ROOT/exec/gnuplot ]
+then
+   gnuplotrc=`ls $TRUST_ROOT/exec/gnuplot/share/gnuplot/*/gnuplotrc 2>/dev/null`
+   [ "$gnuplotrc" = "" ] && echo "Erreur, gnuplotrc not found!" && exit -1
+   echo "set colors classic # Meme palette que gnuplot 4" >> $gnuplotrc
+fi
 exit 0
