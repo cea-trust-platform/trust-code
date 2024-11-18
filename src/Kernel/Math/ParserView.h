@@ -54,22 +54,25 @@ public:
     // Copy host mirror to device
     Kokkos::deep_copy(PNodes_view, host_PNodes_view);
   }
-  KOKKOS_INLINE_FUNCTION void setVar(int i, double val) const
+  KOKKOS_INLINE_FUNCTION void setVar(int i, double val, int threadId) const
   {
     assert(i>=0 && i<ivar);
-    int threadId = token.acquire();
     les_var_view(i, threadId) = val;
-    token.release(threadId);
   }
-  KOKKOS_INLINE_FUNCTION double eval() const
+  KOKKOS_INLINE_FUNCTION double eval(int threadId) const
   {
-    int threadId = token.acquire();
-    double val = eval(PNodes_view[0], threadId);
-    token.release(threadId);
-    return val;
+    return eval(PNodes_view[0], threadId);
   }
+  /**
+  * Token: get a unic threadId to fill safely les_var_view
+  */
+  int acquire() const { return token.acquire(); }
+  void release(int threadId) const { token.release(threadId); }
 private:
   Kokkos::Experimental::UniqueToken<Kokkos::DefaultExecutionSpace> token;
+  Kokkos::View<double**> les_var_view;
+  Kokkos::View<PNodePod*> PNodes_view;
+
   struct StackEntry
   {
     int node_idx;    // Index in PNodes_view array
@@ -184,7 +187,5 @@ private:
 
     return stack[0].result;
   }
-  Kokkos::View<double**> les_var_view;
-  Kokkos::View<PNodePod*> PNodes_view;
 };
 #endif

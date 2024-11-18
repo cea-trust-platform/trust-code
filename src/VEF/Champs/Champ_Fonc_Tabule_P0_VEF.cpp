@@ -62,12 +62,15 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
                              const int num_elem)
       {
+        int threadId = parser.acquire();
         for (int ncomp = 0; ncomp < nbcomp; ncomp++)
           {
             double val = val_params_aux_elems_v(num_elem, ncomp);
-            parser.setVar(0, val);
-            mes_valeurs_v(num_elem, ncomp) = parser.eval();
+
+            parser.setVar(0, val, threadId);
+            mes_valeurs_v(num_elem, ncomp) = parser.eval(threadId);
           }
+        parser.release(threadId);
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
     }

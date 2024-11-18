@@ -163,9 +163,11 @@ void kokkos_self_test()
     Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(
                            const int i)
     {
+      int threadId = parser.acquire();
       double x = (double) i;
-      parser.setVar(0, x);
-      f_v(i) = parser.eval();
+      parser.setVar(0, x, threadId);
+      f_v(i) = parser.eval(threadId);
+      parser.release(threadId);
     });
     assert(f(0) == 2);
     assert(f(nb_elem - 1) == 2 * nb_elem);
