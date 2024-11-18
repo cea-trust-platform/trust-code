@@ -1716,7 +1716,13 @@ else
    TRUST_MPI_GPU_AWARE=0
    if [ "$TRUST_USE_GPU" = 1 ]
    then
-      [ "`$MPI_ROOT/bin/ompi_info --parsable --all 2>/dev/null | grep mpi_built_with_cuda_support:value:true`" != "" ] && TRUST_MPI_GPU_AWARE=1
+     if [ "`$MPI_ROOT/bin/ompi_info --parsable --all 2>/dev/null | grep mpi_built_with_cuda_support:value:true`" != "" ]
+     then
+        TRUST_MPI_GPU_AWARE=1
+     elif [ "$TRUST_FORCE_MPI_GPU_AWARE" = 1 ]
+     then
+        echo "You ask for a MPI GPU-Aware but $MPI_ROOT is not!" && exit -1
+     fi   
    fi
    m="# MPI GPU-Aware ?"; e="TRUST_MPI_GPU_AWARE=\"$TRUST_MPI_GPU_AWARE\" && export TRUST_MPI_GPU_AWARE"; ecrit $m"|"$e"|"$env
    m="# COMM variable"; e="COMM=\"$COMM\" && export COMM"; ecrit $m"|"$e"|"$env

@@ -289,6 +289,7 @@ echo "   -force_latest_mpich               Download and use the MPICH `awk -F= '
 echo "   -force_provided_openmpi           Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "   -force_latest_openmpi             Download and use the OpenMPI `awk -F= '/^latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "   -force_system_mpi                 Use the system-provided MPI library."
+echo "   -force_mpi_gpu_aware              Try to find and use a MPI GPU-Aware. Abort if not found."
 echo " "
 echo "   -rocalution=0|path to rocALUTION  Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library."
 echo "   -cuda=path/nvcc|=download|=ccXY   Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
@@ -543,6 +544,10 @@ do
    elif [ "${1#-force_system_mpi}" != "$1" ]
    then
       export TRUST_FORCE_SYSTEM_MPI=1
+
+   elif [ "${1#-force_mpi_gpu_aware}" != "$1" ]
+   then
+      export TRUST_FORCE_MPI_GPU_AWARE=1
 
    elif [ "${1#-disable-openblas}" != "$1" ]
    then
