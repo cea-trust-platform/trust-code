@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Schema_Euler_explicite.h>
 #include <Operateur_Diff_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
@@ -418,4 +419,10 @@ double QDM_Multiphase::alpha_res() const
   if (evanescence_.est_nul()) Process::exit( "QDM_Multiphase::alpha_res : the evanescence operator should have been created already !" );
   if sub_type(Operateur_Evanescence_base, evanescence_.valeur()) return ref_cast(Operateur_Evanescence_base, evanescence_.valeur()).alpha_res();
   return -1.;
+}
+
+DoubleTab& QDM_Multiphase::corriger_derivee_impl(DoubleTab& derivee)
+{
+  if (sub_type(Schema_Euler_explicite, probleme().schema_temps())) return derivee;
+  return Navier_Stokes_std::corriger_derivee_impl(derivee);
 }

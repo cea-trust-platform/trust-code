@@ -697,6 +697,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
   // Cp is calculated from the following equation:
   // (BJ_{n}M-1Bt)Cp=B(J_{n}U_{n}/timestep+J_{n}derivee_out-J_{n+1}U_ALE), J-Jacobian, _{n}- at time n
 
+
   DoubleTab& tab_pression=la_pression->valeurs();
   DoubleTab& gradP=gradient_P->valeurs();
   DoubleTrav secmemP(tab_pression);
