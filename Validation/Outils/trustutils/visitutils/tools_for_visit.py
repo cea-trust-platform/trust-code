@@ -465,7 +465,7 @@ class Show(object):
         os.chdir(BUILD_DIRECTORY)
         outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
 
-        pattern = os.path.join(os.getcwd(), self.filename.split("./")[-1] + name + str(self.iteration) + "_\d\d\d\d.png")
+        pattern = os.path.join(os.getcwd(), self.filename.split("./")[-1] + name + str(self.iteration) + r"_\d\d\d\d.png")
         error = 0
         for top, dirs, files in os.walk(os.getcwd()):
             for file in files:
