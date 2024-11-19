@@ -219,9 +219,8 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
 
   ConstDoubleTab_parts valeurs_source_parts(source.valeurs()); // pour ignorer les variables auxiliaires
   const DoubleTab& valeurs_source = valeurs_source_parts[0];   // de PolyMAC_P0P1NC (sinon : min, moyenne FAUX)
-  DoubleTab&  espace_valeurs = espace_stockage->valeurs();
+  DoubleTab& espace_valeurs = espace_stockage->valeurs();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
-  //DoubleVect val_extraites(nb_comp);
   double val_extraite=-100.;
 
   if (nb_comp==1)
@@ -237,15 +236,13 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
           if (nb_dim!=nb_comp) //Cas des Champ_Face_VDF
             {
               size_vect=0;
-              //const IntVect& ori = zvf.orientation();
               for (int i=0; i<valeurs_source.dimension(0); i++)
-                //if (ori(i)==comp)
                 if (zvf.orientation(i)==comp)
                   ++size_vect;
             }
 
 
-          DoubleVect vect_source;
+          DoubleTrav vect_source;
           //Pour l'option somme vect_source doit avoir une structure parallele
           //pour appliquer val_extraite = mp_prodscal(vect_source,un)
           //Sa dimension est alors fixee par rapport au nombre d items de la source
@@ -270,15 +267,19 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
           // Remplissage
           if (nb_dim==nb_comp)
             {
-              for (int i=0; i<size_vect; i++)
-                vect_source(i) = valeurs_source(i,comp);
+              CDoubleTabView valeurs = valeurs_source.view_ro();
+              DoubleArrView vect = static_cast<ArrOfDouble&>(vect_source).view_wo();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size_vect, KOKKOS_LAMBDA(const int i)
+              {
+                vect(i) = valeurs(i,comp);
+              });
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
           else
             {
+              ToDo_Kokkos("critical, warning check you have a NR test case with .son !");
               int k=0;
-              //const IntVect& ori = zvf.orientation();
               for (int i=0; i<valeurs_source.dimension(0); i++)
-                //if (ori(i)==comp)
                 if (zvf.orientation(i)==comp)
                   {
                     if (methode_=="somme" || methode_=="moyenne" || methode_=="sum" || methode_=="average")
@@ -295,14 +296,17 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
 
           if (nb_dim==nb_comp)
             {
-              for (int i=0; i<size_vect; i++)
-                espace_valeurs(i,comp) = val_extraite;
+              DoubleTabView valeurs = espace_valeurs.view_wo();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size_vect, KOKKOS_LAMBDA(const int i)
+              {
+                valeurs(i,comp) = val_extraite;
+              });
+              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
           else
             {
-              //const IntVect& ori = zvf.orientation();
+              ToDo_Kokkos("critical, warning check you have a NR test case with .son !");
               for (int i=0; i<valeurs_source.dimension(0); i++)
-                //if (ori(i)==comp)
                 if (zvf.orientation(i)==comp)
                   espace_valeurs(i) = val_extraite;
             }
