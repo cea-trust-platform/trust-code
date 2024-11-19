@@ -52,6 +52,7 @@ void Integrale_tps_Champ::mettre_a_jour_integrale()
         {
           const DoubleTab& val = source.valeurs();
           DoubleTab& mes_val = le_champ_->valeurs();
+          if (val.isDataOnDevice()) mapToDevice(mes_val); // If source is on device, integral will be computed on device
           if (puissance_ == 1)
             mes_val.ajoute(dt, val);
           else if (puissance_ == 2)

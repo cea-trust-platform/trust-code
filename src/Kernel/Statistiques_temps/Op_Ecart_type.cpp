@@ -71,7 +71,8 @@ DoubleTab Op_Ecart_type::calculer_valeurs() const
       Cerr << "Not implemented yet in Op_Ecart_type::calculer_valeurs()" << finl;
       exit();
     }
-  DoubleTab ecart_type(valeurs_carre());
+  DoubleTrav ecart_type(valeurs_carre());
+  ecart_type = valeurs_carre();
   if (dt > 0)
     {
       ecart_type *= dt;                      // sum(I^2)*dt

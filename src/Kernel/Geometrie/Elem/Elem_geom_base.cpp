@@ -104,6 +104,7 @@ void Elem_geom_base_32_64<_SIZE_>::calculer_centres_gravite(DoubleTab_t& xp) con
     nb_elem=xp.dimension(0);
 
   xp = 0.;
+  ToDo_Kokkos("critical");
   for (int_t num_elem=0; num_elem<nb_elem; num_elem++)
     {
       int nb_som_reel=nb_som();

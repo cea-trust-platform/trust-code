@@ -71,7 +71,8 @@ void Op_Moyenne::completer(const Probleme_base& Pb)
 DoubleTab Op_Moyenne::calculer_valeurs() const
 {
   double dt = dt_integration();
-  DoubleTab moyenne(valeurs());
+  DoubleTrav moyenne(valeurs());
+  moyenne = valeurs();
   if (dt > 0)
     moyenne /= dt;
   return moyenne;
