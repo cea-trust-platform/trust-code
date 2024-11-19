@@ -22,6 +22,7 @@
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
+#include <TRUST_2_PDI.h>
 #include <Domaine.h>
 #include <Avanc.h>
 #include <Param.h>
@@ -277,7 +278,8 @@ int Navier_Stokes_Turbulent::reprendre(Entree& is)
   ident_modele += probleme().domaine().le_nom();
   ident_modele += Nom(temps, probleme().reprise_format_temps());
 
-  avancer_fichier(is, ident_modele);
+  if(!TRUST_2_PDI::PDI_restart_)
+    avancer_fichier(is, ident_modele);
   le_modele_turbulence->reprendre(is);
 
   return 1;

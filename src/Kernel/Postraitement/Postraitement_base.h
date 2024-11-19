@@ -44,8 +44,8 @@ public:
   virtual void mettre_a_jour(double temps);
   virtual void init() {}
   virtual void finir() {}
-  virtual void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const { }
-  virtual void scal_a_sauvegarder(std::map<std::string, std::string>& scal) const { }
+  virtual void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch, std::map<std::string, std::string>& cond) const { }
+  virtual void scal_a_sauvegarder(std::map<std::string, std::string>& scal, std::map<std::string, std::string>& cond) const { }
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   virtual void completer() = 0;

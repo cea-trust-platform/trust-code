@@ -84,6 +84,7 @@ public :
   virtual void discretiser(Discretisation_base&);
   inline virtual void mettre_a_jour_modele_rayo(double temps);
   void initialize() override;
+  void sauver() const override;
 
 protected:
 

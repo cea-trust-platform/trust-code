@@ -99,6 +99,7 @@ Read pb
             vitesse elem
         }
 
+	# BEGIN STATS #
         Statistiques dt_post 0.02
         {
             t_deb 0.0 t_fin 0.12
@@ -107,6 +108,7 @@ Read pb
             moyenne pression
             ecart_type pression
         }
+       # END STATS #
     }
     $checkpoint_restart pdi canal.sauv
 }

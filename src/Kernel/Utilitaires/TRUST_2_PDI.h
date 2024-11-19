@@ -23,6 +23,8 @@
 #include <map>
 #include <assert.h>
 #include <TRUSTTab.h>
+#include <Comm_Group_MPI.h>
+#include <PE_Groups.h>
 
 /*! @brief classe TRUST_2_PDI Encapsulation of PDI methods (library used for IO operations)
  */
@@ -36,13 +38,33 @@ public:
 
   static void init(std::string IO_config)
   {
-    if(!PDI_initialized_)
+    if(PDI_initialized_)
       {
-        // initialize PDI
-        PC_tree_t conf = PC_parse_path(IO_config.c_str());
-        PDI_init(PC_get(conf, ".pdi"));
-        PDI_initialized_ = 1;
+        Cerr << "TRUST_2_PDI::initialize PDI has already been initialized" << finl;
+        Process::exit();
       }
+    tconf_ = PC_parse_path(IO_config.c_str());
+    PDI_init(PC_get(tconf_, ".pdi"));
+
+    // share node parallelism
+#ifdef MPI_
+    const Comm_Group& ngrp = PE_Groups::get_node_group();
+    const Comm_Group_MPI* nodeComm = dynamic_cast<const Comm_Group_MPI*>(&ngrp);
+    if(nodeComm)
+      {
+        MPI_Comm comm = nodeComm->get_mpi_comm();
+        int nodeSz = nodeComm->nproc();
+        int nodeRk = nodeComm->rank();
+
+        PDI_multi_expose("Parallelism",
+                         "nodeComm",&comm, PDI_OUT,
+                         "nodeSize",&nodeSz, PDI_OUT,
+                         "nodeRk",    &nodeRk, PDI_OUT,
+                         nullptr);
+      }
+#endif
+
+    PDI_initialized_ = 1;
   }
 
   static void finalize()
@@ -55,6 +77,8 @@ public:
 
     // finalize PDI
     PDI_finalize();
+
+    PC_tree_destroy(&tconf_);
   }
 
   void read(const std::string& name, void *data)
@@ -109,10 +133,8 @@ public:
   }
 
   // Higher level methods
-  void share_node_parallelism();
-
   void share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write);
-
+  void prepareRestart(int& last_iteration, double& tinit, int resume_last_time);
 
 private:
 
@@ -120,6 +142,9 @@ private:
 
   // data that are currently shared with PDI
   static std::vector<std::string> shared_data_;
+
+  // configuration tree
+  static PC_tree_t tconf_;
 };
 
 #endif

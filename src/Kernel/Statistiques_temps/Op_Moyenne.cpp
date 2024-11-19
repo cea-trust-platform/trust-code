@@ -37,7 +37,7 @@ Entree& Op_Moyenne::lire_ch_moyenne(Entree& is)
 
 void Op_Moyenne::completer(const Probleme_base& Pb)
 {
-  Nom nom_pour_post("Moyenne_");
+  Nom nom_pour_post = Pb.le_nom() + "_Moyenne_";
 
   const OBS_PTR(Champ_Generique_base) &mon_champ = integrale_champ_.le_champ();
   const Noms noms = mon_champ->get_property("nom");

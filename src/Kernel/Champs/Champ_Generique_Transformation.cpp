@@ -916,7 +916,25 @@ void Champ_Generique_Transformation::nommer_source()
     {
       Nom nom_post_source;
       nom_post_source =  "Combinaison_";
-      nom_post_source += les_fct[0];
+
+      // PDI doesn't understand mathematical symbol inside variable name, so we replace them
+      std::string fonction = les_fct[0].getString();
+      auto replace = [&](std::string oldS, std::string newS)
+      {
+        size_t start_pos = 0;
+        while((start_pos = fonction.find(oldS, start_pos)) != std::string::npos)
+          {
+            fonction.replace(start_pos, oldS.length(), newS);
+            start_pos += newS.length();
+          }
+      };
+      replace("*", "x");
+      replace("+", "PLUS");
+      replace("-", "MINUS");
+      replace("/", "DIV");
+      replace("(", "_BEGINPAR_");
+      replace(")", "_ENDPAR_");
+      nom_post_source += fonction;
       nommer(nom_post_source);
     }
 }

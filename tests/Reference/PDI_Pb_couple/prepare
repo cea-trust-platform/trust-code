@@ -1,0 +1,7 @@
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   make_PAR.data prepare
+   trust PAR_prepare 2 || exit -1
+   mv PAR_prepare_Channel_Flow_Rate_repr_pb_boite_periox PDI_Pb_couple_Channel_Flow_Rate_repr_pb_boite_periox
+fi
+exit 0

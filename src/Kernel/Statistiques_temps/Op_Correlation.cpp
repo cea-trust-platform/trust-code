@@ -153,7 +153,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   if (nb_comp > 1)
     val.resize(0, nb_comp);
 
-  Nom nom_pour_post("Correlation_");
+  Nom nom_pour_post = Pb.le_nom() + "_Correlation_";
   nom_pour_post += nom_a + "_" + nom_b;
   integrale_tps_ab_.le_champ_calcule().nommer(nom_pour_post);
 

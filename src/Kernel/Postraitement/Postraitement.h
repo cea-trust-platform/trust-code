@@ -66,8 +66,8 @@ public:
   void postraiter(int forcer) override;
   void mettre_a_jour(double temps) override;
   void finir() override;
-  void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
-  void scal_a_sauvegarder(std::map<std::string, std::string>& scal) const override;
+  void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch, std::map<std::string, std::string>& cond) const override;
+  void scal_a_sauvegarder(std::map<std::string, std::string>& scal, std::map<std::string, std::string>& cond) const override;
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   void completer() override;

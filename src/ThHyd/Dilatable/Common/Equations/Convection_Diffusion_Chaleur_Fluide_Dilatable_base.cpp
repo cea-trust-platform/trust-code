@@ -129,7 +129,8 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
     {
       bytes += 8;
       TRUST_2_PDI pdi_interface;
-      double pth = le_fluide->pression_th();
+
+      double& pth = ref_cast_non_const(Fluide_Dilatable_base, le_fluide.valeur()).pression_th();
       pdi_interface.TRUST_start_sharing(ident_Pth.getString(), &pth);
     }
   return bytes;

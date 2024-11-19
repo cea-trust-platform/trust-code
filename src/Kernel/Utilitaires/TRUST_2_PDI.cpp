@@ -14,13 +14,12 @@
 *****************************************************************************/
 
 #include <TRUST_2_PDI.h>
-#include <Comm_Group_MPI.h>
-#include <PE_Groups.h>
 
 int TRUST_2_PDI::PDI_checkpoint_=0;
 int TRUST_2_PDI::PDI_restart_=0;
 int TRUST_2_PDI::PDI_initialized_=0;
 std::vector<std::string> TRUST_2_PDI::shared_data_;
+PC_tree_t TRUST_2_PDI::tconf_;
 
 void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)
 {
@@ -39,33 +38,12 @@ void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::str
     PDI_reclaim(it->first.c_str());
 }
 
-void TRUST_2_PDI::share_node_parallelism()
-{
-#ifdef MPI_
-  const Comm_Group& ngrp = PE_Groups::get_node_group();
-  const Comm_Group_MPI* nodeComm = dynamic_cast<const Comm_Group_MPI*>(&ngrp);
-  if(nodeComm)
-    {
-      MPI_Comm comm = nodeComm->get_mpi_comm();
-      int nodeSz = nodeComm->nproc();
-      int nodeRk = nodeComm->rank();
-
-      PDI_multi_expose("Parallelism",
-                       "nodeComm",&comm, PDI_OUT,
-                       "nodeSize",&nodeSz, PDI_OUT,
-                       "nodeRk",    &nodeRk, PDI_OUT,
-                       nullptr);
-    }
-#endif
-}
-
-
 void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write)
 {
   int nb_dim = tab.nb_dim();
   ArrOfInt dimensions(nb_dim);
   for(int i=0; i< nb_dim; i++)
-    dimensions[i] = tab.dimension(i);
+    dimensions[i] = tab.dimension_tot(i) ? tab.dimension_tot(i) : 1; // can't share null data
 
   int glob_dim_0;
   PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
@@ -79,4 +57,54 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int 
   data_dims[glob_dim_str] = &glob_dim_0;
   multiple_IO_("dimensions", data_dims, write);
 }
+
+void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_last_time)
+{
+  // Check that we have the same number of procs used for checkpoint
+  int nb_proc = -1;
+  PDI_expose("nb_proc", &nb_proc, PDI_INOUT);
+  if(nb_proc != Process::nproc())
+    {
+      Cerr << "TRUST_2_PDI::prepareRestart():: PDI Restart Error ! The backup file has been generated with " << nb_proc << " processors, whereas the current computation is launched with "
+           << Process::nproc() << " processors. With PDI, you need to restart your computation with the same number of processors used for previous computation" << finl;
+      Process::exit();
+    }
+
+  // Get time scheme information
+  int nb_sauv = -1;
+  PDI_expose("iter", &nb_sauv, PDI_INOUT);
+  std::vector<double> temps(nb_sauv+1);
+  PDI_expose("temps_sauvegardes", temps.data(), PDI_INOUT);
+
+  // Restart from the last time
+  if (resume_last_time)
+    {
+      // Look for the last time saved in checkpoint file to init current computation
+      tinit = temps.back();
+      last_iteration = nb_sauv;
+    }
+  else // resume from the requested time
+    {
+      // looking for tinit in backup file
+      auto it = std::find_if(temps.begin(), temps.end(), [&](const double &t) { return std::fabs(t-tinit) < 1.e-8 ; } );
+      if(it == temps.end())
+        {
+          Cerr << "------------------------------------------------------------------------------------" << finl;
+          Cerr << "Time " << tinit << " not found in backup file. Please adjust tinit in your datafile "     << finl;
+          Cerr << "Available times are:" << finl;
+          for(auto t: temps)
+            Cerr << t << " ";
+          Cerr << finl << "------------------------------------------------------------------------------------" << finl;
+          Process::exit();
+        }
+      last_iteration = (int)std::distance(temps.begin(),it);
+    }
+
+  // letting PDI know which iteration/time to read during restart
+  PDI_expose("iter", &last_iteration, PDI_OUT);
+  PDI_expose("temps", &tinit, PDI_OUT);
+
+}
+
+
 

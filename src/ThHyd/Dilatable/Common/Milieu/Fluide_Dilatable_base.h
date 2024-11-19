@@ -112,6 +112,7 @@ public :
   inline void set_pression_th(double Pth) { Pth_n_ = Pth_ = Pth; }
   inline int getTraitementPth() const { return traitement_PTh_; }
   inline double pression_th() const { return Pth_; } // Pression thermodynamique
+  inline double& pression_th() { return Pth_; } // Pression thermodynamique
   inline double pression_thn() const { return Pth_n_; } // Pression thermodynamique a l'etape precedente
   inline double pression_th1() const { return Pth1_; } // Pression thermodynamique calculee pour conserver la masse
   inline double calculer_H(double hh) const { return loi_etat_->calculer_H(Pth_,hh); }

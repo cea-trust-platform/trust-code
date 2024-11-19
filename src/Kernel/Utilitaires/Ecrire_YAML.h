@@ -24,22 +24,20 @@ class Ecrire_YAML
 {
 public:
   Ecrire_YAML() : indent_(2) { }
-  void write_checkpoint_file(Nom fname);
-  void write_restart_file(Nom fname);
-  void write_champ_fonc_restart_file(Nom fname);
+  void write_checkpoint_file(std::string yaml_fname);
+  void write_restart_file(std::string yaml_fname);
+  void write_champ_fonc_restart_file(std::string filename);
 
-  void associer_pb_base(const Probleme_base& pb)
+  void add_pb_base(const Probleme_base& pb_base, Nom file_name)
   {
-    if (pb_.non_nul())
-      {
-        Cerr<<"Error: Problem while associating problem in Ecrire_YAML" <<finl;
-        Process::exit();
-      }
-    pb_=pb;
+    Pb2Save new_pb;
+    new_pb.pb = pb_base;
+    new_pb.filename = file_name;
+    pbs_.push_back(new_pb);
   }
 
-  void set_field(Nom nom, int nb_dim);
-  void set_scalar(Nom nom, Nom type);
+  void add_field(Nom pb, Nom nom, int nb_dim);
+  void add_scalar(Nom pb, Nom nom, Nom type);
 
 private:
   void begin_bloc_(const std::string line, std::string& text)
@@ -58,28 +56,39 @@ private:
 
   void set_data_();
 
-  void write_checkpoint_restart_file_(int save, Nom fname);
+  void write_checkpoint_restart_file_(int save, std::string yaml_fname);
   void declare_metadata_(int save, std::string& text);
   void declare_data_(int save, std::string& text);
 
-  void write_data_for_checkpoint_(Nom fname, std::string& text);
-  void write_data_for_restart_(Nom fname, std::string& text);
-  void write_metadata_(int save, Nom fname, std::string& text);
-  void write_time_data_(int save, Nom fname, std::string& text);
+  void write_data_for_checkpoint_(int pb_i, std::string& text);
+  void write_file_initialization_(int pb_i, std::string& text);
+  void write_data_for_restart_(int pb_i, std::string& text);
+
+  void write_format_(int save, std::string fname, std::string& text);
+  void write_time_scheme_(int save, std::string fname, std::string& text);
 
   void declare_array_(std::string name, std::string type, std::string size, std::string& text);
   void declare_dtab_(std::string name, std::string type, int nb_dim, std::string& text);
   void declare_dataset_(std::string name, std::string type, int nb_dim, std::string& text);
   void write_attribute_(std::string dname, std::string fname, std::string& text);
-  void write_scalar_(std::string dname, std::string fname, std::string& text);
+  void write_scalar_(std::string dname, std::string fname, std::string cond, std::string& text);
   void write_scalar_selection_(std::string& text);
-  void write_dtab_(std::string name, int nb_dim, std::string& text);
+  void write_dtab_(std::string fname, int nb_dim, std::string cond, std::string& text);
   void write_dtab_selection_(std::string name, int nb_dim, std::string& text);
 
   int indent_;
-  OBS_PTR(Probleme_base) pb_;
-  std::map<std::string, std::pair<std::string, int>> fields_; //fields to save/restore : fields["name_of_field"] = (type_of_the_field, dimensions_of_field)
-  std::map<std::string, std::string> scalars_; //additional scalars to save/restore : scalars_["name_of_scalar"] = type of the scalar
+
+  using Field2Type = std::map<std::string, std::pair<std::string, int>>; //fields to save/restore : fields["name_of_field"] = (type_of_the_field, dimensions_of_field)
+  using Scalar2Type = std::map<std::string, std::string>;  //additional scalars to save/restore : scalars["name_of_scalar"] = type of the scalar
+  typedef struct
+  {
+    OBS_PTR(Probleme_base) pb;
+    Scalar2Type scalars;
+    Field2Type fields;
+    std::map<std::string, std::string> conditions; //for each field/scalar, is it a condition to respect in order to write it?
+    std::string filename;
+  } Pb2Save;
+  std::vector<Pb2Save> pbs_;
 
 };
 

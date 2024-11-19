@@ -119,9 +119,8 @@ int EcritureLectureSpecial::is_lecture_special()
  */
 int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
 {
-  int pdi_format = TRUST_2_PDI::PDI_checkpoint_;
   // with PDI, no one is writing, the library handles the IO
-  if(pdi_format)
+  if(TRUST_2_PDI::PDI_checkpoint_)
     {
       a_faire = 0;
       special = 0;

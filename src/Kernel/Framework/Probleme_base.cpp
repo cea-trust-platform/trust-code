@@ -21,17 +21,6 @@
 #include <Synonyme_info.h>
 #include <Postraitement.h>
 #include <stat_counters.h>
-<<<<<<< HEAD
-=======
-#include <Equation_base.h>
-#include <FichierHDFPar.h>
-#include <Sortie_Nulle.h>
-#include <Milieu_base.h>
-#include <TRUST_2_PDI.h>
-#include <TRUST_Deriv.h>
-#include <TRUST_Ref.h>
-#include <sys/stat.h>
->>>>>>> 933ddf6474 ([PDI] enabling reading of old HDF5 backup files)
 #include <Debog.h>
 
 Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);

@@ -145,7 +145,14 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   vrai_champ_.typer(ch_inc.que_suis_je());
   vrai_champ_->associer_domaine_dis_base(pb.domaine_dis());
   //vrai_champ_->fixer_nb_valeurs_temporelles(2);
-  vrai_champ_->nommer(ch_inc.le_nom());
+  Nom inc_name = ch_inc.le_nom();
+  if(format_rep == "pdi")
+    {
+      Nom nom_ch = pb.le_nom() + "_" + ch_inc.le_nom();
+      le_champ().nommer(nom_ch);
+    }
+  else
+    vrai_champ_->nommer(inc_name);
   vrai_champ_->fixer_nb_comp(ch_inc.nb_comp());
   //vrai_champ_->fixer_nb_valeurs_nodales(ch_inc.nb_valeurs_nodales());
   vrai_champ_->valeurs() = ch_inc.valeurs();
@@ -193,7 +200,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       fic_hdf.close();
     }
   else if (format_rep == "pdi")
-    init_pdi(nom_fic, last_time, un_temps, reprend_champ_moyen);
+    init_pdi(pb, nom_fic, last_time, un_temps, reprend_champ_moyen);
   else
     {
       if (format_rep == "xyz")
@@ -268,7 +275,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       nom_ident="Operateurs_Statistique_tps";
       nom_ident+=pb.domaine().le_nom();
       nom_ident+=nom_temps;
-      nom_ident_champ_stat=nom_champ;
+      nom_ident_champ_stat=pb.le_nom() + "_" + nom_champ;
 
       nom_ident_champ_stat+="Champ_Fonc";
       type.suffix("Champ");
@@ -353,63 +360,35 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
     }
 
   if(format_rep == "pdi")
-    {
-      TRUST_2_PDI::PDI_restart_ = 0;
-      TRUST_2_PDI::finalize();
-    }
+    TRUST_2_PDI::finalize();
 
   return s ;
 }
 
-void Champ_Fonc_reprise::init_pdi(Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen)
+void Champ_Fonc_reprise::init_pdi(const Probleme_base& pb, Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen)
 {
   TRUST_2_PDI::PDI_restart_ = 1;
 
   Ecrire_YAML yaml_file;
+  yaml_file.add_pb_base(pb, nom_fic);
   int nb_dim = le_champ().valeurs().nb_dim();
   Nom nom_ch = le_champ().le_nom();
-  yaml_file.set_field(nom_ch, nb_dim);
+  yaml_file.add_field(pb.le_nom(), nom_ch, nb_dim);
   if(reprend_champ_moyen)
     {
-      yaml_file.set_scalar("stat_nb_champs", "int");
-      yaml_file.set_scalar("stat_tdeb", "double");
-      yaml_file.set_scalar("stat_tend", "double");
+      Nom pbname = pb.le_nom();
+      yaml_file.add_scalar(pbname, pbname + "_stat_nb_champs", "int");
+      yaml_file.add_scalar(pbname, pbname + "_stat_tdeb", "double");
+      yaml_file.add_scalar(pbname, pbname + "_stat_tend", "double");
     }
-  yaml_file.write_champ_fonc_restart_file(nom_fic);
+  yaml_file.write_champ_fonc_restart_file("restart.yml");
   TRUST_2_PDI::init("restart.yml");
 
   TRUST_2_PDI pdi_interface;
+  int last_iteration = -1;
+  double tinit = last_time ? -1. : un_temps;
+  pdi_interface.prepareRestart(last_iteration, tinit, last_time);
 
-  // Prepare parallelism
-  pdi_interface.share_node_parallelism();
-
-  // Get time scheme information
-  int nb_sauv = -1;
-  pdi_interface.read("iter", &nb_sauv);
-  std::vector<double> temps(nb_sauv+1);
-  pdi_interface.read("temps", temps.data());
-
-  // Restart from the requested time
-  if (!last_time)
-    {
-      // looking for un_temps in backup file
-      auto it = std::find_if(temps.begin(), temps.end(), [&](const double &t) { return std::fabs(t-un_temps) < 1.e-8 ; } );
-      if(it == temps.end())
-        {
-          Cerr << "------------------------------------------------------------------------------------" << finl;
-          Cerr << "Time " << un_temps << " not found in backup file. Please adjust the requested restart time in your datafile "     << finl;
-          Cerr << "Available times are:" << finl;
-          for(auto t: temps)
-            Cerr << t << " ";
-          Cerr << finl << "------------------------------------------------------------------------------------" << finl;
-          exit();
-        }
-
-      // letting PDI know which iteration to read during restart
-      int last_iteration = (int)std::distance(temps.begin(),it);
-      pdi_interface.TRUST_start_sharing("iter", &last_iteration);
-      pdi_interface.stop_sharing_last_variable();
-    }
 }
 
 void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, Nom nom_ident,
@@ -427,9 +406,10 @@ void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const P
       if(pdi_format)
         {
           TRUST_2_PDI pdi_interface;
-          pdi_interface.read("stat_nb_champs", &n);
-          pdi_interface.read("stat_tdeb", &tdeb);
-          pdi_interface.read("stat_tend", &tfin);
+          std::string pbname = pb.le_nom().getString();
+          pdi_interface.read(pbname + "_stat_nb_champs", &n);
+          pdi_interface.read(pbname + "_stat_tdeb", &tdeb);
+          pdi_interface.read(pbname + "_stat_tend", &tfin);
         }
       else
         {
@@ -445,9 +425,13 @@ void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const P
       OWN_PTR(Champ_Generique_base) champ;
       Nom ajout("");
       ajout += " refChamp { Pb_champ ";
-      ajout += pb.le_nom();
+      Nom pb_name = pb.le_nom();
+      ajout += pb_name;
       ajout += " ";
-      ajout += le_champ().le_nom();
+      if(pdi_format)
+        ajout += le_champ().le_nom().getSuffix(pb_name + "_");
+      else
+        ajout += le_champ().le_nom();
       ajout += " }";
       Entree_complete s_complete(ajout,jdd);
       s_complete>>champ;
@@ -467,6 +451,7 @@ void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const P
     }
   else
     le_champ().reprendre(file);
+
 }
 
 void Champ_Fonc_reprise::mettre_a_jour(double t)

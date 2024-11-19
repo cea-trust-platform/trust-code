@@ -841,27 +841,40 @@ Postraitement::Postraitement():
 /*! @brief for PDI IO: retrieve name and type and dimensions of the scalars to save/restore
  *
  */
-void Postraitement::scal_a_sauvegarder(std::map<std::string, std::string>& scal) const
+void Postraitement::scal_a_sauvegarder(std::map<std::string, std::string>& scal, std::map<std::string, std::string>& cond) const
 {
   if(stat_demande_ || stat_demande_definition_champs_)
     {
-      scal["stat_nb_champs"] = "int";
-      scal["stat_tdeb"] = "double";
-      scal["stat_tend"] = "double";
+      std::string pb_name = probleme().le_nom().getString();
+      std::string post_cond = "$temps>" + std::to_string(tstat_deb_);
+
+      scal[pb_name + "_stat_nb_champs"] = "int";
+      cond[pb_name + "_stat_nb_champs"] = post_cond;
+
+      scal[pb_name + "_stat_tdeb"] = "double";
+      cond[pb_name + "_stat_tdeb"] = post_cond;
+
+      scal[pb_name + "_stat_tend"] = "double";
+      cond[pb_name + "_stat_tend"] = post_cond;
     }
 }
 
 /*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
  *
  */
-void Postraitement::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+void Postraitement::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch, std::map<std::string, std::string>& cond) const
 {
+  std::map<std::string, std::pair<std::string, int>> post;
   if(stat_demande_ || stat_demande_definition_champs_)
     {
       for (const auto& ch_post : champs_post_complet_)
-        ch_post->champ_a_sauvegarder(ch);
-
+        ch_post->champ_a_sauvegarder(post);
     }
+
+  for (auto const& p : post)
+    cond[p.first] = "$temps>" + std::to_string(tstat_deb_);
+
+  ch.insert(post.begin(), post.end());
 }
 
 int Postraitement::sauvegarder(Sortie& os) const
@@ -894,11 +907,15 @@ int Postraitement::sauvegarder(Sortie& os) const
           else if (TRUST_2_PDI::PDI_checkpoint_)
             {
               TRUST_2_PDI pdi_interface;
+              std::string pb_name = probleme().le_nom().getString();
               int nb_champs = nb_champs_stat_;
               double tdeb = tstat_deb_, tend =  tstat_dernier_calcul_;
-              pdi_interface.TRUST_start_sharing("stat_nb_champs", &nb_champs);
-              pdi_interface.TRUST_start_sharing("stat_tdeb", &tdeb);
-              pdi_interface.TRUST_start_sharing("stat_tend", &tend);
+              std::string name = pb_name + "_stat_nb_champs";
+              pdi_interface.TRUST_start_sharing(name, &nb_champs);
+              name = pb_name + "_stat_tdeb";
+              pdi_interface.TRUST_start_sharing(name, &tdeb);
+              name = pb_name + "_stat_tend";
+              pdi_interface.TRUST_start_sharing(name, &tend);
             }
 
           bytes += champs_post_complet_.sauvegarder(os);
@@ -932,9 +949,10 @@ int Postraitement::reprendre(Entree& is)
               if (TRUST_2_PDI::PDI_restart_)
                 {
                   TRUST_2_PDI pdi_interface;
-                  pdi_interface.read("stat_nb_champs", &n);
-                  pdi_interface.read("stat_tdeb", &tstat_deb_sauv);
-                  pdi_interface.read("stat_tend", &temps_derniere_mise_a_jour_stats);
+                  std::string pb_name = probleme().le_nom().getString();
+                  pdi_interface.read(pb_name + "_stat_nb_champs", &n);
+                  pdi_interface.read(pb_name + "_stat_tdeb", &tstat_deb_sauv);
+                  pdi_interface.read(pb_name + "_stat_tend", &temps_derniere_mise_a_jour_stats);
                 }
               else
                 {

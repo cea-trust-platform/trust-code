@@ -174,7 +174,6 @@ protected:
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
   bool bord_fluide_multiphase_ = false, via_ch_fonc_reprise_ = false;
-  mutable bool first_checkpoint_ = true;
 };
 
 #endif /* Champ_Inc_base_included */

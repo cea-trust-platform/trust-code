@@ -76,7 +76,7 @@ public:
 
 private:
   OWN_PTR(Champ_Inc_base) vrai_champ_;
-  void init_pdi(Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen);
+  void init_pdi( const Probleme_base& pb, Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen);
   void read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, Nom nom_ident,
                             Nom nom_ident_champ_stat, int reprend_champ_moyen, Nom nom_ident_champ_keps, int reprend_modele_k_eps, int pdi_format = 0);
   inline virtual const Champ_Inc_base& le_champ() const { return vrai_champ_.valeur(); }

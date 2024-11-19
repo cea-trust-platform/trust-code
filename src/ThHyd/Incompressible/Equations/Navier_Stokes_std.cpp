@@ -1196,7 +1196,8 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
 void Navier_Stokes_std::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
 {
   Equation_base::champ_a_sauvegarder(ch);
-  std::string name = la_pression->le_nom().getString();
+  std::string name = probleme().le_nom().getString() + "_" + la_pression->le_nom().getString();
+
   int nb_dim = la_pression->valeurs().nb_dim();
   ch[name] = std::make_pair("double",nb_dim);
 }

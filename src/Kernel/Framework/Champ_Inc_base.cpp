@@ -367,14 +367,17 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
       bytes = 8 * valeurs().size_array();
 
       TRUST_2_PDI pdi_interface;
-      if(first_checkpoint_) // first checkpoint (no need to share this every time, PDI keeps it in memory)
-        {
-          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 1 /*write mode*/);
-          first_checkpoint_ = false;
-        }
+      Nom name = equation().probleme().le_nom() + "_" + nom_;
+      pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
 
       DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
-      pdi_interface.TRUST_start_sharing(nom_.getString(), unknwon.addr());
+      if( valeurs().dimension_tot(0) )
+        pdi_interface.TRUST_start_sharing(name.getString(), unknwon.addr());
+      else
+        {
+          ArrOfDouble garbage( valeurs().nb_dim() );
+          pdi_interface.TRUST_start_sharing(name.getString(), garbage.addr());
+        }
     }
   else
     {
@@ -413,8 +416,17 @@ int Champ_Inc_base::reprendre(Entree& fich)
       if(TRUST_2_PDI::PDI_restart_)
         {
           TRUST_2_PDI pdi_interface;
-          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 0 /*read mode*/);
-          pdi_interface.read(nom_.getChar(), valeurs().addr());
+          // Sometimes (with Champ_fonc_reprise), the equation has not been associated yet so we just share the raw name of the field
+          // otherwise, we need to prefix it with the name of the problem
+          Nom name = mon_equation_non_nul() ? equation().probleme().le_nom() + "_" + nom_ : nom_;
+          pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 0 /*read mode*/);
+          if( valeurs().dimension_tot(0) )
+            pdi_interface.read(name.getChar(), valeurs().addr());
+          else
+            {
+              ArrOfDouble garbage( valeurs().nb_dim() );
+              pdi_interface.read(name.getChar(), garbage.addr());
+            }
         }
       else
         {

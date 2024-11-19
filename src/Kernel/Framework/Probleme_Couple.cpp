@@ -21,6 +21,8 @@
 #include <Milieu_base.h>
 #include <TRUSTTabs.h>
 #include <Domaine_VF.h>
+#include <TRUST_2_PDI.h>
+#include <Ecrire_YAML.h>
 
 Implemente_instanciable(Probleme_Couple,"Probleme_Couple",Couplage_U);
 // XD coupled_problem pb_gen_base probleme_couple -1 This instruction causes a probleme_couple type object to be created. This type of object has an associated problem list, that is, the coupling of n problems among them may be processed. Coupling between these problems is carried out explicitly via conditions at particular contact limits. Each problem may be associated either with the Associate keyword or with the Read/groupes keywords. The difference is that in the first case, the four problems exchange values then calculate their timestep, rather in the second case, the same strategy is used for all the problems listed inside one group, but the second group of problem exchange values with the first group of problems after the first group did its timestep. So, the first case may then also be written like this: NL2 Probleme_Couple pbc NL2 Read pbc { groupes { { pb1 , pb2 , pb3 , pb4 } } } NL2 There is a physical environment per problem (however, the same physical environment could be common to several problems). NL2 Each problem is resolved in a domain. NL2 Warning : Presently, coupling requires coincident meshes. In case of non-coincident meshes, boundary condition \'paroi_contact\' in VEF returns error message (see paroi_contact for correcting procedure).
@@ -362,5 +364,35 @@ void Probleme_Couple::discretiser(Discretisation_base& dis)
       Probleme_base& pb=ref_cast(Probleme_base,probleme(i));
       pb.discretiser(dis);
     }
+}
+
+
+void Probleme_Couple::sauver() const
+{
+  Ecrire_YAML yaml_file;
+  bool pdi_format = false;
+  for (int i=0; i<nb_problemes(); i++)
+    {
+      const Probleme_base& pb=ref_cast(Probleme_base,probleme(i));
+      Nom format = pb.restart_format();
+      if((Motcle(format) == "pdi"))
+        {
+          Nom fname = pb.restart_filename();
+          yaml_file.add_pb_base(pb, fname);
+          pdi_format = true;
+        }
+    }
+  // we need to initialize PDI with a yaml file that contains the information of all the problems with a PDI checkpoint format
+  // (allows to initialize PDI once for all checkpoints and not multiple times)
+  if(pdi_format && !TRUST_2_PDI::PDI_initialized_)
+    {
+      std::string yaml_fname = "save_" + le_nom().getString() + ".yml";
+      yaml_file.write_checkpoint_file(yaml_fname);
+      TRUST_2_PDI::init(yaml_fname);
+    }
+
+  for(int i=0; i<nb_problemes(); i++)
+    ref_cast(Probleme_base,probleme(i)).sauver();
+
 }
 

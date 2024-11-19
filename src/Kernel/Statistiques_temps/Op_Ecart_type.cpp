@@ -31,7 +31,8 @@ Entree& Op_Ecart_type::readOn(Entree& s)
 
 void Op_Ecart_type::completer(const Probleme_base& Pb)
 {
-  Nom nom_pour_post("Ecart_type_");
+  Nom nom_pour_post = Pb.le_nom() + "_Ecart_type_";
+
   const OBS_PTR(Champ_Generique_base) &mon_champ = integrale_carre_champ_.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);

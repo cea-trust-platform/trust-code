@@ -39,3 +39,11 @@ fi
 # set init time and other variables for restart computation
 t0=_T0_
 sed -i "s/tinit.*/tinit $t0/g" $jdd
+# if tinit is smaller than the last time statistics were updated,
+# then we don't resume statistics
+backward_tinit=`echo $t0 0.08 | awk '{if ($1 < $2) print 1; else print 0}'` 
+if [ "$backward_tinit" -eq 1 ]
+then
+    sed -i "s/# BEGIN STATS #/# BEGIN STATS /g" $jdd
+    sed -i "s/# END STATS #/ END STATS #/g" $jdd
+fi

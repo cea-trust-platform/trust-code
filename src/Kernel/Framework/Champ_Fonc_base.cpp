@@ -112,11 +112,8 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
       bytes = 8 * valeurs().size_array();
 
       TRUST_2_PDI pdi_interface;
-      if(first_checkpoint_) // first checkpoint (no need to share this every time, PDI keeps it in memory)
-        {
-          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 1 /*write mode*/);
-          first_checkpoint_ = false;
-        }
+      pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 1 /*write mode*/);
+
       DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
       pdi_interface.TRUST_start_sharing(nom_.getString(), unknwon.addr());
     }
