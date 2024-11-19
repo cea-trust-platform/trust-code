@@ -1,3 +1,5 @@
+XX/XX/24 (TRUST) Change       : Parser rewrite can create different initialization for random fields (Champ_front_bruite, ...) or advanced fields using Rnd function
+XX/XX/24 (TRUST) Change       : y+ field were possibly wrong on tetraedra/triangle with more than one boundary face
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
