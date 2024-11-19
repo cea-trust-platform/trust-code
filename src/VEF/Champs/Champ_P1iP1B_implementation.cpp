@@ -173,11 +173,11 @@ DoubleVect& Champ_P1iP1B_implementation::valeur_aux_elems_compo(const DoubleTab&
 
 // Recupere un domaine
 // Renvoie un tableau contenant les valeurs du champ aux sommets du domaine
-DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
+DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& tab_val) const
 {
   const Domaine_VEF& zvef = domaine_vef();
   int nb_compo_=le_champ().nb_comp();
-  assert(nb_compo_ == val.line_size());
+  assert(nb_compo_ == tab_val.line_size());
 
   // Filtrage du champ pour le postraitement (contenu dans le tableau champ_filtre_)
   champ_filtre_=filtrage(zvef,le_champ());
@@ -187,7 +187,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, D
       Champ_P0_VEF tmp;
       tmp.associer_domaine_dis_base(zvef);
       tmp.valeurs() = champ_filtre_;
-      tmp.valeur_aux_sommets(zvef.domaine(), val);
+      tmp.valeur_aux_sommets(zvef.domaine(), tab_val);
     }
 
   if (zvef.get_alphaS()) // Support P1
@@ -196,12 +196,14 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, D
       int prs=zvef.numero_premier_sommet();
       if (nb_compo_ == 1)
         {
-          int som,num_som;
-          for (num_som = 0; num_som<nbs; num_som++)
-            {
-              som = prs+num_som;
-              val(num_som,0) += champ_filtre_(som);
-            }
+          CDoubleArrView champ_filtre = static_cast<const DoubleVect&>(champ_filtre_).view_ro();
+          DoubleTabView val = tab_val.view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nbs, KOKKOS_LAMBDA(const int num_som)
+          {
+            int som = prs+num_som;
+            val(num_som,0) += champ_filtre(som);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
       else // nb_compo_ > 1
         {
@@ -209,7 +211,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, D
           Process::exit();
         }
     }
-  return val;
+  return tab_val;
 }
 
 
