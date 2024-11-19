@@ -66,6 +66,7 @@ void Integrale_tps_produit_champs::mettre_a_jour_integrale()
           if (premiere_puissance() == 1 && seconde_puissance() == 1)
             {
               ////ajoute_produit_tensoriel(dt, mon_premier_champ(), mon_second_champ());
+              ToDo_Kokkos("Do as Integrale_tps_champ, mapToDevice?");
               ajoute_produit_tensoriel(dt, source, source2);
             }
           else
@@ -82,6 +83,7 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
 {
   if (support_different_)
     {
+      ToDo_Kokkos("Use DoubleTrav and don't resize...");
       // On ramene au centre des elements
       const DoubleTab& xp = ref_cast(Domaine_VF,le_champ_->domaine_dis_base()).xp();
       int nb_elem_tot = xp.dimension_tot(0);
