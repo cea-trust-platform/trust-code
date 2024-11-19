@@ -332,7 +332,7 @@ echo "   -disable-gnuplot                  Disable gnuplot installation and buil
 echo "   -disable-doxygen                  Disable doxygen installation and build. HTML documentation cannot be build if doxygen disabled."
 echo "   -disable-tcl_tk                   Disable Tcl/Tk detection/installation."
 echo "   -disable-gmsh                     Disable Gmsh installation and build."
-echo "   -disable-trustpy                  Do not build the trustpy documentation."
+echo "   -disable-trustify                 Do not build the trustify documentation tool."
 echo "   -disable-plot2d                   Disable PLOT2D installation and build."
 echo "   -disable-checks                   Disable checks for external packages, sources, disk space and speed."
 echo "   -disable-check_sources            Disable check sources before compiling."
@@ -360,7 +360,7 @@ cc=""
 F77=""
 clean=""
 
-LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D DOXYGEN TRUSTPY"
+LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D DOXYGEN TRUSTIFY"
 
 #[ -f configure.log ] && sed "s/^/# /" -i  configure.log
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log

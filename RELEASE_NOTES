@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5_beta : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
+20/11/24 (TRUST) Tools        : 'trustpy' now becomes 'trustify'. Check the syntax of your dataset with 'trust -trustify my_case.data'. See a more complete usage example in Outils/trustify/doc/examples/hello_world.
 28/10/24 (TRUST) New feature  : Support for Cathare FORT21 format in lata tools and plugins.
 28/10/24 (TRUST) New feature  : New environment variable TRUST_STDCPP tells which C++ standard is being used to build TRUST (C++17 by default)
 28/10/24 (TRUST) Build        : TRUST is now configured by default with Kokkos SIMD (if C++17) backend enabled

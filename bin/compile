@@ -45,7 +45,7 @@ make_tools()
    reps=$reps" Outils/lata_tools"
    [ "$TRUST_DISABLE_MPI" = 0 ] && reps=$reps" Outils/ICoCo"
    [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"
-   [ "$TRUST_DISABLE_TRUSTPY" != 1 ] && reps=$reps" Outils/trustpy"
+   [ "$TRUST_DISABLE_TRUSTIFY" != 1 ] && reps=$reps" Outils/trustify"
    reps=$reps" Outils/TRIOXDATA"
    [ "$TRUST_DISABLE_DOXYGEN" != 1 ] && reps=$reps" Outils/doxygen"
    [ "$TRUST_WITHOUT_DOC" != 1 ] && reps=$reps" doc"
