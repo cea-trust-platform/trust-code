@@ -446,6 +446,7 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           nfin = ndeb + le_bord.nb_faces();
           int dim = Objet_U::dimension;
           int nfac = domaine_vef().domaine().nb_faces_elem();
+          DoubleTrav counter(y_plus.size());
           CDoubleTabView xp = domaine_vef().xp().view_ro(); // DOUBT: Why defined inside the for loop?
           CDoubleTabView xv = domaine_vef().xv().view_ro();
           CDoubleTabView face_normale = domaine_vef().face_normales().view_ro();
@@ -455,17 +456,22 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           CDoubleArrView visco = static_cast<const DoubleVect&>(tab_visco).view_ro();
           CDoubleArrView yp_faces = static_cast<const DoubleVect&>(yplus_faces).view_ro();
           DoubleArrView y_plus_view = y_plus.view_rw();
-
+          DoubleArrView counter_view = static_cast<DoubleVect&>(counter).view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+          {
+            int elem = face_voisins(num_face, 0);
+            y_plus_view(elem) = 0;
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
           {
             int num[3] {};
             double val[3] {};
             int elem = face_voisins(num_face, 0);
-
             if (yplus_already_computed)
               {
                 // y+ is only defined on faces so we take the face value to put in the element
-                y_plus_view(elem) = yp_faces(num_face);
+                Kokkos::atomic_add(&y_plus_view(elem), yp_faces(num_face));
               }
             else
               {
@@ -488,11 +494,15 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
                 // PQ : 01/10/03 : corrections par rapport a la version premiere
                 double norm_tau = d_visco * norm_v / dist;
                 double u_etoile = sqrt(norm_tau);
-                y_plus_view(elem) = dist * u_etoile / d_visco;
-
+                Kokkos::atomic_add(&y_plus_view(elem), dist * u_etoile / d_visco);
               } // else yplus already computed
-
+            Kokkos::atomic_add(&counter_view(elem), +1);
           }); // loop on faces
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, y_plus.size()), KOKKOS_LAMBDA (const int elem)
+          {
+            if (counter_view(elem)>0) y_plus_view(elem)/=counter_view(elem);
+          });
           end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
         } // Fin de paroi fixe
@@ -670,7 +680,7 @@ static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
   CDoubleTabView uview = u.view_ro(); // DOUBT: How to name this variable?
 
   Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_faces,
-                          KOKKOS_LAMBDA (const int i, double s)
+                          KOKKOS_LAMBDA (const int i, double& s)
   {
     for (int j = 0; j < nb_compo_; j++)
       s += uview(i, j) * uview(i, j);
@@ -715,7 +725,7 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
   //ATTENTION: les prismes ne sont pas supportes.
   dnorme_H1 = 0.;
   Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_comp(), //cas scalaire ou vectoriel
-                          KOKKOS_LAMBDA (const int composante, double norme_H1_comp)
+                          KOKKOS_LAMBDA (const int composante, double& norme_H1_comp)
   {
     for (int K = 0; K < nb_elem; K++) //boucle sur les elements
       {
