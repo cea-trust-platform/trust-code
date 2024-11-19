@@ -104,3 +104,13 @@ So for example repeating `dt_max 32` twice in the time scheme block will be OK f
 
 Work in progress to see if this behaviour should be forbidden in TRUST too.
 
+### Update TRUST website documentation
+
+To update the doc on the readthedocs website, maintainers of the code may:
+- run `make doc` to generate in the TRUST directory all the documentation files (mainly `install/doc/all.rst` file)
+- go to the documentation repository, and clone it (github.com:cea-trust-platform/trust-documentation.git) 
+- in this repo, run the script `update_from_TRUST.sh` which will copy all the necessary files.
+
+
+
+

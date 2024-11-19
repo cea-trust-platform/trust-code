@@ -70,6 +70,8 @@ class TRUSTDocGenerator:
         of the file extra_rst/toto.rst
         """
         import os
+        if doc is None:
+            print(keyw)
         for match in self.re_input.finditer(doc):
             g0, g1 = match.group(0), match.group(1)
             file_nam = os.path.join(self.script_dir, "..", "doc", "extra_rst", f"{g1}.rst")
@@ -91,7 +93,7 @@ class TRUSTDocGenerator:
 
 .. image:: {fil_nam}
   :alt: {fil_nam}
-  :scale: 150%
+  :scale: 80%
   :align: center
 
 """
@@ -175,6 +177,8 @@ class TRUSTDocGenerator:
             lst = inv_top[p]
             lst.sort(key=lambda c: c.__name__)
             par = p.__name__.lower()
+            # Skip specific classes:
+            if par in ["dataset", "declaration", "bloc_comment"]: continue
             s = f"**Keywords derived from {par}**\n"
             s += "=" * (len(s)-1) + "\n\n"
             for i, c in enumerate(lst):

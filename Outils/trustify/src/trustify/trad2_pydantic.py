@@ -28,10 +28,14 @@ def valid_variable_name(s):
         s += '_'
     return s
 
+def substitute_nl(s, repl):
+    s = s.replace("NL1", repl)
+    s = s.replace("NL2", repl*2)
+    return s
+
 def format_docstring(description):
     docstring = f'r"""\n{description}\n"""'
-    docstring = docstring.replace("NL1", "\n")
-    docstring = docstring.replace("NL2", "\n\n")
+    docstring = substitute_nl(docstring, "\n")
     docstring = docstring.splitlines()
     docstring = [textwrap.wrap(line, width=90) if line else [""] for line in docstring]
     docstring = sum(docstring, [])
@@ -150,7 +154,7 @@ def write_pyd_block(block, pyd_file, all_blocks):
         assert isinstance(attr, tu.TRAD2Attr)
         args = f'default_factory=lambda: eval("{ClassFactory.ToPydName(attr.type)}()")'
         attr_typ = attr.type
-        attr_desc = attr.desc
+        attr_desc = substitute_nl(attr.desc, "")
 
         if attr.type in all_blocks:    # Complex attribute (=another TRUST class)
             cls = all_blocks[attr.type]
@@ -198,7 +202,7 @@ def write_pyd_block(block, pyd_file, all_blocks):
         # Fix attribute name:
         attr_nam = valid_variable_name(attr.name)
 
-        lines.append(f'    {attr_nam}: {attr_typ} = Field(description=r"{attr_desc}", {args})')
+        lines.append(f'    {attr_nam}: {attr_typ} = Field(description=r"""{attr_desc}""", {args})')
 
     lines += [
         f'    _synonyms: ClassVar[dict] = {synonyms}',

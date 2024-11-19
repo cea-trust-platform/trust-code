@@ -83,7 +83,8 @@ if has_Eqn_base:
     for c in to_modif:
         c._synonyms['liste_equations'] = []
         # Update global scope, and class factory
-        c_new = c.with_fields(liste_equations=(List[Eqn_base], []))
+        c_new = c.with_fields(liste_equations=(Annotated[List[Eqn_base], "Listeqn"], []))
+        c_new.__doc__ = c.__doc__
         globals()[c.__name__] = c_new
         ClassFactory._ALL_CLASSES[c.__name__] = c_new
     del to_modif
