@@ -97,9 +97,6 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
           assert(nb_elems == buffer.size_array());
           assert(idx_end_of_list <= list.get_data().size_array());
           bool kernelOnDevice = vect.checkDataOnDevice();
-          // ToDo the location of the buffer should be set in Schema_Comm_Vecteurs::get_next_area_template
-          // It needs probably to change Schema_Comm_Vecteurs API with an attribute bufferOnDevice_ initiated during begin_comm(...)
-          buffer.set_data_location(kernelOnDevice ? DataLocation::Device : DataLocation::HostOnly);
           if (kernelOnDevice)
             vect_items_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _ITEM_TYPE_>(line_size, idx, idx_end_of_list, list, vect, buffer);
           else
@@ -202,9 +199,6 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
           assert(idx_end_of_list <= list.get_data().size_array());
 
           bool kernelOnDevice = vect.checkDataOnDevice();
-          // ToDo the location of the buffer should be set in Schema_Comm_Vecteurs::get_next_area_template
-          // It needs probably to change Schema_Comm_Vecteurs API with an attribute bufferOnDevice_ initiated during begin_comm(...)
-          buffer.set_data_location(kernelOnDevice ? DataLocation::Device : DataLocation::HostOnly);
           if (kernelOnDevice)
             vect_blocs_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _ITEM_TYPE_>(line_size, idx, idx_end_of_list, list, vect, buffer);
           else
