@@ -170,7 +170,7 @@ void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, con
           }
       });
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
     }
 }
 }
@@ -418,8 +418,8 @@ void operator_vect_single_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const _
       const int count = end_bloc - begin_bloc;
 
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-
       Kokkos::RangePolicy<ExecSpace> policy(0, count);
+
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
       {
         const int resu_idx = begin_bloc + i ;
