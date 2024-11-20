@@ -161,6 +161,10 @@ public :
   virtual const DoubleTab& xv_bord() const;
   DoubleTab calculer_xgr() const;
 
+  virtual void get_position(DoubleTab& positions) const;
+  virtual double compute_L1_norm(const DoubleVect& val_source) const;
+  virtual double compute_L2_norm(const DoubleVect& val_source) const;
+
   //produit scalaire (a - ma).(b - mb)
   inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
 

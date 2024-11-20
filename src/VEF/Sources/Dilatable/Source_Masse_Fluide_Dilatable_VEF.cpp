@@ -214,7 +214,6 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
         {
           const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
-<<<<<<< HEAD
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
           {
             const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
@@ -223,15 +222,6 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
             flux_faces(num_face) = val_flux(num_face - ndeb, 0) * surf / volumes(elem); // TODO multiple elements!! units val_flux(num_face-ndeb,0) *surf [kg.s-1] => gives [kg.m-3.s-1]
           });
           end_gpu_timer(__KERNEL_NAME__);
-=======
-          for (int num_face = ndeb; num_face < nfin; num_face++)
-            {
-              const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
-              int elem = elem1 == -1 ? elem2 : elem1;
-              const double surf = zp1b.face_surfaces(num_face);
-              tab_flux_faces(num_face) = val_flux(num_face - ndeb, 0) * surf / zp1b.volumes(elem); // TODO multiple elements!! units val_flux(num_face-ndeb,0) *surf [kg.s-1] => gives [kg.m-3.s-1]
-            }
->>>>>>> a5783e7d19 ([OWN_PTR] porting for discontinuous galerkin)
         }
     }
 

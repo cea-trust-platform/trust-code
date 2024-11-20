@@ -28,27 +28,31 @@ class Domaine_DG : public Domaine_Poly_base
 public :
   void discretiser() override;
 
-  inline const DoubleTab& get_DiaTri() const { return DiaTri; }
-  inline const DoubleTab& get_invDiaTri() const { return invDiaTri; }
-  inline const DoubleTab& get_PerTri() const { return PerTri; }
-  inline const DoubleTab& get_rhoTri() const { return rhoTri; }
-  inline const DoubleTab& get_sigTri() const { return sigTri; }
+  inline const DoubleTab& get_DiaTri() const { return DiaTri_; }
+  inline const DoubleTab& get_invDiaTri() const { return invDiaTri_; }
+  inline const DoubleTab& get_PerTri() const { return PerTri_; }
+  inline const DoubleTab& get_rhoTri() const { return rhoTri_; }
+  inline const DoubleTab& get_sigTri() const { return sigTri_; }
 
 
   inline void set_quadrature(int order, const Quadrature_base* quad);
   inline const Quadrature_base& get_quadrature(int order) const;
-  DoubleTab DiaTri;
-  DoubleTab invDiaTri;
-  DoubleTab PerTri;
-  DoubleTab rhoTri;
-  DoubleTab sigTri;
+
+  void get_position(DoubleTab& positions) const override;
+  double compute_L1_norm(const DoubleVect& val_source) const override;
+  double compute_L2_norm(const DoubleVect& val_source) const override;
 
 //  void calculer_h_carre() override;
 
 
-private:
+protected:
 
   std::map<int, const Quadrature_base*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
+  DoubleTab DiaTri_;
+  DoubleTab invDiaTri_;
+  DoubleTab PerTri_;
+  DoubleTab rhoTri_;
+  DoubleTab sigTri_;
 // DoubleVect h_, sigma;
 
   void compute_mesh_param(); // Compute the stabilization parameters

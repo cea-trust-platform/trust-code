@@ -23,6 +23,9 @@ class Champ_Fonc_P1_DG: public Champ_Fonc_P0_base
   Declare_instanciable(Champ_Fonc_P1_DG);
 public :
   Champ_base& affecter_(const Champ_base& ch) override;
+
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+
 };
 
 #endif /* Champ_Fonc_Elem_DG_included */

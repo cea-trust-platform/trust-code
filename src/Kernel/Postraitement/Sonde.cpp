@@ -1068,7 +1068,8 @@ void Sonde::initialiser()
   if (ncomp == -1)
     {
       const Noms noms_comp = mon_champ->get_property("composantes");
-      int nb_comp = noms_comp.size();
+      Motcle directive = mon_champ->get_directive_pour_discr();
+      int nb_comp = (directive == "temperature" || directive == "champ_elem_DG") ? 1 : noms_comp.size();
       valeurs_locales.resize(nbre_points,nb_comp);
     }
   else

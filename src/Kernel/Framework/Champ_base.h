@@ -96,6 +96,8 @@ public:
   virtual double valeur_a_sommet_compo(int, int, int) const;
   virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
   virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
+  virtual DoubleTab& eval_elem(DoubleTab& valeurs) const;
+
 
   /* ces methodes ne s'appliquent que si a_un_domaine_dis_base() */
   virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;

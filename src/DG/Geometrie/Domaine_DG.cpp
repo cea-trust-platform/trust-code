@@ -85,35 +85,84 @@ void Domaine_DG::discretiser()
 
 }
 
+void Domaine_DG::get_position(DoubleTab& positions) const
+{
+  //TODO Kokkos DG
+  const Quadrature_base& quad = get_quadrature(5);
+  positions = quad.get_integ_points();
+}
+
+double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
+{
+  const Quadrature_base& quad = get_quadrature(5);
+  int nb_pts_integ = quad.nb_pts_integ();
+  int nelem = nb_elem();
+
+  DoubleTab val_elem(nb_pts_integ);
+
+  double sum = 0.;
+
+  for (int i = 0; i < nelem; i++)
+    {
+      for (int k = 0; k < nb_pts_integ ; k++)
+        val_elem(k) = std::fabs(val_source(i*nb_pts_integ+k));
+
+      sum += quad.compute_integral_on_elem(i, val_elem);
+    }
+
+  return sum;
+}
+
+double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
+{
+  const Quadrature_base& quad = get_quadrature(5);
+  int nb_pts_integ = quad.nb_pts_integ();
+  int nelem = nb_elem();
+
+  DoubleTab val_elem(nb_pts_integ);
+
+  double sum = 0.;
+
+  for (int i = 0; i < nelem; i++)
+    {
+      for (int k = 0; k < nb_pts_integ ; k++)
+        val_elem(k) = val_source(i*nb_pts_integ+k)*val_source(i*nb_pts_integ+k);
+
+      sum += quad.compute_integral_on_elem(i, val_elem);
+    }
+
+  return sum;
+}
+
 void Domaine_DG::compute_mesh_param()
 {
   /*
   int nb_elem = this->nb_elem();
 
-  DiaTri.resize(nb_elem);
-  invDiaTri.resize(nb_elem);
-  PerTri.resize(nb_elem);
-  rhoTri.resize(nb_elem);
-  sigTri.resize(nb_elem);
+  DiaTri_.resize(nb_elem);
+  invDiaTri_.resize(nb_elem);
+  PerTri_.resize(nb_elem);
+  rhoTri_.resize(nb_elem);
+  sigTri_.resize(nb_elem);
 
   for (int e = 0; e < nb_elem; e++)
     {
-      DiaTri(e) = 1 / (2 * this->volumes(e));
+      DiaTri_(e) = 1 / (2 * this->volumes(e));
       int nb_elem_face = 3; // nb_elem_faces(e)
       for (int i_f = 1; i_f < nb_elem_face; i_f++)
         {
           int f = this->elem_faces(e, i_f);
           double sur_f = this->face_surfaces(f);
-          DiaTri(e) *= sur_f;
-          PerTri(e) += sur_f; //
+          DiaTri_(e) *= sur_f;
+          PerTri_(e) += sur_f; //
         }
     }
 
   for (int e = 0; e < this->nb_elem(); e++)
     {
-      invDiaTri(e) = 1. / DiaTri(e);
-      rhoTri(e) = 4. * this->volumes(e) / PerTri(e);
-      sigTri(e) = DiaTri(e) / rhoTri(e);
+      invDiaTri_(e) = 1. / DiaTri_(e);
+      rhoTri_(e) = 4. * this->volumes(e) / PerTri_(e);
+      sigTri_(e) = DiaTri_(e) / rhoTri_(e);
     }
     */
 }

@@ -40,3 +40,49 @@ Champ_base& Champ_Fonc_P1_DG::affecter_(const Champ_base& ch)
 
   return *this;
 }
+
+DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
+{
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+  const DoubleVect& volume = domaine.volumes();
+
+  const Quadrature_base& quad = domaine.get_quadrature(5);
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  const DoubleTab& values = le_champ().valeurs();
+  int nb_polys = polys.size();
+
+  if (nb_polys == 0)
+    return result;
+
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (result.nb_dim() == 1) result.resize(nb_polys, 1);
+
+  assert(result.line_size() == 1);
+  ToDo_Kokkos("critical");
+
+  DoubleTab value_pts(nb_pts_integ);
+
+  for (int i = 0; i < nb_polys; i++)
+    {
+      int cell = polys(i);
+      assert(cell < values.dimension_tot(0));
+
+      if (cell != -1)
+        {
+          for (int k=0; k<nb_pts_integ; k++)
+            value_pts(k) = values(cell,k);
+//          value_pts.ref_tab(values,cell,1); //pb de const
+
+          result(i,0) = quad.compute_integral_on_elem(cell, value_pts);
+          result(i,0) /= volume(cell); //TODO DG est ce necessaire de multiplier dans integral pour diviser deriere ?
+        }
+    }
+
+  return result;
+
+}
+

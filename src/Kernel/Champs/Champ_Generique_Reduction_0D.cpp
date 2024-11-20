@@ -229,6 +229,15 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)&) 
       extraire(val_extraite,valeurs_source);
       espace_valeurs = val_extraite;
     }
+  else if (domaine_dis.que_suis_je() == "Domaine_DG")
+    {
+      extraire(val_extraite,valeurs_source);
+      int size_vect = valeurs_source.dimension(0);
+
+      for (int i=0; i<size_vect; i++)
+        for (int j=0; j<nb_comp; j++)
+          espace_valeurs(i,j) = val_extraite;
+    }
   else
     {
       for (int comp=0; comp<nb_comp; comp++)
@@ -365,21 +374,13 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // au ELEM
       if (get_localisation()==Entity::ELEMENT)
         {
-          ToDo_Kokkos("Code but check test!");
-          int nb_elem = zvf.nb_elem();
           if (methode_ =="L1_norm")
             {
-              for (int i=0; i<nb_elem; i++)
-                {
-                  sum+=std::fabs(val_source(i))*volumes(i);
-                }
+              sum = zvf.compute_L1_norm(val_source);
             }
           else if (methode_ =="L2_norm")
             {
-              for (int i=0; i<nb_elem; i++)
-                {
-                  sum+=val_source(i)*val_source(i)*volumes(i);
-                }
+              sum = zvf.compute_L2_norm(val_source);
             }
           else
             {

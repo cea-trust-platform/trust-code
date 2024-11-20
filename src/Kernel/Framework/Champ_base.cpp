@@ -442,6 +442,13 @@ void Champ_base::corriger_unite_nom_compo()
     }
 }
 
+DoubleTab& Champ_base::eval_elem(DoubleTab& tab_valeurs) const
+{
+  Process::exit("This function is only for DG");
+
+  return tab_valeurs;
+}
+
 
 void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Domaine& dom) const
 {
@@ -457,7 +464,8 @@ void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,N
       nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
     }
 
-  bool isChamp_basis_function_DG = (que_suis_je().debute_par("Champ_Elem_DG"));
+
+  bool isChamp_basis_function_DG = (que_suis_je() == ("Champ_Elem_DG") || que_suis_je() == ("Champ_Fonc_P1_DG"));
   if (isChamp_basis_function_DG)
     les_valeurs.resize(nb_elem, 1);
   else

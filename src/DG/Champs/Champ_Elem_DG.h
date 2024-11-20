@@ -42,6 +42,7 @@ public:
   //Evaluation of the basis functions on integration points for elements and facets
   void eval_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& fbasis) const;
   void eval_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& grad_fbasis) const;
+  void eval_bfunc(const DoubleTab& coord, const int& nelem, DoubleTab& fbasis) const;
 
   //Evaluation of the gradient of the basis functions on integration points for elements and facets
   void eval_grad_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& fbasis) const;
@@ -58,6 +59,9 @@ public:
 
   /* fonctions pour reconstruire la valeur du champ selon la localisation */
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleTab& eval_elem(DoubleTab& valeurs) const override;
+
 
   void compute_stab_param();
 protected:

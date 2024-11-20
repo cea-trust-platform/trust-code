@@ -71,7 +71,7 @@ void Champ_Elem_DG::build_mass_matrix()
 
   int current_indice = 0;
 
-  const Quadrature_base& quad = domaine.get_quadrature(5);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   int nb_pts_integ = quad.nb_pts_integ();
 
   DoubleTab fbase(nb_bfunc_, nb_pts_integ);
@@ -217,6 +217,37 @@ void Champ_Elem_DG::eval_bfunc(const Quadrature_base& quad, const int& nelem, Do
 
           fbasis(1, pt) = (integ_points(nelem*nb_pts_integ + pt, 0) - xp(nelem,0))*invh;
           fbasis(2, pt) = (integ_points(nelem*nb_pts_integ + pt, 1) - xp(nelem,1))*invh;
+
+          if (order_ == 1) continue;
+          throw;
+        }
+    }
+  else if (Objet_U::dimension == 3)
+    throw; //TODO
+  else
+    Process::exit();
+}
+
+void Champ_Elem_DG::eval_bfunc(const DoubleTab& coords, const int& nelem, DoubleTab& fbasis) const
+{
+  int nb_points = coords.dimension(0);
+
+  assert(fbasis.dimension(0) == nb_bfunc_ && fbasis.dimension(1) == nb_points);
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+  const DoubleTab& xp = domaine.xp(); // barycentre elem
+
+  if (Objet_U::dimension == 2)
+    {
+      double invh = 1./sqrt(domaine.carre_pas_maille(nelem));
+
+      for (int pt = 0; pt < nb_points; pt++)
+        {
+          fbasis(0, pt) = 1;
+          if (order_ == 0) continue;
+
+          fbasis(1, pt) = (coords(pt, 0) - xp(nelem,0))*invh;
+          fbasis(2, pt) = (coords(pt, 1) - xp(nelem,1))*invh;
 
           if (order_ == 1) continue;
           throw;
@@ -430,6 +461,96 @@ Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
   return *this;
 }
 
+DoubleTab& Champ_Elem_DG::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
+{
+  const Domaine& domaine = domaine_dis_base().domaine();
+
+  int nb_elems = tab_valeurs.dimension_tot(0);
+  int nb_points = tab_valeurs.dimension(1);
+
+  DoubleTab pos_elem;
+  const int dim = positions.dimension(1);
+  pos_elem.resize(tab_valeurs.dimension_tot(0), dim);
+
+  for (int i = 0; i < nb_elems; i++)
+    {
+      for (int k = 0; k<dim; k++)
+        pos_elem(i,k) = positions(i*nb_points, k);
+    }
+
+
+  IntVect les_polys;
+  les_polys.resize(tab_valeurs.dimension_tot(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
+
+  domaine.chercher_elements(pos_elem, les_polys); //TODO DG selectionner uniquement la premiere valeur de tab_valeurs
+
+  const Champ_base& ch_base = le_champ();
+  const DoubleTab& values = ch_base.valeurs();
+  int nb_polys = les_polys.size();
+
+
+  if (nb_polys == 0)
+    return tab_valeurs;
+
+  DoubleTab fbase(nb_bfunc_,nb_points);
+  DoubleTab coords(nb_points,dim);
+  for (int i = 0; i < nb_polys; i++)
+    {
+      int cell = les_polys(i);
+      assert(cell < values.dimension_tot(0));
+
+      if (cell != -1)
+        {
+          for (int j = 0; j < nb_points; j++)
+            for (int k = 0; k<dim; k++)
+              coords(j,k) = positions(i*nb_points+j, k);
+//          coords.ref_tab(positions, i*nb_points, nb_points); //pas possible car const
+
+          eval_bfunc(coords, cell, fbase);
+
+          for (int j = 0; j < nb_points ; j++)
+            {
+              tab_valeurs(i,j) = 0.;
+              for (int l =0; l<nb_bfunc_; l++)
+                tab_valeurs(i,j) += values(cell,l) * fbase(l,j); // reconstruction valeurs du champ aux points d'integrations
+            }
+        }
+    }
+
+  return tab_valeurs;
+}
+
+DoubleTab& Champ_Elem_DG::eval_elem(DoubleTab& tab_valeurs) const
+{
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+  const int nb_elem = domaine.nb_elem();
+
+  const Quadrature_base& quad = domaine.get_quadrature(5);
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  const Champ_base& ch_base = le_champ();
+  const DoubleTab& values = ch_base.valeurs();
+
+
+  assert(tab_valeurs.dimension(0) == nb_elem && tab_valeurs.dimension(1) == nb_pts_integ );
+
+  DoubleTab fbase(nb_bfunc_,nb_pts_integ);
+  for (int i = 0; i < nb_elem; i++)
+    {
+      eval_bfunc(quad, i, fbase);
+
+      for (int j = 0; j < nb_pts_integ ; j++)
+        {
+          tab_valeurs(i,j) = 0.;
+          for (int l =0; l<nb_bfunc_; l++)
+            tab_valeurs(i,j) += values(i,l) * fbase(l,j); // reconstruction valeurs du champ aux points d'integrations
+        }
+    }
+
+  return tab_valeurs;
+}
+
 DoubleTab& Champ_Elem_DG::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
 {
 
@@ -469,7 +590,7 @@ DoubleTab& Champ_Elem_DG::valeur_aux_elems(const DoubleTab& positions, const Int
           product = 0.;
           for (int k = 0; k < nb_pts_integ ; k++)
             for (int l =0; l<nb_bfunc_; l++)
-              product(k) += values(cell,l) * fbase(l,k); // reconstruction valeurs du champ aux points d'integrations
+              product(k) += values(cell,l) * fbase(l,k); // reconstruction valeurs du champ aux points coords
 
           result(i,0) = quad.compute_integral_on_elem(cell, product);
           result(i,0) /= volume(cell);

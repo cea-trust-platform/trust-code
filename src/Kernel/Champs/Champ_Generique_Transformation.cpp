@@ -532,18 +532,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
       if (zvf.xp().nb_dim() != 2) /* xp() non initialise */
         zvf.domaine().calculer_centres_gravite(positions);
       else
-        {
-          positions.resize(zvf.nb_elem(), zvf.xp().dimension(1));
-          CDoubleTabView xp = zvf.xp().view_ro();
-          DoubleTabView positions_v = positions.view_wo();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {zvf.nb_elem(), zvf.xp().dimension(1)}), KOKKOS_LAMBDA(const int i, const int j)
-          {
-            positions_v(i,j) = xp(i,j);
-          });
-          end_gpu_timer(__KERNEL_NAME__);
-          // Don't work with simply: ToDo fix
-          // positions = zvf.xp();
-        }
+        zvf.get_position(positions);
     }
   else if (localisation_ == "som")
     positions = get_ref_domain().coord_sommets();
@@ -611,9 +600,19 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
       //pour recuperer un tableau avec autant de composantes que la dimension du probleme
       if (directive!=directive_so)
         {
-          sources_val[so].resize(nb_pos,nb_compso);
-          if (directive == "CHAMP_FACE") source_so.valeur_aux_faces(sources_val[so]);
-          else source_so.valeur_aux(positions,sources_val[so]);
+          if (directive_so == "champ_elem_DG") //TODO DG a changer quand nb_compso sera egal a 1
+            {
+              int nelem = valeurs_espace.dimension(0);
+              int npoints = valeurs_espace.dimension(1);
+              sources_val[so].resize(nelem,npoints);
+              source_so.eval_elem(sources_val[so]);
+            }
+          else
+            {
+              sources_val[so].resize(nb_pos,nb_compso);
+              if (directive == "CHAMP_FACE") source_so.valeur_aux_faces(sources_val[so]);
+              else source_so.valeur_aux(positions,sources_val[so]);
+            }
         }
       else
         {
@@ -779,51 +778,82 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           special = 1;
           nb_pos = valeurs_espace.dimension(0);
         }
-      int line_size = valeurs_espace.line_size();
-      int dim = dimension;
-      int nb_comp = nb_comp_;
-      Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
-      for (int so=0; so<nb_sources; so++)
-        sources[so] = sources_val[so].view_ro();
-      CDoubleTabView pos = positions.view_ro();
-      CIntArrView nb_comp_sources = nb_comps.view_ro();
-      DoubleTabView valeurs = valeurs_espace.view_wo();
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
-      {
-        int threadId = parser.acquire();
-        double x = special ? 1e38 : pos(i,0);
-        double y = special ? 1e38 : pos(i,1);
-        double z = special ? 1e38 : (dim>2 ? pos(i,2) : 0);
-        parser.setVar(0,x,threadId);
-        parser.setVar(1,y,threadId);
-        parser.setVar(2,z,threadId);
-        parser.setVar(3,temps,threadId);
-        if (line_size == 1)
+
+      if (directive == "temperature") //This is for DG
+        {
+          Parser_U& f = fxyz[0];
+          f.setVar("t",temps);
+          double x, y, z;
+          // DG version with nb_points correspond to the nb of integration point in one cell
+          int nb_elem = valeurs_espace.dimension(0);
+          int nb_points = valeurs_espace.dimension(1);
+          for (int i = 0; i<nb_elem; i++)
+            {
+              for (int j=0; j<nb_points; j++)
+                {
+                  int k = i*nb_points+j;
+                  x = positions(k,0);
+                  y = positions(k,1);
+                  z = 0;
+                  if (dimension>2)
+                    z = positions(k,2);
+                  f.setVar(0,x);
+                  f.setVar(1,y);
+                  f.setVar(2,z);
+                  for (int so=0; so<nb_sources; so++)
+                    f.setVar(so+4,sources_val[so](i,j));
+                  valeurs_espace(i,j) = f.eval();
+                }
+            }
+        }
+      else
+        {
+          int line_size = valeurs_espace.line_size();
+          int dim = dimension;
+          int nb_comp = nb_comp_;
+          Kokkos::Array<CDoubleTabView, max_nb_sources> sources;
+          for (int so=0; so<nb_sources; so++)
+            sources[so] = sources_val[so].view_ro();
+          CDoubleTabView pos = positions.view_ro();
+          CIntArrView nb_comp_sources = nb_comps.view_ro();
+          DoubleTabView valeurs = valeurs_espace.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
           {
-            for (int so=0; so<nb_sources; so++)
-              parser.setVar(so+4,sources[so](i,0),threadId);
-            valeurs(i, 0) = parser.eval(threadId);
-          }
-        else // line_size > 1
-          {
-            for (int j=0; j<nb_comp; j++)
+            int threadId = parser.acquire();
+            double x = special ? 1e38 : pos(i,0);
+            double y = special ? 1e38 : pos(i,1);
+            double z = special ? 1e38 : (dim>2 ? pos(i,2) : 0);
+            parser.setVar(0,x,threadId);
+            parser.setVar(1,y,threadId);
+            parser.setVar(2,z,threadId);
+            parser.setVar(3,temps,threadId);
+            if (line_size == 1)
               {
                 for (int so=0; so<nb_sources; so++)
-                  {
-                    int nbcomp_loc = nb_comp_sources(so);
-                    if (nbcomp_loc == nb_comp)
-                      parser.setVar(so+4,sources[so](i,j),threadId);
-                    else if (nbcomp_loc == 1)
-                      parser.setVar(so+4,sources[so](i,0),threadId);
-                    else
-                      Process::Kokkos_exit("The arrays of values don't have compatibles dimensions in Champ_Generique_Transformation::get_champ()");
-                  }
-                valeurs(i,j) = parser.eval(threadId);
+                  parser.setVar(so+4,sources[so](i,0),threadId);
+                valeurs(i, 0) = parser.eval(threadId);
               }
-          }
-        parser.release(threadId);
-      });
-      end_gpu_timer(__KERNEL_NAME__);
+            else // line_size > 1
+              {
+                for (int j=0; j<nb_comp; j++)
+                  {
+                    for (int so=0; so<nb_sources; so++)
+                      {
+                        int nbcomp_loc = nb_comp_sources(so);
+                        if (nbcomp_loc == nb_comp)
+                          parser.setVar(so+4,sources[so](i,j),threadId);
+                        else if (nbcomp_loc == 1)
+                          parser.setVar(so+4,sources[so](i,0),threadId);
+                        else
+                          Process::Kokkos_exit("The arrays of values don't have compatibles dimensions in Champ_Generique_Transformation::get_champ()");
+                      }
+                    valeurs(i,j) = parser.eval(threadId);
+                  }
+              }
+            parser.release(threadId);
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+        }
     }
   // PL: Suppression d'une synchronisation couteuse tres souvent inutile
   // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel
@@ -886,7 +916,8 @@ const Motcle Champ_Generique_Transformation::get_directive_pour_discr() const
   Motcle directive;
   if (localisation_=="elem")
     {
-      directive = "champ_elem";
+      const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
+      directive = (domaine_dis.que_suis_je() == "Domaine_DG") ? "temperature" : "champ_elem";
     }
   else if (localisation_=="som")
     {

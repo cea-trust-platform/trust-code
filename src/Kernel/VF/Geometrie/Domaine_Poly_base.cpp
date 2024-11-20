@@ -490,8 +490,6 @@ void Domaine_Poly_base::modifier_pour_Cl(const Conds_lim& conds_lim)
   Domaine_VF::marquer_faces_double_contrib(conds_lim);
 }
 
-
-
 void Domaine_Poly_base::detecter_faces_non_planes() const
 {
   const IntTab& f_e = face_voisins(), &f_s = face_sommets_;

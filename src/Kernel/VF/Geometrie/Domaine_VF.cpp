@@ -1090,6 +1090,42 @@ void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
 
 #endif
 
+void Domaine_VF::get_position(DoubleTab& positions) const
+{
+  positions.resize(nb_elem(), xp_.dimension(1));
+  CDoubleTabView xp = xp_.view_ro();
+  DoubleTabView positions_v = positions.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {nb_elem(), xp_.dimension(1)}), KOKKOS_LAMBDA(const int i, const int j)
+  {
+    positions_v(i,j) = xp(i,j);
+  });
+  end_gpu_timer(__KERNEL_NAME__);
+  // Don't work with simply: ToDo fix
+  // positions = zvf.xp();
+}
+
+double Domaine_VF::compute_L1_norm(const DoubleVect& val_source) const
+{
+  double sum = 0.;
+  const int ne = nb_elem();
+  for (int i=0; i<ne; i++)
+    {
+      sum+=std::fabs(val_source(i))*volumes(i);
+    }
+  return sum;
+}
+
+double Domaine_VF::compute_L2_norm(const DoubleVect& val_source) const
+{
+  double sum = 0.;
+  const int ne = nb_elem();
+  for (int i=0; i<ne; i++)
+    {
+      sum+=val_source(i)*val_source(i)*volumes(i);
+    }
+  return sum;
+}
+
 /*! Methode inspiree de Raccord_distant_homogene::initialise
  */
 void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim)
