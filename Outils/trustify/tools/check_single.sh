@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Check a single dataset with the trustpy tool
+# Check a single dataset with the trustify tool
 
 echo 'Usage: check_single.sh </the/dataset/path/jdd.data>'
 echo ""

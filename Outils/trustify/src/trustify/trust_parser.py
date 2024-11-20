@@ -9,7 +9,7 @@ Authors: A Bruneton, E Saikali
 
 class TObject(object):
     """ An object in the dataset. To be derived. Mostly used in the dataset conversion scripts, not
-    in trustpy stuff.
+    in trustify stuff.
     """
     def __init__(self):
         self.decl = -1    # Token index of the declaration like 'Solide sol'
@@ -288,7 +288,7 @@ class TRUSTParser(object):
 
     ##############################################################################################
     ##
-    ## From here on, the methods are just used in old conversion scripts, not in 'trustpy' package.
+    ## From here on, the methods are just used in old conversion scripts, not in 'trustify' package.
     ## Typically this is used for the scripts allowing to move the 'medium' block into the problem.
     ##
     ##############################################################################################

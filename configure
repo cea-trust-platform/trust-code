@@ -378,14 +378,14 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-trustpy $*
+  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-trustify $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -without-pdflatex -disable-checks -disable-check_sources -disable-trustpy $*
+  $0 -disable-ccache -disable-openblas -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -without-pdflatex -disable-checks -disable-check_sources -disable-trustify $*
   exit $?
 fi
 
@@ -713,11 +713,10 @@ do
       [ "$THIRD_PARTY" = "VALGRIND" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/valgrind
       [ "$THIRD_PARTY" = "HWLOC" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/hwloc
       [ "$THIRD_PARTY" = "GNUPLOT" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/gnuplot
-      [ "$THIRD_PARTY" = "TRUSTPY" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/trustpy
+      [ "$THIRD_PARTY" = "TRUSTIFY" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/trustify
       [ "$THIRD_PARTY" = "DOXYGEN" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/doxygen
       [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk
       [ "$THIRD_PARTY" = "PLOT2D" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/IHM
-      [ "$THIRD_PARTY" = "TRUSTPY" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/trustpy
       if [ ! -d $REP_THIRD_PARTY ]
       then
          echo "$1 option not available cause $REP_THIRD_PARTY is not installed."

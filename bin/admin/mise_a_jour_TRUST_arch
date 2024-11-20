@@ -357,7 +357,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi " | grep ^$HOST"\."`" != "" ]                   && option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py " | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-mpi4py"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ]              && option_configure=" -disable-optionals"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-for-c3d" | grep ^$HOST"\."`" != "" ]                        && option_configure=" -disable-ccache -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-openblas -disable-hwloc -disable-trustpy -disable-cgns -disable-trustpy -without-conda -std=c++14"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-for-c3d" | grep ^$HOST"\."`" != "" ]                        && option_configure=" -disable-ccache -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-openblas -disable-hwloc -disable-trustify -disable-cgns -without-conda -std=c++14"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ]          && option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -disable-mpiio"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-valgrind"
@@ -399,10 +399,10 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -with-coolprop=$WORKDIR/ExternalLibs/CoolProp_6.6.0"
 # eos
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=$WORKDIR/ExternalLibs/EOS/v2.0.0/install"
-# no conda, I disable trustpy too since no PyQt5
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -without-conda -disable-trustpy"
-# no trustpy
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustpy" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-trustpy"
+# no conda, I disable trustify too since no PyQt5 and not pydantic
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -without-conda -disable-trustify"
+# no trustify
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustify" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-trustify"
 # no openblas (add it for fedora 38)
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-openblas" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-openblas"
 # disable gnuplot

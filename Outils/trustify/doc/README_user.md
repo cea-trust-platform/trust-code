@@ -19,7 +19,7 @@ The `with_brace` flag can take one of the following values:
 - (-2) like 0 but wait after discretisation to write free part
 - (-3) like 1 but wait after discretisation to write free part
 
-NB: mode -2 and -3 are not used in `trustpy` and are inherited from the former tool.
+NB: mode -2 and -3 are not used in `trustify` and are inherited from the former tool.
 
 
 It is important to place the attribute tags on the same line as the `param.ajouter` calls so that the name of the parameter used in the C++ code can be extracted.

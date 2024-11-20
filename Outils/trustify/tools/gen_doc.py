@@ -26,7 +26,7 @@ class TRUSTDocGenerator:
             if "TRUST_ROOT" not in os.environ:
                 print("Generated module not specified and TRUST_ROOT not defined! Exiting.")
                 sys.exit(-1)
-            self.py_mod = os.path.join(os.environ["TRUST_ROOT"], "Outils", "trustpy", "install", "generated", "trustpy_gen.py")
+            self.py_mod = os.path.join(os.environ["TRUST_ROOT"], "Outils", "trustify", "install", "generated", "trustify_gen.py")
         # Regexp to replace '\input' directives in the core of the description
         self.re_input = re.compile(r"\\input{{([a-z]+)}}")
         # Regexp to replace '\image` directives:

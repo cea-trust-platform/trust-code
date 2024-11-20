@@ -493,11 +493,11 @@ def do_main():
         outfile = "test/trad2/myTRAD2"
     tr = os.environ.get("TRUST_ROOT", None)
     pd = os.environ.get("project_directory", None)
-    trustpy_from_trust = os.environ.get("TRUSTIFY_FROM_TRUST", None)
+    trustify_from_trust = os.environ.get("TRUSTIFY_FROM_TRUST", None)
     if tr is None:
         raise Exception("TRUST_ROOT environment variable is not defined!")
     srcs = [os.path.join(tr, "src")]
-    if not pd is None and trustpy_from_trust is None:  # called from a BALTIK
+    if not pd is None and trustify_from_trust is None:  # called from a BALTIK
         trad2org = os.path.join(pd, "build", "trustify", "generated", "agg_TRAD_2.org")
         # Append baltik sources:
         srcs.append(os.path.join(pd, "build", "src"))

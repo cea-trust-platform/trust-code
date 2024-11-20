@@ -6,10 +6,10 @@ sed "s?#BALISE_MODULE?$DIR/modif \$NOM.data ; ?" $TRUST_ROOT/bin/lance_test  > $
 # syntaxe de FT discontinu est maintenant similaire a celle de TRUST/TrioCFD
 
 s='# Discard XDATA check for FT discontinu test cases since broken when syntax changed.
-       # trustpy works FT dicontinu test cases
+       # trustify works for FT dicontinu test cases
        if [ "`grep -i "probleme_ft_disc_gen" $REP/* 2>/dev/null`" != "" ]
        then
-          echo "Test $i skipped (XDATA does not support FT discontinu syntax since V1.9.5b, use trustpy to check FTD syntax)"
+          echo "Test $i skipped (XDATA does not support FT discontinu syntax after V1.9.4, use trustify to check FTD syntax)"
           liste_skipped=$liste_skipped" $i"
           i=""
        fi'
