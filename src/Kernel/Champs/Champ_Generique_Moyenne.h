@@ -60,8 +60,8 @@ public:
   inline const Operateur_Statistique_tps_base& Operateur_Statistique() const override;
   inline Operateur_Statistique_tps_base& Operateur_Statistique() override;
   void completer(const Postraitement_base& post) override;
-
-  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base& get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base& get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   void nommer_source() override;
 
   const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;
@@ -72,6 +72,8 @@ protected:
 
   Op_Moyenne Op_Moyenne_;
 
+private:
+  mutable OWN_PTR(Champ_Fonc_base) espace_stockage_;
 };
 
 

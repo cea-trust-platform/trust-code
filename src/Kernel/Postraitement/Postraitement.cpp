@@ -1383,9 +1383,6 @@ void Postraitement::init()
 
         if (!indic_correlation)
           {
-
-            OWN_PTR(Champ_base) espace_stockage;
-            const Champ_base& champ_ecriture = champ->get_champ(espace_stockage);
             Entity loc = champ->get_localisation();
             const Nom loc_post = get_nom_localisation(loc);
             const Noms nom = champ->get_property("nom");
@@ -1404,17 +1401,9 @@ void Postraitement::init()
                 if (ref_domaine_dis.non_nul())
                   domaine_dis_pour_faces = ref_domaine_dis;
               }
-            const Nature_du_champ& nature = champ_ecriture.nature_du_champ();
             if (Motcle(nom_post)== Motcle(nom[0]))
               {
                 le_nom_champ_post = nom[0];
-                /* Sinon le cas Reprise_grossier_fin ne passe pas, en effet on doit pouvoir postraiter K_Eps
-                   if (nature==multi_scalaire)
-                   {
-                   Cerr<<"The field "<<nom[0]<<" is of multi scalar nature."<<finl;
-                   Cerr<<"Only the components of this field may be post-processed."<<finl;
-                   exit();
-                   } */
               }
             else
               {
@@ -1437,10 +1426,11 @@ void Postraitement::init()
                 Cerr<<"The postprocessing to the faces is allowed only for the field naturally localized at the faces."<<finl;
                 exit();
               }
-
+            OWN_PTR(Champ_base) espace_stockage;
+            const Champ_base& champ_ecriture = champ->get_champ_without_evaluation(espace_stockage);
+            const Nature_du_champ& nature = champ_ecriture.nature_du_champ();
             const int nb_compo = champ_ecriture.nb_comp();
             format_post->completer_post(dom,axi,nature,nb_compo,composantes,loc_post,le_nom_champ_post);
-
           }
       }
   }

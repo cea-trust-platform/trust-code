@@ -146,7 +146,7 @@ OWN_PTR(Champ_Fonc_base)& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const N
       const  Domaine_Cl_dis_base& zcl = get_ref_zcl_dis_base();
       es_tmp->completer(zcl);
     }
-
+  ToDo_Kokkos("critical, call to creer_espace_stockage() is expensive on GPU (fields copy on host). Refactor like Champ_Generique_Moyenne and other advanced fields...");
   return es_tmp;
 }
 

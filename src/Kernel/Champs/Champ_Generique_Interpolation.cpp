@@ -171,7 +171,7 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
 /*! @brief Interpolation du champ source en fonction de la methode, localisation et domaine demandes.
  *
  */
-const Champ_base& Champ_Generique_Interpolation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Interpolation::get_champ(OWN_PTR(Champ_base)&) const
 {
   if (localisation_ == "")
     {
@@ -182,7 +182,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ(OWN_PTR(Champ_base)& 
 
   if (methode_ == "calculer_champ_post")
     {
-      get_champ_with_calculer_champ_post(espace_stockage);
+      get_champ_with_calculer_champ_post();
     }
   else
     {
@@ -190,7 +190,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ(OWN_PTR(Champ_base)& 
       exit();
     }
 
-  return espace_stockage;
+  return espace_stockage_;
 }
 
 const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
@@ -228,10 +228,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(OW
 /*! @brief Interpolation du champ source a l'aide de Champ_base::calculer_champ_xxx_post
  *
  */
-const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post() const
 {
-  OWN_PTR(Champ_base) espace_stockage_source;
-  const Champ_base& source0 = get_source(0).get_champ(espace_stockage_source);
+  const Champ_base& source0 = get_source(0).get_champ(espace_stockage_source_);
   OWN_PTR(Champ_base) source_bis;
 
   if (optimisation_sous_maillage_==-1)
@@ -265,17 +264,16 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   Nature_du_champ nature_source = (ncomp==-1)?source.nature_du_champ():scalaire;
   nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
-
-  OWN_PTR(Champ_Fonc_base)  es_tmp;
-  ToDo_Kokkos("critical: copie d'un champ et de son tableau de valeurss");
-  espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
+  if (espace_stockage_.est_nul())
+    creer_espace_stockage(nature_source, nb_comp, espace_stockage_);
+  espace_stockage_->changer_temps(source.temps());
 
   //double default_value=-1e35;
   //espace_stockage.valeurs()=default_value;
   int decal=10;
   if (optimisation_sous_maillage_==-1)
     {
-      espace_stockage->valeurs()=0;
+      espace_stockage_->valeurs()=0;
       // premier appel avec maillage different (ou on a force) , on essaye de voir si on peut optimiser
       // on champ la source on y met val(i)=i, pour recuperer le numero de la maille apres
       DoubleTab& val=source_bis->valeurs();
@@ -287,7 +285,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     }
 
   //Evaluation des valeurs du champ espace_stockage
-  DoubleTab& espace_valeurs = espace_stockage->valeurs();
+  DoubleTab& espace_valeurs = espace_stockage_->valeurs();
 
   if (optimisation_sous_maillage_==1)
     {
@@ -304,7 +302,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
         else espace_valeurs(i, ncomp) = val_temp[renumerotation_maillage_[i]];
 
       espace_valeurs.echange_espace_virtuel();
-      return espace_stockage;
+      return espace_stockage_;
     }
 
   int imax = espace_valeurs.dimension(0);
@@ -445,7 +443,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     }
   else
     {
-      espace_stockage->affecter(source);
+      espace_stockage_->affecter(source);
     }
 
   if (optimisation_sous_maillage_==-1)
@@ -483,10 +481,10 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
         {
           ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=0;
           OWN_PTR(Champ_base) espace_stockage_test;
-          get_champ_with_calculer_champ_post(espace_stockage_test);
+          espace_stockage_test = get_champ_with_calculer_champ_post();
           ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=test;
-          get_champ_with_calculer_champ_post(espace_stockage);
-          espace_stockage_test->valeurs()-=espace_stockage->valeurs();
+          get_champ_with_calculer_champ_post();
+          espace_stockage_test->valeurs()-=espace_stockage_->valeurs();
           double dmax= mp_max_abs_vect(espace_stockage_test->valeurs());
           if (dmax > 1e-7)
             {
@@ -506,11 +504,11 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
             }
         }
       ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=test;
-      return get_champ_with_calculer_champ_post(espace_stockage);
+      return get_champ_with_calculer_champ_post();
     }
 
   espace_valeurs.echange_espace_virtuel();
-  return espace_stockage;
+  return espace_stockage_;
 }
 
 const DoubleTab& Champ_Generique_Interpolation::get_ref_values() const
