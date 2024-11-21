@@ -955,6 +955,12 @@ then
              echo "Test $i skipped (PolyMAC not yet supported on GPU)"
              liste_skipped=$liste_skipped" $i"
              i=""
+          # Discard Pb_multiphase #
+          elif [ "`grep -i "Pb_multiphase " $file 2>/dev/null`" != "" ]
+          then
+             echo "Test $i skipped (Pb_multiphase not yet supported on GPU)"
+             liste_skipped=$liste_skipped" $i"
+             i=""
           # Discard sensitive test case #
           elif [ "`grep -i " ecarts " $file | grep "#" 2>/dev/null`" != "" ]
           then

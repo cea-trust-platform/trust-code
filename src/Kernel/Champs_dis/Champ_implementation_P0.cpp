@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,58 +57,83 @@ double Champ_implementation_P0::valeur_a_elem_compo(const DoubleVect& position, 
   return result;
 }
 
-DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
+template<typename ExecSpace>
+void valeur_aux_elems_kernel(const DoubleTab& tab_values, const IntVect& tab_polys, DoubleTab& tab_result, int nb_components)
 {
-  const Champ_base& ch_base = le_champ();
-  int nb_components = ch_base.nb_comp();
-  const DoubleTab& values = ch_base.valeurs();
-  int nb_polys = polys.size();
-
-  if (nb_polys == 0)
-    return result;
-
-  // TODO : FIXME
-  // For FT the resize should be done in its good position and not here ...
-  if (result.nb_dim() == 1) result.resize(nb_polys, 1);
-
-  assert(values.line_size() == nb_components);
-  assert(result.line_size() == nb_components || nb_components == 1);
-  ToDo_Kokkos("critical");
-  for (int i = 0; i < nb_polys; i++)
-    {
-      int cell = polys(i);
-      assert(cell < values.dimension_tot(0));
-
-      for (int j = 0; j < result.line_size(); j++)
-        if (cell != -1)
-          result(i, j) = values.nb_dim() == 1 ? values(cell) : values(cell, (result.line_size() == nb_components) * j); // Some post-processed fields can have nb_dim() == 1
-    }
-
-  return result;
+  int nb_polys = tab_polys.size();
+  int line_size = tab_result.line_size();
+  int nb_dim = tab_values.nb_dim();
+  auto polys = tab_polys.template view_ro<ExecSpace>();
+  auto values = tab_values.template view_ro<ExecSpace>();
+  auto result = tab_result.template view_wo<ExecSpace>();
+  Kokkos::RangePolicy<ExecSpace> policy(0, nb_polys);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+  {
+    int cell = polys(i);
+    if (cell>=0)
+      for (int j = 0; j < line_size; j++)
+        result(i, j) = nb_dim == 1 ? values(cell, 0) : values(cell, (line_size == nb_components) * j); // Some post-processed fields can have nb_dim() == 1
+  });
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 
-DoubleVect& Champ_implementation_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const
+DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& tab_polys, DoubleTab& tab_result) const
 {
-  const Champ_base& ch_base = le_champ();
-  const DoubleTab& values = ch_base.valeurs();
+  int nb_polys = tab_polys.size();
+  if (nb_polys == 0)
+    return tab_result;
 
-  int nb_polys = polys.size();
+  const DoubleTab& tab_values = le_champ().valeurs();
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (tab_result.nb_dim() == 1) tab_result.resize(nb_polys, 1);
+  int nb_components = le_champ().nb_comp();
+  assert(tab_values.line_size() == nb_components);
+  assert(tab_values.line_size() == nb_components || nb_components == 1);
+
+  bool kernelOnDevice = tab_result.checkDataOnDevice(tab_values);
+  if (kernelOnDevice)
+    valeur_aux_elems_kernel<Kokkos::DefaultExecutionSpace>(tab_values, tab_polys, tab_result, nb_components);
+  else
+    valeur_aux_elems_kernel<Kokkos::DefaultHostExecutionSpace>(tab_values, tab_polys, tab_result, nb_components);
+  return tab_result;
+}
+
+template<typename ExecSpace>
+void valeur_aux_elems_compo_kernel(const DoubleTab& tab_values, const IntVect& tab_polys, DoubleVect& tab_result, int ncomp)
+{
+  int nb_polys = tab_polys.size();
+  auto polys = tab_polys.template view_ro<ExecSpace>();
+  auto values = tab_values.template view_ro<ExecSpace>();
+  auto result = tab_result.template view_wo<ExecSpace>();
+  Kokkos::RangePolicy<ExecSpace> policy(0, nb_polys);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+  {
+    int cell = polys(i);
+    if (cell>=0)
+      result(i) = values(cell, ncomp);
+  });
+  static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
+
+DoubleVect& Champ_implementation_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& tab_polys, DoubleVect& tab_result, int ncomp) const
+{
+  const DoubleTab& tab_values = le_champ().valeurs();
 
   assert(ncomp >= 0);
-  assert(ncomp < ch_base.nb_comp());
-  assert(result.size() == nb_polys);
+  assert(ncomp < le_champ().nb_comp());
+  assert(tab_result.size() == tab_polys.size());
+  assert(tab_values.line_size() == le_champ().nb_comp());
 
-  assert(values.line_size() == ch_base.nb_comp());
-  ToDo_Kokkos("critical");
-  for (int i = 0; i < nb_polys; i++)
-    {
-      int cell = polys(i);
-      assert(cell < values.dimension_tot(0));
-      if (cell != -1) result(i) = values(cell, ncomp);
-      // result(i) = (cell == -1) ? 0 : values(cell,ncomp);
-    }
+  bool kernelOnDevice = tab_result.checkDataOnDevice(tab_values);
+  if (kernelOnDevice)
+    valeur_aux_elems_compo_kernel<Kokkos::DefaultExecutionSpace>(tab_values, tab_polys, tab_result, ncomp);
+  else
+    valeur_aux_elems_compo_kernel<Kokkos::DefaultHostExecutionSpace>(tab_values, tab_polys, tab_result, ncomp);
 
-  return result;
+  return tab_result;
 }
 
 DoubleTab& Champ_implementation_P0::remplir_coord_noeuds(DoubleTab& positions) const

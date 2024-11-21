@@ -2,6 +2,7 @@
 # Et teste aussi la version non MPIIO #
 # Ne pas modifier donc le fichier old.xyz #
 # PARALLEL OK #
+# GPU NOT #
 dimension 3
 Pb_Hydraulique pb
 
