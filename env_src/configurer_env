@@ -891,6 +891,8 @@ if [ "$INSTALL_CONDA" = 1 ]
 then
     # If a previous installation folder exists, we remove it.
     [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
+    # remove libxml2 too
+    [ -d $TRUST_ROOT/exec/utils/libxml2 ] && rm -rf $TRUST_ROOT/exec/utils/libxml2
 
     # Detect if conda env is activated. This breaks the install of a new conda
     if [ "x$CONDA_PREFIX" != "x" ]
@@ -1084,9 +1086,12 @@ fi
 # Installing xml2 without dependency to icu, necessary on some systems (Rocky/Fedora 34) for ld and/or mpicxx
 # see https://github.com/conda-forge/libxml2-feedstock/issues/41
 # keep here to be able to use $TRUST_cc_BASE (seen on adastra)
-if [ "$TRUST_WITHOUT_CONDA" != "1" ] && [ "$system" = "Linux" ] && [ $model = "x86_64" ]
+if [ "$system" = "Linux" ] && [ $model = "x86_64" ]
 then
-   make_ $TRUST_ROOT/Outils/libxml2 libxml2 $TRUST_ROOT/exec/libxml2.log
+   if [ "$TRUST_WITHOUT_CONDA" != "1" ] && [ "$INSTALL_CONDA" = 1 ]
+   then
+      make_ $TRUST_ROOT/Outils/libxml2 libxml2 $TRUST_ROOT/exec/libxml2.log
+   fi
 fi
 
 # Gestion d'une librairie systeme plus recente que conda (ex: libstdc++.so.6.0.29 sur Fedora>=34 pour libstdc++.so.6.0.28 dans conda avec libstdcxx-ng=9.3.0), on vire:

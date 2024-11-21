@@ -44,7 +44,7 @@ XML_INSTALL_DIR=$TRUST_ROOT/exec/utils/libxml2
 $TRUST_ROOT/exec/python/bin/cmake .. $options -DCMAKE_INSTALL_PREFIX=$XML_INSTALL_DIR -DCMAKE_C_COMPILER=$TRUST_cc_BASE
 make install || exit -1
 cd $TRUST_ROOT/exec/python/lib
-ln -nsf $XML_INSTALL_DIR/lib64/lib* .
+ln -nsf ../../utils/libxml2/lib*/libxml2* .
 ls -l $TRUST_ROOT/exec/python/lib/libxml2*
 cd $TRUST_ROOT
 rm -rf $TRUST_ROOT/build/utils/
