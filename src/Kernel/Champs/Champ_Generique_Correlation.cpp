@@ -90,7 +90,7 @@ void Champ_Generique_Correlation::completer(const Postraitement_base& post)
   Op_Correlation_.completer(Pb);
 }
 
-const Champ_base& Champ_Generique_Correlation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Correlation::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
   int nb_comp = integrale().le_champ_calcule().nb_comp();
   //Nature_du_champ nature_source = source.nature_du_champ();
@@ -99,11 +99,24 @@ const Champ_base& Champ_Generique_Correlation::get_champ(OWN_PTR(Champ_base)& es
   Nature_du_champ nature_source = (nb_comp==1)?scalaire:vectoriel;
   OWN_PTR(Champ_Fonc_base)  es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
+  return espace_stockage;
+}
 
-  DoubleTab& tab_correlation = espace_stockage->valeurs();
+const Champ_base& Champ_Generique_Correlation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
+{
+  int nb_comp = integrale().le_champ_calcule().nb_comp();
+  //Nature_du_champ nature_source = source.nature_du_champ();
+  //Pas completement exact car il y a le cas de la correlation vecteur-vecteur et dans
+  //ce cas c est un tenseur qui est manipule (la nature n est pas scalaire ou vectorielle)
+  Nature_du_champ nature_source = (nb_comp==1)?scalaire:vectoriel;
+  if (espace_stockage_.est_nul())
+    creer_espace_stockage(nature_source,nb_comp,espace_stockage_);
+  else
+    espace_stockage_->changer_temps(temps());
+  DoubleTab& tab_correlation = espace_stockage_->valeurs();
   tab_correlation = Op_Correlation_.calculer_valeurs();
   tab_correlation.echange_espace_virtuel();
-  return espace_stockage;
+  return espace_stockage_;
 }
 
 const Noms Champ_Generique_Correlation::get_property(const Motcle& query) const

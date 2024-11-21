@@ -499,20 +499,19 @@ void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domain
 //-Interpolation des valeurs des sources sur le support retenu
 //-Evaluation des valeurs de l espace de stockage en fonction de la fonction (les_fct)
 
-const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(OWN_PTR(Champ_base)&) const
 {
-  OWN_PTR(Champ_Fonc_base)  es_tmp;
-
-  espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
-  return espace_stockage;
+  creer_espace_stockage(nature_ch,nb_comp_,espace_stockage_);
+  return espace_stockage_;
 }
-const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&) const
 {
   const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
-  OWN_PTR(Champ_Fonc_base)  es_tmp;
-
-  espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
-  DoubleTab& valeurs_espace = espace_stockage->valeurs();
+  if (espace_stockage_.est_nul())
+    creer_espace_stockage(nature_ch,nb_comp_,espace_stockage_);
+  else
+    espace_stockage_->changer_temps(get_source(0).get_time());
+  DoubleTab& valeurs_espace = espace_stockage_->valeurs();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   int nb_elem_tot = zvf.nb_elem_tot();
   int nb_som_tot = get_ref_domain().nb_som_tot();
@@ -797,7 +796,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
   // PL: Suppression d'une synchronisation couteuse tres souvent inutile
   // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel
   // valeurs_espace.echange_espace_virtuel();
-  return espace_stockage;
+  return espace_stockage_;
 }
 
 //Les localisations elem som faces peuvent etre retenues pour le postraitement

@@ -63,13 +63,17 @@ public:
   void completer(const Postraitement_base& post) override;
 
   const Motcle get_directive_pour_discr() const override;
-  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base& get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   void nommer_source() override;
   int get_info_type_post() const override;
 
 protected:
 
   Op_Correlation Op_Correlation_;
+
+private:
+  mutable OWN_PTR(Champ_Fonc_base) espace_stockage_;
 };
 
 inline const Operateur_Statistique_tps_base& Champ_Generique_Correlation::Operateur_Statistique() const

@@ -49,7 +49,7 @@ public:
   virtual int     set_domaine(const Nom& nom_domaine, int exit_on_error = 1);
   const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   const Champ_base&  get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
-  virtual const Champ_base&  get_champ_with_calculer_champ_post(OWN_PTR(Champ_base)& espace_stockage) const;
+  virtual const Champ_base&  get_champ_with_calculer_champ_post() const;
 
   const DoubleTab&  get_ref_values() const override;
   void              get_copy_values(DoubleTab&) const override;
@@ -86,6 +86,7 @@ private:
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d un domaine discretise
   int optimisation_sous_maillage_,optimisation_demande_;
   ArrOfInt renumerotation_maillage_;
+  mutable OWN_PTR(Champ_Fonc_base) espace_stockage_;
 };
 
 #endif

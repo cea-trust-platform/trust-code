@@ -73,22 +73,37 @@ void Champ_Generique_Ecart_Type::completer(const Postraitement_base& post)
       Cerr<<get_property("nom")[0]<<finl;
       exit();
     }
+
 }
 
-const Champ_base& Champ_Generique_Ecart_Type::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Ecart_Type::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const
 {
   const OBS_PTR(Champ_Generique_base)& mon_champ = integrale().le_champ();
   OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
-  OWN_PTR(Champ_Fonc_base)  es_tmp;
+  OWN_PTR(Champ_Fonc_base) es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
+  return espace_stockage;
+}
 
-  DoubleTab& tab_ecart_type = espace_stockage->valeurs();
+const Champ_base& Champ_Generique_Ecart_Type::get_champ(OWN_PTR(Champ_base)&) const
+{
+  // Creation de l'espace_stockage
+  const OBS_PTR(Champ_Generique_base)& mon_champ = integrale().le_champ();
+  OWN_PTR(Champ_base) espace_stockage_source;
+  const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
+  Nature_du_champ nature_source = source.nature_du_champ();
+  int nb_comp = source.nb_comp();
+  if (espace_stockage_.est_nul())
+    creer_espace_stockage(nature_source,nb_comp,espace_stockage_);
+  else
+    espace_stockage_->changer_temps(temps());
+  DoubleTab& tab_ecart_type = espace_stockage_->valeurs();
   tab_ecart_type = Op_Ecart_Type_.calculer_valeurs();
   tab_ecart_type.echange_espace_virtuel();
-  return espace_stockage;
+  return espace_stockage_;
 }
 
 const Noms Champ_Generique_Ecart_Type::get_property(const Motcle& query) const

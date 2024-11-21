@@ -52,13 +52,16 @@ public:
   inline double dt_integration_carre() const { return Op_Ecart_Type_.dt_integration_carre(); }
   inline Operateur_Statistique_tps_base& Operateur_Statistique() override { return Op_Ecart_Type_; }
   inline const Operateur_Statistique_tps_base& Operateur_Statistique() const override { return Op_Ecart_Type_; }
-
-  const Champ_base&  get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base& get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const override;
+  const Champ_base& get_champ(OWN_PTR(Champ_base)& espace_stockage) const override;
   void completer(const Postraitement_base& post) override;
   void nommer_source() override;
 
 protected:
   Op_Ecart_type Op_Ecart_Type_;
+
+private:
+  mutable OWN_PTR(Champ_Fonc_base) espace_stockage_;
 };
 
 #endif
