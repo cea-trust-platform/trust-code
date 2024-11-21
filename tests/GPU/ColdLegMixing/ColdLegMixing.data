@@ -6,21 +6,21 @@ domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-        {
+    Pave Entree
+    {
         Origine -1. 0. 0.
         Nombre_de_Noeuds 3 2 2
         /* Nombre_de_Noeuds 65 33 33 */
         Longueurs 2 1 1
-        }
-        {
+    }
+    {
         Bord WALL X = -1   0 <= Y <= 1 0. <= Z <= 1.
         Bord WALL X =  1   0 <= Y <= 1 0. <= Z <= 1.
         Bord WALL Y = 0.  -1 <= X <= 1 0. <= Z <= 1.
         Bord WALL Y = 1.  -1 <= X <= 1 0. <= Z <= 1.
         Bord WALL Z = 0.  -1 <= X <= 1 0. <= Y <= 1.
         Bord WALL Z = 1.  -1 <= X <= 1 0. <= Y <= 1.
-        }
+    }
 }
 Tetraedriser_homogene dom
 
@@ -30,17 +30,17 @@ lire dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_
 Runge_Kutta_rationnel_ordre_2 sch
 lire sch
 {
-	nb_pas_dt_max 10
-	tinit 0
-	dt_max 0.005
-	dt_start dt_calc
-	dt_impr 1e-6
-	facsec 2
-	periode_sauvegarde_securite_en_heures 1000
-	diffusion_implicite 1
-	impr_diffusion_implicite 1
-	precision_impr 8
-	tcpumax 19
+    nb_pas_dt_max 10
+    tinit 0
+    dt_max 0.005
+    dt_start dt_calc
+    dt_impr 1e-6
+    facsec 2
+    periode_sauvegarde_securite_en_heures 1000
+    diffusion_implicite 1
+    impr_diffusion_implicite 1
+    precision_impr 8
+    tcpumax 19
 }
 
 associer pb dom
@@ -50,214 +50,214 @@ discretiser pb dis
 
 lire pb
 {
-	fluide_quasi_compressible
-	# water/ethanol water/saccarose mixture #
-	{
-		mu		champ_fonc_fonction pb temperature 1 ((val*0.00109+(1-val)*0.00245)_MAX_0.00109)_MIN_0.00245
-		lambda		champ_fonc_fonction pb temperature 1 1.77e-6
-		pression	1
-		loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7 }
-		gravite 	champ_uniforme 3 0 -9.81 0
-		traitement_pth	constant
-		traitement_rho_gravite standard
-		omega_relaxation_drho_dt 0.9
-		temps_debut_prise_en_compte_drho_dt 1e-6
-	}
-	Navier_Stokes_QC
-	{
-		parametre_equation	parametre_diffusion_implicite	{
-									Crank 1
-									niter_max_diffusion_implicite 300
-									preconditionnement_diag 1
-									seuil_diffusion_implicite 1e-10
-									}
-		solveur_pression	amgx GCP { precond sa-amg { } seuil 1e-5 impr }
-		convection		{ MUSCL }
-		diffusion		{ }
-		conditions_initiales	{ vitesse champ_uniforme 3 0 0 0 }
-		conditions_limites	{
-					WALL paroi_fixe
-					} 
-	}
+    fluide_quasi_compressible
+    # water/ethanol water/saccarose mixture #
+    {
+        mu		champ_fonc_fonction pb temperature 1 ((val*0.00109+(1-val)*0.00245)_MAX_0.00109)_MIN_0.00245
+        lambda		champ_fonc_fonction pb temperature 1 1.77e-6
+        pression	1
+        loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7 }
+        gravite 	champ_uniforme 3 0 -9.81 0
+        traitement_pth	constant
+        traitement_rho_gravite standard
+        omega_relaxation_drho_dt 0.9
+        temps_debut_prise_en_compte_drho_dt 1e-6
+    }
+    Navier_Stokes_QC
+    {
+        parametre_equation	parametre_diffusion_implicite	{
+            Crank 1
+            niter_max_diffusion_implicite 300
+            preconditionnement_diag 1
+            seuil_diffusion_implicite 1e-10
+        }
+        solveur_pression	amgx GCP { precond sa-amg { } seuil 1e-5 impr }
+        convection		{ MUSCL }
+        diffusion		{ }
+        conditions_initiales	{ vitesse champ_uniforme 3 0 0 0 }
+        conditions_limites	{
+            WALL paroi_fixe
+        }
+    }
 
-	convection_diffusion_chaleur_QC
-	{
-		parametre_equation	parametre_diffusion_implicite	{
-									Crank 1
-									niter_max_diffusion_implicite 300
-									preconditionnement_diag 1
-									seuil_diffusion_implicite 1e-10
-									}
-		convection		{ MUSCL }
-		diffusion		{ }
-		conditions_initiales	{ temperature champ_fonc_xyz dom 1 (x<0)*(1)+(x>0)*(0) }
-		conditions_limites	{
-					WALL paroi_adiabatique
-					}
-	}
+    convection_diffusion_chaleur_QC
+    {
+        parametre_equation	parametre_diffusion_implicite	{
+            Crank 1
+            niter_max_diffusion_implicite 300
+            preconditionnement_diag 1
+            seuil_diffusion_implicite 1e-10
+        }
+        convection		{ MUSCL }
+        diffusion		{ }
+        conditions_initiales	{ temperature champ_fonc_xyz dom 1 (x<0)*(1)+(x>0)*(0) }
+        conditions_limites	{
+            WALL paroi_adiabatique
+        }
+    }
 
-	liste_postraitements
-	{
-	        postraitement NR
-		{
-		        fichier ColdLegMixing 
-			champs dt_post 1e8 { pression som }
-		}
-		postraitement IMAGES
-			{
-			fichier IMAGES
-			format lata
-			champs binaire dt_post 0.005
-						{
-						temperature som
-						vitesse som
-						}
-			}
-		postraitement INST
-			{
-			definition_champs	{
-						Vmin	reduction_0D { methode min source refChamp { pb_champ pb vitesse } }
-						Vmax	reduction_0D { methode max source refChamp { pb_champ pb vitesse } }
-						Tmin	reduction_0D { methode min source refChamp { pb_champ pb temperature } }
-						Tmax	reduction_0D { methode max source refChamp { pb_champ pb temperature } }
-						}
-			sondes			{
-						Vmin	Vmin	periode 1e-6 numero_elem_sur_maitre 0
-						Vmax	Vmax	periode 1e-6 numero_elem_sur_maitre 0
-						Tmin	Tmin	periode 1e-6 numero_elem_sur_maitre 0
-						Tmax	Tmax	periode 1e-6 numero_elem_sur_maitre 0
+    liste_postraitements
+    {
+        postraitement NR
+        {
+            fichier ColdLegMixing
+            champs dt_post 1e8 { pression som }
+        }
+        postraitement IMAGES
+        {
+            fichier IMAGES
+            format lata
+            champs binaire dt_post 0.005
+            {
+                temperature som
+                vitesse som
+            }
+        }
+        postraitement INST
+        {
+            definition_champs	{
+                Vmin	reduction_0D { methode min source refChamp { pb_champ pb vitesse } }
+                Vmax	reduction_0D { methode max source refChamp { pb_champ pb vitesse } }
+                Tmin	reduction_0D { methode min source refChamp { pb_champ pb temperature } }
+                Tmax	reduction_0D { methode max source refChamp { pb_champ pb temperature } }
+            }
+            sondes			{
+                Vmin	Vmin	periode 1e-6 numero_elem_sur_maitre 0
+                Vmax	Vmax	periode 1e-6 numero_elem_sur_maitre 0
+                Tmin	Tmin	periode 1e-6 numero_elem_sur_maitre 0
+                Tmax	Tmax	periode 1e-6 numero_elem_sur_maitre 0
 
-						vitesse_axe_1			vitesse periode 1 segment 1500 -0.5  0.000 0 1  0.000 0
-						vitesse_axe_2			vitesse periode 1 segment 1500 -0.5  0.013 0 1  0.013 0
-						vitesse_axe_3			vitesse periode 1 segment 1500 -0.5 -0.013 0 1 -0.013 0
+                vitesse_axe_1			vitesse periode 1 segment 1500 -0.5  0.000 0 1  0.000 0
+                vitesse_axe_2			vitesse periode 1 segment 1500 -0.5  0.013 0 1  0.013 0
+                vitesse_axe_3			vitesse periode 1 segment 1500 -0.5 -0.013 0 1 -0.013 0
 
-						concentration_axe_1		temperature periode 1 segment 1500 -0.5  0.000 0 1  0.000 0
-						concentration_axe_2		temperature periode 1 segment 1500 -0.5  0.013 0 1  0.013 0
-						concentration_axe_3		temperature periode 1 segment 1500 -0.5 -0.013 0 1 -0.013 0
+                concentration_axe_1		temperature periode 1 segment 1500 -0.5  0.000 0 1  0.000 0
+                concentration_axe_2		temperature periode 1 segment 1500 -0.5  0.013 0 1  0.013 0
+                concentration_axe_3		temperature periode 1 segment 1500 -0.5 -0.013 0 1 -0.013 0
 
-						vitesse_CL1_point_1		vitesse periode 1e-6 point 1 0.7368 -0.0132 0
-						vitesse_CL1_point_2		vitesse periode 1e-6 point 1 0.7368  0.0000 0
-						vitesse_CL1_point_3		vitesse periode 1e-6 point 1 0.7368  0.0132 0
+                vitesse_CL1_point_1		vitesse periode 1e-6 point 1 0.7368 -0.0132 0
+                vitesse_CL1_point_2		vitesse periode 1e-6 point 1 0.7368  0.0000 0
+                vitesse_CL1_point_3		vitesse periode 1e-6 point 1 0.7368  0.0132 0
 
-						vitesse_CL2_point_1		vitesse periode 1e-6 point 1 0.7860 -0.0132 0
-						vitesse_CL2_point_2		vitesse periode 1e-6 point 1 0.7860  0.0000 0
-						vitesse_CL2_point_3		vitesse periode 1e-6 point 1 0.7860  0.0132 0
+                vitesse_CL2_point_1		vitesse periode 1e-6 point 1 0.7860 -0.0132 0
+                vitesse_CL2_point_2		vitesse periode 1e-6 point 1 0.7860  0.0000 0
+                vitesse_CL2_point_3		vitesse periode 1e-6 point 1 0.7860  0.0132 0
 
-						concentration_CL1_point_1	temperature periode 1e-6 point 1 0.7368 -0.0132 0
-						concentration_CL1_point_2	temperature periode 1e-6 point 1 0.7368  0.0000 0
-						concentration_CL1_point_3	temperature periode 1e-6 point 1 0.7368  0.0132 0
+                concentration_CL1_point_1	temperature periode 1e-6 point 1 0.7368 -0.0132 0
+                concentration_CL1_point_2	temperature periode 1e-6 point 1 0.7368  0.0000 0
+                concentration_CL1_point_3	temperature periode 1e-6 point 1 0.7368  0.0132 0
 
-						concentration_CL2_point_1	temperature periode 1e-6 point 1 0.7860 -0.0132 0
-						concentration_CL2_point_2	temperature periode 1e-6 point 1 0.7860  0.0000 0
-						concentration_CL2_point_3	temperature periode 1e-6 point 1 0.7860  0.0132 0
-						}
-			fichier INST
-			format lata
-			champs binaire dt_post 1
-						{
-						temperature elem
-						vitesse elem
-						pression elem
-						}
-			}
-		postraitement REV_1_COLD_LEG_SET_1
-			{
-			definition_champs	{
-						REV_1_COLD_LEG_SET_1_yplus_mean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
-						REV_1_COLD_LEG_SET_1_yplus_sd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
-						REV_1_COLD_LEG_SET_1_Cmean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
-						REV_1_COLD_LEG_SET_1_Csd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
-						REV_1_COLD_LEG_SET_1_Umean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
-						REV_1_COLD_LEG_SET_1_Usd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
-						REV_1_COLD_LEG_SET_1_Ufluct		transformation	{
-													methode formule expression 1 V-Vmean
-													localisation faces
-													sources	{
-														refChamp { Pb_champ pb vitesse nom_source V } ,
-														moyenne { t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
-														}
-													}
-						REV_1_COLD_LEG_SET_1_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_1_Ufluct } }
-						REV_1_COLD_LEG_SET_1_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_1_Ufluct } }
-						REV_1_COLD_LEG_SET_1_uprime_vprime	transformation	{
-													methode formule
-													expression 1 REV_1_COLD_LEG_SET_1_uprime*REV_1_COLD_LEG_SET_1_vprime
-													localisation faces
-													sources_reference { REV_1_COLD_LEG_SET_1_uprime , REV_1_COLD_LEG_SET_1_vprime }
-													}
-						REV_1_COLD_LEG_SET_1_Restress		moyenne		{ t_deb 0. t_fin 16.38 sources_reference { REV_1_COLD_LEG_SET_1_uprime_vprime } }
-						}
-			sondes			{
-						REV_1_COLD_LEG_SET_1_CMEAN_X0.701156	REV_1_COLD_LEG_SET_1_Cmean	periode 1e-6 segment 10 0.701156 -0.026 0 0.701156 0.026 0
-						REV_1_COLD_LEG_SET_1_CSD_X0.701156	REV_1_COLD_LEG_SET_1_Csd	periode 1e-6 position_like REV_1_COLD_LEG_SET_1_CMEAN_X0.701156
-						}
-			}
-		postraitement REV_1_COLD_LEG_SET_2
-			{
-			definition_champs	{
-						REV_1_COLD_LEG_SET_2_yplus_mean		moyenne		{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb y_plus } }
-						REV_1_COLD_LEG_SET_2_yplus_sd		ecart_type	{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb y_plus } }
-						REV_1_COLD_LEG_SET_2_Cmean		moyenne		{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb temperature } }
-						REV_1_COLD_LEG_SET_2_Csd		ecart_type	{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb temperature } }
-						REV_1_COLD_LEG_SET_2_Umean		moyenne		{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb vitesse } }
-						REV_1_COLD_LEG_SET_2_Usd		ecart_type	{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb vitesse } }
-						REV_1_COLD_LEG_SET_2_Ufluct		transformation	{
-													methode formule expression 1 V-Vmean
-													localisation faces
-													sources	{
-														refChamp { Pb_champ pb vitesse nom_source V } ,
-														moyenne { t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
-														}
-													}
-						REV_1_COLD_LEG_SET_2_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_2_Ufluct } }
-						REV_1_COLD_LEG_SET_2_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_2_Ufluct } }
-						REV_1_COLD_LEG_SET_2_uprime_vprime	transformation	{
-													methode formule
-													expression 1 REV_1_COLD_LEG_SET_2_uprime*REV_1_COLD_LEG_SET_2_vprime
-													localisation faces
-													sources_reference { REV_1_COLD_LEG_SET_2_uprime , REV_1_COLD_LEG_SET_2_vprime }
-													}
-						REV_1_COLD_LEG_SET_2_Restress		moyenne		{ t_deb 0 t_fin 26.38 sources_reference { REV_1_COLD_LEG_SET_2_uprime_vprime } }
-						}
-			sondes			{
-						REV_1_COLD_LEG_SET_2_CMEAN_X0.701156	REV_1_COLD_LEG_SET_2_Cmean	periode 1e-6 segment 10 0.701156 -0.026 0 0.701156 0.026 0
-						REV_1_COLD_LEG_SET_2_CSD_X0.701156	REV_1_COLD_LEG_SET_2_Csd	periode 1e-6 position_like REV_1_COLD_LEG_SET_2_CMEAN_X0.701156
-						}
-			}
-		postraitement REV_1_COLD_LEG_SET_3
-			{
-			definition_champs	{
-						REV_1_COLD_LEG_SET_3_yplus_mean		moyenne		{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb y_plus } }
-						REV_1_COLD_LEG_SET_3_yplus_sd		ecart_type	{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb y_plus } }
-						REV_1_COLD_LEG_SET_3_Cmean		moyenne		{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb temperature } }
-						REV_1_COLD_LEG_SET_3_Csd		ecart_type	{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb temperature } }
-						REV_1_COLD_LEG_SET_3_Umean		moyenne		{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb vitesse } }
-						REV_1_COLD_LEG_SET_3_Usd		ecart_type	{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb vitesse } }
-						REV_1_COLD_LEG_SET_3_Ufluct		transformation	{
-													methode formule expression 1 V-Vmean
-													localisation faces
-													sources	{
-														refChamp { Pb_champ pb vitesse nom_source V } ,
-														moyenne { t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
-														}
-													}
-						REV_1_COLD_LEG_SET_3_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_3_Ufluct } }
-						REV_1_COLD_LEG_SET_3_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_3_Ufluct } }
-						REV_1_COLD_LEG_SET_3_uprime_vprime	transformation	{
-													methode formule
-													expression 1 REV_1_COLD_LEG_SET_3_uprime*REV_1_COLD_LEG_SET_3_vprime
-													localisation faces
-													sources_reference { REV_1_COLD_LEG_SET_3_uprime , REV_1_COLD_LEG_SET_3_vprime }
-													}
-						REV_1_COLD_LEG_SET_3_Restress		moyenne		{ t_deb 0. t_fin 36.38 sources_reference { REV_1_COLD_LEG_SET_3_uprime_vprime } }
-						}
-			sondes			{
-						REV_1_COLD_LEG_SET_3_CMEAN_X0.701156	REV_1_COLD_LEG_SET_3_Cmean	periode 1e-6 segment 10 0.701156 -0.026 0 0.701156 0.026 0
-						REV_1_COLD_LEG_SET_3_CSD_X0.701156	REV_1_COLD_LEG_SET_3_Csd	periode 1e-6 position_like REV_1_COLD_LEG_SET_3_CMEAN_X0.701156
-						}
-			}
-	}
- 	sauvegarde single_hdf Cas.sauv 
+                concentration_CL2_point_1	temperature periode 1e-6 point 1 0.7860 -0.0132 0
+                concentration_CL2_point_2	temperature periode 1e-6 point 1 0.7860  0.0000 0
+                concentration_CL2_point_3	temperature periode 1e-6 point 1 0.7860  0.0132 0
+            }
+            fichier INST
+            format lata
+            champs binaire dt_post 1
+            {
+                temperature elem
+                vitesse elem
+                pression elem
+            }
+        }
+        postraitement REV_1_COLD_LEG_SET_1
+        {
+            definition_champs	{
+                REV_1_COLD_LEG_SET_1_yplus_mean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
+                REV_1_COLD_LEG_SET_1_yplus_sd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
+                REV_1_COLD_LEG_SET_1_Cmean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
+                REV_1_COLD_LEG_SET_1_Csd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb temperature } }
+                REV_1_COLD_LEG_SET_1_Umean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
+                REV_1_COLD_LEG_SET_1_Usd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } }
+                REV_1_COLD_LEG_SET_1_Ufluct		transformation	{
+                    methode formule expression 1 V-Vmean
+                    localisation faces
+                    sources	{
+                        refChamp { Pb_champ pb vitesse nom_source V } ,
+                        moyenne { t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
+                    }
+                }
+                REV_1_COLD_LEG_SET_1_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_1_Ufluct } }
+                REV_1_COLD_LEG_SET_1_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_1_Ufluct } }
+                REV_1_COLD_LEG_SET_1_uprime_vprime	transformation	{
+                    methode formule
+                    expression 1 REV_1_COLD_LEG_SET_1_uprime*REV_1_COLD_LEG_SET_1_vprime
+                    localisation faces
+                    sources_reference { REV_1_COLD_LEG_SET_1_uprime , REV_1_COLD_LEG_SET_1_vprime }
+                }
+                REV_1_COLD_LEG_SET_1_Restress		moyenne		{ t_deb 0. t_fin 16.38 sources_reference { REV_1_COLD_LEG_SET_1_uprime_vprime } }
+            }
+            sondes			{
+                REV_1_COLD_LEG_SET_1_CMEAN_X0.701156	REV_1_COLD_LEG_SET_1_Cmean	periode 1e-6 segment 10 0.701156 -0.026 0 0.701156 0.026 0
+                REV_1_COLD_LEG_SET_1_CSD_X0.701156	REV_1_COLD_LEG_SET_1_Csd	periode 1e-6 position_like REV_1_COLD_LEG_SET_1_CMEAN_X0.701156
+            }
+        }
+        postraitement REV_1_COLD_LEG_SET_2
+        {
+            definition_champs	{
+                REV_1_COLD_LEG_SET_2_yplus_mean		moyenne		{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb y_plus } }
+                REV_1_COLD_LEG_SET_2_yplus_sd		ecart_type	{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb y_plus } }
+                REV_1_COLD_LEG_SET_2_Cmean		moyenne		{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb temperature } }
+                REV_1_COLD_LEG_SET_2_Csd		ecart_type	{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb temperature } }
+                REV_1_COLD_LEG_SET_2_Umean		moyenne		{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb vitesse } }
+                REV_1_COLD_LEG_SET_2_Usd		ecart_type	{ t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb vitesse } }
+                REV_1_COLD_LEG_SET_2_Ufluct		transformation	{
+                    methode formule expression 1 V-Vmean
+                    localisation faces
+                    sources	{
+                        refChamp { Pb_champ pb vitesse nom_source V } ,
+                        moyenne { t_deb 0 t_fin 26.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
+                    }
+                }
+                REV_1_COLD_LEG_SET_2_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_2_Ufluct } }
+                REV_1_COLD_LEG_SET_2_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_2_Ufluct } }
+                REV_1_COLD_LEG_SET_2_uprime_vprime	transformation	{
+                    methode formule
+                    expression 1 REV_1_COLD_LEG_SET_2_uprime*REV_1_COLD_LEG_SET_2_vprime
+                    localisation faces
+                    sources_reference { REV_1_COLD_LEG_SET_2_uprime , REV_1_COLD_LEG_SET_2_vprime }
+                }
+                REV_1_COLD_LEG_SET_2_Restress		moyenne		{ t_deb 0 t_fin 26.38 sources_reference { REV_1_COLD_LEG_SET_2_uprime_vprime } }
+            }
+            sondes			{
+                REV_1_COLD_LEG_SET_2_CMEAN_X0.701156	REV_1_COLD_LEG_SET_2_Cmean	periode 1e-6 segment 10 0.701156 -0.026 0 0.701156 0.026 0
+                REV_1_COLD_LEG_SET_2_CSD_X0.701156	REV_1_COLD_LEG_SET_2_Csd	periode 1e-6 position_like REV_1_COLD_LEG_SET_2_CMEAN_X0.701156
+            }
+        }
+        postraitement REV_1_COLD_LEG_SET_3
+        {
+            definition_champs	{
+                REV_1_COLD_LEG_SET_3_yplus_mean		moyenne		{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb y_plus } }
+                REV_1_COLD_LEG_SET_3_yplus_sd		ecart_type	{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb y_plus } }
+                REV_1_COLD_LEG_SET_3_Cmean		moyenne		{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb temperature } }
+                REV_1_COLD_LEG_SET_3_Csd		ecart_type	{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb temperature } }
+                REV_1_COLD_LEG_SET_3_Umean		moyenne		{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb vitesse } }
+                REV_1_COLD_LEG_SET_3_Usd		ecart_type	{ t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb vitesse } }
+                REV_1_COLD_LEG_SET_3_Ufluct		transformation	{
+                    methode formule expression 1 V-Vmean
+                    localisation faces
+                    sources	{
+                        refChamp { Pb_champ pb vitesse nom_source V } ,
+                        moyenne { t_deb 0. t_fin 36.38 source refChamp { Pb_champ pb vitesse } nom_source Vmean }
+                    }
+                }
+                REV_1_COLD_LEG_SET_3_uprime		transformation	{ methode composante numero 0 sources_reference { REV_1_COLD_LEG_SET_3_Ufluct } }
+                REV_1_COLD_LEG_SET_3_vprime		transformation	{ methode composante numero 1 sources_reference { REV_1_COLD_LEG_SET_3_Ufluct } }
+                REV_1_COLD_LEG_SET_3_uprime_vprime	transformation	{
+                    methode formule
+                    expression 1 REV_1_COLD_LEG_SET_3_uprime*REV_1_COLD_LEG_SET_3_vprime
+                    localisation faces
+                    sources_reference { REV_1_COLD_LEG_SET_3_uprime , REV_1_COLD_LEG_SET_3_vprime }
+                }
+                REV_1_COLD_LEG_SET_3_Restress		moyenne		{ t_deb 0. t_fin 36.38 sources_reference { REV_1_COLD_LEG_SET_3_uprime_vprime } }
+            }
+            sondes			{
+                REV_1_COLD_LEG_SET_3_CMEAN_X0.701156	REV_1_COLD_LEG_SET_3_Cmean	periode 1e-6 segment 10 0.701156 -0.026 0 0.701156 0.026 0
+                REV_1_COLD_LEG_SET_3_CSD_X0.701156	REV_1_COLD_LEG_SET_3_Csd	periode 1e-6 position_like REV_1_COLD_LEG_SET_3_CMEAN_X0.701156
+            }
+        }
+    }
+    sauvegarde single_hdf Cas.sauv
 }
 
 ecritureLectureSpecial 0

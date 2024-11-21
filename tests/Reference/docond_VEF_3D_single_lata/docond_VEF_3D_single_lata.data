@@ -149,7 +149,7 @@ Read pb1
 
 
         }
-	format LATA
+        format LATA
         fields dt_post 20.
         {
             temperature elem

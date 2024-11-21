@@ -14,9 +14,9 @@ Tetraedriser_homogene dom_pb1
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
-	Larg_joint 2
-	Nom_Zones DOM1
+    Partitionneur metis { Nb_parts 2 }
+    Larg_joint 2
+    Nom_Zones DOM1
 }
 Fin
 END PARTITION #
@@ -31,16 +31,16 @@ Schema_Euler_explicite sch
 
 Lire sch
 {
-	nb_pas_dt_max 1
-	tinit 0.0
-	tmax  1000.
-	dt_min 1.e-6
-	dt_max 0.001
-	dt_impr 1.e-6
-	dt_sauv 0.05
-	seuil_statio 1.e-15
-	facsec 1.0
-	diffusion_implicite 1
+    nb_pas_dt_max 1
+    tinit 0.0
+    tmax  1000.
+    dt_min 1.e-6
+    dt_max 0.001
+    dt_impr 1.e-6
+    dt_sauv 0.05
+    seuil_statio 1.e-15
+    facsec 1.0
+    diffusion_implicite 1
 }
 
 Associate pb dom_pb1
@@ -50,94 +50,93 @@ Discretize pb dis
 
 Lire pb
 {
-Fluide_Incompressible
-{
-   mu      Champ_Uniforme 1 0.0001683
-   lambda  Champ_Uniforme 1 0.6797
-   Cp      Champ_Uniforme 1 4342.
-   rho     Champ_Uniforme 1 906.
-   gravite Champ_Uniforme 3  0. 0. -9.89
-}
+    Fluide_Incompressible
+    {
+        mu      Champ_Uniforme 1 0.0001683
+        lambda  Champ_Uniforme 1 0.6797
+        Cp      Champ_Uniforme 1 4342.
+        rho     Champ_Uniforme 1 906.
+        gravite Champ_Uniforme 3  0. 0. -9.89
+    }
 
-Constituant
-{
-        coefficient_diffusion Champ_Uniforme 6 0. 2.147E-7 2.147E-7 2.147E-7 2.147E-7 2.147E-7 
-}
+    Constituant
+    {
+        coefficient_diffusion Champ_Uniforme 6 0. 2.147E-7 2.147E-7 2.147E-7 2.147E-7 2.147E-7
+    }
 
-	Navier_Stokes_turbulent
-	{
-		solveur_pression petsc cholesky { }
-		convection { muscl }
-		diffusion { }
-		Modele_turbulence Sous_maille_Wale
-			{
-			cw 0.5
-			Turbulence_paroi negligeable
-			}
-		conditions_initiales
-		        {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions
-		{
-   			entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1.
-   			sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			paroi paroi_fixe
-		}
-
+    Navier_Stokes_turbulent
+    {
+        solveur_pression petsc cholesky { }
+        convection { muscl }
+        diffusion { }
+        Modele_turbulence Sous_maille_Wale
+        {
+            cw 0.5
+            Turbulence_paroi negligeable
         }
- 	# Ecriture des 6 equations de concentration C0,C1 et m0,m1,m2,m3  #
-        Convection_Diffusion_Concentration_Turbulent {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions 
-		{
-   			entree frontiere_ouverte_concentration_imposee Champ_front_uniforme 6 0.5 0.5 1.0 1.0 1.0 1.0
-   			sud frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
-   			nord frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
-   			gauche frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
-   			droit frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
-   			bas frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
-   			haut frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
-   			paroi paroi
-                }
-                conditions_initiales 
-		{
-                        concentration Champ_Uniforme 6 0.5 0.5 0 0 0 0
-                }
-		Modele_turbulence Schmidt
-		 	{
-		 	   Turbulence_paroi negligeable_scalaire
-		 	}
-		# Codage des termes sources #		
-		# Probleme dC0/dt=-2*dm3/dt #
-		/*
-		Sources { source_generique Transformation {
-		  	    		methode formule expression 6 m3*exp(-3*t) 0 2*log(1/log(sqrt(C0^2*C1^3))) 0 0 -2*m2
-			    		sources {
-                                        	Transformation { methode composante numero 0 source refchamp { Pb_champ pb concentration } nom_source C0 } ,
-                                        	Transformation { methode composante numero 1 source refchamp { Pb_champ pb concentration } nom_source C1 } ,
-						Transformation { methode composante numero 2 source refchamp { Pb_champ pb concentration } nom_source m0 } ,
-						Transformation { methode composante numero 3 source refchamp { Pb_champ pb concentration } nom_source m1 } ,
-						Transformation { methode composante numero 4 source refchamp { Pb_champ pb concentration } nom_source m2 } ,
-						Transformation { methode composante numero 5 source refchamp { Pb_champ pb concentration } nom_source m3 }
-			  		}
-			}
-		} */
+        conditions_initiales
+        {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1.
+            sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            paroi paroi_fixe
         }
 
-	Postraitement
-	{
-		Champs dt_post 0.01
-		{
-			concentration0 elem
-		}
+    }
+    # Ecriture des 6 equations de concentration C0,C1 et m0,m1,m2,m3  #
+    Convection_Diffusion_Concentration_Turbulent {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_concentration_imposee Champ_front_uniforme 6 0.5 0.5 1.0 1.0 1.0 1.0
+            sud frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
+            nord frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
+            gauche frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
+            droit frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
+            bas frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
+            haut frontiere_ouverte C_ext Champ_Front_Uniforme 	6 0 0 0 0 0 0
+            paroi paroi
         }
+        conditions_initiales
+        {
+            concentration Champ_Uniforme 6 0.5 0.5 0 0 0 0
+        }
+        Modele_turbulence Schmidt
+        {
+            Turbulence_paroi negligeable_scalaire
+        }
+        # Codage des termes sources #
+        # Probleme dC0/dt=-2*dm3/dt #
+        /*
+        Sources { source_generique Transformation {
+            methode formule expression 6 m3*exp(-3*t) 0 2*log(1/log(sqrt(C0^2*C1^3))) 0 0 -2*m2
+            sources {
+                Transformation { methode composante numero 0 source refchamp { Pb_champ pb concentration } nom_source C0 } ,
+                Transformation { methode composante numero 1 source refchamp { Pb_champ pb concentration } nom_source C1 } ,
+                Transformation { methode composante numero 2 source refchamp { Pb_champ pb concentration } nom_source m0 } ,
+                Transformation { methode composante numero 3 source refchamp { Pb_champ pb concentration } nom_source m1 } ,
+                Transformation { methode composante numero 4 source refchamp { Pb_champ pb concentration } nom_source m2 } ,
+                Transformation { methode composante numero 5 source refchamp { Pb_champ pb concentration } nom_source m3 }
+            }
+        } */
+    }
+
+    Postraitement
+    {
+        Champs dt_post 0.01
+        {
+            concentration0 elem
+        }
+    }
 
 }
 Solve pb

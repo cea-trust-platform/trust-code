@@ -1,8 +1,8 @@
 # Test for ICoCo resetTime() method #
 # What's important in this data file:
-  - the final call to Pilote_ICoCo, emulating a supervising from outside TRUST
-  - the nb_pas_dt_max in the time scheme
- The rest is really just to have a representative dataset.
+- the final call to Pilote_ICoCo, emulating a supervising from outside TRUST
+- the nb_pas_dt_max in the time scheme
+The rest is really just to have a representative dataset.
 #
 # PARALLEL OK 8 #
 dimension 2
@@ -55,7 +55,7 @@ Read sch
     dt_impr 0.01
     dt_sauv 100
     seuil_statio 1.e-8
-    nb_pas_dt_max 10   # enough, we will reset at 5 #    
+    nb_pas_dt_max 10   # enough, we will reset at 5 #
 }
 
 Associate pb dom
@@ -123,9 +123,9 @@ Read pb
 }
 
 # PILOTE BEGIN
-Pilote_ICoCo { main Pilote_ICoCo_3 
+Pilote_ICoCo { main Pilote_ICoCo_3
                pb_name pb
-               nb_pas_dt_reset 5 
+               nb_pas_dt_reset 5
              }
 end
 PILOTE END #

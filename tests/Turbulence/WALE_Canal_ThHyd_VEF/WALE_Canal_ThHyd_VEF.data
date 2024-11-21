@@ -7,23 +7,23 @@ Domaine dom
 
 # BEGIN MESH #
 Mailler dom
-	{
-	Pave Cavite
-		{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 8 14 10
-		Longueurs  12.56637061 2. 3.141592653
-		ytanh 0.90180
-		}
-		{
-		Bord periox   X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
-		Bord periox   X = 12.56637061   0. <= Y <= 2.0           0. <= Z <= 3.141592653
-		Bord perioz   Z = 0.            0. <= X <= 12.56637061   0. <= Y <= 2.0
-		Bord perioz   Z = 3.141592653   0. <= X <= 12.56637061   0. <= Y <= 2.0
-		Bord bas      Y = 0.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
-		Bord haut     Y = 2.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
-		}
-	}
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 8 14 10
+        Longueurs  12.56637061 2. 3.141592653
+        ytanh 0.90180
+    }
+    {
+        Bord periox   X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord periox   X = 12.56637061   0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord perioz   Z = 0.            0. <= X <= 12.56637061   0. <= Y <= 2.0
+        Bord perioz   Z = 3.141592653   0. <= X <= 12.56637061   0. <= Y <= 2.0
+        Bord bas      Y = 0.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
+        Bord haut     Y = 2.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
+    }
+}
 Tetraedriser dom
 Corriger_frontiere_periodique { Domaine dom Bord periox }
 Corriger_frontiere_periodique { Domaine dom Bord perioz }
@@ -32,10 +32,10 @@ Corriger_frontiere_periodique { Domaine dom Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
-	Larg_joint 2
-	Nom_Zones DOM
-	Periodique 2 periox perioz
+    Partitionneur tranche { tranches 1 2 1 }
+    Larg_joint 2
+    Nom_Zones DOM
+    Periodique 2 periox perioz
 }
 Fin
 END PARTITION #
@@ -50,17 +50,17 @@ VEFPreP1b dis
 # Schema_Euler_explicite sch #
 Runge_Kutta_ordre_3 sch
 Lire sch
-	{
-	nb_pas_dt_max 5
-	tinit 0.
-        tmax 10000.
-	dt_min 1.e-7
-	dt_max 1.e-1
-	dt_impr 1e-5
-	dt_sauv 500.
-        seuil_statio 1.e-8
-	facsec 0.01
-	}
+{
+    nb_pas_dt_max 5
+    tinit 0.
+    tmax 10000.
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_impr 1e-5
+    dt_sauv 500.
+    seuil_statio 1.e-8
+    facsec 0.01
+}
 
 
 
@@ -70,86 +70,86 @@ Associate pb sch
 Discretize pb dis
 
 Lire pb
-	{
-   
-   fluide_incompressible {
-   
+{
+
+    fluide_incompressible {
+
         gravite champ_uniforme 3 0 0 0
-   	mu Champ_Uniforme	1 2.84e-5
-   	rho Champ_Uniforme	1 0.0976
-   	lambda Champ_Uniforme	1 22.1e-2
-   	Cp Champ_Uniforme	1 5193.
-   	beta_th Champ_Uniforme	1 1.9954e-3
-   }
-   
-   	Navier_Stokes_Turbulent
-		{
-		solveur_pression GCP
-			{
-			precond ssor { omega 1.5 } 
-			seuil 1e-9
-			impr
-			}
-		convection { amont }
-		diffusion { }
-		Sources
-			{
-			Canal_perio { bord periox } ,
-			Boussinesq_temperature { T0 500 }
-			}
-		conditions_initiales
-			{
-			vitesse champ_init_canal_sinal 3  { Ucent 1.2062 h 1.0  ampli_sin 0.3 omega 2. ampli_bruit 0 }
-			}
-		boundary_conditions
-			{
-			periox periodique 
-			haut     paroi_fixe
-			bas      paroi_fixe
-			perioz periodique 
-			}
-		Modele_turbulence sous_maille_wale
-			{
-			turbulence_paroi negligeable
-			cw 0.5
-			}
-		}
+        mu Champ_Uniforme	1 2.84e-5
+        rho Champ_Uniforme	1 0.0976
+        lambda Champ_Uniforme	1 22.1e-2
+        Cp Champ_Uniforme	1 5193.
+        beta_th Champ_Uniforme	1 1.9954e-3
+    }
 
-	Convection_Diffusion_Temperature_Turbulent
-		{
-		diffusion { }
-		convection { Amont }
-		Modele_turbulence Prandtl { turbulence_paroi negligeable_scalaire  dt_impr_nusselt 0.4 }
-		boundary_conditions 
-			{
-			periox periodique 
-			perioz periodique 
- 			haut   Paroi_temperature_imposee Champ_Front_Uniforme 1 505
-			bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
-			    
-			}
-		conditions_initiales { Temperature Champ_Fonc_xyz dom 1 500.+y*(505.-500.)/2. }
-		}
+    Navier_Stokes_Turbulent
+    {
+        solveur_pression GCP
+        {
+            precond ssor { omega 1.5 }
+            seuil 1e-9
+            impr
+        }
+        convection { amont }
+        diffusion { }
+        Sources
+        {
+            Canal_perio { bord periox } ,
+            Boussinesq_temperature { T0 500 }
+        }
+        conditions_initiales
+        {
+            vitesse champ_init_canal_sinal 3  { Ucent 1.2062 h 1.0  ampli_sin 0.3 omega 2. ampli_bruit 0 }
+        }
+        boundary_conditions
+        {
+            periox periodique
+            haut     paroi_fixe
+            bas      paroi_fixe
+            perioz periodique
+        }
+        Modele_turbulence sous_maille_wale
+        {
+            turbulence_paroi negligeable
+            cw 0.5
+        }
+    }
+
+    Convection_Diffusion_Temperature_Turbulent
+    {
+        diffusion { }
+        convection { Amont }
+        Modele_turbulence Prandtl { turbulence_paroi negligeable_scalaire  dt_impr_nusselt 0.4 }
+        boundary_conditions
+        {
+            periox periodique
+            perioz periodique
+            haut   Paroi_temperature_imposee Champ_Front_Uniforme 1 505
+            bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
+
+        }
+        conditions_initiales { Temperature Champ_Fonc_xyz dom 1 500.+y*(505.-500.)/2. }
+    }
 
 
-	Postraitement
-        	{       
-                Sondes
-                	{ 
-                        sonde_vit  vitesse periode 10. segment 65	4. 0. 1.
-									4. 2. 1.
-			sonde_temp temperature periode 10. segment 65	4. 0. 1.
-									4. 2. 1. 
-			}
-		Champs dt_post 20.
-			{
-			temperature elem
-			vitesse som
-			viscosite_turbulente elem
-			}
-		}
-	}
+    Postraitement
+    {
+        Sondes
+        {
+            sonde_vit  vitesse periode 10. segment 65	4. 0. 1.
+            4. 2. 1.
+            sonde_temp temperature periode 10. segment 65	4. 0. 1.
+            4. 2. 1.
+        }
+        Champs dt_post 20.
+        {
+            temperature elem
+            vitesse som
+            viscosite_turbulente elem
+        }
+    }
+}
 
 Solve pb
 Fin
- 
+

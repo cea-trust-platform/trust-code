@@ -6,19 +6,19 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave volum0
-  {
-    Origine 0. 0.
-    Nombre_de_Noeuds 31 31
-    Longueurs 1 1
-    Facteurs 1. 1.
-  }
-  {
-    Bord boundary   X = 0.0  0.0 <= Y <= 1
-    Bord boundary   X = 1    0.0 <= Y <= 1
-    Bord boundary   Y = 0.0  0.0 <= X <= 1
-    Bord boundary   Y = 1    0.0 <= X <= 1
-  }
+    Pave volum0
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 31 31
+        Longueurs 1 1
+        Facteurs 1. 1.
+    }
+    {
+        Bord boundary   X = 0.0  0.0 <= Y <= 1
+        Bord boundary   X = 1    0.0 <= Y <= 1
+        Bord boundary   Y = 0.0  0.0 <= X <= 1
+        Bord boundary   Y = 1    0.0 <= X <= 1
+    }
 }
 # END MESH #
 
@@ -44,7 +44,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0.3
-	nb_pas_dt_max 30
+    nb_pas_dt_max 30
     dt_max 1e-2
     tmax 10
     seuil_statio 1e-6
@@ -82,7 +82,7 @@ Read pb
 
     Correlations {
         Frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 }
-         masse_ajoutee coef_constant { beta 0.5 } 
+        masse_ajoutee coef_constant { beta 0.5 }
     }
 
     QDM_Multiphase
@@ -136,7 +136,7 @@ Read pb
             profil_vg vitesse_gaz_eau periode 1e-8 segment 500 0.5 0 0.5 1
             profil_vl vitesse_liquide_eau periode 1e-8 segment 500 0.5 0 0.5 1
             alpha       alpha_gaz_eau periode 1e-8 segment 500 0.5 0 0.5 1
-vit vitesse periode 1e-8 point 1 0.5 0.5
+            vit vitesse periode 1e-8 point 1 0.5 0.5
 
 
         }

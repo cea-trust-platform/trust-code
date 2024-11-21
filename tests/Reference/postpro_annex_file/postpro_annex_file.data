@@ -86,12 +86,12 @@ Lire pb
 
     Postraitement
     {
-        Definition_champs_fichier                      { fichier annex/definition_champs } 
+        Definition_champs_fichier                      { fichier annex/definition_champs }
         champs_fichier                 dt_post   1.e-4 { fichier annex/fields }
         sondes_fichier                                 { fichier annex/probes }
         sondes_mobiles_fichier                         { fichier annex/mobile_probes }
         statistiques_fichier           dt_post   1.e-4 { fichier annex/stats }
-        statistiques_en_serie_fichier  dt_integr 1.    { fichier annex/serial_stats }        
+        statistiques_en_serie_fichier  dt_integr 1.    { fichier annex/serial_stats }
     }
 }
 Solve pb

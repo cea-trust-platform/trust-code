@@ -56,9 +56,9 @@ Read sch
     facsec
     {
         facsec_ini 20         # initial safety factor  #
-	facsec_max 100        # upper bound on the safety factor #
-	rapport_residus 2.     # if residus_{n-1} > rapport_residus*residus_{n}, then facsec=sqrt(rapport_residus) #
-	nb_ite_sans_accel_max 20  # if the facsec hasn't changed after 20 iterations, we multiply it by sqrt(rapport_residus)  #
+        facsec_max 100        # upper bound on the safety factor #
+        rapport_residus 2.     # if residus_{n-1} > rapport_residus*residus_{n}, then facsec=sqrt(rapport_residus) #
+        nb_ite_sans_accel_max 20  # if the facsec hasn't changed after 20 iterations, we multiply it by sqrt(rapport_residus)  #
     }
     Solveur
     Piso

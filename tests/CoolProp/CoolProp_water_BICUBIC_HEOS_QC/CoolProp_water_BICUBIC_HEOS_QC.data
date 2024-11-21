@@ -63,15 +63,15 @@ Read pb_fluide
     fluide_quasi_compressible
     {
         pression 2.4e5
-        
-        mu Champ_Fonc_xyz dom_fluide 1 4.71169e-05 
-        lambda Champ_Fonc_xyz dom_fluide 1 4.71169e-05 
-        loi_etat CoolProp_QC 
+
+        mu Champ_Fonc_xyz dom_fluide 1 4.71169e-05
+        lambda Champ_Fonc_xyz dom_fluide 1 4.71169e-05
+        loi_etat CoolProp_QC
         {
-        	fluid water
-        	model BICUBIC&HEOS
+            fluid water
+            model BICUBIC&HEOS
             cp 123
-        } 
+        }
         traitement_pth constant /* conservation_masse */
         gravite Champ_Uniforme 2  0. -9.81
     }
@@ -123,7 +123,7 @@ Read pb_fluide
             viscosite_dynamique elem
             capacite_calorifique elem
             conductivite  elem
-            diffusivite_thermique elem            
+            diffusivite_thermique elem
         }
     }
 }

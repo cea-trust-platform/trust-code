@@ -54,7 +54,7 @@ Read sch
     solveur ice
     {
         pression_degeneree 0
-        criteres_convergence { alpha 1e-5  pression 1 vitesse 1 } 
+        criteres_convergence { alpha 1e-5  pression 1 vitesse 1 }
         solveur petsc cli { }
         seuil_convergence_implicite 1e30
     }

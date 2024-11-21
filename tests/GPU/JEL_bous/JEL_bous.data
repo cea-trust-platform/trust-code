@@ -7,21 +7,21 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-        {
+    Pave Entree
+    {
         Origine 0. 0. 0.
         Nombre_de_Noeuds 4 4 26
         /* Nombre_de_Noeuds 19 19 181 */
         Longueurs 1 1 10
-        }
-        {
+    }
+    {
         Bord walls X = 0.  0. <= Y <= 1. 0. <= Z <= 10.
         Bord walls X = 1.  0. <= Y <= 1. 0. <= Z <= 10.
         Bord walls Y = 0.  0. <= X <= 1. 0. <= Z <= 10.
         Bord walls Y = 1.  0. <= X <= 1. 0. <= Z <= 10.
         Bord inlet Z = 0.  0. <= X <= 1. 0. <= Y <= 1.
         Bord outlet Z = 10.  0. <= X <= 1. 0. <= Y <= 1.
-        }
+    }
 }
 Tetraedriser_homogene dom
 VerifierCoin dom {  }
@@ -44,7 +44,7 @@ vef dis
 Runge_Kutta_Rationnel_ordre_2 sch
 Lire sch
 {
-nb_pas_dt_max 10
+    nb_pas_dt_max 10
     tinit 0.
     tcpumax 47.00
     dt_impr 0.0000001
@@ -66,15 +66,15 @@ Discretiser pb1 dis
 Lire pb1
 {
 
-   fluide_incompressible 
-   {
-    gravite champ_uniforme 3 0 0 -9.81 
-    mu Champ_Uniforme 1 0.008
-    rho Champ_Uniforme 1 995.2
-    lambda Champ_Uniforme 1 0.062
-    Cp Champ_Uniforme 1 4.1802
-    beta_th Champ_Uniforme 1 0.002902383982248589
-   }
+    fluide_incompressible
+    {
+        gravite champ_uniforme 3 0 0 -9.81
+        mu Champ_Uniforme 1 0.008
+        rho Champ_Uniforme 1 995.2
+        lambda Champ_Uniforme 1 0.062
+        Cp Champ_Uniforme 1 4.1802
+        beta_th Champ_Uniforme 1 0.002902383982248589
+    }
 
     Navier_Stokes_turbulent
     {
@@ -118,9 +118,9 @@ Lire pb1
         diffusion { }
         convection { muscl }
         conditions_initiales { temperature champ_fonc_xyz dom 1 ((x*x+y*y)[(10e-3*10e-3)*(z[0.06))*20+20 }
-        boundary_conditions 
+        boundary_conditions
         {
-            outlet  frontiere_ouverte T_ext champ_front_uniforme 1 20 
+            outlet  frontiere_ouverte T_ext champ_front_uniforme 1 20
             inlet  frontiere_ouverte_temperature_imposee  champ_front_uniforme 1 40
             walls  Paroi_adiabatique
         }

@@ -1,5 +1,5 @@
 # Same story as verif_coin.data with raffiner 'interprete'
- #
+#
 
 dimension 2
 Pb_Thermohydraulique pb
@@ -28,7 +28,7 @@ Associate pb dom
 Associate pb sch
 Discretize pb dis
 
-postraiter_domaine { 
+postraiter_domaine {
     domaine dom_init
     format lml
 }

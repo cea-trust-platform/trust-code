@@ -7,38 +7,38 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave DOM_DOM
-  {
-    Origine 0. -5.e-3 0.
-    Nombre_de_Noeuds 6 51 6
-    Longueurs 1.e-3 50.e-3 1.e-3
-  }
-  {
-    /* Top */
-    bord wall Z = 1.e-3 0.0 <= X <= 1.e-3 -5.e-3 <= Y <= 45.e-3
-    
-    /* Bottom */
-    bord wall Z = 0.0 0.0 <= X <= 1.e-3 -5.0e-3 <= Y <= 0.e-3
-    bord ame Z = 0.0 0.0 <= X <= 1.e-3 0.0e-3 <= Y <= 40.e-3
-    bord wall Z = 0.0 0.0 <= X <= 1.e-3 40.0e-3 <= Y <= 45.e-3
-    
-    /* Left */
-    bord wall X = 0.0 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
-    
-    /* Right */
-    bord wall X = 1.e-3 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
-    
-    bord in Y = -5.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
-    bord out Y = 45.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
-  }
+    Pave DOM_DOM
+    {
+        Origine 0. -5.e-3 0.
+        Nombre_de_Noeuds 6 51 6
+        Longueurs 1.e-3 50.e-3 1.e-3
+    }
+    {
+        /* Top */
+        bord wall Z = 1.e-3 0.0 <= X <= 1.e-3 -5.e-3 <= Y <= 45.e-3
+
+        /* Bottom */
+        bord wall Z = 0.0 0.0 <= X <= 1.e-3 -5.0e-3 <= Y <= 0.e-3
+        bord ame Z = 0.0 0.0 <= X <= 1.e-3 0.0e-3 <= Y <= 40.e-3
+        bord wall Z = 0.0 0.0 <= X <= 1.e-3 40.0e-3 <= Y <= 45.e-3
+
+        /* Left */
+        bord wall X = 0.0 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
+
+        /* Right */
+        bord wall X = 1.e-3 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
+
+        bord in Y = -5.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
+        bord out Y = 45.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool Tranche { tranches 2 2 2 }
-  Larg_joint 2
-  zones_name dom
+    Partition_tool Tranche { tranches 2 2 2 }
+    Larg_joint 2
+    zones_name dom
 }
 End
 END PARTITION #
@@ -51,17 +51,17 @@ Runge_Kutta_Rationnel_ordre_2 sch
 
 Lire sch
 {
-  tinit 0.
-  dt_impr 1.e-3
-  dt_start dt_calc
-  tmax 0.25
-  dt_min 1.e-7
-  dt_max 6.e-3
-  seuil_statio 1.e-14
-  facsec 0.9
-  diffusion_implicite 1
-  seuil_diffusion_implicite 1.e-9
-  /* nb_pas_dt_max 2 */
+    tinit 0.
+    dt_impr 1.e-3
+    dt_start dt_calc
+    tmax 0.25
+    dt_min 1.e-7
+    dt_max 6.e-3
+    seuil_statio 1.e-14
+    facsec 0.9
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-9
+    /* nb_pas_dt_max 2 */
 }
 
 
@@ -77,156 +77,156 @@ Discretiser pb dis
 Lire pb
 {
 
-   fluide_weakly_compressible {
+    fluide_weakly_compressible {
         gravite champ_uniforme 3 0 0. -9.81
-     pression_thermo   100000.
-     use_total_pressure 1
-     time_activate_ptot 1e-04
-     traitement_pth constant
-   
-     loi_etat Multi_Gaz_Parfait_WC
-     {
-   
-       Species_number 3
-       diffusion_coeff Champ_uniforme 3 20.2e-6 20.2e-6 20.2e-6
-       molar_mass Champ_uniforme 3 32e-3 18e-3 28e-3
-       mu Champ_uniforme 3 2.32e-5 0.0017916 1.99e-5
-       cp Champ_uniforme 3 1005 1000 1003
-       Prandtl 0.71
-     }
-   }
-   
-     Navier_Stokes_WC
-  {
-    parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-8 impr } }
-    solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-13 impr   }
-    convection { centre }
-    diffusion { }
-    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
-    conditions_limites
-    {
-      wall paroi_fixe
-      ame frontiere_ouverte_rho_U_impose Champ_front_uniforme 3   0. 0. 0.
-      in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.63 0.
-      out    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -1.026322938285598*9.81*z
-    }
-    
-    mass_source 
-    { 
-        bord ame
-        /* Source term which is actually just added at the boundary with AME. User hence enters the data as a surfacic field
-          i.e. a Champ_front */
-        surfacic_flux Champ_front_uniforme 3 $flux1_ $flux2_ 0. 
-    }
-  }
+        pression_thermo   100000.
+        use_total_pressure 1
+        time_activate_ptot 1e-04
+        traitement_pth constant
 
-  Convection_Diffusion_Chaleur_WC
-  {
-    equation_non_resolue 1
-    parametre_equation parametre_diffusion_implicite
-    {
-      solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
-    }
-    convection { quick }
-    diffusion { }
-    conditions_initiales { temperature Champ_uniforme 1 373.15 }
-    conditions_limites
-    {
-      wall paroi_adiabatique
-      ame  Frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 373.15
-      in  Frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 373.15
-      out  Frontiere_ouverte T_ext Champ_front_uniforme 1 373.15
-    }
-  }
-
-  /* Equations_Especes */
-  Equations_Scalaires_Passifs
-  {
-    Convection_Diffusion_Espece_Multi_WC
-    {
-      parametre_equation parametre_diffusion_implicite
-      {
-        solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
-      }
-      convection  { quick }
-      diffusion { }
-      conditions_initiales { fraction_massique0 Champ_fonc_XYZ dom 1 0.5 }
-      conditions_limites
-      {
-        wall paroi
-      	ame Paroi_flux_impose champ_front_Uniforme 1 $flux1_
-        in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.5
-        out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
-      }
-    }
-
-    Convection_Diffusion_Espece_Multi_WC
-    {
-      parametre_equation parametre_diffusion_implicite
-      {
-        solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
-      }
-      convection  { quick }
-      diffusion { }
-      conditions_initiales { fraction_massique1 Champ_fonc_XYZ dom 1 0.2 }
-      conditions_limites
-      {
-        wall paroi
-      	ame Paroi_flux_impose champ_front_Uniforme 1 $flux2_
-        in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.2
-        out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
-      }
-    }
-  }
-
-  post_processings
-  {
-
-    surfacic 
-    {
-        Definition_champs
+        loi_etat Multi_Gaz_Parfait_WC
         {
 
-          y_wall Interpolation
-          {
-             localisation elem
-             domaine dom_boundaries_ame
-             source refChamp { Pb_champ pb fraction_massique0 }
-          }
-          
-          rho_wall Interpolation
-          {
-             localisation elem
-             domaine dom_boundaries_ame
-             source refChamp { Pb_champ pb masse_volumique }
-          }
-
-        }  
-        domaine dom_boundaries_ame
-        fichier bound_ame 
-        format lata
-        fields dt_post 0.05
-        {
-            y_wall elem
+            Species_number 3
+            diffusion_coeff Champ_uniforme 3 20.2e-6 20.2e-6 20.2e-6
+            molar_mass Champ_uniforme 3 32e-3 18e-3 28e-3
+            mu Champ_uniforme 3 2.32e-5 0.0017916 1.99e-5
+            cp Champ_uniforme 3 1005 1000 1003
+            Prandtl 0.71
         }
-    } /* front */
-  }
-
-  Postraitement
-  {
-    format lata
-    Champs dt_post 0.1
-    {
-    vitesse som
-    fraction_massique0 elem
-    fraction_massique1 elem
-    fraction_massique_nonresolue elem
-    /* masse_volumique som
-    pression elem
-    pression_tot elem
-    pression_eos elem */
     }
-  }
+
+    Navier_Stokes_WC
+    {
+        parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-8 impr } }
+        solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-13 impr   }
+        convection { centre }
+        diffusion { }
+        conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+        conditions_limites
+        {
+            wall paroi_fixe
+            ame frontiere_ouverte_rho_U_impose Champ_front_uniforme 3   0. 0. 0.
+            in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.63 0.
+            out    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -1.026322938285598*9.81*z
+        }
+
+        mass_source
+        {
+            bord ame
+            /* Source term which is actually just added at the boundary with AME. User hence enters the data as a surfacic field
+              i.e. a Champ_front */
+            surfacic_flux Champ_front_uniforme 3 $flux1_ $flux2_ 0.
+        }
+    }
+
+    Convection_Diffusion_Chaleur_WC
+    {
+        equation_non_resolue 1
+        parametre_equation parametre_diffusion_implicite
+        {
+            solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
+        }
+        convection { quick }
+        diffusion { }
+        conditions_initiales { temperature Champ_uniforme 1 373.15 }
+        conditions_limites
+        {
+            wall paroi_adiabatique
+            ame  Frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 373.15
+            in  Frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 373.15
+            out  Frontiere_ouverte T_ext Champ_front_uniforme 1 373.15
+        }
+    }
+
+    /* Equations_Especes */
+    Equations_Scalaires_Passifs
+    {
+        Convection_Diffusion_Espece_Multi_WC
+        {
+            parametre_equation parametre_diffusion_implicite
+            {
+                solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
+            }
+            convection  { quick }
+            diffusion { }
+            conditions_initiales { fraction_massique0 Champ_fonc_XYZ dom 1 0.5 }
+            conditions_limites
+            {
+                wall paroi
+                ame Paroi_flux_impose champ_front_Uniforme 1 $flux1_
+                in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.5
+                out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+            }
+        }
+
+        Convection_Diffusion_Espece_Multi_WC
+        {
+            parametre_equation parametre_diffusion_implicite
+            {
+                solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
+            }
+            convection  { quick }
+            diffusion { }
+            conditions_initiales { fraction_massique1 Champ_fonc_XYZ dom 1 0.2 }
+            conditions_limites
+            {
+                wall paroi
+                ame Paroi_flux_impose champ_front_Uniforme 1 $flux2_
+                in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.2
+                out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+            }
+        }
+    }
+
+    post_processings
+    {
+
+        surfacic
+        {
+            Definition_champs
+            {
+
+                y_wall Interpolation
+                {
+                    localisation elem
+                    domaine dom_boundaries_ame
+                    source refChamp { Pb_champ pb fraction_massique0 }
+                }
+
+                rho_wall Interpolation
+                {
+                    localisation elem
+                    domaine dom_boundaries_ame
+                    source refChamp { Pb_champ pb masse_volumique }
+                }
+
+            }
+            domaine dom_boundaries_ame
+            fichier bound_ame
+            format lata
+            fields dt_post 0.05
+            {
+                y_wall elem
+            }
+        } /* front */
+    }
+
+    Postraitement
+    {
+        format lata
+        Champs dt_post 0.1
+        {
+            vitesse som
+            fraction_massique0 elem
+            fraction_massique1 elem
+            fraction_massique_nonresolue elem
+            /* masse_volumique som
+            pression elem
+            pression_tot elem
+            pression_eos elem */
+        }
+    }
 
 }
 

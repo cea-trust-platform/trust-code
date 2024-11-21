@@ -1,7 +1,7 @@
 # Reading a MED file with orphan nodes was buggy.
-  Unused node was cleaned by TRUST, but internal MEDCoupling
-  objet not correctly updated, leading to an invalid mesh.
- #
+Unused node was cleaned by TRUST, but internal MEDCoupling
+objet not correctly updated, leading to an invalid mesh.
+#
 dimension 2
 Pb_Thermohydraulique pb
 
@@ -26,8 +26,8 @@ Associate pb dom
 Associate pb sch
 Discretize pb dis
 
-postraiter_domaine { 
-    domaine dom 
+postraiter_domaine {
+    domaine dom
     format lml
 }
 

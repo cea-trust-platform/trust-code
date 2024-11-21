@@ -7,38 +7,38 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave DOM_DOM
-  {
-    Origine 0. -5.e-3 0.
-    Nombre_de_Noeuds 6 51 6 
-    Longueurs 1.e-3 50.e-3 1.e-3
-  }
-  {
-    /* Top */
-    bord wall Z = 1.e-3 0.0 <= X <= 1.e-3 -5.e-3 <= Y <= 45.e-3
-    
-    /* Bottom */
-    bord wall Z = 0.0 0.0 <= X <= 1.e-3 -5.0e-3 <= Y <= 0.e-3
-    bord ame Z = 0.0 0.0 <= X <= 1.e-3 0.0e-3 <= Y <= 40.e-3
-    bord wall Z = 0.0 0.0 <= X <= 1.e-3 40.0e-3 <= Y <= 45.e-3
-    
-    /* Left */
-    bord wall X = 0.0 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
-    
-    /* Right */
-    bord wall X = 1.e-3 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
-    
-    bord in Y = -5.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
-    bord out Y = 45.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
-  }
+    Pave DOM_DOM
+    {
+        Origine 0. -5.e-3 0.
+        Nombre_de_Noeuds 6 51 6
+        Longueurs 1.e-3 50.e-3 1.e-3
+    }
+    {
+        /* Top */
+        bord wall Z = 1.e-3 0.0 <= X <= 1.e-3 -5.e-3 <= Y <= 45.e-3
+
+        /* Bottom */
+        bord wall Z = 0.0 0.0 <= X <= 1.e-3 -5.0e-3 <= Y <= 0.e-3
+        bord ame Z = 0.0 0.0 <= X <= 1.e-3 0.0e-3 <= Y <= 40.e-3
+        bord wall Z = 0.0 0.0 <= X <= 1.e-3 40.0e-3 <= Y <= 45.e-3
+
+        /* Left */
+        bord wall X = 0.0 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
+
+        /* Right */
+        bord wall X = 1.e-3 -5.e-3 <= Y <= 45.e-3 0.0 <= Z <= 1.e-3
+
+        bord in Y = -5.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
+        bord out Y = 45.e-3 0.0 <= X <= 1.e-3 0.0 <= Z <= 1.e-3
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool Tranche { tranches 2 2 2 }
-  Larg_joint 2
-  zones_name dom
+    Partition_tool Tranche { tranches 2 2 2 }
+    Larg_joint 2
+    zones_name dom
 }
 End
 END PARTITION #
@@ -51,17 +51,17 @@ Runge_Kutta_Rationnel_ordre_2 sch
 
 Lire sch
 {
-  tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-  dt_impr 1.e-3
-  dt_start dt_calc
-  tmax 0.25
-  dt_min 1.e-6
-  dt_max 3.e-3
-  seuil_statio 1.e-15
-  facsec 0.5
-  diffusion_implicite 1
-  seuil_diffusion_implicite 1.e-9
+    dt_impr 1.e-3
+    dt_start dt_calc
+    tmax 0.25
+    dt_min 1.e-6
+    dt_max 3.e-3
+    seuil_statio 1.e-15
+    facsec 0.5
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-9
 }
 
 
@@ -77,142 +77,142 @@ Discretiser pb dis
 Lire pb
 {
 
-   fluide_weakly_compressible {
+    fluide_weakly_compressible {
         gravite champ_uniforme 3 0 0. 0.0
-     pression_thermo 100000.
-     
-     loi_etat binaire_gaz_parfait_WC
-     {
-       temperature 375.
-       diffusion_coeff  3.12574e-5
-   
-       # O2 rho 1.026322938285598 #
-       molar_mass1 32e-3
-       mu1 2.32e-5
-   
-       # N2 rho 0.9519145252598922 #
-       molar_mass2 28e-3
-       mu2 1.32e-5 
-     }
-   }
-   
-     Navier_Stokes_WC
-  {
-    parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-8 impr } }
-    solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-13 impr   }
-    convection { centre }
-    diffusion { }
-    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
-    conditions_limites
+        pression_thermo 100000.
+
+        loi_etat binaire_gaz_parfait_WC
+        {
+            temperature 375.
+            diffusion_coeff  3.12574e-5
+
+            # O2 rho 1.026322938285598 #
+            molar_mass1 32e-3
+            mu1 2.32e-5
+
+            # N2 rho 0.9519145252598922 #
+            molar_mass2 28e-3
+            mu2 1.32e-5
+        }
+    }
+
+    Navier_Stokes_WC
     {
-      wall paroi_fixe
-      ame frontiere_ouverte_rho_U_impose Champ_front_uniforme 3   0. 0. 0.
-      in frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.63 0.
-      out Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -1.026322938285598*9.81*z
-    }
-    
-    mass_source { 
-        bord ame
-        /* Source term which is actually just added at the boundary with AME. User hence enters the data as a surfacic field
-          i.e. a Champ_front */
-        surfacic_flux Champ_front_uniforme 2 -0.0052499999999999995 0. 
-    }
-  }
+        parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-8 impr } }
+        solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-13 impr   }
+        convection { centre }
+        diffusion { }
+        conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+        conditions_limites
+        {
+            wall paroi_fixe
+            ame frontiere_ouverte_rho_U_impose Champ_front_uniforme 3   0. 0. 0.
+            in frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 0.63 0.
+            out Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -1.026322938285598*9.81*z
+        }
 
-  Convection_Diffusion_Espece_Binaire_WC
-  {
-    parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-7 impr } }
-    convection  { quick }
-    diffusion { }
-    conditions_initiales { fraction_massique Champ_uniforme 1 0.5 }
-    conditions_limites
+        mass_source {
+            bord ame
+            /* Source term which is actually just added at the boundary with AME. User hence enters the data as a surfacic field
+              i.e. a Champ_front */
+            surfacic_flux Champ_front_uniforme 2 -0.0052499999999999995 0.
+        }
+    }
+
+    Convection_Diffusion_Espece_Binaire_WC
     {
-      wall paroi
-      ame Paroi_flux_impose champ_front_Uniforme 1 -0.0052499999999999995
-      in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.5
-      out frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0 
+        parametre_equation parametre_diffusion_implicite { solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-7 impr } }
+        convection  { quick }
+        diffusion { }
+        conditions_initiales { fraction_massique Champ_uniforme 1 0.5 }
+        conditions_limites
+        {
+            wall paroi
+            ame Paroi_flux_impose champ_front_Uniforme 1 -0.0052499999999999995
+            in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.5
+            out frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+        }
     }
-  }
 
-  post_processings
-  {
+    post_processings
+    {
 
-    surfacic 
+        surfacic
+        {
+            Definition_champs
+            {
+
+                y_wall Interpolation
+                {
+                    localisation elem
+                    domaine dom_boundaries_ame
+                    source refChamp { Pb_champ pb fraction_massique }
+                }
+
+                rho_wall Interpolation
+                {
+                    localisation elem
+                    domaine dom_boundaries_ame
+                    source refChamp { Pb_champ pb masse_volumique }
+                }
+
+            }
+            domaine dom_boundaries_ame
+            fichier bound_ame
+            format LATA
+            fields dt_post 0.05
+            {
+                y_wall elem
+            }
+        } /* front */
+    }
+
+
+    post_processing
     {
         Definition_champs
         {
+            rhoY Transformation
+            {
+                methode formule expression 1 rho*fm
+                sources
+                {
+                    refChamp { Pb_champ pb fraction_massique nom_source fm } ,
+                    refChamp { Pb_champ pb masse_volumique nom_source rho }
+                }
+            }
 
-          y_wall Interpolation
-          {
-             localisation elem
-             domaine dom_boundaries_ame
-             source refChamp { Pb_champ pb fraction_massique }
-          }
-          
-          rho_wall Interpolation
-          {
-             localisation elem
-             domaine dom_boundaries_ame
-             source refChamp { Pb_champ pb masse_volumique }
-          }
+            rhoo Transformation
+            {
+                methode formule expression 1 rho
+                sources
+                {
+                    refChamp { Pb_champ pb masse_volumique nom_source rho }
+                }
+            }
 
-        }  
-        domaine dom_boundaries_ame
-        fichier bound_ame 
-        format LATA
-        fields dt_post 0.05
+
+            total_rhoY reduction_0D { methode weighted_sum sources_reference { rhoY } }
+            total_rhoo reduction_0D { methode weighted_sum sources_reference { rhoo } }
+
+        } /* end Definition_champs */
+
+        probes
         {
-            y_wall elem
+            total_rhoY_mass total_rhoY periode 1e-3 Numero_elem_sur_maitre 0
+            total_rhoo_mass total_rhoo periode 1e-3 Numero_elem_sur_maitre 0
         }
-    } /* front */
-	}
-    
-    
-    post_processing 
-    {
-    	Definition_champs
-    	{
-    	  rhoY Transformation
-    	  {
-    	    methode formule expression 1 rho*fm
-    	    sources
-    	    {
-    	    refChamp { Pb_champ pb fraction_massique nom_source fm } ,
-    	    refChamp { Pb_champ pb masse_volumique nom_source rho }
-    	    }
-    	  }
 
-    	  rhoo Transformation
-    	  {
-    	    methode formule expression 1 rho
-    	    sources
-    	    {
-    	    refChamp { Pb_champ pb masse_volumique nom_source rho }
-    	    }
-    	  }
-    	  
-
-    	  total_rhoY reduction_0D { methode weighted_sum sources_reference { rhoY } }
-    	  total_rhoo reduction_0D { methode weighted_sum sources_reference { rhoo } }
-
-    	} /* end Definition_champs */
-
-    	probes
-    	{
-    	  total_rhoY_mass total_rhoY periode 1e-3 Numero_elem_sur_maitre 0
-    	  total_rhoo_mass total_rhoo periode 1e-3 Numero_elem_sur_maitre 0
-    	}
-
-    	format lml 
-    	Champs dt_post 0.05
-    	{
-    	    fraction_massique elem
-    	    vitesse elem 
-    	    masse_volumique som
-    	    source_masse_espece elem
-    	    Source_masse_projection elem
-    	}
-     }  /* volume */
+        format lml
+        Champs dt_post 0.05
+        {
+            fraction_massique elem
+            vitesse elem
+            masse_volumique som
+            source_masse_espece elem
+            Source_masse_projection elem
+        }
+    }  /* volume */
 }
 
 Resoudre pb

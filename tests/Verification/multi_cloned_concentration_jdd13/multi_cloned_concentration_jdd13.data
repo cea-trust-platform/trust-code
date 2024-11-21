@@ -73,7 +73,7 @@ Read pb
     Constituant
     {
         coefficient_diffusion champ_uniforme 4 0.000262 0.00262 0.0262 0.262
-     }
+    }
 
     Navier_Stokes_standard
     {
@@ -127,9 +127,9 @@ Read pb
         probes
         {
             c0 grav concentration0 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
- 		c1 grav concentration1 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
- 		c2 grav concentration2 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
-        c3 grav concentration3 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+            c1 grav concentration1 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+            c2 grav concentration2 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
+            c3 grav concentration3 periode 1e8 segment 500 0 5e-3 1e-2 5e-3
         }
         format lml
         fields dt_post 0.1
@@ -139,8 +139,8 @@ Read pb
             diffusivite_thermique	elem
             coefficient_diffusion0 	elem
             concentration1      elem
-            coefficient_diffusion1 elem 
-	    concentration2      elem
+            coefficient_diffusion1 elem
+            concentration2      elem
             coefficient_diffusion2 elem #
         }
     }

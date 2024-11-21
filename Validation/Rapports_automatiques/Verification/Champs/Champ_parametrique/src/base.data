@@ -91,28 +91,28 @@ Read pb
     }
     Postraitements
     {
-      lata 
-      {
-        probes
+        lata
         {
-            T temperature periode 0.01 points 1 0.0045 0.0045
+            probes
+            {
+                T temperature periode 0.01 points 1 0.0045 0.0045
+            }
+            format lata
+            fields dt_post 10
+            {
+                vitesse elem
+                temperature elem
+            }
         }
-        format lata
-        fields dt_post 10
+        med
         {
-            vitesse elem
-            temperature elem
+            format med
+            fields dt_post 10
+            {
+                vitesse elem
+                temperature elem
+            }
         }
-      }
-      med 
-      {
-        format med
-        fields dt_post 10
-        {
-            vitesse elem
-            temperature elem
-        }
-      }
     }
 }
 Solve pb

@@ -6,39 +6,39 @@ Domaine dom
 
 # BEGIN MESH #
 Read_file ../../Marche3D.geo ;
-Regroupebord dom WALL 
-{              
-    Haut1  
-    Haut2  
-    Haut3  
-    Bas2  
-    Gauche  
-    Bas3  
-    Sud1  
-    Nord1  
-    Sud2  
-    Nord2  
-    Sud3  
-    Nord3  
-    Sud4  
-    Nord4  
-    Sud5 
-    Nord5  
+Regroupebord dom WALL
+{
+    Haut1
+    Haut2
+    Haut3
+    Bas2
+    Gauche
+    Bas3
+    Sud1
+    Nord1
+    Sud2
+    Nord2
+    Sud3
+    Nord3
+    Sud4
+    Nord4
+    Sud5
+    Nord5
 }
 
-Regroupebord dom SORTIE 
-{             
-    SortieBasse  
-    SortieHaute    
+Regroupebord dom SORTIE
+{
+    SortieBasse
+    SortieHaute
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool tranche { tranches 4 1 1 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool tranche { tranches 4 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #

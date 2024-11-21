@@ -115,13 +115,13 @@ Lire pb
     }
     Postraitement
     {
-            format lml
-            Champs dt_post 1
-            {
-                vitesse elem
-                masse_volumique elem
-                u_star som
-            }
+        format lml
+        Champs dt_post 1
+        {
+            vitesse elem
+            masse_volumique elem
+            u_star som
+        }
     }
 }
 

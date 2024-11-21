@@ -80,7 +80,7 @@ Lire pb
 {
 
     fluide_incompressible
-	{
+    {
         mu champ_uniforme 1 2e-2
         rho champ_uniforme 1 1000.0
     }
@@ -102,7 +102,7 @@ Lire pb
     Postraitement
     {
         sondes
-		{
+        {
             vitesse	grav	vitesse		periode 1e8 segment 10    95 0.05    95 0.95
             u		VitesseX		periode 1e8 position_like vitesse
             y_plus		y_plus			periode 1e8 segment 40    1.25 0.05    98.75 0.05

@@ -7,21 +7,21 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-        {
+    Pave Entree
+    {
         Origine 10. 0. 0.
         Nombre_de_Noeuds 11 3 3
         /* Nombre_de_Noeuds 161 17 17 */
         Longueurs 10 1 1
-        }
-        {
+    }
+    {
         Bord extlat X = 10.  0. <= Y <= 1. 0. <= Z <= 1.
         Bord extlat X = 20.  0. <= Y <= 1. 0. <= Z <= 1.
         Bord haut   Y = 0.  10. <= X <= 20. 0. <= Z <= 1.
         Bord bas    Y = 1.  10. <= X <= 20. 0. <= Z <= 1.
         Bord sym1   Z = 0.  10. <= X <= 20. 0. <= Y <= 1.
         Bord sym2   Z = 1.  10. <= X <= 20. 0. <= Y <= 1.
-        }
+    }
 }
 Tetraedriser_homogene dom
 # END MESH #
@@ -42,23 +42,23 @@ END SCATTER #
 
 VEFPreP1B dis
 
-runge_kutta_ordre_3 sch_ex 
+runge_kutta_ordre_3 sch_ex
 Read sch_ex
 {
-nb_pas_dt_max 10
-        tinit 0.0
-        tmax 10000
-        dt_min 1.e-11
-        # dt_max 5. #
-        # dt_max 2. #
-        dt_max 1.e-2
-        dt_impr 1.e-2
-        dt_sauv 1.
-        dt_start dt_calc
-        seuil_statio 1.e-8
-        facsec 1
-        diffusion_implicite 1
-	tcpumax 20		/* Le calcul s'arretera proprement apres n heures */
+    nb_pas_dt_max 10
+    tinit 0.0
+    tmax 10000
+    dt_min 1.e-11
+    # dt_max 5. #
+    # dt_max 2. #
+    dt_max 1.e-2
+    dt_impr 1.e-2
+    dt_sauv 1.
+    dt_start dt_calc
+    seuil_statio 1.e-8
+    facsec 1
+    diffusion_implicite 1
+    tcpumax 20		/* Le calcul s'arretera proprement apres n heures */
 }
 
 
@@ -71,382 +71,382 @@ Discretize pb dis
 
 Lire pb
 {
-	# PARAMETRES PHYSIQUES DE L'OxYDE -SFR (30% Pu pour les temperature) a 2985 K (reduit de 3228 K) #
-        Fluide_Incompressible 
-        {
-        gravite champ_uniforme 3 0. -9.81 0. 
-	mu	Champ_Uniforme 1 4.13e-3 # Pa/s #
-	rho	Champ_Uniforme 1 8516. # kg/m3 #
-	lambda	Champ_Uniforme 1 3.35 # W/m/K # 
-	Cp	Champ_Uniforme 1 485. # J/kg/K #
-	beta_th	Champ_Uniforme 1 1.02e-4 # K^-1 # 
+    # PARAMETRES PHYSIQUES DE L'OxYDE -SFR (30% Pu pour les temperature) a 2985 K (reduit de 3228 K) #
+    Fluide_Incompressible
+    {
+        gravite champ_uniforme 3 0. -9.81 0.
+        mu	Champ_Uniforme 1 4.13e-3 # Pa/s #
+        rho	Champ_Uniforme 1 8516. # kg/m3 #
+        lambda	Champ_Uniforme 1 3.35 # W/m/K #
+        Cp	Champ_Uniforme 1 485. # J/kg/K #
+        beta_th	Champ_Uniforme 1 1.02e-4 # K^-1 #
         # Pr = 0.598 #
+    }
+    Navier_Stokes_Standard
+    {
+        # solveur_pression petsc Cholesky { } #
+        # solveur_pression GCP { seuil 1.e-10 impr precond ssor { omega 1.55 } } #
+        solveur_pression petsc_gpu GCP { seuil 1.e-10 impr precond boomeramg { } }
+        convection { EF_stab { alpha 0.2 } }
+        diffusion { }
+        sources { boussinesq_temperature { T0 2985. verif_boussinesq 0 }  }
+
+        conditions_initiales
+        {
+            vitesse Champ_Uniforme 3 0. 0. 0.
         }
-	Navier_Stokes_Standard
-	{
-               # solveur_pression petsc Cholesky { } #
-               # solveur_pression GCP { seuil 1.e-10 impr precond ssor { omega 1.55 } } #
- 		solveur_pression petsc_gpu GCP { seuil 1.e-10 impr precond boomeramg { } }
-		convection { EF_stab { alpha 0.2 } }
-		diffusion { }
-		sources { boussinesq_temperature { T0 2985. verif_boussinesq 0 }  }
-		
-		conditions_initiales
-		{
-			vitesse Champ_Uniforme 3 0. 0. 0.
-		}
-		
-		conditions_limites
-		{
-			haut 	 paroi_fixe
-			bas 	 paroi_fixe
-			extlat	 paroi_fixe
-			sym2	 symetrie
-			sym1	 symetrie
-		}
-	} # fin Navier Stokes #
-	
-	
-	
-	Convection_Diffusion_Temperature
-	{
-		convection { EF_stab { alpha 0.5 } }
-		diffusion { }
-		# Puissance volumique 5.81e3 kW.m-3 pour un volume de 0.00424743m3 #
-		sources { Puissance_Thermique valeur_totale_sur_volume dom 1 { defaut 24834.0 } } 
 
-		conditions_initiales
-		{
-			Temperature Champ_Uniforme 1 2985.
-		}
-		
-		conditions_limites
-		{
-			haut 	  paroi_temperature_imposee Champ_front_Uniforme 1 2978.
-			bas 	  paroi_temperature_imposee Champ_front_Uniforme 1 2978.
-			extlat    paroi_temperature_imposee Champ_front_Uniforme 1 2978.
-			sym2      symetrie
-			sym1      symetrie
-		}
-	} # fin convection diffusion #
-	 
-	Liste_postraitements
-	{
-	postraitement INST  {
-				Definition_champs	{
-							vitesse_max	reduction_0D	{ methode max source refChamp { Pb_champ pb vitesse } }
-							temperature_max	reduction_0D	{ methode max source refChamp { Pb_champ pb temperature } }
-							temperature_moy reduction_0D	{ methode moyenne_ponderee source refChamp { Pb_champ pb temperature } }
+        conditions_limites
+        {
+            haut 	 paroi_fixe
+            bas 	 paroi_fixe
+            extlat	 paroi_fixe
+            sym2	 symetrie
+            sym1	 symetrie
+        }
+    } # fin Navier Stokes #
 
-                                                        # Derivees de vitesse dui/dxj #
-                                                        du_dx           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        du_dy           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        du_dz           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dv_dx           transformation  { methode composante numero 3 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dv_dy           transformation  { methode composante numero 4 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dv_dz           transformation  { methode composante numero 5 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dw_dx           transformation  { methode composante numero 6 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dw_dy           transformation  { methode composante numero 7 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dw_dz           transformation  { methode composante numero 8 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
 
-                                                        # max rate of change in velocity #
-                                                        maxGradU         transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 sqrt(du_dx^2+du_dy^2+du_dz^2+dv_dx^2+dv_dy^2+dv_dz^2+dw_dx^2+dw_dy^2+dw_dz^2)
-                                                                                        localisation elem
-                                                                                        sources_reference { du_dx , du_dy , du_dz , dv_dx , dv_dy , dv_dz , dw_dx , dw_dy , dw_dz }
-                                                                                        }
-							
-                                                        # Derivees de temperature dTi/dxj #
-                                                        dT_dx           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb gradient_temperature } } }
-                                                        dT_dy           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb gradient_temperature } } }
-                                                        dT_dz           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb gradient_temperature } } }
-                                                        # max rate of change in temperature #
-                                                        maxGradT         transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 sqrt(dT_dx^2+dT_dy^2+dT_dz^2)
-                                                                                        localisation elem
-                                                                                        sources_reference { dT_dx , dT_dy , dT_dz }
-                                                                                        }
 
-                                                        # Composantes de vitesse (ux, uy, uz) #
-                                                        u_x           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb vitesse } } }
-                                                        u_y           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb vitesse } } }
-                                                        u_z           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb vitesse } } }
+    Convection_Diffusion_Temperature
+    {
+        convection { EF_stab { alpha 0.5 } }
+        diffusion { }
+        # Puissance volumique 5.81e3 kW.m-3 pour un volume de 0.00424743m3 #
+        sources { Puissance_Thermique valeur_totale_sur_volume dom 1 { defaut 24834.0 } }
 
-                                                        # Euclidean norm of velocity #
-                                                        U_L2norm         transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 sqrt(u_x^2+u_y^2+u_z^2)
-                                                                                        localisation elem
-                                                                                        sources_reference { u_x , u_y , u_z }
-                                                                                        }
-							vitesse_L2normMax	reduction_0D	{ methode max sources_reference { U_L2norm } }
-							}
-				Format lata
-				Champs binaire dt_post 1e+6
-							{
-							vitesse elem
-							temperature elem
-							y_plus elem
-							vorticite elem
-							gradient_vitesse elem
-							Gradient_temperature elem
-							maxGradU elem
-							maxGradT elem
-			 				}
+        conditions_initiales
+        {
+            Temperature Champ_Uniforme 1 2985.
+        }
 
-				Sondes			{
-							Tmax temperature_max periode 0.01 numero_elem_sur_maitre 0
-							Tmoy temperature_moy periode 0.01 numero_elem_sur_maitre 0
-							Vmax vitesse_max periode 0.01 numero_elem_sur_maitre 0
-							KEtotal energie_cinetique_totale periode 0.01 numero_elem_sur_maitre 0
-							UL2normMax vitesse_L2normMax periode 0.01 numero_elem_sur_maitre 0
-							#  #
+        conditions_limites
+        {
+            haut 	  paroi_temperature_imposee Champ_front_Uniforme 1 2978.
+            bas 	  paroi_temperature_imposee Champ_front_Uniforme 1 2978.
+            extlat    paroi_temperature_imposee Champ_front_Uniforme 1 2978.
+            sym2      symetrie
+            sym1      symetrie
+        }
+    } # fin convection diffusion #
 
-							# profils verticaux dans la hauteur #
-							vitesse_prof_vertical_milieu 	vitesse 	periode 1e-6 segment 50 0.5 0 0. 0.5 0.04 0.  # xdeb ydeb zdeb xfin yfin zfin  #
-							temperature_prof_vertical_milieu	temperature	periode 1e-6 position_like vitesse_prof_vertical_milieu
-							vitesse_prof_vertical_x1    vitesse 	periode 1e-6 segment 50 0.6126 0. -0.065016 0.6126 0.04 -0.065016  # xdeb zdeb ydeb xfin zfin yfin  #
-							temperature_prof_vertical_x1	temperature	periode 1e-6 position_like vitesse_prof_vertical_x1
-							vitesse_prof_vertical_x2    vitesse 	periode 1e-6 segment 50 0.7252 0. -0.1300 0.7252 0.04 -0.1300 # xdeb zdeb ydeb xfin zfin yfin  #
-							temperature_prof_vertical_x2	temperature	periode 1e-6 position_like vitesse_prof_vertical_x2
-							vitesse_prof_vertical_x3    vitesse 	periode 1e-6 segment 50 0.8378 0 -0.19505 0.8375 0.04 -0.19505 # xdeb zdeb ydeb xfin zfin yfin  #
-							temperature_prof_vertical_x3	temperature	periode 1e-6 position_like vitesse_prof_vertical_x3
+    Liste_postraitements
+    {
+        postraitement INST  {
+            Definition_champs	{
+                vitesse_max	reduction_0D	{ methode max source refChamp { Pb_champ pb vitesse } }
+                temperature_max	reduction_0D	{ methode max source refChamp { Pb_champ pb temperature } }
+                temperature_moy reduction_0D	{ methode moyenne_ponderee source refChamp { Pb_champ pb temperature } }
 
-                                    # profils horizontaux dans les couches #
-							vitesse_prof_horiz_milieu 	vitesse 	periode 1e-6 segment 100 0.5 0.02 0.  0.8854 0.02 -0.2225 # xdeb zdeb ydeb xfin zfin yfin  #
-							temperature_prof_horiz_milieu	temperature	periode 1e-6 position_like vitesse_prof_horiz_milieu
-							vitesse_prof_horiz_z1 	vitesse 	periode 1e-6 segment 100 0.5 0.01 0.  0.8616 0.01 -0.20878 # xdeb zdeb ydeb xfin zfin yfin  #
-							temperature_prof_horiz_z1	temperature	periode 1e-6 position_like vitesse_prof_horiz_z1
-							vitesse_prof_horiz_z2 	vitesse 	periode 1e-6 segment 100 0.5 0.03 0.  0.9092 0.03 -0.23626 # xdeb zdeb ydeb xfin zfin yfin  #
-							temperature_prof_horiz_z2	temperature	periode 1e-6 position_like vitesse_prof_horiz_z2
-			 				}    
-			} # fin ptraitement INST #	
+                # Derivees de vitesse dui/dxj #
+                du_dx           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                du_dy           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                du_dz           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dv_dx           transformation  { methode composante numero 3 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dv_dy           transformation  { methode composante numero 4 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dv_dz           transformation  { methode composante numero 5 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dw_dx           transformation  { methode composante numero 6 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dw_dy           transformation  { methode composante numero 7 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dw_dz           transformation  { methode composante numero 8 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+
+                # max rate of change in velocity #
+                maxGradU         transformation  {
+                    methode formule
+                    expression 1 sqrt(du_dx^2+du_dy^2+du_dz^2+dv_dx^2+dv_dy^2+dv_dz^2+dw_dx^2+dw_dy^2+dw_dz^2)
+                    localisation elem
+                    sources_reference { du_dx , du_dy , du_dz , dv_dx , dv_dy , dv_dz , dw_dx , dw_dy , dw_dz }
+                }
+
+                # Derivees de temperature dTi/dxj #
+                dT_dx           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb gradient_temperature } } }
+                dT_dy           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb gradient_temperature } } }
+                dT_dz           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb gradient_temperature } } }
+                # max rate of change in temperature #
+                maxGradT         transformation  {
+                    methode formule
+                    expression 1 sqrt(dT_dx^2+dT_dy^2+dT_dz^2)
+                    localisation elem
+                    sources_reference { dT_dx , dT_dy , dT_dz }
+                }
+
+                # Composantes de vitesse (ux, uy, uz) #
+                u_x           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb vitesse } } }
+                u_y           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb vitesse } } }
+                u_z           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb vitesse } } }
+
+                # Euclidean norm of velocity #
+                U_L2norm         transformation  {
+                    methode formule
+                    expression 1 sqrt(u_x^2+u_y^2+u_z^2)
+                    localisation elem
+                    sources_reference { u_x , u_y , u_z }
+                }
+                vitesse_L2normMax	reduction_0D	{ methode max sources_reference { U_L2norm } }
+            }
+            Format lata
+            Champs binaire dt_post 1e+6
+            {
+                vitesse elem
+                temperature elem
+                y_plus elem
+                vorticite elem
+                gradient_vitesse elem
+                Gradient_temperature elem
+                maxGradU elem
+                maxGradT elem
+            }
+
+            Sondes			{
+                Tmax temperature_max periode 0.01 numero_elem_sur_maitre 0
+                Tmoy temperature_moy periode 0.01 numero_elem_sur_maitre 0
+                Vmax vitesse_max periode 0.01 numero_elem_sur_maitre 0
+                KEtotal energie_cinetique_totale periode 0.01 numero_elem_sur_maitre 0
+                UL2normMax vitesse_L2normMax periode 0.01 numero_elem_sur_maitre 0
+                #  #
+
+                # profils verticaux dans la hauteur #
+                vitesse_prof_vertical_milieu 	vitesse 	periode 1e-6 segment 50 0.5 0 0. 0.5 0.04 0.  # xdeb ydeb zdeb xfin yfin zfin  #
+                temperature_prof_vertical_milieu	temperature	periode 1e-6 position_like vitesse_prof_vertical_milieu
+                vitesse_prof_vertical_x1    vitesse 	periode 1e-6 segment 50 0.6126 0. -0.065016 0.6126 0.04 -0.065016  # xdeb zdeb ydeb xfin zfin yfin  #
+                temperature_prof_vertical_x1	temperature	periode 1e-6 position_like vitesse_prof_vertical_x1
+                vitesse_prof_vertical_x2    vitesse 	periode 1e-6 segment 50 0.7252 0. -0.1300 0.7252 0.04 -0.1300 # xdeb zdeb ydeb xfin zfin yfin  #
+                temperature_prof_vertical_x2	temperature	periode 1e-6 position_like vitesse_prof_vertical_x2
+                vitesse_prof_vertical_x3    vitesse 	periode 1e-6 segment 50 0.8378 0 -0.19505 0.8375 0.04 -0.19505 # xdeb zdeb ydeb xfin zfin yfin  #
+                temperature_prof_vertical_x3	temperature	periode 1e-6 position_like vitesse_prof_vertical_x3
+
+                # profils horizontaux dans les couches #
+                vitesse_prof_horiz_milieu 	vitesse 	periode 1e-6 segment 100 0.5 0.02 0.  0.8854 0.02 -0.2225 # xdeb zdeb ydeb xfin zfin yfin  #
+                temperature_prof_horiz_milieu	temperature	periode 1e-6 position_like vitesse_prof_horiz_milieu
+                vitesse_prof_horiz_z1 	vitesse 	periode 1e-6 segment 100 0.5 0.01 0.  0.8616 0.01 -0.20878 # xdeb zdeb ydeb xfin zfin yfin  #
+                temperature_prof_horiz_z1	temperature	periode 1e-6 position_like vitesse_prof_horiz_z1
+                vitesse_prof_horiz_z2 	vitesse 	periode 1e-6 segment 100 0.5 0.03 0.  0.9092 0.03 -0.23626 # xdeb zdeb ydeb xfin zfin yfin  #
+                temperature_prof_horiz_z2	temperature	periode 1e-6 position_like vitesse_prof_horiz_z2
+            }
+        } # fin ptraitement INST #
 
         # post-traitement des statistiques en temps #
-	postraitement STATS	{
-				Definition_champs	{
-							MOY_yplus	moyenne		{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
-							EC_yplus	ecart_type	{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
-							MOY_vitesse	moyenne		{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
-							EC_vitesse	ecart_type	{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
-							MOY_temperature	moyenne		{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
-							EC_temperature	ecart_type	{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
+        postraitement STATS	{
+            Definition_champs	{
+                MOY_yplus	moyenne		{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
+                EC_yplus	ecart_type	{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
+                MOY_vitesse	moyenne		{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
+                EC_vitesse	ecart_type	{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
+                MOY_temperature	moyenne		{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
+                EC_temperature	ecart_type	{ t_deb 0.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
 
-                          } # fin def champs #
-							 
-				 Sondes			{
-                                     # grandeur temporelle moyenne # 
-                                                        tempo_Tmoy  MOY_temperature  periode 0.1 numero_elem_sur_maitre 0
-                                                        tempo_Vmoy  MOY_vitesse  periode 0.1 numero_elem_sur_maitre 0
+            } # fin def champs #
 
-                                                        } # fin sondes #
-				Format lata
-				Fichier Cas0_DNS
-				Champs dt_post 1e6	{
-							MOY_vitesse elem
-							EC_vitesse elem
-							MOY_temperature elem
-							EC_temperature elem
-							vitesse elem
-							pression elem
-							volume_maille
-							}
-							
-             } # fin ptraitement STATS # 
+            Sondes			{
+                # grandeur temporelle moyenne #
+                tempo_Tmoy  MOY_temperature  periode 0.1 numero_elem_sur_maitre 0
+                tempo_Vmoy  MOY_vitesse  periode 0.1 numero_elem_sur_maitre 0
 
-       # post-traitement des statistiques en temps pendant la phase stationnaire #
+            } # fin sondes #
+            Format lata
+            Fichier Cas0_DNS
+            Champs dt_post 1e6	{
+                MOY_vitesse elem
+                EC_vitesse elem
+                MOY_temperature elem
+                EC_temperature elem
+                vitesse elem
+                pression elem
+                volume_maille
+            }
+
+        } # fin ptraitement STATS #
+
+        # post-traitement des statistiques en temps pendant la phase stationnaire #
         postraitement STATS_STATIONNAIRE     {
-                                Definition_champs       {
-                                                        STAT_MOY_yplus       moyenne         { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
-                                                        STAT_EC_yplus        ecart_type      { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
-                                                        STAT_MOY_vitesse     moyenne         { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
-                                                        STAT_EC_vitesse      ecart_type      { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
-                                                        STAT_MOY_temperature moyenne         { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
-                                                        STAT_EC_temperature  ecart_type      { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
+            Definition_champs       {
+                STAT_MOY_yplus       moyenne         { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
+                STAT_EC_yplus        ecart_type      { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb y_plus } }
+                STAT_MOY_vitesse     moyenne         { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
+                STAT_EC_vitesse      ecart_type      { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb vitesse } }
+                STAT_MOY_temperature moyenne         { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
+                STAT_EC_temperature  ecart_type      { t_deb 120.0 t_fin 1e6 source refChamp { Pb_champ pb temperature } }
 
-                                                        # Fluctuation de vitesse #
-                                                        FLUCT_vitesse transformation {
-                                                                                        methode formule expression 1 U-UMOY
-                                                                                        localisation elem
-                                                                                        sources {
-                                                                                                refChamp { Pb_champ pb vitesse nom_source U } ,
-                                                                                                moyenne { t_deb 120.0 t_fin 1e+06 source refChamp { Pb_champ pb vitesse } nom_source UMOY }
-                                                                                                }
-                                                                                        }
+                # Fluctuation de vitesse #
+                FLUCT_vitesse transformation {
+                    methode formule expression 1 U-UMOY
+                    localisation elem
+                    sources {
+                        refChamp { Pb_champ pb vitesse nom_source U } ,
+                        moyenne { t_deb 120.0 t_fin 1e+06 source refChamp { Pb_champ pb vitesse } nom_source UMOY }
+                    }
+                }
 
-                                                        # Derivees de vitesse dui/dxj #
-                                                        du_dx2           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        du_dy2           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        du_dz2           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dv_dx2           transformation  { methode composante numero 3 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dv_dy2           transformation  { methode composante numero 4 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dv_dz2           transformation  { methode composante numero 5 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dw_dx2           transformation  { methode composante numero 6 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dw_dy2           transformation  { methode composante numero 7 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
-                                                        dw_dz2           transformation  { methode composante numero 8 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                # Derivees de vitesse dui/dxj #
+                du_dx2           transformation  { methode composante numero 0 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                du_dy2           transformation  { methode composante numero 1 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                du_dz2           transformation  { methode composante numero 2 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dv_dx2           transformation  { methode composante numero 3 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dv_dy2           transformation  { methode composante numero 4 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dv_dz2           transformation  { methode composante numero 5 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dw_dx2           transformation  { methode composante numero 6 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dw_dy2           transformation  { methode composante numero 7 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
+                dw_dz2           transformation  { methode composante numero 8 localisation elem sources { refChamp { Pb_champ pb gradient_vitesse } } }
 
-                                                        # Moyenne des derivees de vitesse < dui/dxj> #
-                                                        MOY_du_dx       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { du_dx2 } }
-                                                        MOY_du_dy       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { du_dy2 } }
-                                                        MOY_du_dz       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { du_dz2 } }
-                                                        MOY_dv_dx       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dv_dx2 } }
-                                                        MOY_dv_dy       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dv_dy2 } }
-                                                        MOY_dv_dz       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dv_dz2 } }
-                                                        MOY_dw_dx       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dw_dx2 } }
-                                                        MOY_dw_dy       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dw_dy2 } }
-                                                        MOY_dw_dz       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dw_dz2 } }
+                # Moyenne des derivees de vitesse < dui/dxj> #
+                MOY_du_dx       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { du_dx2 } }
+                MOY_du_dy       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { du_dy2 } }
+                MOY_du_dz       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { du_dz2 } }
+                MOY_dv_dx       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dv_dx2 } }
+                MOY_dv_dy       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dv_dy2 } }
+                MOY_dv_dz       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dv_dz2 } }
+                MOY_dw_dx       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dw_dx2 } }
+                MOY_dw_dy       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dw_dy2 } }
+                MOY_dw_dz       moyenne         { t_deb 120.0 t_fin 1e6 sources_reference { dw_dz2 } }
 
-                                                        # Ecart-type des derivees de vitesse #
-                                                        EC_du_dx        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { du_dx2 } }
-                                                        EC_du_dy        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { du_dy2 } }
-                                                        EC_du_dz        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { du_dz2 } }
-                                                        EC_dv_dx        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dv_dx2 } }
-                                                        EC_dv_dy        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dv_dy2 } }
-                                                        EC_dv_dz        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dv_dz2 } }
-                                                        EC_dw_dx        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dw_dx2 } }
-                                                        EC_dw_dy        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dw_dy2 } }
-                                                        EC_dw_dz        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dw_dz2 } }
+                # Ecart-type des derivees de vitesse #
+                EC_du_dx        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { du_dx2 } }
+                EC_du_dy        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { du_dy2 } }
+                EC_du_dz        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { du_dz2 } }
+                EC_dv_dx        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dv_dx2 } }
+                EC_dv_dy        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dv_dy2 } }
+                EC_dv_dz        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dv_dz2 } }
+                EC_dw_dx        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dw_dx2 } }
+                EC_dw_dy        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dw_dy2 } }
+                EC_dw_dz        ecart_type      { t_deb 120.0 t_fin 1e6 sources_reference { dw_dz2 } }
 
-                                                        # Energie cinetique turbulente #
-                                                        TKE             transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 0.5*norme_EC_vitesse*norme_EC_vitesse
-                                                                                        sources {
-                                                                                                transformation  {
-                                                                                                                        methode norme
-                                                                                                                        localisation elem
-                                                                                                                        nom_source norme_EC_vitesse
-                                                                                                                        sources_reference { STAT_EC_vitesse }
-                                                                                                                        }
-                                                                                                }
-                                                                                        }
-
-
-
-                                                        # Dissipation turbulente #
-                                                        epsilon         transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 4.85e-07*(EC_du_dx^2+EC_du_dy^2+EC_du_dz^2+EC_dv_dx^2+EC_dv_dy^2+EC_dv_dz^2+EC_dw_dx^2+EC_dw_dy^2+EC_dw_dz^2+1.e-10)
-                                                                                        localisation elem
-                                                                                        sources_reference { EC_du_dx , EC_du_dy , EC_du_dz , EC_dv_dx , EC_dv_dy , EC_dv_dz , EC_dw_dx , EC_dw_dy , EC_dw_dz }
-                                                                                        }
-
-                                                        # Echelle de Taylor #
-                                                        TaylorScale     transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 ((10*4.85e-07*TKE/epsilon)^0.5)
-                                                                                        localisation elem
-                                                                                        sources_reference { TKE , epsilon }
-                                                                                        }
-                                                        # Echelle de Kolmogorov #
-                                                        KolmogorovScale transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 (((4.85e-07)^3/epsilon)^0.25)
-                                                                                        localisation elem
-                                                                                        sources_reference { epsilon }
-                                                                                        }
-
-                                                        # Echelle de Kolmogorov #
-                                                        IntegralScale transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 ((TKE)^1.5/epsilon)
-                                                                                        localisation elem
-                                                                                        sources_reference { TKE , epsilon }
-                                                                                        }
-
-                                                        # Echelle de Batchelor #
-                                                        BatchelorScale transformation  {
-                                                                                        methode formule
-                                                                                        expression 1 (((4.85e-07*(8.11e-07)^2)/epsilon)^0.25)
-                                                                                        localisation elem
-                                                                                        sources_reference { TKE , epsilon }
-                                                                                        }
+                # Energie cinetique turbulente #
+                TKE             transformation  {
+                    methode formule
+                    expression 1 0.5*norme_EC_vitesse*norme_EC_vitesse
+                    sources {
+                        transformation  {
+                            methode norme
+                            localisation elem
+                            nom_source norme_EC_vitesse
+                            sources_reference { STAT_EC_vitesse }
+                        }
+                    }
+                }
 
 
-							k_max	reduction_0D	{ methode max sources_reference { TKE } }
-							k_min	reduction_0D	{ methode min sources_reference { TKE } }
-							k_moy	reduction_0D	{ methode moyenne_ponderee sources_reference { TKE } }
 
-							eps_max	reduction_0D	{ methode max sources_reference { epsilon } }
-							eps_min	reduction_0D	{ methode min sources_reference { epsilon } }
-							eps_moy	reduction_0D	{ methode moyenne_ponderee sources_reference { epsilon } }
+                # Dissipation turbulente #
+                epsilon         transformation  {
+                    methode formule
+                    expression 1 4.85e-07*(EC_du_dx^2+EC_du_dy^2+EC_du_dz^2+EC_dv_dx^2+EC_dv_dy^2+EC_dv_dz^2+EC_dw_dx^2+EC_dw_dy^2+EC_dw_dz^2+1.e-10)
+                    localisation elem
+                    sources_reference { EC_du_dx , EC_du_dy , EC_du_dz , EC_dv_dx , EC_dv_dy , EC_dv_dz , EC_dw_dx , EC_dw_dy , EC_dw_dz }
+                }
 
-                          				} # fin def champs #
+                # Echelle de Taylor #
+                TaylorScale     transformation  {
+                    methode formule
+                    expression 1 ((10*4.85e-07*TKE/epsilon)^0.5)
+                    localisation elem
+                    sources_reference { TKE , epsilon }
+                }
+                # Echelle de Kolmogorov #
+                KolmogorovScale transformation  {
+                    methode formule
+                    expression 1 (((4.85e-07)^3/epsilon)^0.25)
+                    localisation elem
+                    sources_reference { epsilon }
+                }
 
+                # Echelle de Kolmogorov #
+                IntegralScale transformation  {
+                    methode formule
+                    expression 1 ((TKE)^1.5/epsilon)
+                    localisation elem
+                    sources_reference { TKE , epsilon }
+                }
 
-                                 Sondes                 {
-                                     # grandeur temporelle moyenne # 
-                                                        stat_tempo_Tmoy  STAT_MOY_temperature  periode 0.01 numero_elem_sur_maitre 0
-                                                        stat_tempo_Vmoy  STAT_MOY_vitesse  periode 0.01 numero_elem_sur_maitre 0
-
-							KMAX k_max periode 0.01 numero_elem_sur_maitre 0
-							KMIN k_min periode 0.01 numero_elem_sur_maitre 0
-							KMOY k_moy periode 0.01 numero_elem_sur_maitre 0
-							EPSMAX eps_max periode 0.01 numero_elem_sur_maitre 0
-							EPSMIN eps_min periode 0.01 numero_elem_sur_maitre 0
-							EPSMOY eps_moy periode 0.01 numero_elem_sur_maitre 0
-							
-
-                                     # profils verticaux dans la hauteur #
-                                                        stat_moyenne_vitesse_prof_vertical_milieu    STAT_MOY_vitesse     periode 0.1 segment 50 0.5 0 0. 0.5 0.04 0.  # xdeb ydeb zdeb xfin yfin zfin  #
-                                                        stat_moyenne_temperature_prof_vertical_milieu        STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_milieu
-                                                        stat_moyenne_vitesse_prof_vertical_x1    STAT_MOY_vitesse         periode 0.1 segment 50 0.6126 0. -0.065016 0.6126 0.04 -0.065016  # xdeb zdeb ydeb xfin zfin yfin  #
-                                                        stat_moyenne_temperature_prof_vertical_x1    STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x1
-                                                        stat_moyenne_vitesse_prof_vertical_x2    STAT_MOY_vitesse         periode 0.1 segment 50 0.7252 0. -0.1300 0.7252 0.04 -0.1300 # xdeb zdeb ydeb xfin zfin yfin  #
-                                                        stat_moyenne_temperature_prof_vertical_x2    STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x2
-                                                        stat_moyenne_vitesse_prof_vertical_x3    STAT_MOY_vitesse         periode 0.1 segment 50 0.8378 0 -0.19505 0.8375 0.04 -0.19505 # xdeb zdeb ydeb xfin zfin yfin  #
-                                                        stat_moyenne_temperature_prof_vertical_x3    STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x3
-                                                        stat_ecart_type_vitesse_prof_vertical_milieu STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_milieu
-                                                        stat_ecart_type_temperature_prof_vertical_milieu     STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_milieu
-                                                        stat_ecart_type_vitesse_prof_vertical_x1     STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x1
-                                                        stat_ecart_type_temperature_prof_vertical_x1 STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x1
-                                                        stat_ecart_type_vitesse_prof_vertical_x2     STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x2
-                                                        stat_ecart_type_temperature_prof_vertical_x2 STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x2
-                                                        stat_ecart_type_vitesse_prof_vertical_x3     STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x3
-                                                        stat_ecart_type_temperature_prof_vertical_x3 STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x3
-
-                                    # profils horizontaux dans les couches #
-                                                        stat_moyenne_vitesse_prof_horiz_milieu       STAT_MOY_vitesse     periode 0.1 segment 100 0.5 0.02 0.  0.8854 0.02 -0.2225 # xdeb zdeb ydeb xfin zfin yfin  #
-                                                        stat_moyenne_temperature_prof_horiz_milieu       STAT_MOY_temperature     periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_milieu
-                                                        stat_moyenne_vitesse_prof_horiz_z1       STAT_MOY_vitesse periode 0.1 segment 100 0.5 0.01 0. 0.8616 0.01 -0.20878
-                                                        stat_moyenne_temperature_prof_horiz_z1       STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z1
-                                                        stat_moyenne_vitesse_prof_horiz_z2   STAT_MOY_vitesse     periode 0.1 segment 100 0.5 0.03 0.  0.9092 0.03 -0.23626 # xdeb zdeb ydeb xfin zfin yfin  #
-                                                        stat_moyenne_temperature_prof_horiz_z2       STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z2
-                                                        stat_ecart_type_vitesse_prof_horiz_milieu    STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_milieu
-                                                        stat_ecart_type_temperature_prof_horiz_milieu        STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_milieu
-                                                        stat_ecart_type_vitesse_prof_horiz_z1        STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z1
-                                                        stat_ecart_type_temperature_prof_horiz_z1    STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z1
-                                                        stat_ecart_type_vitesse_prof_horiz_z2        STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z2
-                                                        stat_ecart_type_temperature_prof_horiz_z2    STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z2
-                                                        } # fin sondes #
+                # Echelle de Batchelor #
+                BatchelorScale transformation  {
+                    methode formule
+                    expression 1 (((4.85e-07*(8.11e-07)^2)/epsilon)^0.25)
+                    localisation elem
+                    sources_reference { TKE , epsilon }
+                }
 
 
-                          	Format lml
-                                Fichier thermohydraulique_VEF_DNS
-                                Champs dt_post 1e6      {
-                                                        STAT_MOY_vitesse elem
-                                                        STAT_EC_vitesse elem
-                                                        STAT_MOY_temperature elem
-                                                        STAT_EC_temperature elem
-							STAT_MOY_yplus elem
-							STAT_EC_yplus elem
-                                                     	epsilon elem
-                                                        TKE elem
-							FLUCT_vitesse elem
-                                                     	TaylorScale elem
-                                                        KolmogorovScale elem
-							IntegralScale elem
-                                                        BatchelorScale elem
-                                                        volume_maille
-                                                        }
+                k_max	reduction_0D	{ methode max sources_reference { TKE } }
+                k_min	reduction_0D	{ methode min sources_reference { TKE } }
+                k_moy	reduction_0D	{ methode moyenne_ponderee sources_reference { TKE } }
 
-             } # fin ptraitement STATS # 
+                eps_max	reduction_0D	{ methode max sources_reference { epsilon } }
+                eps_min	reduction_0D	{ methode min sources_reference { epsilon } }
+                eps_moy	reduction_0D	{ methode moyenne_ponderee sources_reference { epsilon } }
+
+            } # fin def champs #
 
 
-        } # fin liste ptraitement #
-	Sauvegarde single_hdf DNS_Stationnaire.sauv
+            Sondes                 {
+                # grandeur temporelle moyenne #
+                stat_tempo_Tmoy  STAT_MOY_temperature  periode 0.01 numero_elem_sur_maitre 0
+                stat_tempo_Vmoy  STAT_MOY_vitesse  periode 0.01 numero_elem_sur_maitre 0
+
+                KMAX k_max periode 0.01 numero_elem_sur_maitre 0
+                KMIN k_min periode 0.01 numero_elem_sur_maitre 0
+                KMOY k_moy periode 0.01 numero_elem_sur_maitre 0
+                EPSMAX eps_max periode 0.01 numero_elem_sur_maitre 0
+                EPSMIN eps_min periode 0.01 numero_elem_sur_maitre 0
+                EPSMOY eps_moy periode 0.01 numero_elem_sur_maitre 0
+
+
+                # profils verticaux dans la hauteur #
+                stat_moyenne_vitesse_prof_vertical_milieu    STAT_MOY_vitesse     periode 0.1 segment 50 0.5 0 0. 0.5 0.04 0.  # xdeb ydeb zdeb xfin yfin zfin  #
+                stat_moyenne_temperature_prof_vertical_milieu        STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_milieu
+                stat_moyenne_vitesse_prof_vertical_x1    STAT_MOY_vitesse         periode 0.1 segment 50 0.6126 0. -0.065016 0.6126 0.04 -0.065016  # xdeb zdeb ydeb xfin zfin yfin  #
+                stat_moyenne_temperature_prof_vertical_x1    STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x1
+                stat_moyenne_vitesse_prof_vertical_x2    STAT_MOY_vitesse         periode 0.1 segment 50 0.7252 0. -0.1300 0.7252 0.04 -0.1300 # xdeb zdeb ydeb xfin zfin yfin  #
+                stat_moyenne_temperature_prof_vertical_x2    STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x2
+                stat_moyenne_vitesse_prof_vertical_x3    STAT_MOY_vitesse         periode 0.1 segment 50 0.8378 0 -0.19505 0.8375 0.04 -0.19505 # xdeb zdeb ydeb xfin zfin yfin  #
+                stat_moyenne_temperature_prof_vertical_x3    STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x3
+                stat_ecart_type_vitesse_prof_vertical_milieu STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_milieu
+                stat_ecart_type_temperature_prof_vertical_milieu     STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_milieu
+                stat_ecart_type_vitesse_prof_vertical_x1     STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x1
+                stat_ecart_type_temperature_prof_vertical_x1 STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x1
+                stat_ecart_type_vitesse_prof_vertical_x2     STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x2
+                stat_ecart_type_temperature_prof_vertical_x2 STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x2
+                stat_ecart_type_vitesse_prof_vertical_x3     STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x3
+                stat_ecart_type_temperature_prof_vertical_x3 STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_vertical_x3
+
+                # profils horizontaux dans les couches #
+                stat_moyenne_vitesse_prof_horiz_milieu       STAT_MOY_vitesse     periode 0.1 segment 100 0.5 0.02 0.  0.8854 0.02 -0.2225 # xdeb zdeb ydeb xfin zfin yfin  #
+                stat_moyenne_temperature_prof_horiz_milieu       STAT_MOY_temperature     periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_milieu
+                stat_moyenne_vitesse_prof_horiz_z1       STAT_MOY_vitesse periode 0.1 segment 100 0.5 0.01 0. 0.8616 0.01 -0.20878
+                stat_moyenne_temperature_prof_horiz_z1       STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z1
+                stat_moyenne_vitesse_prof_horiz_z2   STAT_MOY_vitesse     periode 0.1 segment 100 0.5 0.03 0.  0.9092 0.03 -0.23626 # xdeb zdeb ydeb xfin zfin yfin  #
+                stat_moyenne_temperature_prof_horiz_z2       STAT_MOY_temperature periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z2
+                stat_ecart_type_vitesse_prof_horiz_milieu    STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_milieu
+                stat_ecart_type_temperature_prof_horiz_milieu        STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_milieu
+                stat_ecart_type_vitesse_prof_horiz_z1        STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z1
+                stat_ecart_type_temperature_prof_horiz_z1    STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z1
+                stat_ecart_type_vitesse_prof_horiz_z2        STAT_EC_vitesse      periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z2
+                stat_ecart_type_temperature_prof_horiz_z2    STAT_EC_temperature  periode 0.1 position_like stat_moyenne_vitesse_prof_horiz_z2
+            } # fin sondes #
+
+
+            Format lml
+            Fichier thermohydraulique_VEF_DNS
+            Champs dt_post 1e6      {
+                STAT_MOY_vitesse elem
+                STAT_EC_vitesse elem
+                STAT_MOY_temperature elem
+                STAT_EC_temperature elem
+                STAT_MOY_yplus elem
+                STAT_EC_yplus elem
+                epsilon elem
+                TKE elem
+                FLUCT_vitesse elem
+                TaylorScale elem
+                KolmogorovScale elem
+                IntegralScale elem
+                BatchelorScale elem
+                volume_maille
+            }
+
+        } # fin ptraitement STATS #
+
+
+    } # fin liste ptraitement #
+    Sauvegarde single_hdf DNS_Stationnaire.sauv
 } # fin lire #
 
 EcritureLectureSpecial 0

@@ -134,11 +134,11 @@ Read pbF1
             interface   	paroi_contact pbG interface
         }
         ecrire_fichier_xyz_valeur
-	{
-	    dt 1.
-	    fields 1 temperature
-	    boundaries 2 interface BasF 
-	}
+        {
+            dt 1.
+            fields 1 temperature
+            boundaries 2 interface BasF
+        }
     }
 
     Post_processing

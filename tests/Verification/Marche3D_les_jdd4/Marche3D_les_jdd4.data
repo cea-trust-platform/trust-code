@@ -6,30 +6,30 @@ Domaine dom
 
 # BEGIN MESH #
 Read_file Marche3D.geo ;
-Regroupebord dom WALL 
-{              
-    Haut1  
-    Haut2  
-    Haut3  
-    Bas2  
-    Gauche  
-    Bas3  
-    Sud1  
-    Nord1  
-    Sud2  
-    Nord2  
-    Sud3  
-    Nord3  
-    Sud4  
-    Nord4  
-    Sud5 
-    Nord5  
+Regroupebord dom WALL
+{
+    Haut1
+    Haut2
+    Haut3
+    Bas2
+    Gauche
+    Bas3
+    Sud1
+    Nord1
+    Sud2
+    Nord2
+    Sud3
+    Nord3
+    Sud4
+    Nord4
+    Sud5
+    Nord5
 }
 
-Regroupebord dom SORTIE 
-{             
-    SortieBasse  
-    SortieHaute    
+Regroupebord dom SORTIE
+{
+    SortieBasse
+    SortieHaute
 }
 Polyedriser dom
 # END MESH #
@@ -37,9 +37,9 @@ Polyedriser dom
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool tranche { tranches 4 1 1 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool tranche { tranches 4 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -116,7 +116,7 @@ Lire pb
             Bas1 Paroi
             WALL Paroi
             SORTIE frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-            Entree frontiere_ouverte a_ext Champ_Front_Uniforme 1 1 
+            Entree frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
         }
     }
     Energie_Multiphase

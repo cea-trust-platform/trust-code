@@ -70,8 +70,8 @@ Associate down dom1
 Lire down { fonction_sous_zone y[1 }
 
 
-Scheme_euler_implicit sch
-Read sch
+            Scheme_euler_implicit sch
+            Read sch
 {
     tinit 0
 	nb_pas_dt_max 3

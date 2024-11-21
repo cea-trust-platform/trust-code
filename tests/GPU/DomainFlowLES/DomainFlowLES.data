@@ -17,21 +17,21 @@ Domaine dom
 # BEGIN MESH #
 Mailler box
 {
-        Pave Entree
-        {
+    Pave Entree
+    {
         Origine 0. 0. 0.
         Nombre_de_Noeuds 11 3 3
         /* Nombre_de_Noeuds 161 17 17 */
         Longueurs 10 1 1
-        }
-        {
+    }
+    {
         Bord perio  X = 0.  0. <= Y <= 1. 0. <= Z <= 1.
         Bord perio  X = 10. 0. <= Y <= 1. 0. <= Z <= 1.
         Bord Top    Y = 0.  0. <= X <= 10. 0. <= Z <= 1.
         Bord Bottom Y = 1.  0. <= X <= 10. 0. <= Z <= 1.
         Bord Perioz Z = 0.  0. <= X <= 10. 0. <= Y <= 1.
         Bord Perioz Z = 1.  0. <= X <= 10. 0. <= Y <= 1.
-        }
+    }
 }
 Tetraedriser_homogene box
 Corriger_frontiere_periodique { domaine box bord perio }
@@ -39,21 +39,21 @@ Corriger_frontiere_periodique { domaine box bord Perioz }
 
 Mailler dom
 {
-        Pave Entree
-        {
+    Pave Entree
+    {
         Origine 10. 0. 0.
         Nombre_de_Noeuds 11 3 3
         /* Nombre_de_Noeuds 161 17 17 */
         Longueurs 10 1 1
-        }
-        {
+    }
+    {
         Bord Inlet  X = 10.  0. <= Y <= 1. 0. <= Z <= 1.
         Bord Outlet X = 20.  0. <= Y <= 1. 0. <= Z <= 1.
         Bord Top    Y = 0.  10. <= X <= 20. 0. <= Z <= 1.
         Bord Bottom Y = 1.  10. <= X <= 20. 0. <= Z <= 1.
         Bord Perioz Z = 0.  10. <= X <= 20. 0. <= Y <= 1.
         Bord Perioz Z = 1.  10. <= X <= 20. 0. <= Y <= 1.
-        }
+    }
 }
 Tetraedriser_homogene dom
 Corriger_frontiere_periodique { domaine dom bord Perioz }
@@ -125,51 +125,51 @@ Read pb_box
 # Water defined in the box #
     Fluide_Incompressible
     {
-        gravite champ_uniforme 3 	-9.81 0 0
-   	rho	Champ_Uniforme	1 	972.6566523355432
-   	mu	Champ_Uniforme	1	0.0003542990110301465
-   }
+        gravite champ_uniforme  3    -9.81 0 0
+        rho	Champ_Uniforme	1    972.6566523355432
+        mu	Champ_Uniforme	1    0.0003542990110301465
+    }
 
     Navier_Stokes_Turbulent
     {
-   	Parametre_equation	parametre_diffusion_implicite	{
-									Crank 1
-									niter_max_diffusion_implicite 300
-									preconditionnement_diag 1
-									seuil_diffusion_implicite 1e-10
-									}
+        Parametre_equation parametre_diffusion_implicite {
+            Crank 1
+            niter_max_diffusion_implicite 300
+            preconditionnement_diag 1
+            seuil_diffusion_implicite 1e-10
+        }
         # Direct method to solve pressure linear system #
-	solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr } 
-	/*
-        solveur_pression Petsc GCP {  precond block_jacobi_icc { level 1 }  seuil 1.e-6 } */
-	/* solveur_pression petsc cli { -pc_type hypre
-        			     -pc_hypre_type boomeramg
-         			     -pc_hypre_boomeramg_strong_threshold 0.8
-                                     -pc_hypre_boomeramg_agg_nl 4
-                                     -pc_hypre_boomeramg_agg_num_paths 5
-         			     -pc_hypre_boomeramg_max_levels 25
-         			     -pc_hypre_boomeramg_coarsen_type PMIS
-         			     -pc_hypre_boomeramg_interp_type ext+i
-       				     -pc_hypre_boomeramg_P_max 2
-          			     -pc_hypre_boomeramg_truncfactor 0.5
-				     # -pc_hypre_boomeramg_print_statistics #
-       				     -ksp_type cg
-         	                     -ksp_rtol 1e-6
-          			     -ksp_max_it 5000
-        				} */
+        solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr }
+        /*
+            solveur_pression Petsc GCP {  precond block_jacobi_icc { level 1 }  seuil 1.e-6 } */
+        /* solveur_pression petsc cli { -pc_type hypre
+                                        -pc_hypre_type boomeramg
+                                        -pc_hypre_boomeramg_strong_threshold 0.8
+                                        -pc_hypre_boomeramg_agg_nl 4
+                                        -pc_hypre_boomeramg_agg_num_paths 5
+                                        -pc_hypre_boomeramg_max_levels 25
+                                        -pc_hypre_boomeramg_coarsen_type PMIS
+                                        -pc_hypre_boomeramg_interp_type ext+i
+                                        -pc_hypre_boomeramg_P_max 2
+                                        -pc_hypre_boomeramg_truncfactor 0.5
+                                        # -pc_hypre_boomeramg_print_statistics #
+                                        -ksp_type cg
+                                        -ksp_rtol 1e-6
+                                        -ksp_max_it 5000
+                                      } */
 
         convection { muscl3 { alpha 0.8 }  }
         diffusion { }
         # Initial conditions for velocity read from the .xyz file of the previous box calculation #
         # initial_conditions { vitesse champ_fonc_MED { domain box file vitesse_init_turb_box.med field vitesse loc som last_time decoup BOX_som.dec } } #
         # initial_conditions { vitesse champ_fonc_MED { domain box file box_init.med field vitesse loc elem last_time } } #
-	initial_conditions { vitesse Champ_Uniforme 3 1.8 0. 0. }
+        initial_conditions { vitesse Champ_Uniforme 3 1.8 0. 0. }
         # Source term to force a constant flow rate #
         sources { Canal_perio { bord perio } }
         # Boundary conditions #
         boundary_conditions        {
             perio	periodique
-            Perioz	periodique 
+            Perioz	periodique
             Top	paroi_fixe
             Bottom	Paroi_fixe
         }
@@ -187,91 +187,91 @@ Read pb_box
     {
         # 1D probes to monitor #
         /* Sondes			{
-		sonde_V_seg_vertic_box vitesse periode 1e-6 segment 10 0.001 0. 0.009 0.001 0.002 0.009
-		sonde_V_seg_horiz_box vitesse periode 1e-6 segment 10 0.001 0.001 0. 0.001 0.001 0.018 
-	} */
+        sonde_V_seg_vertic_box vitesse periode 1e-6 segment 10 0.001 0. 0.009 0.001 0.002 0.009
+        sonde_V_seg_horiz_box vitesse periode 1e-6 segment 10 0.001 0.001 0. 0.001 0.001 0.018
+        } */
         # 3D fields post processing with LATA format for VisIt #
         Format lml
         fields dt_post 0.05
         {
-		  vitesse		elem
-		  y_plus		elem
+            vitesse   elem
+            y_plus    elem
         }
     }
-   Sauvegarde_simple single_hdf DomainFlowLES_pb_box.sauv
-   # Resume_last_time single_hdf DomainFlowLES_pb_box.sauv #
+    Sauvegarde_simple single_hdf DomainFlowLES_pb_box.sauv
+    # Resume_last_time single_hdf DomainFlowLES_pb_box.sauv #
 }
 # Read the second problem #
 Read pb_dom
 {
 
 # Water defined in the domain #
-   Fluide_Quasi_Compressible 
-	{
-	# mu	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.00035256+(val>350)*(0.08592868*exp(-0.01655538*val)+0.00010423) #
-	mu Champ_Fonc_xyz dom 1 0.00035256
-	# lambda	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.66804898+(val>350)*(-0.00000558*val^2+0.00452611*val-0.23453427) #
-	lambda Champ_Fonc_xyz dom 1 0.66804898
+    Fluide_Quasi_Compressible
+    {
+        # mu	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.00035256+(val>350)*(0.08592868*exp(-0.01655538*val)+0.00010423) #
+        mu Champ_Fonc_xyz dom 1 0.00035256
+        # lambda	champ_fonc_fonction pb_dom temperature 1 (val<350)*0.66804898+(val>350)*(-0.00000558*val^2+0.00452611*val-0.23453427) #
+        lambda Champ_Fonc_xyz dom 1 0.66804898
         pression   1e6
-	gravite Champ_Uniforme 3 -9.81 0 0
-	loi_etat rhoT_gaz_parfait_QC
+        gravite Champ_Uniforme 3 -9.81 0 0
+        loi_etat rhoT_gaz_parfait_QC
         {
             Cp 	4401.93904833
             # rho_t 	(T<350)*972.22597063+(T>350)*(-0.00223416*T^2+0.94964965*T+915.49055601) #
             Prandtl 2.323104558709490064
             rho_xyz Champ_Fonc_xyz dom 1 972.22597063
         }
-	Traitement_Pth constant
-	traitement_rho_gravite moins_rho_moyen
-	}
-	
-    Navier_Stokes_Turbulent_QC
-    {	
-    
-    	Parametre_equation	parametre_diffusion_implicite	{
-									Crank 1
-									niter_max_diffusion_implicite 300
-									preconditionnement_diag 1
-									seuil_diffusion_implicite 1e-10
+        Traitement_Pth constant
+        traitement_rho_gravite moins_rho_moyen
+    }
 
-	 								}
-	
-	solveur_pression Petsc_GPU GCP {  precond boomeramg { } rtol 1.e-8 impr }
-	/*
-	solveur_pression petsc cli { -pc_type hypre
-        			     -pc_hypre_type boomeramg
-         			     -pc_hypre_boomeramg_strong_threshold 0.8
+    Navier_Stokes_Turbulent_QC
+    {
+
+        Parametre_equation	parametre_diffusion_implicite	{
+            Crank 1
+            niter_max_diffusion_implicite 300
+            preconditionnement_diag 1
+            seuil_diffusion_implicite 1e-10
+
+        }
+
+        solveur_pression Petsc_GPU GCP {  precond boomeramg { } rtol 1.e-8 impr }
+        /*
+        solveur_pression petsc cli { -pc_type hypre
+                                     -pc_hypre_type boomeramg
+                                     -pc_hypre_boomeramg_strong_threshold 0.8
                                      -pc_hypre_boomeramg_agg_nl 4
                                      -pc_hypre_boomeramg_agg_num_paths 5
-         			     -pc_hypre_boomeramg_max_levels 25
-         			     -pc_hypre_boomeramg_coarsen_type PMIS
-         			     -pc_hypre_boomeramg_interp_type ext+i
-       				     -pc_hypre_boomeramg_P_max 2
-          			     -pc_hypre_boomeramg_truncfactor 0.5
-				     # -pc_hypre_boomeramg_print_statistics #
-       				     -ksp_type cg
-         	                     -ksp_rtol 1e-6
-          			     -ksp_max_it 5000
-        				} */
+                                     -pc_hypre_boomeramg_max_levels 25
+                                     -pc_hypre_boomeramg_coarsen_type PMIS
+                                     -pc_hypre_boomeramg_interp_type ext+i
+                                     -pc_hypre_boomeramg_P_max 2
+                                     -pc_hypre_boomeramg_truncfactor 0.5
+                                     # -pc_hypre_boomeramg_print_statistics #
+                                     -ksp_type cg
+                                     -ksp_rtol 1e-6
+                                     -ksp_max_it 5000
+                                   } */
 
         # Method to solve pressure linear system #
         # solveur_pression Petsc GCP { precond SSOR { omega 1.5 }  seuil 1.e-8 impr   } #
-	# solveur_pression Petsc GCP {  precond block_jacobi_icc { level 1 }  seuil 1.e-9 } #
+        # solveur_pression Petsc GCP {  precond block_jacobi_icc { level 1 }  seuil 1.e-9 } #
         convection { muscl3 { alpha 0.8 }  }
         diffusion { }
         # Initial conditions for velocity #
         # initial_conditions { vitesse champ_fonc_MED { domain box file vitesse_init_turb_box.med field vitesse loc som last_time decoup DOM_som.dec } } #
         # initial_conditions { vitesse champ_fonc_MED { domain dom file dom_init.med field vitesse loc elem last_time } } #
-	initial_conditions { vitesse Champ_Uniforme 3 1.8 0. 0. }
+        initial_conditions { vitesse Champ_Uniforme 3 1.8 0. 0. }
         # Boundary conditions #
         boundary_conditions {
             # Velocity imposed from the previous problem (box) #
-            Inlet 	frontiere_ouverte_vitesse_imposee  Champ_front_recyclage { pb_champ_evaluateur pb_box vitesse 3 }
+            Inlet    frontiere_ouverte_vitesse_imposee  Champ_front_recyclage { pb_champ_evaluateur pb_box vitesse 3 }
             # Pressure imposed #
-	    Outlet 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1e6
-            Perioz	periodique
-            Top	Paroi_fixe
-            Bottom	Paroi_fixe
+            Outlet   frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1e6
+            Perioz   periodique
+            Top	     Paroi_fixe
+            Bottom   Paroi_fixe
         }
         # Wale LES model used #
         modele_turbulence sous_maille_wale
@@ -283,25 +283,25 @@ Read pb_dom
     }
     # Energy equation #
     Convection_Diffusion_Chaleur_Turbulent_QC
-    {		
-    
-    	mode_calcul_convection divrhouT_moins_Tdivrhou
-    	Parametre_equation	parametre_diffusion_implicite	{
-									Crank 1
-									niter_max_diffusion_implicite 300
-									preconditionnement_diag 1
-									seuil_diffusion_implicite 1e-10
-									} 
+    {
+
+        mode_calcul_convection divrhouT_moins_Tdivrhou
+        Parametre_equation	parametre_diffusion_implicite	{
+            Crank 1
+            niter_max_diffusion_implicite 300
+            preconditionnement_diag 1
+            seuil_diffusion_implicite 1e-10
+        }
         convection { muscl_new }
         diffusion { }
         # Initial conditions for temperature #
         initial_conditions { temperature Champ_Uniforme 1 353.15 }
         boundary_conditions {
             # Temperature imposed #
-            Outlet frontiere_ouverte  T_EXT Champ_Front_Uniforme 1 353.15 
+            Outlet frontiere_ouverte  T_EXT Champ_Front_Uniforme 1 353.15
             # Temperature imposed from the previous problem (box) #
             Inlet 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 353.15
-            Perioz	periodique 
+            Perioz	periodique
             # Bottom	Paroi_flux_impose Champ_Front_Uniforme 1 1e5 #
             Bottom	Paroi_flux_impose Champ_front_tabule_lu 1 Flux_Lu_TS2_G1700_5ms_80oc_10bar
             Top	paroi_adiabatique
@@ -314,44 +314,44 @@ Read pb_dom
             dt_impr_nusselt 0.1
         }
     }
-  
+
     # Post processing definition #
     postraitement
-	{
-			
-			# Definition_champs_file { file advanced_fields_def_light } #
-			
-        		# 1D probes to monitor #
-       			 Probes
-	      			  {
-					sonde_V_seg_vertic_box vitesse periode 1e-7 segment 100 0.018 0. 0.0 0.018 0.001 0.0
-					
-					}
-      			  # 3D fields post processing with LATA format for VisIt #
-       			 Format lml
-       			 fields dt_post 0.05
-        		{
-				  pression		som
-		 		  vitesse		som
-                  		  temperature 		som
-				  /* Vorticite 		elem
-				  Critere_Q		elem
-				  Viscosite_turbulente elem
-				  temperature 		elem
-				  tparoi som
-				  masse_volumique	elem
-				  pi_q			elem
-				  pi_nu		elem
-				  diff_s 		som */
-        			
-			}
+    {
+
+        # Definition_champs_file { file advanced_fields_def_light } #
+
+        # 1D probes to monitor #
+        Probes
+        {
+            sonde_V_seg_vertic_box vitesse periode 1e-7 segment 100 0.018 0. 0.0 0.018 0.001 0.0
+
+        }
+        # 3D fields post processing with LATA format for VisIt #
+        Format lml
+        fields dt_post 0.05
+        {
+            pression             som
+            vitesse              som
+            temperature          som
+            /* Vorticite         elem
+            Critere_Q            elem
+            Viscosite_turbulente elem
+            temperature          elem
+            tparoi               som
+            masse_volumique      elem
+            pi_q                 elem
+            pi_nu                elem
+            diff_s               som */
+
+        }
 
     }
-    
-    
-    
-  Sauvegarde_simple single_hdf DomainFlowLES_pb_dom.sauv
-  # Resume_last_time single_hdf DomainFlowLES_pb_dom.sauv #
+
+
+
+    Sauvegarde_simple single_hdf DomainFlowLES_pb_dom.sauv
+    # Resume_last_time single_hdf DomainFlowLES_pb_dom.sauv #
 }
 
 EcritureLectureSpecial 0

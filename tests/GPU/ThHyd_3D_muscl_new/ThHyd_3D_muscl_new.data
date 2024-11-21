@@ -88,10 +88,10 @@ Read pb
     }
     Post_processing
     {
-       champs dt_post 1e6
-       {
-          temperature som
-       }    
+        champs dt_post 1e6
+        {
+            temperature som
+        }
     }
 }
 Solve pb

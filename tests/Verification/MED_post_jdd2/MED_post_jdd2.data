@@ -1,6 +1,6 @@
 # Reading a MED file and then modifying the domain in TRUST (e.g. with VerifierCoin)
-  was buggy. The internal MEDCoupling object was not properly updated.
- #
+was buggy. The internal MEDCoupling object was not properly updated.
+#
 
 dimension 2
 Pb_Thermohydraulique pb
@@ -31,7 +31,7 @@ Associate pb dom
 Associate pb sch
 Discretize pb dis
 
-postraiter_domaine { 
+postraiter_domaine {
     domaine dom
     format lml
 }

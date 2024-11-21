@@ -97,7 +97,7 @@ Read pb
     {
         Probes
         {
-	    sonde_volume volume_maille periode 1.e-5 point 1 0.001 0.0004
+            sonde_volume volume_maille periode 1.e-5 point 1 0.001 0.0004
             sonde_pression pression periode 1.e-5 points 3 0.001 0.0004 0.07 0.0004
             0.008 0.0004
             sonde_vitesse  vitesse  periode 1.e-5 points 5 0.05 0.0004 0.06 0.0004
@@ -106,20 +106,20 @@ Read pb
             seg_prex pression periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
             seg_vity vitesse periode 1.e-5 segment 30 0.08 0.    0.08 0.0015875
         }
-	Definition_champs
-        { 
-           volx2 Transformation  {
-              methode formule expression 1 vol*2
-              localisation elem
-              sources { refChamp { Pb_champ pb volume_maille nom_source vol } }
-	   }
+        Definition_champs
+        {
+            volx2 Transformation  {
+                methode formule expression 1 vol*2
+                localisation elem
+                sources { refChamp { Pb_champ pb volume_maille nom_source vol } }
+            }
         }
         fields dt_post 0.001
         {
             pression
             vitesse
-	    volume_maille elem
-	    volx2 elem
+            volume_maille elem
+            volx2 elem
         }
     }
 }

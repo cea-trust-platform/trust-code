@@ -6,30 +6,30 @@ dimension 3
 Domaine dom
 # BEGIN MESH #
 Mailler dom
-	{
-	Pave Cavite
-		{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 40 30 5
-		Longueurs  12.56637061 2. 3.141592653
-		ytanh 0.90180
-		}
-		{
-		Bord periox   X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
-		Bord periox   X = 12.56637061   0. <= Y <= 2.0           0. <= Z <= 3.141592653
-		Bord perioz   Z = 0.            0. <= X <= 12.56637061   0. <= Y <= 2.0
-		Bord perioz   Z = 3.141592653   0. <= X <= 12.56637061   0. <= Y <= 2.0
-		Bord bas      Y = 0.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
-		Bord haut     Y = 2.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
-		}
-	}
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 40 30 5
+        Longueurs  12.56637061 2. 3.141592653
+        ytanh 0.90180
+    }
+    {
+        Bord periox   X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord periox   X = 12.56637061   0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord perioz   Z = 0.            0. <= X <= 12.56637061   0. <= Y <= 2.0
+        Bord perioz   Z = 3.141592653   0. <= X <= 12.56637061   0. <= Y <= 2.0
+        Bord bas      Y = 0.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
+        Bord haut     Y = 2.            0. <= X <= 12.56637061   0. <= Z <= 3.141592653
+    }
+}
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
-	Larg_joint 2
-	Nom_Zones DOM
+    Partitionneur tranche { tranches 1 2 1 }
+    Larg_joint 2
+    Nom_Zones DOM
 }
 Fin
 END PARTITION #
@@ -43,15 +43,15 @@ VDF dis
 
 Runge_Kutta_ordre_3 sch
 Lire sch
-	{
-	tinit 0.
-        tmax  0.8
-	dt_min 1.e-7
-	dt_max 1.e-1
-	dt_impr 5.
-	dt_sauv 500.
-        seuil_statio 1.e-8
-	}
+{
+    tinit 0.
+    tmax  0.8
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_impr 5.
+    dt_sauv 500.
+    seuil_statio 1.e-8
+}
 
 
 
@@ -63,99 +63,100 @@ Discretize pb dis
 # Ampli_bruit mis a 0 car cela cree des differences entre sequentiel et parallele ou sur entre machines #
 # Sinon mettre Ampli_bruit 0.1 #
 Lire pb
-	{
-   
-   fluide_incompressible {
-   
+{
+
+    fluide_incompressible {
+
         gravite champ_uniforme 3 0 0 0
-   	mu Champ_Uniforme	1 2.84e-5
-   	rho Champ_Uniforme	1 0.0976
-   	lambda Champ_Uniforme	1 20.772e-2
-   	Cp Champ_Uniforme	1 5193.
-   	beta_th Champ_Uniforme	1 1.9954e-3
-   }
-   
-   	Navier_Stokes_Turbulent
-		{
-		solveur_pression GCP
-			{
-			precond ssor { omega 1.5 } 
-			seuil 1e-7
-			}
-		convection { centre }
-		diffusion { }
-		Sources
-			{
-			Canal_perio { bord periox } ,
-			Boussinesq_temperature { T0 0 }
-			}
-		conditions_initiales
-			{
-			vitesse champ_init_canal_sinal 3  { Ucent 3. h 1.0  ampli_sin 0.3 omega 2. ampli_bruit 0. 
-								dir_wall 1 dir_flow 0 }
-			}
-		boundary_conditions
-			{
-periox periodique 
-			haut     paroi_fixe
-			bas      paroi_fixe
-perioz periodique 
-			}
-		Modele_turbulence sous_maille_wale
-			{
-			turbulence_paroi negligeable
-			cw 0.5
-			}
-		Traitement_particulier
-			{
-                        Profils_thermo
-                                {
-                                const_profile X
-                                homog_dir Z
-                                nb_points 50
-                                num_probes 3  6. -1. 10.
-                                dt_output 0.5
-                                stats 0.2 6. 0.4
-                                profil_nu_t
-                                tmin_tmax
-                                stats_thermo
-                                } 
-			}
-		}
+        mu Champ_Uniforme	1 2.84e-5
+        rho Champ_Uniforme	1 0.0976
+        lambda Champ_Uniforme	1 20.772e-2
+        Cp Champ_Uniforme	1 5193.
+        beta_th Champ_Uniforme	1 1.9954e-3
+    }
+
+    Navier_Stokes_Turbulent
+    {
+        solveur_pression GCP
+        {
+            precond ssor { omega 1.5 }
+            seuil 1e-7
+        }
+        convection { centre }
+        diffusion { }
+        Sources
+        {
+            Canal_perio { bord periox } ,
+            Boussinesq_temperature { T0 0 }
+        }
+        conditions_initiales
+        {
+            vitesse champ_init_canal_sinal 3  {
+                Ucent 3. h 1.0  ampli_sin 0.3 omega 2. ampli_bruit 0.
+                dir_wall 1 dir_flow 0
+            }
+        }
+        boundary_conditions
+        {
+            periox periodique
+            haut     paroi_fixe
+            bas      paroi_fixe
+            perioz periodique
+        }
+        Modele_turbulence sous_maille_wale
+        {
+            turbulence_paroi negligeable
+            cw 0.5
+        }
+        Traitement_particulier
+        {
+            Profils_thermo
+            {
+                const_profile X
+                homog_dir Z
+                nb_points 50
+                num_probes 3  6. -1. 10.
+                dt_output 0.5
+                stats 0.2 6. 0.4
+                profil_nu_t
+                tmin_tmax
+                stats_thermo
+            }
+        }
+    }
 
 
-	Convection_Diffusion_Temperature_Turbulent
-		{
-		diffusion { }
-		convection { quick }
-		Modele_turbulence Prandtl { turbulence_paroi negligeable_scalaire }
-		boundary_conditions 
-			{
-periox periodique 
-perioz periodique 
- 			haut	paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
-			bas	paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
-			}
-		conditions_initiales { Temperature Champ_Uniforme 1 0. }
-		}
+    Convection_Diffusion_Temperature_Turbulent
+    {
+        diffusion { }
+        convection { quick }
+        Modele_turbulence Prandtl { turbulence_paroi negligeable_scalaire }
+        boundary_conditions
+        {
+            periox periodique
+            perioz periodique
+            haut	paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
+            bas	paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
+        }
+        conditions_initiales { Temperature Champ_Uniforme 1 0. }
+    }
 
-	Postraitement
-        	{       
-                Sondes
-                	{ 
-                        sonde_vit  vitesse periode 10000. segment 65	4. 0. 1.
-									4. 2. 1.
-			}
-		Champs dt_post 50.
-			{
-			vitesse elem
-			}
-		}
+    Postraitement
+    {
+        Sondes
+        {
+            sonde_vit  vitesse periode 10000. segment 65	4. 0. 1.
+            4. 2. 1.
+        }
+        Champs dt_post 50.
+        {
+            vitesse elem
+        }
+    }
 
-	}
+}
 
 Solve pb
 Fin
 
 
- 

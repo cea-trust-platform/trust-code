@@ -9,29 +9,29 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 50 9 9
-                Longueurs 1. 0.01 0.01
-        }
-        {
-                Bord periox   X = 0.     0. <= Y <= 0.01  0. <= Z <= 0.01
-                Bord periox   X = 1.     0. <= Y <= 0.01  0. <= Z <= 0.01
-                Bord perioz   Z = 0.     0. <= X <= 1.    0. <= Y <= 0.01
-                Bord perioz   Z = 0.01   0. <= X <= 1.    0. <= Y <= 0.01
-                Bord bas      Y = 0.     0. <= X <= 1.    0. <= Z <= 0.01
-                Bord haut     Y = 0.01   0. <= X <= 1.    0. <= Z <= 0.01
- 
-                }
-} 
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 50 9 9
+        Longueurs 1. 0.01 0.01
+    }
+    {
+        Bord periox   X = 0.     0. <= Y <= 0.01  0. <= Z <= 0.01
+        Bord periox   X = 1.     0. <= Y <= 0.01  0. <= Z <= 0.01
+        Bord perioz   Z = 0.     0. <= X <= 1.    0. <= Y <= 0.01
+        Bord perioz   Z = 0.01   0. <= X <= 1.    0. <= Y <= 0.01
+        Bord bas      Y = 0.     0. <= X <= 1.    0. <= Z <= 0.01
+        Bord haut     Y = 0.01   0. <= X <= 1.    0. <= Z <= 0.01
+
+    }
+}
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
-	Larg_joint 2
-	Nom_Zones DOM
+    Partitionneur tranche { tranches 1 2 1 }
+    Larg_joint 2
+    Nom_Zones DOM
 }
 Fin
 END PARTITION #
@@ -45,15 +45,15 @@ VDF dis
 
 Runge_Kutta_ordre_3 sch
 Lire sch
-	{
-	tinit 0.
-        tmax 0.5
-	dt_min 1.e-7
-	dt_max 1.e-1
-	dt_impr 1e-1
-	dt_sauv 500.
-        seuil_statio 1.e-8
-	}
+{
+    tinit 0.
+    tmax 0.5
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_impr 1e-1
+    dt_sauv 500.
+    seuil_statio 1.e-8
+}
 
 
 
@@ -63,84 +63,83 @@ Associate pb sch
 Discretize pb dis
 
 Lire pb
-	{
-   
-   fluide_incompressible {
-   
+{
+
+    fluide_incompressible {
+
         gravite champ_uniforme 3 0 0 0
-   	mu Champ_Uniforme	1 2.84e-5
-   	rho Champ_Uniforme	1 0.0976
-   	lambda Champ_Uniforme	1 1.e-11
-   	Cp Champ_Uniforme	1 5193.
-   	beta_th Champ_Uniforme	1 1.9954e-3
-   }
-   
-   	Navier_Stokes_Turbulent
-		{
-		solveur_pression GCP
-			{
-			precond ssor { omega 1.5 } 
-			seuil 1e-7
-			impr
-			}
-		convection { centre }
-		diffusion { }
-		Sources
-			{
-			Boussinesq_temperature { T0 10 }
-			}
-		conditions_initiales
-			{
-			vitesse champ_uniforme 3 1 0 0
-			}			
-		boundary_conditions
-			{
-			periox periodique 
-			haut     paroi_defilante Champ_Front_Uniforme 3 1. 0. 0.
-			bas      paroi_defilante Champ_Front_Uniforme 3 1. 0. 0.
-			perioz periodique 
-			}
-		Modele_turbulence sous_maille_wale
-			{
-			turbulence_paroi negligeable
-			cw 0.
-			}
-		}
+        mu Champ_Uniforme	1 2.84e-5
+        rho Champ_Uniforme	1 0.0976
+        lambda Champ_Uniforme	1 1.e-11
+        Cp Champ_Uniforme	1 5193.
+        beta_th Champ_Uniforme	1 1.9954e-3
+    }
+
+    Navier_Stokes_Turbulent
+    {
+        solveur_pression GCP
+        {
+            precond ssor { omega 1.5 }
+            seuil 1e-7
+            impr
+        }
+        convection { centre }
+        diffusion { }
+        Sources
+        {
+            Boussinesq_temperature { T0 10 }
+        }
+        conditions_initiales
+        {
+            vitesse champ_uniforme 3 1 0 0
+        }
+        boundary_conditions
+        {
+            periox periodique
+            haut     paroi_defilante Champ_Front_Uniforme 3 1. 0. 0.
+            bas      paroi_defilante Champ_Front_Uniforme 3 1. 0. 0.
+            perioz periodique
+        }
+        Modele_turbulence sous_maille_wale
+        {
+            turbulence_paroi negligeable
+            cw 0.
+        }
+    }
 
 
-	Convection_Diffusion_Temperature_Turbulent
-		{
-		diffusion { }
-		convection { quick }
-		Modele_turbulence Prandtl { Turbulence_paroi negligeable_scalaire }
-		boundary_conditions 
-			{
-			periox periodique 
-			perioz periodique 
- 			haut   paroi_adiabatique
-			bas    paroi_adiabatique
-			}
-		conditions_initiales { Temperature Champ_Fonc_xyz dom 1 10.+EXP(-(x-0.5)*(x-0.5)/0.01) }
-		}
+    Convection_Diffusion_Temperature_Turbulent
+    {
+        diffusion { }
+        convection { quick }
+        Modele_turbulence Prandtl { Turbulence_paroi negligeable_scalaire }
+        boundary_conditions
+        {
+            periox periodique
+            perioz periodique
+            haut   paroi_adiabatique
+            bas    paroi_adiabatique
+        }
+        conditions_initiales { Temperature Champ_Fonc_xyz dom 1 10.+EXP(-(x-0.5)*(x-0.5)/0.01) }
+    }
 
-	Postraitement
-        	{       
-                format lml
-                Sondes
-                	{ 
-                        sonde_vit  vitesse periode 0.5 segment 200	0. 0.005 0.005
-									1. 0.005 0.005
-                        sonde_temp temperature periode 0.5 segment 200	0. 0.005 0.005
-									1. 0.005 0.005 
-			}
-		Champs dt_post 1.
-			{
-			vitesse elem
-			temperature elem
-			}
-		}
-	}
+    Postraitement
+    {
+        format lml
+        Sondes
+        {
+            sonde_vit  vitesse periode 0.5 segment 200	0. 0.005 0.005
+            1. 0.005 0.005
+            sonde_temp temperature periode 0.5 segment 200	0. 0.005 0.005
+            1. 0.005 0.005
+        }
+        Champs dt_post 1.
+        {
+            vitesse elem
+            temperature elem
+        }
+    }
+}
 
 Solve pb
 Fin
- 

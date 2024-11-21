@@ -15,9 +15,9 @@ Tetraedriser_homogene dom_pb1
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
-	Larg_joint 2
-	Nom_Zones DOM1
+    Partitionneur metis { Nb_parts 2 }
+    Larg_joint 2
+    Nom_Zones DOM1
 }
 Fin
 END PARTITION #
@@ -32,16 +32,16 @@ Schema_Euler_explicite sch
 
 Lire sch
 {
-	nb_pas_dt_max 15
-	tinit 0.0
-	tmax  1000.
-	dt_min 1.e-6
-	dt_max 0.001
-	dt_impr 1.e-6
-	dt_sauv 0.05
-	seuil_statio 1.e-15
-	facsec 1.0
-	diffusion_implicite 1
+    nb_pas_dt_max 15
+    tinit 0.0
+    tmax  1000.
+    dt_min 1.e-6
+    dt_max 0.001
+    dt_impr 1.e-6
+    dt_sauv 0.05
+    seuil_statio 1.e-15
+    facsec 1.0
+    diffusion_implicite 1
 }
 
 Associate pb dom_pb1
@@ -51,179 +51,180 @@ Discretize pb dis
 
 Lire pb
 {
-Fluide_Incompressible
-{
-   mu      Champ_Uniforme 1 0.0001683
-   lambda  Champ_Uniforme 1 0.6797
-   Cp      Champ_Uniforme 1 4342.
-   rho     Champ_Uniforme 1 906.
-   beta_th Champ_Uniforme 1 0.9859
-   beta_co Champ_Uniforme 1 0.
-	gravite Champ_Uniforme 3  0. 0. -9.89
-}
+    Fluide_Incompressible
+    {
+        mu      Champ_Uniforme 1 0.0001683
+        lambda  Champ_Uniforme 1 0.6797
+        Cp      Champ_Uniforme 1 4342.
+        rho     Champ_Uniforme 1 906.
+        beta_th Champ_Uniforme 1 0.9859
+        beta_co Champ_Uniforme 1 0.
+        gravite Champ_Uniforme 3  0. 0. -9.89
+    }
 
-Constituant
-{
+    Constituant
+    {
         coefficient_diffusion Champ_Uniforme 1 2.147E-7
-}
-	Navier_Stokes_turbulent
-	{
-		solveur_pression Gcp { precond ssor { omega 1.4 }
-                                       seuil 1.e-7
-                                       impr
-                                     }
-		convection { muscl }
-		diffusion { }
-		sources { boussinesq_temperature { T0 7. } }
-		Modele_turbulence Sous_maille_Wale
-			{
-			cw 0.5
-			longueur_maille volume_sans_lissage
-			Turbulence_paroi negligeable
-			}
-		conditions_initiales
-		        {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions
-		{
-   			entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1.
-   			sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-   			paroi paroi_fixe
-		}
-
+    }
+    Navier_Stokes_turbulent
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.4 }
+            seuil 1.e-7
+            impr
         }
-        Convection_Diffusion_Temperature_Turbulent
-	{
-		diffusion { }
-		convection { muscl }
-		conditions_initiales
-		{
-			temperature Champ_Uniforme 1 0.
-		}
-		boundary_conditions
-		{
-   			entree frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 1.
-   			sud frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
-   			nord frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
-   			gauche frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
-   			droit frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
-   			bas frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
-   			haut frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
- 			paroi paroi_echange_externe_impose T_ext Champ_front_uniforme 1 1. H_imp Champ_front_Uniforme 1 500.
-		}
-		Modele_turbulence Prandtl
-		{
-		 	Turbulence_paroi negligeable_scalaire
-		}
-	}
- 
-        Convection_Diffusion_Concentration_Turbulent {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions 
-		{
-   			entree frontiere_ouverte_concentration_imposee Champ_front_tabule 1 { 6 0.5 0.500000001 0.75 0.7500000001 1. 1.00000001 0. 19.9 20.1 41.5 41.7 500. }
-   			sud frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			nord frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			gauche frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			bas frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			paroi paroi
-                }
-                conditions_initiales 
-		{
-                        concentration Champ_Uniforme 1 0.5
-                }
-		Modele_turbulence Schmidt
-		 	{
-		 	   Turbulence_paroi negligeable_scalaire
-		 	}
-        }
-	
-	Equations_Scalaires_Passifs
+        convection { muscl }
+        diffusion { }
+        sources { boussinesq_temperature { T0 7. } }
+        Modele_turbulence Sous_maille_Wale
         {
-                Convection_diffusion_Concentration_Turbulent {
-                        diffusion { }
-                        convection { muscl }
-                        boundary_conditions 
-			{
-   			entree frontiere_ouverte_concentration_imposee Champ_front_tabule 1 { 6 0.5 0.500000001 0.75 0.7500000001 1. 1.00000001 0. 19.9 20.1 41.5 41.7 500. }
-   			sud frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			nord frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			gauche frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			bas frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			paroi paroi
-                	}
-			
-                        conditions_initiales 
-			{
-                                concentration0 Champ_Uniforme 1 0.5
-                        }
-			Modele_turbulence Schmidt
-		 	{
-		 	   Turbulence_paroi negligeable_scalaire
-		 	}
-                }
-                Convection_diffusion_Concentration_Turbulent {
-                        diffusion { negligeable }
-			convection { muscl }
-                        boundary_conditions 
-			{
-   			entree frontiere_ouverte_concentration_imposee Champ_front_tabule 1 { 6 0.5 0.500000001 0.75 0.7500000001 1. 1.00000001 0. 19.9 20.1 41.5 41.7 500. }
-   			sud frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			nord frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			gauche frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			bas frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-   			paroi paroi
-                	}
-		
-                        conditions_initiales 
-			{
-                                concentration1 Champ_Uniforme 1 0
-                        }
-			Modele_turbulence Schmidt
-		 	{
-		 	   Turbulence_paroi negligeable_scalaire
-		 	}
-                }
+            cw 0.5
+            longueur_maille volume_sans_lissage
+            Turbulence_paroi negligeable
+        }
+        conditions_initiales
+        {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1.
+            sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            paroi paroi_fixe
+        }
 
+    }
+    Convection_Diffusion_Temperature_Turbulent
+    {
+        diffusion { }
+        convection { muscl }
+        conditions_initiales
+        {
+            temperature Champ_Uniforme 1 0.
         }
-	Postraitements
-	{
-	      first_post {
-		Sondes {
-                        sonde_vitesse vitesse periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
-                        sonde_temperature temperature periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
-			sonde_concentration concentration periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
-		}
-	        fichier ThHyd_C_Wale_Scalaires_Passifs_VEFPreP1B
-		Format lml
-                Champs dt_post 1000.
-		{
-			vitesse elem
-			concentration0 elem
-                        concentration1 elem
-  	        }
-	      }	
-	      second_post {
-	        Format lata
-		Champs dt_post 0.01
-		{
-			pas_de_temps
-		}
-	      }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 1.
+            sud frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            nord frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            gauche frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            droit frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            bas frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            haut frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+            paroi paroi_echange_externe_impose T_ext Champ_front_uniforme 1 1. H_imp Champ_front_Uniforme 1 500.
         }
+        Modele_turbulence Prandtl
+        {
+            Turbulence_paroi negligeable_scalaire
+        }
+    }
+
+    Convection_Diffusion_Concentration_Turbulent {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_concentration_imposee Champ_front_tabule 1 { 6 0.5 0.500000001 0.75 0.7500000001 1. 1.00000001 0. 19.9 20.1 41.5 41.7 500. }
+            sud frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            nord frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            gauche frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            bas frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            paroi paroi
+        }
+        conditions_initiales
+        {
+            concentration Champ_Uniforme 1 0.5
+        }
+        Modele_turbulence Schmidt
+        {
+            Turbulence_paroi negligeable_scalaire
+        }
+    }
+
+    Equations_Scalaires_Passifs
+    {
+        Convection_diffusion_Concentration_Turbulent {
+            diffusion { }
+            convection { muscl }
+            boundary_conditions
+            {
+                entree frontiere_ouverte_concentration_imposee Champ_front_tabule 1 { 6 0.5 0.500000001 0.75 0.7500000001 1. 1.00000001 0. 19.9 20.1 41.5 41.7 500. }
+                sud frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                nord frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                gauche frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                bas frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                paroi paroi
+            }
+
+            conditions_initiales
+            {
+                concentration0 Champ_Uniforme 1 0.5
+            }
+            Modele_turbulence Schmidt
+            {
+                Turbulence_paroi negligeable_scalaire
+            }
+        }
+        Convection_diffusion_Concentration_Turbulent {
+            diffusion { negligeable }
+            convection { muscl }
+            boundary_conditions
+            {
+                entree frontiere_ouverte_concentration_imposee Champ_front_tabule 1 { 6 0.5 0.500000001 0.75 0.7500000001 1. 1.00000001 0. 19.9 20.1 41.5 41.7 500. }
+                sud frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                nord frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                gauche frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                bas frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                haut frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                paroi paroi
+            }
+
+            conditions_initiales
+            {
+                concentration1 Champ_Uniforme 1 0
+            }
+            Modele_turbulence Schmidt
+            {
+                Turbulence_paroi negligeable_scalaire
+            }
+        }
+
+    }
+    Postraitements
+    {
+        first_post {
+            Sondes {
+                sonde_vitesse vitesse periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
+                sonde_temperature temperature periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
+                sonde_concentration concentration periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
+            }
+            fichier ThHyd_C_Wale_Scalaires_Passifs_VEFPreP1B
+            Format lml
+            Champs dt_post 1000.
+            {
+                vitesse elem
+                concentration0 elem
+                concentration1 elem
+            }
+        }
+        second_post {
+            Format lata
+            Champs dt_post 0.01
+            {
+                pas_de_temps
+            }
+        }
+    }
 
 }
 Solve pb
