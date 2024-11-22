@@ -28,6 +28,7 @@ Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
 // XD Pb_Multiphase Pb_base Pb_Multiphase -1 A problem that allows the resolution of N-phases with 3*N equations
 // XD attr milieu_composite bloc_lecture milieu_composite 1 The composite medium associated with the problem.
 // XD attr correlations bloc_lecture correlations 1 List of correlations used in specific source terms (i.e. interfacial flux,  interfacial friction, ...)
+// XD attr models bloc_lecture models 1 List of models used in specific source terms (i.e. interfacial flux,  interfacial friction, ...)
 // XD attr Milieu_MUSIG bloc_lecture Milieu_MUSIG 1 The composite medium associated with the problem.
 // XD attr QDM_Multiphase QDM_Multiphase QDM_Multiphase 0 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
 // XD attr Masse_Multiphase Masse_Multiphase Masse_Multiphase 0 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
@@ -76,15 +77,13 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
         }
     }
 
-  bool already_read;
+  bool already_read {true};
 
   is >> mot;
-  if (mot == "correlations")
+  if (mot == "correlations" || mot == "models")
     lire_correlations(is), already_read = false;
-  else
-    already_read = true;
 
-  typer_lire_correlation_hem(); // enforce a interfacial flux correlation with constant coefficient si HEM
+  typer_lire_correlation_hem(); // enforce an interfacial flux correlation with constant coefficient if HEM
 
   Cerr << "Reading of the equations" << finl;
   for (int i = 0; i < nombre_d_equations(); i++, already_read = false)
