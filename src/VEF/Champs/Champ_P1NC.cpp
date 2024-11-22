@@ -390,13 +390,10 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
   // on n'a qu'a supprimer les valeurs negatives et n'apparaissent
   // que les valeurs aux parois.
 
-  int ndeb, nfin, elem, l_unif;
-  double norm_tau, u_etoile, norm_v = 0, dist = 0, val1, val2, val3, d_visco, visco = 1.;
-  IntVect num(dimension);
+  int ndeb, nfin, l_unif;
+  double visco0 = -1.;
   y_plus = -1.;
 
-  const Champ_P1NC& vit = *this;
-  const IntTab& face_voisins = domaine_vef().face_voisins(), &elem_faces = domaine_vef().elem_faces();
   const Equation_base& eqn_hydr = equation();
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
@@ -405,15 +402,16 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
   if (sub_type(Champ_Uniforme, ch_visco_cin))
     {
       if (tab_visco(0, 0) > DMINFLOAT)
-        visco = tab_visco(0, 0);
+        visco0 = tab_visco(0, 0);
       else
-        visco = DMINFLOAT;
+        visco0 = DMINFLOAT;
       l_unif = 1;
     }
   else
     l_unif = 0;
+
   if ((!l_unif) && (tab_visco.local_min_vect() < DMINFLOAT))
-// GF on ne doit pas changer tab_visco ici !
+    // GF on ne doit pas changer tab_visco ici !
     {
       Cerr << " visco <=0 ?" << finl;
       exit();
@@ -446,69 +444,64 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
-          ToDo_Kokkos("critrical cause velocity copy");
-          for (int num_face = ndeb; num_face < nfin; num_face++)
-            {
+          int dim = Objet_U::dimension;
+          int nfac = domaine_vef().domaine().nb_faces_elem();
+          DoubleTrav counter(y_plus.size());
+          CDoubleTabView xp = domaine_vef().xp().view_ro();
+          CDoubleTabView xv = domaine_vef().xv().view_ro();
+          CDoubleTabView face_normale = domaine_vef().face_normales().view_ro();
+          CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();
+          CIntTabView face_voisins = domaine_vef().face_voisins().view_ro();
+          CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();
+          CDoubleArrView visco = static_cast<const DoubleVect&>(tab_visco).view_ro();
+          CDoubleArrView yp_faces = static_cast<const DoubleVect&>(yplus_faces).view_ro();
+          DoubleArrView y_plus_view = y_plus.view_rw();
+          DoubleArrView counter_view = static_cast<DoubleVect&>(counter).view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+          {
+            int elem = face_voisins(num_face, 0);
+            y_plus_view(elem) = 0;
+          });
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+          {
+            int num[3] {};
+            double val[3] {};
+            int elem = face_voisins(num_face, 0);
+            if (yplus_already_computed)
+              {
+                // y+ is only defined on faces so we take the face value to put in the element
+                Kokkos::atomic_add(&y_plus_view(elem), yp_faces(num_face));
+              }
+            else
+              {
+                bool ok = false;
+                for (int i = 0; i < dim; i++)
+                  {
+                    num[i] = elem_faces(elem, i);
+                    if (num[i] == num_face && !ok)
+                      {
+                        num[i] = elem_faces(elem, dim);
+                        ok = true;
+                      }
+                  }
 
-              elem = face_voisins(num_face, 0);
+                double dist = distance(dim, num_face, elem, xp, xv, face_normale);
+                dist *= (dim + 1.) / dim; // pour se ramener a distance paroi / milieu de num[0]-num[1]
+                double norm_v = norm_vit1_lp(dim, vit, num_face, nfac, num, face_normale, val);
+                double d_visco = l_unif ? visco0:visco[elem];
 
-              if (yplus_already_computed)
-                {
-                  // y+ is only defined on faces so we take the face value to put in the element
-                  y_plus(elem) = yplus_faces(num_face);
-                }
-              else
-                {
-
-                  if (dimension == 2)
-                    {
-
-                      num[0] = elem_faces(elem, 0);
-                      num[1] = elem_faces(elem, 1);
-
-                      if (num[0] == num_face)
-                        num[0] = elem_faces(elem, 2);
-                      else if (num[1] == num_face)
-                        num[1] = elem_faces(elem, 2);
-
-                      dist = distance_2D(num_face, elem, domaine_vef());
-                      dist *= 3. / 2.; // pour se ramener a distance paroi / milieu de num[0]-num[1]
-                      norm_v = norm_2D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], domaine_vef(), val1, val2);
-
-                    } // dim 2
-                  else if (dimension == 3)
-                    {
-
-                      num[0] = elem_faces(elem, 0);
-                      num[1] = elem_faces(elem, 1);
-                      num[2] = elem_faces(elem, 2);
-
-                      if (num[0] == num_face)
-                        num[0] = elem_faces(elem, 3);
-                      else if (num[1] == num_face)
-                        num[1] = elem_faces(elem, 3);
-                      else if (num[2] == num_face)
-                        num[2] = elem_faces(elem, 3);
-
-                      dist = distance_3D(num_face, elem, domaine_vef());
-                      dist *= 4. / 3.; // pour se ramener a distance paroi / milieu de num[0]-num[1]-num[2]
-                      norm_v = norm_3D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], num[2], domaine_vef(), val1, val2, val3);
-
-                    } // dim 3
-
-                  if (l_unif)
-                    d_visco = visco;
-                  else
-                    d_visco = tab_visco[elem];
-
-                  // PQ : 01/10/03 : corrections par rapport a la version premiere
-                  norm_tau = d_visco * norm_v / dist;
-                  u_etoile = sqrt(norm_tau);
-                  y_plus(elem) = dist * u_etoile / d_visco;
-
-                } // else yplus already computed
-
-            } // loop on faces
+                // PQ : 01/10/03 : corrections par rapport a la version premiere
+                double norm_tau = d_visco * norm_v / dist;
+                double u_etoile = sqrt(norm_tau);
+                Kokkos::atomic_add(&y_plus_view(elem), dist * u_etoile / d_visco);
+              } // else yplus already computed
+            Kokkos::atomic_add(&counter_view(elem), +1);
+          }); // loop on faces
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, y_plus.size()), KOKKOS_LAMBDA (const int elem)
+          {
+            if (counter_view(elem)>0) y_plus_view(elem)/=counter_view(elem);
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
         } // Fin de paroi fixe
 
@@ -524,17 +517,21 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
   gradient_elem = 0.;
 
   calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, gradient_elem);
-  ToDo_Kokkos("critical");
-  for (int elem = 0; elem < nb_elem; elem++)
-    {
-      int comp = 0;
-      for (int i = 0; i < dimension; i++)
-        for (int j = 0; j < dimension; j++)
-          {
-            grad_u(elem, comp) = gradient_elem(elem, i, j);
-            comp++;
-          }
-    }
+  int dim = dimension;
+  CDoubleTabView3 gradelem = gradient_elem.view3_ro();
+  DoubleTabView gradu = grad_u.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int elem)
+  {
+    int comp = 0;
+    for (int i = 0; i < dim; i++)
+      for (int j = 0; j < dim; j++)
+        {
+          gradu(elem, comp) = gradelem(elem, i, j);
+          comp++;
+        }
+
+  });
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
 }
 
@@ -673,19 +670,22 @@ void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
 
 static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
 {
-  const DoubleVect& volumes = domaine_VEF.volumes_entrelaces();
   const int nb_faces = domaine_VEF.nb_faces();
-  int i = 0;
   double norme = 0;
   int nb_compo_ = u.line_size();
-  ToDo_Kokkos("critical");
-  for (; i < nb_faces; i++)
-    {
-      double s = 0;
-      for (int j = 0; j < nb_compo_; j++)
-        s += u(i, j) * u(i, j);
-      norme += volumes(i) * s;
-    }
+
+  CDoubleArrView volumes = domaine_VEF.volumes_entrelaces().view_ro();
+  CDoubleTabView uview = u.view_ro();
+
+  Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_faces,
+                          KOKKOS_LAMBDA (const int i, double s)
+  {
+    for (int j = 0; j < nb_compo_; j++)
+      s += uview(i, j) * uview(i, j);
+    s *= volumes(i);
+  }, norme);
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+
   return sqrt(norme);
 }
 double Champ_P1NC::norme_L2(const Domaine& dom) const
@@ -704,8 +704,15 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
 {
   const Domaine& mon_dom = domaine_vef().domaine();
 
-  double dnorme_H1, norme_H1_comp, int_grad_elem, norme_grad_elem;
-  int face_globale;
+  double dnorme_H1;
+  int dim = dimension;
+  const int nb_elem = mon_dom.nb_elem();
+  const int nb_faces_elem = mon_dom.nb_faces_elem();
+  CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();
+  CDoubleTabView face_normales = domaine_vef().face_normales().view_ro();
+  CIntTabView face_voisins = domaine_vef().face_voisins().view_ro();
+  CDoubleTabView tab = valeurs().view_ro();
+  CDoubleArrView volumes = domaine_vef().volumes().view_ro();
 
   //On va calculer la norme H1 d'une inconnue P1NC.
   //L'algorithme tient compte des contraintes suivantes:
@@ -713,32 +720,31 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
   //  (i.e etre un scalaire ou etre un vecteur)
   //- la dimension du probleme est arbitraire (1, 2 ou 3).
   //ATTENTION: les prismes ne sont pas supportes.
-  ToDo_Kokkos("critical");
   dnorme_H1 = 0.;
-  for (int composante = 0; composante < nb_comp(); composante++) //cas scalaire ou vectoriel
-    {
-      norme_H1_comp = 0.; //pour eviter les accumulations
-      for (int K = 0; K < mon_dom.nb_elem(); K++) //boucle sur les elements
-        {
-          norme_grad_elem = 0.; //pour eviter les accumulations
-          for (int i = 0; i < dimension; i++) //boucle sur la dimension du pb
-            {
-              int_grad_elem = 0.; //pour eviter les accumulations
-              for (int face = 0; face < mon_dom.nb_faces_elem(); face++) //boucle sur les faces d'un "K"
-                {
-                  face_globale = domaine_vef().elem_faces(K, face);
+  Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_comp(), //cas scalaire ou vectoriel
+                          KOKKOS_LAMBDA (const int composante, double norme_H1_comp)
+  {
+    for (int K = 0; K < nb_elem; K++) //boucle sur les elements
+      {
+        double norme_grad_elem = 0.; //pour eviter les accumulations
+        for (int i = 0; i < dim; i++) //boucle sur la dimension du pb
+          {
+            double int_grad_elem = 0.; //pour eviter les accumulations
+            for (int face = 0; face < nb_faces_elem; face++) //boucle sur les faces d'un "K"
+              {
+                int face_globale = elem_faces(K, face);
 
-                  int_grad_elem += (valeurs())(face_globale, composante) * domaine_vef().face_normales(face_globale, i) * domaine_vef().oriente_normale(face_globale, K);
-                } //fin du for sur "face"
+                int_grad_elem += tab(face_globale, composante) * face_normales(face_globale, i) * oriente_normale(face_globale, K, face_voisins);
+              } //fin du for sur "face"
 
-              norme_grad_elem += int_grad_elem * int_grad_elem;
-            } //fin du for sur "i"
+            norme_grad_elem += int_grad_elem * int_grad_elem;
+          } //fin du for sur "i"
 
-          norme_H1_comp += norme_grad_elem / domaine_vef().volumes(K);
-        } //fin du for sur "K"
+        norme_H1_comp += norme_grad_elem / volumes(K);
+      } //fin du for sur "K"
 
-      dnorme_H1 += norme_H1_comp;
-    } // fin du for sur "composante"
+  }, dnorme_H1); // fin du for sur "composante"
+  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
   return sqrt(dnorme_H1);
 }
