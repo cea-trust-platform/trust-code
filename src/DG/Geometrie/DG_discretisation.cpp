@@ -26,7 +26,7 @@
 #include <Option_DG.h>
 
 Implemente_instanciable(DG_discretisation, "DG", Discret_Thyd);
-// XD polymac discretisation_base polymac -1 polymac discretization (polymac discretization that is not compatible with pb_multi).
+// XD DG discretisation_base DG -1 DG discretization
 
 
 Entree& DG_discretisation::readOn(Entree& s) { return s; }

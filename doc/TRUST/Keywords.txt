@@ -153,6 +153,7 @@
 |Cp
 |Create_domain_from_sub_domain
 |Cv
+|DG
 |DP0
 |Darcy
 |Debog
@@ -374,6 +375,7 @@
 |Optimal
 |Option
 |Option_cgns
+|Option_dg
 |Option_interpolation
 |Option_polymac
 |Option_polymac_p0

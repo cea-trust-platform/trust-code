@@ -23,6 +23,8 @@ int Option_DG::DEFAULT_ORDER = 1;
 std::map<std::string, int> Option_DG::ORDER_OVERRIDE = {};
 
 Implemente_instanciable(Option_DG,"Option_DG",Interprete);
+// XD Option_DG interprete Option_DG 1 Class for DG options.
+
 
 Sortie& Option_DG::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
@@ -33,10 +35,10 @@ Entree& Option_DG::interpreter(Entree& is)
   int vo=-1, po=-1, to=-1;
 
   Param param(que_suis_je());
-  param.ajouter("order",&DEFAULT_ORDER);
-  param.ajouter("velocity_order",&vo);
-  param.ajouter("pressure_order",&po);
-  param.ajouter("temperature_order",&to);
+  param.ajouter("order",&DEFAULT_ORDER); // XD_ADD_P int global order for the DG unknowns (1 by default)
+  param.ajouter("velocity_order",&vo); // XD_ADD_P int optional order for DG velocity unknown
+  param.ajouter("pressure_order",&po); // XD_ADD_P int optional order for DG pressure unknown
+  param.ajouter("temperature_order",&to); // XD_ADD_P int optional order for DG temperature unknown
   param.lire_avec_accolades_depuis(is);
 
   if (vo != -1)
