@@ -1,0 +1,198 @@
+# PARALLEL OK 8 #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+  pave carre
+  {
+    origine 0.0 0.0
+    nombre_de_noeuds 2 51
+    longueurs 1 1
+  }
+  {
+    bord  bas       Y = 0.0  0.0 <= X <= 1.0
+    bord  haut      Y = 1    0.0 <= X <= 1.0
+    bord  boundary  X = 0.0  0.0 <= Y <= 1
+    bord  boundary  X = 1.0  0.0 <= Y <= 1
+  }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+  partitionneur metis { nb_parts 2 }
+  nb_parts_tot 2
+  Larg_joint 2
+  Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+PolyMAC_P0  dis
+Option_PolyMAC_P0 { }
+
+Schema_euler_implicite sch
+Read sch
+{
+  tinit 0
+  nb_pas_dt_max 3
+  seuil_statio 1e-3
+  solveur ice
+  {
+    criteres_convergence { alpha 1e-5 }
+    solveur petsc cli { }
+    seuil_convergence_implicite 1e30
+  }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+  milieu_composite
+  {
+    liquide_sodium Fluide_sodium_liquide { P_ref 100000.0 T_ref 800  }
+    gaz_sodium Fluide_sodium_gaz { P_ref 100000.0 T_ref 879.9430097752451 }
+    saturation_sodium saturation_sodium { P_ref 100000.0 T_ref 879.9430097752451 }
+  }
+  models
+  {
+    flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }
+    diametre_bulles champ champ_fonc_xyz dom 2 0 0.001
+  }
+  QDM_Multiphase
+  {
+    evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+    solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+    convection { amont }
+    diffusion  { negligeable }
+    initial_conditions
+    {
+      vitesse Champ_composite 2
+      {
+        Champ_Fonc_xyz dom 2 0 1
+        Champ_Fonc_xyz dom 2 0 1
+      }
+
+      pression Champ_composite 1
+      {
+        Champ_Fonc_xyz dom 1 100000.0
+      }
+    }
+    boundary_conditions
+    {
+      boundary symetrie
+      bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2
+      {
+        champ_front_uniforme 2 0 1
+        champ_front_uniforme 2 0 1
+      }
+      haut frontiere_ouverte_pression_imposee champ_front_composite 1
+      {
+        champ_front_uniforme 1 100000.0
+      }
+    }
+  }
+  Masse_Multiphase
+  {
+    initial_conditions
+    {
+      alpha Champ_composite 2
+      {
+        Champ_Fonc_xyz dom 1 1
+        Champ_Fonc_xyz dom 1 0
+      }
+    }
+    convection { amont }
+    boundary_conditions
+    {
+      boundary paroi
+      bas  frontiere_ouverte a_ext champ_front_composite 2
+      {
+        Champ_Front_Uniforme 1 1
+        Champ_Front_Uniforme 1 0
+      }
+      haut frontiere_ouverte a_ext champ_front_composite 2
+      {
+        Champ_Front_Uniforme 1 1
+        Champ_Front_Uniforme 1 0
+      }
+    }
+    sources { flux_interfacial }
+  }
+  Energie_Multiphase
+  {
+    diffusion { negligeable }
+    convection { amont }
+    initial_conditions
+    {
+      temperature Champ_composite 2
+      {
+        Champ_Uniforme 1 800
+        Champ_Uniforme 1 879.9430097752451
+      }
+    }
+    boundary_conditions
+    {
+      boundary paroi_adiabatique
+      bas    frontiere_ouverte T_ext champ_front_composite 2
+      {
+        Champ_Front_Uniforme 1 800
+        Champ_Front_Uniforme 1 879.9430097752451
+      }
+      haut   frontiere_ouverte T_ext champ_front_composite 2
+      {
+        Champ_Front_Uniforme 1 800
+        Champ_Front_Uniforme 1 879.9430097752451
+      }
+    }
+    sources
+    {
+      puissance_thermique Champ_composite 2
+      {
+        champ_uniforme 1 100000000.0
+        champ_uniforme 1 0
+      } ,
+      flux_interfacial
+    }
+  }
+  Post_processing
+  {
+    Definition_champs  {
+      d_bulles refChamp { Pb_champ pb diametre_bulles }
+    }
+    Format lml
+    fields dt_post 1e-2
+    {
+      vitesse_liquide_sodium elem
+      vitesse_gaz_sodium elem
+      alpha_gaz_sodium elem
+      alpha elem
+      pression elem
+      pression_pa elem
+      temperature elem
+      masse_volumique elem
+      viscosite_cinematique elem
+      viscosite_dynamique elem
+      conductivite elem
+      capacite_calorifique elem
+      energie_interne elem
+      enthalpie elem
+      masse_volumique_melange elem
+      enthalpie_melange elem
+      diametre_bulles elem
+    }
+  }
+}
+Solve pb
+End
