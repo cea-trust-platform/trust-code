@@ -87,7 +87,7 @@ void Parser::init_parser()
   map_function_["ERF"] = FUNCTION::ERF;
   map_function_["RND"] = FUNCTION::RND;
   map_function_["COSH"] = FUNCTION::COSH;
-  map_function_["Sinh"] = FUNCTION::SINH;
+  map_function_["SINH"] = FUNCTION::SINH;
   map_function_["TANH"] = FUNCTION::TANH;
   map_function_["NOT"] = FUNCTION::NOT;
   map_function_["ABS"] = FUNCTION::ABS;
