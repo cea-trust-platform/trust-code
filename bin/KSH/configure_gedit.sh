@@ -11,7 +11,7 @@ keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
 # prise en compte des keywords des baltiks
 if [ -f $project_directory/share/doc_src/Keywords.txt.n ]
 then
-    keywords=$project_directory/share/doc_src/Keywords.Gedit
+    keywords=$TRUST_TMP/Keywords.Gedit
     cat $TRUST_ROOT/doc/TRUST/Keywords.txt              >   $keywords
     cat $project_directory/share/doc_src/Keywords.txt.n >>  $keywords
     # pour supprimer les lignes contenant "|\hyperpage{99}," et "|{" -> sinon probleme avec nedit
