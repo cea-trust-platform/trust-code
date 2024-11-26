@@ -231,8 +231,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(OW
  */
 const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post() const
 {
-  OWN_PTR(Champ_base) espace_stockage_source;
-  const Champ_base& source0 = get_source(0).get_champ(espace_stockage_source);
+  const Champ_base& source0 = get_source(0).get_champ(espace_stockage_source_);
   OWN_PTR(Champ_base) source_bis;
 
   if (optimisation_sous_maillage_==-1)

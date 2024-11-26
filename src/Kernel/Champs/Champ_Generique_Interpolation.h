@@ -87,6 +87,7 @@ private:
   int optimisation_sous_maillage_,optimisation_demande_;
   ArrOfInt renumerotation_maillage_;
   mutable OWN_PTR(Champ_Fonc_base) espace_stockage_;
+  mutable OWN_PTR(Champ_base) espace_stockage_source_;
 };
 
 #endif
