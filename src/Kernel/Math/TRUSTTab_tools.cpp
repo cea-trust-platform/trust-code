@@ -73,26 +73,18 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
       {
         for (int j = 0; j < lsize; j++)
           {
-            const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
-            Kokkos::atomic_max(&max_colonne_view(j), x);
-          }
-      });
-
-      /*
-      for (int j = 0; j < lsize; j++)
-        {
-          Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i, _TYPE_& local_max)
-          {
-            const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
-            local_max=Kokkos::fmax(local_max, x);
-          }, Kokkos::Max<_TYPE_>(max_colonne_view(j)));
+            _TYPE_ local_max=0;
+            for (int i = begin_bloc; i < end_bloc ; i++)
+              {
+                const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
+                local_max = Kokkos::fmax(local_max, x);
+              }
+            max_colonne_view(j)=local_max;
+          });
+          bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+          end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
         }
-        */
-
     }
-
-  bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
 }
 }
 
