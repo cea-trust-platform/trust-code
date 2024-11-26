@@ -79,7 +79,7 @@ Read pb
         boundary_conditions { wall symetrie }
         sources
         {
-            DP_Impose { dp Champ_uniforme 3 100 0 0 surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } } , perte_Charge_Singuliere { dir K regul { K0 7.0 deb -5 eps 0.5*(t>1) } surface { face_group surf1 orientation Champ_Uniforme 3 0 0 -1 } }
+            DP_Impose { dp Champ_uniforme 3 100 0 0 surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } } , perte_Charge_Singuliere { dir K regul { K0 7.0 deb -5 eps 10*(t>1) } surface { face_group surf1 orientation Champ_Uniforme 3 0 0 -1 } }
         }
     }
     Masse_Multiphase

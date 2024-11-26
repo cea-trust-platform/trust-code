@@ -65,7 +65,7 @@ Read pb
         boundary_conditions { wall symetrie }
         sources
         {
-            DP_Impose { dp_regul { DP0 100 deb 5 eps 0.5*(t>1) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
+            DP_Impose { dp_regul { DP0 100 deb 5 eps 10*(t>1) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
         }
     }
 
