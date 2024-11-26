@@ -108,7 +108,7 @@ class TRUSTDocGenerator:
         s = f".. _{nam}:\n\n"
         s += f"**{nam}**\n"
         s += "-" * (len(nam)+4) + "\n\n"
-        if len(c._synonyms[None]):
+        if len(c._synonyms[None]) and c._synonyms[None] != ['nul']:
             syno = c._synonyms[None]
             s += "**Synonyms:** %s\n\n" % ", ".join(syno)
         # # Inheritance (if not parent)
