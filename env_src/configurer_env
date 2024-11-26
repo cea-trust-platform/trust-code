@@ -776,7 +776,7 @@ then
    cores_per_proc=`grep "core id" /proc/cpuinfo | sort -u | wc -l` && [ "$cores_per_proc" = 0 ] && cores_per_proc=1
    total_cores=`echo $procs $cores_per_proc | awk '{print $1*$2}'`
    echo "# Detected $procs processors of $cores_per_proc cores means a total of $total_cores physical cores." | tee -a $env
-   CACHE_SIZE=`awk '/cache size/ {c=$(NF-1);if (c>cs) cs=c} END {print cs}' /proc/cpuinfo`
+   CACHE_SIZE=`awk '/cache size/ {if ($(NF-1)>cs) cs=$(NF-1)} END {print cs}' /proc/cpuinfo | sort -u`
    echo "# Detected a size cache of $CACHE_SIZE KB." | tee -a $env
 elif [ `uname -s` = "Darwin" ]; then
    total_cores=$(sysctl -n hw.perflevel0.logicalcpu)
