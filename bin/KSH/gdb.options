@@ -1,18 +1,27 @@
-# To print a TRUST DoubleVect, use: dump name_of_array
-define dump
- set $dima = $arg0.size_array_
- printf "%8d \n", $dima
- set $i = 0
- while $i < $dima
-    # IntVect
-    if *($arg0.info_obj.n) == 73
-    printf "[%10d]= %10d \n", $i, $arg0.data_[$i++]
-    end
-    # DoubleVect
-    if *($arg0.info_obj.n) == 68
-    printf "[%10d]= %16.12f \n", $i, $arg0.data_[$i++]
-    end
- end
+define pttab
+  # Syntax:
+  # pttab ze_tab       <- will print 10 first values
+  # pttab ze_tab 21    <- will print 21st values (range [0,21[
+  # pttab ze_tab 15 30 <- will print values in range [15,30[
+  set $first=0
+  set $nmax=10
+  set $sz=($arg0).mem_->size()
+  if $argc == 2
+    set $nmax=$arg1
+  end
+  if $argc == 3
+    set $first=$arg1
+    set $nmax=$arg2
+  end
+  if $nmax > $sz
+     set $nmax=$sz
+  end
+  printf "({Int|Double}Tab)0x%x (size_array_=%i): ",&$arg0,$sz
+  if $sz!=$nmax
+    printf " [CUT] "
+  end
+  printf "\n"
+  print *(($arg0).mem_->data()+$first)@($nmax-$first)
 end
 
 # To print a TRUST DoubleTab, use: dumptab name_of_array
@@ -30,6 +39,8 @@ define dumptab
     set $i = $i+1
  end
 end 
+
+
 # To print a TRUST IntTab, use: dumpinttab name_of_array
 define dumpinttab
  set $dimb = $arg0.line_size()
@@ -45,6 +56,8 @@ define dumpinttab
     set $i = $i+1
  end
 end
+
+
 # To print a TRUST IntVect, use: dumpint name_of_array
 define dumpint
  set $dima = $arg0.size_array_
@@ -54,6 +67,7 @@ define dumpint
     printf "[%10d]= %10d\n", $i, $arg0.data_[$i++]
  end
 end
+
 define ptab
  set $j = $arg0.dimension_tot(1) * $arg1
  set $i = 0
@@ -62,6 +76,7 @@ define ptab
  end
  printf "\n"
 end
+
 define pinttab
  set $j = $arg0.dimension_tot(1) * $arg1
  set $i = 0
@@ -70,9 +85,11 @@ define pinttab
  end
  printf "\n"
 end
+
 define parray
   printf "%16.12\n", $arg0.data_[$arg1]
 end
+
 define pintarray
   printf "%10d\n", $arg0.data_[$arg1]
 end
