@@ -151,13 +151,12 @@ for mkf in `cd $TRUST_ENV;\ls make.$TRUST_ARCH_CC*`; do
     TRUST_ARCH_OPT=$TRUST_ARCH${mkf#make.$TRUST_ARCH_CC}
     # Point to optim version if not there
     if [ ! -d $TRUST_MEDCOUPLING_ROOT/$TRUST_ARCH_OPT/lib ]; then
-        ln -nsf $TRUST_MEDCOUPLING_ROOT/${TRUST_ARCH}_opt $TRUST_MEDCOUPLING_ROOT/$TRUST_ARCH_OPT 
+        (cd $TRUST_MEDCOUPLING_ROOT; ln -nsf ${TRUST_ARCH}_opt $TRUST_ARCH_OPT)
     fi
 done
 
 # Update include link - always pointing to opt includes:
-ln -nsf $TRUST_MEDCOUPLING_ROOT/${TRUST_ARCH}_opt/include $TRUST_MEDCOUPLING_ROOT/include
-
+(cd $TRUST_MEDCOUPLING_ROOT; ln -nsf ${TRUST_ARCH}_opt/include include)
 # Creation of env file. Done in a temporary file, because the final env.sh is the main target of the Makefile
 # but we need an env file for the test below ... 
 echo "@@@@@@@@@@@@ Creating env file ..."
