@@ -639,7 +639,7 @@ KOKKOS_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
   /* OC : Nouvelle version : */
   if (node.value<=0)
     {
-      int unary_function = -node.value-1; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
+      True_int unary_function = -node.value-1; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
       // afin de distinguer operateur binaire (>0) et fonctions unaires (<0>
       // Il est donc necessaire de prendre -node->value ici pour referencer un element de la liste
       // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
@@ -711,17 +711,10 @@ KOKKOS_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
     }
 }
 
-/*
-double Parser::evalOp(PNode* node)
-{
-  return const_cast<const Parser*>(this)->evalOp(node);
-} */
-
 // Ne pas inliner car sinon Parser::eval(PNode* node) plus souvent appelee encore
 // ne sera peut etre pas inlinee...
 KOKKOS_FUNCTION double Parser::evalOp(const PNodePod& node, double x, double y)
 {
-  // PL 12/11/2010, reecriture avec switch pour optimisation
   switch (node.value)
     {
     case 0: // ADD
@@ -773,7 +766,7 @@ KOKKOS_FUNCTION double Parser::evalOp(const PNodePod& node, double x, double y)
 #ifdef _OPENMP_TARGET
       Process::Kokkos_exit("Method evalOp : Unknown operation during expression parsing!");
 #else
-      Cerr << "Method evalOp : Unknown op " << (int)node.value << "!!!" << finl;
+      Cerr << "Method evalOp : Unknown op " << (True_int)node.value << "!!!" << finl;
       Process::exit();
 #endif
       return 0;

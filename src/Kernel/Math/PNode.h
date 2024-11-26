@@ -14,6 +14,7 @@
 *****************************************************************************/
 #ifndef PNode_included
 #define PNode_included
+#include <arch.h>
 
 enum PNode_type { NOTHING=-1, OP=1, VALUE=2, FUNCTION=3, VAR=4, PARAMETER=5 };
 class PNode
@@ -32,7 +33,7 @@ public :
   PNode* left;
   PNode* right;
   int type;
-  int value;
+  True_int value;
   double nvalue = -100.;
 
   PNode();
@@ -48,7 +49,7 @@ public :
   int left;
   int right;
   int type;
-  int value;
+  True_int value;
   double nvalue = -100.;
 
 //    PNodePod();
