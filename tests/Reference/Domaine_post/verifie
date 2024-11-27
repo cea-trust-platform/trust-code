@@ -12,4 +12,24 @@ sed -i "s?MOYENNE_PRESSION?MOYENNE_P?g" seq.lml
 sed -i "s?Correlation_PRESSION?Correlation_pression?g" seq.lml
 compare_lata $jdd.lml seq.lml 1>compare_lata.log 2>&1
 [ $? != 0 ] && echo $ECHO_OPTS "Error when comparing $jdd.lml seq.lml files:" && cat compare_lata.log && export err=1
+[ $err != 0 ] && exit $err
+
+#####################################
+# Comparaison non regression des .son
+#####################################
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   #[ $debog = 1 ] && echo $msg
+}
+
+# Le fichier .son contient les forces de pression non nulle a t=0 et qui augmentent avec le temps:
+err=0
+for file in `ls *.son.ref`
+do
+   msg="compare_sonde $file ${file%.ref}"
+   eval $msg 1>verifie.log 2>&1
+   message $? 0
+done
 exit $err
+

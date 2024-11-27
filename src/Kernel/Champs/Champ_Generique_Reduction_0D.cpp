@@ -90,7 +90,7 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
       Cerr<<"The source field named "<<nom_source[0]<<" of this last "<<que_suis_je()<<" field "<<finl;
       Cerr<<"must be previously interpolated at the elem or som location."<<finl;
       Cerr<<"Please use instead the syntax : "<<finl;
-      Cerr<<"..."<<que_suis_je()<<" { source Champ_Post_Interpolation { ... } ... }"<<finl;
+      Cerr<<"..."<<que_suis_je()<<" { source Interpolation { localisation ... } ... }"<<finl;
       Cerr<<"or contact TRUST support."<<finl;
       exit();
     }
@@ -197,9 +197,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ_without_evaluation(OWN
  */
 const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
 {
-
-  OWN_PTR(Champ_base) source_espace_stockage;
-  const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
+  const Champ_base& source = get_source(0).get_champ(source_espace_stockage_);
   const Domaine_dis_base& domaine_dis = get_source(0).get_ref_domaine_dis_base();
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
@@ -209,8 +207,11 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
   if (source.que_suis_je()=="Champ_Face_PolyMAC_P0P1NC" || source.que_suis_je()=="Champ_Face_PolyMAC_P0")
     Process::exit("PolyMAC_P0P1NC/PolyMAC_P0 face field not supported yet for Reduction_0D");
 
-  OWN_PTR(Champ_Fonc_base)  es_tmp;
-  espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
+
+  if (espace_stockage_.est_nul())
+    creer_espace_stockage(nature_source,nb_comp,espace_stockage_);
+  else
+    espace_stockage_->changer_temps(get_time());
 
   int nb_dim = source.valeurs().nb_dim();
   // correction pour le 3D
@@ -219,7 +220,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
 
   ConstDoubleTab_parts valeurs_source_parts(source.valeurs()); // pour ignorer les variables auxiliaires
   const DoubleTab& valeurs_source = valeurs_source_parts[0];   // de PolyMAC_P0P1NC (sinon : min, moyenne FAUX)
-  DoubleTab& espace_valeurs = espace_stockage->valeurs();
+  DoubleTab& espace_valeurs = espace_stockage_->valeurs();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   double val_extraite=-100.;
 
@@ -240,7 +241,6 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
                 if (zvf.orientation(i)==comp)
                   ++size_vect;
             }
-
 
           DoubleTrav vect_source;
           //Pour l'option somme vect_source doit avoir une structure parallele
