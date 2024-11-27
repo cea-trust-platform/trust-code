@@ -84,7 +84,8 @@ ccc_msub_interactif()
             #qstat -u $me $queue
             #ccc_mpstat -u $me $queue
             squeue -u $me -p $queue
-            sleep 60
+            # wait 5 min instead of 60 seconds
+            sleep 300
          else
             # Unknown error
             echo $id && exit -1
@@ -98,7 +99,8 @@ ccc_msub_interactif()
    #while [ "`ccc_mpstat -u $me | grep $id`" != "" ]
    while [ "`squeue -h -j $id 2>/dev/null`" != "" ]
    do
-      sleep 3
+      # wait 5 min instead of 3 seconds
+      sleep 300
    done
 }
 
