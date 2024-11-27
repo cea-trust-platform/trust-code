@@ -69,6 +69,7 @@ public:
 
   inline int rank() const;
   inline int nproc() const;
+  inline int group_number() const;
 
   // Veut-on faire des verifications supplementaires sur les communications ?
   // Ces verifications impliquent des communications en plus, ce qui modifie
@@ -114,7 +115,7 @@ protected:
   Comm_Group(const Comm_Group&);  // interdit !
   const Comm_Group& operator=(const Comm_Group&);   // interdit !
   virtual void       init_group(const ArrOfInt& pe_list);
-  void               init_group_node(int nproc, int loc_rank, int glob_rank);
+  void               init_group_node(int nproc, int loc_rank, int glob_rank, int node_number);
   void               init_group_trio(int nproc, int rank);
   friend class PE_Groups;
 
@@ -181,6 +182,14 @@ inline int Comm_Group::nproc() const
 {
   assert(nproc_ >= 0);
   return nproc_;
+}
+
+/*! @brief Renvoie le numero de mon groupe
+ *
+ */
+inline int Comm_Group::group_number() const
+{
+  return group_number_;
 }
 
 #endif

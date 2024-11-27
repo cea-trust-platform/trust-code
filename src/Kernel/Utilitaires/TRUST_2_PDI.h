@@ -55,11 +55,13 @@ public:
         MPI_Comm comm = nodeComm->get_mpi_comm();
         int nodeSz = nodeComm->nproc();
         int nodeRk = nodeComm->rank();
+        int nodeId = nodeComm->group_number();
 
         PDI_multi_expose("Parallelism",
                          "nodeComm",&comm, PDI_OUT,
                          "nodeSize",&nodeSz, PDI_OUT,
                          "nodeRk",    &nodeRk, PDI_OUT,
+                         "nodeId",    &nodeId, PDI_OUT,
                          nullptr);
       }
 #endif

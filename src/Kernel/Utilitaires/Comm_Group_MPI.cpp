@@ -772,7 +772,22 @@ void Comm_Group_MPI::init_comm_on_numa_node()
   True_int nbproc;
   mpi_error(MPI_Comm_size(mpi_comm_, &nbproc));
   mpi_error(MPI_Comm_rank(mpi_comm_, &loc_rank));
-  Comm_Group::init_group_node(nbproc, loc_rank, current_rank);
+
+  // get rank of my node among all the other nodes:
+  // we create a temporary communicator which gathers all masters of each node group
+  // so that the rank of my node is the rank of my master inside this temporary communicator
+  int node_number;
+  int master = loc_rank==0? 0 : MPI_UNDEFINED;
+  MPI_Comm tmp;
+  MPI_Comm_split(current_mpi_comm, master, current_rank, &tmp);
+  if(tmp != MPI_COMM_NULL)
+    MPI_Comm_rank(tmp, &node_number);
+  // each master broadcasts info to their group
+  mpi_error(MPI_Bcast(&node_number, 1,  MPI_INT, 0, mpi_comm_));
+  if (tmp!= MPI_COMM_NULL)
+    MPI_Comm_free(&tmp);
+
+  Comm_Group::init_group_node(nbproc, loc_rank, current_rank, node_number);
 
 }
 

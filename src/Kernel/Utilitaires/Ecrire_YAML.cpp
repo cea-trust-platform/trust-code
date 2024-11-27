@@ -272,6 +272,8 @@ void Ecrire_YAML::declare_metadata_(int save, std::string& text)
       add_line_("nodeSize : int", text);
       add_line_("# my rank inside my group", text);
       add_line_("nodeRk : int", text);
+      add_line_("# rank of my group among all the other groups", text);
+      add_line_("nodeId : int", text);
     }
   end_bloc_();
 }

@@ -32,7 +32,18 @@ public:
   {
     Pb2Save new_pb;
     new_pb.pb = pb_base;
-    new_pb.filename = file_name;
+
+    // if we're in parallel, we need to index the filename with the node id
+    int with_ext = file_name.find(".");
+    if(Process::is_parallel() && with_ext >= 0)
+      {
+        std::string suffix = file_name.getString().substr(with_ext+1);
+        std::string prefix = file_name.getString().substr(0,with_ext);
+        new_pb.filename =  prefix + "_${nodeId}." + suffix;
+      }
+    else
+      new_pb.filename = file_name;
+
     pbs_.push_back(new_pb);
   }
 

@@ -160,7 +160,7 @@ void Comm_Group::init_group_trio(int nproc_tot, int arank)
  * This method is called by derived classes when initializing communicator on node
  *
  */
-void Comm_Group::init_group_node(int nproc, int loc_rank, int glob_rank)
+void Comm_Group::init_group_node(int nproc, int loc_rank, int glob_rank, int node_number)
 {
   assert(loc_rank >= 0 && loc_rank < nproc);
 
@@ -179,6 +179,8 @@ void Comm_Group::init_group_node(int nproc, int loc_rank, int glob_rank)
 
   world_ranks_.resize_array(nproc_);
   all_gather(&glob_rank, world_ranks_.data(), 1);
+
+  group_number_ = node_number;
 }
 
 void Comm_Group::set_check_enabled(int flag)
