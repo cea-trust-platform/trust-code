@@ -159,12 +159,18 @@ Read pb
             critere_q_min 	Reduction_0D { methode min 	source refChamp { Pb_Champ pb critere_q } }
             critere_q_max 	Reduction_0D { methode max 	source refChamp { Pb_Champ pb critere_q } }
             critere_q_mean 	Reduction_0D { methode average 	source refChamp { Pb_Champ pb critere_q } }
+            pression_min	Reduction_0D { methode min 	source Interpolation { localisation elem source refChamp { Pb_Champ pb pression } } }
+            pression_max 	Reduction_0D { methode max 	source Interpolation { localisation som source refChamp { Pb_Champ pb pression } } }
+            pression_mean	Reduction_0D { methode average 	source Interpolation { localisation elem source refChamp { Pb_Champ pb pression } } }
         }
         Probes
         {
             critere_q_min critere_q_min periode 0.01 numero_elem_sur_maitre 0
             critere_q_max critere_q_max periode 0.01 numero_elem_sur_maitre 0
             critere_q_mean critere_q_mean periode 0.01 numero_elem_sur_maitre 0
+            pression_min pression_min periode 0.01 numero_elem_sur_maitre 0
+            pression_max pression_max periode 0.01 numero_elem_sur_maitre 0
+            pression_mean pression_mean periode 0.01 numero_elem_sur_maitre 0
         }
         fields dt_post 2.
         {
