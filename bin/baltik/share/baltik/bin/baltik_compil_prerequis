@@ -104,9 +104,9 @@ install_arch()
     cd  $3
     DIR=`pwd`
     # On prend les compilos de TRUST
-    CXX=$TRUST_CC_BASE  #&& [ "$TRUST_CC_BASE_EXTP" != "" ]  && CXX=$TRUST_CC_BASE_EXTP  && MPICH_CXX=$CXX && OMPI_CXX=$CXX
-    CC=$TRUST_cc_BASE   #&& [ "$TRUST_cc_BASE_EXTP" != "" ]  && CC=$TRUST_cc_BASE_EXTP   && MPICH_CC=$CC   && OMPI_CC=$CC
-    F77=$TRUST_F77_BASE #&& [ "$TRUST_F77_BASE_EXTP" != "" ] && F77=$TRUST_F77_BASE_EXTP && MPICH_FC=$F77  && OMPI_FC=$F77
+    CXX=$TRUST_CC_BASE  && [ "$TRUST_CC_BASE_EXTP" != "" ]  && CXX=$TRUST_CC_BASE_EXTP  && MPICH_CXX=$CXX && OMPI_CXX=$CXX
+    CC=$TRUST_cc_BASE   && [ "$TRUST_cc_BASE_EXTP" != "" ]  && CC=$TRUST_cc_BASE_EXTP   && MPICH_CC=$CC   && OMPI_CC=$CC
+    F77=$TRUST_F77_BASE && [ "$TRUST_F77_BASE_EXTP" != "" ] && F77=$TRUST_F77_BASE_EXTP && MPICH_FC=$F77  && OMPI_FC=$F77
     env CXX=$CXX CC=$CC F77=$F77 $DIR/configure --prefix=$dir ${configure_flag}
     $TRUST_MAKE || make
     make install
@@ -122,7 +122,8 @@ install_arch()
 
 
 ###   on regarde si on peut faire le test
-test_execution 
+# PL: on desactive le test pour les compilateurs exotiques (eg: nvc++)
+[ "$TRUST_CC_BASE_EXTP" = "" ] && test_execution 
 
 echo $status_tot
 
