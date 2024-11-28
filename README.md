@@ -12,13 +12,15 @@ You can visit **[TRUST website](https://cea-trust-platform.github.io/)**
 
 ```bash
 # Check out the sources for TRUST
-git clone git@github.com:cea-trust-platform/trust-code.git TRUST-1.9.5
+git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.5
 # Move to the cloned TRUST folder
 cd TRUST-1.9.5
 # Download the required external packages
 wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.5.tar
 # or:
 # curl ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.5.tar > externalpackages-1.9.5.tar
+# or:
+# wget "https://drive.usercontent.google.com/download?id=1YrG36uK5cJoQ9gHAnilJSUjfTWnFBboJ&export=download&authuser=0&confirm=t" -O externalpackages-1.9.5.tar
 # Unzip the downloaded external packages folder
 tar xf externalpackages-1.9.5.tar
 # Have a look at the available configuration options
