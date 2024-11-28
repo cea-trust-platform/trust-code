@@ -1384,7 +1384,8 @@ echo "##################"
 echo "# On study cases #"
 echo "##################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-etude_activation=1
+# ND je desactive les etudes car souci sur irene
+etude_activation=0
 if [ `date '+%u'` -ge 5 ]
 then
    # le vendredi soir on lance toutes les etudes

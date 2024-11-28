@@ -40,7 +40,9 @@
    fun:_Znwm
    fun:_ZN6Kokkos4Impl14SerialInternal9singletonEv
    fun:_ZN6Kokkos6Serial15impl_initializeERKNS_22InitializationSettingsE
+   ...
    fun:_ZN6Kokkos4Impl16ExecSpaceManager17initialize_spacesERKNS_22InitializationSettingsE
+   ...
    fun:_ZN6Kokkos10initializeERiPPc
    fun:_ZN8mon_main13init_parallelE*PPc*
    fun:_Z10main_TRUST*PPcRP8mon_main*

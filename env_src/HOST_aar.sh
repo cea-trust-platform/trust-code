@@ -7,21 +7,21 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    #
-   GNU_ENV=`ls /home/prog/trust/env_gcc-8.2.0_openmpi-3.1.6.sh 2>/dev/null`
+   GNU_ENV=`ls /home/prog/trust/env_openmpi-4.1.6.sh 2>/dev/null`
    if [ "$GNU_ENV" != "" ]
    then
       ligne_supp="source $GNU_ENV # GNU compiler and openmpi"
       echo $ligne_supp  >> $env
       echo "
 # link to add qstat on aar for submission BEGIN
-PATH=/home/prog/torque/torque-2.5.12/bin:/home/prog/torque/maui-3.3.1/bin:\$PATH
+#PATH=/home/prog/torque/torque-2.5.12/bin:/home/prog/torque/maui-3.3.1/bin:\$PATH
 LS_COLORS=''
 PBS_SERVER=aar
 export PATH LS_COLORS PBS_SERVER
 # link to add qstat on aar for submission END"  >> $env
       source $GNU_ENV
    else
-      echo "No GNU environment found under /home/prog/trust/"
+      echo "No MPI environment found under /home/prog/trust/"
       echo "Contact TRUST support."
       exit -1
    fi

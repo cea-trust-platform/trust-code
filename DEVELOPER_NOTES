@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.9.5_beta : Changes since version 1.9.4 :
+Developer notes version 1.9.5 : Changes since version 1.9.4 :
 -------------------------------------------------------------
 29/10/24 (TRUST) Major change : No more try/catch in get_champ. Virtual methods has_champ added and can be used !
 28/10/24 (TRUST) Kokkos       : Add -kokkos_openmp configure option to build Kokkos with OpenMP backend instead of serial backend

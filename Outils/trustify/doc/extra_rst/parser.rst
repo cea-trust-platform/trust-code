@@ -49,15 +49,15 @@ In a mathematical function, used for example in field definition, it's possible 
 +---------+----------------------------------------------------------------------------+
 | x_GT_y  | greater than (returns 1 if :math:`x>y`, else 0)                            |
 +---------+----------------------------------------------------------------------------+
-| x_GE_y  | greater than or equal to (returns 1 if x$\geq$ y, else 0)                  |
+| x_GE_y  | greater than or equal to                                                   |
 +---------+----------------------------------------------------------------------------+
-| x_LT_y  | less than (returns 1 if x{\textless}y, else 0)                             |
+| x_LT_y  | less than (returns 1 if x<y, else 0)                                       |
 +---------+----------------------------------------------------------------------------+
-| x_LE_y  | less than or equal to (returns 1 if x{\textless}=y, else 0)                |
+| x_LE_y  | less than or equal to                                                      |
 +---------+----------------------------------------------------------------------------+
 | x_MIN_y | returns the smallest of x and y                                            |
 +---------+----------------------------------------------------------------------------+
-| x_MA\_y | returns the largest of x and y                                             |
+| x_MAX_y | returns the largest of x and y                                             |
 +---------+----------------------------------------------------------------------------+
 | x_MOD_y | modular division of x per y                                                |
 +---------+----------------------------------------------------------------------------+

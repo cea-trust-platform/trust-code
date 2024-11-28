@@ -74,14 +74,9 @@ def build_location_in_baltik_mode( error_manager ):
 
 # classname analysis utility function
 def classname_analysis( classname, error_manager ):
-    import re
+    #import re
 
-    root = classname
-    root = re.sub( "^\s*",  "",  root )
-    root = re.sub( "\s*$",  "",  root )
-    root = re.sub( "\(\s*", "(", root )
-    root = re.sub( "\s*\)", ")", root )
-
+    root = classname.strip()
     macros = []
 
     #pattern = "^(REF|DERIV|LIST|VECT)\((.*)\)$"
@@ -191,7 +186,7 @@ def build_keywords_for_standard_class( arguments, error_manager ):
     inclusions.append( keywords[ "header_filename" ] )
     inclusions.reverse( )
 
-    keywords[ "source_inclusions" ] = "\n".join( [ "#include <{0}>".format( x ) for x in inclusions ] )
+    keywords[ "source_inclusions" ] = r"\n".join( [ "#include <{0}>".format( x ) for x in inclusions ] )
 
     if ( arguments.trust_mode ):
         keywords[ "location" ] = build_location_in_trust_mode( error_manager )
@@ -273,7 +268,7 @@ def build_keywords_for_macro_class( arguments, error_manager ):
     header_inclusions = [ x for x in set( macros ) ]
     header_inclusions.remove( classtype.upper( ) )
     header_inclusions.insert( 0, classtype.upper( ) )
-    keywords[ "header_inclusions" ] = "\n".join( [ "#include <{0}.h>".format( prefixes_[ x ] ) for x in header_inclusions ] )
+    keywords[ "header_inclusions" ] = r"\n".join( [ "#include <{0}.h>".format( prefixes_[ x ] ) for x in header_inclusions ] )
 
     source_inclusions = [ "{0}.h".format( root ) ]
     macros.reverse( )
@@ -281,7 +276,7 @@ def build_keywords_for_macro_class( arguments, error_manager ):
         source_inclusions.append( "_".join( ( prefixes_[ m ], source_inclusions[ -1 ] ) ) )
     source_inclusions.reverse( )
 
-    keywords[ "source_inclusions" ] = "\n".join( [ "#include <{0}>".format( x ) for x in source_inclusions ] )
+    keywords[ "source_inclusions" ] = r"\n".join( [ "#include <{0}>".format( x ) for x in source_inclusions ] )
 
     if ( arguments.trust_mode ):
         keywords[ "location" ] = build_location_in_trust_mode( error_manager )
