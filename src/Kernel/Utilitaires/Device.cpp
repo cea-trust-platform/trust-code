@@ -298,8 +298,6 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, 
 #ifdef _OPENMP_TARGET
   if (Objet_U::computeOnDevice)
     {
-      init_openmp();
-      self_test();
       DataLocation currentLocation = tab.get_data_location();
       tab.set_data_location(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
       // Important for ref_array/ref_tab support, we take the size of the memory allocated, not the size of the array (tab.size_array()):

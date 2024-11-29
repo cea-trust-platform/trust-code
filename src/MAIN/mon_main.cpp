@@ -330,6 +330,13 @@ void mon_main::dowork(const Nom& nom_du_cas)
     Process::Journal() << "Journal logging started" << finl;
   }
 
+#ifdef _OPENMP_TARGET
+  // PL: It will be better to do it sooner (near Cuda init or Kokkos init) but need stat and journal initialized
+  // Soon obsolete:
+  init_openmp();
+  self_test();
+#endif
+
   Nom nomfic( nom_du_cas );
   nomfic += ".stop";
   if (!get_disable_stop() && Process::je_suis_maitre())
