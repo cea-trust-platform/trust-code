@@ -428,7 +428,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
 DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
   const Domaine& domaine = domaine_dis_base().domaine();
-  IntVect les_polys;
+  IntTrav les_polys;
   les_polys.resize(tab_valeurs.dimension_tot(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
 
   domaine.chercher_elements(positions, les_polys);

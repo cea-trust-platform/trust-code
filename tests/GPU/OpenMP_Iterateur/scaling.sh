@@ -1,5 +1,6 @@
 #!/bin/bash
 # Scaling a mesh on several GPU
+[ "$TRUST_ROOT" = "" ] && echo "TRUST_ROOT empty." && exit
 mkdir -p scaling && cd scaling
 echo "Config     Ax=B B"
 for version in gpu cpu
@@ -8,6 +9,7 @@ do
    [ $HOST = adastra ] && mpis=192 && gpus="1 2 3 4 5 6 7 8"   && sizes="15x15x4 20x20x5 24x24x7 31x31x10 41x41x14 51x51x17 61x61x20 74x74x25 92x92x32"
    [ $HOST = topaze ]  && mpis=128 && gpus="1 2 3 4"           && sizes="15x15x4 20x20x5 24x24x7 31x31x10 41x41x14 51x51x17 61x61x20 74x74x25 92x92x32"
    [ "`hostname`" = petra ] && mpis=32 && gpus="1 2"           && sizes="15x15x4 20x20x5 24x24x7 31x31x10 41x41x14 51x51x17 61x61x20"
+   [ "`hostname`" = is157091 ] && mpis=32 && gpus="1"          && sizes="15x15x4 20x20x5 24x24x7 31x31x10 41x41x14 51x51x17 61x61x20"
    [ $version = cpu ] && gpus="0"
    for gpu in $gpus
    do
@@ -22,8 +24,8 @@ do
             run=1 && [ -f $jdd.TU ] && run=0
             [ $run = 1 ] && echo "$jdd ..."
             # Creation data
-            [ $version = gpu ] && [ "$TRUST_USE_ROCM" = 1 ] && cp ../../OpenMP_Iterateur_BENCH_rocALUTION.data $jdd.data  && exec=$local/trust/amgx_openmp/exec/TRUST_mpi_opt
-            [ $version = gpu ] && [ "$TRUST_USE_CUDA" = 1 ] && cp ../../OpenMP_Iterateur_BENCH_AmgX.data $jdd.data  && exec=$local/trust/amgx_openmp/exec/TRUST_mpi_opt
+            [ $version = gpu ] && [ "$TRUST_USE_ROCM" = 1 ] && cp ../../OpenMP_Iterateur_BENCH_rocALUTION.data $jdd.data  && exec=$TRUST_ROOT/exec/TRUST_mpi_opt
+            [ $version = gpu ] && [ "$TRUST_USE_CUDA" = 1 ] && cp ../../OpenMP_Iterateur_BENCH_AmgX.data $jdd.data        && exec=$TRUST_ROOT/exec/TRUST_mpi_opt
             [ $version = cpu ] && cp ../../OpenMP_Iterateur_BENCH_PETSc.data $jdd.data && exec=$local/trust/tma/exec/TRUST_mpi_opt
             size=`echo $size | awk '{gsub("x"," ",$0);print $0}'`
             sed -i "1,$ s?31 31 10?$size?" $jdd.data
@@ -34,9 +36,9 @@ do
             # Analyse
             awk '/RAM taken/ {if ($1>RAM) RAM=$1} END {print "RAM= "RAM}' $jdd.out_err >> $jdd.TU
             dof=`awk '/Total number of elements/ {print $NF;exit}' $jdd.out_err`
-	    awk -v mpi=$mpi -v gpu=$gpu -v dof=$dof '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print mpi"MPI"(gpu==0?"":"+"gpu"GPU")" "dof" "s" "b}' $jdd.TU
+            awk -v mpi=$mpi -v gpu=$gpu -v dof=$dof '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} /RAM=/ {RAM=$2} END {print mpi"MPI"(gpu==0?"":"+"gpu"GPU")" "dof" "s" "b" "RAM}' $jdd.TU
             cd - 1>/dev/null 2>&1
-	 done   
+         done
       done
    done    
 done

@@ -660,7 +660,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  DoubleTab tab_nu;
+  DoubleTrav tab_nu;
 
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)

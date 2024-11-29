@@ -383,6 +383,7 @@ typename Domaine_32_64<_SZ_>::SmallArrOfTID_t& Domaine_32_64<_SZ_>::chercher_ele
       else
         {
           // Recherche dans le cache:
+          ToDo_Kokkos("critical");
           for (int i = 0; i < cached_positions_.size(); i++)
             if (sameDoubleTab(positions, cached_positions_[i]))
               {
