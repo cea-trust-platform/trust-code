@@ -195,7 +195,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ_without_evaluation(OWN
  *  Dans le cas ou le champ possede plusieurs composantes, elles sont traitees une par une
  *
  */
-const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& espace_stockage) const
+const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)&) const
 {
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage_);
   const Domaine_dis_base& domaine_dis = get_source(0).get_ref_domaine_dis_base();
@@ -314,7 +314,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)& e
     }
   espace_valeurs.echange_espace_virtuel();
 
-  return espace_stockage;
+  return espace_stockage_;
 }
 
 //Extrait la valeur du vecteur val_source dans val_extraite
