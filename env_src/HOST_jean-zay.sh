@@ -49,7 +49,11 @@ define_modules_config()
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
-   [ "$CUDA_VERSION" != "" ] && echo "export NVHPC_CUDA_HOME=\$NVHPC_ROOT/cuda/$CUDA_VERSION" >> $env # Prendre desormais le CUDA de NVHPC
+   if [ "$CUDA_VERSION" != "" ]
+   then
+      echo "export NVHPC_CUDA_HOME=\$NVHPC_ROOT/cuda/$CUDA_VERSION" >> $env # Prendre desormais le CUDA de NVHPC
+      echo "export TRUST_DISABLE_STRUMPACK=1" >> $env
+   fi
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash

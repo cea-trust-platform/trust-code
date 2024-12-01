@@ -46,7 +46,7 @@ then
    then
       PETSC_P="\$ENV{PETSC_ROOT}/\$ENV{TRUST_ARCH}\${OPT}/lib"
       PETSC_L="petsc"
-      superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC_L=$PETSC_L" ${superlu%.a}"
+      superlu=`ls libsuperlu_dist.a 2>/dev/null` && superlu=${superlu#lib} && PETSC_L=$PETSC_L" ${superlu%.a}"
       [ -f libcmumps.a ] && PETSC_L=$PETSC_L" cmumps dmumps mumps_common smumps zmumps pord"
       [ -f libpastix.a ] && PETSC_L=$PETSC_L" pastix"
       [ -f libml.a ] && PETSC_L=$PETSC_L" ml"

@@ -276,7 +276,8 @@ echo "****************************************"
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
    echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
-   with_gpu="--with-cuda"
+   PETSC_HAVE_CUDA=$TRUST_USE_CUDA
+   with_gpu="--with-cuda --with-cuda-arch=$TRUST_CUDA_CC"
    with_gpu=$with_gpu" --with-cudac=$TRUST_NVCC"
    with_gpu=$with_gpu" --with-cuda-dir=$CUDA_ROOT"
    if [ -d $CUDA_ROOT/lib64/stubs ]
@@ -452,19 +453,16 @@ add_package metis
 #############
 # STRUMPACK #
 #############
-TRUST_USE_STRUMPACK=1
-[ "$TRUST_USE_GPU" = 1 ] && TRUST_USE_STRUMPACK=0 # Trop de soucis avec le build GPU... Attendre montee de version PETSc
-if [ "$TRUST_USE_STRUMPACK" = 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" = 0 ]
+if [ "$TRUST_DISABLE_STRUMPACK" != 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" = 0 ]
 then
    add_package zfp
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       add_package magma && with_packages=$with_packages" --with-magma-gputarget=Ampere"
-      with_packages=$with_packages" --with-cuda-arch=$TRUST_CUDA_CC"
       # Encore des problemes  de build (cublas_lib not found, cmake slate pas a jour encore?) sur cluster GPU (ex topaze)
       # ou c'est utile (multi-GPU), et meme sur A6000, cela ne fonctionne pas (MPI_multiple_thread) donc on disable:
-      # [ "$TRUST_USE_OPENMP" = 1 ] && add_package slate && with_packages=$with_packages" --with-cuda-arch=$TRUST_CUDA_CC"
+      # add_package slate && with_packages=$with_packages" --with-openmp"
    fi
    add_package STRUMPACK
 fi
@@ -491,18 +489,17 @@ fi
 # Add other package if MPI is used:
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # SUPERLU_DIST: Attention avec OpenMPI natif...
-   # SuperLU_dist sur GPU necessite OpenMP ! Argh...
-   #[ $minimal_mumps = 0 ] && add_package superlu_dist && [ "$PETSC_HAVE_CUDA" = 1 ] && [ $PETSC_HAVE_OPENMP = 0 ] && echo "Rerun configure by adding -openmp!" && exit 1
-   [ "$minimal_mumps" = 0 ] && [ "$PETSC_HAVE_CUDA" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ] && add_package superlu_dist
+   [ "$minimal_mumps" = 0 ] && [ "$PETSC_HAVE_CUDA" = 1 ] && [ "$PETSC_DISABLE_SUPERLU_DIST" != 1 ] && add_package superlu_dist
 
    # New (SuiteSparse/Cholmod/UmfPack):
    if [ "$minimal_mumps" = 0 ]
    then
-      # Cholmod GPU pas portable avec cartes recentes type V100/A100 sur Cuda 11.x, on desactive en attendant montee de version:
-      if [ "$PETSC_HAVE_CUDA" != 1 ] || [ "$TRUST_WITHOUT_HOST" = 1 ]
+      if [ "$TRUST_DISABLE_SUITESPARSE" != 1 ]
       then
-         add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=1" # Add --with-64-bit-indices ?
+         add_package SuiteSparse
+         # La version GPU (Cholmod) n'est disponible que pour les long (pas pratique...)
+	       # Et cela plante encore sur topaze int64
+         # [ "$TRUST_INT64" = 1 ] && with_packages=$with_packages" --download-suitesparse-disablegpu=0"
       fi
    fi
    # New (Pastix) pb sous cygwin
@@ -735,22 +732,6 @@ do
    sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $PETSC_ROOT/$PETSC_ARCH/lib/petsc/conf/petscrules
 done
 cd $ROOT
-#####################################
-# Tests GPU mais pas sur les clusters
-#####################################
-if [ "$TRUST_USE_CUDA" = 1 ] && [ "`sinfo --version 2>/dev/null`" = "" ]
-then
-   $DIR/test_gpu #|| exit -1
-fi
-
-##############
-# Tests OpenMP
-##############
-# ToDo: a revoir...
-#if [ "$PETSC_HAVE_OPENMP" = 1 ]
-#then
-#   $DIR/test_openmp || exit -1
-#fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
 [ "$liste_debug" = "0" ] && echo "Deleting `pwd`/$package..." && rm -r -f $package

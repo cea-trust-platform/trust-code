@@ -297,7 +297,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[4] = "CHOLESKY_OUT_OF_CORE|MUMPS_OUT_OF_CORE";
     les_solveurs[5] = "BICGSTAB";
     les_solveurs[6] = "IBICGSTAB";
-    les_solveurs[7] = "CHOLESKY_SUPERLU";
+    les_solveurs[7] = "CHOLESKY_SUPERLU|LU_SUPERLU";
     les_solveurs[8] = "PGMRES";
     les_solveurs[9] = "LU";
     les_solveurs[10] = "PIPECG";
@@ -493,10 +493,12 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 20:
       {
+        // Strumpack faster than MUMPS on CPU sometimes (LU and solve, ex: JEL_bous)
         solveur_direct_ = strumpack;
         // ToDo add BLR option
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         solver_supported_on_gpu_by_petsc=1;
+        // ToDo: Triangular solve by default on CPU (possible on GPU with magma but 1 MPI only rank?)
         if (gpu_) add_option("mat_strumpack_gpu", "1");
         break;
       }
@@ -521,11 +523,11 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         solveur_direct_=superlu_dist;
         // SuperLU_dist, parallel but not faster than MUMPS
-#ifdef PETSC_HAVE_OPENMP
-        // Version GPU disponible de SuperLU si OpenMP active (necessaire)
-        solver_supported_on_gpu_by_petsc=1;
-#endif
         KSPSetType(SolveurPetsc_, KSPPREONLY);
+        // ToDo: Update again SuperLU_dist cause GPU Triangular solver available for L (soon U)
+        // But slower on GPU than Strumpack during factorization...
+        solver_supported_on_gpu_by_petsc=1;
+        //if (gpu_) add_option("XXX", "1");
         break;
       }
     case 11:
@@ -674,7 +676,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 if (solveur_direct_==mumps)
                   add_option("mat_mumps_icntl_4","3");
                 else if (solveur_direct_==superlu_dist)
-                  add_option("mat_superlu_dist_statprint","");
+                  add_option("mat_superlu_dist_printstat","");
                 else if (solveur_direct_==petsc)
                   {}
                 else if (solveur_direct_==umfpack)
