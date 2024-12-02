@@ -167,7 +167,7 @@ Sortie& Matrice_Morse::imprimer_image(Sortie& s, int symetrie) const
                     {
                       for (int k=tab1_(j)-numerotation_fortran; k<tab1_(j+1)-numerotation_fortran; k++)
                         if (tab2_(k)-numerotation_fortran==i)
-                          tab_imp[j] = (coeff_(k) >= 0) ? "  " : "\u2592\u2592";
+                          tab_imp[j] = (std::abs(coeff_(k)) < 1e-20) ? "  " : "\u2592\u2592";
                     }
                   int ligne=tab2_(tab1_(i)-numerotation_fortran)-numerotation_fortran;
                   if (i!=ligne)
@@ -181,7 +181,7 @@ Sortie& Matrice_Morse::imprimer_image(Sortie& s, int symetrie) const
                 if (tab2_(k)+!numerotation_fortran==0)
                   Cerr<<"Line " <<i<< " no coefficient "<<k<<finl;
                 else
-                  tab_imp[tab2_(k)-numerotation_fortran] = (coeff_(k) >= 0) ? "  " : "\u2592\u2592";
+                  tab_imp[tab2_(k)-numerotation_fortran] = (std::abs(coeff_(k)) < 1e-20) ? "  " : "\u2592\u2592";
 
               for(int k=0; k<nb_colonnes(); k++)
                 s<<tab_imp[k];
