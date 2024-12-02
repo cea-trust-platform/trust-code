@@ -44,6 +44,7 @@ public:
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Elem::modifier_pour_Cl(iter_->domaine(), iter_->domaine_Cl(), matrice, secmem); }
+  void set_multiscalar(int multi) override { multiscalar_ = multi; }
 
 private:
   void ajouter_blocs_pour_monolithique(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const;
