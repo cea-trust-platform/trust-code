@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,6 +88,12 @@ public:
     is_pb_multi = ty_pb;
   }
 
+  inline void set_multiscalar(int m)
+  {
+    multiscalar_ = m;
+    evaluateur().set_multiscalar(m);
+  }
+
   virtual DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const final
   {
     operator_egal(resu, 0., VECT_REAL_ITEMS);
@@ -114,7 +120,7 @@ protected:
   OBS_PTR(Champ_base) le_ch_v;
   std::string nom_ch_inco_;
   bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false;
-  int incompressible_ = 1;
+  int incompressible_ = 1, multiscalar_ = 0;
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const

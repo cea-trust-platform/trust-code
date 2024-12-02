@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ class Domaine_VDF;
 class Op_VDF_Elem
 {
 public :
-  void dimensionner(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&) const;
+  void dimensionner(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, int) const;
   void modifier_pour_Cl(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
 };
 

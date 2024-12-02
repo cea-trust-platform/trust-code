@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,12 +46,16 @@ public:
   mutable std::vector<const Operateur_Diff_base *> op_ext;
   virtual void init_op_ext() const { op_ext = { this }; }    //remplissage de op_ext (ne peut pas etre fait dans completer(), trop tot)
 
+  //set to 1 if operator is multiscalar (mixes components together). Only overload in operators where this is implemented!
+  virtual void set_multiscalar(int);
+  int get_multiscalar() const { return multiscalar_; }
   virtual bool is_turb() const { return false; }
   virtual const Correlation_base* correlation_viscosite_turbulente() const { return nullptr; }
 
 protected:
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
 
+  int multiscalar_ = 0; //is the operator multiscalar?
   OBS_PTR(Champ_base) diffusivite_pour_pas_de_temps_;
 };
 

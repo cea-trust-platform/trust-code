@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,7 +141,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
-      if(i==0) Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2);
+      if(i==0) Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2, multiscalar_);
       else
         {
           int nl = N[0] * iter_->domaine().nb_elem_tot();
