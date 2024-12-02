@@ -259,7 +259,11 @@ void Op_Diff_PolyVEF_P0P1_Elem::ajouter_blocs_ext(int aux_only, matrices_t matri
                   {
                     secmem(i < 2 ? e : !aux_only * ne_tot[0] + s, n) -= A(i, j, multi ? N[0] * n + m : n) * (j < 2 ? inco[0](eb, m) : v_aux[0](sb, m));
                     if (mat[0] && !semi && (j < 2 ? !aux_only : scl_d[0](sb) == scl_d[0](sb + 1)))
-                      (*mat[0])(N[0] * (i < 2 ? e : !aux_only * ne_tot[0] + s) + n, N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + m) += A(i, j, multi ? N[0] * n + m : n);
+                      {
+                        const int ii = N[0] * (i < 2 ? e  : !aux_only * ne_tot[0] + s ) + n;
+                        const int jj = N[0] * (j < 2 ? eb : !aux_only * ne_tot[0] + sb) + m;
+                        (*mat[0])(ii, jj) += A(i, j, multi ? N[0] * n + m : n);
+                      }
                   }
 
       /* CLs non Dirichlet -> injection aux sommets */

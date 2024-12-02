@@ -20,127 +20,28 @@
 #include <Domaine_Cl_VDF.h>
 #include <Array_tools.h>
 #include <Periodique.h>
-
+#include <Matrix_tools.h>
 #include <Domaine_VDF.h>
 
 void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
 {
-  // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des elements.
-  // Cette matrice a une structure de matrice morse.
-  // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
+  const DoubleTab& inco = le_dom_cl.equation().inconnue().valeurs();
+  const int ne = le_dom.nb_elem(), M = inco.line_size(), multi = 1;
+  const IntTab& f_e = le_dom.face_voisins(), &e_f = le_dom.elem_faces();
 
-  const IntTab& face_voisins = le_dom.face_voisins();
-  const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
-  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
-  const int n1 = le_dom.domaine().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
+  IntTab sten(0, 2);
 
-  la_matrice.dimensionner(n1*nb_comp, n1*nb_comp, 0);
+  for (int e = 0; e < ne; e++)
+    for (int i = 0, f, n; i < e_f.dimension(1); i++)
+      if ((f = e_f(e, i)) >= 0)
+        for (int j = 0; j < 2; j++)
+          if ((n = f_e(f, j)) >= 0)
+            for (int k = 0; k < M; k++)
+              for (int m = (multi ? 0 : k); m < (multi ? M : k + 1); m++)
+                sten.append_line(M * e + k, M * n + m);
 
-  IntVect& tab1 = la_matrice.get_set_tab1(), &tab2 = la_matrice.get_set_tab2();
-  DoubleVect& coeff = la_matrice.get_set_coeff();
-
-  const int ndeb = le_dom.premiere_face_int(), nfin = le_dom.nb_faces();
-  coeff = 0;
-
-  IntVect rang_voisin(n1*nb_comp);
-  rang_voisin = 1;
-
-  for (int num_face = ndeb; num_face < nfin; num_face++)
-    {
-      const int elem1 = face_voisins(num_face,0), elem2 = face_voisins(num_face,1);
-      (rang_voisin(elem2))++;
-      (rang_voisin(elem1))++;
-    }
-
-  // Prise en compte des conditions de type periodicite
-  for (const auto& itr : les_cl)
-    {
-      const Cond_lim& la_cl = itr;
-      if (sub_type(Periodique,la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
-          const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
-          int ind_face_global;
-          IntVect fait(nfaces);
-          fait = 0;
-          for (int face = 0; face < nfaces; face++)
-            {
-              if (fait[face] == 0)
-                {
-                  fait[face] = 1;
-                  fait[la_cl_perio.face_associee(face)] = 1;
-                  ind_face_global = face+numdeb;
-
-                  const int elem1 = face_voisins(ind_face_global,0), elem2 = face_voisins(ind_face_global,1);
-
-                  (rang_voisin(elem2))++;
-                  (rang_voisin(elem1))++;
-                }
-            }
-        }
-    }
-
-  // on balaye les elements pour dimensionner tab1 et tab2
-  tab1(0) = 1;
-  for(int i = 0; i < n1; i++)
-    for (int k = 0; k < nb_comp; k++) tab1(i*nb_comp+1+k) = rang_voisin(i) +  tab1(i*nb_comp+k);
-
-  la_matrice.dimensionner(n1*nb_comp,tab1(n1*nb_comp)-1);
-
-  for (int i = 0; i < n1*nb_comp; i++)
-    {
-      tab2[tab1[i]-1] = i+1;
-      rang_voisin[i] = tab1[i];
-    }
-
-  // on traite les faces internes pour les voisins
-  for (int num_face = ndeb; num_face < nfin; num_face++)
-    {
-      const int elem1 = face_voisins(num_face,0), elem2 = face_voisins(num_face,1);
-      for (int k = 0; k < nb_comp; k++)
-        {
-          tab2[rang_voisin[elem2*nb_comp+k]] = elem1*nb_comp+1+k;
-          rang_voisin[elem2*nb_comp+k]++;
-
-          tab2[rang_voisin[elem1*nb_comp+k]] = elem2*nb_comp+1+k;
-          rang_voisin[elem1*nb_comp+k]++;
-        }
-    }
-
-  // on traite la condition de periodicite
-  for (int i=0; i<les_cl.size(); i++)
-    {
-      const Cond_lim& la_cl = les_cl[i];
-      if (sub_type(Periodique,la_cl.valeur()) )
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
-          const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
-          IntVect fait(nfaces);
-          fait = 0;
-          for (int ind_face_local = 0; ind_face_local < nfaces; ind_face_local++)
-            {
-              if (fait[ind_face_local] == 0)
-                {
-                  const int num_face = numdeb + ind_face_local;
-                  fait[ind_face_local] = 1;
-                  fait[la_cl_perio.face_associee(ind_face_local)] = 1;
-
-                  const int elem1 = face_voisins(num_face,0), elem2 = face_voisins(num_face,1);
-
-                  for (int k = 0; k < nb_comp; k++)
-                    {
-                      tab2[rang_voisin[elem2*nb_comp+k]] = elem1*nb_comp+1+k;
-                      rang_voisin[elem2*nb_comp+k]++;
-
-                      tab2[rang_voisin[elem1*nb_comp+k]] = elem2*nb_comp+1+k;
-                      rang_voisin[elem1*nb_comp+k]++;
-                    }
-                }
-            }
-        }
-    }
+  tableau_trier_retirer_doublons(sten);
+  Matrix_tools::allocate_morse_matrix(ne * M, ne * M, sten, la_matrice);
 }
 
 void Op_VDF_Elem:: modifier_pour_Cl(const Domaine_VDF& , const Domaine_Cl_VDF& , Matrice_Morse& , DoubleTab& ) const { /* Do nothing */ }
