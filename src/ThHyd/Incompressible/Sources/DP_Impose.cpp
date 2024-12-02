@@ -94,7 +94,7 @@ void DP_Impose::update_dp_regul(const Equation_base& eqn, double deb, DoubleVect
   if (std::abs(deb_cible) > 1e-10)
     {
       const double eps = eps_.eval(), error = (deb - deb_cible) / deb_cible;
-      dp_regul_ -= dt * eps * error;
+      fac_regul_ -= dt * eps * error;
     }
 
   //pour le fichier de suivi : seulement sur le maitre, car Source_base::imprimer() fait une somme sur les procs
