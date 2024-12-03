@@ -447,12 +447,12 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           int dim = Objet_U::dimension;
           int nfac = domaine_vef().domaine().nb_faces_elem();
           DoubleTrav counter(y_plus.size());
-          CDoubleTabView xp = domaine_vef().xp().view_ro(); // DOUBT: Why defined inside the for loop?
+          CDoubleTabView xp = domaine_vef().xp().view_ro();
           CDoubleTabView xv = domaine_vef().xv().view_ro();
           CDoubleTabView face_normale = domaine_vef().face_normales().view_ro();
           CIntTabView elem_faces = domaine_vef().elem_faces().view_ro();
           CIntTabView face_voisins = domaine_vef().face_voisins().view_ro();
-          CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();  // DOUBT: Is this correct? Original assignment was `const Champ_P1NC& vit = *this;`
+          CDoubleTabView vit = eqn_hydr.inconnue().valeurs().view_ro();
           CDoubleArrView visco = static_cast<const DoubleVect&>(tab_visco).view_ro();
           CDoubleArrView yp_faces = static_cast<const DoubleVect&>(yplus_faces).view_ro();
           DoubleArrView y_plus_view = y_plus.view_rw();
@@ -676,8 +676,8 @@ static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
   double norme = 0;
   int nb_compo_ = u.line_size();
 
-  CDoubleArrView volumes = domaine_VEF.volumes_entrelaces().view_ro(); // DOUBT: reference?
-  CDoubleTabView uview = u.view_ro(); // DOUBT: How to name this variable?
+  CDoubleArrView volumes = domaine_VEF.volumes_entrelaces().view_ro();
+  CDoubleTabView uview = u.view_ro();
 
   Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_faces,
                           KOKKOS_LAMBDA (const int i, double& s)
@@ -707,7 +707,6 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
   const Domaine& mon_dom = domaine_vef().domaine();
 
   double dnorme_H1;
-  // DOUBT: dimension?
   int dim = dimension;
   const int nb_elem = mon_dom.nb_elem();
   const int nb_faces_elem = mon_dom.nb_faces_elem();
