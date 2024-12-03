@@ -26,6 +26,9 @@ class Op_VDF_Elem
 public :
   void dimensionner(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, const bool) const;
   void modifier_pour_Cl(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
+private :
+  void dimensionner_old(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&) const;
+  void dimensionner_multiscalar(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, const bool) const;
 };
 
 #endif /* Op_VDF_Elem_included */
