@@ -23,7 +23,7 @@
 #include <Matrix_tools.h>
 #include <Domaine_VDF.h>
 
-void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice, int multi) const
+void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice, const bool multi_scalar_diff) const
 {
   const DoubleTab& inco = le_dom_cl.equation().inconnue().valeurs();
   const int ne = le_dom.nb_elem_tot(), M = inco.line_size();
@@ -37,7 +37,7 @@ void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& 
         for (int j = 0; j < 2; j++)
           if ((n = f_e(f, j)) >= 0)
             for (int k = 0; k < M; k++)
-              for (int m = (multi ? 0 : k); m < (multi ? M : k + 1); m++)
+              for (int m = (multi_scalar_diff ? 0 : k); m < (multi_scalar_diff ? M : k + 1); m++)
                 sten.append_line(M * e + k, M * n + m);
 
   tableau_trier_retirer_doublons(sten);

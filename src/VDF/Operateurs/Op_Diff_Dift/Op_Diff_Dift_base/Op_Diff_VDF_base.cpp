@@ -39,7 +39,7 @@ void Op_Diff_VDF_base::completer()
       iter_->associer_champ_convecte_ou_inc(cc, nullptr);
       iter_->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
       iter_->set_convective_op_pb_type(false /* diff op */, sub_type(Pb_Multiphase, equation().probleme()));
-      iter_->set_multiscalar(multiscalar_);
+      iter_->set_multiscalar_diff(equation().diffusion_multi_scalaire());
     }
 }
 

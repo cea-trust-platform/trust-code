@@ -143,8 +143,7 @@ template<class _TYPE_> template<typename Type_Double>
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
-  const int multi = multiscalar_;
-  Type_Double flux(N), aii(N * (multi ? N : 1)), ajj(N * (multi ? N : 1)), aef(N);
+  Type_Double flux(N), aii(N * (multiscalar_diff_ ? N : 1)), ajj(N * (multiscalar_diff_ ? N : 1)), aef(N);
   const int ndeb = le_dom->premiere_face_int(), nfin = le_dom->nb_faces(), Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
   for (int face = ndeb; face < nfin; face++)
     {
@@ -185,7 +184,6 @@ template<class _TYPE_> template<bool should_calc_flux, typename Type_Double, typ
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int ndeb, const int nfin, const int N, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC, Neumann_paroi_adiabatique>::value;
-  const int multi = multiscalar_;
   if (should_calc_flux)
     {
       if (is_Neum_paroi_adiab)
@@ -195,7 +193,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
                        val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : (use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords()); // si le champ associe est un champ_face, alors on est dans un operateur de div
 
       int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
-      Type_Double flux(N), aii(N * (multi ? N : 1)), ajj(N * (multi ? N : 1)), aef(N);
+      Type_Double flux(N), aii(N * (multiscalar_diff_ ? N : 1)), ajj(N * (multiscalar_diff_ ? N : 1)), aef(N);
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.flux_face(donnee, val_b, face, cl, ndeb, flux); // Generic code
@@ -302,8 +300,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
       // Sinon, GO !
       const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
-      const int multi = multiscalar_;
-      Type_Double flux(N), aii(N * (multi ? N : 1)), ajj(N * (multi ? N : 1)), aef(N);
+      Type_Double flux(N), aii(N * (multiscalar_diff_ ? N : 1)), ajj(N * (multiscalar_diff_ ? N : 1)), aef(N);
       int boundary_index = -1;
       if (le_dom->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
         boundary_index = num_cl;
@@ -362,14 +359,14 @@ inline void Iterateur_VDF_Elem<_TYPE_>::fill_derivee_cc(matrices_t mats, const t
 template<class _TYPE_> template<typename Type_Double>
 inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int f, const double coeff, Type_Double& aii, Type_Double& ajj, Matrice_Morse *mat, VectorDeriv& d_cc) const
 {
-  const int multi = multiscalar_, N = multi ? int(sqrt(aii.size_array())) : aii.size_array();
+  const int N = multiscalar_diff_ ? int(sqrt(aii.size_array())) : aii.size_array();
   if (mat)
     {
       for (int i = 0; i < 2; i++)
         for (int j = 0, e = elem(f, i); j < 2; j++)
           for (int n = 0, eb = elem(f, j); n < N; n++)
-            for (int m = (multi ? 0 : n); m < (multi ? N : n + 1); m++)
-              (*mat)(N * e + n, N * eb + m) += (i == j ? 1.0 : -1.0) * coeff * (j ? ajj[multi ? N * n + m : n] : aii[multi ? N * n + m : n]);
+            for (int m = (multiscalar_diff_ ? 0 : n); m < (multiscalar_diff_ ? N : n + 1); m++)
+              (*mat)(N * e + n, N * eb + m) += (i == j ? 1.0 : -1.0) * coeff * (j ? ajj[multiscalar_diff_ ? N * n + m : n] : aii[multiscalar_diff_ ? N * n + m : n]);
     }
   else
     for (auto &&d_m_i : d_cc)
@@ -389,18 +386,18 @@ template<class _TYPE_> template<typename Type_Double>
 inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int face, Type_Double& aii, Type_Double& ajj, Matrice_Morse *mat, VectorDeriv& d_cc) const
 {
   const int e0 = elem(face, 0), e1 = elem(face, 1);
-  const int multi = multiscalar_, N = multi ? int(sqrt(aii.size_array())) : aii.size_array();
+  const int N = multiscalar_diff_ ? int(sqrt(aii.size_array())) : aii.size_array();
 
   if (mat)
     {
       if (e0 > -1)
         for (int n = 0; n < N; n++)
-          for (int m = (multi ? 0 : n); m < (multi ? N : n + 1); m++)
-            (*mat)(e0 * N + n, e0 * N + m) += aii[multi ? N * n + m : n];
+          for (int m = (multiscalar_diff_ ? 0 : n); m < (multiscalar_diff_ ? N : n + 1); m++)
+            (*mat)(e0 * N + n, e0 * N + m) += aii[multiscalar_diff_ ? N * n + m : n];
       if (e1 > -1)
         for (int n = 0; n < N; n++)
-          for (int m = (multi ? 0 : n); m < (multi ? N : n + 1); m++)
-            (*mat)(e1 * N + n, e1 * N + m) += ajj[multi ? N * n + m : n];
+          for (int m = (multiscalar_diff_ ? 0 : n); m < (multiscalar_diff_ ? N : n + 1); m++)
+            (*mat)(e1 * N + n, e1 * N + m) += ajj[multiscalar_diff_ ? N * n + m : n];
     }
   else
     for (auto &&d_m_i : d_cc)

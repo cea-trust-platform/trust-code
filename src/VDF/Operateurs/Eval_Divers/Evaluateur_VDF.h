@@ -38,7 +38,6 @@ public:
   Evaluateur_VDF(const Evaluateur_VDF& );
   virtual void associer_domaines(const Domaine_VDF& , const Domaine_Cl_VDF& );
   virtual void associer_porosite(const DoubleVect&);
-  void set_multiscalar(int m) { multiscalar_ = m; }
 
   inline double dist_face_period(int fac1, int fac2, int k) const { return le_dom->dist_face_period(fac1,fac2,k); }
   inline double dist_face(int fac1, int fac2, int k) const
@@ -50,7 +49,7 @@ public:
 protected:
   OBS_PTR(Domaine_VDF) le_dom;
   OBS_PTR(Domaine_Cl_VDF) la_zcl;
-  int dimension = -100, premiere_face_bord = -100, multiscalar_ = 0;
+  int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces
   IntVect orientation;         // orientations des faces

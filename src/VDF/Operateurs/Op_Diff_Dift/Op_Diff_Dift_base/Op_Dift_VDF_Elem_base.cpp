@@ -150,6 +150,6 @@ void Op_Dift_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //semi-implicite ou pas de bloc diagonal -> rien a faire
 
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr, mat2;
-  Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2, multiscalar_);
+  Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2, equation().diffusion_multi_scalaire());
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }
