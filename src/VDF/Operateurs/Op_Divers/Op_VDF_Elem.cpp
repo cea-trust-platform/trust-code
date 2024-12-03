@@ -23,10 +23,10 @@
 #include <Matrix_tools.h>
 #include <Domaine_VDF.h>
 
-void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
+void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice, int multi) const
 {
   const DoubleTab& inco = le_dom_cl.equation().inconnue().valeurs();
-  const int ne = le_dom.nb_elem_tot(), M = inco.line_size(), multi = 1;
+  const int ne = le_dom.nb_elem_tot(), M = inco.line_size();
   const IntTab& f_e = le_dom.face_voisins(), &e_f = le_dom.elem_faces();
 
   IntTab sten(0, 2);
