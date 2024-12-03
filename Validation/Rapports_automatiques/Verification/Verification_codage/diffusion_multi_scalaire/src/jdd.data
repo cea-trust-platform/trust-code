@@ -1,0 +1,146 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_hydraulique_concentration pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine -1 -1
+        Nombre_de_Noeuds $nb_nodes $nb_nodes
+        Longueurs 2 2
+    }
+    {
+        bord gauche X = -1 -1 <= Y <= 1
+        bord haut   Y =  1 -1 <= X <= 1
+        bord bas    Y = -1 -1 <= X <= 1
+        bord droite X =  1 -1 <= Y <= 1
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Sous_zone sel
+Associate sel dom
+Lire sel { fonction_sous_zone 1 }
+
+Scheme_euler_explicit sch_e
+Read sch_e
+{
+    tinit 0
+    seuil_statio $seuil_statio
+}
+
+Scheme_euler_implicit sch_i
+Read sch_i
+{
+    tinit 0
+    dt_max  1e-2
+    facsec 1e8
+    seuil_statio $seuil_statio
+    solveur implicite
+    {
+        solveur petsc cli
+        {
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -pc_hypre_boomeramg_strong_threshold 0.8
+            -pc_hypre_boomeramg_agg_nl 4
+            -pc_hypre_boomeramg_agg_num_paths 5
+            -pc_hypre_boomeramg_max_levels 25
+            -pc_hypre_boomeramg_coarsen_type PMIS
+            -pc_hypre_boomeramg_interp_type ext+i
+            -pc_hypre_boomeramg_P_max 2
+            -pc_hypre_boomeramg_truncfactor 0.5
+            -ksp_type fgmres
+        }
+    }
+}
+
+
+VDF dis
+
+associate pb dom
+Associate pb $sch
+Discretize pb dis
+
+Read pb
+{
+    fluide_incompressible
+    {
+        rho champ_uniforme 1 1
+        mu  champ_uniforme 1 1
+    }
+    constituant { is_multi_scalar
+                  coefficient_diffusion champ_uniforme $Dcoeff }
+
+    Navier_Stokes_standard
+    {
+        equation_non_resolue 1
+        solveur_pression cholesky { }
+        convection { amont }
+        diffusion { negligeable }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions
+        {
+            gauche symetrie
+            droite frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+            haut   frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+            bas    frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+        }
+    }
+    Convection_diffusion_Concentration
+    {
+        is_multi_scalar
+        diffusion { }
+        convection { negligeable }
+        initial_conditions { concentration Champ_Uniforme $cond_init }
+        boundary_conditions
+        {
+            gauche paroi_echange_externe_impose T_ext Champ_Front_Uniforme $cond_lim h_imp champ_front_uniforme $h_imp
+            droite frontiere_ouverte_concentration_imposee Champ_Front_Uniforme $cond_lim
+            haut   frontiere_ouverte_concentration_imposee Champ_Front_Uniforme $cond_lim
+            bas    frontiere_ouverte_concentration_imposee Champ_Front_Uniforme $cond_lim
+        }
+        sources { source_constituant Champ_Fonc_XYZ dom $source }
+    }
+    Post_processing
+    {
+        Definition_champs
+        {
+            sol transformation
+            {
+                methode vecteur expression $sol localisation elem
+            }
+        }
+        Probes
+        {
+            concentration    grav  concentration periode 1e8 segment 500 -1 -1 1 1
+            concentration_ex grav            sol  periode 1e8 segment 500 -1 -1 1 1
+        }
+        format lml
+        fields dt_post 1e8
+        {
+            concentration elem
+        }
+    }
+}
+
+Solve pb
+End
