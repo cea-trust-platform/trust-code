@@ -88,11 +88,7 @@ public:
     is_pb_multi = ty_pb;
   }
 
-  inline void set_multiscalar(int m)
-  {
-    multiscalar_ = m;
-    evaluateur().set_multiscalar(m);
-  }
+  inline void set_multiscalar_diff(bool m) { multiscalar_diff_ = m; }
 
   virtual DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const final
   {
@@ -119,8 +115,8 @@ protected:
   OBS_PTR(Champ_Inc_base) le_champ_convecte_ou_inc;
   OBS_PTR(Champ_base) le_ch_v;
   std::string nom_ch_inco_;
-  bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false;
-  int incompressible_ = 1, multiscalar_ = 0;
+  bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false, multiscalar_diff_ = false;
+  int incompressible_ = 1;
 };
 
 inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const

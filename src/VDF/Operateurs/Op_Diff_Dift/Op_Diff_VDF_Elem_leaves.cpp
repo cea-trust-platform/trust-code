@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,11 @@ Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem,"Op_Diff_V
 Sortie& Op_Diff_VDF_Multi_inco_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Diff_VDF_Multi_inco_Elem::readOn(Entree& s ) { return s ; }
 Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Multi_inco_Elem>()) { }
+
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Multi_scalar_Elem,"Op_Diff_VDF_Multi_inco_Multi_scalar_P0_VDF",Op_Diff_VDF_Elem_base);
+Sortie& Op_Diff_VDF_Multi_inco_Multi_scalar_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Multi_inco_Multi_scalar_Elem::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Multi_inco_Multi_scalar_Elem::Op_Diff_VDF_Multi_inco_Multi_scalar_Elem() : Op_Diff_VDF_Elem_base(Iterateur_VDF_Elem<Eval_Diff_VDF_Multi_inco_Multi_scalar_Elem>()) { }
 
 Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi,"Op_Diff_VDF_Multi_inco_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
 Sortie& Op_Diff_VDF_Multi_inco_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
