@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -700,27 +700,7 @@ DoubleVect& Domaine_Poly_base::dist_norm_bord(DoubleVect& dist, const Nom& nom_b
 
 const IntTab& Domaine_Poly_base::equiv() const
 {
-  if (equiv_.nb_dim() == 3) return equiv_;
-  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleTab& nf = face_normales();
-  const DoubleVect& fs = face_surfaces();//, &vf = volumes_entrelaces();
-  int i, j, e1, e2, f, f1, f2, d, D = dimension, ok;
-
-  IntTrav ntot, nequiv;
-  creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
-  equiv_.resize(nb_faces_tot(), 2, e_f.dimension(1));
-  Cerr << domaine().le_nom() << " : intializing equiv... ";
-  for (f = 0, equiv_ = -1; f < nb_faces_tot(); f++)
-    if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
-      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
-        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
-          {
-            if (std::fabs(std::fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
-            for (ok = 1, d = 0; d < D; d++) ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
-            if (!ok) continue;
-            equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
-          }
-  Cerr << 100.0 * (double)(mp_somme_vect(nequiv) / mp_somme_vect(ntot)) << "% equivalent faces!" << finl;
+  if (equiv_.nb_dim() != 3) init_equiv();
   return equiv_;
 }
 

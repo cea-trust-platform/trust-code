@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@ Implemente_instanciable(Option_PolyMAC,"Option_PolyMAC",Interprete);
 // XD attr use_osqp rien use_osqp 1 Flag to use the old formulation of the M2 matrix provided by the OSQP library
 
 int Option_PolyMAC::USE_NEW_M2 = 1;
+int Option_PolyMAC::MAILLAGE_VDF = 0;
 
 Sortie& Option_PolyMAC::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
@@ -32,13 +33,18 @@ Entree& Option_PolyMAC::interpreter(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter_non_std("use_osqp",(this)); // chaine Use the new formulation of the M2 matrix
+  param.ajouter_non_std("maillage_vdf|vdf_mesh",(this)); // chaine Forces the calculation of the equiv tab
   param.lire_avec_accolades_depuis(is);
   return is;
 }
 
 int Option_PolyMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="use_osqp") USE_NEW_M2 = 0;
-  else return -1;
+  if (mot == "use_osqp")
+    USE_NEW_M2 = 0;
+  else if (mot == "maillage_vdf" || mot == "vdf_mesh")
+    MAILLAGE_VDF = 1;
+  else
+    return -1;
   return 1;
 }

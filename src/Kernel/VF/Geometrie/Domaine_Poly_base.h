@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,6 +116,7 @@ public :
 
   //faces "equivalentes" : equiv(f, 0/1, i) = face equivalente a e_f(f_e(f, 0/1), i) de l'autre cote, -1 si il n'y en a pas
   const IntTab& equiv() const;
+  virtual void init_equiv() const = 0;
 
   //connectivite sommet-elements
   const Static_Int_Lists& som_elem() const;

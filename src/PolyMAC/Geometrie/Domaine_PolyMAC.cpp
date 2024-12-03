@@ -16,28 +16,30 @@
 #include <Linear_algebra_tools_impl.h>
 #include <MD_Vector_composite.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Option_PolyMAC_P0.h>
 #include <Domaine_PolyMAC.h>
-#include <Segment_poly.h>
+#include <Option_PolyMAC.h>
 #include <Quadrangle_VEF.h>
 #include <Option_PolyMAC.h>
 #include <Poly_geom_base.h>
-#include <Quadri_poly.h>
 #include <communications.h>
 #include <TRUSTTab_parts.h>
-#include <Tetra_poly.h>
-#include <Hexaedre_VEF.h>
-#include <Hexa_poly.h>
+#include <Segment_poly.h>
 #include <Matrix_tools.h>
+#include <Hexaedre_VEF.h>
 #include <Statistiques.h>
-#include <Tri_poly.h>
+#include <Quadri_poly.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
+#include <Tetra_poly.h>
 #include <Rectangle.h>
 #include <Tetraedre.h>
+#include <Hexa_poly.h>
 #include <TRUSTList.h>
 #include <Hexaedre.h>
 #include <Triangle.h>
 #include <EFichier.h>
+#include <Tri_poly.h>
 #include <Segment.h>
 #include <Domaine.h>
 #include <Scatter.h>
@@ -114,6 +116,39 @@ void Domaine_PolyMAC::calculer_volumes_entrelaces()
       }
   volumes_entrelaces_.echange_espace_virtuel();
   volumes_entrelaces_dir_.echange_espace_virtuel();
+}
+
+void Domaine_PolyMAC::init_equiv() const
+{
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleTab& nf = face_normales();
+  const DoubleVect& fs = face_surfaces(); //, &vf = volumes_entrelaces();
+  int i, j, e1, e2, f, f1, f2, d, D = dimension, ok = 1;
+
+  IntTrav ntot, nequiv;
+  creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
+  equiv_.resize(nb_faces_tot(), 2, e_f.dimension(1));
+  Cerr << domaine().le_nom() << " : intializing equiv... ";
+  for (f = 0, equiv_ = -1; f < nb_faces_tot(); f++)
+    if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
+      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
+        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
+          {
+            if (std::fabs(std::fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6)
+              continue; //normales colineaires?
+
+            // XXX Elie Saikali
+            // Options pour forcer le calcul du tableau equiv
+            // car le test ne marche pas si le maillage est hexa, conforme et non-uniforme
+            if (!Option_PolyMAC::MAILLAGE_VDF && !Option_PolyMAC_P0::MAILLAGE_VDF)
+              for (ok = 1, d = 0; d < D; d++)
+                ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
+
+            if (!ok)
+              continue;
+            equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
+          }
+  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces!" << finl;
 }
 
 void Domaine_PolyMAC::modifier_pour_Cl(const Conds_lim& conds_lim)

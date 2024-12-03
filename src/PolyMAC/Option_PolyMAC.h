@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ class Option_PolyMAC : public Interprete
 public :
   Entree& interpreter(Entree&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  static int USE_NEW_M2;
+  static int USE_NEW_M2, MAILLAGE_VDF;
 };
 
 #endif /* Option_PolyMAC_included */

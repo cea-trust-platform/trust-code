@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@ Implemente_instanciable(Option_PolyMAC_P0,"Option_PolyMAC_P0",Interprete);
 
 int Option_PolyMAC_P0::interp_ve1 = 0;
 int Option_PolyMAC_P0::traitement_axi = 0;
+int Option_PolyMAC_P0::MAILLAGE_VDF = 0;
 
 Sortie& Option_PolyMAC_P0::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
@@ -35,14 +36,20 @@ Entree& Option_PolyMAC_P0::interpreter(Entree& is)
   Param param(que_suis_je());
   param.ajouter_non_std("interp_ve1",(this));     //chaine Use first-order face->cell velocity interpolation. By default, it is not activated
   param.ajouter_non_std("traitement_axi",(this));
+  param.ajouter_non_std("maillage_vdf|vdf_mesh",(this)); // chaine Forces the calculation of the equiv tab
   param.lire_avec_accolades_depuis(is);
   return is;
 }
 
 int Option_PolyMAC_P0::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot == "interp_ve1") interp_ve1 = 1;
-  else if (mot == "traitement_axi") traitement_axi = 1;
-  else return -1;
+  if (mot == "interp_ve1")
+    interp_ve1 = 1;
+  else if (mot == "traitement_axi")
+    traitement_axi = 1;
+  else if (mot == "maillage_vdf" || mot == "vdf_mesh")
+    MAILLAGE_VDF = 1;
+  else
+    return -1;
   return 1;
 }

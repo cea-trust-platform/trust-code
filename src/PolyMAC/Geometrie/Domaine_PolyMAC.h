@@ -34,6 +34,7 @@ public :
   void discretiser() override;
   void swap(int, int, int) { }
   void modifier_pour_Cl(const Conds_lim& ) override;
+  void init_equiv() const override;
 
   inline const IntTab& arete_faces() const { return arete_faces_; }
   void calculer_volumes_entrelaces() override;
