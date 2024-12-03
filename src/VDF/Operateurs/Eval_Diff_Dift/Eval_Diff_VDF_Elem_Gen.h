@@ -47,7 +47,8 @@ public:
    * These static constexpr bools & Methods that will generalize the implementation almost for all operator classes. The previous MACRO methodology do not exist anymore
    * See their generic declaration later & override them in the derived class if needed to stay coherent with the previous macros
    */
-  static constexpr bool IS_MULTD = true, IS_AXI = false, IS_DEQUIV = false, IS_MODIF_DEQ = false, IS_QUASI = false, IS_ANISO = false, IS_RANS = false;
+  static constexpr bool IS_MULTD = true, IS_AXI = false, IS_DEQUIV = false, IS_MODIF_DEQ = false,
+                        IS_QUASI = false, IS_ANISO = false, IS_RANS = false, IS_MULTI_SCALAR_DIFF = false;
 
   /*
    * XXX XXX XXX : VERY IMPORTANT

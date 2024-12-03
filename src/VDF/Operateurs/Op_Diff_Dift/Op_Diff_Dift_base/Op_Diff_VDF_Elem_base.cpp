@@ -141,7 +141,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
-      if(i==0) Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2, multiscalar_);
+      if(i==0) Op_VDF_Elem::dimensionner(iter_->domaine(), iter_->domaine_Cl(), mat2, equation().diffusion_multi_scalaire());
       else
         {
           int nl = N[0] * iter_->domaine().nb_elem_tot();

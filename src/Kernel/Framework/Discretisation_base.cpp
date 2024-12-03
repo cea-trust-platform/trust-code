@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -460,6 +460,8 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
           // Modif Elie Saikali (Nov 2020)
           if (eqn.probleme().que_suis_je().debute_par("Pb_Multiphase") || (diffusivite.nb_comp() == 1 && nom_discr == "VDF")) nb_inc = "_";
           else if (diffusivite.nb_comp() > 1 && diffusivite.le_nom() == "conductivite") nb_inc = "ANISOTROPE_";
+          else if (nom_discr == "VDF" && eqn.diffusion_multi_scalaire())
+            nb_inc = "_Multi_inco_Multi_scalar_";
           else
             {
               if (nom_discr == "VEF") nb_inc = "_";

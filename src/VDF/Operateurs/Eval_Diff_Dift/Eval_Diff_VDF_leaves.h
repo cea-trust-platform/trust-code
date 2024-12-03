@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,6 +91,19 @@ public:
 class Eval_Diff_VDF_Multi_inco_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Diff_VDF_Multi_inco_Elem>, public Eval_Diff_VDF
 {
 public:
+  void mettre_a_jour() override { /* do nothing */ }
+};
+
+/*! @brief class Eval_Diff_VDF_Multi_inco_Multi_scalar_Elem Evaluateur VDF pour la diffusion matricielle
+ *  // TODO FIXME
+ *  Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues. Il y a une diffusivite par inconnue.
+ *
+ * @sa Eval_Diff_VDF
+ */
+class Eval_Diff_VDF_Multi_inco_Multi_scalar_Elem :public Eval_Diff_VDF_Elem_Gen<Eval_Diff_VDF_Multi_inco_Multi_scalar_Elem>, public Eval_Diff_VDF
+{
+public:
+  static constexpr bool IS_MULTI_SCALAR_DIFF = true;
   void mettre_a_jour() override { /* do nothing */ }
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Ecrire_fichier_xyz_valeur.h>
 #include <Parametre_equation_base.h>
 #include <Domaine_Cl_dis_base.h>
+#include <Discretisation_base.h>
 #include <Solveur_Masse_base.h>
 #include <Matrice_Morse_Diag.h>
 #include <MD_Vector_tools.h>
@@ -35,7 +36,6 @@
 #include <Sources.h>
 #include <vector>
 
-class Discretisation_base;
 class Schema_Temps_base;
 class Cond_lim_base;
 class Milieu_base;
@@ -240,6 +240,14 @@ public :
 
   inline void add_champs_compris(const Champ_base& ch) { champs_compris_.ajoute_champ(ch); };
 
+  // set to true if operator is multiscalar (mixes components together). Only coded for VDF-Elem at present !
+  inline void set_diffusion_multi_scalaire(bool flg = true)
+  {
+    assert (discretisation().is_vdf());
+    diffusion_multi_scalaire_ = flg;
+  }
+  inline const bool& diffusion_multi_scalaire() const { return diffusion_multi_scalaire_; }
+
 protected :
 
   Nom nom_;
@@ -284,6 +292,8 @@ protected :
 
   // pour une positivation du terme en fin d'iteration si necessaire
   // renvoie 1 pour un champ positif, 0 pour un champ negatif
+
+  bool diffusion_multi_scalaire_ = false;
 
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);

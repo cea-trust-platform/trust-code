@@ -24,7 +24,7 @@ class Domaine_VDF;
 class Op_VDF_Elem
 {
 public :
-  void dimensionner(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, int) const;
+  void dimensionner(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, const bool) const;
   void modifier_pour_Cl(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
 };
 
