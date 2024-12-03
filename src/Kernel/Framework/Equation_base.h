@@ -19,6 +19,7 @@
 #include <Ecrire_fichier_xyz_valeur.h>
 #include <Parametre_equation_base.h>
 #include <Domaine_Cl_dis_base.h>
+#include <Discretisation_base.h>
 #include <Solveur_Masse_base.h>
 #include <Matrice_Morse_Diag.h>
 #include <MD_Vector_tools.h>
@@ -35,7 +36,6 @@
 #include <Sources.h>
 #include <vector>
 
-class Discretisation_base;
 class Schema_Temps_base;
 class Cond_lim_base;
 class Milieu_base;
