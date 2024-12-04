@@ -123,13 +123,17 @@ void Domaine_PolyMAC::init_equiv() const
   const IntTab& e_f = elem_faces(), &f_e = face_voisins();
   const DoubleTab& nf = face_normales();
   const DoubleVect& fs = face_surfaces(); //, &vf = volumes_entrelaces();
-  int i, j, e1, e2, f, f1, f2, d, D = dimension, ok = 1;
+  int i, j, e1, e2, f1, f2, d, D = dimension, ok;
 
   IntTrav ntot, nequiv;
-  creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
+  creer_tableau_faces(ntot);
+  creer_tableau_faces(nequiv);
   equiv_.resize(nb_faces_tot(), 2, e_f.dimension(1));
-  Cerr << domaine().le_nom() << " : intializing equiv... ";
-  for (f = 0, equiv_ = -1; f < nb_faces_tot(); f++)
+  equiv_ = -1;
+
+  Cerr << domaine().le_nom() << " : intializing equiv... " ;
+
+  for (int f = 0; f < nb_faces_tot(); f++)
     if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
@@ -140,14 +144,54 @@ void Domaine_PolyMAC::init_equiv() const
             // XXX Elie Saikali
             // Options pour forcer le calcul du tableau equiv
             // car le test ne marche pas si le maillage est hexa, conforme et non-uniforme
-            if (!Option_PolyMAC::MAILLAGE_VDF && !Option_PolyMAC_P0::MAILLAGE_VDF)
+            if (Option_PolyMAC::MAILLAGE_VDF || Option_PolyMAC_P0::MAILLAGE_VDF)
+              {
+                bool aligned = true;
+                const int orn_f1 = orientation(f1), orn_f2 = orientation(f2);
+                const bool same_orn = (orn_f1 == orn_f2);
+
+                if (same_orn)
+                  for (d = 0; d < D; d++)
+                    if (d != orn_f1)
+                      if ((xv_(f1, d) != xv_(f2, d)) )
+                        {
+                          aligned = false;
+                          break;
+                        }
+
+                if (same_orn && aligned && ( f1 != f2 ))
+                  {
+                    // on cherche si f1 et f2 trouve le meme elem
+                    int ee1 = f_e(f1, 0), ee2 = f_e(f1, 1);
+
+                    for (int ii = 0; ii < e_f.dimension(1); ii++)
+                      {
+                        int ff1 = e_f(ee1, ii), ff2 = e_f(ee2,ii);
+                        if (f2 == ff1 || f2 == ff2)
+                          {
+                            ok = 1;
+                            break;
+                          }
+                        else
+                          ok = 0;
+                      }
+                  }
+                else
+                  for (ok = 1, d = 0; d < D; d++)
+                    ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
+              }
+            else
               for (ok = 1, d = 0; d < D; d++)
                 ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
 
             if (!ok)
               continue;
-            equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
+
+            equiv_(f, 0, i) = f2;
+            equiv_(f, 1, j) = f1;
+            nequiv(f)++; //si oui, on a equivalence
           }
+
   Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces!" << finl;
 }
 
