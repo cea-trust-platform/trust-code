@@ -941,19 +941,27 @@ then
           [ "${PAR_F}" != "" ] && PAR=${PAR_F} && export PAR
        fi
        REP=`dirname $file`
-       # Discard test case with OpenMP #
-       if [ "$TRUST_USE_OPENMP" = 1 ] && [ "`grep -i "# OPENMP NOT #" $file 2>/dev/null`" != "" ]
+       # Discard test case with OpenMP (GPU) #
+       if [ "$TRUST_USE_GPU" = 1 ]
        then
-          echo "Test $i skipped (Not supported with OpenMP)"
-          liste_skipped=$liste_skipped" $i"
-          i=""
-       fi
-       # Discard sensitive test case with OpenMP #
-       if [ "$TRUST_USE_OPENMP" = 1 ] && [ "`grep -i " ecarts " $file | grep "#" 2>/dev/null`" != "" ]
-       then
-          echo "Sensitive test $i is skipped (Not supported with OpenMP)"
-          liste_skipped=$liste_skipped" $i"
-          i=""
+          if [ "`grep -i "# GPU NOT #" $file 2>/dev/null`" != "" ]
+          then
+             echo "Test $i skipped (Not supported yet supported on GPU)"
+             liste_skipped=$liste_skipped" $i"
+             i=""
+          # Discard PolyMAC test case #
+          elif [ "`grep -i "polymac" $file 2>/dev/null`" != "" ]
+          then
+             echo "Test $i skipped (PolyMAC not yet supported on GPU)"
+             liste_skipped=$liste_skipped" $i"
+             i=""
+          # Discard sensitive test case #
+          elif [ "`grep -i " ecarts " $file | grep "#" 2>/dev/null`" != "" ]
+          then
+             echo "Sensitive test $i is skipped on GPU"
+             liste_skipped=$liste_skipped" $i"
+             i=""
+          fi   
        fi
        # Discard test case from Valgrind #
        if [ "$VALGRIND" = 1 ]
