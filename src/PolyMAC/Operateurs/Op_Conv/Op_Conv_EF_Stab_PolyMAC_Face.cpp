@@ -160,137 +160,42 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& tab_inc
 
   domaine.init_ve();
 
-  /* if (0)
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
+  const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), &pf = porosite_f, &pe = porosite_e;
+
+  int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
+  double div;
+  //element e -> contribution de la face fb a l'equation a la face f
+  for (e = 0; e < domaine.nb_elem_tot(); e++)
     {
-      // ToDo Kokkos: Ne fonctionne pas... Difficulte avec les appels virtuels pour les CLs. Separer faces de bord et faces internes ?
-      CIntTabView f_e = domaine.face_voisins().view_ro();
-      CIntTabView e_f = domaine.elem_faces().view_ro();
-      CDoubleTabView xp = domaine.xp().view_ro();
-      CDoubleTabView xv = domaine.xv().view_ro();
-      CDoubleTabView vfd = domaine.volumes_entrelaces_dir().view_ro();
-      CDoubleArrView vit = static_cast<const DoubleVect&>(vitesse_->valeurs()).view_ro();
-      CDoubleArrView fs = domaine.face_surfaces().view_ro();
-      CDoubleArrView ve = domaine.volumes().view_ro();
-      CDoubleArrView pf = porosite_f.view_ro();
-      CDoubleArrView pe = porosite_e.view_ro();
-      CDoubleArrView m2c = static_cast<const DoubleVect&>(domaine.m2c).view_ro();
-      CIntArrView m2d = static_cast<const IntVect&>(domaine.m2d).view_ro();
-      CIntArrView m2i = static_cast<const IntVect&>(domaine.m2i).view_ro();
-      CIntArrView m2j = static_cast<const IntVect&>(domaine.m2j).view_ro();
-      CIntArrView vedeb = static_cast<const IntVect&>(domaine.vedeb).view_ro();
-      CIntArrView veji = static_cast<const IntVect&>(domaine.veji).view_ro();
-      CIntTabView3 equiv = equiv_.view3_ro();
-      CDoubleTabView veci = domaine.veci.view_ro();
-      CIntTabView fcl = ch.fcl().view_ro();
-      CDoubleArrView inco = static_cast<const DoubleVect&>(tab_inco).view_ro();
-      DoubleArrView resu = static_cast<DoubleVect&>(tab_resu).view_rw();
-      int nb_faces = domaine.nb_faces();
-      int nfe = domaine.elem_faces().dimension(1);
-      int dim = Objet_U::dimension;
-      const double alpha = alpha_;
-      const int incompressible = incompressible_;
-      //element e -> contribution de la face fb a l'equation a la face f
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, domaine.nb_elem_tot()),
-                           KOKKOS_LAMBDA(
-                             const int e)
-      {
-        int i, j, k, l, m, eb, f, fb, fc, fd, fam, idx;
-        double div;
-        for (i = 0, div = 0;
-             i < nfe && (f = e_f(e, i)) >= 0; div += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * vit(f), i++)
-          {
-            for (j = 0; f < nb_faces && fcl(f, 0) < 2 && j < nfe && (fb = e_f(e, j)) >= 0; j++)
-              for (k = 0; k < 2; k++) //amont/aval de fb
+      for (i = 0, div = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; div += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * vit(f), i++)
+        for (j = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+          for (k = 0; k < 2; k++) //amont/aval de fb
+            {
+              eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
+              double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2;
+              if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
                 {
-                  eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
-                  double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) *
-                               (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-                  if ((fc = equiv(fb, (int) (e != f_e(fb, 0)), i)) >= 0 || f_e(fb, 0) < 0 ||
-                      f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
-                    {
-                      if (eb >= 0)
-                        for (fam = (eb == e ? f : fc), l = m2d(eb), idx = 0; l < m2d(eb + 1); l++, idx++)
-                          for (m = m2i(l); fam == e_f(eb, idx) && m < m2i(l + 1); m++) //convection de m2
-                            {
-                              fd = e_f(eb, m2j(m));
-                              Kokkos::atomic_sub(&resu(f), fac * (eb == f_e(fd, 0) ? 1 : -1) * ve(eb) * m2c(m) *
-                                                 vfd(f, e != f_e(f, 0)) /
-                                                 vfd(fam, eb != f_e(fam, 0)) * pe(eb) * inco(fd));
-                            }
-                      else if (fcl(fb, 0) == 3)
-                        {
-                          for (l = 0; l < dim; l++) //face de Dirichlet -> on convecte la vitesse au bord
-                            {
-                              // ToDo Kokkos: comment gerer l'appel virtuel ici:
-                              const Dirichlet& cl = static_cast<const Dirichlet&>(cls[fcl(fb, 1)].valeur());
-                              Kokkos::atomic_sub(&resu(f), fac * fs(f) * (xv(f, l) - xp(e, l)) * cl.val_imp_view(fcl(fb, 2), l));
-                            }
-                        }
-                    }
-                  else
-                    for (l = vedeb(eb);
-                         l < vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                      {
-                        fc = veji(l);
-                        Kokkos::atomic_sub(&resu(f),
-                                           fac * fs(f) * domaine.dot(dim, &xv(f, 0), &veci(l, 0), &xp(e, 0)) *
-                                           pe(eb) * inco(fc));
-                      }
+                  if (eb >= 0)
+                    for (fam = (eb == e ? f : fc), l = domaine.m2d(eb), idx = 0; l < domaine.m2d(eb + 1); l++, idx++)
+                      for (m = domaine.m2i(l); fam == e_f(eb, idx) && m < domaine.m2i(l + 1); m++) //convection de m2
+                        fd = e_f(eb, domaine.m2j(m)), tab_resu(f) -= fac * (eb == f_e(fd, 0) ? 1 : -1) * ve(eb) * domaine.m2c(m) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pe(eb) * tab_inco(fd);
+                  else if (ch.fcl()(fb, 0) == 3)
+                    for (l = 0; l < dimension; l++) //face de Dirichlet -> on convecte la vitesse au bord
+                      tab_resu(f) -= fac * fs(f) * (xv(f, l) - xp(e, l)) * ref_cast(Dirichlet, cls[ch.fcl()(fb, 1)].valeur()).val_imp(ch.fcl()(fb, 2), l);
                 }
-          }
+              else
+                for (l = domaine.vedeb(eb); l < domaine.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
+                  fc = domaine.veji(l), tab_resu(f) -= fac * fs(f) * domaine.dot(&xv(f, 0), &domaine.veci(l, 0), &xp(e, 0)) * pe(eb) * tab_inco(fc);
+            }
 
-        //partie - (div v) v
-        if (!incompressible)
-          for (i = 0; i < nfe && (f = e_f(e, i)) >= 0; i++)
-            for (j = m2i(m2d(e) + i); f < nb_faces && fcl(f, 0) < 2 && j < m2i(m2d(e) + i); j++)
-              {
-                fb = e_f(e, m2j(j));
-                Kokkos::atomic_add(&resu(f),
-                                   (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div *
-                                   inco(fb));
-              }
-      });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      //partie - (div v) v
+      if (!incompressible_)
+        for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+          for (j = domaine.m2i(domaine.m2d(e) + i); f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < domaine.m2i(domaine.m2d(e) + i); j++)
+            fb = e_f(e, domaine.m2j(j)), tab_resu(f) += (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div * tab_inco(fb);
     }
-  else */
-  {
-    const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
-    const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-    const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), &pf = porosite_f, &pe = porosite_e;
-
-    int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
-    double div;
-    //element e -> contribution de la face fb a l'equation a la face f
-    for (e = 0; e < domaine.nb_elem_tot(); e++)
-      {
-        for (i = 0, div = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; div += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * vit(f), i++)
-          for (j = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-            for (k = 0; k < 2; k++) //amont/aval de fb
-              {
-                eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
-                double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2;
-                if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
-                  {
-                    if (eb >= 0)
-                      for (fam = (eb == e ? f : fc), l = domaine.m2d(eb), idx = 0; l < domaine.m2d(eb + 1); l++, idx++)
-                        for (m = domaine.m2i(l); fam == e_f(eb, idx) && m < domaine.m2i(l + 1); m++) //convection de m2
-                          fd = e_f(eb, domaine.m2j(m)), tab_resu(f) -= fac * (eb == f_e(fd, 0) ? 1 : -1) * ve(eb) * domaine.m2c(m) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pe(eb) * tab_inco(fd);
-                    else if (ch.fcl()(fb, 0) == 3)
-                      for (l = 0; l < dimension; l++) //face de Dirichlet -> on convecte la vitesse au bord
-                        tab_resu(f) -= fac * fs(f) * (xv(f, l) - xp(e, l)) * ref_cast(Dirichlet, cls[ch.fcl()(fb, 1)].valeur()).val_imp(ch.fcl()(fb, 2), l);
-                  }
-                else
-                  for (l = domaine.vedeb(eb); l < domaine.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                    fc = domaine.veji(l), tab_resu(f) -= fac * fs(f) * domaine.dot(&xv(f, 0), &domaine.veci(l, 0), &xp(e, 0)) * pe(eb) * tab_inco(fc);
-              }
-
-        //partie - (div v) v
-        if (!incompressible_)
-          for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-            for (j = domaine.m2i(domaine.m2d(e) + i); f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < domaine.m2i(domaine.m2d(e) + i); j++)
-              fb = e_f(e, domaine.m2j(j)), tab_resu(f) += (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div * tab_inco(fb);
-      }
-  }
   return tab_resu;
 }
 
