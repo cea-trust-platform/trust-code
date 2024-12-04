@@ -1,6 +1,6 @@
 # test si la maille a bien ete reordonne #
 # PARALLEL NOT #
-# OPENMP NOT #
+# GPU NOT #
 dimension 3
 
 Pb_conduction pb

@@ -1,5 +1,5 @@
 # TRUST_DISABLE_MPI4PY #
-# OPENMP NOT #
+# GPU NOT #
 Nom ok
 
 Read_file ok is_ok

@@ -1,6 +1,6 @@
 # Verification des bilans thermiques en VEF #
 # PARALLEL OK 7 #
-# OPENMP NOT #
+# GPU NOT #
 dimension 2
 Pb_Thermohydraulique_turbulent_QC pb
 Pb_conduction pb_solide

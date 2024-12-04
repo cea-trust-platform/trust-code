@@ -1,6 +1,6 @@
 # Hydraulique 2D sinusoidal #
 # PARALLEL OK #
-# OPENMP NOT #
+# GPU NOT #
 dimension 2
 
 Pb_Hydraulique pb

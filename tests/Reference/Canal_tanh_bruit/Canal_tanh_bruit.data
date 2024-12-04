@@ -1,7 +1,7 @@
 # Canal avec condition initiale de vitesse en tangente hyperbolique + bruit + scalaire passif #
 # PARALLEL RUNS #
 # Ecart sequentiel-parallele normal car la fonction rand est utilisee pour la condition initiale #
-# OPENMP NOT # # RND in Parser not supported yet on GPU #        
+# GPU NOT # # RND in Parser not supported yet on GPU #        
 dimension 2
 Pb_thermohydraulique pb
 Domaine Canal

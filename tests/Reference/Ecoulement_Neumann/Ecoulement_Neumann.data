@@ -1,5 +1,5 @@
 # Test de la condition de pression de sortie en VEF : le cas test diverge si elle est mal implementee (ex: 1.5.4) #
-# OPENMP NOT #
+# GPU NOT #
 dimension 2
 Pb_Hydraulique pb
 Domaine dom

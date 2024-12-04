@@ -5,7 +5,7 @@
 # en appliquant des conditions de Dirichlet #
 
 # PARALLEL OK #
-# OPENMP NOT #
+# GPU NOT #
 
 dimension 2
 
