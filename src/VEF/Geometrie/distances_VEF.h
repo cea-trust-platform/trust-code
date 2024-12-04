@@ -165,12 +165,11 @@ double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
   return norm_vit;
 }
 
+// Kokkos function (similar to nomr_vit1) that fuses norm_2D_vit1_lp and norm_3D_vit1_lp
 KOKKOS_INLINE_FUNCTION
 double norm_vit1_lp(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
-                    CDoubleTabView face_normale,
-                    double* val)
+                    CDoubleTabView face_normale, double* val)
 {
-  // fac numero de la face a paroi fixe
   double r[3] {};
   double norme = 0;
   double c[] = {1., 1., 1.};
@@ -203,7 +202,6 @@ double norm_vit1_lp(int dim, CDoubleTabView vit, int fac, int nfac, const int* n
     }
   double norm_vit = sqrt(std::fabs(sum_carre-carre(psc)));
 
-  // val1,val2 val3 sont les vitesses tangentielles
   for (int i=0; i<dim; i++)
     val[i]=(v[i] - psc*r[i])/(norm_vit + DMINFLOAT);
 
