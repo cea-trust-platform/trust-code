@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1294,6 +1294,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 // Voir https://mooseframework.inl.gov/releases/moose/2021-05-18/application_development/hypre.html
                 //if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
                 if (dimension==3) add_option("pc_hypre_boomeramg_strong_threshold", "0.7");
+                if (limpr()) add_option("pc_hypre_boomeramg_print_statistics","1");
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
