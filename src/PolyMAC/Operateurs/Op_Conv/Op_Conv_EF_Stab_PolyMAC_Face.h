@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,10 +35,7 @@ public :
 
 protected :
   double alpha_ = 1; //alpha = 0 -> centre, alpha = 1 -> amont (par defaut, on fait l'amont)
-  DoubleVect porosite_f, porosite_e; //pour F5
-
-private :
-  IntTab equiv_; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
+  DoubleVect porosite_f, porosite_e; // pour F5, op sans porosite
 };
 
 class Op_Conv_Amont_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face

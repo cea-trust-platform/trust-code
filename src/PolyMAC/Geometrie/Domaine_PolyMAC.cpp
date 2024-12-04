@@ -192,7 +192,7 @@ void Domaine_PolyMAC::init_equiv() const
             nequiv(f)++; //si oui, on a equivalence
           }
 
-  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces!" << finl;
+  Cerr << mp_somme_vect_as_double(nequiv) * 100. / mp_somme_vect_as_double(ntot) << "% equivalent faces!" << finl;
 }
 
 void Domaine_PolyMAC::modifier_pour_Cl(const Conds_lim& conds_lim)

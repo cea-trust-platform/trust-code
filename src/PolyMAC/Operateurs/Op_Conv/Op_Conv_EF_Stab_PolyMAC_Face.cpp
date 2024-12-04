@@ -72,31 +72,6 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
     }
   porosite_f.ref(mon_equation->milieu().porosite_face());
   porosite_e.ref(mon_equation->milieu().porosite_elem());
-
-  if (equation().discretisation().is_polymac())
-    {
-      const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-      const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
-      int i, j, k, e1, e2, f, f1, f2, ok;
-
-      Cerr << domaine.domaine().le_nom() << " : initialisation de la convection aux faces... ";
-
-      IntTrav ntot, nequiv;
-      domaine.creer_tableau_faces(ntot), domaine.creer_tableau_faces(nequiv);
-      equiv_.resize(domaine.nb_faces_tot(), 2, e_f.dimension(1));
-      for (f = 0, equiv_ = -1; f < domaine.nb_faces_tot(); f++)
-        if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
-          for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
-            for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
-              {
-                for (k = 0, ok = 1; ok && k < dimension; k++)
-                  ok &= std::fabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
-                if (ok)
-                  equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++;
-              }
-      if (mp_somme_vect(ntot) != 0)
-        Cerr << mp_somme_vect_as_double(nequiv) * 100. / mp_somme_vect_as_double(ntot) << "% de convection directe!" << finl;
-    }
 }
 
 void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
@@ -109,7 +84,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
 
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &equiv = domaine.equiv();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
   const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   int i, j, k, l, m, e, eb, f, fb, fc, idx;
@@ -125,7 +100,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
         {
           if (ch.fcl()(fb, 0) < 2)
             stencil.append_line(f, fb);
-          if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 1) < 0) //equivalence ou bord -> convection de m2
+          if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 1) < 0) //equivalence ou bord -> convection de m2
             {
               int fa[2] = { f, fc }, ea[2] = { e, f_e(fb, e == f_e(fb, 0)) };
               for (k = 0; k < 2 && ea[k] >= 0; k++)
@@ -160,7 +135,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& tab_inc
 
   domaine.init_ve();
 
-  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &equiv = domaine.equiv();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), &pf = porosite_f, &pe = porosite_e;
 
@@ -175,7 +150,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& tab_inc
             {
               eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
               double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2;
-              if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
+              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
                 {
                   if (eb >= 0)
                     for (fam = (eb == e ? f : fc), l = domaine.m2d(eb), idx = 0; l < domaine.m2d(eb + 1); l++, idx++)
@@ -212,7 +187,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
 
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
-  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &equiv = domaine.equiv();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
   const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &pe = porosite_e, &pf = porosite_f;
   int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
@@ -227,7 +202,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
             {
               eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
               double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1. : 1) >= 0 ? 1. : -1.) * alpha_) / 2;
-              if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
+              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
                 {
                   if (eb >= 0)
                     {
