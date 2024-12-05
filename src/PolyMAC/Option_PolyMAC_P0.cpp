@@ -20,8 +20,6 @@
 Implemente_instanciable(Option_PolyMAC_P0,"Option_PolyMAC_P0",Interprete);
 
 // XD Option_PolyMAC_P0 interprete Option_PolyMAC_P0 1 Class of PolyMAC_P0 options.
-// XD attr interp_ve1 rien interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
-// XD attr traitement_axi rien traitement_axi 1 Flag used to relax the time-step stability criterion in case of a thin slice geometry while modelling an axi-symetrical case
 
 int Option_PolyMAC_P0::interp_ve1 = 0;
 int Option_PolyMAC_P0::traitement_axi = 0;
@@ -34,9 +32,9 @@ Entree& Option_PolyMAC_P0::readOn(Entree& is) { return Interprete::readOn(is); }
 Entree& Option_PolyMAC_P0::interpreter(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter_non_std("interp_ve1",(this));     //chaine Use first-order face->cell velocity interpolation. By default, it is not activated
-  param.ajouter_non_std("traitement_axi",(this));
-  param.ajouter_non_std("maillage_vdf|vdf_mesh",(this)); // chaine Forces the calculation of the equiv tab
+  param.ajouter_non_std("interp_ve1",(this)); // XD_ADD_P rien Flag to enable a first-order face-to-element velocity interpolation. By default, it is not activated which means a second order interpolation.
+  param.ajouter_non_std("traitement_axi",(this)); // XD_ADD_P rien Flag used to relax the time-step stability criterion in case of a thin slice geometry while modelling an axi-symetrical case
+  param.ajouter_non_std("maillage_vdf|vdf_mesh",(this)); // XD_ADD_P rien Flag used to force the calculation of the equiv tab.
   param.lire_avec_accolades_depuis(is);
   return is;
 }

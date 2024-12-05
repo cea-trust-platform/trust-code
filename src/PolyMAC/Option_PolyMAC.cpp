@@ -20,7 +20,6 @@
 Implemente_instanciable(Option_PolyMAC,"Option_PolyMAC",Interprete);
 
 // XD Option_PolyMAC interprete Option_PolyMAC 1 Class of PolyMAC options.
-// XD attr use_osqp rien use_osqp 1 Flag to use the old formulation of the M2 matrix provided by the OSQP library
 
 int Option_PolyMAC::USE_NEW_M2 = 1;
 int Option_PolyMAC::MAILLAGE_VDF = 0;
@@ -32,8 +31,8 @@ Entree& Option_PolyMAC::readOn(Entree& is) { return Interprete::readOn(is); }
 Entree& Option_PolyMAC::interpreter(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter_non_std("use_osqp",(this)); // chaine Use the new formulation of the M2 matrix
-  param.ajouter_non_std("maillage_vdf|vdf_mesh",(this)); // chaine Forces the calculation of the equiv tab
+  param.ajouter_non_std("use_osqp",(this)); // XD_ADD_P rien Flag to use the old formulation of the M2 matrix provided by the OSQP library.
+  param.ajouter_non_std("maillage_vdf|vdf_mesh",(this)); // XD_ADD_P rien Flag used to force the calculation of the equiv tab.
   param.lire_avec_accolades_depuis(is);
   return is;
 }
