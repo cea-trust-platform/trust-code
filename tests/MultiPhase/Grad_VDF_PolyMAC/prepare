@@ -1,6 +1,6 @@
 #!/bin/bash
 
 sed 's/# END MESH #/Polyedriser dom # END MESH #/g;
-	 s/vdf dis option_vdf { all_options }/polymac_P0 dis option_polymac_P0 { }/g' Grad_VDF_PolyMAC.data > Grad_PolyMAC_P0.data
+	 s/vdf dis option_vdf { all_options }/polymac_P0 dis Option_PolyMAC { }/g' Grad_VDF_PolyMAC.data > Grad_PolyMAC_P0.data
 
 trust Grad_PolyMAC_P0.data 1>Grad_PolyMAC_P0.out 2>Grad_PolyMAC_P0.err
