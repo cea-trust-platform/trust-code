@@ -21,7 +21,6 @@
 #include <Connectivite_som_elem.h>
 #include <MD_Vector_composite.h>
 #include <Dirichlet_homogene.h>
-#include <Option_PolyMAC_P0.h>
 #include <MD_Vector_tools.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>

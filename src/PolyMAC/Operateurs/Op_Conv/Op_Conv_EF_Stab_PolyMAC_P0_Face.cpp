@@ -20,7 +20,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Poly_base.h>
-#include <Option_PolyMAC_P0.h>
+#include <Option_PolyMAC.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
@@ -69,7 +69,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
   for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        if (!Option_PolyMAC_P0::traitement_axi || (Option_PolyMAC_P0::traitement_axi && fcl(f,0) != 2) )
+        if (!Option_PolyMAC::TRAITEMENT_AXI || (Option_PolyMAC::TRAITEMENT_AXI && fcl(f,0) != 2) )
           for (n = 0; n < N; n++)
             {
               flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte

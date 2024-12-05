@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,9 @@
 #include <Masse_PolyMAC_P0_Face.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Masse_ajoutee_base.h>
-#include <Option_PolyMAC_P0.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Option_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
@@ -161,6 +161,6 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 DoubleTab& Masse_PolyMAC_P0_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
-  Option_PolyMAC_P0::interp_ve1 ? ch.update_ve(x) : ch.update_ve2(x, incr);
+  Option_PolyMAC::INTERP_VE1 ? ch.update_ve(x) : ch.update_ve2(x, incr);
   return x;
 }

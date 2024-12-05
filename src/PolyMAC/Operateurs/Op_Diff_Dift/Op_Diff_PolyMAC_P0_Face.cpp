@@ -20,7 +20,7 @@
 #include <Dirichlet_homogene.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Option_PolyMAC_P0.h>
+#include <Option_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <MD_Vector_base.h>
 #include <Synonyme_info.h>
@@ -78,7 +78,7 @@ double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
   for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 ; i++)
-        if (!Option_PolyMAC_P0::traitement_axi || (Option_PolyMAC_P0::traitement_axi && fcl(f,0) != 2) )
+        if (!Option_PolyMAC::TRAITEMENT_AXI || (Option_PolyMAC::TRAITEMENT_AXI && fcl(f,0) != 2) )
           for (n = 0; n < N; n++)
             {
               flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);

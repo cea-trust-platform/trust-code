@@ -16,7 +16,6 @@
 #include <Linear_algebra_tools_impl.h>
 #include <MD_Vector_composite.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Option_PolyMAC_P0.h>
 #include <Domaine_PolyMAC.h>
 #include <Option_PolyMAC.h>
 #include <Quadrangle_VEF.h>
@@ -144,7 +143,7 @@ void Domaine_PolyMAC::init_equiv() const
             // XXX Elie Saikali
             // Options pour forcer le calcul du tableau equiv
             // car le test ne marche pas si le maillage est hexa, conforme et non-uniforme
-            if (Option_PolyMAC::MAILLAGE_VDF || Option_PolyMAC_P0::MAILLAGE_VDF)
+            if (Option_PolyMAC::MAILLAGE_VDF)
               {
                 bool aligned = true;
                 const int orn_f1 = orientation(f1), orn_f2 = orientation(f2);
