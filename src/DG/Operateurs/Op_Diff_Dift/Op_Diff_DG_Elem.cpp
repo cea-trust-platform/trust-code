@@ -432,7 +432,7 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
   const DoubleTab& face_normales = domaine.face_normales();
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-  const Quadrature_base& quad = domaine.get_quadrature(5);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
   int nb_pts_int_fac = integ_points_facets.dimension(1);
 

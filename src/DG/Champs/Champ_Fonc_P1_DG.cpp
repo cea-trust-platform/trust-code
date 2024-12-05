@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const 
 
   const DoubleVect& volume = domaine.volumes();
 
-  const Quadrature_base& quad = domaine.get_quadrature(5);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   int nb_pts_integ = quad.nb_pts_integ();
 
   const DoubleTab& values = le_champ().valeurs();

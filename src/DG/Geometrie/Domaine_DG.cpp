@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,7 +94,7 @@ void Domaine_DG::get_position(DoubleTab& positions) const
 
 double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 {
-  const Quadrature_base& quad = get_quadrature(5);
+  const Quadrature_base& quad = get_quadrature(2);
   int nb_pts_integ = quad.nb_pts_integ();
   int nelem = nb_elem();
 
@@ -115,7 +115,7 @@ double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 
 double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
 {
-  const Quadrature_base& quad = get_quadrature(5);
+  const Quadrature_base& quad = get_quadrature(2);
   int nb_pts_integ = quad.nb_pts_integ();
   int nelem = nb_elem();
 
@@ -149,7 +149,7 @@ void Domaine_DG::compute_mesh_param()
     {
       DiaTri_(e) = 1 / (2 * this->volumes(e));
       int nb_elem_face = 3; // nb_elem_faces(e)
-      for (int i_f = 1; i_f < nb_elem_face; i_f++)
+      for (int i_f = 0; i_f < nb_elem_face; i_f++)
         {
           int f = this->elem_faces(e, i_f);
           double sur_f = this->face_surfaces(f);

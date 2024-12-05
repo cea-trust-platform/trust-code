@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -172,9 +172,9 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
   const Nom& type_elem_geom = domaine_DG.domaine().type_elem()->que_suis_je();
   int nb_pts_integ=-1;
   if (type_elem_geom == "Triangle")
-    nb_pts_integ = 7;
+    nb_pts_integ = 3; // 3 for quad 2 7 for quad5
   else if (type_elem_geom == "Quadrangle")
-    nb_pts_integ=16;
+    nb_pts_integ=9; // 9 for quad2 16 for quad5
 
 //  const int order_DG = Option_DG::Get_order_for(directive);
   switch(rang)

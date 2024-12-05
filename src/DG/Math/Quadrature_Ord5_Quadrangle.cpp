@@ -15,15 +15,15 @@
 
 #include <Quadrature_Ord5_Quadrangle.h>
 /****************************************************************/
-/* Formule de quadrature 2D : Formule Gauss-Lobatto Aide-mémoire Éléments finis Ern p.220  */
-/* Formule de quadrature 1D : Formule Gauss-Lobatto Aide-mémoire Éléments finis Ern p.220       */
+/* Formule de quadrature 2D : Formule Gauss-Lobatto Aide-m��moire ��l��ments finis Ern p.220  */
+/* Formule de quadrature 1D : Formule Gauss-Lobatto Aide-m��moire ��l��ments finis Ern p.220       */
 /****************************************************************/
 namespace
 {
 static constexpr double CONSTP =(1.+2.2360679775)/(2.*2.2360679775);
 static constexpr double CONSTM =(-1.+2.2360679775)/(2.*2.2360679775);
 static constexpr double sqrt5 = 1./2.2360679775 ;
-static constexpr double WEIGHTS[16] = {1./144., 1./144., 1./144., 1./144., 5./144.,5./144.,5./144.,5./144.,5./144.,5./144.,5./144.,5./144.,25./144,25./144,25./144,25./144};
+static constexpr double WEIGHTS[16] = {1./144., 1./144., 1./144., 1./144., 5./144.,5./144.,5./144.,5./144.,5./144.,5./144.,5./144.,5./144.,25./144.,25./144.,25./144.,25./144.};
 static constexpr double WEIGHTS_FACETS[4] = {1./12., 5./12.,5./12., 1./12.};
 static constexpr double LAMBDA[16][4] =
 {
@@ -37,12 +37,12 @@ static constexpr double LAMBDA[16][4] =
   {0.,::CONSTP,::CONSTM,0},
   {0.,0,::CONSTM,::CONSTP},
   {0.,0,::CONSTP,::CONSTM},
-  {::CONSTP,0,0,::CONSTM},
-  {::CONSTM,0,0,::CONSTP},
+  {::CONSTP,0.,0.,::CONSTM},
+  {::CONSTM,0.,0.,::CONSTP},
   {::sqrt5,::CONSTM,0.,::CONSTM},
   {::CONSTM,::sqrt5,::CONSTM,0.},
-  {0,::CONSTM,::sqrt5,::CONSTM},
-  {::CONSTM,0,::CONSTM,::sqrt5}
+  {0.,::CONSTM,::sqrt5,::CONSTM},
+  {::CONSTM,0.,::CONSTM,::sqrt5}
 }; // Barycentric coordinates coefficients of integration points in elem */
 static constexpr double LAMBDA_FACETS[4][2] =
 {
@@ -68,7 +68,7 @@ void Quadrature_Ord5_Quadrangle::compute_integ_points()
   integ_points_.resize(nb_elem_tot*nb_pts_integ_, ndim);
   weights_.resize(nb_pts_integ_);
 
-  weights_[nb_pts_integ_-1] = 1;
+  weights_[nb_pts_integ_-1] = 1.;
   for (int pts = 0; pts < nb_pts_integ_; pts++)
     {
       if (pts < nb_pts_integ_ - 1)
@@ -79,7 +79,7 @@ void Quadrature_Ord5_Quadrangle::compute_integ_points()
       lambda(pts, 0) = ::LAMBDA[pts][0];
       lambda(pts, 1) = ::LAMBDA[pts][1];
       lambda(pts, 2) = ::LAMBDA[pts][2];
-      lambda(pts, 3) = 1 -lambda(pts, 2) - lambda(pts, 1) - lambda(pts, 0);
+      lambda(pts, 3) = 1. -lambda(pts, 2) - lambda(pts, 1) - lambda(pts, 0);
     }
 
   for (int e = 0; e < nb_elem_tot; e++)
@@ -111,7 +111,7 @@ void Quadrature_Ord5_Quadrangle::compute_integ_points_on_facet()
 
   // We ensure that sum(weights)=1 and sum(Lambda[i])=1
   DoubleTab lambda_facets(nb_pts_integ_facets_, ndim);
-  weights_facets_[nb_pts_integ_facets_-1] = 1;
+  weights_facets_[nb_pts_integ_facets_-1] = 1.;
   for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
     {
       if (pts < nb_pts_integ_facets_ - 1)
@@ -120,7 +120,7 @@ void Quadrature_Ord5_Quadrangle::compute_integ_points_on_facet()
           weights_facets_(nb_pts_integ_facets_-1) -= weights_facets_(pts);
         }
       lambda_facets(pts, 0) = ::LAMBDA_FACETS[pts][0];
-      lambda_facets(pts, 1) = 1 - lambda_facets(pts, 0);
+      lambda_facets(pts, 1) = 1. - lambda_facets(pts, 0);
     }
 
   for (int f = 0; f < nb_faces; f++)

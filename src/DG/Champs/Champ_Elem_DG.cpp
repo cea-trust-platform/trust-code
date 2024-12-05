@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -327,7 +327,7 @@ void Champ_Elem_DG::eval_bfunc_on_facets(const Quadrature_base& quad, const int&
 void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& grad_fbasis) const
 {
 //  const DoubleTab& integ_points_on_facets = quad.get_integ_points_facets();
-// Q : Arrive t-on ici quand l'ordre est à 0 ?  A.Peita
+// Q : Arrive t-on ici quand l'ordre est �� 0 ?  A.Peita
   int nb_pts_integ_on_facets = quad.nb_pts_integ_facets();
 
   assert(grad_fbasis.dimension(0) == nb_bfunc_ && grad_fbasis.dimension(1) == nb_pts_integ_on_facets && grad_fbasis.dimension(2) == Objet_U::dimension );
@@ -526,7 +526,7 @@ DoubleTab& Champ_Elem_DG::eval_elem(DoubleTab& tab_valeurs) const
 
   const int nb_elem = domaine.nb_elem();
 
-  const Quadrature_base& quad = domaine.get_quadrature(5);
+  const Quadrature_base& quad = domaine.get_quadrature(2);
   int nb_pts_integ = quad.nb_pts_integ();
 
   const Champ_base& ch_base = le_champ();
@@ -637,7 +637,7 @@ void Champ_Elem_DG::compute_stab_param()
     }
   for (unsigned int f = 0; f < (unsigned int) domaine.nb_faces(); f++) // For the boundary
     {
-      eta_facet(f) = 50.; // EtaF=EtaT
+      eta_facet(f) = 1.; // EtaF=EtaT
     }
 }
 
