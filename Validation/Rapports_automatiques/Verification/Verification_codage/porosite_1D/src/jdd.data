@@ -22,12 +22,13 @@ Mailler dom
         bord outlet Z = 3    0 <= X <= 0.2 0 <= Y <= 0.2
     }
 }
+$poly
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool tranche { tranches 2 1 }
+    Partition_tool tranche { tranches 1 1 2 }
     larg_joint 2
     zones_name DOM
 }
@@ -39,7 +40,6 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 $opts
-$poly
 $dis dis
 
 Schema_euler_implicite sch

@@ -1,7 +1,9 @@
+# PARALLEL OK #
 dimension 3
 Pb_Multiphase pb
 Domaine dom
  
+# BEGIN MESH #
 Mailler dom
 {
     Pave domdom
@@ -21,9 +23,24 @@ Mailler dom
         Bord other     Y = 0.2         0.0 <= X <=  0.2 0.0 <= Z <=  3.
     }
 }
+$poly
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 1 1 2 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
 
 $opts
-$poly
 $dis dis
 
 Schema_euler_implicite sch
