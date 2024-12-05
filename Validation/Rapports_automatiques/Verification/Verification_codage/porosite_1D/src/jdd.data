@@ -11,6 +11,7 @@ Mailler dom
         Origine 0. 0. 0.
         Nombre_de_Noeuds 2 2 101 
         Longueurs 0.2 0.2 3
+        $tanh
     }
     {
         bord wall   X = 0    0 <= Y <= 0.2 0 <= Z <= 3
@@ -24,13 +25,6 @@ Mailler dom
 # END MESH #
 
 # BEGIN PARTITION
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lata
-    domaine dom
-}
-
 Partition dom
 {
     Partition_tool tranche { tranches 2 1 }
@@ -44,9 +38,9 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
+$opts
 $poly
 $dis dis
-option_polymac { vdf_mesh }
 
 Schema_euler_implicite sch
 Read sch
@@ -58,20 +52,17 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
-
     fluide_incompressible {
         mu  Champ_Uniforme 1 2.5
         rho Champ_Uniforme 1 1000
         porosites_champ champ_fonc_xyz dom 1 1-0.5*(z>1)*(z<2)
     }
-
 
     Navier_Stokes_standard
     {
@@ -106,6 +97,7 @@ Read pb
         {
             V grav vitesse     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
             P grav pression_pa periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
+            PORO grav porosite_volumique     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
             V_ex grav V_ex     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
             P_ex grav P_ex     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
         }
