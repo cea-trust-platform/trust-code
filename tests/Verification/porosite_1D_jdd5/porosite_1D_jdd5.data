@@ -40,7 +40,7 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 option_polymac { maillage_vdf }
-PolyMAC_P0P1NC dis
+PolyMAC_P0 dis
 
 Schema_euler_implicite sch
 Read sch

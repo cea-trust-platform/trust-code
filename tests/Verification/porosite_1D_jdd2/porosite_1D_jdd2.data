@@ -1,5 +1,5 @@
 # PARALLEL OK #
-dimension 2
+dimension 3
 Pb_hydraulique pb
 Domaine dom
 
@@ -8,30 +8,27 @@ Mailler dom
 {
     Pave mon_pave
     {
-        Origine 0. 0.
-        Nombre_de_Noeuds 2 50
-        Longueurs 0.2 3
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 2 2 101 
+        Longueurs 0.2 0.2 3
+        ztanh_dilatation 0 ztanh_taille_premiere_maille 0.005
     }
     {
-        bord wall   X = 0    0 <= Y <= 3
-        bord wall   X = 0.2  0 <= Y <= 3
-        bord inlet  Y = 0    0 <= X <= 0.2
-        bord outlet Y = 3    0 <= X <= 0.2
+        bord wall   X = 0    0 <= Y <= 0.2 0 <= Z <= 3
+        bord wall   X = 0.2  0 <= Y <= 0.2 0 <= Z <= 3
+        bord wall   Y = 0    0 <= X <= 0.2 0 <= Z <= 3
+        bord wall   Y = 0.2  0 <= X <= 0.2 0 <= Z <= 3
+        bord inlet  Z = 0    0 <= X <= 0.2 0 <= Y <= 0.2
+        bord outlet Z = 3    0 <= X <= 0.2 0 <= Y <= 0.2
     }
 }
+
 # END MESH #
 
 # BEGIN PARTITION
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lml
-    domaine dom
-}
-
 Partition dom
 {
-    Partition_tool tranche { tranches 2 1 }
+    Partition_tool tranche { tranches 1 1 2 }
     larg_joint 2
     zones_name DOM
 }
@@ -42,7 +39,8 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC_P0P1NC dis
+option_vdf { all_options }
+VDF dis
 
 Schema_euler_implicite sch
 Read sch
@@ -55,31 +53,28 @@ Read sch
     solveur implicite { solveur petsc cholesky { } }
 }
 
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
-
     fluide_incompressible {
         mu  Champ_Uniforme 1 2.5
         rho Champ_Uniforme 1 1000
-        porosites_champ champ_fonc_xyz dom 1 1-0.5*(y>1)*(y<2)
+        porosites_champ champ_fonc_xyz dom 1 1-0.5*(z>1)*(z<2)
     }
-
 
     Navier_Stokes_standard
     {
         solveur_pression petsc cholesky { }
         convection { amont }
         diffusion  { negligeable }
-        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
         boundary_conditions
         {
             outlet frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5
-            inlet  frontiere_ouverte_vitesse_imposee  Champ_Front_fonc_txyz 2 0 t_MIN_1
+            inlet  frontiere_ouverte_vitesse_imposee  Champ_Front_fonc_txyz 3 0 0 t_MIN_1
             wall   symetrie
         }
     }
@@ -90,21 +85,22 @@ Read pb
         {
             P_ex transformation
             {
-                methode formule expression 1 1e5+(y>1)*(y<2)*500*(1-1/0.5^2) localisation elem nom_source sol source refChamp { Pb_champ pb pression }
+                methode formule expression 1 1e5+(z>1)*(z<2)*500*(1-1/0.5^2) localisation elem nom_source sol source refChamp { Pb_champ pb pression }
             }
 
             /* aux elems */
             V_ex transformation
             {
-                methode vecteur expression 2 0 1+(y>1)*(y<2) nom_source sol source refChamp { Pb_champ pb pression }
+                methode vecteur expression 3 0 0 1+(z>1)*(z<2) nom_source sol source refChamp { Pb_champ pb pression }
             }
         }
         probes
         {
-            V grav vitesse     periode 1e-6 segment 1000 0.05 0 0.05 3
-            P grav pression_pa periode 1e-6 segment 1000 0.05 0 0.05 3
-            V_ex grav V_ex     periode 1e-6 segment 1000 0.05 0 0.05 3
-            P_ex grav P_ex     periode 1e-6 segment 1000 0.05 0 0.05 3
+            V grav vitesse     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
+            P grav pression_pa periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
+            PORO grav porosite_volumique     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
+            V_ex grav V_ex     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
+            P_ex grav P_ex     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 3
         }
 
         Format lml

@@ -11,7 +11,7 @@ Mailler dom
         Origine 0. 0. 0.
         Nombre_de_Noeuds 2 2 101 
         Longueurs 0.2 0.2 3
-        
+        ztanh_dilatation 0 ztanh_taille_premiere_maille 0.005
     }
     {
         bord wall   X = 0    0 <= Y <= 0.2 0 <= Z <= 3

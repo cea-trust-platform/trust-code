@@ -1,0 +1,161 @@
+# PARALLEL OK #
+dimension 3
+Pb_Multiphase pb
+Domaine dom
+ 
+# BEGIN MESH #
+Mailler dom
+{
+    Pave domdom
+    {
+        Origine 0.0 0.0 0.0
+        Nombre_de_Noeuds 3 3 101
+        Longueurs 0.2 0.2 3
+        facteurs 1.0 1.0 1.0
+        
+    }
+    {
+        Bord bottom    Z = 0           0.0 <= X <= 0.2  0.0 <= Y <= 0.2
+        Bord top       Z = 3.          0.0 <= X <= 0.2  0.0 <= Y <= 0.2
+        Bord other     X = 0.0         0.0 <= Y <=  0.2 0.0 <= Z <=  3.
+        Bord other     X = 0.2         0.0 <= Y <=  0.2 0.0 <= Z <=  3.
+        Bord other     Y = 0.0         0.0 <= X <=  0.2 0.0 <= Z <=  3.
+        Bord other     Y = 0.2         0.0 <= X <=  0.2 0.0 <= Z <=  3.
+    }
+}
+Polyedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 1 1 2 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+option_polymac { maillage_vdf }
+PolyMAC_P0 dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    residuals { relative 2 }
+    tmax 3.
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 }
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+ 
+Associer pb dom
+Associer pb sch
+Discretiser pb dis
+
+Lire pb
+{
+    Milieu_composite
+    {
+        liquide_eau Fluide_generique_EOS { model cathare2 fluid waterliquid }
+        porosites_champ Champ_Fonc_xyz dom 1 (0.15*(z<0.33)+0.3+0.35*(z>1.5))
+    }
+
+    QDM_Multiphase
+    {
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse Champ_composite 1 { Champ_uniforme 3 0 0 1.8 }
+            pression Champ_composite 1 { Champ_uniforme 1 13200000.0 }
+        }
+
+        boundary_conditions
+        {
+            bottom  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 1
+            {
+                champ_front_uniforme 3 0 0 1.8
+            }
+            top frontiere_ouverte_pression_imposee champ_front_composite 1
+            {
+                champ_front_uniforme 1 13200000.0
+            }
+            other Symetrie
+        }
+        sources
+        {
+            source_qdm champ_uniforme 3 0. 0.  -9.81
+        }
+    }
+    
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha Champ_composite 1 { Champ_uniforme 1 1 }
+        }
+        convection { amont }
+        boundary_conditions
+        {
+            bottom  frontiere_ouverte a_ext champ_front_composite 1
+            {
+                Champ_Front_Uniforme 1 1
+            }
+            top frontiere_ouverte a_ext champ_front_composite 1
+            {
+                Champ_Front_Uniforme 1 1
+            }
+            other paroi
+        }
+    }
+
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions
+        {
+            temperature Champ_composite 1 { Champ_uniforme 1 250 }
+        }
+        boundary_conditions
+        {
+            bottom frontiere_ouverte_temperature_imposee champ_front_uniforme 1 250
+            top frontiere_ouverte T_ext champ_front_uniforme 1 250
+            other paroi_adiabatique
+        }
+        sources
+        {
+            travail_pression
+        }
+    }
+
+    Postraitement
+    {
+        format lml
+        Sondes
+        {
+            SONDE_CHANNEL_pressure grav pression periode 10000000.0 segment 1000 0.05 0.05 0 0.05 0.05 3.
+            SONDE_CHANNEL_poro grav porosite_volumique periode 10000000.0 segment 1000 0.05 0.05 0 0.05 0.05 3.
+            SONDE_CHANNEL_vitesse grav vitesse periode 10000000.0 segment 1000 0.05 0.05 0 0.05 0.05 3.
+        }
+
+        champs dt_post 1.E+7
+        {
+            pression elem
+            vitesse elem
+        }
+    }
+}
+
+Resoudre pb
