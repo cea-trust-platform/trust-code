@@ -148,6 +148,7 @@ void Domaine_PolyMAC::init_equiv() const
                 bool aligned = true;
                 const int orn_f1 = orientation(f1), orn_f2 = orientation(f2);
                 const bool same_orn = (orn_f1 == orn_f2);
+                ok = 1; // pour gnu ...
 
                 if (same_orn)
                   for (d = 0; d < D; d++)
@@ -165,7 +166,9 @@ void Domaine_PolyMAC::init_equiv() const
 
                     for (int ii = 0; ii < e_f.dimension(1); ii++)
                       {
-                        int ff1 = e_f(ee1, ii), ff2 = e_f(ee2,ii);
+                        int ff1 = ee1 >= 0 ? e_f(ee1, ii) : -1;
+                        int ff2 = ee2 >= 0 ? e_f(ee2, ii) : -1;
+
                         if (f2 == ff1 || f2 == ff2)
                           {
                             ok = 1;
