@@ -65,7 +65,7 @@ Lire pb
 {
     Milieu_composite
     {
-        liquide_eau Fluide_generique_EOS { model cathare2 fluid waterliquid }
+        liquide_eau $fld
         porosites_champ Champ_Fonc_xyz dom 1 (0.15*(z<0.33)+0.3+0.35*(z>1.5))
     }
 
