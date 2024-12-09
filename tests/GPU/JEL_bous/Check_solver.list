@@ -1,0 +1,6 @@
+let i=$i+1;solver[$i]="Petsc_GPU GCP { rtol $seuil precond boomeramg { } impr }"
+let i=$i+1;solver[$i]="amgx      GCP { rtol $seuil precond sa-amg    { } impr }"
+let i=$i+1;solver[$i]="amgx      GCP { rtol $seuil precond c-amg     { } impr }"
+let i=$i+1;solver[$i]="Petsc_GPU GCP { rtol $seuil precond sa-amg    { } impr }"
+let i=$i+1;solver[$i]="Petsc_GPU GCP { rtol $seuil precond ua-amg    { } impr }"
+let i=$i+1;solver[$i]="Petsc_GPU GCP { rtol $seuil precond c-amg     { } impr }"

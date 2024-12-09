@@ -79,23 +79,6 @@ Lire pb1
     Navier_Stokes_turbulent
     {
         solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr }
-#
-        solveur_pression petsc cli
-        {   -pc_type hypre
-            -pc_hypre_type boomeramg
-            -pc_hypre_boomeramg_strong_threshold 0.8
-            -pc_hypre_boomeramg_agg_nl 4
-            -pc_hypre_boomeramg_agg_num_paths 5
-            -pc_hypre_boomeramg_max_levels 25
-            -pc_hypre_boomeramg_coarsen_type PMIS
-            -pc_hypre_boomeramg_interp_type ext+i
-            -pc_hypre_boomeramg_P_max 2
-            -pc_hypre_boomeramg_truncfactor 0.5
-            -ksp_type cg
-            -ksp_rtol 1e-6
-            -ksp_max_it 5000
-        }
-#
         convection { muscl }
         diffusion { }
         conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }

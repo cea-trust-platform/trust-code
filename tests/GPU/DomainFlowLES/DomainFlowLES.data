@@ -138,25 +138,7 @@ Read pb_box
             preconditionnement_diag 1
             seuil_diffusion_implicite 1e-10
         }
-        # Direct method to solve pressure linear system #
         solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr }
-        /*
-            solveur_pression Petsc GCP {  precond block_jacobi_icc { level 1 }  seuil 1.e-6 } */
-        /* solveur_pression petsc cli { -pc_type hypre
-                                        -pc_hypre_type boomeramg
-                                        -pc_hypre_boomeramg_strong_threshold 0.8
-                                        -pc_hypre_boomeramg_agg_nl 4
-                                        -pc_hypre_boomeramg_agg_num_paths 5
-                                        -pc_hypre_boomeramg_max_levels 25
-                                        -pc_hypre_boomeramg_coarsen_type PMIS
-                                        -pc_hypre_boomeramg_interp_type ext+i
-                                        -pc_hypre_boomeramg_P_max 2
-                                        -pc_hypre_boomeramg_truncfactor 0.5
-                                        # -pc_hypre_boomeramg_print_statistics #
-                                        -ksp_type cg
-                                        -ksp_rtol 1e-6
-                                        -ksp_max_it 5000
-                                      } */
 
         convection { muscl3 { alpha 0.8 }  }
         diffusion { }
@@ -234,26 +216,7 @@ Read pb_dom
         }
 
         solveur_pression Petsc_GPU GCP {  precond boomeramg { } rtol 1.e-8 impr }
-        /*
-        solveur_pression petsc cli { -pc_type hypre
-                                     -pc_hypre_type boomeramg
-                                     -pc_hypre_boomeramg_strong_threshold 0.8
-                                     -pc_hypre_boomeramg_agg_nl 4
-                                     -pc_hypre_boomeramg_agg_num_paths 5
-                                     -pc_hypre_boomeramg_max_levels 25
-                                     -pc_hypre_boomeramg_coarsen_type PMIS
-                                     -pc_hypre_boomeramg_interp_type ext+i
-                                     -pc_hypre_boomeramg_P_max 2
-                                     -pc_hypre_boomeramg_truncfactor 0.5
-                                     # -pc_hypre_boomeramg_print_statistics #
-                                     -ksp_type cg
-                                     -ksp_rtol 1e-6
-                                     -ksp_max_it 5000
-                                   } */
 
-        # Method to solve pressure linear system #
-        # solveur_pression Petsc GCP { precond SSOR { omega 1.5 }  seuil 1.e-8 impr   } #
-        # solveur_pression Petsc GCP {  precond block_jacobi_icc { level 1 }  seuil 1.e-9 } #
         convection { muscl3 { alpha 0.8 }  }
         diffusion { }
         # Initial conditions for velocity #

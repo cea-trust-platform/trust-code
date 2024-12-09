@@ -3,7 +3,7 @@
 # Par defaut on teste le solveur en pression
 # Mais si on peut tester le solveur implicite, on le fait prioritairement
 # echo "Usage: `basename $0` [-all] [-gpu_only] [-not_lml] [-test_solveur] [-solver n1:n2:n3] [-mail] [datafile]"
-echo "Usage: `basename $0` [-all] [-gpu_only] [-amgx_only] [-not_lml] [-test_solveur] [-solver n1:n2:n3] [datafile]"
+echo "Usage: `basename $0` [-all] [-gpu_only] [-amgx_only] [-not_lml] [-test_solveur] [-solver n1:n2:n3] [-no_ranking] [datafile]"
 OK()
 {
    if [ $1 != 0 ]
@@ -48,17 +48,18 @@ print()
        its=` grep -E 'Convergence [ei]n' $out | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$3} END {printf("%3d",s/n)}'`
         # Calcul du residu relatif final
        res=` grep -E 'Residu final:|Final residue:' $out | $TRUST_Awk -v nr=$nr '(NR>=nr) {s=$5} END {printf("%2.0e",s)}'`      
-       # Calcul de la RAM
-       ram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%5d",r)}' $out`
+       # Calcul de la RAM (sur le device en priorite sinon sur le host):
+       hram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%3.1f",0.001*r)}' $out`
+       dram=`$TRUST_Awk '/ RAM / && ($2=="GBytes") {if ($1>r) r=$1} END {printf("%3.1f",r)}' $out`
        # Calcul des Flops du MatMult
        matmult="nc  " && [ -f ${out%.out_err}_petsc.TU ] && matmult=`$TRUST_Awk '/^MatMult / || /^MatMultAdd / {print $21;exit}' ${out%.out_err}_petsc.TU 2>/dev/null`
        OK="OK"
     fi
-    echo $ECHO_OPTS "$cpu\t$cpu0\t$its\t$res\t$ram\t$matmult\t\t$OK\t[$i]\t$solver\t" | tee -a rank
+    echo $ECHO_OPTS "$cpu\t$cpu0\t$its\t$res\t$hram/$dram\t\t$matmult\t\t$OK\t[$i]\t$solver\t" | tee -a rank
 }
 print_init()
 {
-    echo $ECHO_OPTS "cpu\tcpu0\tits\trtol\tram[Mo]\tMatMult[MFlops]\tEtat\tSolveur" | tee -a rank
+    echo $ECHO_OPTS "cpu\tcpu0\tits\trtol\tH/D[GB]\t\tMatMult[MFlops]\tEtat\tSolveur" | tee -a rank
 }
 
 # On regarde si le solveur est operationnel en retournant run=0 ou 1
@@ -91,6 +92,7 @@ lml=1 && [ "$1" = -not_lml ] && lml=0 && shift
 test_solveur=0 && [ "$1" = -test_solveur ] && test_solveur=1 && lml=0 && shift
 mail=0 && [ "$1" = -mail ] && mail=1 && shift
 [ "$1" = -solver ] && shift && liste_solveurs=`echo $1 | awk '{gsub(":"," ",$0);print $0}'` && shift
+ranking=1 && [ "$1" = -no_ranking ] && shift
 ref=${1%.data} && shift
 
 # Determination du jeu de donnees
@@ -301,6 +303,8 @@ do
    fi
    let i=$i+1
 done
+if [ $ranking = 1 ]
+then
 echo "********"
 echo "RANKING:"
 echo "********"
@@ -312,4 +316,5 @@ echo "Saved in ranking.$$ file"
 # [ "$mail" = 1 ] && cat ranking.$$ | mail_ -s\"[Check_solver.sh] NP sur $HOST\" $TRUST_MAIL
 #echo "NP sur $HOST:"
 #cat ranking.$$
+fi
 exit $exit
