@@ -34,7 +34,9 @@ define_modules_config()
       else
          echo "Not supported any more." && exit -1
       fi
-      [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=70 # V100
+      [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=70           # V100
+      [ "$TRUST_CUDA_CC" = 80 ] && module="arch/a100 "$module # A100
+      [ "$TRUST_CUDA_CC" = 90 ] && module="arch/h100 "$module # H100
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
       #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
@@ -74,26 +76,41 @@ define_soumission_batch()
    if [ "$gpu" = 1 ]
    then
       # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html 
-      queue=gpu_p13 && constraint=v100-16g # 351x4=1404 GPU
-      queue=gpu_p13 && constraint=v100-32g # 261x4=1044 GPU (Pour etre plus confort avec c-amg ?)
-      #queue=gpu_p4 # Partition A100      
-      [ "$gpus_per_node" = "" ] && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible... Donc le max par defaut
-      if [ "$TRUST_USE_OPENMP" = 1 ]
+      if [ "$TRUST_CUDA_CC" = 70 ]
       then
-         cpus_per_task=10 # 1MPI<->1GPU
+         ntasks=40 # number of cores max
+         [ "$gpus_per_node" = "" ] && gpus_per_node=4
+         cpus_per_task=10
+         queue=gpu_p13 && constraint=v100-16g # 351x4=1404 GPU
+         queue=gpu_p13 && constraint=v100-32g # 261x4=1044 GPU (Pour etre plus confort avec c-amg ?)
+         arch="v100"
+      elif [ "$TRUST_CUDA_CC" = 80 ]
+      then
+         ntasks=64 # number of cores max
+         [ "$gpus_per_node" = "" ] && gpus_per_node=8
+         cpus_per_task=8
+         queue=gpu_p5 && constraint=a100
+         arch="a100"
+      elif [ "$TRUST_CUDA_CC" = 90 ]
+      then
+         ntasks=96 # number of cores max
+         [ "$gpus_per_node" = "" ] && gpus_per_node=4
+         cpus_per_task=24
+         queue=gpu_p6 && constraint=h100
+         arch="h100"
       fi
       # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html#les_qos_disponibles
-      qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && [ $NB_PROCS -le 32 ] && qos=qos_gpu-dev && cpu=120 
-      #qos=qos_gpu-t4 && cpu=6000
-      [ "`id | grep aih`" != "" ] && project="aih@v100" # GENDEN
+      q="" && [ $arch != v100 ] && q="_"$arch
+      qos=qos_gpu$q-t3 && cpu=1200 && [ "$prod" != 1 ] && [ $NB_PROCS -le 32 ] && qos=qos_gpu$q-dev && cpu=120 
+      [ "`id | grep aih`" != "" ] && project="aih@$arch" # GENDEN
    else
+      ntasks=40 # number of cores max
       queue=cpu_p1
       qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120 
       #qos=qos_cpu-t4 && cpu=6000
       [ "`id | grep aih`" != "" ] && project="aih@cpu" # GENDEN
    fi
    hintnomultithread=1
-   ntasks=40 # number of cores max
    node=1 # --exclusive
    mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
