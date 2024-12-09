@@ -134,7 +134,7 @@ then
    done
    cd $ROOT && rm -r -f $LIB # On efface les sources ?
 fi
-if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
+if [ -f $TRUST_ENV/card.log ] && [ "$TRUST_WITHOUT_HOST" = 1 ] # On ne teste que si on peut lancer des calculs GPU
 then
    # Ces tests doivent absolument marcher:
    echo "Testing $LIB..."
