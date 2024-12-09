@@ -9,7 +9,7 @@ Mailler dom
     {
         Origine 0. 0. 0.
         Nombre_de_Noeuds 10 10 3
-        Nombre_de_Noeuds 31 31 10
+         Nombre_de_Noeuds 31 31 10 
         Longueurs 10 10 3
     }
     {
