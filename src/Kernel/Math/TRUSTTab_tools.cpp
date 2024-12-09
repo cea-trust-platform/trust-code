@@ -21,7 +21,6 @@
 template <typename _TYPE_>
 void local_carre_norme_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& norme_colonne)
 {
-  ToDo_Kokkos("");
   norme_colonne = 0.;
 
   const TRUSTVect<_TYPE_,int>& vect = tableau;
@@ -62,7 +61,7 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
   assert(lsize == max_colonne.size_array());
 
   auto tableau_view= tableau.template view_ro<ExecSpace>();
-  auto max_colonne_view= max_colonne.template view_wo<ExecSpace>();
+  auto max_colonne_view= max_colonne.template view_rw<ExecSpace>();
 
   for (; nblocs_left; nblocs_left--)
     {
@@ -74,20 +73,16 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
       {
         for (int j = 0; j < lsize; j++)
           {
-            _TYPE_ local_max=0;
-            for (int i = begin_bloc; i < end_bloc ; i++)
-              {
-                const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
-                local_max = Kokkos::fmax(local_max, x);
-              }
-            max_colonne_view(j)=local_max;
-          });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-        }
+            const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
+            Kokkos::atomic_max(&max_colonne_view(j), x);
+          }
+      });
     }
-}
-}
 
+  bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+}
+}
 
 template <typename _TYPE_>
 void local_max_abs_tab(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_>& max_colonne)
