@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -843,10 +843,19 @@ void Equation_base::mettre_a_jour(double temps)
 //mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
 void Equation_base::mettre_a_jour_champs_conserves(double temps, int reset)
 {
-  if (reset && champ_conserve_.non_nul()) champ_conserve_->reset_champ_calcule(); //force le calcul de toutes les cases
-  if (reset && champ_convecte_.non_nul()) champ_convecte_->reset_champ_calcule();
+  if (reset == 1 && champ_conserve_.non_nul()) champ_conserve_->reset_champ_calcule(); //force le calcul de toutes les cases
+  if (reset == 1 && champ_convecte_.non_nul()) champ_convecte_->reset_champ_calcule();
   if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
   if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
+
+  if (reset == 2 && champ_conserve_.non_nul())
+    {
+      const Champ_base *coeff = solv_masse().has_coefficient_temporel() ? &get_champ(solv_masse().get_name_of_coefficient_temporel()) : nullptr; //coeff temporel
+      ConstDoubleTab_parts part(inconnue().passe());
+      //valeur du champ lui-meme
+      champ_conserve_->passe() = part[0];
+      if (coeff) tab_multiply_any_shape(champ_conserve_->passe(), coeff->valeurs(), VECT_ALL_ITEMS);
+    }
 }
 
 /*! @brief Reinitialiser ce qui doit l'etre.

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -929,7 +929,10 @@ void Probleme_base::mettre_a_jour(double temps)
 
   // Update the conserved fields in the equations (must be done after the media):
   for(int i=0; i<nombre_d_equations(); i++)
-    equation(i).mettre_a_jour_champs_conserves(temps);
+    {
+      const int update_passe = 2 * (equation(i).solv_masse().has_coefficient_temporel());
+      equation(i).mettre_a_jour_champs_conserves(temps, update_passe);
+    }
 
   // Update the post-processing:
   les_postraitements_.mettre_a_jour(temps);
