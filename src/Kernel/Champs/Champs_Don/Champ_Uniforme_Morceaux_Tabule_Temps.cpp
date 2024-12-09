@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,7 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
   mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
   Domaine& le_domaine=mon_domaine.valeur();
   dim=lire_dimension(is,que_suis_je());
+  fixer_nb_comp(dim);
   valeurs_.resize(0, dim);
   le_domaine.creer_tableau_elements(valeurs_);
   is >> nom;
