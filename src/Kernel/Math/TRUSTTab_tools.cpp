@@ -79,15 +79,14 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
                 const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
                 local_max = Kokkos::fmax(local_max, x);
               },
-              Kokkos::Max<_TYPE_>(max_colonne_view_host(j))); //Reduce in the host
+              //Reduce in a subview, enabled by specifying execspace in the reducer !
+              Kokkos::Max<_TYPE_, ExecSpace>(Kokkos::subview(max_colonne_view,j)));
 
               bool kernelOnDevice = is_default_exec_space<ExecSpace>;
               end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
             }
         }
-
     }
-  Kokkos::deep_copy(max_colonne_view, max_colonne_view_host); //Deep copy in the device
 }
 
 }
