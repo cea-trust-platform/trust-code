@@ -1126,6 +1126,18 @@ double Domaine_VF::compute_L2_norm(const DoubleVect& val_source) const
   return sum;
 }
 
+void Domaine_VF::get_nb_integ_points(IntTab& ) const
+{
+  Process::exit("The function should not be used in domaine_VF, related to quadrature points (DG discretization)");
+  //surcharge dans domaine_DG mais qui n'est pas dans kernel
+}
+
+void Domaine_VF::get_ind_integ_points(IntTab& ) const
+{
+  Process::exit("The function should not be used in domaine_VF, related to quadrature points (DG discretization)");
+  //surcharge dans domaine_DG mais qui n'est pas dans kernel
+}
+
 /*! Methode inspiree de Raccord_distant_homogene::initialise
  */
 void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim)

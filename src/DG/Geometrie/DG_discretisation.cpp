@@ -24,6 +24,10 @@
 #include <Motcle.h>
 #include <Domaine_Cl_DG.h>
 #include <Option_DG.h>
+#include <Quadrature_base.h>
+#include <Quadrature_Ord1_Polygone.h>
+#include <Quadrature_Ord3_Polygone.h>
+#include <Quadrature_Ord5_Polygone.h>
 
 Implemente_instanciable(DG_discretisation, "DG", Discret_Thyd);
 // XD DG discretisation_base DG -1 DG discretization
@@ -169,12 +173,8 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
   Nom type;
   int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
   int rang = motcles.search(directive);
-  const Nom& type_elem_geom = domaine_DG.domaine().type_elem()->que_suis_je();
-  int nb_pts_integ=-1;
-  if (type_elem_geom == "Triangle")
-    nb_pts_integ = 3; // 3 for quad 2 7 for quad5
-  else if (type_elem_geom == "Quadrangle")
-    nb_pts_integ=9; // 9 for quad2 16 for quad5
+  const Quadrature_base& quad = domaine_DG.get_quadrature(2);
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
 
 //  const int order_DG = Option_DG::Get_order_for(directive);
   switch(rang)
@@ -182,7 +182,7 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
     case 0:
     case 1:
       type = "Champ_Fonc_P1_DG";
-      default_nb_comp = nb_pts_integ; //Option_DG::Nb_col_from_order(order_DG);;
+      default_nb_comp = nb_pts_integ_max; //Option_DG::Nb_col_from_order(order_DG);;
       break;
     case 2:
     case 3:

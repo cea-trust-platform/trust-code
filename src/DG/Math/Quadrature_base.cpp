@@ -20,11 +20,11 @@
 
 double Quadrature_base::compute_integral_on_elem(int num_elem, Parser_U& parser) const
 {
-  DoubleTab val_pts_integ(nb_pts_integ_);
-  for (int pts = 0; pts < nb_pts_integ_; pts++)
+  DoubleTab val_pts_integ(tab_nb_pts_integ_(num_elem));
+  for (int pts = 0; pts < tab_nb_pts_integ_(num_elem); pts++)
     {
-      double x = integ_points_(num_elem*nb_pts_integ_ + pts, 0),
-             y = integ_points_(num_elem*nb_pts_integ_ + pts, 1);
+      double x = integ_points_(ind_pts_integ_(num_elem) + pts, 0),
+             y = integ_points_(ind_pts_integ_(num_elem) + pts, 1);
       parser.setVar("x", x);
       parser.setVar("y", y);
       val_pts_integ(pts) = parser.eval();
@@ -36,16 +36,14 @@ double Quadrature_base::compute_integral_on_elem(int num_elem, DoubleTab& val_pt
 {
   double volume = dom_->volumes()[num_elem];
   double acc = 0.;
-  double val_on_pts = 0.;
-  for (int pts = 0; pts < this->nb_pts_integ(); pts++)
+  for (int pts = 0; pts < tab_nb_pts_integ_(num_elem); pts++)
     {
-      val_on_pts = val_pts_integ(pts);
-      acc += val_on_pts * weights_(pts);
+      acc += val_pts_integ(pts) * weights_(ind_pts_integ_(num_elem)+pts);
     }
   return acc * volume;
 }
 
-DoubleTab Quadrature_base::compute_integral_on_elem(DoubleTab& val_pts_integ) const
+/* DoubleTab Quadrature_base::compute_integral_on_elem(DoubleTab& val_pts_integ) const // pas sur que cela serve : je commente jusqu'a destruction
 {
   int nb_elem_tot = dom_->nb_elem_tot();
   DoubleTab results(nb_elem_tot);
@@ -56,7 +54,7 @@ DoubleTab Quadrature_base::compute_integral_on_elem(DoubleTab& val_pts_integ) co
       results[num_elem] = compute_integral_on_elem(num_elem, val_pts_elem);
     }
   return results;
-}
+} */
 
 double Quadrature_base::compute_integral_on_facet(int num_facet, Parser_U& parser) const
 {
@@ -98,12 +96,12 @@ double Quadrature_base::compute_integral(DoubleTab& vals_pts_integ) const
 {
   int nb_elem = dom_->nb_elem();
   double acc = 0.;
-  DoubleTab val_pt_inte(nb_pts_integ_);
+  double volume;
   for (int e = 0; e < nb_elem; e++)
     {
-      for (int pts = 0; pts < nb_pts_integ_; pts++)
-        val_pt_inte(pts) = vals_pts_integ(e, pts);
-      acc += Quadrature_base::compute_integral_on_elem(e, val_pt_inte);
+      volume = dom_->volumes(e);
+      for (int pts = 0; pts < tab_nb_pts_integ_(e); pts++)
+        acc += vals_pts_integ(ind_pts_integ_(e)+pts)*weights_(ind_pts_integ_(e)+pts)*volume;
     }
   Process::mp_sum(acc);
   return acc;

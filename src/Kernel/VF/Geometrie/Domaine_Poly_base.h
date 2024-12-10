@@ -96,7 +96,7 @@ public :
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
   inline int oriente_normale(int face_opp, int elem2)const;
 
-  void calculer_h_carre();
+  virtual void calculer_h_carre();
 
   inline DoubleTab& volumes_entrelaces_dir() { return volumes_entrelaces_dir_; } // renvoie le tableau des volumes entrelaces par cote.
   inline const DoubleTab& volumes_entrelaces_dir() const { return volumes_entrelaces_dir_; }

@@ -38,7 +38,7 @@ public :
 
   inline const IntTab& arete_faces() const { return arete_faces_; }
   void calculer_volumes_entrelaces() override;
-  void calculer_h_carre();
+  void calculer_h_carre() override;
 
   inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const { return dot(dimension, a, b, ma, mb); }
   KOKKOS_INLINE_FUNCTION double dot (const int dim, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;

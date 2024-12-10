@@ -33,6 +33,7 @@ public :
   inline const DoubleTab& get_PerTri() const { return PerTri_; }
   inline const DoubleTab& get_rhoTri() const { return rhoTri_; }
   inline const DoubleTab& get_sigTri() const { return sigTri_; }
+  inline const IntTab& get_type_elem() const { return type_elem_; }
 
 
   inline void set_quadrature(int order, const Quadrature_base* quad);
@@ -41,8 +42,10 @@ public :
   void get_position(DoubleTab& positions) const override;
   double compute_L1_norm(const DoubleVect& val_source) const override;
   double compute_L2_norm(const DoubleVect& val_source) const override;
+  void get_nb_integ_points(IntTab& nb_integ_points) const override;
+  void get_ind_integ_points(IntTab& ind_integ_points) const override;
 
-//  void calculer_h_carre() override;
+  void calculer_h_carre() override;
 
 
 protected:
@@ -53,9 +56,11 @@ protected:
   DoubleTab PerTri_;
   DoubleTab rhoTri_;
   DoubleTab sigTri_;
+  IntTab type_elem_;
 // DoubleVect h_, sigma;
 
   void compute_mesh_param(); // Compute the stabilization parameters
+  bool rempli_type_elem();
 };
 
 void Domaine_DG::set_quadrature(int order, const Quadrature_base* quad)

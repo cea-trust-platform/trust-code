@@ -154,13 +154,13 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
   const DoubleTab& eta_F = ch.get_eta_facet();  // Compute the penalisation coefficient
   const Quadrature_base& quad = domaine.get_quadrature(2); //TODO a trouver avec Option_DG
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
-  int nb_pts_integ = quad.nb_pts_integ();
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
   double coeff;
 
 
   const int nb_bfunc = ch.nb_bfunc();
-  DoubleTab grad_fbase_elem(nb_bfunc,nb_pts_integ, Objet_U::dimension);
-  DoubleTab divergence(nb_pts_integ);
+  DoubleTab grad_fbase_elem(nb_bfunc,nb_pts_integ_max, Objet_U::dimension);
+  DoubleTab divergence(nb_pts_integ_max);
 
   for (int e = 0; e < le_dom_dg_->nb_elem(); e++)
     {
@@ -173,7 +173,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
         for (int j=0; j<nb_bfunc; j++)
           {
             divergence = 0.;
-            for (int k = 0; k < nb_pts_integ ; k++)
+            for (int k = 0; k < quad.nb_pts_integ(e) ; k++)
               for (int d=0; d<Objet_U::dimension; d++)
                 divergence(k) += grad_fbase_elem(i,k,d) * grad_fbase_elem(j,k,d);
 

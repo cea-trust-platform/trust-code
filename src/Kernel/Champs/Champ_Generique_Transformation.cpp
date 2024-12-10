@@ -784,14 +784,16 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           Parser_U& f = fxyz[0];
           f.setVar("t",temps);
           double x, y, z;
-          // DG version with nb_points correspond to the nb of integration point in one cell
+          // DG version with nb_points correspond to the nb of integration point in one cell TODO DG mettre quadrature dans Kernel Math !
           int nb_elem = valeurs_espace.dimension(0);
-          int nb_points = valeurs_espace.dimension(1);
+          IntTab nb_points, ind_integ_points;
+          zvf.get_ind_integ_points(ind_integ_points);
+          zvf.get_nb_integ_points(nb_points);
           for (int i = 0; i<nb_elem; i++)
             {
-              for (int j=0; j<nb_points; j++)
+              for (int j=0; j<nb_points(i); j++)
                 {
-                  int k = i*nb_points+j;
+                  int k = ind_integ_points(i)+j;
                   x = positions(k,0);
                   y = positions(k,1);
                   z = 0;

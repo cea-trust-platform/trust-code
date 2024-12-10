@@ -164,6 +164,8 @@ public :
   virtual void get_position(DoubleTab& positions) const;
   virtual double compute_L1_norm(const DoubleVect& val_source) const;
   virtual double compute_L2_norm(const DoubleVect& val_source) const;
+  virtual void get_nb_integ_points(IntTab& nelem) const;
+  virtual void get_ind_integ_points(IntTab& nelem) const;
 
   //produit scalaire (a - ma).(b - mb)
   inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;

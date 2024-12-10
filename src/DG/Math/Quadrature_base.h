@@ -23,7 +23,7 @@
 class Quadrature_base
 {
 public:
-  Quadrature_base(const Domaine_DG& dom) : dom_(dom), nb_pts_integ_(-1), nb_pts_integ_facets_(-1)
+  Quadrature_base(const Domaine_DG& dom) : dom_(dom),  nb_pts_integ_quad_(-1), nb_pts_integ_tri_(-1), nb_pts_integ_facets_(-1), nb_pts_integ_max_(-1)
   { }
 
   virtual ~Quadrature_base() {}
@@ -34,6 +34,8 @@ public:
   inline const DoubleTab& get_weights() const { return weights_; }
   inline const DoubleTab& get_weights_facets() const { return weights_facets_; }
 
+  inline const IntTab& get_tab_nb_pts_integ() const { return tab_nb_pts_integ_; }
+  inline const IntTab& get_ind_pts_integ() const { return ind_pts_integ_; }
 //  void register_quadrature();
 
   /*! Compute for the whole domain the exact location of integration points per element
@@ -44,8 +46,11 @@ public:
    */
   virtual void compute_integ_points_on_facet() = 0;
 
-  inline int nb_pts_integ() const { return nb_pts_integ_; }
+
+  inline int nb_pts_integ_max() const { return nb_pts_integ_max_; } // TODO: max du nombre de pts de la quadrature
+  inline int nb_pts_integ(int e ) const { return tab_nb_pts_integ_(e); }
   inline int nb_pts_integ_facets() const { return nb_pts_integ_facets_; }
+  inline int ind_pts_integ(int e ) const { return ind_pts_integ_(e); }
 
   /*! Compute the integral of a function on the whole domain
    */
@@ -65,7 +70,7 @@ public:
   double compute_integral_on_elem(int num_elem, DoubleTab& val_pts_integ) const ;
   /*! Compute the integral of a function on each triangle with its value on integration points
    */
-  DoubleTab compute_integral_on_elem(DoubleTab& val_pts_integ) const ;
+  // DoubleTab compute_integral_on_elem(DoubleTab& val_pts_integ) const ; // pas sur que cela serve : je commente jusqu'a destruction
 
   /*! Compute the integral of a function on one facet
    */
@@ -78,15 +83,23 @@ public:
 protected:
   OBS_PTR(Domaine_DG) dom_;
 
-  int nb_pts_integ_;
-  int nb_pts_integ_facets_;
+  int nb_pts_integ_quad_; // local numbers of integ points for quadrangles
+  int nb_pts_integ_tri_; // // local numbers of integ points for triangles
+  int nb_pts_integ_facets_; // local numbers of integ points for facets
+  int nb_pts_integ_max_;
+
+  IntTab tab_nb_pts_integ_; // numbers of integ points cumulated
+
+  IntTab ind_pts_integ_; // numero of the first integ points
 
   Parser_U parser_; // why not?
 
-  DoubleTab integ_points_; // number of cols (line size) will vary according to order of the method and element type
+  DoubleTab integ_points_; // Integ points for quadrature formula
   DoubleTab integ_points_facets_;
-  DoubleTab weights_;
-  DoubleTab weights_facets_;
+  DoubleTab weights_;      //global weights
+  DoubleTab weights_quad_; // local numbers
+  DoubleTab weights_tri_; // local numbers
+  DoubleTab weights_facets_; // local numbers
 
 };
 

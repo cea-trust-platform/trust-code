@@ -29,14 +29,17 @@ Champ_base& Champ_Fonc_P1_DG::affecter_(const Champ_base& ch)
 
   const Quadrature_base& quad = domaine.get_quadrature(2);
   const DoubleTab& integ_points = quad.get_integ_points();
-  int nb_pts_integ = quad.nb_pts_integ();
-  int nb_elem_tot = domaine.nb_elem_tot();
+  int nb_elem = domaine.nb_elem();
 
-  DoubleTab values;
-  values.ref_tab(valeurs_,0,nb_elem_tot);
-  values.reshape(nb_elem_tot*nb_pts_integ,1);
+  DoubleTab values(integ_points.dimension(0),1);
 
   ch.valeur_aux(integ_points, values);
+
+  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+    {
+      for (int k = 0; k < quad.nb_pts_integ(num_elem) ; k++)
+        valeurs_(num_elem,k) = values(quad.ind_pts_integ(num_elem)+k);
+    }
 
   return *this;
 }
@@ -49,7 +52,7 @@ DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const 
   const DoubleVect& volume = domaine.volumes();
 
   const Quadrature_base& quad = domaine.get_quadrature(2);
-  int nb_pts_integ = quad.nb_pts_integ();
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
 
   const DoubleTab& values = le_champ().valeurs();
   int nb_polys = polys.size();
@@ -64,7 +67,7 @@ DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const 
   assert(result.line_size() == 1);
   ToDo_Kokkos("critical");
 
-  DoubleTab value_pts(nb_pts_integ);
+  DoubleTab value_pts(nb_pts_integ_max);
 
   for (int i = 0; i < nb_polys; i++)
     {
@@ -73,7 +76,7 @@ DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const 
 
       if (cell != -1)
         {
-          for (int k=0; k<nb_pts_integ; k++)
+          for (int k=0; k<quad.nb_pts_integ(cell); k++)
             value_pts(k) = values(cell,k);
 //          value_pts.ref_tab(values,cell,1); //pb de const
 

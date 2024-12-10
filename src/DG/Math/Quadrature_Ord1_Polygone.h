@@ -12,20 +12,19 @@
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *****************************************************************************/
-#ifndef Quadrature_Ord2_Triangle_included
-#define Quadrature_Ord2_Triangle_included
+#ifndef Quadrature_Ord1_Polygone_included
+#define Quadrature_Ord1_Polygone_included
 
 #include <Quadrature_base.h>
 
-class Quadrature_Ord2_Triangle : public Quadrature_base
+class Quadrature_Ord1_Polygone : public Quadrature_base
 {
 public:
-  Quadrature_Ord2_Triangle(const Domaine_DG& dom) : Quadrature_base(dom)
+  Quadrature_Ord1_Polygone(const Domaine_DG& dom) : Quadrature_base(dom)
   {
-    nb_pts_integ_ = 3;
-    nb_pts_integ_facets_ = 3;
     compute_integ_points();
     compute_integ_points_on_facet();
+    nb_f_elem_max = dom_->elem_faces().dimension(1);
   }
   /*! Compute for the whole domain the exact location of integration points per element
    */
@@ -34,6 +33,9 @@ public:
   /*! Compute for the whole domain the exact location of integration points per facet
    */
   void compute_integ_points_on_facet() override;
+
+protected:
+  int nb_f_elem_max; // max number of faces per elem
 
 };
 

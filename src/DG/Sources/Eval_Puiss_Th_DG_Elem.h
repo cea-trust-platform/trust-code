@@ -55,17 +55,17 @@ inline void Eval_Puiss_Th_DG_Elem::calculer_terme_source(const int e, Type_Doubl
   const Domaine_DG& dom = ref_cast(Domaine_DG, le_dom.valeur());
 
   const Quadrature_base& quad = dom.get_quadrature(2);
-  int nb_pts_integ = quad.nb_pts_integ();
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
   const int nb_bfunc = ch.nb_bfunc();
 
-  DoubleTab product(nb_pts_integ);
+  DoubleTab product(nb_pts_integ_max);
 
-  DoubleTab fbase(nb_bfunc, nb_pts_integ);
+  DoubleTab fbase(nb_bfunc, nb_pts_integ_max);
   ch.eval_bfunc(quad, e, fbase);
 
   for (int fb = 0; fb < nb_bfunc; fb++)
     {
-      for (int k = 0; k < nb_pts_integ ; k++)
+      for (int k = 0; k < quad.nb_pts_integ(e) ; k++)
         product(k) = puissance(e,k) * fbase(fb, k);
 
       S(fb) = quad.compute_integral_on_elem(e, product);

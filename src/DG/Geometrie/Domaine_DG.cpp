@@ -33,12 +33,9 @@
 #include <EChaine.h>
 #include <Interprete_bloc.h>
 #include <Quadrature_base.h>
-#include <Quadrature_Ord1_Triangle.h>
-#include <Quadrature_Ord2_Triangle.h>
-#include <Quadrature_Ord5_Triangle.h>
-#include <Quadrature_Ord1_Quadrangle.h>
-#include <Quadrature_Ord3_Quadrangle.h>
-#include <Quadrature_Ord5_Quadrangle.h>
+#include <Quadrature_Ord1_Polygone.h>
+#include <Quadrature_Ord3_Polygone.h>
+#include <Quadrature_Ord5_Polygone.h>
 #include <Champ_Elem_DG.h>
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
@@ -55,34 +52,16 @@ void Domaine_DG::discretiser()
   compute_mesh_param();
   // if triangle elem
 
-  const Nom& type_elem_geom = domaine().type_elem()->que_suis_je();
-
-  if (type_elem_geom == "Triangle")
-    {
-      Quadrature_base* quad1 = new Quadrature_Ord1_Triangle(*this);
-      Quadrature_base* quad2 = new Quadrature_Ord2_Triangle(*this);
-      Quadrature_base* quad5 = new Quadrature_Ord5_Triangle(*this);
-      // association of the quads with the dom
-      set_quadrature(1, quad1);
-      set_quadrature(2, quad2);
-      set_quadrature(5, quad5);
-    }
-  else if (type_elem_geom == "Quadrangle")
-    {
-      // If Quadrangle elem
-      Quadrature_base* quad1 = new Quadrature_Ord1_Quadrangle(*this);
-      Quadrature_base* quad2 = new Quadrature_Ord3_Quadrangle(*this);  // yes 3, who can do the most can do the least
-      Quadrature_base* quad5 = new Quadrature_Ord5_Quadrangle(*this);
-      // association of the quads with the dom
-      set_quadrature(1, quad1);
-      set_quadrature(2, quad2);
-      set_quadrature(5, quad5);
-    }
-  else
-    {
-      Process::exit("This geometry is not yet covered in DG");
-    }
-
+  // const Nom& type_elem_geom = domaine().type_elem()->que_suis_je();
+  bool tri_or_quad_only = rempli_type_elem(); // bool_only_triangle_and_quadrangle + fullfield the tab type_elem
+  if (tri_or_quad_only==false)
+    Process::exit("General meshes not implemented yet"); // TODO : Change this if general meshes implemented
+  Quadrature_base* quad1 = new Quadrature_Ord1_Polygone(*this);
+  Quadrature_base* quad2 = new Quadrature_Ord3_Polygone(*this);
+  Quadrature_base* quad5 = new Quadrature_Ord5_Polygone(*this);
+  set_quadrature(1, quad1);
+  set_quadrature(2, quad2);
+  set_quadrature(5, quad5);
 }
 
 void Domaine_DG::get_position(DoubleTab& positions) const
@@ -92,20 +71,35 @@ void Domaine_DG::get_position(DoubleTab& positions) const
   positions = quad.get_integ_points();
 }
 
+void Domaine_DG::get_nb_integ_points(IntTab& nb_integ_points) const
+{
+  const Quadrature_base& quad = get_quadrature(2);
+  nb_integ_points = quad.get_tab_nb_pts_integ();
+//  nb_integ_points.ref(tab_pts_integ);
+}
+
+void Domaine_DG::get_ind_integ_points(IntTab& ind_integ_points) const
+{
+  const Quadrature_base& quad = get_quadrature(2);
+  ind_integ_points = quad.get_ind_pts_integ();
+//  ind_integ_points.ref(ind_pts_integ);
+}
+
+
 double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 {
   const Quadrature_base& quad = get_quadrature(2);
-  int nb_pts_integ = quad.nb_pts_integ();
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
   int nelem = nb_elem();
 
-  DoubleTab val_elem(nb_pts_integ);
+  DoubleTab val_elem(nb_pts_integ_max);
 
   double sum = 0.;
 
   for (int i = 0; i < nelem; i++)
     {
-      for (int k = 0; k < nb_pts_integ ; k++)
-        val_elem(k) = std::fabs(val_source(i*nb_pts_integ+k));
+      for (int k = 0; k < quad.nb_pts_integ(i) ; k++)
+        val_elem(k) = std::fabs(val_source(i*nb_pts_integ_max+k));
 
       sum += quad.compute_integral_on_elem(i, val_elem);
     }
@@ -116,17 +110,17 @@ double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
 {
   const Quadrature_base& quad = get_quadrature(2);
-  int nb_pts_integ = quad.nb_pts_integ();
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
   int nelem = nb_elem();
 
-  DoubleTab val_elem(nb_pts_integ);
+  DoubleTab val_elem(nb_pts_integ_max);
 
   double sum = 0.;
 
   for (int i = 0; i < nelem; i++)
     {
-      for (int k = 0; k < nb_pts_integ ; k++)
-        val_elem(k) = val_source(i*nb_pts_integ+k)*val_source(i*nb_pts_integ+k);
+      for (int k = 0; k < quad.nb_pts_integ(i) ; k++)
+        val_elem(k) = val_source(i*nb_pts_integ_max+k)*val_source(i*nb_pts_integ_max+k);
 
       sum += quad.compute_integral_on_elem(i, val_elem);
     }
@@ -168,14 +162,73 @@ void Domaine_DG::compute_mesh_param()
 }
 
 //TODO DG h_carre with diameter
-//void Domaine_DG::calculer_h_carre()
-//{
-//  // Calcul de h_carre
-//  h_carre = 1;
-//  if (h_carre_.size()) return; // deja fait
-//  h_carre_.resize(nb_elem_tot());
-//
-//  h_carre_ = 1.;
-////  h_carre = 1.;
-//}
+void Domaine_DG::calculer_h_carre()
+{
+  // Calcul de h_carre
+  h_carre = 1;
+  if (h_carre_.size()) return; // deja fait
+  h_carre_.resize(nb_elem_tot());
 
+  h_carre_ = 0.1;
+//  h_carre = 1.;
+}
+
+
+bool Domaine_DG::rempli_type_elem()
+{
+  type_elem_.resize(this->nb_elem_tot());
+  bool only_tri_quad=true;
+  const IntTab& elem_face = elem_faces();
+  int nb_f_elem_max=elem_face.dimension(1);
+
+  if (Objet_U::dimension == 2)
+    {
+      if (nb_f_elem_max == 3) // que des triangles
+        {
+          for (int e = 0; e < this->nb_elem_tot(); e++)
+            {
+              type_elem_(e) = 3; // triangle
+            }
+        }
+      else if (nb_f_elem_max == 4) // que des quadrangle ou m��lange triangle et quadrangle
+        {
+          for (int e = 0; e < this->nb_elem_tot(); e++)
+            {
+              if (elem_face(e, 3) == -1)
+                {
+                  type_elem_(e) = 3; // triangle
+                  continue;
+                }
+              type_elem_(e) = 4; // quadrangle
+            }
+        }
+      else // melange polygone
+        {
+          only_tri_quad = false;
+          for (int e = 0; e < this->nb_elem_tot(); e++)
+            {
+              if (elem_face(e, 3) == -1)
+                {
+                  type_elem_(e) = 3; // triangle
+                  continue;
+                }
+              if (elem_face(e, 4) == -1)
+                {
+                  type_elem_(e) = 4; // quadrangle
+                  continue;
+                }
+              for (int i_f = 5; i_f < nb_f_elem_max; i_f++)
+                {
+                  if (elem_face(e, i_f) == -1 || i_f == nb_f_elem_max)
+                    type_elem_(e) = i_f+1; // polygone
+                  continue;
+                }
+            }
+        }
+    }
+  else
+    {
+      Process::exit("3D not implemented yet");
+    }
+  return only_tri_quad;
+}
