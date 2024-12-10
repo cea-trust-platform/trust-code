@@ -462,8 +462,14 @@ then
    #add_package ButterflyPACK (pb EXAMPLE est necessaire mais trop gros, que faire?). Voir deja si c'est utile ce package
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      echo "Not using Magma yet cause slower and limited to 1 GPU..." # See https://github.com/pghysels/STRUMPACK/issues/127
-      # add_package magma && with_packages=$with_packages" --with-magma-gputarget=Ampere"
+      # Magma limited to 1 GPU ? See https://github.com/pghysels/STRUMPACK/issues/127
+      [ "$TRUST_CUDA_CC" = 70 ] && target=Volta
+      [ "$TRUST_CUDA_CC" = 80 ] && target=Ampere
+      [ "$TRUST_CUDA_CC" = 86 ] && target=Ampere
+      [ "$TRUST_CUDA_CC" = 90 ] && target=Hopper
+      [ "$target" = "" ] && echo "Configura Magma target!" && exit -1
+      add_package magma && with_packages=$with_packages" --with-magma-gputarget=$target"
+
       # Slate (multi-gpu) necessite OpenMP et MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
       # On desactive car crash au run
       # add_package slate && with_packages=$with_packages" --with-openmp"

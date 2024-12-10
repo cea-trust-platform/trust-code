@@ -511,8 +511,12 @@ void Solv_Petsc::create_solver(Entree& entree)
         // ToDo add BLR option
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         solver_supported_on_gpu_by_petsc=1;
-        // ToDo: Triangular solve by default on CPU (possible on GPU with magma but 1 MPI only rank?)
-        if (gpu_) add_option("mat_strumpack_gpu", "1");
+        if (gpu_)
+          {
+            // Triangular solve by default on GPU but limited to 1 MPI rank
+            add_option("mat_strumpack_gpu", "1");
+            add_option("mat_strumpack_metis_nodeNDP", "1"); // See https://github.com/pghysels/STRUMPACK/issues/127
+          }
         break;
       }
     case 5:
