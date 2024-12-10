@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -553,7 +553,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
                     for (int som = 0; som < nbsf; som++)
                       {
                         int som_glob = faces(face, som);
-                        Kokkos::atomic_assign(&pression(nps + som_glob), 0);
+                        Kokkos::atomic_store(&pression(nps + som_glob), 0);
                       }
                   });
                   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);

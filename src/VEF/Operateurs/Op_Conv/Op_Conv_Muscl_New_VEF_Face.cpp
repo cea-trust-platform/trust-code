@@ -1396,7 +1396,7 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
                   int ligne=facei*nb_comp+dim;
                   int ligneAss=faceiAss*nb_comp+dim;
                   Kokkos::atomic_add(&resu[ligneAss], resu[ligne]);
-                  Kokkos::atomic_assign(&resu[ligne], resu[ligneAss]);
+                  Kokkos::atomic_store(&resu[ligne], resu[ligneAss]);
                 }
             /*
                           if (old_centered)

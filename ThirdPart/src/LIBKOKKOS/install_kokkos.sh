@@ -3,7 +3,9 @@
 if [ "$TRUST_USE_OPENMP" = 1 ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
 then
    # Kokkos pour SIMD ou GPU (C++17):
-   archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tgz
+   #archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tar.gz
+   #archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.4.01.tar.gz
+   archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.5.00.tar.gz
 else
    # Kokkos Serial (C++14)
    archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-3.7.02.tgz
@@ -22,7 +24,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
 
       cd $build_dir
       tar xzf $archive || exit -1
-      src_dir=$build_dir/kokkos
+      src_dir=$build_dir/`ls $build_dir | grep kokkos`
 
       # Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug or when developping on GPU:
       if [ $HOST = $TRUST_HOST_ADMIN ] || [ "$TRUST_USE_OPENMP" = 1 ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
@@ -96,8 +98,8 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         fi
         # Autres options possibles: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
         # et ici aussi: https://kokkos.org/kokkos-core-wiki/API/core/Macros.html
-        echo "cmake ../kokkos $CMAKE_OPT" | tee $log_file
-        cmake ../kokkos $CMAKE_OPT 2>&1 | tee -a $log_file
+        echo "cmake $src_dir $CMAKE_OPT" | tee $log_file
+        cmake $src_dir $CMAKE_OPT 2>&1 | tee -a $log_file
         [ ${PIPESTATUS[0]} != 0 ] && echo "Error when configuring Kokkos (CMake) - look at $log_file" && exit -1
 
         make -j$TRUST_NB_PHYSICAL_PROCS install 2>&1 | tee -a $log_file

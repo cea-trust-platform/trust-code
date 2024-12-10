@@ -265,7 +265,9 @@ bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 ea0931758fc180e3b1950931b9869921  gnuplot/gnuplot-6.0.2.tar.gz
 4fa24da17c99b122a56cb8808b6eb78b  hwloc-2.7.1.tar.gz
 36abe803480d07db87f9ba03cd5a842c  kokkos/kokkos-3.7.02.tgz
-fa15c31a146dd1487d619c7679393e78  kokkos/kokkos-4.2.00.tgz
+731647b61a4233f568d583702e9cd6d1  kokkos/kokkos-4.2.00.tar.gz
+eafd0d42c9831858aa84fde78576644c  kokkos/kokkos-4.4.01.tar.gz
+2ec50b6f07a7c72d63037e2f02066627  kokkos/kokkos-4.5.00.tar.gz
 48384e324cd1cdcfbdb0d2e16ca55327  lapack/OpenBLAS-0.3.25.tar.gz
 853a0c5c0747c5943e7ef4bbb793162d  lapack/OpenBLAS-0.3.29.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz

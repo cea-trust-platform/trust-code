@@ -10,7 +10,7 @@ if [ "$ROCM_PATH" != "" ]
 then
    OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH -Wno-openmp-mapping -ldl"
 else
-   OPENMP="-fopenmp -mp -target=gpu -cuda"
+   OPENMP="-fopenmp -mp=gpu -cuda -L$CUDA_ROOT/lib64/stubs -lcuda"
 fi
 echo $OPENMP
 $TRUST_CC -g -O3 -std=c++17 $OPENMP -o mix_openmp_kokkos mix_openmp_kokkos.cpp $KOKKOS && touch dumb.data && exec=`pwd`/mix_openmp_kokkos trust dumb 1

@@ -4,7 +4,7 @@ if [ "$ROCM_PATH" != "" ]
 then
    OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH -Wno-openmp-mapping -ldl"
 else
-   OPENMP="-fopenmp -mp -target=gpu -cuda"
+   OPENMP="-fopenmp -mp=gpu -cuda $CUDA_ROOT/lib64/stubs -lcuda"
 fi
 cmd="$TRUST_CC_BASE -std=c++17 $OPENMP -o virtual_function virtual_function.cpp $KOKKOS"
 echo $cmd

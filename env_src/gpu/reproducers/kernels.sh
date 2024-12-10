@@ -4,7 +4,7 @@ rm -f kernels
 # Aucun effet (meme O3 !) sur le device...
 KOKKOS_INC="-I$TRUST_KOKKOS_ROOT/linux_opt/include"
 KOKKOS_LIB="-L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore"
-[ "$TRUST_USE_CUDA" = 1 ] && OPENMP="-fopenmp -mp=gpu -cuda"
+[ "$TRUST_USE_CUDA" = 1 ] && OPENMP="-fopenmp -mp=gpu -cuda -L$CUDA_ROOT/lib64/stubs -lcuda"
 [ "$TRUST_USE_ROCM" = 1 ] && OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH"
 if [ "$TRUST_USE_KOKKOS_HIP" = 1  ]
 then

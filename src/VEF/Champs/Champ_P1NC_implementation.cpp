@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1639,7 +1639,7 @@ valeur_aux_sommets(const Domaine& dom,
           int num_som = sommet_elem(num_elem, j);
           if (num_som < nb_som_return)
             {
-              Kokkos::atomic_increment(&compteur(num_som));
+              Kokkos::atomic_inc(&compteur(num_som));
               for (int ncomp = 0; ncomp < nb_compo_; ncomp++)
                 {
                   Kokkos::atomic_add(&champ_som(num_som, ncomp), valeur_a_sommet_compo(num_som, num_elem, ncomp, elem_faces, sommet_elem, ch));
