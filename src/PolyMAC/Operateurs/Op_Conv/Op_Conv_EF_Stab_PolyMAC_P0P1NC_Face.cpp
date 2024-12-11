@@ -59,38 +59,34 @@ double Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-//  const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue());
-  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(); // &vf = domaine.volumes_entrelaces();
-  const DoubleTab& vit = vitesse_->valeurs(), // &vfd = domaine.volumes_entrelaces_dir(),
+  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem();
+  const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(); //, &fcl = ch.fcl();
-  int i, e, f, n, N = vit.line_size();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+  const int N = vit.line_size();
   DoubleTrav flux(N), vol(N); //somme des flux pf * |f| * vf, volume minimal des mailles d'elements/faces affectes par ce flux
 
-  for (e = 0; e < domaine.nb_elem(); e++)
+  for (int e = 0; e < domaine.nb_elem(); e++)
     {
       // Calcul du volume effectif de l'élément
       vol = pe(e) * ve(e);
       flux = 0.;
 
       // Parcourt des faces associées à l'élément
-      for (i = 0; i < e_f.dimension(1); i++)
+      for (int i = 0; i < e_f.dimension(1); i++)
         {
-          f = e_f(e, i);
+          int f = e_f(e, i);
           if (f >= 0)
-            for (n = 0; n < N; n++)
+            for (int n = 0; n < N; n++)
               {
-                // Ajout du flux entrant pour la composante n
-                double flux_f = pf(f) * fs(f) * (e == f_e(f, 1) ? 1 : -1) * vit(f, n);
-                flux(n) += flux_f;  // Seuls les flux entrants comptent
-
-//                  if (false && fcl(f, 0) < 2)
-//                    vol(n) = std::min(vol(n), pf(f) * vf(f) * vf(f) / vfd(f, e != f_e(f, 0))); //prise en compte de la contribution aux faces
+                // Ajout du flux entrant pour la composante n : Seuls les flux entrants comptent
+                double flux_f = pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.);
+                flux(n) += flux_f;
               }
         }
 
       // Calcul du pas de temps pour chaque composante n
-      for (n = 0; n < N; n++)
+      for (int n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12)
           dt = std::min(dt, vol(n) / flux(n));
     }
@@ -115,47 +111,59 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, k, l, e, eb, f, fb, fc, m, n, N = equation().inconnue().valeurs().line_size();
+  const int N = equation().inconnue().valeurs().line_size();
 
   IntTab stencil(0, 2);
 
   /* Ce bloc agit uniquement aux éléments; la diagonale de la matrice est omise. */
-  for (f = 0; f < domaine.nb_faces_tot(); f++)
+  for (int f = 0; f < domaine.nb_faces_tot(); f++)
     {
       // Vérifie si la face est interne ou satisfait les conditions aux limites
       if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
         {
           // Parcourt les éléments associés à cette face
-          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
-              {
-                // Parcourt les faces connectées à l'élément courant
-                for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
+          for (int i = 0; i < 2 ; i++)
+            {
+              const int e = f_e(f, i);
+              if (e >= 0)
+                for (int j = 0; j < 2 ; j++)
                   {
-                    if (fb < domaine.nb_faces())
-                      {
-                        // Cas où une équivalence entre faces existe
-                        if ((fc = equiv(f, i, k)) >= 0)
-                          {
-                            for (n = 0; n < N; n++)
-                              for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
-                                stencil.append_line(N * fb + n, N * fc + m);
-                          }
-                        // Cas sans équivalence : contributions entre faces de l'élément
-                        else if (f_e(f, 1) >= 0)
-                          {
-                            for (l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++)
-                              {
-                                double critère = fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0));
-                                if (std::abs(critère) > 1e-6 * ve(eb) * fs(fb))
-                                  for (n = 0; n < N; n++)
-                                    for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                    const int eb = f_e(f, j);
+                    // Parcourt les faces connectées à l'élément courant
+                    if (eb >= 0)
+                      for (int k = 0; k < e_f.dimension(1); k++)
+                        {
+                          const int fb = e_f(e, k);
+                          if (fb >= 0 && fb < domaine.nb_faces())
+                            {
+                              int fc = equiv(f, i, k);
+                              // Cas où une équivalence entre faces existe
+                              if (fc >= 0)
+                                {
+                                  for (int n = 0; n < N; n++)
+                                    for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
                                       stencil.append_line(N * fb + n, N * fc + m);
-                              }
-                          }
-                      }
+                                }
+                              // Cas sans équivalence : contributions entre faces de l'élément
+                              else if (f_e(f, 1) >= 0)
+                                {
+                                  for (int l = 0; l < e_f.dimension(1); l++)
+                                    {
+                                      fc = e_f(eb, l);
+                                      if (fc >= 0)
+                                        {
+                                          const double critere = fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0));
+                                          if (std::abs(critere) > 1e-6 * ve(eb) * fs(fb))
+                                            for (int n = 0; n < N; n++)
+                                              for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                                                stencil.append_line(N * fb + n, N * fc + m);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                   }
-              }
+            }
         }
     }
 
@@ -195,136 +203,153 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, Dou
 
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
-  int i, j, k, l, e, eb, f, fb, fc, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
+  const int N = inco.line_size(), D = dimension;
 
   DoubleTrav dfac(2, N, N), masse(N, N);
   // Parcourt toutes les faces du domaine
-  for (f = 0; f < domaine.nb_faces_tot(); f++)
+  for (int f = 0; f < domaine.nb_faces_tot(); f++)
     {
       if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
         {
           // Calcul des contributions des faces
-          for (i = 0, dfac = 0; i < 2; i++)
+          dfac = 0.;
+          for (int i = 0; i < 2; i++)
             {
               // Masse diagonale avec correction si nécessaire
-              for (masse = 0, e = f_e(f, (f_e(f, i) >= 0) ? i : 0), n = 0; n < N; n++)
+              masse = 0.;
+              int e = f_e(f, (f_e(f, i) >= 0) ? i : 0);
+              for (int n = 0; n < N; n++)
                 masse(n, n) = a_r ? (*a_r)(e, n) : 1;
 
               if (corr)
                 corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
 
               // Contribution à dfac
-              for (e = f_e(f, i), eb = f_e(f, i), n = 0; n < N; n++)
-                {
-                  for (m = 0; m < N; m++)
-                    {
-                      double signe = (vit(f, m) * (i ? -1 : 1) >= 0) ? 1. : (vit(f, m) ? -1. : 0.);
-                      dfac((fcl(f, 0) == 1) ? 0 : i, n, m) += fs(f) * vit(f, m) * pe((eb >= 0) ? eb : f_e(f, 0)) * masse(n, m) * (1. + signe * alpha_) / 2;
-                    }
-                }
+              e = f_e(f, i);
+              int eb = f_e(f, i);
+              for (int n = 0; n < N; n++)
+                for (int m = 0; m < N; m++)
+                  {
+                    const double signe = (vit(f, m) * (i ? -1 : 1) >= 0) ? 1. : (vit(f, m) ? -1. : 0.);
+                    dfac((fcl(f, 0) == 1) ? 0 : i, n, m) += fs(f) * vit(f, m) * pe((eb >= 0) ? eb : f_e(f, 0)) * masse(n, m) * (1. + signe * alpha_) / 2;
+                  }
             }
 
           // Contributions aux matrices et au second membre
-          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          for (int i = 0; i < 2 ; i++)
             {
-              for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-                {
-                  if (fb < domaine.nb_faces())
-                    {
-                      // Cas d'équivalence : face source -> face cible
-                      if ((fc = equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
-                        {
-                          for (j = 0; j < 2; j++)
-                            {
-                              eb = f_e(f, j);
-                              fd = (j == i) ? fb : fc; // Face ou élément source
+              const int e = f_e(f, i);
+              if (e >= 0)
+                for (int k = 0; k < e_f.dimension(1) ; k++)
+                  {
+                    const int fb = e_f(e, k);
 
-                              //multiplicateur pour passer de vf a ve
-                              double mult = (fd < 0 || domaine.dot(&nf(fb, 0), &nf(fd, 0)) > 0) ? 1 : -1;
-                              mult *= (fd >= 0) ? pf(fd) / pe(eb) : 1;
+                    if (fb >= 0 && fb < domaine.nb_faces())
+                      {
+                        int fc = equiv(f, i, k);
+                        // Cas d'équivalence : face source -> face cible
+                        if (fc >= 0 || f_e(f, 1) < 0)
+                          {
+                            for (int j = 0; j < 2; j++)
+                              {
+                                int eb = f_e(f, j);
+                                int fd = (j == i) ? fb : fc; // Face ou élément source
 
-                              for (n = 0; n < N; n++)
-                                for (m = 0; m < N; m++)
+                                //multiplicateur pour passer de vf a ve
+                                double mult = (fd < 0 || domaine.dot(&nf(fb, 0), &nf(fd, 0)) > 0) ? 1 : -1;
+                                mult *= (fd >= 0) ? pf(fd) / pe(eb) : 1;
+
+                                for (int n = 0; n < N; n++)
+                                  for (int m = 0; m < N; m++)
+                                    {
+                                      if (dfac(j, n, m))
+                                        {
+                                          double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
+
+                                          // Mise à jour du second membre
+                                          if (fd >= 0)
+                                            secmem(fb, n) -= fac * mult * inco(fd, m);
+                                          else
+                                            {
+                                              // CL de Dirichlet
+                                              for (int d = 0; d < D; d++)
+                                                secmem(fb, n) -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+                                            }
+                                          if (!incompressible_)
+                                            secmem(fb, n) += fac * inco(fb, m);
+
+                                          // Mise à jour de la matrice
+                                          if (mat)
+                                            {
+                                              if (fd >= 0)
+                                                (*mat)(N * fb + n, N * fd + m) += fac * mult;
+
+                                              if (!incompressible_)
+                                                (*mat)(N * fb + n, N * fb + m) -= fac;
+                                            }
+                                        }
+                                    }
+                              }
+                          }
+                        // Cas sans équivalence : n_f * opérateur élémentaire
+                        else
+                          {
+                            for (int j = 0; j < 2; j++)
+                              {
+                                const int eb = f_e(f, j);
+                                for (int l = 0; l < e_f.dimension(1) ; l++)
                                   {
-                                    if (dfac(j, n, m))
+                                    fc = e_f(eb, l);
+                                    if (fc >= 0)
                                       {
-                                        double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
-
-                                        // Mise à jour du second membre
-                                        if (fd >= 0)
-                                          secmem(fb, n) -= fac * mult * inco(fd, m);
-                                        else
+                                        double critere = fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0));
+                                        if (std::abs(critere) > 1e-6 * ve(eb) * fs(fb))
                                           {
-                                            // CL de Dirichlet
-                                            for (d = 0; d < D; d++)
-                                              secmem(fb, n) -= fac * nf(fb, d) / fs(fb) *
-                                                               ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
-                                          }
-                                        if (comp)
-                                          secmem(fb, n) += fac * inco(fb, m);
-
-                                        // Mise à jour de la matrice
-                                        if (mat)
-                                          {
-                                            if (fd >= 0)
-                                              (*mat)(N * fb + n, N * fd + m) += fac * mult;
-
-                                            if (comp)
-                                              (*mat)(N * fb + n, N * fb + m) -= fac;
+                                            for (int n = 0; n < N; n++)
+                                              for (int m = 0; m < N; m++)
+                                                if (dfac(j, n, m))
+                                                  {
+                                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * ((eb == f_e(fc, 0)) ? 1 : -1) * critere / (ve(e) * ve(eb) * fs(fb));
+                                                    secmem(fb, n) -= fac * inco(fc, m);
+                                                    if (mat && fac)
+                                                      {
+                                                        (*mat)(N * fb + n, N * fc + m) += fac;
+                                                      }
+                                                  }
                                           }
                                       }
                                   }
-                            }
-                        }
-                      // Cas sans équivalence : n_f * opérateur élémentaire
-                      else
-                        {
-                          for (j = 0; j < 2; j++)
-                            {
-                              for (eb = f_e(f, j), l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++)
-                                {
-                                  double critère = fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0));
-                                  if (std::abs(critère) > 1e-6 * ve(eb) * fs(fb))
-                                    {
-                                      for (n = 0; n < N; n++)
-                                        for (m = 0; m < N; m++)
-                                          if (dfac(j, n, m))
-                                            {
-                                              double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * ((eb == f_e(fc, 0)) ? 1 : -1) * critère / (ve(e) * ve(eb) * fs(fb));
-                                              secmem(fb, n) -= fac * inco(fc, m);
-                                              if (mat && fac)
-                                                {
-                                                  (*mat)(N * fb + n, N * fc + m) += fac;
-                                                }
-                                            }
-                                    }
-                                }
-                              // Partie correction si `comp`
-                              if (comp)
-                                {
-                                  for (l = 0; l < e_f.dimension(1) && (fc = e_f(e, l)) >= 0; l++)
-                                    {
-                                      double critère_comp = fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0));
-                                      if (std::abs(critère_comp) > 1e-6 * ve(e) * fs(fb))
-                                        {
-                                          for (n = 0; n < N; n++)
-                                            for (m = 0; m < N; m++)
+                                // Partie correction si `comp`
+                                if (!incompressible_)
+                                  {
+                                    for (int l = 0; l < e_f.dimension(1) ; l++)
+                                      {
+                                        fc = e_f(e, l);
+                                        if (fc >= 0)
+                                          {
+
+                                            double critere = fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0));
+                                            if (std::abs(critere) > 1e-6 * ve(e) * fs(fb))
                                               {
-                                                if (dfac(j, n, m))
-                                                  {
-                                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * ((e == f_e(fc, 0)) ? 1 : -1) * critère_comp / (ve(e) * ve(e) * fs(fb));
-                                                    secmem(fb, n) += fac * inco(fc, m);
-                                                    if (mat && fac)
-                                                      (*mat)(N * fb + n, N * fc + m) -= fac;
-                                                  }
+                                                for (int n = 0; n < N; n++)
+                                                  for (int m = 0; m < N; m++)
+                                                    {
+                                                      if (dfac(j, n, m))
+                                                        {
+                                                          double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * ((e == f_e(fc, 0)) ? 1 : -1) * critere / (ve(e) * ve(e) * fs(fb));
+                                                          secmem(fb, n) += fac * inco(fc, m);
+                                                          if (mat && fac)
+                                                            (*mat)(N * fb + n, N * fc + m) -= fac;
+                                                        }
+                                                    }
                                               }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }
             }
         }
     }
