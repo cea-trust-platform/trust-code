@@ -59,8 +59,9 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
   double dt = 1e10;
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
-  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces();
-  const DoubleTab& vit = vitesse_->valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
+  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(),
+                    &pe = equation().milieu().porosite_elem(); //, &vf = domaine.volumes_entrelaces();
+  const DoubleTab& vit = vitesse_->valeurs(),// &vfd = domaine.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   int i, e, f, n, N = vit.line_size();
@@ -68,15 +69,29 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
 
   for (e = 0; e < domaine.nb_elem(); e++)
     {
-      for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        if (!Option_PolyMAC::TRAITEMENT_AXI || (Option_PolyMAC::TRAITEMENT_AXI && fcl(f,0) != 2) )
-          for (n = 0; n < N; n++)
-            {
-              flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
-              if (0 && fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //prise en compte de la contribution aux faces
-            }
+      // Initialisation du volume et du flux pour chaque element
+      vol = pe(e) * ve(e);
+      flux = 0.;
+
+      for (i = 0; i < e_f.dimension(1); i++)
+        {
+          f = e_f(e, i);
+          if (f >= 0 && (!Option_PolyMAC::TRAITEMENT_AXI || fcl(f, 0) != 2))
+            for (n = 0; n < N; n++)
+              {
+                // Calcul du flux entrant
+                double contribution_flux = pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.);
+                flux(n) += contribution_flux;
+
+//                  // Si la prise en compte des contributions aux faces est activee
+//                  if (false && fcl(f, 0) < 2)
+//                      vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f));
+              }
+        }
+
+      // Mise à jour du pas de temps minimal
       for (n = 0; n < N; n++)
-        if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12 /* eviter les valeurs 'tres proches de 0 mais pas completement nulles' */)
+        if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12)
           dt = std::min(dt, vol(n) / flux(n));
     }
 
@@ -102,33 +117,49 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
 
   IntTab stencil(0, 2);
 
-
-  /* agit uniquement aux elements; diagonale omise */
+  // Parcourt des faces totales du domaine
   for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+      {
+        // Parcourt des deux éléments adjacents à la face
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
-            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-              if (fb < domaine.nb_faces() && fcl(fb, 0) < 2)
-                {
-                  if ((fc = equiv(f, i, k)) >= 0) //equivalence : face -> face
-                    for (n = 0; fcl(fc, 0) < 2 && n < N; n++)
-                      for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
-                        stencil.append_line(N * fb + n, N * fc + m);
-                  else if (f_e(f, 1) >= 0)
-                    for (d = 0; d < D; d++) //pas d'equivalence : elem -> face
-                      if (std::fabs(nf(fb, d)) > 1e-6 * fs(fb))
-                        for (n = 0; n < N; n++)
-                          for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
-                            stencil.append_line(N * fb + n, N * (nf_tot + D * eb + d) + m); //elem -> face
-                }
-            for (d = 0; d < D; d++)
-              for (n = 0; n < N; n++)
-                for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)  //elem->elem
-                  stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + m);
-          }
+            for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+              {
+                // Contribution des faces connectées à l'élément
+                for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
+                  {
+                    if (fb < domaine.nb_faces() && fcl(fb, 0) < 2)
+                      {
+                        if ((fc = equiv(f, i, k)) >= 0)
+                          {
+                            // Cas d'équivalence : face -> face
+                            for (n = 0; n < N; n++)
+                              for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                                stencil.append_line(N * fb + n, N * fc + m);
+                          }
+                        else if (f_e(f, 1) >= 0)
+                          {
+                            // Pas d'équivalence : élément -> face
+                            for (d = 0; d < D; d++)
+                              if (std::fabs(nf(fb, d)) > 1e-6 * fs(fb))
+                                for (n = 0; n < N; n++)
+                                  for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                                    stencil.append_line(N * fb + n, N * (nf_tot + D * eb + d) + m);
+                          }
+                      }
+                  }
 
+                // Contribution élément -> élément
+                for (d = 0; d < D; d++)
+                  for (n = 0; n < N; n++)
+                    for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                      stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + m);
+              }
+          }
+      }
+
+  // Suppression des doublons et allocation de la matrice
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(N * (nf_tot + D * ne_tot), N * (nf_tot + D * ne_tot), stencil, mat2);
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;
@@ -156,92 +187,128 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
 
   int i, j, k, e, eb, f, fb, fc, fd, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
-  double mult;
 
   DoubleTrav dfac(2, N, N), masse(N, N);
+  // Parcourt toutes les faces du domaine
   for (f = 0; f < domaine.nb_faces_tot(); f++)
-    if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
-      {
-        for (i = 0, dfac = 0; i < 2; i++)
-          {
-            //masse : diagonale + masse ajoutee si correlation
-            for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : 0), n = 0; n < N; n++)
-              masse(n, n) = a_r ? (*a_r)(e, n) : 1;
-            if (corr)
-              corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
-            //contribution a dfac
-            for (e = f_e(f, i), eb = f_e(f, i), n = 0; n < N; n++)
-              for (m = 0; m < N; m++)
-                dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * pe(eb >= 0 ? eb : f_e(f, 0)) * masse(n, m) * (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.) * alpha_) / 2;
-          }
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          {
-            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-              if (fb < domaine.nb_faces() && fcl(fb, 0) < 2) //partie "faces"
+    {
+      if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
+        {
+          // Calcul des contributions des faces
+          for (i = 0, dfac = 0; i < 2; i++)
+            {
+              e = f_e(f, (f_e(f, i) >= 0) ? i : 0);
+
+              // Masse : diagonale + correction
+              for (masse = 0, n = 0; n < N; n++)
+                masse(n, n) = a_r ? (*a_r)(e, n) : 1;
+
+              if (corr)
+                corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+
+              // Contribution à dfac
+              for (n = 0; n < N; n++)
                 {
-                  if ((fc = equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
-                    for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
-                      {
-                        eb = f_e(f, j), fd = (j == i ? fb : fc); //element/face sources
-                        mult = (fd < 0 || domaine.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
-                        for (n = 0; n < N; n++)
-                          for (m = 0; m < N; m++)
-                            if (dfac(j, n, m))
-                              {
-                                double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
-                                if (fd >= 0)
-                                  secmem(fb, n) -= fac * mult * inco(fd, m); //autre face calculee
-                                else
-                                  for (d = 0; d < D; d++)  //CL de Dirichlet
-                                    secmem(fb, n) -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
-                                if (comp)
-                                  secmem(fb, n) += fac * inco(fb, m); //partie v div(alpha rho v)
-                                if (!mat)
-                                  continue;
-                                if (fd >= 0 && fcl(fd, 0) < 2)
-                                  (*mat)(N * fb + n, N * fd + m) += fac * mult;
-                                if (comp)
-                                  (*mat)(N * fb + n, N * fb + m) -= fac;
-                              }
-                      }
-                  else
-                    for (j = 0; j < 2; j++)
-                      for (eb = f_e(f, j), d = 0; d < D; d++)
-                        if (std::fabs(nf(fb, d)) > 1e-6 * fs(fb))
-                          for (n = 0; n < N; n++)
-                            for (m = 0; m < N; m++)
-                              if (dfac(j, n, m))
-                                {
-                                  //pas d'equivalence : mu_f * n_f * operateur aux elements
-                                  double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e) * nf(fb, d) / fs(fb);
-                                  secmem(fb, n) -= fac * inco(nf_tot + D * eb + d, m);
-                                  if (comp)
-                                    secmem(fb, n) += fac * inco(nf_tot + D * e + d, m);
-                                  if (!mat || !fac)
-                                    continue;
-                                  (*mat)(N * fb + n, N * (nf_tot + D * eb + d) + m) += fac;
-                                  if (comp)
-                                    (*mat)(N * fb + n, N * (nf_tot + D * e + d) + m) -= fac;
-                                }
-                }
-            for (j = 0; j < 2; j++)
-              for (eb = f_e(f, j), d = 0; d < D; d++)
-                for (n = 0; n < N; n++)
                   for (m = 0; m < N; m++)
-                    if (dfac(j, n, m)) //partie "elem"
-                      {
-                        double fac = (i ? -1 : 1) * dfac(j, n, m);
-                        secmem(nf_tot + D * e + d, n) -= fac * (eb >= 0 ? inco(nf_tot + D * eb + d, m) : ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m));
-                        if (comp)
-                          secmem(nf_tot + D * e + d, n) += fac * inco(nf_tot + D * e + d, m); //partie v div(alpha rho v)
-                        if (!mat)
-                          continue;
-                        if (eb >= 0)
-                          (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * eb + d) + m) += fac;
-                        if (comp)
-                          (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e + d) + m) -= fac;
-                      }
-          }
-      }
+                    {
+                      double signe = (vit(f, m) * (i ? -1 : 1) >= 0) ? 1. : (vit(f, m) ? -1. : 0.);
+                      dfac((fcl(f, 0) == 1) ? 0 : i, n, m) += fs(f) * vit(f, m) * pe((f_e(f, i) >= 0) ? f_e(f, i) : f_e(f, 0)) * masse(n, m) * (1. + signe * alpha_) / 2;
+                    }
+                }
+            }
+
+          // Calcul des contributions à la matrice et au second membre
+          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+            {
+              for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
+                {
+                  if (fb < domaine.nb_faces() && fcl(fb, 0) < 2)
+                    {
+                      // Cas d'équivalence : face -> face
+                      if ((fc = equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
+                        {
+                          for (j = 0; j < 2; j++)
+                            {
+                              eb = f_e(f, j);
+                              fd = (j == i) ? fb : fc; // Face source
+                              //multiplicateur pour passer de vf a ve
+                              double mult = (fd < 0 || domaine.dot(&nf(fb, 0), &nf(fd, 0)) > 0) ? 1 : -1;
+                              mult *= (fd >= 0) ? pf(fd) / pe(eb) : 1;
+
+                              for (n = 0; n < N; n++)
+                                {
+                                  for (m = 0; m < N; m++)
+                                    {
+                                      if (dfac(j, n, m))
+                                        {
+                                          double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
+
+                                          // Mise à jour du second membre
+                                          if (fd >= 0)
+                                            secmem(fb, n) -= fac * mult * inco(fd, m);
+                                          else
+                                            // CL de Dirichlet
+                                            for (d = 0; d < D; d++)
+                                              secmem(fb, n) -= fac * nf(fb, d) / fs(fb) *
+                                                               ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+
+                                          if (comp)
+                                            secmem(fb, n) += fac * inco(fb, m);
+
+                                          // Mise à jour de la matrice
+                                          if (mat)
+                                            {
+                                              if (fd >= 0 && fcl(fd, 0) < 2)
+                                                (*mat)(N * fb + n, N * fd + m) += fac * mult;
+                                              if (comp)
+                                                (*mat)(N * fb + n, N * fb + m) -= fac;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                      // Cas sans équivalence : éléments connectés
+                      else
+                        {
+                          for (j = 0; j < 2; j++)
+                            {
+                              eb = f_e(f, j);
+                              for (d = 0; d < D; d++)
+                                {
+                                  if (std::fabs(nf(fb, d)) > 1e-6 * fs(fb))
+                                    {
+                                      for (n = 0; n < N; n++)
+                                        {
+                                          for (m = 0; m < N; m++)
+                                            {
+                                              if (dfac(j, n, m))
+                                                {
+                                                  double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e) * nf(fb, d) / fs(fb);
+
+                                                  // Mise à jour du second membre
+                                                  secmem(fb, n) -= fac * inco(nf_tot + D * eb + d, m);
+                                                  if (comp)
+                                                    secmem(fb, n) += fac * inco(nf_tot + D * e + d, m);
+
+                                                  // Mise à jour de la matrice
+                                                  if (mat && fac)
+                                                    {
+                                                      (*mat)(N * fb + n, N * (nf_tot + D * eb + d) + m) += fac;
+                                                      if (comp)
+                                                        (*mat)(N * fb + n, N * (nf_tot + D * e + d) + m) -= fac;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
   statistiques().end_count(convection_counter_);
 }
