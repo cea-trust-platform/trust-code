@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,14 +88,20 @@ void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
   const Conds_lim& cls = solv_mass_->equation().domaine_Cl_dis().les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue()).fcl(), &f_e = domaine.face_voisins();
+  const DoubleTab& inco_present = solv_mass_->equation().inconnue().valeurs(), &inco_passe = solv_mass_->equation().inconnue().passe();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
   const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem(), &fs = domaine.face_surfaces();
+  const Champ_base *coeff = solv_mass_->has_coefficient_temporel() ? &solv_mass_->equation().get_champ(solv_mass_->get_name_of_coefficient_temporel()) : nullptr;
   int e, f, n, N = cc.valeurs().line_size(), ne = domaine.nb_elem();
+  const bool is_conduction = solv_mass_->equation().que_suis_je() == "Conduction";
 
   /* second membre : avec ou sans resolution en increments*/
   for (e = 0; e < ne; e++)
     for (n = 0; n < N; n++)
-      secmem(e, n) += pe(e) * ve(e) * (passe(e, n) - resoudre_en_increments * present(e, n)) / dt;
+      if (is_conduction) // on traite le terme en temps comme rho.cp.dT/dt plutot que d(rho.cp.T)/dt
+        secmem(e, n) += coeff->valeurs()(e, n) * pe(e) * ve(e) * (inco_passe(e, n) - resoudre_en_increments * inco_present(e, n)) / dt;
+      else
+        secmem(e, n) += pe(e) * ve(e) * (passe(e, n) - resoudre_en_increments * present(e, n)) / dt;
 
   /* si on n'a pas d'operateur de diffusion (operateur(0) negligeable ou operateur(0) convectif pour Masse_Multiphase), alors ajout des flux aux faces de Neumann */
   if ( (sub_type(Op_Diff_negligeable, solv_mass_->equation().operateur(0).l_op_base())) || (!sub_type(Operateur_Diff_base, solv_mass_->equation().operateur(0).l_op_base())) )
