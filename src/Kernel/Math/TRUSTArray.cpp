@@ -106,7 +106,7 @@ void TRUSTArray<_TYPE_, _SIZE_>::resize_array_(_SIZE_ new_size, RESIZE_OPTIONS o
           if (opt == RESIZE_OPTIONS::COPY_INIT)
             data_location_ = std::make_shared<DataLocation>(DataLocation::Device);
           else
-            data_location_ = std::make_shared<DataLocation>(DataLocation::Host);
+            data_location_ = std::make_shared<DataLocation>(DataLocation::Host); // PL ToDo Check why setting to DataLocation::Device is not better...
         }
       else
         data_location_ = std::make_shared<DataLocation>(DataLocation::HostOnly);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -429,8 +429,6 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab
 {
   const Domaine& domaine = domaine_dis_base().domaine();
   IntTrav les_polys;
-  les_polys.resize(tab_valeurs.dimension_tot(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
-
   domaine.chercher_elements(positions, les_polys);
 
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
@@ -446,7 +444,7 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab
 DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
   const Domaine& domaine = domaine_dis_base().domaine();
-  IntVect les_polys(positions.dimension(0));
+  IntTrav les_polys;
   domaine.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }

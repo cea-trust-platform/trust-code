@@ -680,8 +680,8 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
   CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
   CDoubleTabView nu = tab_nu.view_ro();
 
-  IntVect tab_face_associee(domaine_VEF.premiere_face_int());
-  IntVect tab_fac2b_idx(domaine_VEF.nb_faces());
+  IntTrav tab_face_associee(domaine_VEF.premiere_face_int());
+  IntTrav tab_fac2b_idx(domaine_VEF.nb_faces());
 
   Matrice_Morse_View matrice;
   matrice.set(tab_matrice);
@@ -717,8 +717,8 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
     }
 
   CIntArrView est_face_bord = domaine_VEF.est_face_bord().view_ro();
-  CIntArrView face_associee = tab_face_associee.view_ro();
-  CIntArrView fac2b_idx = tab_fac2b_idx.view_ro();
+  CIntArrView face_associee = static_cast<ArrOfInt&>(tab_face_associee).view_ro();
+  CIntArrView fac2b_idx = static_cast<ArrOfInt&>(tab_fac2b_idx).view_ro();
 
   auto ajouter_contrib = KOKKOS_LAMBDA(const int fac)
   {

@@ -347,6 +347,17 @@ typename Domaine_32_64<_SZ_>::SmallArrOfTID_t& Domaine_32_64<_SZ_>::indice_eleme
 }
 
 // TODO should go into TRUSTTab somehow ...
+/**
+ * @brief Compares two `TRUSTTab<double, _SZ_>` objects for equality.
+ *
+ * Performs an element-wise comparison of the two arrays, using Kokkos for GPU data
+ * and a sequential approach for host data. Returns `true` if all elements match, `false` otherwise.
+ *
+ * @tparam _SZ_ The size type of the `TRUSTTab` object.
+ * @param a First array to compare.
+ * @param b Second array to compare.
+ * @return `true` if the arrays are equal, `false` otherwise.
+ */
 template <typename _SZ_>
 bool sameDoubleTab(const TRUSTTab<double, _SZ_>& a, const TRUSTTab<double, _SZ_>& b)
 {
@@ -354,10 +365,26 @@ bool sameDoubleTab(const TRUSTTab<double, _SZ_>& a, const TRUSTTab<double, _SZ_>
   _SZ_ size_b = b.size_array();
   if (size_a != size_b)
     return false;
-  for (_SZ_ i = 0; i < size_a; i++)
-    if (a.addr()[i] != b.addr()[i])
-      return false;
-  return true;
+  bool kernelOnDevice = a.checkDataOnDevice() && b.checkDataOnDevice();
+  if (kernelOnDevice)
+    {
+      auto a_v = static_cast<const ArrOfDouble&>(a).view_ro();
+      auto b_v = static_cast<const ArrOfDouble&>(b).view_ro();
+      bool same = true;
+      Kokkos::parallel_reduce(start_gpu_timer(), size_a, KOKKOS_LAMBDA(const int i, bool& local_same)
+      {
+        if (a_v(i) != b_v(i)) local_same = false;
+      }, Kokkos::LAnd<bool>(same));
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      return same;
+    }
+  else
+    {
+      for (_SZ_ i = 0; i < size_a; i++)
+        if (a.addr()[i] != b.addr()[i])
+          return false;
+      return true;
+    }
 }
 
 /*! @brief Recherche des elements contenant les points dont les coordonnees sont specifiees.
@@ -383,11 +410,12 @@ typename Domaine_32_64<_SZ_>::SmallArrOfTID_t& Domaine_32_64<_SZ_>::chercher_ele
       else
         {
           // Recherche dans le cache:
-          ToDo_Kokkos("critical");
           for (int i = 0; i < cached_positions_.size(); i++)
             if (sameDoubleTab(positions, cached_positions_[i]))
               {
-                elements.resize_tab(cached_positions_[i].dimension(0), RESIZE_OPTIONS::NOCOPY_NOINIT);
+                int size = cached_positions_[i].dimension(0);
+                if (elements.size_array() != size)
+                  elements.resize_tab(size);
                 elements = cached_elements_[i];
                 // elements.ref_array(cached_elements_[i]); // Non Provoque un assert (ex Sondes.data) et en parallele aussi, normal elements est modifie dans les sondes....
                 return elements;
@@ -424,6 +452,10 @@ typename Domaine_32_64<_SZ_>::SmallArrOfTID_t& Domaine_32_64<_SZ_>::chercher_ele
           // Met en cache
           cached_positions_.add(positions);
           cached_elements_.add(elements);
+          // Send cached arrays to device:
+          int last = cached_positions_.size();
+          mapToDevice(cached_positions_[last-1]);
+          mapToDevice(cached_elements_[last-1]);
           cached_memory += (double)(positions.size_array() * sizeof(double));
           cached_memory += (double)(elements.size_array() * sizeof(int));
           if (cached_memory > 1e7)   // 10Mo
