@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ public :
 protected:
   int n_l = -1; //phase liquide
 
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
+  virtual void dimensionner_blocs_aux(IntTab&) const = 0;
   virtual void ajouter_blocs_aux(matrices_t , DoubleTab& ) const = 0;
 };
 

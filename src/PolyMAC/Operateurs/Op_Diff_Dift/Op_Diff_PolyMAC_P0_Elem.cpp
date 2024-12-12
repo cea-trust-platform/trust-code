@@ -244,7 +244,7 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
       matrices.at(i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco) : nullptr;
 
   std::vector<int> N(op_ext.size()); //nombre de composantes par probleme de op_ext
-  std::vector<IntTrav> stencil(op_ext.size()); //stencils par matrice
+  std::vector<IntTab> stencil(op_ext.size()); //stencils par matrice
   for (i = 0; i < (int) op_ext.size(); i++)
     {
       stencil[i].resize(0, 2);

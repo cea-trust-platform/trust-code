@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ Implemente_instanciable(Op_Evanescence_Homogene_PolyMAC_P0_Face, "Op_Evanescence
 Sortie& Op_Evanescence_Homogene_PolyMAC_P0_Face::printOn(Sortie& os) const { return os; }
 Entree& Op_Evanescence_Homogene_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Evanescence_Homogene_Face_base::readOn(is); }
 
-void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs_aux(std::set<int>& idx, IntTrav& sten,  Matrice_Morse& mat ) const
+void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs_aux(std::set<int>& idx, IntTab& sten,  Matrice_Morse& mat ) const
 {
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());

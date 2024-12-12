@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ void Masse_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_
 {
   if (sub_type(Pb_Multiphase, equation().probleme()))
     {
-      IntTrav sten(0, 2);
+      IntTab sten(0, 2);
 
       Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices, semi_impl, true /* allocate too */, sten);
     }

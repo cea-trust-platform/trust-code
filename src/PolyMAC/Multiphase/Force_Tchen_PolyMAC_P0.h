@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@ class Force_Tchen_PolyMAC_P0: public Source_Force_Tchen_base
 {
   Declare_instanciable(Force_Tchen_PolyMAC_P0);
 protected:
-  void dimensionner_blocs_aux(IntTrav&) const override;
+  void dimensionner_blocs_aux(IntTab&) const override;
   void ajouter_blocs_aux(matrices_t , DoubleTab& ) const override;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ Implemente_instanciable(Frottement_interfacial_PolyMAC_P0, "Frottement_interfaci
 Sortie& Frottement_interfacial_PolyMAC_P0::printOn(Sortie& os) const { return os; }
 Entree& Frottement_interfacial_PolyMAC_P0::readOn(Entree& is) { return Source_Frottement_interfacial_base::readOn(is); }
 
-void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil) const
+void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs_aux(IntTab& stencil) const
 {
   const DoubleTab& inco = ref_cast(Champ_Face_base, equation().inconnue()).valeurs();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());

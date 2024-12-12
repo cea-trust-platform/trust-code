@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,7 +81,7 @@ void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
                                                                                                                   le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
   update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
-  IntTrav sten_p(0, 2), sten_v(0, 2); //stencils (NS, pression), (NS, vitesse)
+  IntTab sten_p(0, 2), sten_v(0, 2); //stencils (NS, pression), (NS, vitesse)
 
 
   const std::string& nom_inc = ch.le_nom().getString();

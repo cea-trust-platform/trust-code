@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ void Op_Grad_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const 
   const DoubleTab& vit = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
   int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = vit.line_size(), m, M = press.line_size();
   Matrice_Morse *mat = matrices["pression"], mat2;
-  IntTrav sten(0, 2);
+  IntTab sten(0, 2);
   DoubleTrav w2;
 
   for (e = 0; e < ne_tot; e++)

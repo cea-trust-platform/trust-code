@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ class Solveur_Masse_Face_proto
 public:
   void associer_masse_proto(const Solveur_Masse_base& , const Domaine_VF&) ;
   DoubleTab& appliquer_impl_proto(DoubleTab& ) const;
-  void dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl,const bool allocate, IntTrav&) const;
+  void dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl,const bool allocate, IntTab&) const;
   void ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const ;
 
 protected:

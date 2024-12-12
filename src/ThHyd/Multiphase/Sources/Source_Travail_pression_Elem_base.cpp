@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, 
     if (n_m.first == "pression" || (n_m.first == "alpha" && !semi_impl.count("alpha")) || n_m.first == "vitesse")
       {
         Matrice_Morse& mat = *n_m.second, mat2;
-        IntTrav sten(0, 2);
+        IntTab sten(0, 2);
 
         if (n_m.first == "pression") /* pression : dependance locale, implicite */
           for (e = 0; e < ne; e++)

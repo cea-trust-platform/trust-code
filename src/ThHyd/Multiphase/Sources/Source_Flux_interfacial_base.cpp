@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const
         Matrice_Morse& mat = *n_m.second, mat2;
         const DoubleTab& dep = equation().probleme().get_champ(n_m.first).valeurs();
         const int M = dep.line_size();
-        IntTrav sten(0, 2);
+        IntTab sten(0, 2);
 
         if (n_m.first == "temperature" || n_m.first == "pression" || n_m.first == "alpha" || n_m.first == "interfacial_area" ) /* temperature/pression: dependance locale */
           for (e = 0; e < domaine.nb_elem(); e++)

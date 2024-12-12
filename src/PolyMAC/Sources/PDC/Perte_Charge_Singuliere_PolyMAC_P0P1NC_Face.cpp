@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t 
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
   int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot();
   //DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
-  IntTrav stencil(0, 2);
+  IntTab stencil(0, 2);
 
 
   for (i = 0; i < num_faces.size(); i++)

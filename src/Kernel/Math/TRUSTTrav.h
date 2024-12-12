@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,6 +146,12 @@ public:
 
 private:
   static constexpr _TYPE_ TYPE_ZERO = (_TYPE_)0;
+
+  /* APPELS INTERDITS : very in-efficient on Trvas, should use tabs */
+  void append_line(_TYPE_);
+  void append_line(_TYPE_, _TYPE_);
+  void append_line(_TYPE_, _TYPE_, _TYPE_);
+  void append_line(_TYPE_, _TYPE_, _TYPE_, _TYPE_);
 };
 
 using DoubleTrav = TRUSTTrav<double>;

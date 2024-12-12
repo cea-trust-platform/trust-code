@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ void Source_Dispersion_bulles_base::dimensionner_blocs(matrices_t matrices, cons
   const IntTab& fcl = ch.fcl();
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
-  IntTrav stencil(0, 2);
+  IntTab stencil(0, 2);
 
   int f, k, l, N = inco.line_size();
 

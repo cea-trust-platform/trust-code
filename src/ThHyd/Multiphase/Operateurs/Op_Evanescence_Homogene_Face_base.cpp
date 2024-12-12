@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,7 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
   for (auto &&n_m : matrices)
     if (n_m.second->nb_colonnes())
       {
-        IntTrav sten(0, 2);
+        IntTab sten(0, 2);
 
 
         std::set<int> idx;

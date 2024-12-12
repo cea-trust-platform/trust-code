@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
   return sm;
 }
 
-void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl, const bool allocate, IntTrav& sten) const
+void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl, const bool allocate, IntTab& sten) const
 {
   const std::string& nom_inc = solv_mass_->equation().inconnue().le_nom().getString();
   if (!matrices.count(nom_inc)) return; //rien a faire

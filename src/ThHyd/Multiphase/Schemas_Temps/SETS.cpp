@@ -680,7 +680,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
 
           for (auto &&i_bl : bloc) //stencil par inconnue -> en demultipliant
             {
-              IntTrav sten(0, 2);
+              IntTab sten(0, 2);
 
               for (oMg = offs[i_bl], M = dims[i_bl][1], i = 0; i < calc.size_array(); i++)
                 if (calc[i])

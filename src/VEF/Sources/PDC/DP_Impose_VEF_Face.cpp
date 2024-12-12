@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,8 +104,7 @@ void DP_Impose_VEF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  IntTrav sten(0, 2);
-
+  IntTab sten(0, 2);
 
   int i, f, d, db, D = dimension, n, N = equation().inconnue().valeurs().line_size() / D, nf_tot = dom.nb_faces_tot();
   for (i = 0; i < num_faces.size(); i++)

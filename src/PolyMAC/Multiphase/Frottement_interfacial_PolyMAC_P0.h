@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@ class Frottement_interfacial_PolyMAC_P0: public Source_Frottement_interfacial_ba
   Declare_instanciable(Frottement_interfacial_PolyMAC_P0);
 protected:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void dimensionner_blocs_aux(IntTrav&) const override;
+  void dimensionner_blocs_aux(IntTab&) const override;
 };
 
 #endif /* Frottement_interfacial_PolyMAC_P0_included */

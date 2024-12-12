@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@ class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Op_Evanescence_Homogene_Fa
   Declare_instanciable(Op_Evanescence_Homogene_PolyMAC_P0_Face);
 
 protected:
-  void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const override;
+  void dimensionner_blocs_aux(std::set<int>&, IntTab& ,  Matrice_Morse& ) const override;
   void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const override;
   void calc_grad_alpha_elem(DoubleTab&) const;
   void calc_grad_alpha_faces(DoubleTab&) const override;

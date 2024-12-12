@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,7 +127,7 @@ void Assembleur_P_PolyMAC_P0P1NC::dimensionner_continuite(matrices_t matrices, i
   int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
                          ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue()).fcl(), &e_f = domaine.elem_faces();
-  IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
+  IntTab sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
   DoubleTrav w2;
 
   /* equations sum alpha_k = 1 */

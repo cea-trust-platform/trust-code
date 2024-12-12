@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ protected:
   int is_turb = 0;
   double beta_ = 1.; // To adjust the force in .data
 
-  virtual void dimensionner_blocs_aux(IntTrav&) const = 0;
+  virtual void dimensionner_blocs_aux(IntTab&) const = 0;
 };
 
 #endif /* Source_Dispersion_bulles_base_included */
