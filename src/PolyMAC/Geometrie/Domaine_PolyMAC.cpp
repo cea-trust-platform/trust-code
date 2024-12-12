@@ -132,13 +132,16 @@ void Domaine_PolyMAC::init_equiv() const
 
   Cerr << domaine().le_nom() << " : intializing equiv... " ;
 
+  const bool is_polymac = (que_suis_je() == "Domaine_PolyMAC");
+
   for (int f = 0; f < nb_faces_tot(); f++)
     if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
-            if (std::fabs(std::fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6)
-              continue; //normales colineaires?
+            if (!is_polymac || (is_polymac && Option_PolyMAC::MAILLAGE_VDF))
+              if (std::fabs(std::fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6)
+                continue; //normales colineaires?
 
             // XXX Elie Saikali
             // Options pour forcer le calcul du tableau equiv
@@ -184,7 +187,7 @@ void Domaine_PolyMAC::init_equiv() const
               }
             else
               for (ok = 1, d = 0; d < D; d++)
-                ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
+                ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < (is_polymac ? 1.e-6 /* XXX Elie Saikali : comme avant pour le moment */ : 1e-12); //xv - xp identiques?
 
             if (!ok)
               continue;
