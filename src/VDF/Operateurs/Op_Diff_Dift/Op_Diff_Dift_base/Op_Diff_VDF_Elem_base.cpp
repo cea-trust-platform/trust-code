@@ -49,17 +49,39 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 
   if (sub_type(Champ_Uniforme,diffusivite_pour_pas_de_temps()) && !has_champ_masse_volumique())
     {
-      // GF le max permet de traiter le multi_inco
-      double alpha=max_array(diffu);
+      double alpha = -123.;
+      if (equation().diffusion_multi_scalaire())
+        {
+          const int nb_comp = static_cast<int>(std::sqrt(diffu.line_size()));
+          std::vector<double> diff_vect(nb_comp);
 
-      double coef = 1/(domaine_VDF.h_x()*domaine_VDF.h_x()) + 1/(domaine_VDF.h_y()*domaine_VDF.h_y());
+          for (int i = 0; i < nb_comp; i++)
+            for (int j = 0; j < nb_comp; j++)
+              diff_vect[i] += std::abs(diffu(0, nb_comp * i + j));
 
-      if (dimension == 3) coef += 1/(domaine_VDF.h_z()*domaine_VDF.h_z());
+          alpha = *std::max_element(diff_vect.begin(), diff_vect.end());
+        }
+      else
+        {
+          // GF le max permet de traiter le multi_inco
+          alpha = max_array(diffu);
+        }
 
-      if (alpha==0) dt_stab = DMAXFLOAT;
-      else dt_stab = 0.5/(alpha*coef);
+      double coef = 1 / (domaine_VDF.h_x() * domaine_VDF.h_x()) + 1 / (domaine_VDF.h_y() * domaine_VDF.h_y());
+
+      if (dimension == 3)
+        coef += 1 / (domaine_VDF.h_z() * domaine_VDF.h_z());
+
+      if (alpha == 0)
+        dt_stab = DMAXFLOAT;
+      else
+        dt_stab = 0.5 / (alpha * coef);
+
       return Process::mp_min(dt_stab);
     }
+
+  if (equation().diffusion_multi_scalaire())
+    return 1e30;
 
   return Op_Diff_VDF_base::calculer_dt_stab_(domaine_VDF);
 }
