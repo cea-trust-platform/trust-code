@@ -40,8 +40,15 @@ Sous_zone sel
 Associate sel dom
 Lire sel { fonction_sous_zone 1 }
 
-Scheme_euler_implicit sch
-Read sch
+Scheme_euler_explicit sch_e
+Read sch_e
+{
+    tinit 0
+    seuil_statio $seuil_statio
+}
+
+Scheme_euler_implicit sch_i
+Read sch_i
 {
     tinit 0
     seuil_statio $seuil_statio
@@ -55,7 +62,7 @@ Read sch
 VDF dis
 
 associate pb dom
-Associate pb sch
+Associate pb $sch
 Discretize pb dis
 
 Read pb
@@ -65,10 +72,12 @@ Read pb
         rho champ_uniforme 1 1
         mu  champ_uniforme 1 1
     }
-    constituant { coefficient_diffusion champ_uniforme $Dg }
+    constituant { is_multi_scalar 
+                  coefficient_diffusion champ_uniforme $Dcoeff }
 
     Navier_Stokes_standard
     {
+        equation_non_resolue 1
         solveur_pression cholesky { }
         convection { amont }
         diffusion { negligeable }
@@ -98,8 +107,8 @@ Read pb
         }
         Probes
         {
-            concentration grav flux_neutronique periode 1e8 segment 500 -1 -1 1 1
-            concentration_ex                sol periode 1e8 segment 500 -1 -1 1 1
+            concentration    grav  concentration periode 1e8 segment 500 -1 -1 1 1
+            concentration_ex grav            sol  periode 1e8 segment 500 -1 -1 1 1
         }
         format Lata
         fields dt_post 1e8
