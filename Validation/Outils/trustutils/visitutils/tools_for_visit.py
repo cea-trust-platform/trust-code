@@ -209,7 +209,7 @@ class Show(object):
                 from ..jupyter.run import BUILD_DIRECTORY
 
                 path = os.path.join(BUILD_DIRECTORY, tmp)
-                for f in glob(path + "*.png"):
+                for f in glob(path + r"*_\d\d\d\d.png"):
                     os.remove(f)
 
         self.gestMsg = GestionMessages(verbose, "")

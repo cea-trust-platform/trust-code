@@ -105,14 +105,8 @@ else  # Jupyter notebook
     mv build build_init
     mv preserve build
     curr_dir=`pwd`
-		sed -i '/.png/s/build\//src\//g' $base_prm
-		sed -i '/.jpg/s/build\//src\//g' $base_prm
-		sed -i '/.jpeg/s/build\//src\//g' $base_prm
-    env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/old_rapport.pdf" --execute $base_prm 1>$log_file 2>&1
+    env JUPYTER_RUN_OPTIONS="-not_run" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/old_rapport.pdf" --execute $base_prm 1>$log_file 2>&1
     status=$?
-		sed -i '/.png/s/src\//build\//g' $base_prm
-		sed -i '/.jpg/s/src\//build\//g' $base_prm
-		sed -i '/.jpeg/s/src\//build\//g' $base_prm
 fi
 
 [ $status -ne 0 ] && echo "*** FAILED generating archive!! Last logs of (failed) report build can be seen in $log_file" &&  mv $archive.tgz ${archive}_FAILED.tgz && exit 2
