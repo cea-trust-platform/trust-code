@@ -78,7 +78,7 @@ void Convection_Diffusion_Concentration::set_param(Param& param)
   param.ajouter_non_std("nom_inconnue",(this)); // XD_ADD_P chaine Keyword Nom_inconnue will rename the unknown of this equation with the given name. In the postprocessing part, the concentration field will be accessible with this name. This is usefull if you want to track more than one concentration (otherwise, only the concentration field in the first concentration equation can be accessed).
   param.ajouter_non_std("alias",(this)); // XD_ADD_P chaine not_set
   param.ajouter("masse_molaire",&masse_molaire_); // XD_ADD_P floattant not_set
-  param.ajouter_non_std("is_multi_scalar", (this)); // XD_ADD_P floattant not_set
+  param.ajouter_non_std("is_multi_scalar|is_multi_scalar_diffusion", (this)); // XD_ADD_P rien Flag to activate the multi_scalar diffusion operator
 }
 
 int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -105,9 +105,9 @@ int Convection_Diffusion_Concentration::lire_motcle_non_standard(const Motcle& m
       champs_compris_.ajoute_champ(la_concentration);
       return 1;
     }
-  else if (mot=="is_multi_scalar")
+  else if (mot=="is_multi_scalar" || mot=="is_multi_scalar_diffusion")
     {
-      diffusion_multi_scalaire_ = 1;
+      diffusion_multi_scalaire_ = true;
       return 1;
     }
   else

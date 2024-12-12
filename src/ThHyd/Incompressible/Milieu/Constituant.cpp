@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@ void Constituant::set_param(Param& param)
 {
   Milieu_base::set_param(param);
   param.ajouter("coefficient_diffusion", &D_, Param::REQUIRED);
+  param.ajouter_non_std("is_multi_scalar|is_multi_scalar_diffusion", (this)); // XD_ADD_P rien Flag to activate the multi_scalar diffusion operator
 }
 
 void Constituant::discretiser(const Probleme_base& pb, const Discretisation_base& dis)
@@ -42,4 +43,15 @@ void Constituant::discretiser_multi_concentration(const Nom& nm, const Probleme_
   dis.nommer_completer_champ_physique(domaine_dis, nm, "m2/s", D_.valeur(), pb);
   champs_compris_.ajoute_champ(D_.valeur());
   Milieu_base::discretiser(pb, dis);
+}
+
+int Constituant::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot=="is_multi_scalar" || mot=="is_multi_scalar_diffusion")
+    {
+      diffusion_multi_scalaire_ = true;
+      return 1;
+    }
+  else
+    return Milieu_base::lire_motcle_non_standard(mot,is);
 }
