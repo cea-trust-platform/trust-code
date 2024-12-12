@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,10 +54,15 @@ public :
     return 1;
   }
 
-  inline int nb_constituants() const { return D_->nb_comp(); }
+  inline int nb_constituants() const
+  {
+    return diffusion_multi_scalaire_ ? static_cast<int>(std::sqrt(D_->nb_comp())) /* TODO FIXME */ : D_->nb_comp();
+  }
+  int lire_motcle_non_standard(const Motcle& mot, Entree& is) override;
 
 protected :
   OWN_PTR(Champ_Don_base) D_; // Coefficient de diffusion du constituant dans un milieu
+  bool diffusion_multi_scalaire_ = false;
 };
 
 #endif /* Constituant_included */
