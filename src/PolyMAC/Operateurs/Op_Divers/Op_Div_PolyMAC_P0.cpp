@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,15 +40,20 @@ void Op_Div_PolyMAC_P0::dimensionner(Matrice_Morse& matrice) const
 
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const IntTab& f_e = domaine.face_voisins();
-  int i, e, f, n, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(),
-                  N = equation().inconnue().valeurs().line_size(), D = dimension;
+  const int ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(),
+            N = equation().inconnue().valeurs().line_size(), D = dimension;
 
   IntTab stencil(0, 2);
 
-  for (f = 0; f < domaine.nb_faces(); f++)
-    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-      for (n = 0; n < N; n++)
-        stencil.append_line(N * e + n, N * f + n);
+  for (int f = 0; f < domaine.nb_faces(); f++)
+    for (int i = 0; i < 2; i++)
+      {
+        const int e = f_e(f, i);
+        if (e < 0) continue;
+
+        for (int n = 0; n < N; n++)
+          stencil.append_line(N * e + n, N * f + n);
+      }
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(N * ne_tot, N * (nf_tot + D * ne_tot), stencil, matrice);
@@ -61,20 +66,26 @@ DoubleTab& Op_Div_PolyMAC_P0::ajouter(const DoubleTab& vit, DoubleTab& div) cons
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   const IntTab& f_e = domaine.face_voisins();
-  int i, e, f, n, N = vit.line_size();
+  const int N = vit.line_size();
   assert(div.line_size() == N);
 
   DoubleTab& tab_flux_bords = flux_bords_;
   tab_flux_bords.resize(domaine.nb_faces_bord(), 1);
-  tab_flux_bords = 0;
+  tab_flux_bords = 0.;
 
-  for (f = 0; f < domaine.nb_faces(); f++)
+  for (int f = 0; f < domaine.nb_faces(); f++)
     {
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (n = 0; n < N; n++)
-          div(e, n) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f, n);
+      for (int i = 0; i < 2; i++)
+        {
+          const int e = f_e(f, i);
+          if (e < 0) continue;
+
+          for (int n = 0; n < N; n++)
+            div(e, n) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f, n);
+        }
+
       if (f < domaine.premiere_face_int())
-        for (n = 0; n < N; n++)
+        for (int n = 0; n < N; n++)
           tab_flux_bords(f, n) = fs(f) * pf(f) * vit(f, n);
     }
 
@@ -94,10 +105,15 @@ void Op_Div_PolyMAC_P0::contribuer_a_avec(const DoubleTab& incoo, Matrice_Morse&
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   const IntTab& f_e = domaine.face_voisins();
-  int i, e, f, n, N = ch.valeurs().line_size();
+  const int N = ch.valeurs().line_size();
 
-  for (f = 0; f < domaine.nb_faces(); f++)
-    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-      for (n = 0; n < N; n++)
-        mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);
+  for (int f = 0; f < domaine.nb_faces(); f++)
+    for (int i = 0; i < 2 ; i++)
+      {
+        const int e = f_e(f, i);
+        if (e < 0) continue;
+
+        for (int n = 0; n < N; n++)
+          mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);
+      }
 }

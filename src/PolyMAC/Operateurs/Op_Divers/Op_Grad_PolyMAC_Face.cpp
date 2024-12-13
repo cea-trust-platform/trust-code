@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,8 +54,13 @@ void Op_Grad_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
   IntTab stencil(0, 2);
 
   for (int f = 0; f < zPolyMAC_P0P1NC.nb_faces(); f++)
-    for (int i = 0, e; i < 2 && (e = zPolyMAC_P0P1NC.face_voisins(f, i)) >= 0; i++)
-      stencil.append_line(f, e);
+    for (int i = 0; i < 2; i++)
+      {
+        const int e = zPolyMAC_P0P1NC.face_voisins(f, i);
+        if (e < 0) continue;
+
+        stencil.append_line(f, e);
+      }
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(zPolyMAC_P0P1NC.nb_faces_tot(), zPolyMAC_P0P1NC.nb_elem_tot(), stencil, mat);
 }
