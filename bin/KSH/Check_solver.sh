@@ -92,7 +92,7 @@ lml=1 && [ "$1" = -not_lml ] && lml=0 && shift
 test_solveur=0 && [ "$1" = -test_solveur ] && test_solveur=1 && lml=0 && shift
 mail=0 && [ "$1" = -mail ] && mail=1 && shift
 [ "$1" = -solver ] && shift && liste_solveurs=`echo $1 | awk '{gsub(":"," ",$0);print $0}'` && shift
-ranking=1 && [ "$1" = -no_ranking ] && shift
+ranking=1 && [ "$1" = -no_ranking ] && ranking=0 && shift
 ref=${1%.data} && shift
 
 # Determination du jeu de donnees
