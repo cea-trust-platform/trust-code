@@ -60,6 +60,7 @@ Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 
 // XD constituant milieu_base constituant -1 Constituent.
 // XD attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
+// XD attr is_multi_scalar rien is_multi_scalar_diffusion 1 Flag to activate the multi_scalar diffusion operator
 
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
