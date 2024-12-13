@@ -29,7 +29,7 @@ void Constituant::set_param(Param& param)
 {
   Milieu_base::set_param(param);
   param.ajouter("coefficient_diffusion", &D_, Param::REQUIRED);
-  param.ajouter_non_std("is_multi_scalar|is_multi_scalar_diffusion", (this)); // XD_ADD_P rien Flag to activate the multi_scalar diffusion operator
+  param.ajouter_non_std("is_multi_scalar|is_multi_scalar_diffusion", (this));
 }
 
 void Constituant::discretiser(const Probleme_base& pb, const Discretisation_base& dis)
