@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,9 +44,8 @@ public:
                const IntTab& ,const Domaine& )  const override ;
 };
 
-#pragma omp declare target
-inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const double * vsom,
-                            const double* vitesse,True_int type_cl, const double* porosite_face)
+KOKKOS_INLINE_FUNCTION void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const double * vsom,
+                                            const double* vitesse,True_int type_cl, const double* porosite_face)
 {
   // Passage (justifie vue la taille) en True_int de type_cl et comp car bug nvc++ sinon
   True_int comp;
@@ -161,7 +160,6 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
     } // fin du switch
 
 }
-#pragma omp end declare target
 
 KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, const double * vs, const double * vsom,
                                                   CDoubleTabView vitesse,True_int type_cl, CDoubleArrView porosite_face)

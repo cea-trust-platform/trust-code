@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -278,10 +278,6 @@ void debug_device_view(const View<_TYPE_,_SHAPE_> view_tab, TRUSTArray<_TYPE_,_S
   });
   Cout << "Tab size=" << tab.size_array() << finl;
   assert(view_tab.size()==tab.size_array());
-//  _TYPE_ *ptr = tab.data();
-//  #pragma omp target teams distribute parallel for
-//  for (_SIZE_ i=0; i<size; i++)
-//    printf("[OpenMP]: %p [%2ld]=%e\n", ptr, i, ptr[i]);
 }
 #endif
 #endif

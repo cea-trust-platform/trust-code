@@ -204,25 +204,6 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
       }
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
-  /* ToDo OpenMP use grad as calculer_cas_vectoriel
-  for (int num_face=premiere_face_int; num_face<nb_faces; num_face++)
-  {
-    for (int k=0; k<2; k++)
-      {
-        int elem = face_voisins_addr[2*num_face+k];
-        if (elem>=0)
-          {
-            int ori = 1 - 2 * k;
-            for (int j = 0; j < dimension; j++)
-              {
-                double flux = ori * face_normales_addr[num_face * dimension + j]
-                              * nu_addr[elem] * grad_addr[elem * dimension + j];
-                #pragma omp atomic
-                resu_addr[num_face] -= flux;
-              }
-          }
-      } // Fin de la boucle sur les 2 elements comnuns a la face
-  } // Fin de la boucle sur les faces */
 
   // Neumann :
   copyPartialFromDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
