@@ -21,6 +21,7 @@
 #include <sstream>
 #include <map>
 #include <tuple>
+#include <kokkos++.h>
 
 #ifndef LATATOOLS
 #include <comm_incl.h>
@@ -167,18 +168,26 @@ void init_cuda()
 #endif /* LATATOOLS */
 
 // Adress on device (return host adress if no device):
-template <typename _TYPE_, typename _SIZE_>
-_TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
+template <typename _TYPE_>
+_TYPE_* addrOnDevice(_TYPE_* ptr)
 {
 #ifdef _OPENMP_TARGET
-  if (tab.get_data_location()==DataLocation::HostOnly) return tab.data();
   _TYPE_ *device_ptr = nullptr;
-  _TYPE_ *ptr = tab.data();
   #pragma omp target data use_device_ptr(ptr)
   {
     device_ptr = ptr;
   }
   return device_ptr;
+#else
+  return ptr;
+#endif
+}
+template <typename _TYPE_, typename _SIZE_>
+_TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
+{
+#ifdef _OPENMP_TARGET
+  if (tab.get_data_location()==DataLocation::HostOnly) return tab.data();
+  else return addrOnDevice(tab.data());
 #else
   return tab.data();
 #endif
@@ -327,13 +336,15 @@ template <typename _TYPE_, typename _SIZE_>
 void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
+  if (Objet_U::computeOnDevice && size>0)
     {
-      assert(isAllocatedOnDevice(ptr) || size==0);
+      assert(isAllocatedOnDevice(ptr));
       _SIZE_ bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyToDevice",bytes);
       if (timer_on) statistiques().begin_count(gpu_copytodevice_counter_);
-      #pragma omp target update to(ptr[0:size])
+      Kokkos::View<_TYPE_*> host_view(ptr, size);
+      Kokkos::View<_TYPE_*> device_view(addrOnDevice(ptr), size);
+      Kokkos::deep_copy(device_view, host_view);
       if (timer_on) statistiques().end_count(gpu_copytodevice_counter_, bytes);
       std::stringstream message;
       message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "]";
@@ -373,13 +384,15 @@ template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
+  if (Objet_U::computeOnDevice && size>0)
     {
-      assert(isAllocatedOnDevice(ptr) || size==0);
+      assert(isAllocatedOnDevice(ptr));
       _SIZE_ bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyFromDevice",bytes);
       if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
-      #pragma omp target update from(ptr[0:size])
+      Kokkos::View<_TYPE_*> host_view(ptr, size);
+      Kokkos::View<_TYPE_*> device_view(addrOnDevice(ptr), size);
+      Kokkos::deep_copy(host_view, device_view);
       if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
       std::stringstream message;
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
@@ -414,7 +427,9 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
           _TYPE_ *tab_addr = tab.data();
           start_gpu_timer("copyPartialFromDevice",bytes);
           if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
-          #pragma omp target update from(tab_addr[deb:fin-deb])
+          Kokkos::View<_TYPE_*> host_view(tab_addr+deb, fin-deb);
+          Kokkos::View<_TYPE_*> device_view(addrOnDevice(tab_addr)+deb, fin-deb);
+          Kokkos::deep_copy(host_view, device_view);
           if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
           std::string message;
           message = "Partial update from device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
@@ -436,7 +451,9 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
       _TYPE_ *tab_addr = tab.data();
       start_gpu_timer("copyPartialToDevice",bytes);
       if (timer_on) statistiques().begin_count(gpu_copytodevice_counter_);
-      #pragma omp target update to(tab_addr[deb:fin-deb])
+      Kokkos::View<_TYPE_*> host_view(tab_addr+deb, fin-deb);
+      Kokkos::View<_TYPE_*> device_view(addrOnDevice(tab_addr)+deb, fin-deb);
+      Kokkos::deep_copy(device_view, host_view);
       if (timer_on) statistiques().end_count(gpu_copytodevice_counter_, bytes);
       std::string message;
       message = "Partial update to device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
