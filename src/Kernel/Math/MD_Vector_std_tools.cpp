@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,11 +29,11 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
   const int bloc_size = 1;
   const int n = line_size * bloc_size;
   Kokkos::RangePolicy<ExecSpace> policy(idx, idx_end_of_list);
-  auto items_to_process_view = list.get_data().template view_ro<ExecSpace>();
+  auto items_to_process_view = list.get_data().template view_ro<1, ExecSpace>();
   if (IS_READ)
     {
-      auto buffer_view = buffer.template view_wo<ExecSpace>();
-      auto vect_view = vect.template view_ro<ExecSpace>();
+      auto buffer_view = buffer.template view_wo<1, ExecSpace>();
+      auto vect_view = vect.template view_ro<1, ExecSpace>();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
                              const int item)
       {
@@ -50,8 +50,8 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
     }
   else
     {
-      auto buffer_view = buffer.template view_ro<ExecSpace>();
-      auto vect_view = vect.template view_rw<ExecSpace>();
+      auto buffer_view = buffer.template view_ro<1, ExecSpace>();
+      auto vect_view = vect.template view_rw<1, ExecSpace>();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
                              const int item)
       {
@@ -147,11 +147,11 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
 #endif
       const int n = line_size * bloc_size;
       Kokkos::RangePolicy<ExecSpace> policy(0, n);
-      auto items_to_process_view = items_to_process.template view_ro<ExecSpace>();
+      auto items_to_process_view = items_to_process.template view_ro<1, ExecSpace>();
       if (IS_READ)
         {
-          auto buffer_view = buffer.template view_wo<ExecSpace>();
-          auto vect_view = vect.template view_ro<ExecSpace>();
+          auto buffer_view = buffer.template view_wo<1, ExecSpace>();
+          auto vect_view = vect.template view_ro<1, ExecSpace>();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
                                  const int j)
           {
@@ -162,8 +162,8 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
         }
       else
         {
-          auto buffer_view = buffer.template view_ro<ExecSpace>();
-          auto vect_view = vect.template view_rw<ExecSpace>();
+          auto buffer_view = buffer.template view_ro<1, ExecSpace>();
+          auto vect_view = vect.template view_rw<1, ExecSpace>();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
                                  const int j)
           {

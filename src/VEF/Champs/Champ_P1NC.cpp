@@ -517,7 +517,7 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
   DoubleTrav tab_gradient_elem(nb_elem_tot, dimension, dimension);
   calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, tab_gradient_elem);
   int dim = dimension;
-  CDoubleTabView3 gradient_elem = tab_gradient_elem.view3_ro();
+  CDoubleTabView3 gradient_elem = tab_gradient_elem.view_ro<3>();
   DoubleTabView grad_u = tab_grad_u.view_wo();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(const int elem)
   {

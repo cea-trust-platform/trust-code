@@ -63,9 +63,9 @@ void valeur_aux_elems_kernel(const DoubleTab& tab_values, const IntVect& tab_pol
   int nb_polys = tab_polys.size();
   int line_size = tab_result.line_size();
   int nb_dim = tab_values.nb_dim();
-  auto polys = tab_polys.template view_ro<ExecSpace>();
-  auto values = tab_values.template view_ro<ExecSpace>();
-  auto result = tab_result.template view_wo<ExecSpace>();
+  auto polys = tab_polys.template view_ro<1, ExecSpace>();
+  auto values = tab_values.template view_ro<2, ExecSpace>();
+  auto result = tab_result.template view_wo<2, ExecSpace>();
   Kokkos::RangePolicy<ExecSpace> policy(0, nb_polys);
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
   {
@@ -104,9 +104,9 @@ template<typename ExecSpace>
 void valeur_aux_elems_compo_kernel(const DoubleTab& tab_values, const IntVect& tab_polys, DoubleVect& tab_result, int ncomp)
 {
   int nb_polys = tab_polys.size();
-  auto polys = tab_polys.template view_ro<ExecSpace>();
-  auto values = tab_values.template view_ro<ExecSpace>();
-  auto result = tab_result.template view_wo<ExecSpace>();
+  auto polys = tab_polys.template view_ro<1, ExecSpace>();
+  auto values = tab_values.template view_ro<2, ExecSpace>();
+  auto result = tab_result.template view_wo<1, ExecSpace>();
   Kokkos::RangePolicy<ExecSpace> policy(0, nb_polys);
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
   {
