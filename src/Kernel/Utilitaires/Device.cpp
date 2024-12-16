@@ -229,8 +229,12 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       DeviceMemory::getMemoryMap()[ptr] = {size, DataLocation::Host};
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
-      #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-      for (int i = 0; i < size; i++) ptr[i] = INVALIDE_;
+      Kokkos::View<_TYPE_*> device_ptr(addrOnDevice(ptr), size);
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(const int i)
+      {
+        device_ptr(i) = INVALIDE_;
+      });
+      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 #endif
       if (clock_on)
         {
