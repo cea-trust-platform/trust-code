@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <TRUST_Ref.h>
 #include <vector>
 
-class Domaine_PolyMAC;
+class Domaine_VF;
 
 class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC: public Source_base
 {
@@ -33,9 +33,8 @@ public:
   void associer_pb(const Probleme_base& ) override { };
 
 protected:
-  std::vector<double> lambda;
-  OBS_PTR(Domaine_PolyMAC) le_dom_PolyMAC;
-  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
+  std::vector<double> lambda_;
+  void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override { }
 };
 
 #endif /* Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included */
