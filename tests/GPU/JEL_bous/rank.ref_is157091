@@ -1,9 +1,9 @@
-Calcul sequentiel sur 1 proc de is157091
+Calcul sequentiel sur 1 proc de is157091 (Tailles maillage: 2332800 matrice: 2332800 )
 cpu	cpu0	its	rtol	H/D[GB]		MatMult[MFlops]	Etat	Solveur
- 0.1685	  2.085	 25	7e-07	8.7/6.8		n/a		OK	[1]	Petsc_GPU GCP { rtol 1.e-6 precond boomeramg { } impr }	
- 0.5876	  4.109	118	1e-06	8.3/6.5				OK	[2]	amgx      GCP { rtol 1.e-6 precond sa-amg    { } impr }	
- 0.0570	  3.692	  7	6e-06	8.3/8.8				OK	[3]	amgx      GCP { rtol 1.e-6 precond c-amg     { } impr }	
- 0.1200	  3.319	 14	2e-07	8.7/8.8		n/a		OK	[4]	Petsc_GPU GCP { rtol 1.e-6 precond sa-amg    { } impr }	
- 0.9256	  3.816	114	1e-06	8.5/6.6		n/a		OK	[5]	Petsc_GPU GCP { rtol 1.e-6 precond ua-amg    { } impr }	
- 4.2290	 33.434	324	9e-07	9.5/13.3		n/a		OK	[6]	Petsc_GPU GCP { rtol 1.e-6 precond c-amg     { } impr }	
- 0.3663	 25.510	  1	4e-14	8.7/13.5		n/a		OK	[7]	Petsc_GPU LU_STRUMPACK { impr }	
+ 0.0571	  3.706	  7	6e-06	8.3/8.8				OK	[1]	amgx      GCP { rtol 1.e-6 precond c-amg     { } impr }	
+ 0.1199	  3.312	 14	2e-07	8.7/8.8		n/a		OK	[2]	Petsc_GPU GCP { rtol 1.e-6 precond sa-amg    { } impr }	
+ 0.1686	  2.096	 25	7e-07	8.7/6.8		n/a		OK	[3]	Petsc_GPU GCP { rtol 1.e-6 precond boomeramg { } impr }	
+ 0.3636	 25.518	  1	4e-14	8.7/13.4		n/a		OK	[4]	Petsc_GPU LU_STRUMPACK { impr }	
+ 0.5891	  4.091	118	1e-06	8.3/6.5				OK	[5]	amgx      GCP { rtol 1.e-6 precond sa-amg    { } impr }	
+ 0.9263	  3.827	114	1e-06	8.5/6.6		n/a		OK	[6]	Petsc_GPU GCP { rtol 1.e-6 precond ua-amg    { } impr }	
+ 4.2374	 33.521	324	9e-07	9.5/13.2		n/a		OK	[7]	Petsc_GPU GCP { rtol 1.e-6 precond c-amg     { } impr }	

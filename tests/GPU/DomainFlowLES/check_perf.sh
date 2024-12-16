@@ -61,6 +61,8 @@ done
 
 # Liste des machines:
 [ "$1" = -nsys ] && run -nsys
-[ $HOST = is157091 ] && run a6000
+[ $HOST = is157091 ]       && run a6000
+[ $HOST = topaze ]         && run a100
+[ $HOST = irene-amd-ccrt ] && run v100
 # clean
 rm -f *.sauv *.lml *.sqlite *.nsys-rep
