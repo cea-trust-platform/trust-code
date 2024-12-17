@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,12 +29,13 @@ Entree& Masse_VDF_Elem::readOn(Entree& s) { return s ; }
 void Masse_VDF_Elem::preparer_calcul()
 {
   associer_masse_proto(*this, le_dom_VDF.valeur());
-  if (sub_type(Pb_Multiphase,equation().probleme())) preparer_calcul_proto();
+  use_proto_ = sub_type(Pb_Multiphase, equation().probleme()) || equation().que_suis_je().debute_par("Equation_flux");
+  if (use_proto_) preparer_calcul_proto();
 }
 
 DoubleTab& Masse_VDF_Elem::appliquer_impl(DoubleTab& sm) const
 {
-  if (sub_type(Pb_Multiphase, equation().probleme())) return appliquer_impl_proto(sm);
+  if (use_proto_) return appliquer_impl_proto(sm);
   else
     {
       const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
@@ -79,7 +80,7 @@ DoubleTab& Masse_VDF_Elem::appliquer_impl(DoubleTab& sm) const
 
 void Masse_VDF_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  if (sub_type(Pb_Multiphase, equation().probleme()))
+  if (use_proto_)
     dimensionner_blocs_proto(matrices, semi_impl);
   else
     Masse_VDF_base::dimensionner_blocs(matrices, semi_impl);
@@ -87,7 +88,7 @@ void Masse_VDF_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_
 
 void Masse_VDF_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  if (sub_type(Pb_Multiphase, equation().probleme()))
+  if (use_proto_)
     ajouter_blocs_proto(matrices, secmem, dt, semi_impl, resoudre_en_increments);
   else
     Masse_VDF_base::ajouter_blocs(matrices, secmem, dt, semi_impl, resoudre_en_increments);
