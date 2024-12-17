@@ -886,39 +886,39 @@ void Raffiner_Simplexes_32_64<_SIZE_>::refine_domain(const Domaine_t& src, Domai
         }
     }
 
-  auto build_front_lambda_rac = [&] (const auto& boundaries_src, auto& boundaries_dest, auto&& new_obj)
+  auto build_front_lambda_rac = [&] (const auto& boundaries_src_arg, auto& boundaries_dest_arg, auto&& new_obj)
   {
-    boundaries_dest.vide();
-    const int nb_boundaries = boundaries_src.size();
+    boundaries_dest_arg.vide();
+    const int nb_boundaries = boundaries_src_arg.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
       {
-        boundaries_dest.add(new_obj);
-        boundaries_dest[boundary].typer(boundaries_src[boundary]->que_suis_je());
-        const Type_Face& face_type = boundaries_src[boundary]->faces().type_face();
-        Impl_::build_frontier(boundaries_src[boundary].valeur(),
+        boundaries_dest_arg.add(new_obj);
+        boundaries_dest_arg[boundary].typer(boundaries_src_arg[boundary]->que_suis_je());
+        const Type_Face& face_type = boundaries_src_arg[boundary]->faces().type_face();
+        Impl_::build_frontier(boundaries_src_arg[boundary].valeur(),
                               face_type,
                               nodes_of_cells_src, cells_of_nodes_src, edges_of_cells_src,
                               faces_pattern, face_refinement_pattern,
                               dest,
-                              boundaries_dest[boundary].valeur());
+                              boundaries_dest_arg[boundary].valeur());
       }
   };
 
   // Almost the same, without .valeur():
-  auto build_front_lambda = [&] (const auto& boundaries_src, auto& boundaries_dest, auto&& new_obj)
+  auto build_front_lambda = [&] (const auto& boundaries_src_arg, auto& boundaries_dest_arg, auto&& new_obj)
   {
-    boundaries_dest.vide();
-    const int nb_boundaries = boundaries_src.size();
-    for (int boundary=0; boundary<nb_boundaries; ++boundary)
+    boundaries_dest_arg.vide();
+    const int nb_boundaries_loc = boundaries_src_arg.size();
+    for (int boundary=0; boundary<nb_boundaries_loc; ++boundary)
       {
-        boundaries_dest.add(new_obj);
-        const Type_Face& face_type = boundaries_src[boundary].faces().type_face();
-        Impl_::build_frontier(boundaries_src[boundary],
+        boundaries_dest_arg.add(new_obj);
+        const Type_Face& face_type = boundaries_src_arg[boundary].faces().type_face();
+        Impl_::build_frontier(boundaries_src_arg[boundary],
                               face_type,
                               nodes_of_cells_src, cells_of_nodes_src, edges_of_cells_src,
                               faces_pattern, face_refinement_pattern,
                               dest,
-                              boundaries_dest[boundary]);
+                              boundaries_dest_arg[boundary]);
       }
   };
 

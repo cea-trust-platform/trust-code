@@ -167,9 +167,9 @@ void NettoieNoeuds_32_64<_SIZE_>::nettoie(Domaine_t& dom)
         }
 
       // Handy renum lambda:
-      auto renum_lamb = [&](auto& itr)
+      auto renum_lamb = [&](auto& itr_arg)
       {
-        Frontiere_t& front = itr;
+        Frontiere_t& front = itr_arg;
         Faces_t& faces = front.faces();
         IntTab_t& faces_sommets = faces.les_sommets();
         IntTab_t old_faces_sommets(faces.les_sommets());
