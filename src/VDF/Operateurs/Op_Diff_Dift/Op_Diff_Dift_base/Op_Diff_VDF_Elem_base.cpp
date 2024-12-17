@@ -81,7 +81,7 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
     }
 
   if (equation().diffusion_multi_scalaire())
-    throw;
+    return 1e30;
 
   return Op_Diff_VDF_base::calculer_dt_stab_(domaine_VDF);
 }
