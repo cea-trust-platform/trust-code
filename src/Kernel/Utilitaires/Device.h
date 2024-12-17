@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -148,6 +148,9 @@ inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) //
 #endif
 }
 
+template <typename _TYPE_>
+extern _TYPE_* addrOnDevice(_TYPE_* ptr);
+
 template <typename _TYPE_, typename _SIZE_=int>
 extern _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
@@ -167,29 +170,10 @@ inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std:
 }
 
 template <typename _TYPE_>
-bool isAllocatedOnDevice(_TYPE_* tab_addr)
-{
-  // Routine omp_target_is_present pour existence d'une adresse sur le device
-  // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
-#ifdef _OPENMP_TARGET
-  return omp_target_is_present(tab_addr, omp_get_default_device())==1;
-#else
-  return false;
-#endif
-}
+extern bool isAllocatedOnDevice(_TYPE_* tab_addr);
 
 template <typename _TYPE_, typename _SIZE_=int>
-bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
-{
-#ifdef _OPENMP_TARGET
-  bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
-  bool isAllocatedOnDevice2 = isAllocatedOnDevice(tab.data());
-  if (isAllocatedOnDevice1!=isAllocatedOnDevice2) Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");
-  return isAllocatedOnDevice2;
-#else
-  return false;
-#endif
-}
+extern bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
 extern void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,16 +52,36 @@ size_t DeviceMemory::allocatedBytesOnDevice()
   return initial_free_ - free;
 }
 
+// Adress on device (return nullptr if not):
+void* DeviceMemory::addrOnDevice(void * ptr)
+{
+  if (memory_map_.empty()) return nullptr;
+  auto it = memory_map_.find(ptr);
+  if (it != memory_map_.end())
+    {
+      int sz;
+      DataLocation loc;
+      void* device_ptr;
+      std::tie(sz, loc, device_ptr) = it->second;
+      return device_ptr;
+    }
+  else
+    {
+      return nullptr;
+    }
+}
+
 void DeviceMemory::printMemoryMap()
 {
   int sz;
   DataLocation loc;
+  void* device_ptr;
   std::cout << "=== Memory blocks on the device ===" << std::endl;
   for (const auto& block : memory_map_)
     {
       void* ptr = block.first;
-      std::tie(sz, loc) = block.second;
-      std::cout << "Host ptr: " << ptr << " size: " << sz << " loc: " << (int)loc << std::endl;
+      std::tie(sz, loc, device_ptr) = block.second;
+      std::cout << "Host ptr: " << ptr << " Device ptr: " << device_ptr << " size: " << sz << " loc: " << (int)loc << std::endl;
     }
   std::cout << "===================================" << std::endl;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,6 @@
 #include <TRUSTTrav.h>
 #include <TRUSTTab_parts.h>
 #include <Device.h>
-#ifdef _OPENMP_TARGET
-#include <omp.h>
-#endif
 #include <string>
 #include <sstream>
 #include <comm_incl.h>
@@ -32,18 +29,6 @@ void self_test()
     return;
   else
     self_tested_ = true;
-#ifdef _OPENMP_TARGET
-  // Verification que omp_target_is_present fonctionne bien (important)
-  {
-    DoubleTab a(10);
-    mapToDevice(a);
-    if (omp_target_is_present(a.data(), omp_get_default_device())!=1)
-      Process::exit("omp_target_is_present buggy. TRUST can't work on multi-gpu.");
-    deleteOnDevice(a);
-    if (omp_target_is_present(a.data(), omp_get_default_device())!=0)
-      Process::exit("omp_target_is_present buggy. TRUST can't work on multi-gpu.");
-  }
-#endif
   {
     // local_operations_vect_bis_generic
     // Cas test unitaire critique:

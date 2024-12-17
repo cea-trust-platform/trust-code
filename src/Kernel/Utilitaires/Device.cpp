@@ -103,9 +103,6 @@ void init_openmp()
   cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;
   omp_set_default_device(devID);
 #endif
-  // Dummy target region, so as not to measure startup time later:
-  #pragma omp target
-  { ; }
   // ToDo Kokkos:
   if (nDevs>1 && nRanks>nDevs)
     {
@@ -181,6 +178,7 @@ _TYPE_* addrOnDevice(_TYPE_* ptr)
 #else
   return ptr;
 #endif
+  //return DeviceMemory::addrOnDevice(ptr);
 }
 template <typename _TYPE_, typename _SIZE_>
 _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
@@ -190,6 +188,32 @@ _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
   else return addrOnDevice(tab.data());
 #else
   return tab.data();
+#endif
+}
+
+// Allocated ?
+template <typename _TYPE_>
+bool isAllocatedOnDevice(_TYPE_* tab_addr)
+{
+  // Routine omp_target_is_present pour existence d'une adresse sur le device
+  // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
+#ifdef _OPENMP_TARGET
+  return omp_target_is_present(tab_addr, omp_get_default_device())==1;
+#else
+  return false;
+#endif
+}
+
+template <typename _TYPE_, typename _SIZE_>
+bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
+{
+#ifdef _OPENMP_TARGET
+  bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
+  bool isAllocatedOnDevice2 = isAllocatedOnDevice(tab.data());
+  if (isAllocatedOnDevice1!=isAllocatedOnDevice2) Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");
+  return isAllocatedOnDevice2;
+#else
+  return false;
 #endif
 }
 
@@ -226,7 +250,8 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
           Process::exit();
         }
       #pragma omp target enter data map(alloc:ptr[0:size])
-      DeviceMemory::getMemoryMap()[ptr] = {size, DataLocation::Host};
+      DeviceMemory::getMemoryMap()[ptr] = {size, DataLocation::Host, addrOnDevice(ptr)};
+      assert(addrOnDevice(ptr)==DeviceMemory::addrOnDevice(ptr));
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
       Kokkos::View<_TYPE_*> device_ptr(addrOnDevice(ptr), size);
@@ -482,9 +507,17 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
 //
 //  Explicit template instanciations
 //
+template char* addrOnDevice<char>(char* ptr);
 template double* addrOnDevice<double>(TRUSTArray<double>& tab);
 template int* addrOnDevice<int>(TRUSTArray<int>& tab);
 template float* addrOnDevice<float>(TRUSTArray<float>& tab);
+
+template bool isAllocatedOnDevice<double>(double* tab_addr);
+template bool isAllocatedOnDevice<int>(int* tab_addr);
+template bool isAllocatedOnDevice<float>(float* tab_addr);
+template bool isAllocatedOnDevice<double>(TRUSTArray<double>& tab);
+template bool isAllocatedOnDevice<int>(TRUSTArray<int>& tab);
+template bool isAllocatedOnDevice<float>(TRUSTArray<float>& tab);
 
 template double* allocateOnDevice<double>(TRUSTArray<double>& tab, std::string arrayName);
 template int* allocateOnDevice<int>(TRUSTArray<int>& tab, std::string arrayName);
@@ -545,6 +578,13 @@ template int* addrOnDevice<int>(TRUSTArray<int,trustIdType>& tab);
 template trustIdType* addrOnDevice<trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab);
 template trustIdType* addrOnDevice<trustIdType>(TRUSTArray<trustIdType,int>& tab);
 template float* addrOnDevice<float>(TRUSTArray<float,trustIdType>& tab);
+
+template bool isAllocatedOnDevice<trustIdType>(trustIdType* tab_addr);
+template bool isAllocatedOnDevice<double>(TRUSTArray<double,trustIdType>& tab);
+template bool isAllocatedOnDevice<float>(TRUSTArray<float,trustIdType>& tab);
+template bool isAllocatedOnDevice<int>(TRUSTArray<int,trustIdType>& tab);
+template bool isAllocatedOnDevice<trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab);
+template bool isAllocatedOnDevice<trustIdType>(TRUSTArray<trustIdType,int>& tab);
 
 template double* allocateOnDevice<double>(TRUSTArray<double,trustIdType>& tab, std::string arrayName);
 template int* allocateOnDevice<int>(TRUSTArray<int,trustIdType>& tab, std::string arrayName);
