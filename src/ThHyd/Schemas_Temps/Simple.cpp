@@ -362,7 +362,8 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
 
-  if(ok && (eqn.discretisation().is_polymac_family() || eqn.probleme().que_suis_je().debute_par("Pb_Multiphase"))) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  const bool upd = (eqn.discretisation().is_polymac_family() && !eqn.probleme().que_suis_je().debute_par("Pb_Neutronique")) || eqn.probleme().que_suis_je().debute_par("Pb_Multiphase");
+  if(ok && upd) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
   solveur->reinit();
   return (ok && converge==1);
 }
