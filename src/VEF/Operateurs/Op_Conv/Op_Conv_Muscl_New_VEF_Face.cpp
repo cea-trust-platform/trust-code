@@ -149,7 +149,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
     double vc[3];
     double vs[3];
     double vsom[12];
-    int face[4];
+    int face[4] = {-1, -1, -1, -1};
     int rang=rang_elem_non_std(elem);
     int itypcl=(rang==-1)?0:type_elem_Cl(rang);
 
