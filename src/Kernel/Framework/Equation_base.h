@@ -243,7 +243,7 @@ public :
   // set to true if operator is multiscalar (mixes components together). Only coded for VDF-Elem at present !
   inline void set_diffusion_multi_scalaire(bool flg = true)
   {
-    assert (discretisation().is_vdf());
+    if (flg) assert (discretisation().is_vdf());
     diffusion_multi_scalaire_ = flg;
   }
   inline const bool& diffusion_multi_scalaire() const { return diffusion_multi_scalaire_; }
