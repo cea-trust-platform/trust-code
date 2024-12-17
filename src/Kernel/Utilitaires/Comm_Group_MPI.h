@@ -74,8 +74,10 @@ public:
 #ifdef MPI_
   void init_group_trio();
   void init_comm_on_numa_node();
+  void init_comm_on_node_master();
+  int get_node_id() const;
   void free();
-  void free_comm();
+  void free_all();
   void all_to_allv(const void *src_buffer, int *send_data_size, int *send_data_offset,
                    void *dest_buffer, int *recv_data_size, int *recv_data_offset) const;
   static void set_trio_u_world(MPI_Comm world);

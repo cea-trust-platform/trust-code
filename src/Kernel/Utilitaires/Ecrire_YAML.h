@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,8 @@ private:
   void declare_metadata_(int save, std::string& text);
   void declare_data_(int save, std::string& text);
 
-  void write_data_for_checkpoint_(int pb_i, std::string& text);
+  void write_fields_for_checkpoint_(int pb_i, std::string& text);
+  void write_scalars_for_checkpoint_(int pb_i, std::string& text);
   void write_file_initialization_(int pb_i, std::string& text);
   void write_data_for_restart_(int pb_i, std::string& text);
 

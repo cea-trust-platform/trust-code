@@ -116,6 +116,7 @@ public:
 
   static int je_suis_maitre();
   KOKKOS_INLINE_FUNCTION static void Kokkos_exit(const char*);
+  static int node_master();
   static void exit(const Nom& message, int exit_code = -1);
   static bool is_sequential(); // serial ?
   static void barrier();

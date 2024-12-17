@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ const Comm_Group * PE_Groups::current_group_ = 0;
 // node group is an isolated variable from all the other groups as it is only used for IO purposes
 // and might be used throughout the code together with other groups
 static OBS_PTR(Comm_Group) node_group;
-bool PE_Groups::node_initialized_ = false;
+static OBS_PTR(Comm_Group) node_master;
 
 int PE_Groups::check_current_group()
 {
@@ -60,6 +60,23 @@ void PE_Groups::create_group(const ArrOfInt& liste_pe, OWN_PTR(Comm_Group) & gro
       // On cree un groupe du meme type que le groupe_TRUST
       group.typer(groups[0]->que_suis_je());
     }
+  group->init_group(liste_pe);
+}
+
+/*! @brief Initialisation d'un nouveau groupe de processeurs deja instantie (utilisation possible n'importe ou dans le code)
+ *
+ *   Il faut l'appeler simultanement sur tous les processeurs du groupe current_group()
+ *   avec le meme tableau liste_pe. liste_pe est la liste des rangs dans le groupe
+ *   courant des processeurs que l'on veut inclure dans le groupe. Le premier de la
+ *   liste sera le maitre du groupe. La liste ne doit pas comporter de doublon et
+ *   doit contenir au moins un processeur.
+ *   La methode type et initialize l'objet group.
+ *   Il faut ensuite appeler enter_group() et exit_group() (autant de fois qu'on veut)
+ *
+ */
+void PE_Groups::init_group(const ArrOfInt& liste_pe, OWN_PTR(Comm_Group) & group)
+{
+  assert(group.non_nul());
   group->init_group(liste_pe);
 }
 
@@ -174,8 +191,17 @@ const Comm_Group& PE_Groups::groupe_TRUST()
  */
 const Comm_Group& PE_Groups::get_node_group()
 {
-  assert(node_initialized_);
+  assert(node_group.non_nul());
   return node_group.valeur();
+}
+
+/*! @brief Renvoie le groupe contenant le maitre de mon noeud
+ *
+ */
+const Comm_Group& PE_Groups::get_node_master()
+{
+  assert(node_master.non_nul());
+  return node_master.valeur();
 }
 
 /*! @brief Methode a appeler au debut de l'execution (MAIN.
@@ -195,9 +221,16 @@ void PE_Groups::initialize(const Comm_Group& groupe_trio_u)
  */
 void PE_Groups::initialize_node(const Comm_Group& ngrp)
 {
-  assert(!node_initialized_);
+  assert(node_group.est_nul());
   node_group = ngrp;
-  node_initialized_ = true;
+}
+
+/*! @brief Methode a appeler apres l'initialisation de trio_u_world et de node_group et l'initialisation des compteurs statistiques de TRUST
+ */
+void PE_Groups::initialize_node_master(const Comm_Group& ngrp)
+{
+  assert(node_master.est_nul());
+  node_master = ngrp;
 }
 
 
@@ -213,7 +246,7 @@ void PE_Groups::finalize()
   ngroups = 0;
   current_group_ = 0;
   node_group.reset();
-  node_initialized_ = false;
+  node_master.reset();
 }
 
 const int& PE_Groups::get_nb_groups()

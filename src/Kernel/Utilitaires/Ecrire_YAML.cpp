@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,9 @@ void Ecrire_YAML::write_checkpoint_restart_file_(int save, std::string yaml_fnam
       if(save)
         {
           write_file_initialization_(i_pb, text);
-          write_data_for_checkpoint_(i_pb, text);
+          write_fields_for_checkpoint_(i_pb, text);
+          write_scalars_for_checkpoint_(i_pb, text);
+          write_time_scheme_(1, pbs_[i_pb].filename, text);
         }
       else
         write_data_for_restart_(i_pb, text);
@@ -79,7 +81,7 @@ void Ecrire_YAML::write_format_(int save, std::string fname, std::string& text)
   std::string format_sauvegarde = "- file: " + fname;
   begin_bloc_(format_sauvegarde, text);
   if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
+    add_line_("communicator: $master", text);
   std::string IO = save ? "write:" : "read:";
   begin_bloc_(IO, text);
   write_attribute_("format_sauvegarde/version", "version", text);
@@ -98,7 +100,10 @@ void Ecrire_YAML::write_time_scheme_(int save, std::string fname, std::string& t
     add_line_("on_event: time_scheme", text);
 
   if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
+    {
+      std::string communicator = save ? "$master" : "$node";
+      add_line_("communicator: " + communicator, text);
+    }
 
   if(save)
     {
@@ -127,7 +132,7 @@ void Ecrire_YAML::write_file_initialization_(int pb_i, std::string& text)
   add_line_(event, text);
   add_line_("collision_policy: replace_and_warn # print a warning if file or any of dataset already exist", text);
   if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
+    add_line_("communicator: $master", text);
 
   // we need to dump a single variable with PDI for the collision policy to work
   begin_bloc_("write:", text);
@@ -136,14 +141,14 @@ void Ecrire_YAML::write_file_initialization_(int pb_i, std::string& text)
   end_bloc_();
 }
 
-void Ecrire_YAML::write_data_for_checkpoint_(int pb_i, std::string& text)
+void Ecrire_YAML::write_fields_for_checkpoint_(int pb_i, std::string& text)
 {
   std::string checkpoint = "- file: " + pbs_[pb_i].filename;
   begin_bloc_(checkpoint, text);
-  std::string event = "on_event: backup_" + pbs_[pb_i].pb->le_nom().getString();
+  std::string event = "on_event: fields_backup_" + pbs_[pb_i].pb->le_nom().getString();
   add_line_(event, text);
   if(Process::is_parallel())
-    add_line_("communicator: $nodeComm", text);
+    add_line_("communicator: $node", text);
 
   // declaring datasets
   begin_bloc_("datasets:", text);
@@ -153,12 +158,6 @@ void Ecrire_YAML::write_data_for_checkpoint_(int pb_i, std::string& text)
       std::string type = f.second.first;
       int nb_dim = f.second.second;
       declare_dataset_(name, type, nb_dim, text);
-    }
-  for (auto const& scal : pbs_[pb_i].scalars)
-    {
-      const std::string& name = scal.first;
-      const std::string& type = scal.second;
-      declare_array_(name, type, "\'$nb_iter_max\'", text);
     }
   end_bloc_();
 
@@ -171,6 +170,32 @@ void Ecrire_YAML::write_data_for_checkpoint_(int pb_i, std::string& text)
       std::string cond = pbs_[pb_i].conditions.count(name) ? pbs_[pb_i].conditions[name] : "" ;
       write_dtab_(name, nb_dim, cond, text);
     }
+  end_bloc_();
+
+  end_bloc_();
+}
+
+
+void Ecrire_YAML::write_scalars_for_checkpoint_(int pb_i, std::string& text)
+{
+  std::string checkpoint = "- file: " + pbs_[pb_i].filename;
+  begin_bloc_(checkpoint, text);
+  std::string event = "on_event: scalars_backup_" + pbs_[pb_i].pb->le_nom().getString();
+  add_line_(event, text);
+  if(Process::is_parallel())
+    add_line_("communicator: $master", text);
+
+  // declaring datasets
+  begin_bloc_("datasets:", text);
+  for (auto const& scal : pbs_[pb_i].scalars)
+    {
+      const std::string& name = scal.first;
+      const std::string& type = scal.second;
+      declare_array_(name, type, "\'$nb_iter_max\'", text);
+    }
+  end_bloc_();
+
+  begin_bloc_("write:", text);
   // writing scalars
   for(const auto& scal: pbs_[pb_i].scalars)
     {
@@ -181,9 +206,6 @@ void Ecrire_YAML::write_data_for_checkpoint_(int pb_i, std::string& text)
   end_bloc_();
 
   end_bloc_();
-
-  // writing time
-  write_time_scheme_(1, pbs_[pb_i].filename, text);
 }
 
 void Ecrire_YAML::write_data_for_restart_(int pb_i, std::string& text)
@@ -196,7 +218,7 @@ void Ecrire_YAML::write_data_for_restart_(int pb_i, std::string& text)
       std::string checkpoint = "- file: " + fname;
       begin_bloc_(checkpoint, text);
       if(Process::is_parallel())
-        add_line_("communicator: $nodeComm", text);
+        add_line_("communicator: $node", text);
 
       begin_bloc_("read:", text);
       std::string name = f.first;
@@ -212,7 +234,7 @@ void Ecrire_YAML::write_data_for_restart_(int pb_i, std::string& text)
       std::string checkpoint = "- file: " + fname;
       begin_bloc_(checkpoint, text);
       if(Process::is_parallel())
-        add_line_("communicator: $nodeComm", text);
+        add_line_("communicator: $node", text);
 
       begin_bloc_("read:", text);
       const std::string& name = scal.first;
@@ -267,13 +289,15 @@ void Ecrire_YAML::declare_metadata_(int save, std::string& text)
   if(Process::is_parallel())
     {
       add_line_("# MPI communicator for my group", text);
-      add_line_("nodeComm : int", text);
+      add_line_("node : int", text);
       add_line_("# number of processors inside my group", text);
       add_line_("nodeSize : int", text);
       add_line_("# my rank inside my group", text);
       add_line_("nodeRk : int", text);
       add_line_("# rank of my group among all the other groups", text);
       add_line_("nodeId : int", text);
+      add_line_("# MPI communicator for masters of each group", text);
+      add_line_("master : int", text);
     }
   end_bloc_();
 }

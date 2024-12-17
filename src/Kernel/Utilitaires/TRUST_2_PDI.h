@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,8 +43,9 @@ public:
         Cerr << "TRUST_2_PDI::initialize PDI has already been initialized" << finl;
         Process::exit();
       }
-    tconf_ = PC_parse_path(IO_config.c_str());
-    PDI_init(PC_get(tconf_, ".pdi"));
+    PC_tree_t tconf = PC_parse_path(IO_config.c_str());
+    PDI_init(PC_get(tconf, ".pdi"));
+    PC_tree_destroy(&tconf);
 
     // share node parallelism
 #ifdef MPI_
@@ -55,13 +56,20 @@ public:
         MPI_Comm comm = nodeComm->get_mpi_comm();
         int nodeSz = nodeComm->nproc();
         int nodeRk = nodeComm->rank();
-        int nodeId = nodeComm->group_number();
+        int nodeId = nodeComm->get_node_id();
+
+        const Comm_Group& nm = PE_Groups::get_node_master();
+
+        const Comm_Group_MPI* nodeMaster = dynamic_cast<const Comm_Group_MPI*>(&nm);
+        assert(nodeMaster);
+        MPI_Comm masterComm = nodeMaster->get_mpi_comm();
 
         PDI_multi_expose("Parallelism",
-                         "nodeComm",&comm, PDI_OUT,
+                         "node",&comm, PDI_OUT,
                          "nodeSize",&nodeSz, PDI_OUT,
                          "nodeRk",    &nodeRk, PDI_OUT,
                          "nodeId",    &nodeId, PDI_OUT,
+                         "master", &masterComm, PDI_OUT,
                          nullptr);
       }
 #endif
@@ -79,8 +87,6 @@ public:
 
     // finalize PDI
     PDI_finalize();
-
-    PC_tree_destroy(&tconf_);
   }
 
   void read(const std::string& name, void *data)
@@ -145,8 +151,6 @@ private:
   // data that are currently shared with PDI
   static std::vector<std::string> shared_data_;
 
-  // configuration tree
-  static PC_tree_t tconf_;
 };
 
 #endif

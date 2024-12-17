@@ -90,6 +90,15 @@ int Process::je_suis_maitre()
   return r == 0;
 }
 
+/*! @brief renvoie 1 si on est sur le processeur maitre du noeud numa, 0 sinon.
+ *
+ */
+int Process::node_master()
+{
+  const int r = PE_Groups::get_node_group().rank();
+  return r == 0;
+}
+
 /*! @brief renvoie le nombre de processeurs dans le groupe courant Voir Comm_Group::nproc() et PE_Groups::current_group()
  *
  */

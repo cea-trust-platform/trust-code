@@ -19,7 +19,6 @@ int TRUST_2_PDI::PDI_checkpoint_=0;
 int TRUST_2_PDI::PDI_restart_=0;
 int TRUST_2_PDI::PDI_initialized_=0;
 std::vector<std::string> TRUST_2_PDI::shared_data_;
-PC_tree_t TRUST_2_PDI::tconf_;
 
 void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)
 {
@@ -61,13 +60,16 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int 
 void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_last_time)
 {
   // Check that we have the same number of procs used for checkpoint
-  int nb_proc = -1;
-  PDI_expose("nb_proc", &nb_proc, PDI_INOUT);
-  if(nb_proc != Process::nproc())
+  if(Process::node_master())
     {
-      Cerr << "TRUST_2_PDI::prepareRestart():: PDI Restart Error ! The backup file has been generated with " << nb_proc << " processors, whereas the current computation is launched with "
-           << Process::nproc() << " processors. With PDI, you need to restart your computation with the same number of processors used for previous computation" << finl;
-      Process::exit();
+      int nb_proc = -1;
+      PDI_expose("nb_proc", &nb_proc, PDI_INOUT);
+      if(nb_proc != Process::nproc())
+        {
+          Cerr << "TRUST_2_PDI::prepareRestart():: PDI Restart Error ! The backup file has been generated with " << nb_proc << " processors, whereas the current computation is launched with "
+               << Process::nproc() << " processors. With PDI, you need to restart your computation with the same number of processors used for previous computation" << finl;
+          Process::exit();
+        }
     }
 
   // Get time scheme information
@@ -103,7 +105,6 @@ void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_
   // letting PDI know which iteration/time to read during restart
   PDI_expose("iter", &last_iteration, PDI_OUT);
   PDI_expose("temps", &tinit, PDI_OUT);
-
 }
 
 

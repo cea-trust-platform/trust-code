@@ -743,12 +743,15 @@ int Schema_Temps_base::sauvegarder(Sortie& os) const
         }
       double t = temps_courant_;
 
-      std::map<std::string,void*> time_infos;
-      time_infos["iter"] =  &i;
-      time_infos["nb_iter_max"] =  &i_max;
-      time_infos["temps"] = &t;
       TRUST_2_PDI pdi_interface;
-      pdi_interface.multiple_writes("time_scheme", time_infos);
+      pdi_interface.TRUST_start_sharing("iter", &i);
+      pdi_interface.TRUST_start_sharing("nb_iter_max", &i_max);
+      pdi_interface.TRUST_start_sharing("temps", &t);
+      if(Process::node_master())
+        pdi_interface.trigger("time_scheme");
+      pdi_interface.stop_sharing_last_variable(); //temps
+      pdi_interface.stop_sharing_last_variable(); //nb_iter_max
+      pdi_interface.stop_sharing_last_variable(); //iter
 
       bytes = 8+4; // one double and one int
     }

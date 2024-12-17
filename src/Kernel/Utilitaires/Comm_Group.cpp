@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,27 +160,20 @@ void Comm_Group::init_group_trio(int nproc_tot, int arank)
  * This method is called by derived classes when initializing communicator on node
  *
  */
-void Comm_Group::init_group_node(int nproc, int loc_rank, int glob_rank, int node_number)
+void Comm_Group::init_group_node(int nproc, int loc_rank, int glob_rank)
 {
-  assert(loc_rank >= 0 && loc_rank < nproc);
-
   rank_ = loc_rank;
   nproc_ = nproc;
 
   const Comm_Group& groupe_trio = PE_Groups::groupe_TRUST();
   local_ranks_.resize_array(groupe_trio.nproc());
   local_ranks_ = -1;
-
-  std::vector<True_int> recv_size(nproc_, 1);
-  std::vector<True_int> displs(nproc_);
-  for(int i=0; i<nproc_; i++)
-    displs[i] = glob_rank;
-  all_gatherv(&loc_rank, local_ranks_.data(), 1, recv_size.data(), displs.data());
+  groupe_trio.all_gather(&loc_rank, local_ranks_.addr(), (int)sizeof(int));
 
   world_ranks_.resize_array(nproc_);
-  all_gather(&glob_rank, world_ranks_.data(), 1);
-
-  group_number_ = node_number;
+  world_ranks_ = glob_rank;
+  if(nproc_ > 1) // the master of my node is of parallel type but only contains one proc, so can't perform MPI communications with it
+    all_gather(&glob_rank, world_ranks_.data(), (int)sizeof(int));
 }
 
 void Comm_Group::set_check_enabled(int flag)

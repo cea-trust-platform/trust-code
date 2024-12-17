@@ -134,12 +134,18 @@ static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 #endif
 }
 
-static void instantiate_node_mpi(OWN_PTR(Comm_Group) & ngrp, int with_mpi)
+static void instantiate_node_mpi(OWN_PTR(Comm_Group) & ngrp, OWN_PTR(Comm_Group) & mgrp, int with_mpi)
 {
   if (with_mpi)
-    ngrp.typer("Comm_Group_MPI");
+    {
+      ngrp.typer("Comm_Group_MPI");
+      mgrp.typer("Comm_Group_MPI");
+    }
   else
-    ngrp.typer("Comm_Group_NoParallel");
+    {
+      ngrp.typer("Comm_Group_NoParallel");
+      mgrp.typer("Comm_Group_NoParallel");
+    }
 }
 
 static void init_node_mpi(OWN_PTR(Comm_Group) & ngrp)
@@ -148,6 +154,15 @@ static void init_node_mpi(OWN_PTR(Comm_Group) & ngrp)
   assert(ngrp.non_nul());
   Comm_Group_MPI& mpi_on_node = ref_cast(Comm_Group_MPI, ngrp.valeur());
   mpi_on_node.init_comm_on_numa_node();
+#endif
+}
+
+static void init_node_masters(OWN_PTR(Comm_Group) & master)
+{
+#ifdef MPI_
+  assert(master.non_nul());
+  Comm_Group_MPI& mm = ref_cast(Comm_Group_MPI, master.valeur());
+  mm.init_comm_on_node_master();
 #endif
 }
 
@@ -222,7 +237,7 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
 
   // the node group is instantiated here, so that it's done only once (necessary with ICoCo)
   // however, it is initialized later, as it involves communication operations, which require statistics to be initialized first...
-  instantiate_node_mpi(node_group_, with_mpi);
+  instantiate_node_mpi(node_group_, node_master_, with_mpi);
 
   if (!init_kokkos_before_mpi)
     {
@@ -243,12 +258,16 @@ void mon_main::finalize()
   TClearable::Clear_all();
 
 #ifdef MPI_
-  // MPI_Group_free before MPI_Finalize
+  // MPI_Group_free before MPI_Finalize (not freeing comm as we can not free MPI_COMM_WORLD)
   if (sub_type(Comm_Group_MPI,groupe_trio_.valeur()))
     ref_cast(Comm_Group_MPI,groupe_trio_.valeur()).free();
 
+  if (sub_type(Comm_Group_MPI,node_master_.valeur()))
+    ref_cast(Comm_Group_MPI,node_master_.valeur()).free_all(); // free comm + group
+
   if (sub_type(Comm_Group_MPI,node_group_.valeur()))
-    ref_cast(Comm_Group_MPI,node_group_.valeur()).free_comm();
+    ref_cast(Comm_Group_MPI,node_group_.valeur()).free_all(); // free comm + group
+
 
 #endif
 #ifdef PETSCKSP_H
@@ -372,10 +391,15 @@ void mon_main::dowork(const Nom& nom_du_cas)
       Cerr<<"Fin chargement des modules "<<finl;
     }
 
-  // initializing communicator on node
+  // initializing communicators on node
   if (Process::is_parallel())
     init_node_mpi(node_group_);
   PE_Groups::initialize_node(node_group_);
+
+  // Node_master needs node_group to be initialized first
+  if (Process::is_parallel())
+    init_node_masters(node_master_);
+  PE_Groups::initialize_node_master(node_master_);
 
   Cout<< " " << finl;
   Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * *     " << finl;
