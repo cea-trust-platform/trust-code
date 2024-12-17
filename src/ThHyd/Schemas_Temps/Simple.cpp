@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -269,7 +269,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       DoubleTrav resu_temp(current); /* residu en increments */
       if (eqn.has_interface_blocs()) /* si assembler_blocs est disponible */
         {
-          if (eqn.discretisation().is_polymac_family())
+          if (eqn.discretisation().is_polymac_family() || eqn.que_suis_je().debute_par("Equation_flux"))
             {
               eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
               resu = resu_temp;

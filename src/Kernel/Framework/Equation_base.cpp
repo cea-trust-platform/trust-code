@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -2042,7 +2042,7 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
-  if (!(discretisation().is_polymac_family() || probleme().que_suis_je().debute_par("Pb_Multiphase")))
+  if (!(discretisation().is_polymac_family() || probleme().que_suis_je().debute_par("Pb_Multiphase") || que_suis_je().debute_par("Equation_flux")))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
