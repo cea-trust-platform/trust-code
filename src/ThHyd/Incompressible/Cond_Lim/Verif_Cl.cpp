@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -233,7 +233,7 @@ int tester_compatibilite_hydr_concentration(const Domaine_Cl_dis_base& domaine_C
         }
       else if (sub_type(Symetrie, la_cl_hydr.valeur()))
         {
-          if ((sub_type(Symetrie, la_cl_co.valeur())) || (sub_type(Neumann_paroi_flux_nul, la_cl_co.valeur())))
+          if ((sub_type(Symetrie, la_cl_co.valeur())) || (sub_type(Neumann_paroi_flux_nul, la_cl_co.valeur()))|| (sub_type(Echange_externe_impose, la_cl_co.valeur())))
             { /* Do nothing */}
           else
             {
