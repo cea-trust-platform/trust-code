@@ -1,0 +1,210 @@
+# PARALLEL OK 8 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0 0.0 0.0
+        nombre_de_noeuds  2 2 51
+        longueurs 0.053 0.002 1.508
+    }
+    {
+        bord  inlet     Z = 0.0    0.0 <= X <= 0.053 0.0 <= Y <= 0.002
+        bord  outlet    Z = 1.508    0.0 <= X <= 0.053 0.0 <= Y <= 0.002
+        bord  sides     X = 0.0    0.0 <= Y <= 0.002 0.0 <= Z <= 1.508
+        bord  sides     X = 0.053    0.0 <= Y <= 0.002 0.0 <= Z <= 1.508
+        bord  heated    Y = 0.0    0.0 <= X <= 0.053 0.0 <= Z <= 1.508
+        bord  heated    Y = 0.002    0.0 <= X <= 0.053 0.0 <= Z <= 1.508
+    }
+}
+$poly
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+$opts
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_start dt_fixe 1e-5
+    seuil_statio 1e-4
+    solveur ice
+    {
+        solveur petsc cli { -ksp_max_it 1000 }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Sous_Zone tot
+Associate tot dom
+Read tot { fonction_sous_zone 1 }
+
+Read pb
+{
+    Milieu_composite
+    {
+        liquide_eau        Fluide_generique_eos { model cathare2 fluid waterliquid }
+        gaz_eau            Fluide_generique_eos { model cathare2 fluid watervapor }
+        saturation_eau saturation_generique_eos { model cathare2 fluid watervapor }
+        Diametre_hyd_champ champ_uniforme 1 0.00385
+        porosites_champ champ_uniforme 1 0.833333333
+    }
+
+    correlations
+    {
+        multiplicateur_diphasique friedel { }
+        flux_interfacial coef_constant { 
+                                        liquide_eau 1e4 /* coeff echange liquide-interface (interface tjrs a Tsat) => petit echange => liquide loin de Tsat */
+                                        gaz_eau 1e10 /* coeff echange gaz-interface (interface tjrs a Tsat) => grande echange => gaz toujours a Tsat */
+                                        }
+        flux_parietal diphasique_simple_lineaire { 
+                                        coeff_echange_monophasique 5000 /* echange classique mono-phasique entre paroi et liquide */
+                                        coeff_osv 5e-5 /* vapeur produite en paroi quand Tl = Ts-phi*coef_osv, donc si petit, ca fait de la vapeur quand liquide est a Tsat, si grand, production de vapeur tot */
+                                        }
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } } /* en 4 equations. si 6, faut ajouter frottement interfacial. ici sans ishii, donc vl = vg */
+        solveur_pression petsc cli_quiet
+        {
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -pc_hypre_boomeramg_strong_threshold 0.8
+            -pc_hypre_boomeramg_agg_nl 4
+            -pc_hypre_boomeramg_agg_num_paths 5
+            -pc_hypre_boomeramg_max_levels 25
+            -pc_hypre_boomeramg_coarsen_type PMIS
+            -pc_hypre_boomeramg_interp_type ext+i
+            -pc_hypre_boomeramg_P_max 2
+            -pc_hypre_boomeramg_truncfactor 0.5
+
+            -ksp_type gmres
+            -ksp_rtol 1
+            -ksp_max_it 1000
+        }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions
+        {
+            vitesse Champ_composite 2 /* champ par phase */
+            {
+                champ_uniforme 3 0 0 0
+                champ_uniforme 3 0 0 0
+            }
+  
+            pression champ_uniforme 1 13734000.0
+        }
+        boundary_conditions
+        {
+            heated symetrie
+            sides symetrie
+            inlet  frontiere_ouverte_vitesse_imposee champ_front_composite 2 /* champ par phase */
+            {
+                champ_front_uniforme 3 0 0 1
+                champ_front_uniforme 3 0 0 0
+            }
+            outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 13734000.0
+        }
+        sources
+        {
+            source_qdm champ_uniforme 6 0 0 0 0 -9.81 -9.81 ,
+            Perte_Charge_Isotrope
+            {
+                diam_hydr Champ_Uniforme 1 0.00385 sous_zone tot
+                lambda
+                ((2000_min_((Re-1000)_max_0))*0.194*Re^(-0.2)+(2000_min_((3000-Re)_max_0))*64/Re)/2000
+            }
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_uniforme 2 1 0 }
+        convection { amont }
+        boundary_conditions
+        {
+            heated symetrie
+            sides symetrie
+            inlet  frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+            outlet frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+        }
+        sources { flux_interfacial }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 2 282.8 335 }
+        boundary_conditions
+        {
+            heated paroi_flux_impose champ_front_fonc_t 1 (t_min_1)*511000.0
+            sides paroi_adiabatique
+            inlet    frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 2 282.8 335
+            outlet  frontiere_ouverte T_ext Champ_Front_Uniforme 2 282.8 335
+        }
+        sources
+        {
+            travail_pression ,
+            flux_interfacial
+        }
+    }
+    Post_processing
+    {
+        probes
+        {
+            rho_m_trust         grav    masse_volumique_melange periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            h_m_trust           grav          enthalpie_melange periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            pression_trust      grav                pression_pa periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            alpha_trust         grav           alpha_gaz_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            temperature_l_trust grav temperature_liquide_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            temperature_g_trust grav     temperature_gaz_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            vitesse_l_trust     grav     vitesse_liquide_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            vitesse_g_trust     grav         vitesse_gaz_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+        }
+        Format lml
+        fields dt_post 1e8
+        {
+            vitesse_liquide_eau elem
+            vitesse_gaz_eau elem
+            alpha_gaz_eau elem
+            alpha elem
+            pression elem
+            pression_pa elem
+            temperature elem
+            masse_volumique elem
+            viscosite_cinematique elem
+            viscosite_dynamique elem
+            conductivite elem
+            capacite_calorifique elem
+            energie_interne elem
+            enthalpie elem
+            masse_volumique_melange elem
+            enthalpie_melange elem
+        }
+    }
+}
+Solve pb
+End
