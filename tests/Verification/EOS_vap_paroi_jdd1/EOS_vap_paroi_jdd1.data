@@ -20,7 +20,7 @@ mailler  dom
         bord  heated    Y = 0.002    0.0 <= X <= 0.053 0.0 <= Z <= 1.508
     }
 }
-$poly
+Polyedriser dom
 # END MESH #
 
 # BEGIN PARTITION
@@ -38,13 +38,14 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-$opts
-$dis dis
+option_polymac { }
+PolyMAC_P0 dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     dt_start dt_fixe 1e-5
     seuil_statio 1e-4
     solveur ice

@@ -49,7 +49,7 @@ Read sch
     seuil_statio 1e-4
     solveur ice
     {
-        solveur petsc cli { -ksp_max_it 1000 }
+        solveur petsc cholesky { } /* cli { -ksp_max_it 1000 } */
         seuil_convergence_implicite 1e30
         # criteres_convergence { alpha 1e-5 pression 1e-2 } #
     }
@@ -90,7 +90,8 @@ Read pb
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } } /* en 4 equations. si 6, faut ajouter frottement interfacial. ici sans ishii, donc vl = vg */
-        solveur_pression petsc cholesky { } # cli_quiet
+        solveur_pression petsc cholesky { }
+        /* solveur_pression petsc cli_quiet
         {
             -pc_type hypre
             -pc_hypre_type boomeramg
@@ -106,7 +107,7 @@ Read pb
             -ksp_type gmres
             -ksp_rtol 1
             -ksp_max_it 1000
-        } #
+        } */
         convection { amont }
         diffusion  { negligeable }
         initial_conditions

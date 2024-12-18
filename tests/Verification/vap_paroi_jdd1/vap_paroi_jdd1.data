@@ -20,7 +20,7 @@ mailler  dom
         bord  heated    Y = 0.002    0.0 <= X <= 0.053 0.0 <= Z <= 1.508
     }
 }
-$poly
+Polyedriser dom
 # END MESH #
 
 # BEGIN PARTITION
@@ -38,19 +38,21 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-$opts
-$dis dis
+option_polymac { }
+PolyMAC_P0 dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     dt_start dt_fixe 1e-5
     seuil_statio 1e-4
     solveur ice
     {
         solveur petsc cholesky { } /* cli { -ksp_max_it 1000 } */
         seuil_convergence_implicite 1e30
+        # criteres_convergence { alpha 1e-5 pression 1e-2 } #
     }
 }
 
@@ -67,19 +69,19 @@ Read pb
 {
     Milieu_composite
     {
-        liquide_eau        Fluide_generique_eos { model cathare2 fluid waterliquid }
-        gaz_eau            Fluide_generique_eos { model cathare2 fluid watervapor }
-        saturation_eau saturation_generique_eos { model cathare2 fluid watervapor }
+        liquide_sodium Fluide_sodium_liquide { }
+        saturation_sodium saturation_sodium { } /* test l'ordre du readOn */
+        gaz_sodium Fluide_sodium_gaz { }
         Diametre_hyd_champ champ_uniforme 1 0.00385
         porosites_champ champ_uniforme 1 0.833333333
     }
 
     correlations
     {
-        multiplicateur_diphasique friedel { }
+        /* multiplicateur_diphasique friedel { } */
         flux_interfacial coef_constant { 
-                                        liquide_eau 1e4 /* coeff echange liquide-interface (interface tjrs a Tsat) => petit echange => liquide loin de Tsat */
-                                        gaz_eau 1e10 /* coeff echange gaz-interface (interface tjrs a Tsat) => grande echange => gaz toujours a Tsat */
+                                        liquide_sodium 1e8 /* coeff echange liquide-interface (interface tjrs a Tsat) => petit echange => liquide loin de Tsat */
+                                        gaz_sodium 1e10 /* coeff echange gaz-interface (interface tjrs a Tsat) => grande echange => gaz toujours a Tsat */
                                         }
         flux_parietal diphasique_simple_lineaire { 
                                         coeff_echange_monophasique 5000 /* echange classique mono-phasique entre paroi et liquide */
@@ -113,11 +115,11 @@ Read pb
         {
             vitesse Champ_composite 2 /* champ par phase */
             {
-                champ_uniforme 3 0 0 0
+                champ_uniforme 3 0 0 1
                 champ_uniforme 3 0 0 0
             }
   
-            pression champ_uniforme 1 13734000.0
+            pression champ_uniforme 1 100000.0
         }
         boundary_conditions
         {
@@ -128,17 +130,17 @@ Read pb
                 champ_front_uniforme 3 0 0 1
                 champ_front_uniforme 3 0 0 0
             }
-            outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 13734000.0
+            outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
         }
         sources
         {
-            source_qdm champ_uniforme 6 0 0 0 0 -9.81 -9.81 ,
+            source_qdm champ_uniforme 6 0 0 0 0 -9.81 -9.81 /* ,
             Perte_Charge_Isotrope
             {
                 diam_hydr Champ_Uniforme 1 0.00385 sous_zone tot
                 lambda
                 ((2000_min_((Re-1000)_max_0))*0.194*Re^(-0.2)+(2000_min_((3000-Re)_max_0))*64/Re)/2000
-            }
+            } */
         }
     }
     Masse_Multiphase
@@ -158,13 +160,29 @@ Read pb
     {
         diffusion { }
         convection { amont }
-        initial_conditions { temperature Champ_Uniforme 2 282.8 335 }
+        initial_conditions
+        {
+            temperature Champ_composite 2
+            {
+                Champ_Uniforme 1 800
+                Champ_Uniforme 1 879.9430097752451
+            }
+        }
+
         boundary_conditions
         {
-            heated paroi_flux_impose champ_front_fonc_t 1 (t_min_1)*511000.0
+            heated paroi_flux_impose champ_front_fonc_t 1 50000
             sides paroi_adiabatique
-            inlet    frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 2 282.8 335
-            outlet  frontiere_ouverte T_ext Champ_Front_Uniforme 2 282.8 335
+            inlet    frontiere_ouverte_temperature_imposee champ_front_composite 2
+            {
+                Champ_Front_Uniforme 1 800
+                Champ_Front_Uniforme 1 879.9430097752451
+            }
+            outlet  frontiere_ouverte T_ext champ_front_composite 2
+            {
+                Champ_Front_Uniforme 1 800
+                Champ_Front_Uniforme 1 879.9430097752451
+            }
         }
         sources
         {
@@ -179,18 +197,18 @@ Read pb
             rho_m_trust         grav    masse_volumique_melange periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
             h_m_trust           grav          enthalpie_melange periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
             pression_trust      grav                pression_pa periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
-            alpha_trust         grav           alpha_gaz_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
-            temperature_l_trust grav temperature_liquide_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
-            temperature_g_trust grav     temperature_gaz_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
-            vitesse_l_trust     grav     vitesse_liquide_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
-            vitesse_g_trust     grav         vitesse_gaz_eau    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            alpha_trust         grav           alpha_gaz_sodium    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            temperature_l_trust grav temperature_liquide_sodium    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            temperature_g_trust grav     temperature_gaz_sodium    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            vitesse_l_trust     grav     vitesse_liquide_sodium    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
+            vitesse_g_trust     grav         vitesse_gaz_sodium    periode 1 segment 500 1e-3 1e-3 0. 1e-3 1e-3 1.508
         }
         Format lml
-        fields dt_post 1e8
+        fields dt_post 0
         {
-            vitesse_liquide_eau elem
-            vitesse_gaz_eau elem
-            alpha_gaz_eau elem
+            vitesse_liquide_sodium elem
+            vitesse_gaz_sodium elem
+            alpha_gaz_sodium elem
             alpha elem
             pression elem
             pression_pa elem
