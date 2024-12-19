@@ -637,7 +637,7 @@ void TestInvalidateData(Mp_vect_options opt) {
     const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md->get_items_to_sum() : md->get_items_to_compute();
     const int blocs_size = items_blocs.size_array();
     int i = 0;
-    _TYPE_ *resu_ptr = computeOnTheDevice(resu, "", false);
+    _TYPE_ *resu_ptr = resu.data();
     for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
       {
         const int bloc_end = line_size * items_blocs[blocs_idx];

@@ -315,18 +315,13 @@ void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
 // HostDevice	HostDevice	No
 // Device		Device		No
 template <typename _TYPE_, typename _SIZE_>
-const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName, const bool enabled)
+const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
-  if (!enabled)
-    return tab.data();
-  else
-    {
-      // Update data on device if necessary
-      DataLocation loc = tab.isDataOnDevice() ? tab.get_data_location() : DataLocation::HostDevice;
-      const _TYPE_ *tab_addr = mapToDevice_(const_cast<TRUSTArray<_TYPE_,_SIZE_> &>(tab),
-                                            loc, arrayName);
-      return tab_addr;
-    }
+  // Update data on device if necessary
+  DataLocation loc = tab.isDataOnDevice() ? tab.get_data_location() : DataLocation::HostDevice;
+  const _TYPE_ *tab_addr = mapToDevice_(const_cast<TRUSTArray<_TYPE_,_SIZE_> &>(tab),
+                                        loc, arrayName);
+  return tab_addr;
 }
 
 template <typename _TYPE_, typename _SIZE_>
@@ -384,16 +379,11 @@ void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 
 // Copy non-const array on device if necessary for computation on device
 template <typename _TYPE_, typename _SIZE_>
-_TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName, const bool enabled)
+_TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
-  if (!enabled)
-    return tab.data();
-  else
-    {
-      // non-const array will be modified on device:
-      _TYPE_ *tab_addr = mapToDevice_(tab, DataLocation::Device, arrayName);
-      return tab_addr;
-    }
+  // non-const array will be modified on device:
+  _TYPE_ *tab_addr = mapToDevice_(tab, DataLocation::Device, arrayName);
+  return tab_addr;
 }
 
 // ToDo OpenMP: rename copy -> update or map ?
@@ -536,18 +526,18 @@ template void deleteOnDevice<int>(int* ptr, int size);
 template void deleteOnDevice<float>(float* ptr, int size);
 template void deleteOnDevice<double>(double* ptr, int size);
 
-template const double* mapToDevice<double>(const TRUSTArray<double>& tab, std::string arrayName, bool enabled);
-template const int* mapToDevice<int>(const TRUSTArray<int>& tab, std::string arrayName, bool enabled);
-template const float* mapToDevice<float>(const TRUSTArray<float>& tab, std::string arrayName, bool enabled);
+template const double* mapToDevice<double>(const TRUSTArray<double>& tab, std::string arrayName);
+template const int* mapToDevice<int>(const TRUSTArray<int>& tab, std::string arrayName);
+template const float* mapToDevice<float>(const TRUSTArray<float>& tab, std::string arrayName);
 template void copyToDevice<char>(char* ptr, int size, std::string arrayName);
 
 template double* mapToDevice_<double>(TRUSTArray<double>& tab, DataLocation nextLocation, std::string arrayName);
 template int* mapToDevice_<int>(TRUSTArray<int>& tab, DataLocation nextLocation, std::string arrayName);
 template float* mapToDevice_<float>(TRUSTArray<float>& tab, DataLocation nextLocation, std::string arrayName);
 
-template double* computeOnTheDevice<double>(TRUSTArray<double>& tab, std::string arrayName, bool enabled);
-template int* computeOnTheDevice<int>(TRUSTArray<int>& tab, std::string arrayName, bool enabled);
-template float* computeOnTheDevice<float>(TRUSTArray<float>& tab, std::string arrayName, bool enabled);
+template double* computeOnTheDevice<double>(TRUSTArray<double>& tab, std::string arrayName);
+template int* computeOnTheDevice<int>(TRUSTArray<int>& tab, std::string arrayName);
+template float* computeOnTheDevice<float>(TRUSTArray<float>& tab, std::string arrayName);
 
 template void copyFromDevice<double>(TRUSTArray<double>& tab, std::string arrayName);
 template void copyFromDevice<int>(TRUSTArray<int>& tab, std::string arrayName);
@@ -614,17 +604,17 @@ template void deleteOnDevice<double>(double* ptr, long size);
 template void deleteOnDevice<float>(float* ptr, long long size);
 template void deleteOnDevice<double>(double* ptr, long long size);
 
-template const double* mapToDevice<double>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
-template const int* mapToDevice<int>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName, bool enabled);
-template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName, bool enabled);
-template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,int>& tab, std::string arrayName, bool enabled);
-template const float* mapToDevice<float>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName, bool enabled);
+template const double* mapToDevice<double>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName);
+template const int* mapToDevice<int>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
+template const trustIdType* mapToDevice<trustIdType>(const TRUSTArray<trustIdType,int>& tab, std::string arrayName);
+template const float* mapToDevice<float>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName);
 
 template int* computeOnTheDevice(TRUSTArray<int,trustIdType>& tab, std::string arrayName, bool enabled);
-template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName, bool enabled);
-template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,int>& tab, std::string arrayName, bool enabled);
-template float* computeOnTheDevice(TRUSTArray<float,trustIdType>& tab, std::string arrayName, bool enabled);
-template double* computeOnTheDevice(TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
+template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
+template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,int>& tab, std::string arrayName);
+template float* computeOnTheDevice(TRUSTArray<float,trustIdType>& tab, std::string arrayName);
+template double* computeOnTheDevice(TRUSTArray<double,trustIdType>& tab, std::string arrayName);
 
 template void copyFromDevice<int, trustIdType>(TRUSTArray<int,trustIdType>& tab, std::string arrayName);
 template void copyFromDevice<trustIdType, int>(TRUSTArray<trustIdType,int>& tab, std::string arrayName);

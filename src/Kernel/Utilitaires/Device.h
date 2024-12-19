@@ -179,13 +179,13 @@ template <typename _TYPE_, typename _SIZE_=int>
 extern void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??", const bool enabled=true);
+extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
 template <typename _TYPE_, typename _SIZE_=int>
 extern _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, std::string arrayName);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??", const bool enabled=true);
+extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
 template <typename _TYPE_, typename _SIZE_=int>
 extern void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
