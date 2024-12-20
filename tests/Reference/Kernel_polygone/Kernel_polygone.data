@@ -1,5 +1,6 @@
 # Test polygone #
 # PARALLEL OK 2 #
+# GPU NOT #
 dimension 2
 domaine dom2
 # BEGIN MESH #
