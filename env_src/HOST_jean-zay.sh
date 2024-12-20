@@ -1,6 +1,6 @@
 #!/bin/bash
 #######################################################################
-# Jean-Zay2                                                                    #
+# Jean-Zay2                                                           #
 #######################################################################
 
 
@@ -10,27 +10,22 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
-   # Initialisation de l environnement module $MODULE_PATH
-   echo "source /etc/profile" >> $env
+   # Initialisation de l environnement module $MODULE_PATH si pas disponible:
+   module -v 2>/dev/null || echo $echo "source /etc/profile" >> $env
    #
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.0.5-cuda" # Les modules sont mieux configures sur IDRIS qu'au CCRT...
-         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.1.5" # OK car crash au demarrage pour precedent (4.0.5-cuda -> NVHPC)
-         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.5 openmpi/4.1.5" # Passage a 23.5 pour etre plus pres du PC de dev
-         #module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.1 openmpi/4.1.5" # 23.5 a disparu...
          # On utilise desormais le CUDA de NVHPC:
          if [ "$TRUST_FORCE_MPI_GPU_AWARE" = 1 ]
          then
             # MPI GPU-Aware fait diverger plusieurs preconditionneurs PETSc 3.20 dont boomeramg le plus performant... Support contacte
-            module="nvidia-compilers/23.1 openmpi/4.1.5-cuda"
+            module="gcc/8.5.0 openmpi/4.1.5-cuda"
          else
-            module="nvidia-compilers/23.1 openmpi/4.1.5" 
+            module="gcc/8.5.0 openmpi/4.1.5" # On telecharge le NVHPC 23.5 pour pouvoir compiler Kokkos 4.5 (23.1 trop vieux)
          fi
-         CUDA_VERSION=12.0
       else
          echo "Not supported any more." && exit -1
       fi
@@ -38,12 +33,6 @@ define_modules_config()
       [ "$TRUST_CUDA_CC" = 80 ] && module="arch/a100 "$module # A100
       [ "$TRUST_CUDA_CC" = 90 ] && module="arch/h100 "$module # H100
    else
-      # avec intel/intelmpi 19.0.2, les calculs bloquent
-      #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
-      # avec intel/intelmpi 19.0.5, impossible de compiler TrioCFD ou autre BALTIK (meme vide)
-      #module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
-      # avec intel 19.0.5 et openmpi 3.1.4, trust et TrioCFD compilent
-      #module="intel-compilers/19.0.5 intel-mkl/19.0.5 openmpi/3.1.4"
       # 21/06/2023 : ND : passage a gcc
       module="gcc/8.5.0 openmpi/4.0.5"
    fi
@@ -51,11 +40,8 @@ define_modules_config()
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
-   if [ "$CUDA_VERSION" != "" ]
-   then
-      echo "export NVHPC_CUDA_HOME=\$NVHPC_ROOT/cuda/$CUDA_VERSION" >> $env # Prendre desormais le CUDA de NVHPC
-      echo "export TRUST_DISABLE_STRUMPACK=1" >> $env
-   fi
+   echo "export TRUST_DISABLE_STRUMPACK=1" >> $env
+   echo "export TRUST_DISABLE_SUPERLU_DIST=1" >> $env
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash

@@ -499,7 +499,7 @@ fi
 # Add other package if MPI is used:
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   [ "$minimal_mumps" = 0 ] && [ "$PETSC_HAVE_CUDA" = 1 ] && [ "$PETSC_DISABLE_SUPERLU_DIST" != 1 ] && add_package superlu_dist
+   [ "$minimal_mumps" = 0 ] && [ "$PETSC_HAVE_CUDA" = 1 ] && [ "$TRUST_DISABLE_SUPERLU_DIST" != 1 ] && add_package superlu_dist
 
    # New (SuiteSparse/Cholmod/UmfPack):
    if [ "$minimal_mumps" = 0 ]

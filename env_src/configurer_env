@@ -676,11 +676,10 @@ case $arch in
         if [ $? != 0 ]
         then
            source ../env_src/gpu/install_nvhpc_sdk_toolkit.sh
-           # Attention, on met NVHPC en dernier car on prendre de preference le nvcc du CUDA Toolkit:
-           echo "ADD_PATH_AFTER $NVHPC/bin" >>$env
-           echo "ADD_LD_LIBRARY_PATH_AFTER $NVHPC/lib" >>$env
-           export PATH=$PATH:$NVHPC/bin # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/bin
-           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NVHPC/lib # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/lib
+           echo "ADD_PATH $NVHPC/bin" >>$env
+           echo "ADD_LD_LIBRARY_PATH $NVHPC/lib" >>$env
+           export PATH=$NVHPC/bin:$PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/bin
+           export LD_LIBRARY_PATH=$NVHPC/lib:$LD_LIBRARY_PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/lib
         fi
         nvc++ -help 1>/dev/null 2>&1
         [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
@@ -1985,9 +1984,10 @@ case $TRUST_ARCH_CC in
            CppFlags=$CppFlags$gpu
            TRUST_STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
         fi
-	      if [ ${HOST#orcus} != $HOST ]
+	[ $HOST = jean-zay ] && [ "$TRUST_CUDA_CC" = 80 ] && CppFlags=$CppFlags" -tp=zen3" # Build sur AMD sinon illegal instruction
+        if [ "${HOST#orcus}" != $HOST ] || [ $HOST = jean-zay ]
         then
-           # PL: -Ktrap=fp fait desormais planter MPI_Init sur ce cluster de m...e
+           # PL: -Ktrap=fp fait desormais planter MPI_Init
            CppFlags=$CppFlags" -O3 -fPIC -Kieee -noswitcherror"
         else
            CppFlags=$CppFlags" -O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
