@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,9 @@ public:
   int T_at_wall() const override { return 0; }
 private:
   mutable Parser_U nusselt_;
+  double Hnb_ = 0; // EPICE (basse pression) : 675.0
+  double Tsat_ = 1e8; // 100
+  double a_ = 2.1643;
 };
 
 #endif /* Flux_parietal_Nusselt_included */
