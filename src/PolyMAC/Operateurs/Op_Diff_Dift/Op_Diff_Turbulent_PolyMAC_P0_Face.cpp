@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,6 @@
 #include <PolyMAC_P0_discretisation.h>
 #include <Op_Diff_PolyMAC_P0_Face.h>
 #include <Pb_Multiphase.h>
-#include <vector>
 
 Implemente_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Face, "Op_Diff_Turbulent_PolyMAC_P0_Face|Op_Diff_Turbulente_PolyMAC_P0_Face", Op_Diff_PolyMAC_P0_Face );
 

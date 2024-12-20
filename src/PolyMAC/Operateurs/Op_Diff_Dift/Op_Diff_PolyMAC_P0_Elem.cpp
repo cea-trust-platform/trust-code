@@ -15,29 +15,20 @@
 
 #include <Convection_Diffusion_Temperature.h>
 #include <Flux_interfacial_PolyMAC_P0P1NC.h>
-#include <Modele_turbulence_scal_base.h>
 #include <Echange_contact_PolyMAC_P0.h>
 #include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <Echange_externe_impose.h>
 #include <Champ_Elem_PolyMAC_P0.h>
-#include <Domaine_PolyMAC_P0.h>
 #include <Flux_parietal_base.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Schema_Temps_base.h>
-#include <Champ_front_calc.h>
 #include <Milieu_composite.h>
 #include <Option_PolyMAC.h>
-#include <communications.h>
-#include <MD_Vector_base.h>
-#include <Pb_Multiphase.h>
 #include <Neumann_paroi.h>
-#include <Synonyme_info.h>
+#include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
-#include <EOS_to_TRUST.h>
 #include <Statistiques.h>
 #include <Array_tools.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
 #include <functional>
 #include <cmath>
 
@@ -65,7 +56,7 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
 
   const Equation_base& eq = equation();
   const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, eq.inconnue());
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
 
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
@@ -111,7 +102,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
   if (som_ext_init_)
     return; //deja fait
 
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
 
   /* remplissage de op_ext : de proche en proche */
   op_ext = { this };
@@ -280,7 +271,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 
 double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 {
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
   const Champ_Elem_PolyMAC_P0& 	ch	= ref_cast(Champ_Elem_PolyMAC_P0, equation().inconnue());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales();
@@ -336,7 +327,7 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   if (semi_impl.count(nom_inco))
     return; //semi-implicite -> rien a dimensionner
 
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
   const IntTab& f_e = domaine.face_voisins();
 
   std::vector<Matrice_Morse*> mat(op_ext.size());

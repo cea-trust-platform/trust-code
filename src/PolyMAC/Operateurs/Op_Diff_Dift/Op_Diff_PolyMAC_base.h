@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,48 +16,32 @@
 #ifndef Op_Diff_PolyMAC_base_included
 #define Op_Diff_PolyMAC_base_included
 
+#include <Op_Diff_PolyMAC_Gen_base.h>
 #include <Op_Diff_Turbulent_base.h>
-#include <Operateur_Diff_base.h>
 #include <Domaine_PolyMAC.h>
-#include <TRUST_Ref.h>
-#include <SFichier.h>
 
-class Domaine_Cl_PolyMAC;
-
-class Op_Diff_PolyMAC_base: public Operateur_Diff_base, public Op_Diff_Turbulent_base
+class Op_Diff_PolyMAC_base: public Op_Diff_PolyMAC_Gen_base, public Op_Diff_Turbulent_base
 {
   Declare_base(Op_Diff_PolyMAC_base);
 public:
-  void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&) override;
-
   double calculer_dt_stab() const override;
 
-  void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
   void completer() override;
-  const Champ_base& diffusivite() const override { return diffusivite_.valeur(); }
   void mettre_a_jour(double t) override
   {
     Operateur_base::mettre_a_jour(t);
     nu_a_jour_ = 0;
   }
 
-  void update_nu() const; //met a jour nu et nu_fac
+  void update_nu() const override; // met a jour nu et nu_fac
   const DoubleTab& get_nu() const { return nu_; }
   const DoubleTab& get_nu_fac() const { return nu_fac_; }
 
   inline void remplir_nu_ef(int e, DoubleTab& nu_ef) const;
 
-  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
-  int impr(Sortie& os) const override;
-  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
-
 protected:
-  OBS_PTR(Domaine_PolyMAC) le_dom_poly_;
-  OBS_PTR(Domaine_Cl_PolyMAC) la_zcl_poly_;
-  OBS_PTR(Champ_base) diffusivite_;
-  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
-  mutable int nu_a_jour_ = 0; //si on doit mettre a jour nu
-  mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
+  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
+  mutable DoubleTab nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
 };
 
 /* diffusivite a l'interieur d'un element e : nu_ef(i, n) : diffusivite de la composante n entre le centre de l'element et celui de la face i */

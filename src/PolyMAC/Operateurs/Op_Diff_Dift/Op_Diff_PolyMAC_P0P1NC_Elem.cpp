@@ -18,25 +18,12 @@
 #include <Champ_Elem_PolyMAC_P0P1NC.h>
 #include <Echange_externe_impose.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
-#include <Flux_parietal_base.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Dirichlet_homogene.h>
-#include <Schema_Temps_base.h>
-#include <Champ_front_calc.h>
-#include <TRUSTTab_parts.h>
-#include <MD_Vector_base.h>
-#include <communications.h>
-#include <Synonyme_info.h>
+#include <Flux_parietal_base.h>
 #include <Pb_Multiphase.h>
-#include <Neumann_paroi.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
 #include <Array_tools.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
-#include <functional>
-#include <cmath>
-#include <deque>
 
 extern Stat_Counter_Id diffusion_counter_;
 
@@ -57,7 +44,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::completer()
   Equation_base& eq = equation();
   Champ_Elem_PolyMAC_P0P1NC& ch = ref_cast(Champ_Elem_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue());
   ch.init_auxiliary_variables();
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_poly_.valeur());
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Diff_PolyMAC_P0P1NC_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
@@ -103,7 +90,7 @@ void Op_Diff_PolyMAC_P0P1NC_Elem::init_op_ext() const
 
 double Op_Diff_PolyMAC_P0P1NC_Elem::calculer_dt_stab() const
 {
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_poly_.valeur());
   const IntTab& e_f = domaine.elem_faces();
   const DoubleTab& nf = domaine.face_normales(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr, &diffu =
                                                           diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();

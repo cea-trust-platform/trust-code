@@ -13,25 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Op_Grad_PolyMAC_P0_Face.h>
 #include <Op_Diff_PolyMAC_P0_Face.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Dirichlet_homogene.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Schema_Temps_base.h>
 #include <Option_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <MD_Vector_base.h>
 #include <Synonyme_info.h>
 #include <Pb_Multiphase.h>
-#include <Probleme_base.h>
 #include <Statistiques.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
 
 extern Stat_Counter_Id diffusion_counter_;
 
@@ -47,7 +39,7 @@ void Op_Diff_PolyMAC_P0_Face::completer()
 {
   Op_Diff_PolyMAC_P0_base::completer();
 
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
   Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue());
   if (le_champ_inco.non_nul())
     ch.init_auxiliary_variables(); // cas flica5 : ce n'est pas l'inconnue qui est utilisee, donc on cree les variables auxiliaires ici
@@ -64,7 +56,7 @@ void Op_Diff_PolyMAC_P0_Face::completer()
 
 double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
 {
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue()).fcl();
 
   const DoubleTab& nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(),
@@ -117,7 +109,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco))
     return; //semi-implicite ou pas de bloc diagonal -> rien a faire
 
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl(), &equiv = domaine.equiv();
   const DoubleTab& nf = domaine.face_normales();
   const DoubleVect& fs = domaine.face_surfaces();
@@ -238,7 +230,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
 
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
-  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl(), &equiv = domaine.equiv();
   const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &pf = porosite_f, &pe = porosite_e;

@@ -14,24 +14,15 @@
 *****************************************************************************/
 
 #include <Op_Diff_PolyMAC_P0P1NC_Face.h>
-#include <Modele_turbulence_hyd_base.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
-#include <Dirichlet_homogene.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Schema_Temps_base.h>
-#include <Champ_Uniforme.h>
-#include <TRUSTTab_parts.h>
-#include <MD_Vector_base.h>
 #include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
 #include <Array_tools.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
 
 extern Stat_Counter_Id diffusion_counter_;
 
@@ -46,7 +37,7 @@ Entree& Op_Diff_PolyMAC_P0P1NC_Face::readOn(Entree& is) { return Op_Diff_PolyMAC
 void Op_Diff_PolyMAC_P0P1NC_Face::completer()
 {
   Op_Diff_PolyMAC_P0P1NC_base::completer();
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_poly_.valeur());
   Equation_base& eq = equation();
   Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue());
   ch.init_auxiliary_variables(); /* ajout des inconnues auxiliaires (vorticites aux aretes) */
@@ -63,7 +54,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::completer()
 
 double Op_Diff_PolyMAC_P0P1NC_Face::calculer_dt_stab() const
 {
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_poly_.valeur());
   const IntTab& e_f = domaine.elem_faces();
 
   const DoubleTab& nf = domaine.face_normales(),
@@ -108,7 +99,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_
   if (!matrices.count(nom_inco))
     return; //pas de bloc diagonal -> rien a faire
 
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_poly_.valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_s = domaine.face_sommets(), &e_a = domaine.domaine().elem_aretes(), &fcl = ch.fcl();
 
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
@@ -243,7 +234,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::ajouter_blocs_ext(int aux_only, matrices_t mat
 
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue());
   const Conds_lim& cls = ch.domaine_Cl_dis().les_conditions_limites();
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_poly_.valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_s = domaine.face_sommets(), &e_a = domaine.domaine().elem_aretes(),
                 &fcl = ch.fcl(), &f_e = domaine.face_voisins();
 

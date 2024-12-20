@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,19 +13,20 @@
 *
 *****************************************************************************/
 
-#include <PolyMAC_P0P1NC_discretisation.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
-#include <Milieu_base.h>
-#include <Equation_base.h>
-#include <Champ_Uniforme.h>
-#include <DescStructure.h>
-#include <Schema_Temps_base.h>
-#include <Motcle.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Operateur.h>
+#include <PolyMAC_P0P1NC_discretisation.h>
 #include <Op_Diff_PolyMAC_P0P1NC_base.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Domaine_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Fonc_Tabule.h>
+#include <Champ_Uniforme.h>
+#include <Equation_base.h>
+#include <DescStructure.h>
+#include <Milieu_base.h>
+#include <Operateur.h>
+#include <Motcle.h>
 
 Implemente_instanciable(PolyMAC_P0P1NC_discretisation, "PolyMAC_P0P1NC", PolyMAC_discretisation);
 // XD polymac_P0P1NC discretisation_base polymac_P0P1NC -1 polymac_P0P1NC discretization (previously polymac discretization compatible with pb_multi).

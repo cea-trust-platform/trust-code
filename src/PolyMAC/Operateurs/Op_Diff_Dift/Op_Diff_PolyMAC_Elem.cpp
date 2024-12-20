@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,23 +15,13 @@
 
 #include <Modele_turbulence_scal_base.h>
 #include <Echange_contact_PolyMAC.h>
-#include <Echange_externe_impose.h>
 #include <Op_Diff_PolyMAC_Elem.h>
-#include <Dirichlet_homogene.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Elem_PolyMAC.h>
-#include <Schema_Temps_base.h>
 #include <Champ_front_calc.h>
-#include <Domaine_PolyMAC.h>
-#include <communications.h>
-#include <Synonyme_info.h>
 #include <Probleme_base.h>
-#include <Neumann_paroi.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
-#include <cmath>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Elem , "Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem" , Op_Diff_PolyMAC_base );
 Implemente_instanciable( Op_Dift_PolyMAC_Elem , "Op_Dift_PolyMAC_P0_PolyMAC|Op_Dift_PolyMAC_var_P0_PolyMAC" , Op_Diff_PolyMAC_Elem );

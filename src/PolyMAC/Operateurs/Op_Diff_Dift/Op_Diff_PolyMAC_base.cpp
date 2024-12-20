@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,18 +17,11 @@
 #include <Echange_externe_impose.h>
 #include <Op_Diff_PolyMAC_base.h>
 #include <Check_espace_virtuel.h>
-#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Elem_PolyMAC.h>
 #include <Champ_Fonc_P0_base.h>
-#include <Schema_Temps_base.h>
-#include <Domaine_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <communications.h>
-#include <Probleme_base.h>
-#include <EcrFicPartage.h>
 #include <Milieu_base.h>
-#include <TRUSTTrav.h>
-#include <SFichier.h>
 
 Implemente_base(Op_Diff_PolyMAC_base, "Op_Diff_PolyMAC_base", Operateur_Diff_base);
 
@@ -156,150 +149,6 @@ void Op_Diff_PolyMAC_base::completer()
   le_dom_poly_->domaine().creer_tableau_elements(nu_);
   le_dom_poly_->creer_tableau_faces(nu_fac_);
   nu_a_jour_ = 0;
-}
-
-int Op_Diff_PolyMAC_base::impr(Sortie& os) const
-{
-  const Domaine& mon_dom = le_dom_poly_->domaine();
-  const int impr_mom = mon_dom.moments_a_imprimer();
-  const int impr_sum = (mon_dom.bords_a_imprimer_sum().est_vide() ? 0 : 1);
-  const int impr_bord = (mon_dom.bords_a_imprimer().est_vide() ? 0 : 1);
-  const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();
-  DoubleTab& tab_flux_bords = flux_bords();
-  int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
-  DoubleVect bilan(nb_comp);
-  const int nb_faces = le_dom_poly_->nb_faces_tot();
-  DoubleTab xgr(nb_faces, dimension);
-  xgr = 0.;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = le_dom_poly_->xv();
-      const ArrOfDouble& c_grav = mon_dom.cg_moments();
-      for (int num_face = 0; num_face < nb_faces; num_face++)
-        for (int i = 0; i < dimension; i++)
-          xgr(num_face, i) = xgrav(num_face, i) - c_grav[i];
-    }
-  int k, face;
-  int nb_front_Cl = le_dom_poly_->nb_front_Cl();
-  DoubleTrav flux_bords2(5, nb_front_Cl, nb_comp);
-  flux_bords2 = 0;
-  for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
-    {
-      const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
-      int ndeb = frontiere_dis.num_premiere_face();
-      int nfin = ndeb + frontiere_dis.nb_faces();
-      for (face = ndeb; face < nfin; face++)
-        {
-          for (k = 0; k < nb_comp; k++)
-            {
-              flux_bords2(0, num_cl, k) += tab_flux_bords(face, k);
-              if (mon_dom.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
-                flux_bords2(3, num_cl, k) += tab_flux_bords(face, k);
-            } /* fin for k */
-          if (impr_mom)
-            {
-              if (dimension == 2)
-                {
-                  flux_bords2(4, num_cl, 0) += tab_flux_bords(face, 1) * xgr(face, 0) - tab_flux_bords(face, 0) * xgr(face, 1);
-                }
-              else
-                {
-                  flux_bords2(4, num_cl, 0) += tab_flux_bords(face, 2) * xgr(face, 1) - tab_flux_bords(face, 1) * xgr(face, 2);
-                  flux_bords2(4, num_cl, 1) += tab_flux_bords(face, 0) * xgr(face, 2) - tab_flux_bords(face, 2) * xgr(face, 0);
-                  flux_bords2(4, num_cl, 2) += tab_flux_bords(face, 1) * xgr(face, 0) - tab_flux_bords(face, 0) * xgr(face, 1);
-                }
-            }
-        } /* fin for face */
-    }
-  mp_sum_for_each_item(flux_bords2);
-
-  if (je_suis_maitre() && nb_comp > 0)
-    {
-      ouvrir_fichier(Flux, "", 1);
-      ouvrir_fichier(Flux_moment, "moment", impr_mom);
-      ouvrir_fichier(Flux_sum, "sum", impr_sum);
-      Flux.add_col(sch.temps_courant());
-      if (impr_mom)
-        Flux_moment.add_col(sch.temps_courant());
-      if (impr_sum)
-        Flux_sum.add_col(sch.temps_courant());
-      for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
-        {
-          for (k = 0; k < nb_comp; k++)
-            {
-              Flux.add_col(flux_bords2(0, num_cl, k));
-              if (impr_sum)
-                Flux_sum.add_col(flux_bords2(3, num_cl, k));
-              bilan(k) += flux_bords2(0, num_cl, k);
-            }
-          if (dimension == 3)
-            {
-              for (k = 0; k < nb_comp; k++)
-                if (impr_mom)
-                  Flux_moment.add_col(flux_bords2(4, num_cl, k));
-            }
-          else
-            {
-              if (impr_mom)
-                Flux_moment.add_col(flux_bords2(4, num_cl, 0));
-            }
-        } /* fin for num_cl */
-      for (k = 0; k < nb_comp; k++)
-        Flux.add_col(bilan(k));
-      Flux << finl;
-      if (impr_sum)
-        Flux_sum << finl;
-      if (impr_mom)
-        Flux_moment << finl;
-    }
-  const LIST(Nom) &Liste_Bords_a_imprimer = le_dom_poly_->domaine().bords_a_imprimer();
-  if (!Liste_Bords_a_imprimer.est_vide() && nb_comp > 0)
-    {
-      EcrFicPartage Flux_face;
-      ouvrir_fichier_partage(Flux_face, "", impr_bord);
-      for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
-        {
-          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl)->frontiere_dis();
-          const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
-          int ndeb = frontiere_dis.num_premiere_face();
-          int nfin = ndeb + frontiere_dis.nb_faces();
-          if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
-            {
-              if (je_suis_maitre())
-                {
-                  Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps ";
-                  sch.imprimer_temps_courant(Flux_face);
-                  Flux_face << " : " << finl;
-                }
-              for (face = ndeb; face < nfin; face++)
-                {
-                  if (dimension == 2)
-                    Flux_face << "# Face a x= " << le_dom_poly_->xv(face, 0) << " y= " << le_dom_poly_->xv(face, 1) << " : ";
-                  else if (dimension == 3)
-                    Flux_face << "# Face a x= " << le_dom_poly_->xv(face, 0) << " y= " << le_dom_poly_->xv(face, 1) << " z= " << le_dom_poly_->xv(face, 2) << " : ";
-                  for (k = 0; k < nb_comp; k++)
-                    Flux_face << tab_flux_bords(face, k) << " ";
-                  Flux_face << finl;
-                }
-              Flux_face.syncfile();
-            }
-        }
-    }
-  return 1;
-}
-
-void Op_Diff_PolyMAC_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base&)
-{
-  le_dom_poly_ = ref_cast(Domaine_PolyMAC, domaine_dis);
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC, zcl);
-}
-
-DoubleTab& Op_Diff_PolyMAC_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
-{
-  resu = 0.;
-  return ajouter(inco, resu);
 }
 
 void Op_Diff_PolyMAC_base::update_nu() const
