@@ -983,8 +983,9 @@ echo "export PYTHONPATH=\$TRUST_ROOT/Validation/Outils:\$PYTHONPATH" >> $env
 
 if [ "$TRUST_DISABLE_JUPYTER" != 1 ]
 then
+   PYTHON_VERSION=`$TRUST_ROOT/exec/python/bin/python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
    # Disable autosave in jupyter
-   jupyter_config_js=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
+   jupyter_config_js=$TRUST_ROOT/exec/python/lib/python$PYTHON_VERSION/site-packages/notebook/static/custom/custom.js
    if [ -f $jupyter_config_js ] && [ "`grep 'Jupyter.notebook.set_autosave_interval(0)' $jupyter_config_js 2>/dev/null`" = "" ]
    then
       echo "Disabling autosave in jupyter-notebook"
@@ -1011,7 +1012,7 @@ then
    fi
 
    # Increase number of attemp when connecting to Jupyter Kernel (to avoid exception: "zmq.error.ZMQError: Address already in use"
-   jy_kernel_app=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/ipykernel/kernelapp.py
+   jy_kernel_app=$TRUST_ROOT/exec/python/lib/python$PYTHON_VERSION/site-packages/ipykernel/kernelapp.py
    if [ -f $jy_kernel_app ]
    then
       sed -i "s@max_attempts = 1 if port else 100@max_attempts = 100 if port else 100@" $jy_kernel_app
@@ -1106,7 +1107,7 @@ then
     remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
     if [ $remove_stdcpp_conda -eq 1 ]
     then
-       echo "Warning! Look for a newer conda package than libstdcxx-ng=13.2.0 to avoid this hack:"
+       echo "Warning! Look for a newer conda package than libstdcxx-ng installed in conda to avoid this hack:"
        #rm $TRUST_ROOT/exec/python/lib/libstdc++.so*
        #dirlibstd=`dirname $libstd_sys`
        for file in `ls $TRUST_ROOT/exec/python/lib/libstdc++.so* 2>/dev/null`

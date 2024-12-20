@@ -5,7 +5,8 @@ set -e
 
 org=$TRUST_ROOT/Outils/trustify
 install_dir=$org/install
-full_install_dir=$install_dir/lib/python3.12/site-packages
+PYTHON_VERSION=`python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
+full_install_dir=$install_dir/lib/python$PYTHON_VERSION/site-packages
 
 # Are we invoked from a baltik, or from TRUST?
 if [ "$project_directory" = "" ] || [ "$TRUSTIFY_FROM_TRUST" = 1 ]; then  # from TRUST

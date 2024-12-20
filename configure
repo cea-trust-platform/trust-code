@@ -801,7 +801,7 @@ then
       extp_commit=`cat bin/gestion_externalpackages/extp.commit`
       echo "Error: You need to download externalpackages $TRUST_ROOT_VERSION before configuring :"
       version_extp=$TRUST_ROOT_VERSION
-      [ "`grep beta $version_extp &>/dev/null ; echo $?`" != 0 ] && version_extp="next"
+      [ "`echo $version_extp | grep beta &>/dev/null ; echo $?`" = 0 ] && version_extp="next"
       echo "   wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-$version_extp.tar"
       echo " or:"
       echo "   curl ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-$version_extp.tar > externalpackages-$version_extp.tar"
