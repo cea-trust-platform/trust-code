@@ -1983,9 +1983,15 @@ case $TRUST_ARCH_CC in
            # Attention -mp=gpu -gpu=nordc ne marche pas sur le GPU !!! Voir: https://forums.developer.nvidia.com/t/openmp-offload-w-cuda-interop-undefined-reference-to-fatbinwrap-nv-module-id/253051
            # Donc on active Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON au niveau de Kokkos
            CppFlags=$CppFlags$gpu
-	   TRUST_STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
+           TRUST_STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
         fi
-        CppFlags=$CppFlags" -O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
+	      if [ ${HOST#orcus} != $HOST ]
+        then
+           # PL: -Ktrap=fp fait desormais planter MPI_Init sur ce cluster de m...e
+           CppFlags=$CppFlags" -O3 -fPIC -Kieee -noswitcherror"
+        else
+           CppFlags=$CppFlags" -O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
+        fi
         CppFlags=$CppFlags" -std=$TRUST_STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
         CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte tous les objets C++ non utilises
         #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
