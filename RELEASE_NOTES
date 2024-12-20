@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.9.5 : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
 20/11/24 (TRUST) Tools        : 'trustpy' now becomes 'trustify'. Check the syntax of your dataset with 'trust -trustify my_case.data'. See a more complete usage example in Outils/trustify/doc/examples/hello_world.

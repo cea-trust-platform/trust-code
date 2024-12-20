@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.9.5 : Changes since version 1.9.4 :
 -------------------------------------------------------------
 29/10/24 (TRUST) Major change : No more try/catch in get_champ. Virtual methods has_champ added and can be used !
