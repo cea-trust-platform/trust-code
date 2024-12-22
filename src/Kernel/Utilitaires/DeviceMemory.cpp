@@ -52,17 +52,29 @@ size_t DeviceMemory::allocatedBytesOnDevice()
   return initial_free_ - free;
 }
 
-// Adress on device (return nullptr if not):
+/** Check if a chunk (even empty) is allocated on the device for the host ptr
+ * Return true/false
+*/
+bool DeviceMemory::isAllocatedOnDevice(void * ptr)
+{
+  if (memory_map_.empty()) return false;
+  auto it = memory_map_.find(ptr);
+  return (it != memory_map_.end());
+}
+
+/** Return the device address of the host ptr
+ * Return nullptr if not on the device
+*/
 void* DeviceMemory::addrOnDevice(void * ptr)
 {
-  if (memory_map_.empty()) return nullptr;
+  if (memory_map_.empty())
+    return nullptr;
   auto it = memory_map_.find(ptr);
   if (it != memory_map_.end())
     {
       int sz;
-      DataLocation loc;
       void* device_ptr;
-      std::tie(sz, loc, device_ptr) = it->second;
+      std::tie(sz, device_ptr) = it->second;
       return device_ptr;
     }
   else
@@ -71,19 +83,49 @@ void* DeviceMemory::addrOnDevice(void * ptr)
     }
 }
 
+/** Add a new line to the memory_map_
+ * ptr should be non-null, device_ptr and size may be null
+ */
+void DeviceMemory::add(void * ptr, void * device_ptr, int size)
+{
+  if (ptr==nullptr) return;//Process::exit();
+  DeviceMemory::getMemoryMap()[ptr] = {size, device_ptr};
+  if (clock_on)
+    {
+      Process::Journal() << "Adding Host ptr: " << ptrToString(ptr) << " Device ptr: " << ptrToString(device_ptr)
+                         << " size: " << size << finl;
+      DeviceMemory::printMemoryMap();
+    }
+}
+
+/** Delete a line into the memory_map_
+ *
+ */
+void DeviceMemory::del(void * ptr)
+{
+  DeviceMemory::getMemoryMap().erase(ptr);
+  if (clock_on)
+    {
+      Process::Journal() << "Deleting Host ptr: " << ptrToString(ptr) << finl;
+      DeviceMemory::printMemoryMap();
+    }
+}
+
+/** Print the memory map for debug
+ *
+ */
 void DeviceMemory::printMemoryMap()
 {
   int sz;
-  DataLocation loc;
   void* device_ptr;
-  std::cout << "=== Memory blocks on the device ===" << std::endl;
+  Process::Journal() << "=== Memory blocks on the device ===" << finl;
   for (const auto& block : memory_map_)
     {
       void* ptr = block.first;
-      std::tie(sz, loc, device_ptr) = block.second;
-      std::cout << "Host ptr: " << ptr << " Device ptr: " << device_ptr << " size: " << sz << " loc: " << (int)loc << std::endl;
+      std::tie(sz, device_ptr) = block.second;
+      Process::Journal() << "Host ptr: " << ptrToString(ptr) << " Device ptr: " << ptrToString(device_ptr) << " size: " << sz << finl;
     }
-  std::cout << "===================================" << std::endl;
+  Process::Journal() << "===================================" << finl;
 }
 
 bool DeviceMemory::warning(trustIdType nb_items)

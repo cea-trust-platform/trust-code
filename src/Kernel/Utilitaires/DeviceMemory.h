@@ -25,7 +25,7 @@
 #include <tuple>
 
 // Map host ptr, size, DataLocation, Ddevice ptr
-using map_t = std::unordered_map<void*, std::tuple<int, DataLocation, void*>>;
+using map_t = std::unordered_map<void*, std::tuple<int, void*>>;
 
 struct DeviceMemory
 {
@@ -36,7 +36,10 @@ public:
   static size_t allocatedBytesOnDevice();
   static size_t deviceMemGetInfo(bool);
   static map_t& getMemoryMap() { return memory_map_; };
+  static bool isAllocatedOnDevice(void *);
   static void* addrOnDevice(void*);
+  static void add(void * ptr, void * device_ptr, int size);
+  static void del(void * ptr);
   static void printMemoryMap();
   static trustIdType internal_items_size_;
   static int nb_pas_dt_; // can't reference Schema_temps_base cause Kernel/Utilitaires...

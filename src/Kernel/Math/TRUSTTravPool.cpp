@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -240,10 +240,7 @@ void TRUSTTravPool<_TYPE_>::ClearPool()
         {
           _TYPE_* ptr = mem->data();
           if(isAllocatedOnDevice(ptr))
-            {
-              deleteOnDevice(ptr, (int)size); // Delete the block memory on the device
-              DeviceMemory::getMemoryMap().erase(ptr); // Remove in the memory map
-            }
+            deleteOnDevice(ptr, (int)size); // Delete the block memory on the device
         }
     }
   // Clear the whole pool (shared_ptr will do the cleaning job):

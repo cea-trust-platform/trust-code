@@ -174,11 +174,29 @@ _TYPE_* addrOnDevice(_TYPE_* ptr)
   {
     device_ptr = ptr;
   }
+  if (DeviceMemory::isAllocatedOnDevice(ptr))
+    {
+      _TYPE_ *device_ptr_new = static_cast<_TYPE_ *>(DeviceMemory::addrOnDevice(ptr));
+      if (device_ptr != device_ptr_new)
+        {
+          std::cerr << "Provisoire addrOnDevice: " << ptrToString(ptr) << " " << ptrToString(device_ptr) << " "
+                    << ptrToString(device_ptr_new) << std::endl;
+          DeviceMemory::printMemoryMap();
+          Process::exit();
+        }
+    }
   return device_ptr;
+  /* _TYPE_ *device_ptr = DeviceMemory::addrOnDevice(ptr);
+  if (device_ptr==nullptr)
+  {
+      // FATAL ERROR: data in use_device clause was not found on device 1: host:0x3dc75600
+      Cerr << "Error! Device address for host adress " << ptrToString(ptr) << " not found." << finl;
+      Process::exit();
+  }
+  return device_ptr; */
 #else
   return ptr;
 #endif
-  //return DeviceMemory::addrOnDevice(ptr);
 }
 template <typename _TYPE_, typename _SIZE_>
 _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
@@ -195,10 +213,8 @@ _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 template <typename _TYPE_>
 bool isAllocatedOnDevice(_TYPE_* tab_addr)
 {
-  // Routine omp_target_is_present pour existence d'une adresse sur le device
-  // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
 #ifdef _OPENMP_TARGET
-  return omp_target_is_present(tab_addr, omp_get_default_device())==1;
+  return DeviceMemory::isAllocatedOnDevice(tab_addr);
 #else
   return false;
 #endif
@@ -250,14 +266,15 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
           Process::exit();
         }
       #pragma omp target enter data map(alloc:ptr[0:size])
-      DeviceMemory::getMemoryMap()[ptr] = {size, DataLocation::Host, addrOnDevice(ptr)};
-      assert(addrOnDevice(ptr)==DeviceMemory::addrOnDevice(ptr));
+      // Map host_ptr with device_ptr:
+      _TYPE_* device_ptr = addrOnDevice(ptr);
+      DeviceMemory::add(ptr, device_ptr, size);
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
-      Kokkos::View<_TYPE_*> device_ptr(addrOnDevice(ptr), size);
+      Kokkos::View<_TYPE_*> ptr_v(device_ptr, size);
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(const int i)
       {
-        device_ptr(i) = INVALIDE_;
+        ptr_v(i) = INVALIDE_;
       });
       end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 #endif
@@ -303,7 +320,7 @@ void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
       if (clock_on)
         cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
-      if (PE_Groups::get_nb_groups()>0) DeviceMemory::getMemoryMap().erase(ptr);
+      if (PE_Groups::get_nb_groups()>0) DeviceMemory::del(ptr);
     }
 #endif
 }
