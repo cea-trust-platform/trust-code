@@ -64,14 +64,7 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
 // Set MPI processes to devices
 void init_openmp()
 {
-  // ToDo: OMP_TARGET_OFFLOAD=DISABLED equivaut a TRUST_DISABLE_DEVICE=1
-  // donc peut etre supprimer cette derniere variable (qui disable aussi rocALUTION sur GPU dans le code mais pas AmgX encore)...
-  // https://www.openmp.org/spec-html/5.0/openmpse65.html
-  if (init_openmp_ || getenv("TRUST_DISABLE_DEVICE")!=nullptr)
-    return;
-  char const* var = getenv("OMP_TARGET_OFFLOAD");
-  if (var!=nullptr && std::string(var)=="DISABLED")
-    return;
+  if (init_openmp_) return;
   init_openmp_ = true;
   if (getenv("TRUST_CLOCK_ON")!= nullptr) clock_on = true;
   if (getenv("TRUST_DISABLE_TIMER")!= nullptr) timer_on = false;
@@ -98,20 +91,21 @@ void init_openmp()
       Cerr << "Error, no device detected during OpenMP initialization." << finl;
       Process::exit();
     }
+  else if (nDevs>1 && nRanks>nDevs)
+    {
+      // ToDo fix Kokkos:
+      Cerr << "Error!" << finl;
+      Cerr << "You can't use more MPI ranks than available GPU devices per node for the moment !" << finl;
+      Cerr << "Use the same number of MPI ranks than GPU per node." << finl;
+      Cerr << "Or You can force MPI ranks using one device only: CUDA_VISIBLE_DEVICES=0" << finl;
+      Process::exit();
+    }
+  // Setting each MPI rank to a GPU device according to AmgXWrapper:
   int devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
   Cerr << "[OpenMP] Initialization on the device(s):"  << finl;
   cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;
   omp_set_default_device(devID);
 #endif
-  // ToDo Kokkos:
-  if (nDevs>1 && nRanks>nDevs)
-    {
-      Cerr << "Error!" << finl;
-      Cerr << "You can't use more MPI ranks than available  GPU devices per node for the moment !" << finl;
-      Cerr << "Use the same number of MPI ranks than GPU per node." << finl;
-      Cerr << "Or You can force MPI ranks using one device only: CUDA_VISIBLE_DEVICES=0" << finl;
-      Process::exit();
-    }
   Process::imprimer_ram_totale(); // Impression avant copie des donnees sur GPU
 }
 #endif
