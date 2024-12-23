@@ -164,36 +164,13 @@ void init_cuda()
 #endif /* TRUST_USE_CUDA */
 #endif /* LATATOOLS */
 
-// Adress on device (return host adress if no device):
+// Address on device (return host adress if no device):
 template <typename _TYPE_>
 _TYPE_* addrOnDevice(_TYPE_* ptr)
 {
 #ifdef _OPENMP_TARGET
-  _TYPE_ *device_ptr = nullptr;
-  #pragma omp target data use_device_ptr(ptr)
-  {
-    device_ptr = ptr;
-  }
-  if (DeviceMemory::isAllocatedOnDevice(ptr))
-    {
-      _TYPE_ *device_ptr_new = static_cast<_TYPE_ *>(DeviceMemory::addrOnDevice(ptr));
-      if (device_ptr != device_ptr_new)
-        {
-          std::cerr << "Provisoire addrOnDevice: " << ptrToString(ptr) << " " << ptrToString(device_ptr) << " "
-                    << ptrToString(device_ptr_new) << std::endl;
-          DeviceMemory::printMemoryMap();
-          Process::exit();
-        }
-    }
+  _TYPE_ *device_ptr = static_cast<_TYPE_*>(DeviceMemory::addrOnDevice(ptr));
   return device_ptr;
-  /* _TYPE_ *device_ptr = DeviceMemory::addrOnDevice(ptr);
-  if (device_ptr==nullptr)
-  {
-      // FATAL ERROR: data in use_device clause was not found on device 1: host:0x3dc75600
-      Cerr << "Error! Device address for host adress " << ptrToString(ptr) << " not found." << finl;
-      Process::exit();
-  }
-  return device_ptr; */
 #else
   return ptr;
 #endif
@@ -265,9 +242,14 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
           Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
           Process::exit();
         }
+      //_TYPE_* device_ptr = static_cast<_TYPE_*>(Kokkos::kokkos_malloc(bytes));
       #pragma omp target enter data map(alloc:ptr[0:size])
       // Map host_ptr with device_ptr:
-      _TYPE_* device_ptr = addrOnDevice(ptr);
+      _TYPE_ *device_ptr = nullptr;
+      #pragma omp target data use_device_ptr(ptr)
+      {
+        device_ptr = ptr;
+      }
       DeviceMemory::add(ptr, device_ptr, size);
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
@@ -320,7 +302,8 @@ void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
       if (clock_on)
         cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
       #pragma omp target exit data map(delete:ptr[0:size])
-      if (PE_Groups::get_nb_groups()>0) DeviceMemory::del(ptr);
+      //Kokkos::kokkos_free(addrOnDevice(ptr));
+      DeviceMemory::del(ptr);
     }
 #endif
 }

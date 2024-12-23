@@ -63,24 +63,34 @@ bool DeviceMemory::isAllocatedOnDevice(void * ptr)
 }
 
 /** Return the device address of the host ptr
- * Return nullptr if not on the device
+ * Return nullptr if ptr null or map empty
+ * Fatal error if address not found on the device
 */
+#ifndef LATATOOLS
 void* DeviceMemory::addrOnDevice(void * ptr)
 {
-  if (memory_map_.empty())
+  if (ptr==nullptr || memory_map_.empty())
     return nullptr;
-  auto it = memory_map_.find(ptr);
-  if (it != memory_map_.end())
+  int sz;
+  void* device_ptr;
+  void* host_ptr;
+  for (auto it = memory_map_.begin(); it != memory_map_.end(); ++it)
     {
-      int sz;
-      void* device_ptr;
+      host_ptr = it->first;
       std::tie(sz, device_ptr) = it->second;
-      return device_ptr;
+      if (ptr==host_ptr) return device_ptr;
+      else
+        {
+          // Cas de buffer_base (ptr n'est pas forcement l'adresse de debut du bloc memoire...)
+          if (ptr >= host_ptr && ptr < static_cast<char *>(host_ptr) + sz)
+            return static_cast<char *>(device_ptr) + (static_cast<char *>(ptr) - static_cast<char *>(host_ptr));
+        }
     }
-  else
-    {
-      return nullptr;
-    }
+  // Reproduce OpenMP-target spec: FATAL ERROR: data in use_device clause was not found on device 1: host:0x3dc75600
+  Process:: Journal() << "Error! Device address for host address " << ptrToString(ptr) << " not found:" << finl;
+  DeviceMemory::printMemoryMap();
+  Process::exit("Error! Device address for host address not found. See log.");
+  return nullptr;
 }
 
 /** Add a new line to the memory_map_
@@ -88,7 +98,7 @@ void* DeviceMemory::addrOnDevice(void * ptr)
  */
 void DeviceMemory::add(void * ptr, void * device_ptr, int size)
 {
-  if (ptr==nullptr) return;//Process::exit();
+  if (ptr==nullptr) return;
   DeviceMemory::getMemoryMap()[ptr] = {size, device_ptr};
   if (clock_on)
     {
@@ -132,3 +142,4 @@ bool DeviceMemory::warning(trustIdType nb_items)
 {
   return clock_on && nb_pas_dt_>1 && nb_items>=internal_items_size_;
 }
+#endif
