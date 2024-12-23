@@ -242,14 +242,8 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
           Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
           Process::exit();
         }
-      //_TYPE_* device_ptr = static_cast<_TYPE_*>(Kokkos::kokkos_malloc(bytes));
-      #pragma omp target enter data map(alloc:ptr[0:size])
+      _TYPE_* device_ptr = static_cast<_TYPE_*>(Kokkos::kokkos_malloc(bytes));
       // Map host_ptr with device_ptr:
-      _TYPE_ *device_ptr = nullptr;
-      #pragma omp target data use_device_ptr(ptr)
-      {
-        device_ptr = ptr;
-      }
       DeviceMemory::add(ptr, device_ptr, size);
 #ifndef NDEBUG
       static const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
@@ -301,8 +295,7 @@ void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
       _SIZE_ bytes = sizeof(_TYPE_) * size;
       if (clock_on)
         cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
-      #pragma omp target exit data map(delete:ptr[0:size])
-      //Kokkos::kokkos_free(addrOnDevice(ptr));
+      Kokkos::kokkos_free(addrOnDevice(ptr));
       DeviceMemory::del(ptr);
     }
 #endif

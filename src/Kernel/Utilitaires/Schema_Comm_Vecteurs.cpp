@@ -52,8 +52,11 @@ void Schema_Comm_Vecteurs_Static_Data::init(int min_buf_size, bool bufferOnDevic
   // Le buffer global a-t-il une taille suffisante ?
   if (buffer_base_size_ < min_buf_size)
     {
-      if (buffer_base_device_size_>0)
-        deleteOnDevice(buffer_base_, buffer_base_device_size_);
+      if (buffer_base_device_size_ > 0)
+        {
+          deleteOnDevice(buffer_base_, buffer_base_device_size_);
+          buffer_base_device_size_ = 0;
+        }
       delete [] buffer_base_;
       buffer_base_ = new char[min_buf_size];
       // GF ajout de la mise a zero pour mpiwrapper valgrind mais est ce util ?
