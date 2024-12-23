@@ -683,6 +683,7 @@ then
       OPT=`basename $exec` && OPT=${OPT#$name} && cd $project_directory/build/src/exec$OPT || exit -1
       rep_tests=build/src/exec$OPT
    fi
+   [ "$TRUST_USE_GPU" = 1 ] && rm -rf Testing # Don't run slow tests first on GPU. Faster.
    cmake .
    ctest -j$TRUST_NB_PHYSICAL_CORES --output-on-failure $CTEST_OPTS
    err_ctest=$?
