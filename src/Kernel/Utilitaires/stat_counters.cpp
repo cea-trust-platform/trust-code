@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,6 +83,7 @@ Stat_Counter_Id probleme_combustible_;
 
 Stat_Counter_Id gpu_copytodevice_counter_;
 Stat_Counter_Id gpu_copyfromdevice_counter_;
+Stat_Counter_Id gpu_mallocfree_counter_;
 Stat_Counter_Id gpu_library_counter_;
 Stat_Counter_Id gpu_kernel_counter_;
 
@@ -186,6 +187,7 @@ void declare_stat_counters()
   gpu_kernel_counter_         = statistiques().new_counter(2, "GPU_kernel",        "GPU_kernel", 0);
   gpu_copytodevice_counter_   = statistiques().new_counter(2, "GPU_copyToDevice",  "GPU_copy", 0);
   gpu_copyfromdevice_counter_ = statistiques().new_counter(2, "GPU_copyFromDevice","GPU_copy", 0);
+  gpu_mallocfree_counter_     = statistiques().new_counter(2, "GPU_allocations"   ,"GPU_alloc", 0);
 
   // Compte le temps d'ecriture dans EcrireFicPartageXXX (gros volumes de donnees dans fichiers XYZ ou LATA)
   // quantity = nombre d'octets ecrits
@@ -308,6 +310,7 @@ void print_statistics_analyse(const char * message, int mode_append)
   Stat_Results IO_seq, IO_par;
   Stat_Results gpu_copytodevice;
   Stat_Results gpu_copyfromdevice;
+  Stat_Results gpu_alloc;
   Stat_Results gpu_library;
   Stat_Results gpu_kernel;
 
@@ -370,6 +373,7 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(IO_EcrireFicPartageMPIIO_counter_, IO_par);
       statistiques().get_stats(gpu_copytodevice_counter_, gpu_copytodevice);
       statistiques().get_stats(gpu_copyfromdevice_counter_, gpu_copyfromdevice);
+      statistiques().get_stats(gpu_mallocfree_counter_, gpu_alloc);
       statistiques().get_stats(gpu_library_counter_, gpu_library);
       statistiques().get_stats(gpu_kernel_counter_, gpu_kernel);
 
@@ -560,14 +564,15 @@ void print_statistics_analyse(const char * message, int mode_append)
           if (gpu_copytodevice.max_count > 0)
             {
               stat_file << "GPU statistics per time step (experimental):" << finl;
-              double ratio_gpu_library = write_gpu_stat_file("Libraries:", gpu_library, pas_de_temps, stat_file);
-              double ratio_gpu_kernel  = write_gpu_stat_file("Kernels  :", gpu_kernel, pas_de_temps, stat_file);
+              double ratio_gpu_library = write_gpu_stat_file("Libraries :", gpu_library, pas_de_temps, stat_file);
+              double ratio_gpu_kernel  = write_gpu_stat_file("Kernels   :", gpu_kernel, pas_de_temps, stat_file);
               double ratio_gpu  = ratio_gpu_library + ratio_gpu_kernel;
-              double ratio_copy = write_gpu_stat_file("Copy H2D :", gpu_copytodevice, pas_de_temps, stat_file);
-              ratio_copy += write_gpu_stat_file("Copy D2H :", gpu_copyfromdevice, pas_de_temps, stat_file);
+              double ratio_copy = write_gpu_stat_file("Copy H2D  :", gpu_copytodevice, pas_de_temps, stat_file);
+              ratio_copy += write_gpu_stat_file("Copy D2H  :", gpu_copyfromdevice, pas_de_temps, stat_file);
+              double ratio_alloc = write_gpu_stat_file("Alloc/Free:", gpu_alloc, pas_de_temps, stat_file);
               double ratio_comm = 100. * (comm_sendrecv.avg_time + comm_allreduce.avg_time) / pas_de_temps.max_time;
-              double ratio_cpu = 100 - ratio_gpu - ratio_copy - ratio_comm;
-              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% Comm: " << 0.1*int(10*ratio_comm) << "% CPU & Others: " << 0.1*int(10*ratio_cpu) << "%" << finl;
+              double ratio_cpu = 100 - ratio_gpu - ratio_copy - ratio_alloc - ratio_comm;
+              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% Alloc/Free: " << 0.1*int(10*ratio_alloc) << "% Comm: " << 0.1*int(10*ratio_comm) << "% CPU & Others: " << 0.1*int(10*ratio_cpu) << "%" << finl;
               if (0.1*int(10*ratio_gpu)<50)
                 {
                   Cerr << "==============================================================================================" << finl;

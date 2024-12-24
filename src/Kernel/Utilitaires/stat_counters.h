@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,6 +71,7 @@ extern Stat_Counter_Id probleme_combustible_;
 
 extern Stat_Counter_Id gpu_copytodevice_counter_;
 extern Stat_Counter_Id gpu_copyfromdevice_counter_;
+extern Stat_Counter_Id gpu_mallocfree_counter_;
 extern Stat_Counter_Id gpu_library_counter_;
 extern Stat_Counter_Id gpu_kernel_counter_;
 
