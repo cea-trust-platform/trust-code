@@ -1,6 +1,6 @@
 # PARALLEL OK #
 # Quasi compressible test case on GPU with still a lot of D2H copies: #
-# copyToDevice 11 #
+# copyToDevice 9 #
 dimension 3
 Pb_thermohydraulique_Turbulent pb1
 Domaine dom

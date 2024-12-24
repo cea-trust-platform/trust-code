@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -189,7 +189,8 @@ inline void TRUSTVect<_TYPE_,_SIZE_>::copy_(const TRUSTVect& v, RESIZE_OPTIONS o
   assert((!md_vector_.non_nul()) || (md_vector_ == v.md_vector_));
 #endif
   TRUSTArray<_TYPE_,_SIZE_>::resize_array_(v.size_array(), RESIZE_OPTIONS::NOCOPY_NOINIT);
-  if (v.isDataOnDevice()) allocateOnDevice(*this); // Alloue de la memoire sur le device si v est deja alloue sur le device
+  if (v.isDataOnDevice() && !isAllocatedOnDevice(*this))
+    allocateOnDevice(*this); // Alloue de la memoire sur le device si v est deja alloue sur le device
   if (opt != RESIZE_OPTIONS::NOCOPY_NOINIT)
     TRUSTArray<_TYPE_,_SIZE_>::inject_array(v);
   md_vector_ = v.md_vector_; // Pour le cas ou md_vector_ est nul et pas v.md_vector_
