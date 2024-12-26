@@ -1,28 +1,19 @@
+#!/bin/bash
 rm -f kernels 
 # -gpu=loadcache:L1|L2s
 # -gpu=ccnative
 # Aucun effet (meme O3 !) sur le device...
 KOKKOS_INC="-I$TRUST_KOKKOS_ROOT/linux_opt/include"
 KOKKOS_LIB="-L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore"
-[ "$TRUST_USE_CUDA" = 1 ] && OPENMP="-fopenmp -mp=gpu -cuda -L$CUDA_ROOT/lib64/stubs -lcuda"
-[ "$TRUST_USE_ROCM" = 1 ] && OPENMP="-fopenmp -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=$ROCM_ARCH"
 if [ "$TRUST_USE_KOKKOS_HIP" = 1  ]
 then
-   # Mix OpenMP target and HIP code with separate compilation units:
-
-   # Build OpenMP code with crayCC:
-   $TRUST_CC_BASE -g -O3 -std=c++17 $OPENMP -c kernels_omp_only.cpp || exit -1
-
    # Build HIP code with hipcc or (crayCC -xhip):
-   HIP="-xhip --offload-arch=$ROCM_ARCH"
-   $TRUST_CC_BASE -g -O3 -std=c++17 $HIP $KOKKOS_INC -c kernels_hip_only.cpp || exit -1
-
-   # Link with crayCC:
-   HIP_LIB="-L$ROCM_PATH/lib -lamdhip64 -ldl"
-   $TRUST_CC_BASE $OPENMP -o kernels kernels_hip_only.o kernels_omp_only.o $KOKKOS_LIB $HIP_LIB
+   HIP="hipcc -xhip --offload-arch=$ROCM_ARCH -march=$ROCM_ARCH"
+   time $HIP -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB || exit -1
 else
    # Mix OpenMP target and Kokkos in the same file:
-   $TRUST_CC -g -O3 -std=c++17 $OPENMP $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB || exit -1
+   NVCPP="nvc++ -cuda -L$CUDA_ROOT/lib64/stubs -lcuda"
+   time $NVCPP -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB || exit -1
 fi
 echo "Build OK"
 rm -f *nsys-rep
