@@ -28,7 +28,6 @@
 #endif
 #endif
 #ifdef _OPENMP_TARGET
-#include <omp.h>
 #ifdef TRUST_USE_CUDA
 #include <nvtx3/nvToolsExt.h>
 #endif
@@ -37,12 +36,12 @@
 #endif
 
 // TODO - scope all this, global vars are bad.
-extern bool init_openmp_, clock_on, timer_on;
+extern bool init_device_, clock_on, timer_on;
 extern double clock_start;
 extern int timer_counter;
 
 void self_test();
-void init_openmp();
+void init_device();
 void init_cuda();
 std::string ptrToString(const void* adr);
 
@@ -81,7 +80,7 @@ inline const std::string methodName(const std::string& prettyFunction, const int
 inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 {
 #ifdef _OPENMP_TARGET
-  if (init_openmp_ && timer_on)
+  if (init_device_ && timer_on)
     {
       timer_counter++;
 #ifndef NDEBUG
@@ -102,7 +101,7 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
 {
 #ifdef _OPENMP_TARGET
-  if (init_openmp_ && timer_on)
+  if (init_device_ && timer_on)
     {
       timer_counter--;
 #ifndef NDEBUG

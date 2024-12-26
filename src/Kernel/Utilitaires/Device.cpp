@@ -22,13 +22,12 @@
 #include <map>
 #include <tuple>
 #include <kokkos++.h>
-
 #ifndef LATATOOLS
 #include <comm_incl.h>
 #include <Comm_Group_MPI.h>
 #endif
 
-bool init_openmp_ = false;
+bool init_device_ = false;
 bool clock_on = false;
 bool timer_on = true;
 double clock_start;
@@ -61,51 +60,12 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
 
 
 #ifdef _OPENMP_TARGET
-// Set MPI processes to devices
-void init_openmp()
+void init_device()
 {
-  if (init_openmp_) return;
-  init_openmp_ = true;
+  if (init_device_) return;
+  init_device_ = true;
   if (getenv("TRUST_CLOCK_ON")!= nullptr) clock_on = true;
   if (getenv("TRUST_DISABLE_TIMER")!= nullptr) timer_on = false;
-#ifdef MPI_
-  MPI_Comm localWorld;
-  MPI_Comm globalWorld;
-  if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
-    globalWorld = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
-  else
-    globalWorld = MPI_COMM_WORLD;
-  MPI_Comm_split_type(globalWorld, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &localWorld);
-  True_int rank; // Local rank
-  MPI_Comm_rank(localWorld, &rank);
-  True_int nRanks; // Local number of ranks
-  MPI_Comm_size(localWorld, &nRanks);
-  // Node name:
-  True_int len;
-  char name[MPI_MAX_PROCESSOR_NAME];
-  MPI_Get_processor_name(name, &len);
-  std::string nodeName = name;
-  int nDevs = omp_get_num_devices(); // Local number of devices
-  if (nDevs==0)
-    {
-      Cerr << "Error, no device detected during OpenMP initialization." << finl;
-      Process::exit();
-    }
-  else if (nDevs>1 && nRanks>nDevs)
-    {
-      // ToDo fix Kokkos:
-      Cerr << "Error!" << finl;
-      Cerr << "You can't use more MPI ranks than available GPU devices per node for the moment !" << finl;
-      Cerr << "Use the same number of MPI ranks than GPU per node." << finl;
-      Cerr << "Or You can force MPI ranks using one device only: CUDA_VISIBLE_DEVICES=0" << finl;
-      Process::exit();
-    }
-  // Setting each MPI rank to a GPU device according to AmgXWrapper:
-  int devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
-  Cerr << "[OpenMP] Initialization on the device(s):"  << finl;
-  cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;
-  omp_set_default_device(devID);
-#endif
   Process::imprimer_ram_totale(); // Impression avant copie des donnees sur GPU
 }
 #endif
@@ -269,7 +229,7 @@ void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
   if (Objet_U::computeOnDevice)
     {
       _TYPE_ *tab_addr = tab.data();
-      if (init_openmp_ && tab_addr && isAllocatedOnDevice(tab))
+      if (init_device_ && tab_addr && isAllocatedOnDevice(tab))
         {
           deleteOnDevice(tab_addr, tab.size_mem());
           tab.set_data_location(DataLocation::HostOnly);

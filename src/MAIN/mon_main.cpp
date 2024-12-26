@@ -136,13 +136,6 @@ static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 #endif
 }
 
-// ToDo move to Device.cpp
-void init_kokkos(int argc, char **argv)
-{
-  True_int argc2 = argc;
-  Kokkos::initialize(argc2, argv);
-}
-
 ///////////////////////////////////////////////////////////
 // Desormais Petsc/MPI_Initialize et Petsc/MPI_Finalize
 // sont dans un seul fichier: mon_main
@@ -155,7 +148,8 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
   if (init_kokkos_before_mpi)
     {
       // Kokkos initialization
-      init_kokkos(argc, argv);
+      True_int argc2 = argc;
+      Kokkos::initialize(argc2, argv);
     }
   Nom arguments_info="";
   arguments_info +="Kokkos initialized!\n";
@@ -220,7 +214,8 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
   if (!init_kokkos_before_mpi)
     {
       // Kokkos initialization
-      init_kokkos(argc, argv);
+      True_int argc2 = argc;
+      Kokkos::initialize(argc2, argv);
       if (Process::je_suis_maitre())
         Cerr << "Kokkos initialized after MPI !" << finl;
     }
@@ -339,7 +334,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
 #ifdef _OPENMP_TARGET
   // PL: It will be better to do it sooner (near Cuda init or Kokkos init) but need stat and journal initialized
   // Soon obsolete:
-  init_openmp();
+  init_device();
   self_test();
 #endif
 
