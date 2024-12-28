@@ -1,0 +1,50 @@
+Statistiques d'initialisation du calcul
+
+Temps total                       60.3014
+
+Statistiques de resolution du probleme
+
+Temps total                       5.76268
+
+
+Timesteps                         10
+Secondes / pas de temps           0.576265
+Dont solveurs Ax=B                0.300940 52% (1 appel/pas de temps)
+Dont mettre_a_jour                0.023816  4% (1 appel/pas de temps)
+Dont operateurs convection        0.054178  9% (1 appel/pas de temps)
+Dont operateurs diffusion         0.009570  1% (1 appel/pas de temps)
+Dont operateurs gradient          0.021475  3% (2 appels/pas de temps)
+Dont operateurs divergence        0.013706  2% (2 appels/pas de temps)
+Dont operations postraitement     0.109575 19% (1 appel/pas de temps)
+Dont calcul dt                    0.009710  1% (2 appels/pas de temps)
+Dont calcul divers                0.033294  5% (0 appels/pas de temps)
+Nb solveur / pas de temps         1
+Secondes / solveur                0.30094
+Iterations / solveur              53.4
+GPU statistics per time step (experimental):
+Libraries : 0.300592 s 52.2%  1.0 calls
+Kernels   : 0.129879 s 22.5% 116.7 calls
+Copy H2D  : 0.006000 s  1.0% 15.8 calls 12.7 GB/s
+Copy D2H  : 0.022249 s  3.9% 19.1 calls  9.9 GB/s
+Alloc/Free: 0.000181 s  0.0%  1.4 calls
+GPU: 74.7% Copy H<->D: 4.9% Alloc/Free: 0% Comm: 0% CPU & Others: 20.3%
+I/O:
+
+Timesteps = number of time steps
+Nb solveur = number of linear system resolutions
+Nb assemblage implicite = number of matrix assemblies for the implicit scheme
+Iterations = average number of iterations of the solver
+Communications = fraction of the time spent
+                 in communications between processors (excluding io files)
+Network latency = time of one mpsum measured by an internal bench over 0.1s
+Network bandwidth = maximum on all processors
+                    of the average bandwidth of send_recv operations
+Waiting time = estimation of the waiting time of the different processors
+
+Max_waiting_time big    => probably due to a bad partitioning
+Communications > 30%    => too many processors or network too slow
+
+Statistiques de post resolution
+
+Temps total                       0.057927
+
