@@ -28,7 +28,8 @@
 #include <TRUSTArray.h>
 
 class StringTokenizer;
-
+// FUNCTION start at 1, cause 0 is needed
+enum FUNCTION { SIN=1, ASIN, COS, ACOS, TAN, ATAN, LN, EXP, SQRT, ENT, ERF, RND, COSH,  SINH, TANH, ATANH, NOT, ABS, SGN };
 /*! @brief Representation des donnees de la classe Parser
  *
  * @sa =
@@ -140,8 +141,8 @@ protected:
         return 0;
       }
   }
-  KOKKOS_FUNCTION double evalOp(const PNodePod&, double x, double y);
-  KOKKOS_FUNCTION double evalFunc(const PNodePod&, double x);
+  KOKKOS_INLINE_FUNCTION double evalOp(const PNodePod& node, double x, double y);
+  KOKKOS_INLINE_FUNCTION double evalFunc(const PNodePod& node, double x);
   void parserState0(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState1(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState2(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
@@ -173,4 +174,143 @@ inline int Parser::searchVar(const char * sv)
   return les_var_names.rang(s.c_str());
 }
 
+KOKKOS_INLINE_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
+{
+  /* OC : Nouvelle version : */
+  if (node.value<=0)
+    {
+      True_int unary_function = -node.value-1; // OC attention, dans node->value c est l'oppose de l'indice de la func dans la liste
+      // afin de distinguer operateur binaire (>0) et fonctions unaires (<0>
+      // Il est donc necessaire de prendre -node->value ici pour referencer un element de la liste
+      // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
+      switch (unary_function)
+        {
+        case SIN:
+          return sin(x);
+        case ASIN:
+          return asin(x);
+        case COS:
+          return cos(x);
+        case ACOS:
+          return acos(x);
+        case TAN:
+          return tan(x);
+        case ATAN:
+          return atan(x);
+        case LN:
+          if (x <= 0)
+            Process::Kokkos_exit("Negative value x for LN(x) function used.\nCheck your data file.");
+          return log(x);
+        case EXP:
+          return exp(x);
+        case SQRT:
+          if (x < 0)
+            Process::Kokkos_exit("Negative value x for SQRT(x) function used.\nCheck your data file.");
+          return sqrt(x);
+        case ENT:
+          return (int) x;
+        case ERF:
+#ifndef MICROSOFT
+          return erf(x);
+#else
+          Process::exit("erf(x) fonction not implemented on Windows version.");
+          return eval(x);
+#endif
+        case RND:
+#ifdef _OPENMP_TARGET
+          // ToDo Kokkos: cuRAND and hipRAND
+          Process::Kokkos_exit("Rnd function is not available yet for TRUST GPU version.");
+          return 0;
+#else
+          return x*drand48();
+#endif
+        case COSH:
+          return cosh(x);
+        case SINH:
+          return sinh(x);
+        case TANH:
+          return tanh(x);
+        case ATANH:
+          return atanh(x);
+        case NOT:
+          if (x == 0) return 1;
+          else return 0;
+        case ABS:
+          return std::fabs(x);
+        case SGN:
+          return (x > 0) - (x < 0);
+        default:
+          Process::Kokkos_exit("method evalFunc : Unknown function for this node !!!");
+          return 0;
+        }
+    }
+  else
+    {
+      Process::Kokkos_exit("method evalFunc : Unknown func !!!");
+      return -1;
+    }
+}
+
+// Ne pas inliner car sinon Parser::eval(PNode* node) plus souvent appelee encore
+// ne sera peut etre pas inlinee...
+KOKKOS_INLINE_FUNCTION
+double Parser::evalOp(const PNodePod& node, double x, double y)
+{
+  switch (node.value)
+    {
+    case 0: // ADD
+      return x + y;
+    case 1: // SUBTRACT
+      return  x - y;
+    case 2: // MULTIPLY
+      return x * y;
+    case 3: // DIVIDE
+      if (y==0)
+        {
+          Process::Kokkos_exit("Error in the Parser: x/y calculated with y equals 0. You are using a formulae with a division per 0.");
+        }
+      return x/y;
+    case 4: // POWER
+      if (y != (int)(y) && x<0)
+        {
+#ifdef _OPENMP_TARGET
+          Process::Kokkos_exit("Error in the Parser: x^y calculated with negative value for x !");
+#else
+          Cerr << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )" << finl;
+          Process::exit();
+#endif
+        }
+      return pow(x,y);
+    case 5: // LT
+      return (x<y)?1:0;
+    case 6: // GT
+      return (x>y)?1:0;
+    case 7: // LE
+      return (x<=y)?1:0;
+    case 8: // GE
+      return (x>=y)?1:0;
+    case 9: // MOD
+      return ((int)(x))%((int)(y));
+    case 10: // MAX
+      return (x>y)?x:y;
+    case 11: // MIN
+      return (x<y)?x:y;
+    case 12: // AND
+      return x && y;
+    case 13: // OR
+      return x || y;
+    case 14: // EQ
+      return (x == y);
+    case 15: // NEQ
+      return (x != y);
+    default:
+#ifdef _OPENMP_TARGET
+      Process::Kokkos_exit("Method evalOp : Unknown operation during expression parsing!");
+#else
+      Cerr << "Method evalOp : Unknown op " << (True_int)node.value << "!!!" << finl;
+      Process::exit();
+#endif
+      return 0;
+    }
+}
 #endif

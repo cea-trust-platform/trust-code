@@ -105,7 +105,6 @@ Nom::Nom(long i)
 
 Nom::Nom(long long i)
 {
-  nb_noms++;
   nom_ = "";
   // 22 caracteres suffisent pour stocker n'importe quel entier long long
   char chaine[22];
@@ -203,7 +202,6 @@ int Nom::longueur() const
  * Modif BM pour que nom puisse pointer sur une sous-partie de nom_
  *
  */
-KOKKOS_FUNCTION
 Nom& Nom::operator=(const char* const nom)
 {
   nom_=nom;
@@ -215,7 +213,6 @@ Nom& Nom::operator=(const char* const nom)
  * @param (const Nom& nom) le nom a copier
  * @return (Nom&) reference sur this qui represente la chaine du Nom nom
  */
-KOKKOS_FUNCTION
 Nom& Nom::operator=(const Nom& nom)
 {
   nom_ = nom.nom_;
@@ -522,18 +519,15 @@ Nom::operator const char*() const
  * @param (const char* const un_autre)
  * @return (int) 1 si les noms sont egaux, 0 sinon
  */
-KOKKOS_FUNCTION
 int operator ==(const Nom& un_nom, const char* const un_autre)
 {
   int res_actu=(un_nom.nom_.compare(un_autre)==0);
   return res_actu;
 }
-KOKKOS_FUNCTION
 int operator ==(const Nom& un_nom, const Nom& un_autre)
 {
   return (un_nom==un_autre.getChar());
 }
-KOKKOS_FUNCTION
 int operator ==(const char* const un_autre, const Nom& un_nom)
 {
   return (un_nom == un_autre);

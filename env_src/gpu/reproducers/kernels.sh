@@ -5,11 +5,13 @@ rm -f kernels
 # Aucun effet (meme O3 !) sur le device...
 KOKKOS_INC="-I$TRUST_KOKKOS_ROOT/linux_opt/include"
 KOKKOS_LIB="-L$TRUST_KOKKOS_ROOT/linux_opt/lib64 -lkokkoscontainers -lkokkoscore"
-if [ "$TRUST_USE_KOKKOS_HIP" = 1  ]
+if [ "$ROCM_PATH" != ""  ]
 then
-   # Build HIP code with hipcc or (crayCC -xhip):
-   HIP="hipcc -xhip --offload-arch=$ROCM_ARCH -march=$ROCM_ARCH"
-   time $HIP -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB || exit -1
+   # Build HIP code with hipcc:
+   HIP="hipcc --offload-arch=$ROCM_ARCH" # -march=$ROCM_ARCH"
+   cmd="$HIP -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB -ldl"
+   echo $cmd
+   time eval $cmd || exit -1
 else
    # Mix OpenMP target and Kokkos in the same file:
    NVCPP="nvc++ -cuda -L$CUDA_ROOT/lib64/stubs -lcuda"

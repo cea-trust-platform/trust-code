@@ -262,17 +262,18 @@ int Process::check_int_overflow(trustIdType v)
 /*! @brief Routine de sortie de TRUST dans une region Kokkos
  *
  */
+/*
 KOKKOS_FUNCTION
 void Process::Kokkos_exit(const char* str)
 {
 #ifdef _OPENMP_TARGET
-  // ToDo Kokkos: try to exit more properly on device...
-  Kokkos::abort(str);
-  //Kokkos::finalize();
+ // ToDo Kokkos: try to exit more properly on device...
+ Kokkos::abort(str);
+ //Kokkos::finalize();
 #else
     Process::exit(str);
 #endif
-}
+}*/
 
 /*! @brief Routine de sortie de TRUST sur une erreur.
  *

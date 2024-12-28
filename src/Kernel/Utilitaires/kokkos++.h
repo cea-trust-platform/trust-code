@@ -27,7 +27,7 @@
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
-#if defined(NO_HIP) || defined(LATATOOLS)
+#if defined(LATATOOLS)
 #undef KOKKOS
 #define KOKKOS_FUNCTION
 #define KOKKOS_INLINE_FUNCTION inline

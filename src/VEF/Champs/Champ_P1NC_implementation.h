@@ -36,12 +36,12 @@ public:
 
   int fixer_nb_valeurs_nodales(int);
 
-  KOKKOS_INLINE_FUNCTION double fonction_forme_2D(double x, double y, int le_poly, int face, CIntTabView sommet_poly, CDoubleTabView coord) const
+  KOKKOS_INLINE_FUNCTION double fonction_forme_2D_v(double x, double y, int le_poly, int face, CIntTabView sommet_poly, CDoubleTabView coord) const
   {
     return 1 - 2 * coord_barycentrique_P1_triangle(sommet_poly, coord, x, y, le_poly, face);
   }
 
-  KOKKOS_INLINE_FUNCTION double fonction_forme_3D(double x, double y, double z, int le_poly, int face, CIntTabView sommet_poly, CDoubleTabView coord) const
+  KOKKOS_INLINE_FUNCTION double fonction_forme_3D_v(double x, double y, double z, int le_poly, int face, CIntTabView sommet_poly, CDoubleTabView coord) const
   {
     return 1 - 3 * coord_barycentrique_P1_tetraedre(sommet_poly, coord, x, y, z, le_poly, face);
   }

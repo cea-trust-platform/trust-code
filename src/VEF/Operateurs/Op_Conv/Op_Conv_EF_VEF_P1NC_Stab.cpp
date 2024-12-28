@@ -234,11 +234,7 @@ KOKKOS_INLINE_FUNCTION double formule_2D(int n)
     case 2:
       return 1.;
     default:
-#ifndef NO_HIP
-      Kokkos::abort("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D() ");
-#else
-      Process::exit("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D() ");
-#endif
+      Process::Kokkos_exit("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_2D() ");
     }
   return 0.;
 }
@@ -256,11 +252,7 @@ KOKKOS_INLINE_FUNCTION double formule_3D(int n)
     case 3:
       return 1.;
     default:
-#ifndef NO_HIP
-      Kokkos::abort("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D() ");
-#else
-      Process::exit("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D() ");
-#endif
+      Process::Kokkos_exit("Erreur Op_Conv_EF_VEF_P1NC_Stab::formule_3D() ");
     }
   return 0.;
 }

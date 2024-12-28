@@ -12,13 +12,15 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
+   if [ "$TRUST_USE_ROCM" = 1 ]
    then
       # Compilateur crayCC
       module="craype-x86-trento craype-network-ofi PrgEnv-cray/8.5.0 rocm/5.7.1 craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
       #module=$module" cce/15.0.1" # 16.0.0 has an issue with crayftn (ToDo contact support)
       # Compilateur amdclang
       #module="craype-x86-trento craype-network-ofi PrgEnv-amd/8.5.0 rocm/5.7.1 craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
+      # Compilateur hipcc
+      module="PrgEnv-gnu/8.5.0"
    else
       # Compilateur GNU
       #module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0" used for first 1.9.3 install

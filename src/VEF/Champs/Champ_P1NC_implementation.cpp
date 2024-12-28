@@ -1424,7 +1424,7 @@ valeur_aux_elems(const DoubleTab& positions,
               {
                 int face = elem_faces_v(le_poly, i);
                 val_v(rang_poly, ncomp) += ch_v(face, ncomp) *
-                                           ((D == 2) ? fonction_forme_2D(xs, ys, le_poly, i, sommet_poly_v, coord_v) : fonction_forme_3D(xs, ys, zs, le_poly, i, sommet_poly_v, coord_v));
+                                           ((D == 2) ? fonction_forme_2D_v(xs, ys, le_poly, i, sommet_poly_v, coord_v) : fonction_forme_3D_v(xs, ys, zs, le_poly, i, sommet_poly_v, coord_v));
               }
           }
       }

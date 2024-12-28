@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) GPU          : Performance regression on adastra fixed by using HIP backend for Kokkos
 XX/XX/24 (TRUST) GPU          : Jean-Zay a100 partition is supported
 XX/XX/24 (TRUST) Change       : Parser rewrite can create different initialization for random fields (Champ_front_bruite, ...) or advanced fields using Rnd function
 XX/XX/24 (TRUST) Change       : y+ field were possibly wrong on tetraedra/triangle with more than one boundary face

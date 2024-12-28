@@ -21,9 +21,9 @@
 #include <stat_counters.h>
 #include <kokkos++.h>
 
-#if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
 // Use our own macro _OPENMP_TARGET instead of _OPENMP to differentiate from host OpenMP backend
-#if defined(_OPENMP)
+#if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
+#ifndef LATATOOLS
 #define _OPENMP_TARGET
 #endif
 #endif

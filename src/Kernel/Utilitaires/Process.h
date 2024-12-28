@@ -22,6 +22,8 @@
 #ifdef LATATOOLS
 #include <string>
 #include <stdlib.h>
+#else
+#include <kokkos++.h>
 #endif
 
 class Objet_U;
@@ -113,7 +115,7 @@ public:
   static int check_int_overflow(trustIdType);
 
   static int je_suis_maitre();
-  static void Kokkos_exit(const char*);
+  KOKKOS_INLINE_FUNCTION static void Kokkos_exit(const char*);
   static void exit(const Nom& message, int exit_code = -1);
   static bool is_sequential(); // serial ?
   static void barrier();
@@ -127,6 +129,22 @@ public:
   static bool force_single_file(const int ranks, const Nom& filename);
 #endif
 };
+
+/*! @brief Routine de sortie de TRUST dans une region Kokkos
+ *
+ */
+#ifndef LATATOOLS
+KOKKOS_INLINE_FUNCTION void Process::Kokkos_exit(const char* str)
+{
+#ifdef KOKKOS
+  // ToDo Kokkos: try to exit more properly on device...
+  Kokkos::abort(str);
+  //Kokkos::finalize();
+#else
+  Process::exit(str);
+#endif
+}
+#endif
 
 #endif /* Process_included */
 

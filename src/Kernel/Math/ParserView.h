@@ -66,8 +66,8 @@ public:
   /**
   * Token: get a unic threadId to fill safely les_var_view
   */
-  int acquire() const { return token.acquire(); }
-  void release(int threadId) const { token.release(threadId); }
+  KOKKOS_INLINE_FUNCTION int acquire() const { return token.acquire(); }
+  KOKKOS_INLINE_FUNCTION void release(int threadId) const { token.release(threadId); }
 private:
   Kokkos::Experimental::UniqueToken<Kokkos::DefaultExecutionSpace> token;
   Kokkos::View<double**> les_var_view;

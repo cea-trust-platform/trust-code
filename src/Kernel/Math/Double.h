@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,8 +70,11 @@
 /*! @brief : fonctions utiles sur les double
  *
  */
+#ifdef LATATOOLS
+#define KOKKOS_INLINE_FUNCTION inline
+#endif
 
-inline double carre(double x) { return x*x; }
+KOKKOS_INLINE_FUNCTION double carre(double x) { return x*x; }
 
 inline double* prodvect(const double* a, const double* b, double* resu)
 {

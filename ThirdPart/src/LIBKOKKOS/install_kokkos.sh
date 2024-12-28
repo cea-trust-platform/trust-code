@@ -39,9 +39,12 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
         rm -rf BUILD
         mkdir -p BUILD
         cd BUILD
-        if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "$TRUST_USE_CUDA" = 1 ]
+        if [ "$TRUST_USE_CUDA" = 1 ]
         then
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP"
+        elif [ "$TRUST_USE_ROCM" = 1 ]
+        then
+           CMAKE_OPT="-DCMAKE_CXX_COMPILER=hipcc"
         else
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
            # To use nvc++ as device compiler (nvcc ~ nvc++ -gpu):
@@ -72,14 +75,8 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
-           if [ "$TRUST_USE_KOKKOS_HIP" = 1 ]
-           then
-              CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON"
-              #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS" # faster but slow build
-           else
-              # Impossible de mixer HIP et OpenMP dans une meme translation unit, on utilise le backend OPENMPTARGET:
-              CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMPTARGET=ON" # Slow on MI250
-           fi
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON"
+           #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON" # faster but slow build (nb: no gain on kernels.sh with gfx1100)
            CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_STANDARD=17"
            [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
         fi
