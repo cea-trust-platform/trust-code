@@ -6,12 +6,12 @@ unset TRUST_USE_MPI_GPU_AWARE
 benchs="gpu cpu"              && mpis_gpu="2 16"          && mpis_cpu="8 64"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc
 if [ "$HOST" = adastra ]
 then
-   [ "$TRUST_USE_ROCM" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AMD        && TRUST_USE_MPI_GPU_AWARE=On
+   [ "$TRUST_USE_ROCM" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AMD        && TRUST_USE_MPI_GPU_AWARE=1
    [ "$TRUST_USE_ROCM" != 1 ] && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_cpu=BENCH_CPU
 fi
 if [ "$HOST" = topaze ]
 then
-   [ "$TRUST_USE_CUDA" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_NVIDIA     && TRUST_USE_MPI_GPU_AWARE=On
+   [ "$TRUST_USE_CUDA" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_NVIDIA     && TRUST_USE_MPI_GPU_AWARE=1
    [ "$TRUST_USE_CUDA" != 1 ] && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_cpu=BENCH_CPU
 fi
 [ "$HOST" = jean-zay ]        && benchs="gpu"             && mpis_gpu="2 16 128 512"      && int="_int64" && jdd_gpu=BENCH_NVIDIA

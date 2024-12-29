@@ -47,7 +47,7 @@ std::string ptrToString(const void* adr);
 
 #ifdef _OPENMP_TARGET
 #define ToDo_Kokkos(str)                              \
-        fprintf(stderr, "[Kokkos %s] Warning, code running slow cause not ported yet: line %d in %s \n", str, __LINE__, __FILE__);
+        if (Process::je_suis_maitre()) fprintf(stderr, "[Kokkos %s] Warning, code running slow cause not ported yet: line %d in %s \n", str, __LINE__, __FILE__);
 #else
 #define ToDo_Kokkos(str)
 #endif

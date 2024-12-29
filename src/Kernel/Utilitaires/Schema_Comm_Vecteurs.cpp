@@ -88,9 +88,9 @@ Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
 {
   status_ = RESET;
   use_gpu_aware_mpi_ = getenv("TRUST_USE_MPI_GPU_AWARE") != nullptr;
-  if (use_gpu_aware_mpi_ && PE_Groups::get_nb_groups())
+  if (use_gpu_aware_mpi_) // && PE_Groups::get_nb_groups())
     {
-      Cerr << "[MPI] Enabling GPU capability to communicate between devices." << finl;
+      std::cerr << "[MPI] Enabling GPU capability to communicate between devices." << std::endl;
       //Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
     }
 }
