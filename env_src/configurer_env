@@ -658,8 +658,7 @@ case $arch in
 	# Support compilateur NVidia:
 	if [ "$TRUST_USE_CUDA" = 1 ]
 	then
-	   if [ "$TRUST_USE_OPENMP" = 1 ]
-	   then
+	   [ "$TRUST_USE_OPENMP" = 1 ] && echo "OpenMP target is not supported anymore for GPU build. Remove -openmp option." && exit -1
         TRUST_CC_BASE="nvc++ "$TRUST_CC_BASE
         TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
         TRUST_cc_BASE="nvc "$TRUST_cc_BASE
@@ -688,11 +687,11 @@ case $arch in
 #           nvcc_wrapper --help 1>/dev/null 2>&1
 #           [ $? != 0 ] && echo "Kokkos: error, nvc_wrapper not correctly installed!" && exit -1
 #        fi
-     fi
 	fi
 	# Support compilateur cray et AOMP de AMD: https://github.com/ROCm-Developer-Tools/aomp/blob/aomp-dev/docs/UBUNTUINSTALL.md
 	if [ "$TRUST_USE_ROCM" = 1 ]
 	then
+	   [ "$TRUST_USE_OPENMP" = 1 ] && echo "OpenMP target is not supported anymore for GPU build. Remove -openmp option." && exit -1
            PATH=$PATH:/opt/rocm/bin # Pour trouver les compilateurs si necessaire
            TRUST_CC_BASE="hipcc crayCC   amdclang++ "$TRUST_CC_BASE
            # Attention flang amdflang s'ils n'utilisent pas -fopenmp linke avec libompstub et Kokkos::initialize() ne trouve pas la carte GPU...
@@ -1214,23 +1213,6 @@ then
    # Ajout du nvcc local en priorite si trouve pour coherence avec driver
    # local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
    m="# Wrapper to CUDA compiler";e="`cherche_file TRUST_NVCC nvcc`";eval $e;CUDA_NVCC=$TRUST_NVCC;configure_compilateur_ccache
-   # Verifie si NVIdia SDK que l'on pointe vers une version specifique du Cuda Toolkit integree et non sur /compilers/bin/nvcc:
-   #if [ "`echo $CUDA_NVCC | grep Linux_x86_64`" != "" ]
-   #then
-   #   echo "Using NVidia SDK."
-   #   if [ "`echo $CUDA_NVCC | grep /compilers/`" != "" ]
-   #   then
-   #     #echo "Error, you should specify a specific Cuda Toolkit version inside the HPC SDK:"
-   #     #ls `dirname $CUDA_NVCC`/../../cuda | grep "\."
-   #     #echo "Add -cuda=X.Y to configure option."
-   #     #exit -1
-   #     NVHPC_ROOT=`echo $CUDA_NVCC | sed "1,$ s?/compilers/bin/nvcc??g"`
-   #     NVCC_VERSION=`ls $NVHPC_ROOT/cuda | grep "\." | tail -1`
-   #     echo "Warning, using last Cuda version of the NVidia SDK: $NVCC_VERSION"
-   #     PATH=$NVHPC_ROOT/cuda/$NVCC_VERSION/bin:$PATH
-   #     e="`cherche_file CUDA_NVCC nvcc`";
-   #   fi
-   #fi
    ecrit $m"|"$e"|"$env;eval $e
    #m="# Path to CUDA compiler";e="CUDA_NVCC=\"$CUDA_NVCC\" && export CUDA_NVCC";ecrit $m"|"$e"|"$env
    # Version que le compilateur fonctionne (typiquement GNU trop recent par rapport a nvcc, build echoue ensuite dans PETSc ou AmgX)
@@ -1266,7 +1248,7 @@ then
    fi
    if [ "$TRUST_CUDA_CC" = "" ]
    then
-      TRUST_CUDA_CC=`nvidia-smi --query-gpu=compute_cap --format=csv 2>/dev/null | tail -1 | awk '{gsub("\\.","",$1);print $1}'`
+      TRUST_CUDA_CC=`nvidia-smi --query-gpu=compute_cap --format=csv 2>/dev/null | tail -1 | awk '{gsub("\\\.","",$1);print $1}'`
       # nvidia-smi trop anciens ne supporte pas query-gpu=compute_cap:
       [ "$TRUST_CUDA_CC" = "" ] && [ "`nvidia-smi 2>&1 | grep -e A[123456]000`" != "" ] && TRUST_CUDA_CC=86 # Cartes A3000-A6000
    fi
@@ -1331,8 +1313,7 @@ then
    echo "ADD_PATH_AFTER \$ROCM_PATH/bin" >> $env
    echo "ADD_LD_LIBRARY_PATH_AFTER \$ROCM_PATH/lib" >> $env
    # Detection de l'architecture de la carte AMD:
-   ROCM_ARCH=`$ROCM_PATH/bin/rocminfo 2>&1 | awk '/ gfx/ {print $2}'`
-   [ "$HOST" = adastra ] && ROCM_ARCH=gfx90a # Adastra
+   [ "$ROCM_ARCH" = "" ] && ROCM_ARCH=`$ROCM_PATH/bin/rocminfo 2>&1 | awk '/ gfx/ {print $2}'`
    # Pour les cartes mal supportees (ex PC AMD): https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
    [ "${ROCM_ARCH#gfx103}" != $ROCM_ARCH ] && ROCM_ARCH=gfx1030 && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
    echo "export ROCM_ARCH=$ROCM_ARCH # Carte AMD" >> $env
@@ -1938,7 +1919,10 @@ case $TRUST_ARCH_CC in
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
         #[ "$TRUST_CC_BASE_EXTP" != "" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
         [ "$TRUST_ARCH_CC" = "linux_crayCC" ] && SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
-        SYSLIBS=$SYSLIBS" $PE_MPICH_GTL_DIR_amd_gfx90a $PE_MPICH_GTL_LIBS_amd_gfx90a" # Librairie GTL necessaire pour activer GPU-Direct
+        # Librairie GTL necessaire pour activer GPU-Direct:
+        var1=PE_MPICH_GTL_DIR_amd_$ROCM_ARCH
+        var2=PE_MPICH_GTL_LIBS_amd_$ROCM_ARCH
+        SYSLIBS=$SYSLIBS" ${!var1} ${!var2}"
         F77Flags_32b="-O3 -fPIC"
         F77Flags_32b="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
         F77Flags=$F77Flags_32b
@@ -1962,16 +1946,14 @@ case $TRUST_ARCH_CC in
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
         Defines="-D_COMPILE_AVEC_PGCC"
         CppFlags=""
-        if [ "$TRUST_USE_KOKKOS" = 1 ] && [ "$TRUST_USE_CUDA" = 1 ]
+        if [ "$TRUST_USE_CUDA" = 1 ]
         then
            CppFlags="-cuda" # nvc++ compile cuda code to avoid use of "nvcc -ccbin=nvc++"
            # Si CUDA_VERSION est specifie explicitement dans le HOST sinon on prend le SDK:
            [ "$CUDA_VERSION" = "" ] && CUDA_VERSION=`ls $CUDA_ROOT | grep "[0-9]\.[0-9]"`
-           gpu=" -gpu=cc$TRUST_CUDA_CC,cuda$CUDA_VERSION"
+           gpu=" -gpu=nordc,cc$TRUST_CUDA_CC,cuda$CUDA_VERSION"
            #TRUST_USE_UVM=1 # Provisoire
            [ "$TRUST_USE_UVM" = 1 ] && gpu=$gpu",managed" && Defines=$Defines" -DTRUST_USE_UVM"
-           # Attention -mp=gpu -gpu=nordc ne marche pas sur le GPU !!! Voir: https://forums.developer.nvidia.com/t/openmp-offload-w-cuda-interop-undefined-reference-to-fatbinwrap-nv-module-id/253051
-           # Donc on active Kokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON au niveau de Kokkos
            CppFlags=$CppFlags$gpu
            TRUST_STDCPP="c++17"   # For Kokkos 4.x (attention C++17: NVHPC 23.5 OK, NVHPC 23.9 KO sur template !)
         fi
@@ -1985,7 +1967,6 @@ case $TRUST_ARCH_CC in
         fi
         CppFlags=$CppFlags" -std=$TRUST_STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
         CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte tous les objets C++ non utilises
-        #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
 	      # On passe en -O1 au lieu de -O3 car plantage dans routine_fft.f dans TrioCFD
         F77Flags_32b="-O1 -fPIC -noswitcherror"
@@ -2305,7 +2286,7 @@ then
    elif [ $TRUST_OPENMP_CC = clang++ ]
    then
       openmp="-fopenmp"
-      #[ "$TRUST_USE_ROCM" = 1 ]    && target=amdgcn  && march="-march=gfx90a"
+      #[ "$TRUST_USE_ROCM" = 1 ]    && target=amdgcn  && march="-march=$ROCM_ARCH"
       if [ "$TRUST_USE_CUDA" = 1 ] # Compilation de clang pour offload OpenMP: See https://gist.github.com/anjohan/9ee746295ea1a00d9ca69415f40fafc9
       then
          target=nvptx64 && march=""
@@ -2319,7 +2300,7 @@ then
       openmp="-fopenmp"
       target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
       [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none    && march="" # Complique gcc a recompiler: voir https://gist.github.com/matthiasdiener/e318e7ed8815872e9d29feb3b9c8413f
-      [ "$TRUST_USE_ROCM" = 1 ] && target=amdgcn-amdhsa && march="-march=gfx90a" # Device AMD Radeon MI200
+      [ "$TRUST_USE_ROCM" = 1 ] && target=amdgcn-amdhsa && march="-march=$ROCM_ARCH" # Device AMD Radeon MI200
       openmp_target="-foffload=$target $march"
    elif [ $TRUST_OPENMP_CC = icpc ]
    then

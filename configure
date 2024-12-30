@@ -292,12 +292,11 @@ echo "   -force_system_mpi                 Use the system-provided MPI library."
 echo "   -force_mpi_gpu_aware              Try to find and use a MPI GPU-Aware. Abort if not found."
 echo " "
 echo "   -rocalution=0|path to rocALUTION  Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library."
-echo "   -cuda=path/nvcc|=download|=ccXY   Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
-echo "   -rocm                             Activate the ROCM support into several libraries for AMD GPU computing (experimental)."
-echo "   -openmp                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)."
-echo "   -kokkos_openmp                    Enable OpenMP Kokkos backend instead of serial backend (default)"
+echo "   -cuda[=path/nvcc|=download|=ccXY] Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
+echo "   -rocm[=gfx...]                    Activate the ROCM support into several libraries for AMD GPU computing (experimental)."
+echo "   -openmp                           Enable OpenMP support."
+echo "   -kokkos_openmp                    Enable OpenMP Kokkos backend instead of serial backend"
 echo "   -kokkos_simd                      Enable SIMD Kokkos support"
-echo "   -kokkos_hip                       Enable HIP backend on AMD (OpenMP target is the default)"
 echo " "
 echo -e "\033[1m\033[4mLinking with external Thermo-Physical Properties libraries\033[0m"
 echo " "
@@ -424,7 +423,6 @@ export TRUST_USE_OPENMP=0
 export TRUST_USE_KOKKOS=1
 export TRUST_USE_KOKKOS_OPENMP=0
 export TRUST_USE_KOKKOS_SIMD=1
-export TRUST_USE_KOKKOS_HIP=0
 export TRUST_USE_AVX=1
 export TRUST_DISABLE_MPI4PY=0
 export TRUST_DISABLE_JUPYTER=0
@@ -438,6 +436,7 @@ export TRUST_ENABLE_DOC_DOXYGEN=0
 export TRUST_STDCPP=c++17
 unset CUDA_NVCC
 unset TRUST_CUDA_CC
+unset ROCM_ARCH
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
@@ -587,7 +586,11 @@ do
    elif [ "${1#-rocm}" != "$1" ]
    then
       export TRUST_USE_ROCM=1
-
+      if [ "${1#-rocm=gfx}" != "$1" ]
+      then 
+         export ROCM_ARCH=${1#-rocm=}
+      fi
+      
    elif [ "${1#-with-eos}" != "$1" ]
    then
       # Proper include files for EOS are managed by script bin/cree_include
@@ -656,10 +659,6 @@ do
    elif [ "${1#-kokkos_simd}" != "$1" ]
    then
       export TRUST_USE_KOKKOS_SIMD=1
-
-   elif [ "${1#-kokkos_hip}" != "$1" ]
-   then
-      export TRUST_USE_KOKKOS_HIP=1
 
    elif [ "${1#-without-doc}" != "$1" ]
    then
@@ -781,23 +780,6 @@ then
    export PATH=$CUDA_BIN:$PATH
 fi
 
-########
-# Kokkos
-########
-
-#if [ "$TRUST_USE_KOKKOS" = 1 ]
-#then
-#    source env/TRUST_TMP.env 1>/dev/null 2>&1
-#    source env/gpu/install_kokkos.sh
-#    export PATH=$KOKKOS_ROOT_DIR/bin:$PATH
-#    nvcc_wrapper --help 1>/dev/null 2>&1
-#    [ $? != 0 ] && echo "Kokkos: error, nvc_wrapper not correctly installed!" && exit -1
-#    echo "# Kokkos root dir is: $KOKKOS_ROOT_DIR"
-#else
-#    echo "Kokkos not requested - cleaning previous install..."
-#    rm -rf env/gpu/kokkos
-#fi
-
 export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
 if [ "$clean" != "clean" ]
 then
@@ -859,7 +841,6 @@ echo "TRUST_WITHOUT_CONDA=$TRUST_WITHOUT_CONDA && export TRUST_WITHOUT_CONDA    
 echo "TRUST_USE_KOKKOS=$TRUST_USE_KOKKOS && export TRUST_USE_KOKKOS    	# TRUST built with Kokkos" >> $var
 echo "TRUST_USE_KOKKOS_OPENMP=$TRUST_USE_KOKKOS_OPENMP && export TRUST_USE_KOKKOS_OPENMP    	# TRUST built with Kokkos OpenMP backend" >> $var
 echo "TRUST_USE_KOKKOS_SIMD=$TRUST_USE_KOKKOS_SIMD && export TRUST_USE_KOKKOS_SIMD    	# TRUST built with Kokkos SIMD" >> $var
-echo "TRUST_USE_KOKKOS_HIP=$TRUST_USE_KOKKOS_HIP && export TRUST_USE_KOKKOS_HIP    	# TRUST built with Kokkos HIP" >> $var
 
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]
 then

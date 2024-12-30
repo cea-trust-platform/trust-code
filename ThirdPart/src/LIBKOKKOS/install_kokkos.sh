@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$TRUST_USE_OPENMP" = 1 ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
+if [ "$TRUST_USE_GPU" = 1 ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
 then
    # Kokkos pour SIMD ou GPU (C++17):
    #archive=$TRUST_ROOT/externalpackages/kokkos/kokkos-4.2.00.tar.gz
@@ -27,7 +27,7 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
       src_dir=$build_dir/`ls $build_dir | grep kokkos`
 
       # Set this flag to 1 to have Kokkos compiled/linked in Debug mode for $exec_debug or when developping on GPU:
-      if [ $HOST = $TRUST_HOST_ADMIN ] || [ "$TRUST_USE_OPENMP" = 1 ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
+      if [ $HOST = $TRUST_HOST_ADMIN ] || [ "$TRUST_USE_KOKKOS_SIMD" = 1 ]
       then
          build_debug=1
       else
@@ -44,11 +44,9 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP"
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
-           CMAKE_OPT="-DCMAKE_CXX_COMPILER=hipcc"
-        else
+           CMAKE_OPT="-DCMAKE_CXX_COMPILER=hipcc" # $TRUST_CC_BASE pour profiter de ccache ?
+        else # Serial
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
-           # To use nvc++ as device compiler (nvcc ~ nvc++ -gpu):
-           [ "`basename $TRUST_CC_BASE`" = nvc++ ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_IMPL_NVHPC_AS_DEVICE_COMPILER=ON"
         fi
         CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_FLAGS=-fPIC"
         if [ "$TRUST_USE_CUDA" = 1 ]
@@ -65,20 +63,35 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            elif [ "$TRUST_CUDA_CC" = 80 ] || [ "$TRUST_CUDA_CC" = 86 ]
            then
               CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMPERE$TRUST_CUDA_CC=ON"
+           elif [ "$TRUST_CUDA_CC" = 89 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_ADA$TRUST_CUDA_CC=ON"
            elif [ "$TRUST_CUDA_CC" = 90 ]
            then
               CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_HOPPER$TRUST_CUDA_CC=ON"
            else
-              echo "KOKKOS_ARCH not set!" && exit -1
+              echo "KOKKOS_ARCH not set cause TRUST_CUDA_CC=$TRUST_CUDA_CC unknown!" && exit -1
            fi
-           # To mix Kokkos with OpenMP:
-           [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE=ON"
         elif [ "$TRUST_USE_ROCM" = 1 ]
         then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP=ON"
            #CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON" # faster but slow build (nb: no gain on kernels.sh with gfx1100)
            CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_STANDARD=17"
-           [ "$ROCM_ARCH" = gfx90a ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON"
+           if [ "$ROCM_ARCH" = gfx1030 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX1030=ON"
+           elif [ "$ROCM_ARCH" = gfx1100 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX1100=ON"
+           elif [ "$ROCM_ARCH" = gfx90a ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX90A=ON" # MI250
+           elif [ "$ROCM_ARCH" = gfx942 ]
+           then
+              CMAKE_OPT="$CMAKE_OPT -DKokkos_ARCH_AMD_GFX942_APU=ON" # MI300
+           else
+              echo "KOKKOS_ARCH not set cause $ROCM_ARCH unknown!" && exit -1
+           fi
         fi
         [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ] && CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_OPENMP=ON"	# Backend OpenMP au lieu de serial
         # On ne construit les examples que la ou cela marche...

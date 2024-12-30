@@ -27,16 +27,11 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      if [ "$TRUST_USE_OPENMP" = 1 ]
-      then
-         module="gnu/8.3.0 mpi/openmpi/4.0.5 nvhpc/21.3" # TRUST 1.9.2. Cuda 11.2 mais c-amg crash (sur topaze aussi...)
-         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Comme sur topaze
-         module="gnu/8.3.0 cuda/11.7 nvhpc/22.7 mpi/openmpi/4.1.4" # Comme sur topaze (passage a 11.7)
-         #module="gnu/8.3.0 cuda/11.8 nvhpc/22.11 mpi/openmpi/4.1.4" # cuda/11.7 nvhpc/22.7 plus dispo suite maj 04/2024
-         module="gnu/8.3.0 nvhpc/23.7 mpi/openmpi/4.1.4" # Passage a Cuda 11.8 et NVHPC 23.7 OK
-      else
-         echo "Not supported anymore" && exit -1
-      fi
+      module="gnu/8.3.0 mpi/openmpi/4.0.5 nvhpc/21.3" # TRUST 1.9.2. Cuda 11.2 mais c-amg crash (sur topaze aussi...)
+      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Comme sur topaze
+      module="gnu/8.3.0 cuda/11.7 nvhpc/22.7 mpi/openmpi/4.1.4" # Comme sur topaze (passage a 11.7)
+      #module="gnu/8.3.0 cuda/11.8 nvhpc/22.11 mpi/openmpi/4.1.4" # cuda/11.7 nvhpc/22.7 plus dispo suite maj 04/2024
+      module="gnu/8.3.0 nvhpc/23.7 mpi/openmpi/4.1.4" # Passage a Cuda 11.8 et NVHPC 23.7 OK
       [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=70 # V100
    else
       # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 

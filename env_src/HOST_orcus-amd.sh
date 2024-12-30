@@ -15,18 +15,10 @@ define_modules_config()
    gnu=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      if [ "$TRUST_USE_OPENMP" = 1 ]
-      then
-         #module="nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
-         module="gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
-         CUDA_VERSION=12.1 # Kokkos prend par defaut 12.1 et au link nvlink prend 11.0 donc on met tout au meme niveau...
-      else
-         echo "Not supported anymore" && exit -1
-      fi
+      #module="nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020"
+      module="gcc/11.4.0 openmpi/gcc_11.4.0/4.1.6 texlive/20240312" # On telecharge desormais le meme SDK que sur PC
+      CUDA_VERSION=12.1 # Kokkos prend par defaut 12.1 et au link nvlink prend 11.0 donc on met tout au meme niveau...
       [ "$TRUST_CUDA_CC" = "" ] && echo TRUST_CUDA_CC=80 # A100
-      # TRUST_CUDA_CC=90 # H100
-      # TRUST_CUDA_CC=70 # V100
-      # Embetant Kokkos configure impose l'un ou l'autre pas les 2. Si on met V100, cela ne tourne pas sur A100 et vice-versa (mismatch arch lors du Kokkos::initialize())
    elif [ $gnu = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI

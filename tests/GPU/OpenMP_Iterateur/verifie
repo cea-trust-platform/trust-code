@@ -1,6 +1,6 @@
 ####################
 # Recherche des Copy from device uniquement en optimise (car des copies en plus en debug pour assert_echange_espace_virtuel())
-if [ "$TRUST_USE_OPENMP" = 1 ] && [ ${exec%mpi_opt} != $exec ]
+if [ "$TRUST_USE_GPU" = 1 ] && [ ${exec%mpi_opt} != $exec ]
 then
    NP=1 && [ ${1#PAR} != $1 ] && NP=2
    TRUST_CLOCK_ON=1 trust $1 $NP 1>$1.out_err 2>&1 

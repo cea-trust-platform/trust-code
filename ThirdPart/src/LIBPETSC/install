@@ -552,7 +552,8 @@ then
       add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$TRUST_CUDA_CC"
    elif [ "$TRUST_USE_ROCM" = 1 ]
    then
-      add_package hypre && with_packages=$with_packages" -download-hypre-arguments=--enable-unified-memory"
+      # --enable-unified-memory important on Adastra, else weak_scaling on OpenMP_Iterateur at 128 GPU fails (too slow)
+      add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$ROCM_ARCH -download-hypre-arguments=--enable-unified-memory"
    else
       [ $minimal_mumps = 0 ] && add_package hypre
    fi

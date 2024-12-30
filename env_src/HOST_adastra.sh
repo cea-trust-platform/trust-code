@@ -21,6 +21,16 @@ define_modules_config()
       #module="craype-x86-trento craype-network-ofi PrgEnv-amd/8.5.0 rocm/5.7.1 craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
       # Compilateur hipcc
       module="PrgEnv-gnu/8.5.0"
+      
+      # ROCM_ARCH par defaut:
+      if [ "$ROCM_ARCH" = "" ]
+      then
+         export ROCM_ARCH=gfx90a # MI250
+      elif [ "$ROCM_ARCH" != gfx942 ] # MI300
+      then
+         echo "$ROCM_ARCH not supported on adastra!"
+      fi
+      module=$module" craype-accel-amd-$ROCM_ARCH"
    else
       # Compilateur GNU
       #module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0" used for first 1.9.3 install

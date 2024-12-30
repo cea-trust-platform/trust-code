@@ -1037,7 +1037,7 @@ do
                echo "Run_bench script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..."
                # ND 22/04/24: si machine GPU, OpenMP_Iterateur est lance en guise de benchmark
                # si machine CPU, BENCHMARK est lance
-               if [ "$TRUST_USE_OPENMP" = 0 ]
+               if [ "$TRUST_USE_CUDA" = 0 ]
                then
                   (
                     Build=$TRUST_ROOT/build/tests/Reference;
