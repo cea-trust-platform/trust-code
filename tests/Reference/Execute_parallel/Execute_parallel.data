@@ -1,6 +1,6 @@
 # Multi-parallel calculation #
 # PARALLEL ONLY 5 #
-
+# GPU NOT #
 # PAR_VAHL_DAVIS runs on 2 CPUs #
 # PAR_VAHL_DAVIS_VEF runs on 3 CPUs #
 # 5 CPUs is needed #
