@@ -14,7 +14,7 @@ then
    time eval $cmd || exit -1
 else
    # Use nvc++ -cuda
-   COMPILER="nvc++ -cuda -gpu=nordc -L$CUDA_ROOT/lib64/stubs -lcuda"
+   COMPILER="nvc++ -cuda -gpu=nordc,cc$TRUST_CUDA_CC -L$CUDA_ROOT/lib64/stubs -lcuda"
    cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
    echo $cmd
    time eval $cmd || exit -1
