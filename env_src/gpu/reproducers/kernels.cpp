@@ -4,7 +4,7 @@
 #include <algorithm> 
 #include <Kokkos_Core.hpp>
 #include <Kokkos_DualView.hpp>
-using namespace Kokkos;
+//using namespace Kokkos;
 
 using layout = Kokkos::LayoutRight;
 using trait = Kokkos::MemoryTraits<Kokkos::RandomAccess>;

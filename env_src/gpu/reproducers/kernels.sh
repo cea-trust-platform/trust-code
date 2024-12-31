@@ -13,15 +13,16 @@ then
    echo $cmd
    time eval $cmd || exit -1
 else
-   # Use nvc++ -cuda
+   # Use nvc++ -cuda (build time 7.2s)
    COMPILER="nvc++ -cuda -gpu=nordc,cc$TRUST_CUDA_CC -L$CUDA_ROOT/lib64/stubs -lcuda"
    cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
    echo $cmd
    time eval $cmd || exit -1
-   #COMPILER="nvcc -ccbin g++ -L$CUDA_ROOT/lib64/stubs -lcuda"
-   #cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
-   #echo $cmd
-   #time eval $cmd || exit -1
+   # Suing nvcc -ccbin=g++ (build time 5.7s)
+   COMPILER="nvcc -x cu -arch=sm_$TRUST_CUDA_CC --extended-lambda -ccbin=g++ -Xcompiler=\"-O3\" -L$CUDA_ROOT/lib64/stubs -lcuda"
+   cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
+   echo $cmd
+   time eval $cmd || exit -1
 fi
 echo "Build OK"
 rm -f *nsys-rep
