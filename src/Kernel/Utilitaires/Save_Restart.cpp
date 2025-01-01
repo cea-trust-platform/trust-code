@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -363,7 +363,7 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
           input_data >> restart_version_;
 #endif
         }
-      if (mp_min(restart_version_) != mp_max(restart_version_))
+      if (Process::mp_min(restart_version_) != Process::mp_max(restart_version_))
         {
           Cerr << "The version of the format backup/resumption is not the same in the resumption files " << nomfic << finl;
           Process::exit();

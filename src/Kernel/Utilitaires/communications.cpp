@@ -285,64 +285,6 @@ bool reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list)
   return true;
 }
 
-int mp_operations_commun_(int x, Comm_Group::Collective_Op op)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  int y;
-  grp.mp_collective_op(&x, &y, 1, op);
-  return y;
-}
-
-/*! @brief renvoie le plus grand int i sur l'ensemble des processeurs du groupe courant.
- *
- */
-int mp_max(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
-
-/*! @brief renvoie le plus petit int i sur l'ensemble des processeurs du groupe courant.
- *
- */
-int mp_min(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
-
-
-#if INT_is_64_ == 2
-trustIdType mp_operations_commun_(trustIdType x, Comm_Group::Collective_Op op)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  trustIdType y;
-  grp.mp_collective_op(&x, &y, 1, op);
-  return y;
-}
-trustIdType mp_max(trustIdType x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
-trustIdType mp_min(trustIdType x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
-#endif
-
-/*! @brief Calul de la somme partielle de i sur les processeurs 0 a me()-1 (renvoie 0 sur le processeur 0).
- *
- * Voir Comm_Group::mppartial_sum()
- *
- */
-trustIdType mppartial_sum(trustIdType x)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  trustIdType xx = x;
-  trustIdType y;
-
-  grp.mp_collective_op(&xx, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
-  return y;
-}
-
-void mpsum_multiple(double& x1, double& x2)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  double x[2];
-  double y[2];
-  x[0] = x1;
-  x[1] = x2;
-  grp.mp_collective_op(x, y, 2, Comm_Group::COLL_SUM);
-  x1 = y[0];
-  x2 = y[1];
-}
-
 /*! @brief On suppose que les tableaux en entree et en sortie sont tels que dimension(0)==nproc() et que les autres dimensions
  *
  *   sont identiques. On envoie src(0, i, j, ...) au proc 0,
@@ -471,16 +413,16 @@ bool comm_check_enabled() { return Comm_Group::check_enabled(); }
  */
 bool is_parallel_object(const int x)
 {
-  const int x1 = mp_min(x);
-  const int x2 = mp_max(x);
+  const int x1 = Process::mp_min(x);
+  const int x2 = Process::mp_max(x);
   return x1 == x2;
 }
 
 #if INT_is_64_ == 2
 bool is_parallel_object(const trustIdType x)
 {
-  const trustIdType x1 = mp_min(x);
-  const trustIdType x2 = mp_max(x);
+  const trustIdType x1 = Process::mp_min(x);
+  const trustIdType x2 = Process::mp_max(x);
   return x1 == x2;
 }
 #endif

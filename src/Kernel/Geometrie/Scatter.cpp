@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1524,7 +1524,7 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
   MD_Vector_tools::creer_tableau_distribue(md_items, table_);
 
   const int nb_entites = md_items->get_nb_items_tot();
-  const trustIdType decal = mppartial_sum(nb_entites);
+  const trustIdType decal = Process::mppartial_sum(nb_entites);
   premier_indice_global_ = decal;
 
   for (int i = 0; i < nb_entites; i++)

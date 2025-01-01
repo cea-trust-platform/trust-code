@@ -62,7 +62,6 @@ public:
   static int mp_min(int) { return 0; }
   static trustIdType mp_sum(int) { return 0; }
   static trustIdType mp_sum(trustIdType) { return 0; }
-  static int check_int_overflow(trustIdType) { return 0; }
 
 #else
   static int me(); /* mon rang dans le groupe courant */
@@ -70,19 +69,43 @@ public:
   static bool is_parallel();
   static void exit(int exit_code = -1);
 
-  static double mp_sum(double);
+  //
+  // Min/max across all procs
+  //
   static double mp_max(double);
-  static int mp_max(int);
   static double mp_min(double);
+  static int mp_max(int);
   static int mp_min(int);
+#if INT_is_64_ == 2
+  static trustIdType mp_max(trustIdType);
+  static trustIdType mp_min(trustIdType);
+#endif
 
+  //
+  // Sum across all procs
+  //
+  static double mp_sum(double);
+#if INT_is_64_ == 2
   // Careful, the sum of many 'int' on several procs, might return a 'long'!!
   static trustIdType mp_sum(int v) { return mp_sum(static_cast<trustIdType>(v)); }
+#endif
   static trustIdType mp_sum(trustIdType);
-
   // When computing percentages or ratios, useful:
   static double mp_sum_as_double(int v) { return static_cast<double>(mp_sum(v)); }
+#if INT_is_64_ == 2
   static double mp_sum_as_double(trustIdType v) { return static_cast<double>(mp_sum(v)); }
+#endif
+
+  // Summing for all procs before me:
+  static trustIdType mppartial_sum(trustIdType i);
+#if INT_is_64_ == 2
+  static trustIdType mppartial_sum(int i) { return mppartial_sum(static_cast<trustIdType>(i)); }
+#endif
+
+  // Summing two doubles at once
+  static void mpsum_multiple(double& x1, double& x2);
+
+  static bool mp_and(bool);
 
   static int check_int_overflow(trustIdType);
 
@@ -90,7 +113,6 @@ public:
   static void exit(const Nom& message, int exit_code = -1);
   static bool is_sequential(); // serial ?
   static void barrier();
-  static bool mp_and(bool);
   static void abort();
 
   static Sortie& Journal(int message_level = 0);

@@ -93,7 +93,6 @@ protected:
 #endif
   void internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const;
   void internal_collective(const float *x, float *resu, int nx, const Collective_Op *op, int nop, int level) const;
-  trustIdType mppartial_sum(trustIdType x) const;
 
 private:
   template <typename _TYPE_, MPI_Datatype _MPITYPE_>
@@ -101,6 +100,7 @@ private:
                                  const Stat_Counter_Id& cnt_sum_id,
                                  const Stat_Counter_Id& cnt_min_id,
                                  const Stat_Counter_Id& cnt_max_id) const;
+  trustIdType mppartial_sum_impl(trustIdType x) const;
 
   // Voir set_must_mpi_initialize() et init_group_trio()
   static int must_mpi_initialize_;

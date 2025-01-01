@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,10 +45,10 @@ static Sortie        std_out_(cout);
 //  and the processors' output is redirected to journal_shared_stream_ before being written in a HDF5 file)
 static SFichier     journal_file_;
 static SChaine      journal_shared_stream_;
-static int 			journal_shared_;
+static int          journal_shared_;
 
-static int        journal_file_open_;
-static Nom           journal_file_name_;
+static int          journal_file_open_;
+static Nom          journal_file_name_;
 // Niveau maximal des messages ecrits. La valeur initiale determine
 // si les messages ecrits avant l'initialisation du journal sont ecrits
 // ou pas.
@@ -133,55 +133,10 @@ void Process::barrier()
   PE_Groups::current_group().barrier(0);
 }
 
-/*! @brief Calcule le max de x sur tous les processeurs du groupe courant.
- *
- * Remarques :
- *    Cette methode doit etre appelee sur tous les processeurs du groupe.
- *    La valeur renvoyee est identique sur tous les processeurs.
- *
- */
-double Process::mp_max(double x)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  double y;
-  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MAX);
-  return y;
-}
-
-int Process::mp_max(int x)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  int y;
-  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MAX);
-  return y;
-}
-
-
-/*! @brief Calcule le min de x sur tous les processeurs du groupe courant.
- *
- * @sa mp_max()
- *
- */
-double Process::mp_min(double x)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  double y;
-  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MIN);
-  return y;
-}
-
-int Process::mp_min(int x)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  int y;
-  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MIN);
-  return y;
-}
 
 /*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
  *
  * @sa mp_max()
- *
  */
 double Process::mp_sum(double x)
 {
@@ -205,11 +160,64 @@ trustIdType Process::mp_sum(trustIdType x)
   return y;
 }
 
-int check_int_overflow(trustIdType v)
+
+namespace
 {
-  if (v >= std::numeric_limits<int>::max())
-    Process::exit("Value too big - above 32b and can not be converted to int!!");
-  return static_cast<int>(v);
+
+template <typename T>
+T mp_operations_commun_(T x, Comm_Group::Collective_Op op)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  T y;
+  grp.mp_collective_op(&x, &y, 1, op);
+  return y;
+}
+}
+
+/*! @brief renvoie le plus grand int i sur l'ensemble des processeurs du groupe courant.
+ *
+ */
+int Process::mp_max(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
+double Process::mp_max(double x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
+#if INT_is_64_ == 2
+trustIdType Process::mp_max(trustIdType x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
+#endif
+
+
+/*! @brief renvoie le plus petit int i sur l'ensemble des processeurs du groupe courant.
+ *
+ */
+int Process::mp_min(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
+double Process::mp_min(double x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
+#if INT_is_64_ == 2
+trustIdType Process::mp_min(trustIdType x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
+#endif
+
+/*! @brief Calul de la somme partielle de i sur les processeurs 0 a me()-1 (renvoie 0 sur le processeur 0).
+ *
+ * Voir Comm_Group::mppartial_sum()
+ *
+ */
+trustIdType Process::mppartial_sum(trustIdType x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  trustIdType xx = x;
+  trustIdType y;
+
+  grp.mp_collective_op(&xx, &y, 1, Comm_Group::COLL_PARTIAL_SUM);
+  return y;
+}
+
+void Process::mpsum_multiple(double& x1, double& x2)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  double x[2];
+  double y[2];
+  x[0] = x1;
+  x[1] = x2;
+  grp.mp_collective_op(x, y, 2, Comm_Group::COLL_SUM);
+  x1 = y[0];
+  x2 = y[1];
 }
 
 
@@ -225,10 +233,16 @@ bool Process::mp_and(bool b)
   return y == 1;
 }
 
-/*! @brief Routine de sortie de Trio-U sur une erreur Sauvegarde la memoire et le hierarchie dans les fichiers "memoire.
+int Process::check_int_overflow(trustIdType v)
+{
+  if (v >= std::numeric_limits<int>::max())
+    Process::exit("Value too big - above 32b and can not be converted to int!!");
+  return static_cast<int>(v);
+}
+
+/*! @brief Routine de sortie de TRUST sur une erreur.
  *
- * dump" et "hierarchie.dump"
- *
+ * Sauvegarde la memoire et de la hierarchie dans les fichiers "memoire.dump" et "hierarchie.dump"
  */
 void Process::exit(int i)
 {

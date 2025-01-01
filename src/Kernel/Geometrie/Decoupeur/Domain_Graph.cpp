@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -202,7 +202,7 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<_SIZE_>& dom,
   const int_t nb_elem = dom.nb_elem();
 
   SmallArrOfTID_t offsets(Process::nproc());
-  trustIdType totsum = mppartial_sum(nb_elem);
+  trustIdType totsum = Process::mppartial_sum(nb_elem);
   if (totsum > std::numeric_limits<_SIZE_>::max())
     {
       Cerr << "Are you trying to partition a Domain_64 with a non-64b 'Partitionneur'? Total number of elements is too big!" << finl;

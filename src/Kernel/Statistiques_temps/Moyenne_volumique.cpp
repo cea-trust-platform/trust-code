@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -649,7 +649,7 @@ void Moyenne_volumique::calculer_convolution(const Domaine_VF& domaine_source,
   const int dim = Objet_U::dimension;
   const int nbproc = Process::nproc();
   const int nb_coords_to_compute = coords_to_compute.dimension(0);
-  const int nb_coords_max = ::mp_max(nb_coords_to_compute);
+  const int nb_coords_max = mp_max(nb_coords_to_compute);
 
   int nb_comp;
   nb_comp = champ_source.line_size();

@@ -747,7 +747,7 @@ void Comm_Group_MPI::internal_collective(const int *x, int *resu, int nx, const 
       if (op[j] != COLL_PARTIAL_SUM)
         mp_collective_op(&xx, &resu2, 1, op[j]);
       else
-        resu2 = mppartial_sum(x[i]);
+        resu2 = mppartial_sum_impl(x[i]);
       assert(resu2 < std::numeric_limits<int>::max());
       resu[i] = static_cast<int>(resu2);
     }
@@ -763,7 +763,7 @@ void Comm_Group_MPI::internal_collective(const trustIdType *x, trustIdType *resu
       if (op[j] != COLL_PARTIAL_SUM)
         mp_collective_op(x+i, resu+i, 1, op[j]);
       else
-        resu[i] = mppartial_sum(x[i]);
+        resu[i] = mppartial_sum_impl(x[i]);
     }
 }
 #endif
@@ -808,7 +808,7 @@ void Comm_Group_MPI::internal_collective(const float *x, float *resu, int nx, co
  *  fournis dans le constructeur.
  *
  */
-trustIdType Comm_Group_MPI::mppartial_sum(trustIdType x) const
+trustIdType Comm_Group_MPI::mppartial_sum_impl(trustIdType x) const
 {
   statistiques().begin_count(mpi_partialsum_counter_);
   trustIdType somme = 0;

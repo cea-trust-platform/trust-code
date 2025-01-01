@@ -28,12 +28,6 @@ bool recevoir(Objet_U& t, int source, int cible, int canal);
 bool recevoir(Objet_U& t, int source, int canal);
 bool envoyer_broadcast(Objet_U& t, int source);
 
-void mpsum_multiple(double& x1, double& x2);
-trustIdType mppartial_sum(trustIdType i);
-trustIdType mppartial_sum(int i) { return mppartial_sum(static_cast<trustIdType>(i)); }
-int mp_max(int i);
-int mp_min(int i);
-
 void assert_parallel(const Objet_U& obj);
 bool is_parallel_object(const Objet_U& obj);
 bool is_parallel_object(const double x);
@@ -132,7 +126,7 @@ inline assert_parallel(const _TYPE_ x)
 }
 
 template<typename _TYPE_>
-inline void mp_collective_op(TRUSTArray<_TYPE_>& x, Comm_Group::Collective_Op op)
+inline void mp_collective_op_arr(TRUSTArray<_TYPE_>& x, Comm_Group::Collective_Op op)
 {
   int sz = x.size_array();
   assert_parallel<_TYPE_>(sz);
@@ -148,13 +142,13 @@ inline void mp_collective_op(TRUSTArray<_TYPE_>& x, Comm_Group::Collective_Op op
 }
 
 template<typename _TYPE_>
-inline void mp_sum_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_SUM); }
+inline void mp_sum_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op_arr(x, Comm_Group::COLL_SUM); }
 
 template<typename _TYPE_>
-inline void mp_max_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_MAX); }
+inline void mp_max_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op_arr(x, Comm_Group::COLL_MAX); }
 
 template<typename _TYPE_>
-inline void mp_min_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_MIN); }
+inline void mp_min_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op_arr(x, Comm_Group::COLL_MIN); }
 
 /*! @brief On suppose que les tableaux en entree et en sortie sont de taille nproc() .
  *

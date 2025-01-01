@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,7 @@ void Ch_front_input::getTemplate(TrioField& afield) const
   afield._space_dim=sommets.dimension(1);
   afield._mesh_dim=afield._space_dim-1;
   afield._nbnodes=sommets.dimension(0);
-  afield._nodes_per_elem=::mp_max(faces.dimension(1));
+  afield._nodes_per_elem = mp_max(faces.dimension(1));
   afield._nb_elems=faces.dimension(0);
 
   // Includes all the nodes, even those not used in connectivity

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ void corriger_type(Faces_32_64<_SIZE_>& faces, const OWN_PTR(Elem_geom_base_32_6
 {
   Type_Face typ = faces.type_face();
   const int pe = (faces.type_face() == Type_Face::vide_0D) ? Process::nproc() - 1 : Process::me();
-  const int min_pe = ::mp_min(pe);
+  const int min_pe = Process::mp_min(pe);
   // Le processeur min_pe envoie son type a tous les autres
   int typ_commun_i = static_cast<int>(typ);
   envoyer_broadcast(typ_commun_i, min_pe);
