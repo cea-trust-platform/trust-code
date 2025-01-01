@@ -75,9 +75,9 @@ define_soumission_batch()
    queue=amdq_naples && [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
    if [ "$gpu" = 1 ]
    then
-      [ "$TRUST_CUDA_CC" = 90 ] && queue=gpuq_h100 && noeuds=`echo "1+($NB_PROCS-1)/4" | bc` # 4GPUs/node
-      [ "$TRUST_CUDA_CC" = 80 ] && queue=gpuq_a100 && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
-      [ "$TRUST_CUDA_CC" = 70 ] && queue=gpuq_v100 && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
+      [ "$TRUST_CUDA_CC" = 90 ] && queue=gpuq_h100 && noeuds=`echo "1+($NB_PROCS-1)/4" | bc` && cpus_per_task=18 # 4GPUs/node
+      [ "$TRUST_CUDA_CC" = 80 ] && queue=gpuq_a100 && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` && cpus_per_task=16 # 2GPUs/node
+      [ "$TRUST_CUDA_CC" = 70 ] && queue=gpuq_v100 && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` && cpus_per_task=16 # 2GPUs/node
    fi
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
