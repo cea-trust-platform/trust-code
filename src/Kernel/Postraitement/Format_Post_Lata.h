@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,30 +56,42 @@ public:
   // Methodes declarees dans la classe de base (interface commune a tous
   // les formats de postraitment de champs):
   //
-  void reset() override;
-  void resetTime(double t, const std::string dirname) override;
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
+
+  void reset() override;
+  void resetTime(double t, const std::string dirname) override;
+
+  int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post,
+                     const Nom& le_nom_champ_post) override;
+  int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
+
   int initialize_by_default(const Nom& file_basename) override;
   int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;
-  int modify_file_basename(const Nom file_basename, bool for_restart, const double tinit) override;
-  virtual int reconstruct(const Nom file_basename, const Nom, const double tinit);
-  virtual int finir_sans_reprise(const Nom file_basename);
-  int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post) override;
-  int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
 
-  int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
+  int modify_file_basename(const Nom file_basename, bool for_restart, const double tinit) override;
+
+  int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post) override;
   int ecrire_domaine(const Domaine& domaine, const int est_le_premier_post) override;
-  int ecrire_domaine_low_level(const Nom& id_dom, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_elem);
   int ecrire_temps(const double temps) override;
+  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
+                   const Nom& localisation, const Nom& nature, const DoubleTab& data) override;
+  int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference,
+                      const IntVect& data, const int reference_size) override;
 
   int finir(const int est_le_dernier_post) override;
 
-  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
-                   const Nom& localisation, const Nom& nature, const DoubleTab& data) override;
+  //
+  // Other methods
+  //
+  virtual int reconstruct(const Nom file_basename, const Nom, const double tinit);
+  virtual int finir_sans_reprise(const Nom file_basename);
 
-  int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size) override;
+  void ecrire_domaine_low_level(const Nom& id_dom, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_elem);
 
+  // When writing joints, we need to write trustIdType (=big) values - only for LATA (?):
+  int ecrire_item_tid(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation,
+                      const Nom& reference, const TIDVect& data, const int reference_size);
 
   //
   // Methodes specifiques a ce format:
@@ -100,8 +112,8 @@ public:
   static const char * remove_path(const char * filename);
 
 protected:
-  static int write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option);
-  static int write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option);
+  static trustIdType write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option);
+  static trustIdType write_inttab(Fichier_Lata& fichier, bool decal_fort, trustIdType decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option);
 
   Nom lata_basename_;
   Format format_;
@@ -114,6 +126,11 @@ protected:
   double tinit_;
   bool un_seul_fichier_lata_ = false;
   long int offset_elem_ = -1, offset_som_ = -1; // offset used if single_lata
+
+private:
+  template<typename TYP>
+  int ecrire_item_integral_T(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation,
+                             const Nom& reference, const TRUSTVect<TYP, int>& val, const int reference_size);
 };
 
 #endif /* Format_Post_Lata_included */

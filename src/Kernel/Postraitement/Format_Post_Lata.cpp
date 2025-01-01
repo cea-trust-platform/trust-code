@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -131,23 +131,54 @@ int Format_Post_Lata::preparer_post(const Nom& , const int , const int , const d
   return 1;
 }
 
-/*! @brief fichier est un fichier lata de donnees (pas le fichier maitre) on y ecrit le tableau tab tel quel (en binaire ou ascii et sur un ou
- *
- *   plusieurs fichiers en parallel).
- *   nb_colonnes est rempli avec le produit des tab.dimension(i) pour i>0
- *
- */
-int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option)
+namespace
 {
-  int line_size = 1;
+
+template<typename TYP, typename LATA_TYP>
+void fill_tmp_array(const TRUSTTab<TYP,int>& tab, int upper, int offset, bool decal_fort, trustIdType decalage_partiel, LATA_TYP *tmp);
+
+template<typename TYP>
+typename std::enable_if_t<std::is_same<TYP, int>::value || std::is_same<TYP, trustIdType>::value, void>
+fill_tmp_array(const TRUSTTab<TYP,int>& tab, int upper, int offset, bool decal_fort, trustIdType decalage_partiel, _LATA_INT_TYPE_ *tmp)
+{
+  trustIdType decal_fort_val = decal_fort ? 1 : 0;
+  const TYP *data = tab.addr();
+  for (int i = 0; i < upper; i++)
+    {
+      // valeur a ecrire (conversion en numerotation fortran si besoin)
+      _LATA_INT_TYPE_ x = data[i+offset];
+      if (x > -1)
+        x += decalage_partiel;
+      else
+        x += decal_fort_val;
+      tmp[i] = x;
+    }
+}
+
+template<>
+void fill_tmp_array<double, float>(const TRUSTTab<double,int>& tab, int upper, int offset, bool , trustIdType , float *tmp)
+{
+  const double *data = tab.addr();
+  for (int i = 0; i < upper; i++)
+    tmp[i] = (float) data[i+offset];       // downcast to float
+}
+
+/** Generic method to write the block corresponding to an array of data in a LATA file
+ */
+template<typename TYP, typename LATA_TYP>
+trustIdType write_T_tab(Fichier_Lata& fichier, bool decal_fort, trustIdType decalage_partiel, const TRUSTTab<TYP,int>& tab, int& nb_colonnes, const Format_Post_Lata::Options_Para& option)
+{
   int nb_lignes = tab.dimension(0);
+  int line_size = 1;
   const int nb_dim = tab.nb_dim();
+
   for (int i = 1; i < nb_dim; i++)
     line_size *= tab.dimension(i);
 
-  int nb_lignes_tot = 0;
+  trustIdType nb_lignes_tot = 0;
+
   const int tab_size = line_size * nb_lignes;
-  int nb_octets = tab_size * (int) sizeof(float);
+  trustIdType nb_octets = tab_size * (trustIdType) sizeof(LATA_TYP);
   switch(option)
     {
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
@@ -155,7 +186,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       nb_lignes_tot = Process::mp_sum(nb_lignes);
       // En parallele, tous les tableaux doivent avoir le meme nombre de colonnes (ou etre vides).
       nb_colonnes = Process::mp_max(line_size);
-      nb_octets = nb_colonnes * nb_lignes_tot * (int) sizeof(float);
+      nb_octets = nb_colonnes * nb_lignes_tot * (trustIdType) sizeof(LATA_TYP);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -176,120 +207,9 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
   // Ecriture des donnees.
   if (sub_type(EcrFicPartageMPIIO, sfichier))
     {
-      auto *tmp = new float[tab_size]; // No ArrOfFloat in TRUST
-      const double *data = tab.addr();
-      for (int i = 0; i < tab_size; i++)
-        tmp[i] = (float) data[i];       // downcast to float
-      sfichier.put(tmp, tab_size, line_size);
-      delete[] tmp;
-      // Fin de bloc fortran
-      if (fichier.is_master())
-        sfichier << nb_octets << finl;
-    }
-  else
-    {
-      // On convertit le tout en float par paquet de N valeurs Buffer dont la taille est un multiple de line_size:
-      const int N = 16384;
-      int bufsize = (N / line_size + 1) * line_size;
-      float *tmp = new float[bufsize];
-      const double *data = tab.addr();
-      for (int i = 0; i < tab_size; i += bufsize)
-        {
-          int j_max = bufsize;
-          if (j_max > tab_size - i)
-            j_max = tab_size - i;
-
-          // Conversion du bloc en float:
-          for (int j = 0; j < j_max; j++)
-            tmp[j] = (float) data[i + j];
-
-          // Ecriture avec retour a la ligne a chaque ligne du tableau
-          sfichier.put(tmp, j_max, line_size);
-        }
-      delete[] tmp;
-      fichier.syncfile();
-      // Fin de bloc fortran
-      if (fichier.is_master())
-        sfichier << nb_octets << finl;
-      fichier.syncfile();
-    }
-
-  return nb_lignes_tot;
-}
-
-/*! @brief Ecriture d'un tableau d'entiers dans le fichier fourni.
- *
- * Les valeurs ecrites sont les valeurs du tableau auquelles ont ajoute "decalage". Cette valeur est utilisee pour passer en numerotation
- *   fortran (ajouter 1), ou pour passer en numerotation globale (ajouter le nombre d'elements sur les processeurs precedents).
- *
- *  On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
- *  Valeur de retour: somme des dimension(0) ecrits (selon que tous les processeurs ecrivent sur le meme fichier ou pas).
- */
-int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
-{
-  assert(decalage_partiel >= decalage);
-  assert((decalage == 0) || (decalage == 1));
-  int nb_lignes = 0;
-  int line_size = 1;
-  int i;
-  nb_lignes = tab.dimension(0);
-  const int nb_dim = tab.nb_dim();
-  for (i = 1; i < nb_dim; i++)
-    line_size *= tab.dimension(i);
-
-  int nb_lignes_tot = 0;
-
-  const int tab_size = line_size * nb_lignes;
-  int nb_octets = tab_size * (int) sizeof(_LATA_INT_TYPE_);
-  switch(option)
-    {
-    case Format_Post_Lata::SINGLE_FILE_MPIIO:
-    case Format_Post_Lata::SINGLE_FILE:
-      nb_lignes_tot = Process::mp_sum(nb_lignes);
-      // En parallele, tous les tableaux doivent avoir le meme nombre de colonnes (ou etre vides).
-      nb_colonnes = Process::mp_max(line_size);
-      nb_octets = nb_colonnes * nb_lignes_tot * (int) sizeof(_LATA_INT_TYPE_);
-      assert(nb_lignes == 0 || line_size == nb_colonnes);
-      break;
-    case Format_Post_Lata::MULTIPLE_FILES:
-      nb_lignes_tot = nb_lignes;
-      nb_colonnes = line_size;
-      break;
-    default:
-      Cerr << "Format_Post_Lata_write_tab: error nb_lignes_tot" << finl;
-      exit();
-    }
-
-  SFichier& sfichier = fichier.get_SFichier();
-
-  // Debut de bloc fortran
-  if (fichier.is_master())
-    sfichier << nb_octets << finl;
-  int erreurs = 0;
-
-  // Ecriture des donnees.
-  if (sub_type(EcrFicPartageMPIIO, sfichier))
-    {
-      // On convertit le tout en _INT_TYPE_
-      _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[tab_size];
-      const int *data = tab.addr();
-      for (i = 0; i < tab_size; i++)
-        {
-          // valeur a ecrire (conversion en numerotation fortran si besoin)
-          int x = data[i];
-          if (x > -1)
-            x += decalage_partiel;
-          else
-            x += decalage;
-
-          // conversion en type int pour ecriture
-          _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
-          // reconversion en int pour comparaison
-          int z = (int) y;
-          if (x != z)
-            erreurs++;
-          tmp[i] = y;
-        }
+      // On convertit le tout en LATA_TYP
+      LATA_TYP *tmp = new LATA_TYP[tab_size];
+      fill_tmp_array(tab, tab_size, 0, decal_fort, decalage_partiel, tmp);
       sfichier.put(tmp, tab_size, line_size);
       delete[] tmp;
       // Fin de bloc fortran
@@ -302,33 +222,16 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
       // Buffer dont la taille est un multiple de line_size:
       const int N = 16384;
       int bufsize = (N / line_size + 1) * line_size;
-      _LATA_INT_TYPE_ *tmp = new _LATA_INT_TYPE_[bufsize];
-      const int *data = tab.addr();
-      for (i = 0; i < tab_size; i += bufsize)
+      LATA_TYP *tmp = new LATA_TYP[bufsize];
+      for (int i = 0; i < tab_size; i += bufsize)
         {
-          int j;
           int j_max = bufsize;
           if (j_max > tab_size - i)
             j_max = tab_size - i;
 
-          // Conversion du bloc en int_type:
-          for (j = 0; j < j_max; j++)
-            {
-              // valeur a ecrire (conversion en numerotation fortran si besoin)
-              int x = data[i + j];
-              if (x > -1)
-                x += decalage_partiel;
-              else
-                x += decalage;
+          // Conversion du bloc en LATA_TYP:
+          fill_tmp_array(tab, j_max, i, decal_fort, decalage_partiel, tmp);
 
-              // conversion en type int pour ecriture
-              _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
-              // reconversion en int pour comparaison
-              int z = (int) y;
-              if (x != z)
-                erreurs++;
-              tmp[j] = y;
-            }
           // Ecriture avec retour a la ligne a chaque ligne du tableau
           sfichier.put(tmp, j_max, line_size);
         }
@@ -339,12 +242,35 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
         sfichier << nb_octets << finl;
       fichier.syncfile();
     }
-  if (erreurs > 0)
-    {
-      Cerr << "Error in Format_Post_Lata::write_inttab\n" << " Some integers were truncated\n" << " Recompile the code with #define _LATA_INT_TYPE_ entier" << finl;
-      Process::exit();
-    }
   return nb_lignes_tot;
+}
+
+} // end anonymous namespace
+
+
+/*! @brief fichier est un fichier lata de donnees (pas le fichier maitre) on y ecrit le tableau tab tel quel (en binaire ou ascii et sur un ou
+ *
+ *   plusieurs fichiers en parallel).
+ *   nb_colonnes est rempli avec le produit des tab.dimension(i) pour i>0
+ *
+ */
+trustIdType Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option)
+{
+  return ::write_T_tab<double, float>(fichier, 0, 0, tab, nb_colonnes, option);
+}
+
+
+/*! @brief Ecriture d'un tableau d'entiers dans le fichier fourni.
+ *
+ * Les valeurs ecrites sont les valeurs du tableau auquelles ont ajoute "decalage". Cette valeur est utilisee pour passer en numerotation
+ *   fortran (ajouter 1), ou pour passer en numerotation globale (ajouter le nombre d'elements sur les processeurs precedents).
+ *
+ *  On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
+ *  Valeur de retour: somme des dimension(0) ecrits (selon que tous les processeurs ecrivent sur le meme fichier ou pas).
+ */
+trustIdType Format_Post_Lata::write_inttab(Fichier_Lata& fichier, bool decal_fort, trustIdType decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
+{
+  return ::write_T_tab<int, _LATA_INT_TYPE_>(fichier, decal_fort, decalage_partiel, tab, nb_colonnes, option);
 }
 
 /*! @brief Initialisation de la classe avec des parametres par defaut (format ASCII, SINGLE_FILE)
@@ -552,7 +478,7 @@ static Noms liste_single_lata_ecrit;
  *
  * Also called directly in TrioCFD, by Postraitement_ft_lata for interface writing.
  */
-int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_element)
+void Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_element)
 {
   const int dim = sommets.dimension(1);
   Motcle type_elem(type_element);
@@ -560,7 +486,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   // GF Pour assuerer la lecture avec le plugin lata
   if (type_element == "PRISME") type_elem = "PRISM6";
 
-  int nb_som_tot, nb_elem_tot;  // Nombre de sommets/elements dans le fichier
+  trustIdType nb_som_tot, nb_elem_tot;  // Nombre de sommets/elements dans le fichier
 
   // Construction du nom du fichier de geometrie
   Nom basename_geom(lata_basename_), extension_geom(extension_lata());
@@ -578,7 +504,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
     }
 
   Nom nom_fichier_geom;
-  int decalage_sommets = 1, decalage_elements = 1;
+  trustIdType decalage_sommets = 1, decalage_elements = 1;
 
   {
     const bool not_in_list =  !liste_single_lata_ecrit.contient_(lata_basename_),
@@ -632,12 +558,12 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         if (fichier_geom.is_master())
           offset_elem_ = fichier_geom.get_SFichier().get_ofstream().tellp();
 
-        nb_elem_tot = write_inttab(fichier_geom, 1, decalage_sommets, elements, nb_col, options_para_);
+        nb_elem_tot = write_inttab(fichier_geom, true, decalage_sommets, elements, nb_col, options_para_);
       }
     else
       {
         Fichier_Lata fichier_geom_elem(basename_geom, extension_geom + Nom(".elem"), Fichier_Lata::ERASE, format_, options_para_);
-        nb_elem_tot = write_inttab(fichier_geom_elem, 1, decalage_sommets, elements, nb_col, options_para_);
+        nb_elem_tot = write_inttab(fichier_geom_elem, true, decalage_sommets, elements, nb_col, options_para_);
       }
   }
 
@@ -707,10 +633,10 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   if (Process::is_parallel())
     if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
       {
-        IntTab data(1,2);
+        TIDTab data(1,2);
         data(0, 0) = decalage_sommets;
         data(0, 1) = sommets.dimension(0);
-        ecrire_item_int("JOINTS_SOMMETS",
+        ecrire_item_tid("JOINTS_SOMMETS",
                         id_domaine,
                         "", /* id_domaine */
                         "", /* localisation */
@@ -719,7 +645,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
                         0); /* reference_size */
         data(0, 0) = decalage_elements;
         data(0, 1) = elements.dimension(0);
-        ecrire_item_int("JOINTS_ELEMENTS",
+        ecrire_item_tid("JOINTS_ELEMENTS",
                         id_domaine,
                         "", /* id_domaine */
                         "", /* localisation */
@@ -727,7 +653,6 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
                         data,
                         0); /* reference_size */
       }
-  return 1;
 }
 
 /*! @brief voir Format_Post_base::ecrire_domaine On accepte l'ecriture d'un domaine dans un pas de temps, mais
@@ -816,7 +741,8 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
     }
 
   Nom filename_champ;
-  int size_tot, nb_compo;
+  trustIdType size_tot;
+  int nb_compo;
   {
     const bool not_in_list =  !liste_single_lata_ecrit.contient_(lata_basename_),
                should_erase = (!un_seul_fichier_lata_) ? true /* Always erase */ : (offset_elem_ < 0 && not_in_list);
@@ -877,7 +803,9 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
  *    decalage a toutes les valeurs (renumerotation des indices pour passer en numerotation globale, voir le codage de ecrire_domaine par exemple)
  *
  */
-int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference, const IntVect& val, const int reference_size)
+template<typename TYP>
+int Format_Post_Lata::ecrire_item_integral_T(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation,
+                                             const Nom& reference, const TRUSTVect<TYP, int>& val, const int reference_size)
 {
   // Construction du nom du fichier
   Nom basename_champ(lata_basename_), extension_champ(extension_lata());
@@ -900,8 +828,9 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
     }
 
   Nom filename_champ;
-  int size_tot, nb_compo;
-  const IntTab& valeurs = static_cast<const IntTab&>(val);
+  trustIdType size_tot;
+  int nb_compo = 0; // filled by ::write_T_tab() below, but my compiler doesn't see it since I templatized it.
+  const TRUSTTab<TYP, int> valeurs = static_cast<const TRUSTTab<TYP, int>&>(val);
   {
     const bool not_in_list =  !liste_single_lata_ecrit.contient_(lata_basename_),
                should_erase = (!un_seul_fichier_lata_) ? true /* Always erase */ : (offset_elem_ < 0 && not_in_list);
@@ -917,11 +846,11 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
 
     filename_champ = fichier_champ.get_filename();
     // On suppose que si reference est non vide, c'est un indice dans un autre tableau, donc numerotation fortran :
-    int decal = 0;
-    int decal_partiel = 0;
+    bool decal = false;
+    trustIdType decal_partiel = 0;
     if (reference != "")
       {
-        decal = 1;
+        decal = true;
         decal_partiel = 1;
         if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
           {
@@ -930,7 +859,7 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
             decal_partiel += mppartial_sum(reference_size);
           }
       }
-    size_tot = write_inttab(fichier_champ, decal, decal_partiel, valeurs, nb_compo, options_para_);
+    size_tot = ::write_T_tab<TYP, _LATA_INT_TYPE_>(fichier_champ, decal, decal_partiel, valeurs, nb_compo, options_para_);
   }
 
   {
@@ -982,10 +911,10 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
   if ((id_item == "FACES" && Process::is_parallel()) && (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO))
     {
       const int n = valeurs.dimension(0);
-      IntTab data(1,2);
+      TIDTab data(1,2);
       data(0, 0) = 1 + mppartial_sum(n);
       data(0, 1) = n;
-      ecrire_item_int("JOINTS_FACES",
+      ecrire_item_tid("JOINTS_FACES",
                       id_du_domaine,
                       "", /* id_domaine */
                       "", /* localisation */
@@ -994,6 +923,18 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
                       0); /* reference_size */
     }
   return 1;
+}
+
+int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation,
+                                      const Nom& reference, const IntVect& val, const int reference_size)
+{
+  return ecrire_item_integral_T(id_item, id_du_domaine, id_domaine, localisation, reference, val, reference_size);
+}
+
+int Format_Post_Lata::ecrire_item_tid(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation,
+                                      const Nom& reference, const TIDVect& val, const int reference_size)
+{
+  return ecrire_item_integral_T(id_item, id_du_domaine, id_domaine, localisation, reference, val, reference_size);
 }
 
 int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name, const Options_Para& option, const Format& format, const int est_le_premier_post)
