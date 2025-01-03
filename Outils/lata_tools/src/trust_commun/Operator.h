@@ -49,7 +49,7 @@ public:
   OperatorBoundary() : geom_init_(false) { }
   void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
   void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
     return memory_size(src_nodes_) + memory_size(src_element_) + memory_size(src_face_);
   }
@@ -85,7 +85,7 @@ public:
   void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
   void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
 
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
     return memory_size(renum_nodes_) + memory_size(renum_elements_) + memory_size(renum_faces_);
   }
@@ -110,7 +110,7 @@ class OperatorDualMesh: public Operator
 public:
   void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
   void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
     return 0;
   }
@@ -120,7 +120,7 @@ class OperatorFacesMesh: public Operator
 public:
   void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
   void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
     return 0;
   }
@@ -131,7 +131,7 @@ class OperatorNCMesh: public Operator
 public:
   void build_geometry(const Domain& src_domain, LataDeriv<Domain>& dest) override;
   void build_field(const Domain& src_domain, const LataField_base& src_field, const Domain& dest_domain, LataDeriv<LataField_base>& dest) override;
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
     return 0;
   }

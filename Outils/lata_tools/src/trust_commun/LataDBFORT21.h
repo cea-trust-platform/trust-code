@@ -187,7 +187,7 @@ template <class C_Tab>
 int LataDB::read_data2_fort21_( LataDataFile& f,
                                 const LataDBField& fld,
                                 C_Tab * const data, // const pointer to non const data !
-                                BigEntier debut, BigEntier n) const
+                                Size_t debut, Size_t n) const
 {
   Journal(6)<< "read_data2_fort21_  " << fld.name_<<" on " <<fld.geometry_<<" "<<fld.datatype_.file_offset_<<endl;
 

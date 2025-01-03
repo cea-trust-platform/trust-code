@@ -42,7 +42,7 @@ protected:
   FileSplittingOption lata_option_ = MULTIPLE_LATA_FILES;
   LataDB db_; // This is the database where we put all data...
   Nom base_name_; // Basename for files and lata master file:
-  FileOffset offset_ = 0;
+  Size_t offset_ = 0;
   bool write_faces_fields_ = false;
 };
 

@@ -23,7 +23,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
 template <class C_Tab>
 void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // const pointer to non const data !
-                             BigEntier debut, BigEntier n) const
+                             Size_t debut, Size_t n) const
 {
   Journal() << "MED PLUGIN not compiled!" << endl;
   throw;
@@ -412,7 +412,7 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
 template <class C_Tab>
 void LataDB::read_data2_med_(const LataDBField& fld, C_Tab * const data, // const pointer to non const data !
-                             BigEntier debut, BigEntier n) const
+                             Size_t debut, Size_t n) const
 {
   using namespace MEDCoupling;
   using value_t = typename C_Tab::Value_type_;    // type stored in TAB

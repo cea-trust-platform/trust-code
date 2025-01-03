@@ -67,7 +67,7 @@ public:
   void set_options(const UserFields_options &opt) { opt_ = opt; }
   void new_fields_metadata(LataFilter &filter, LataVector<LataFieldMetaData> &fields_data);
   FieldType get_field(const Field_Id &id);
-  BigEntier compute_memory_size() { return 0; }
+  Size_t compute_memory_size() { return 0; }
 
 protected:
   // Declaration de methodes outils

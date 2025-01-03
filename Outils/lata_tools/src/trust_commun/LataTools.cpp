@@ -45,32 +45,32 @@ std::ostream& Journal(int level)
 
 // Description: this method must return the total memory consumption
 //  of the object (used to compute the size of the data cache)
-BigEntier LataObject::compute_memory_size() const
+Size_t LataObject::compute_memory_size() const
 {
   Journal() << "Error in LataObject::compute_memory_size(): function not implemented" << endl;
   throw;
 }
 
 template<typename _TYPE_, typename _SIZE_>
-BigEntier memory_size(const TRUSTArray<_TYPE_,_SIZE_>& tab)
+Size_t memory_size(const TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(_TYPE_);
+  return ((Size_t)sizeof(tab)) + ((Size_t)tab.size_array()) * sizeof(_TYPE_);
 }
 
-template BigEntier memory_size<int,trustIdType>(const TRUSTArray<int,trustIdType>& tab);
-template BigEntier memory_size<float,int>(const TRUSTArray<float,int>& tab);
-template BigEntier memory_size<double,int>(const TRUSTArray<double,int>& tab);
+template Size_t memory_size<int,trustIdType>(const TRUSTArray<int,trustIdType>& tab);
+template Size_t memory_size<float,int>(const TRUSTArray<float,int>& tab);
+template Size_t memory_size<double,int>(const TRUSTArray<double,int>& tab);
 
 #if INT_is_64_ == 2
-template BigEntier memory_size<trustIdType,trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab);
-template BigEntier memory_size<float,trustIdType>(const TRUSTArray<float,trustIdType>& tab);
-template BigEntier memory_size<double,trustIdType>(const TRUSTArray<double,trustIdType>& tab);
+template Size_t memory_size<trustIdType,trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab);
+template Size_t memory_size<float,trustIdType>(const TRUSTArray<float,trustIdType>& tab);
+template Size_t memory_size<double,trustIdType>(const TRUSTArray<double,trustIdType>& tab);
 #endif
 
 
-BigEntier memory_size(const BigArrOfBit& tab)
+Size_t memory_size(const BigArrOfBit& tab)
 {
-  return ((BigEntier)sizeof(tab)) + ((BigEntier)tab.size_array()) * sizeof(int) / 32;
+  return ((Size_t)sizeof(tab)) + ((Size_t)tab.size_array()) * sizeof(int) / 32;
 }
 
 void split_path_filename(const char *s, Nom& path, Nom& filename)

@@ -27,7 +27,6 @@
 //  It provides services to add meta-data, read data to a user specified array,
 //  and write data to a lata file.
 
-typedef BigEntier FileOffset;
 
 // .Description: LataDBError is the type used for thrown exceptions in LataDBxxx classes
 class LataDBError
@@ -85,7 +84,7 @@ public:
   Type bloc_marker_type_;
 
   // Data is located at this offset in the file
-  FileOffset file_offset_;
+  Size_t file_offset_;
 
   LataDBDataType() : msb_(UNKNOWN_MSB), type_(UNKNOWN_TYPE), array_index_(UNKNOWN_ARRAYINDEX),
     data_ordering_(UNKNOWN_ORDERING), fortran_bloc_markers_(UNKNOWN_MARKERS), bloc_marker_type_(UNKNOWN_TYPE),
@@ -247,16 +246,16 @@ public:
   LataDBDataType default_type_int_;
   LataDBDataType::Type default_float_type_;
 
-  virtual void read_data(const LataDBField&, BigDoubleTab& data, BigEntier debut=0, BigEntier n=-1) const;
-  virtual void read_data(const LataDBField&, BigFloatTab& data, BigEntier debut=0, BigEntier n=-1) const;
-  virtual void read_data(const LataDBField&, BigIntTab& data, BigEntier debut=0, BigEntier n=-1) const;
+  virtual void read_data(const LataDBField&, BigDoubleTab& data, Size_t debut=0, Size_t n=-1) const;
+  virtual void read_data(const LataDBField&, BigFloatTab& data, Size_t debut=0, Size_t n=-1) const;
+  virtual void read_data(const LataDBField&, BigIntTab& data, Size_t debut=0, Size_t n=-1) const;
 
   virtual void read_data(const LataDBField&, BigDoubleTab& data, const BigArrOfTID& lines_to_read) const;
   virtual void read_data(const LataDBField&, BigFloatTab& data, const BigArrOfTID& lines_to_read) const;
   virtual void read_data(const LataDBField&, BigIntTab& data, const BigArrOfTID& lines_to_read) const;
 
 #if INT_is_64_ == 2
-  virtual void read_data(const LataDBField&, BigTIDTab& data, BigEntier debut=0, BigEntier n=-1) const;
+  virtual void read_data(const LataDBField&, BigTIDTab& data, Size_t debut=0, Size_t n=-1) const;
   virtual void read_data(const LataDBField&, BigTIDTab& data, const BigArrOfTID& lines_to_read) const;
 #endif
 
@@ -273,11 +272,11 @@ public:
   bool   check_duplicate_filename(const char *filename) const;
   void   add_field(const LataDBField& field);
   void   write_master_file(const char *filename) const;
-  FileOffset write_data(int tstep, const Field_UName&, const BigDoubleTab&);
-  FileOffset write_data(int tstep, const Field_UName&, const BigFloatTab&);
-  FileOffset write_data(int tstep, const Field_UName&, const BigIntTab&);
+  Size_t write_data(int tstep, const Field_UName&, const BigDoubleTab&);
+  Size_t write_data(int tstep, const Field_UName&, const BigFloatTab&);
+  Size_t write_data(int tstep, const Field_UName&, const BigIntTab&);
 #if INT_is_64_ == 2
-  FileOffset write_data(int tstep, const Field_UName&, const BigTIDTab&);
+  Size_t write_data(int tstep, const Field_UName&, const BigTIDTab&);
 #endif
 
 protected:
@@ -290,12 +289,12 @@ protected:
   const LataDBTimestep& get_tstep(int i) const;
   void add(int tstep, const LataDBGeometry& item);
   void add(int tstep, const LataDBField& item);
-  template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, BigEntier debut, BigEntier n) const;
+  template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, Size_t debut, Size_t n) const;
   template <class C_Tab> void read_data_(const LataDBField&, C_Tab& data, const BigArrOfTID& lines_to_read) const;
-  template <class C_Tab> void read_data2_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, BigEntier debut=0, BigEntier n=-1, const BigArrOfTID *lines_to_read=nullptr) const;
-  template <class C_Tab> void read_data2_med_( const LataDBField& fld, C_Tab * const data, BigEntier debut=0, BigEntier n=-1) const;
-  template <class C_Tab> int read_data2_fort21_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, BigEntier debut=0, BigEntier n=-1) const;
-  template <class C_Tab> FileOffset write_data_(int tstep, const Field_UName& uname, const C_Tab&);
+  template <class C_Tab> void read_data2_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, Size_t debut=0, Size_t n=-1, const BigArrOfTID *lines_to_read=nullptr) const;
+  template <class C_Tab> void read_data2_med_( const LataDBField& fld, C_Tab * const data, Size_t debut=0, Size_t n=-1) const;
+  template <class C_Tab> int read_data2_fort21_(LataDataFile& f, const LataDBField& fld, C_Tab * const data, Size_t debut=0, Size_t n=-1) const;
+  template <class C_Tab> Size_t write_data_(int tstep, const Field_UName& uname, const C_Tab&);
 
   // Timestep 0 contains global domains and field definition
   // Timestep 1..size()-1 contain the data for each "TEMPS" entry

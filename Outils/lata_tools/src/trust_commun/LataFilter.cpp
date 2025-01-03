@@ -222,7 +222,7 @@ int LataOptions::parse_option(const Nom& s)
   return 1;
 }
 
-void LataFilterCache::set_cache_properties(bool clear_on_tstep_change, BigEntier mem_limit)
+void LataFilterCache::set_cache_properties(bool clear_on_tstep_change, Size_t mem_limit)
 {
   clear_cache_on_tstep_change_ = clear_on_tstep_change;
   cache_memory_limit_ = mem_limit;
@@ -338,9 +338,9 @@ void LataFilterCache::cleanup_cache(int tstep_to_keep)
         {
           const int n = data_.size();
           // Scan cached data, looking for the oldest item and summing up memory
-          BigEntier total_memsize = 0;
+          Size_t total_memsize = 0;
           int oldest = -1;
-          BigEntier oldest_time = cache_data_access_count_;
+          Size_t oldest_time = cache_data_access_count_;
           for (int i = 0; i < n; i++)
             {
               const DataCacheItem& item = data_[i];
@@ -382,7 +382,7 @@ void LataFilter::initialize(const LataOptions& opt, const LataDB& lata_db)
   get_all_metadata(geoms_metadata_, fields_metadata_);
 }
 
-void LataFilter::set_cache_properties(BigEntier max_memory, bool keep_all_timesteps)
+void LataFilter::set_cache_properties(Size_t max_memory, bool keep_all_timesteps)
 {
   data_cache_.set_cache_properties(!keep_all_timesteps, max_memory);
 }

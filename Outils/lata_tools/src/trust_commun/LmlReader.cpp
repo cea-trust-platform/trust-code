@@ -85,7 +85,7 @@ void lml_reader(const char *lmlfilename, const char *data_filename, LataDB& lata
   // but we must tell write_data() if it must put the data at the beginning
   //  (file_offset==0) or append the data at the end of the file (file_offset!=0)
   // file_offset is 0 for the first data block and it is incremented for each block.
-  FileOffset file_offset = 0;
+  Size_t file_offset = 0;
   LataDBField sommets;
   BigFloatTab nodes;
   trustIdType tmp; // tmp variable

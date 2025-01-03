@@ -25,9 +25,9 @@
 #define __BYTE_ORDER __LITTLE_ENDIAN
 
 #define strtoll _strtoi64
-// This must be able to contain a total memory size
+// This must be able to contain a total memory size, a file offset,
 // or a very big operation counter.
-typedef __int64 BigEntier;
+typedef __int64 Size_t;
 
 #else
 #ifdef __APPLE__
@@ -37,9 +37,9 @@ typedef __int64 BigEntier;
 #define __BYTE_ORDER __LITTLE_ENDIAN
 #endif
 
-// This must be able to contain a total memory size
+// This must be able to contain a total memory size, a file offset,
 // or a very big operation counter.
-typedef std::int64_t BigEntier;
+typedef std::int64_t Size_t;
 #endif
 
 #ifndef __BYTE_ORDER
@@ -66,15 +66,15 @@ const bool mymachine_msb =  false;
 #include <ArrOfBit.h>
 
 template<typename _TYPE_, typename _SIZE_>
-BigEntier memory_size(const TRUSTArray<_TYPE_,_SIZE_>& tab);
+Size_t memory_size(const TRUSTArray<_TYPE_,_SIZE_>& tab);
 
-BigEntier memory_size(const BigArrOfBit&);
+Size_t memory_size(const BigArrOfBit&);
 
 class LataObject
 {
 public:
   virtual ~LataObject() {};
-  virtual BigEntier compute_memory_size() const;
+  virtual Size_t compute_memory_size() const;
 };
 
 // A 'LataDeriv<X> ptr' object can hold an object of class Y which is any derived type of X.
@@ -125,7 +125,7 @@ public:
       throw ERROR_TYPE;
     return *x;
   }
-  BigEntier compute_memory_size() const override { if (ptr_) return ptr_->compute_memory_size(); else return 0; }
+  Size_t compute_memory_size() const override { if (ptr_) return ptr_->compute_memory_size(); else return 0; }
 protected:
   LataDeriv(const LataDeriv<C>& c) { ptr_ = 0; operator=(c); }
   LataDeriv(const C& c) { ptr_ = 0; operator=(c); }

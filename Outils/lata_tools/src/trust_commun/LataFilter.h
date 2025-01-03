@@ -117,13 +117,13 @@ public:
   LataDeriv<LataObject> item_; // The cached item
   Nom id_; // The id for this item
   int tstep_; // The timestep of the cached data (for cache cleanup)
-  BigEntier last_access_time_; // Last time this item has been accessed (for cache cleanup)
+  Size_t last_access_time_; // Last time this item has been accessed (for cache cleanup)
   // Is the item locked ? => cannot be deleted by clear_cache()
   // This is a counter: get_item increases, release_item dereases.
   // (this is when we simultaneously need several items, we must lock them to be sure)
   int lock_;
   // The memory size is computed when the item is released
-  BigEntier memory_size_;
+  Size_t memory_size_;
 };
 
 class LataFilterCache
@@ -135,7 +135,7 @@ public:
     data_.reset();
     cache_data_access_count_ = 0;
   }
-  void set_cache_properties(bool clear_on_tstep_change, BigEntier mem_limit);
+  void set_cache_properties(bool clear_on_tstep_change, Size_t mem_limit);
   template<class C> C& get_item(const Nom& id, int tstep)
   {
     LataDeriv<LataObject>& obj = get_item_(id, tstep);
@@ -153,14 +153,14 @@ protected:
   // Stored data (depends on caching strategy)
   // data_ grows when needed.
   LataVector<DataCacheItem> data_;
-  BigEntier cache_data_access_count_;
+  Size_t cache_data_access_count_;
   // If nonzero, whenever we ask a timestep,
   //  remove all cached data from other timesteps
   bool clear_cache_on_tstep_change_;
   // If before getting a new geometry or field, the data cache
   //  uses more than the limit, remove old data until we are below.
   // -1 means "no limit"
-  BigEntier cache_memory_limit_; // Limit in bytes
+  Size_t cache_memory_limit_; // Limit in bytes
 };
 
 // Description: This is the MAIN class for the lata filter tool:
@@ -180,7 +180,7 @@ class LataFilter
 public:
   LataFilter() : lataDB__(0) { }
   void initialize(const LataOptions& opt, const LataDB& db);
-  void set_cache_properties(BigEntier max_memory, bool keep_all_timesteps);
+  void set_cache_properties(Size_t max_memory, bool keep_all_timesteps);
   Noms get_exportable_geometry_names() const;
   const LataGeometryMetaData& get_geometry_metadata(const char *geometry) const;
   LataVector<Field_UName> get_exportable_field_unames(const char *geometry) const;

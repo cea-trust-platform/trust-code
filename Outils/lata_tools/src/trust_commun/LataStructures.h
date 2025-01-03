@@ -147,7 +147,7 @@ public:
   template<typename TabType>
   void compute_cell_center_coordinates(TabType& coord, trustIdType index_begin) const;
 
-  BigEntier compute_memory_size() const override { return memory_size(nodes_) + memory_size(elements_) + memory_size(faces_) + memory_size(elem_faces_); }
+  Size_t compute_memory_size() const override { return memory_size(nodes_) + memory_size(elements_) + memory_size(faces_) + memory_size(elem_faces_); }
 
   const BigTIDTab& get_joints(LataField_base::Elem_som loc) const
   {
@@ -327,9 +327,9 @@ public:
   //  stockes dans les composantes du champ.
   trustIdType nb_faces() const override { return nb_nodes(); }
 
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
-    BigEntier x = 0;
+    Size_t x = 0;
     const int n = coord_.size();
     for (int i = 0; i < n; i++)
       x += memory_size(coord_[i]);
@@ -374,7 +374,7 @@ class Field: public LataField_base
 {
 public:
   TabType data_;
-  BigEntier compute_memory_size() const override
+  Size_t compute_memory_size() const override
   {
     return memory_size(data_);
   }
