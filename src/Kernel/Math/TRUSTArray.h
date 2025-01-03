@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -322,9 +322,12 @@ using ArrOfFloat = TRUSTArray<float, int>;
 using ArrOfInt = TRUSTArray<int, int>;
 using ArrOfTID = TRUSTArray<trustIdType, int>;
 
-using BigArrOfDouble = TRUSTArray<double, trustIdType>;
-using BigArrOfInt = TRUSTArray<int, trustIdType>;
-using BigArrOfTID = TRUSTArray<trustIdType, trustIdType>;
+template <typename _TYPE_>
+using BigTRUSTArray = TRUSTArray<_TYPE_, trustIdType>;
+
+using BigArrOfDouble = BigTRUSTArray<double>;
+using BigArrOfInt = BigTRUSTArray<int>;
+using BigArrOfTID = BigTRUSTArray<trustIdType>;
 
 
 /* *********************************** *

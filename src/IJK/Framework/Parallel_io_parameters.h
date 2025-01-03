@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,17 @@
 #ifndef Parallel_io_parameters_included
 #define Parallel_io_parameters_included
 #include <Interprete.h>
+#include <LataTools.h>  // For 'Size_t'
 
 class Parallel_io_parameters : public Interprete
 {
   Declare_instanciable(Parallel_io_parameters);
+
 public:
   Entree& interpreter(Entree&) override;
-  static long long get_max_block_size();
+  static Size_t get_max_block_size()     { return max_block_size_; }
   static int       get_nb_writing_processes();
+
 protected:
   static void run_bench_read(const Nom& ijk_splitting);
   static void run_bench_write(const Nom& ijk_splitting);
@@ -31,7 +34,8 @@ protected:
   // File writes will be performed by chunks of this size (in bytes)
   // The size should be a multiple of the GPFS block size or lustre stripping size
   // (typically several megabytes).
-  static long long max_block_size_;
+  static Size_t max_block_size_;
+
   // This is the number of processes that will write concurrently to the file system
   // (this must be set according to the capacity of the filesystem, set to 1 on
   //  small computers, can be up to 64 or 128 on very large systems).

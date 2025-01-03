@@ -21,18 +21,6 @@
 #include <errno.h>
 #include <IJK_Striped_Writer.h>
 #include <Parallel_io_parameters.h>
-// L'objet Sortie est prevu pour long, pas pour long long.
-// Mais long est peut-etre seulement sur 32 bits.
-// Verification: si erreur, il faut ajouter une sortie long long dans Sortie.h
-static inline long CHECKLONG(long long x)
-{
-  if (sizeof(long) != 8)
-    {
-      Cerr << "ERROR checklong" << finl;
-      Process::exit();
-    }
-  return (long) x;
-}
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
@@ -105,7 +93,7 @@ void dumplata_vector(const char *filename, const char *fieldname,
   Nom prefix = Nom(filename) + Nom(".") + Nom(step) + Nom(".");
   Nom fd = prefix + fieldname;
   IJK_Striped_Writer striped_writer;
-  const long long n = striped_writer.write_data_template<float,_TYPE_,_TYPE_ARRAY_>(fd, vx, vy, vz); //ToDo// FLOAT HERE TOO ???
+  const Size_t n = striped_writer.write_data_template<float,_TYPE_,_TYPE_ARRAY_>(fd, vx, vy, vz); //ToDo// FLOAT HERE TOO ???
   if (Process::je_suis_maitre())
     {
       SFichier master_file;
@@ -116,7 +104,7 @@ void dumplata_vector(const char *filename, const char *fieldname,
 #ifdef INT_is_64_
       //master_file << " file_offset=6";
 #endif
-      master_file << " size=" << CHECKLONG(n) << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
+      master_file << " size=" << n << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
     }
   Process::barrier();
 }
@@ -131,7 +119,7 @@ void dumplata_vector_parallele_plan(const char *filename, const char *fieldname,
   Nom fd_global = prefix + fieldname;
   Nom fd = prefix + fieldname + Nom(".") + Nom(Process::me());
   IJK_Striped_Writer striped_writer;
-  const long long n = striped_writer.write_data_parallele_plan_template<float,_TYPE_,_TYPE_ARRAY_>(fd, vx, vy, vz);
+  const Size_t n = striped_writer.write_data_parallele_plan_template<float,_TYPE_,_TYPE_ARRAY_>(fd, vx, vy, vz);
   if (Process::je_suis_maitre())
     {
       SFichier master_file;
@@ -142,7 +130,7 @@ void dumplata_vector_parallele_plan(const char *filename, const char *fieldname,
 #ifdef INT_is_64_
       master_file << " file_offset=6";
 #endif
-      master_file << " size=" << CHECKLONG(n) << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
+      master_file << " size=" << n << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
     }
 }
 
@@ -164,7 +152,7 @@ void dumplata_scalar(const char *filename, const char *fieldname,
   Nom prefix = Nom(filename) + Nom(".") + Nom(step) + Nom(".");
   Nom fd = prefix + fieldname;
   IJK_Striped_Writer striped_writer;
-  const long long n = striped_writer.write_data_template<float,_TYPE_,_TYPE_ARRAY_>(fd, f);
+  const Size_t n = striped_writer.write_data_template<float,_TYPE_,_TYPE_ARRAY_>(fd, f);
   if (Process::je_suis_maitre())
     {
       master_file.ouvrir(filename, ios::app);
@@ -193,7 +181,7 @@ void dumplata_scalar_parallele_plan(const char *filename, const char *fieldname,
   Nom fd_global = prefix + fieldname;
   Nom fd = prefix + fieldname + Nom(".") + Nom(Process::me());
   IJK_Striped_Writer striped_writer;
-  const long long n = striped_writer.write_data_parallele_plan_template<float,_TYPE_,_TYPE_ARRAY_>(fd, f);
+  const Size_t n = striped_writer.write_data_parallele_plan_template<float,_TYPE_,_TYPE_ARRAY_>(fd, f);
   if (Process::je_suis_maitre())
     {
       master_file.ouvrir(filename, ios::app);
@@ -318,8 +306,8 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
               if (slice_i == 0)
                 {
                   // First processor in the row reads the data
-                  const long long start = ((long long) global_k * input_nj_tot + global_j) * input_ni_tot;
-                  const long long n = number_of_j_this_batch * input_ni_tot;
+                  const Size_t start = ((Size_t) global_k * input_nj_tot + global_j) * input_ni_tot;
+                  const Size_t n = number_of_j_this_batch * input_ni_tot;
                   lata_db.read_data(*db_field, tmp_read, start, n);
                   if (tmp_read.dimension_int(1) <= i_compo)
                     {
@@ -423,7 +411,7 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
           Cerr << "Error reading field " << geometryname << " / " << fieldname << " / " << locstring << " at timestep " << tstep;
           Cerr << " in file " << filename_with_path << " : wrong size\n";
           Cerr << " Expected size = " << nitot << " x " << njtot << " x " << nktot << " = " << nitot * njtot * nktot << "\n";
-          Cerr << " Size in file  = " << CHECKLONG(db_field->size_) << finl;
+          Cerr << " Size in file  = " << db_field->size_ << finl;
           Process::exit();
         }
       is_double = (db_field->datatype_.type_ == LataDBDataType::REAL64);
@@ -431,22 +419,17 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
   envoyer_broadcast(is_double, 0);
   if (!is_double)
     {
-      // TODO - should not size down ... ?
-      FloatTab data;
-      BigFloatTab big_data;
+      BigFloatTab data;
       if (master)
-        db.read_data(*db_field, big_data);
-      big_data.ref_as_small(data);
+        db.read_data(*db_field, data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, f, nitot, njtot, nktot, 1 /* total nbcompo */, 0 /* this component */);
     }
   else
     {
-      DoubleTab data;
-      BigDoubleTab big_data;
+      BigDoubleTab data;
       if (master)
-        db.read_data(*db_field, big_data);
-      big_data.ref_as_small(data);
+        db.read_data(*db_field, data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, f, nitot, njtot, nktot, 1 /* total nbcompo */, 0 /* this component */);
     }
@@ -507,7 +490,7 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
           Cerr << "Error reading field " << geometryname << " / " << fieldname << " / " << locstring << " at timestep " << tstep;
           Cerr << " in file " << filename_with_path << " : wrong size\n";
           Cerr << " Expected size = " << nitot << " x " << njtot << " x " << nktot << " = " << nitot * njtot * nktot << "\n";
-          Cerr << " Size in file  = " << CHECKLONG(db_field->size_) << finl;
+          Cerr << " Size in file  = " << db_field->size_ << finl;
           Process::exit();
         }
       is_double = (db_field->datatype_.type_ == LataDBDataType::REAL64);
@@ -516,11 +499,9 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
 
   if (!is_double)
     {
-      FloatTab data;
-      BigFloatTab big_data;
+      BigFloatTab data;
       if (master)
-        db.read_data(*db_field, big_data);
-      big_data.ref_as_small(data);
+        db.read_data(*db_field, data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, vx, nitot, njtot, nktot, 3 /* total nbcompo */, 0 /* this component */);
       reader.redistribute_load(data, vy, nitot, njtot, nktot, 3 /* total nbcompo */, 1 /* this component */);
@@ -528,11 +509,9 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
     }
   else
     {
-      DoubleTab data;
-      BigDoubleTab big_data;
+      BigDoubleTab data;
       if (master)
-        db.read_data(*db_field, big_data);
-      big_data.ref_as_small(data);
+        db.read_data(*db_field, data);
       IJK_Striped_Writer reader;
       reader.redistribute_load(data, vx, nitot, njtot, nktot, 3 /* total nbcompo */, 0 /* this component */);
       reader.redistribute_load(data, vy, nitot, njtot, nktot, 3 /* total nbcompo */, 1 /* this component */);

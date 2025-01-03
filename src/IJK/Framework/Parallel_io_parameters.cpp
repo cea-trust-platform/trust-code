@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ Implemente_instanciable(Parallel_io_parameters, "Parallel_io_parameters", Interp
 // XD Parallel_io_parameters interprete Parallel_io_parameters 1 Object to handle parallel files in IJK discretization
 
 // Reasonable default value for typical machines nowadays
-long long Parallel_io_parameters::max_block_size_ = (long long) 0; // for the moment, deactivate parallel write by default 1024*1024*64;
+Size_t Parallel_io_parameters::max_block_size_ = (Size_t) 0; // for the moment, deactivate parallel write by default 1024*1024*64;
 
 // 0 means that the number of writing processes will be guessed depending on the
 // number of compute processors
@@ -84,11 +84,6 @@ Entree& Parallel_io_parameters::interpreter(Entree& is)
       run_bench_read(ijk_name_read);
     }
   return is;
-}
-
-long long Parallel_io_parameters::get_max_block_size()
-{
-  return max_block_size_;
 }
 
 int Parallel_io_parameters::get_nb_writing_processes()

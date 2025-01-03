@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -379,9 +379,12 @@ using FloatTab = TRUSTTab<float, int>;
 using IntTab = TRUSTTab<int, int>;
 using TIDTab = TRUSTTab<trustIdType, int>;
 
-using BigDoubleTab = TRUSTTab<double, trustIdType>;
-using BigIntTab = TRUSTTab<int, trustIdType>;
-using BigTIDTab = TRUSTTab<trustIdType, trustIdType>;
+template <typename _TYPE_>
+using BigTRUSTTab = TRUSTTab<_TYPE_, trustIdType>;
+
+using BigDoubleTab = BigTRUSTTab<double>;
+using BigIntTab = BigTRUSTTab<int>;
+using BigTIDTab = BigTRUSTTab<trustIdType>;
 
 /* ********************************* *
  * FONCTIONS NON MEMBRES DE TRUSTTab *

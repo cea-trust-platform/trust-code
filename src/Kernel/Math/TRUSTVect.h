@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,10 +207,12 @@ using FloatVect = TRUSTVect<float, int>;
 using IntVect = TRUSTVect<int, int>;
 using TIDVect = TRUSTVect<trustIdType, int>;
 
-using BigDoubleVect = TRUSTVect<double, trustIdType>;
-using BigIntVect = TRUSTVect<int, trustIdType>;
-using BigTIDVect = TRUSTVect<trustIdType, trustIdType>;
+template <typename _TYPE_>
+using BigTRUSTVect = TRUSTVect<_TYPE_, trustIdType>;
 
+using BigDoubleVect = BigTRUSTVect<double>;
+using BigIntVect = BigTRUSTVect<int>;
+using BigTIDVect = BigTRUSTVect<trustIdType>;
 
 /* ********************************** *
  * FONCTIONS NON MEMBRES DE TRUSTVect *

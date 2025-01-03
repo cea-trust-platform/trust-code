@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define IJK_Striped_Writer_included
 
 #include <IJK_Field.h>
+#include <LataTools.h>
 
 /*! @brief : class IJK_Striped_Writer
  *
@@ -29,27 +30,27 @@ class IJK_Striped_Writer
 {
 public:
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  long long write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
+  Size_t write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  long long write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
+  Size_t write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  long long write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
+  Size_t write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  long long write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
+  Size_t write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  long long write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
+  Size_t write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  long long write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
+  Size_t write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
   void write_data_parallel2_template(const char * filename,
                                      const int file_ni_tot, const int file_nj_tot, const int file_nk_tot,
                                      const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
 
   template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  void redistribute(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& input, TRUSTArray<_OUT_TYPE_>& output,
+  void redistribute(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& input, BigTRUSTArray<_OUT_TYPE_>& output,
                     const int nitot, const int njtot, const int nktot, const int nbcompo, int component);
   template<typename _IN_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-  void redistribute_load(const TRUSTArray<_IN_TYPE_>& input, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& output,
+  void redistribute_load(const BigTRUSTArray<_IN_TYPE_>& input, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& output,
                          const int nitot, const int njtot, const int nktot, const int nbcompo, const int component);
 
 };

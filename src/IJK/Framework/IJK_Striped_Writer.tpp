@@ -23,7 +23,7 @@
 
 // Returns the number of written values
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-long long IJK_Striped_Writer::write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
+Size_t IJK_Striped_Writer::write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
 {
   if (Parallel_io_parameters::get_max_block_size() > 0)
     return write_data_parallel_template<_OUT_TYPE_,_TYPE_, _TYPE_ARRAY_>(filename, f);
@@ -41,7 +41,7 @@ long long IJK_Striped_Writer::write_data_template(const char * filename, const I
   const int nktot = splitting.get_nb_items_global(loc, DIRECTION_K);
   const int ncompo = 1;
 
-  TRUSTArray<_OUT_TYPE_> tmp;
+  BigTRUSTArray<_OUT_TYPE_> tmp;
   if (Process::je_suis_maitre())
     tmp.resize_array(nitot*njtot*nktot);
   redistribute(f, tmp, nitot, njtot, nktot, ncompo, 0);
@@ -63,7 +63,7 @@ long long IJK_Striped_Writer::write_data_template(const char * filename, const I
 //    line of data = 3 values. 1st value = component i of velocity on left face of element (i,j,k), 2nd value = component j, etc...
 // Returns the number of written values (1 value = 3 scalars)
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-long long IJK_Striped_Writer::write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz)
+Size_t IJK_Striped_Writer::write_data_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz)
 {
   if (Parallel_io_parameters::get_max_block_size() > 0)
     return write_data_parallel_template<_OUT_TYPE_, _TYPE_, _TYPE_ARRAY_>(filename, vx, vy, vz);
@@ -86,11 +86,9 @@ long long IJK_Striped_Writer::write_data_template(const char * filename, const I
   const int nktot = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2) + 1;
   const int nbcompo = 3;
 
-  TRUSTArray<_OUT_TYPE_> tmp;
+  BigTRUSTArray<_OUT_TYPE_> tmp;
   if (Process::je_suis_maitre())
     tmp.resize_array(nitot*njtot*nktot*nbcompo);
-  // Modif Martin
-  //tmp=-123456789;
   tmp=0;
   redistribute(vx, tmp, nitot, njtot, nktot, nbcompo, 0);
   redistribute(vy, tmp, nitot, njtot, nktot, nbcompo, 1);
@@ -111,7 +109,7 @@ long long IJK_Striped_Writer::write_data_template(const char * filename, const I
 
 // Density fields are written by more than one processor. Each processor write a file.
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
+Size_t IJK_Striped_Writer::write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
 {
   if (f.get_localisation() != IJK_Splitting::ELEM && f.get_localisation() != IJK_Splitting::NODES)
     {
@@ -145,7 +143,7 @@ long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * fi
 
 // Velocity fields are written by more than one processor. Each processor write a file.
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz)
+Size_t IJK_Striped_Writer::write_data_parallele_plan_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz)
 {
   if (vx.get_localisation() != IJK_Splitting::FACES_I
       || vy.get_localisation() != IJK_Splitting::FACES_J
@@ -185,7 +183,6 @@ long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * fi
 
   TRUSTArray<_OUT_TYPE_> tmp;
   tmp.resize_array(ni*nj*nk*nbcompo);
-  //tmp=-123456789;
   for (int k = 0; k < nk; k++)
     {
       for (int j = 0; j < nj; j++)
@@ -209,11 +206,13 @@ long long IJK_Striped_Writer::write_data_parallele_plan_template(const char * fi
 }
 
 
-// Redistribute data from input (distributed ijk scalar field) to ouput
-// (striped linear storage)
-// les n_compo_tot sont inutiles ici !!!
+/** Redistribute data from input (distributed ijk scalar field) to ouput
+ * (striped linear storage)
+ * output is a 'big' array (might contain more than 32b)
+ * les n_compo_tot sont inutiles ici !!!
+ */
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Striped_Writer::redistribute(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& input, TRUSTArray<_OUT_TYPE_>& output,
+void IJK_Striped_Writer::redistribute(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& input, BigTRUSTArray<_OUT_TYPE_>& output,
                                       const int nitot, const int njtot, const int nktot, const int nbcompo, const int component)
 {
   const IJK_Splitting& splitting = input.get_splitting();
@@ -302,9 +301,11 @@ void IJK_Striped_Writer::redistribute(const IJK_Field_template<_TYPE_,_TYPE_ARRA
     }
 }
 
-// les n_compo_tot sont inutiles ici !!!
+/** Redistribute data read by master procs to all other procs.
+ *
+ */
 template<typename _IN_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Striped_Writer::redistribute_load(const TRUSTArray<_IN_TYPE_>& input, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& output,
+void IJK_Striped_Writer::redistribute_load(const BigTRUSTArray<_IN_TYPE_>& input, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& output,
                                            const int nitot, const int njtot, const int nktot, const int nbcompo, const int component)
 {
   const IJK_Splitting& splitting = output.get_splitting();
@@ -378,9 +379,7 @@ void IJK_Striped_Writer::redistribute_load(const TRUSTArray<_IN_TYPE_>& input, I
   if (splitting.get_nb_elem_local(0) > 0)
     {
       if (!Process::je_suis_maitre())
-        {
-          recevoir(recv_tmp, 0, 0);
-        }
+        recevoir(recv_tmp, 0, 0);
 
       for (int k = 0; k < nk; k++)
         for (int j = 0; j < nj; j++)
@@ -396,7 +395,7 @@ void IJK_Striped_Writer::redistribute_load(const TRUSTArray<_IN_TYPE_>& input, I
 //    line of data = 3 values. 1st value = component i of velocity on left face of element (i,j,k), 2nd value = component j, etc...
 // Returns the number of written values (1 value = 3 scalars)
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-long long IJK_Striped_Writer::write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz)
+Size_t IJK_Striped_Writer::write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz)
 {
   if (vx.get_localisation() != IJK_Splitting::FACES_I
       || vy.get_localisation() != IJK_Splitting::FACES_J
@@ -416,11 +415,11 @@ long long IJK_Striped_Writer::write_data_parallel_template(const char * filename
 
   write_data_parallel2_template<_OUT_TYPE_,_TYPE_,_TYPE_ARRAY_>(filename, nitot, njtot, nktot, vx, vy, vz);
 
-  return (long long) nktot * njtot * nitot;
+  return (Size_t) nktot * njtot * nitot;
 }
 
 template<typename _OUT_TYPE_, typename _TYPE_, typename _TYPE_ARRAY_>
-long long IJK_Striped_Writer::write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
+Size_t IJK_Striped_Writer::write_data_parallel_template(const char * filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
 {
   const IJK_Splitting& splitting = f.get_splitting();
 
@@ -444,7 +443,7 @@ long long IJK_Striped_Writer::write_data_parallel_template(const char * filename
     }
   write_data_parallel2_template<_OUT_TYPE_,_TYPE_,_TYPE_ARRAY_>(filename, nitot, njtot, nktot, f, f, f);
 
-  return (long long) nktot * njtot * nitot;
+  return (Size_t) nktot * njtot * nitot;
 }
 
 // if vx, vy and vz are references to the same object, we assume that we have only 1 component.
@@ -463,7 +462,7 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
   // which are a multiple of the gpfs block size (which is ???), aligned by the same amount,
   // in order to avoid thrashing the filesystem.
 
-  long long block_size = Parallel_io_parameters::get_max_block_size();
+  Size_t block_size = Parallel_io_parameters::get_max_block_size();
   // Reasonable default value for the number of writing processes (one per node, but no more than 16).
   int nb_writing_processes = Parallel_io_parameters::get_nb_writing_processes();
 
@@ -479,7 +478,7 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
     }
   //Cerr << "file_n_tot= " << file_ni_tot << " " << file_nj_tot << " " << file_nk_tot << finl;
   //Cerr << "ncompo= " << nb_components << finl;
-  const long long total_data_bytes = (long long) file_nk_tot * file_nj_tot * file_ni_tot * nb_components * sizeof(_OUT_TYPE_);
+  const Size_t total_data_bytes = (Size_t) file_nk_tot * file_nj_tot * file_ni_tot * nb_components * sizeof(_OUT_TYPE_);
 
   FILE *file_pointer = 0;
   // According to recommandations of LRZ about GPFS, we create the file on processor 0,
@@ -499,14 +498,14 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
       // Seek at the end of file and write something to set the file size and check if filessystem
       // accepts the final file size:
       // On 64 bit platform, the prototype for the fseek library function takes a 64 bit integer, so this is ok:
-      fseek(file_pointer, total_data_bytes - sizeof(long long), SEEK_SET);
+      fseek(file_pointer, total_data_bytes - sizeof(Size_t), SEEK_SET);
       if (errno != 0)
         {
           Cerr << "Error seeking at file offset " << (int)(total_data_bytes>>32) << "GB in file " << filename << finl;
           Process::exit();
         }
       // Write something to allocate disk space for the file:
-      fwrite(&total_data_bytes, sizeof(long long), 1, file_pointer);
+      fwrite(&total_data_bytes, sizeof(Size_t), 1, file_pointer);
       if (errno != 0)
         {
           Cerr << "Error writing at file offset " << (int)(total_data_bytes>>32) << "GB in file " << filename << finl;
@@ -571,8 +570,8 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
         {
           Sortie& send_buffer = schema_comm.send_buffer(writing_processes[iwrite_process]);
 
-          long long offset_start_of_block = (long long) block_size * (i_block_proc0 + iwrite_process);
-          long long offset_end_of_block = offset_start_of_block + block_size;
+          Size_t offset_start_of_block = (Size_t) block_size * (i_block_proc0 + iwrite_process);
+          Size_t offset_end_of_block = offset_start_of_block + block_size;
           if (offset_end_of_block > total_data_bytes)
             offset_end_of_block = total_data_bytes;
           if (offset_start_of_block >= offset_end_of_block)
@@ -591,15 +590,15 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
                 {
                   // This is the position of the current block in the file, in bytes
                   // This is where the segment (i=0..imax-1, j, k) resides in the file, in bytes
-                  long long offset_segment_start = (long long) (k + splitting.get_offset_local(DIRECTION_K)) * file_nj_tot;
+                  Size_t offset_segment_start = (Size_t) (k + splitting.get_offset_local(DIRECTION_K)) * file_nj_tot;
                   offset_segment_start = (offset_segment_start + j + splitting.get_offset_local(DIRECTION_J)) * file_ni_tot;
                   offset_segment_start += splitting.get_offset_local(DIRECTION_I);
                   offset_segment_start *= nb_components * sizeof(_OUT_TYPE_);
-                  long long offset_segment_end = offset_segment_start + imax * nb_components * sizeof(_OUT_TYPE_);
+                  Size_t offset_segment_end = offset_segment_start + imax * nb_components * sizeof(_OUT_TYPE_);
 
                   // Compute the intersection of the two ranges (block and segment):
-                  const long long offset_intersection_start = (offset_start_of_block < offset_segment_start) ? offset_segment_start : offset_start_of_block;
-                  const long long offset_intersection_end = (offset_end_of_block < offset_segment_end) ? offset_end_of_block : offset_segment_end;
+                  const Size_t offset_intersection_start = (offset_start_of_block < offset_segment_start) ? offset_segment_start : offset_start_of_block;
+                  const Size_t offset_intersection_end = (offset_end_of_block < offset_segment_end) ? offset_end_of_block : offset_segment_end;
 
                   // Check if intersection is empty ?
                   if (offset_intersection_end > offset_intersection_start)
@@ -642,10 +641,10 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
       if (my_writing_process_index >= 0)
         {
           recv_tmp = 0.;
-          // Cast to long long to be sure that the multiply will not overflow:
-          const long long offset = (long long) block_size * (i_block_proc0 + my_writing_process_index);
+          // Cast to Size_t to be sure that the multiply will not overflow:
+          const Size_t offset = (Size_t) block_size * (i_block_proc0 + my_writing_process_index);
           //Cerr << "Offset=" << (int)offset << finl;
-          long long this_block_size = block_size;
+          Size_t this_block_size = block_size;
           if (total_data_bytes - offset < this_block_size)
             this_block_size = total_data_bytes - offset;
           const int nproc=Process::nproc();
