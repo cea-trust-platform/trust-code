@@ -1,0 +1,1 @@
+../OpenMP_Iterateur/weak_scaling.sh

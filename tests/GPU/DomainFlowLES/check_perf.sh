@@ -72,6 +72,7 @@ then
    run -nsys
 else
    GPU_ARCH=""
+   HOST=${HOST%.intra.cea.fr}
    [ "$TRUST_USE_CUDA" = 1 ] && GPU_ARCH=_cc$TRUST_CUDA_CC
    [ "$TRUST_USE_ROCM" = 1 ] && GPU_ARCH=_$ROCM_ARCH
    run $HOST$GPU_ARCH

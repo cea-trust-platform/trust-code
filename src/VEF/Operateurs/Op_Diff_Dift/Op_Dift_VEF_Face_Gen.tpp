@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -470,16 +470,16 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
                           int n0 = num_face0 * nb_comp + nc;
                           int n0perio = fac_asso * nb_comp + nc;
                           int j0 = j * nb_comp + nc;
-                          Kokkos::atomic_add(&matrice(n0, n0), + valA * porosite_eventuelle(num_face0));
-                          Kokkos::atomic_add(&matrice(n0, j0), - valA * porosite_eventuelle(j));
+                          matrice.atomic_add(n0, n0, + valA * porosite_eventuelle(num_face0));
+                          matrice.atomic_add(n0, j0, - valA * porosite_eventuelle(j));
 
                           if (j < nb_faces) // On traite les faces reelles
                             {
                               if (ok == 1)
-                                Kokkos::atomic_add(&matrice(j0, n0), - valA * porosite_eventuelle(num_face0));
+                                matrice.atomic_add(j0, n0, - valA * porosite_eventuelle(num_face0));
                               else
-                                Kokkos::atomic_add(&matrice(j0, n0perio), - valA * porosite_eventuelle(num_face0));
-                              Kokkos::atomic_add(&matrice(j0, j0), + valA * porosite_eventuelle(j));
+                                matrice.atomic_add(j0, n0perio, - valA * porosite_eventuelle(num_face0));
+                              matrice.atomic_add(j0, j0, + valA * porosite_eventuelle(j));
                             }
 
                           // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
@@ -490,8 +490,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
                                 int j1 = j * nb_comp + nc2;
                                 double coeff_s = orientation * nu_turb(elem) / volumes(elem) *
                                                  face_normale(num_face0, nc2) * face_normale(j, nc);
-                                Kokkos::atomic_add(&matrice(n0, n1), + coeff_s * porosite_eventuelle(num_face0));
-                                Kokkos::atomic_add(&matrice(n0, j1), - coeff_s * porosite_eventuelle(j));
+                                matrice.atomic_add(n0, n1, + coeff_s * porosite_eventuelle(num_face0));
+                                matrice.atomic_add(n0, j1, - coeff_s * porosite_eventuelle(j));
 
                                 if (j < nb_faces) // On traite les faces reelles
                                   {
@@ -499,11 +499,11 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
                                                       face_normale(num_face0, nc) * face_normale(j, nc2);
 
                                     if (ok == 1)
-                                      Kokkos::atomic_add(&matrice(j0, n1), - coeff_s2 * porosite_eventuelle(num_face0));
+                                      matrice.atomic_add(j0, n1, - coeff_s2 * porosite_eventuelle(num_face0));
                                     else
-                                      Kokkos::atomic_add(&matrice(j0, fac_asso * nb_comp + nc2), - coeff_s2 * porosite_eventuelle(num_face0));
+                                      matrice.atomic_add(j0, fac_asso * nb_comp + nc2, - coeff_s2 * porosite_eventuelle(num_face0));
 
-                                    Kokkos::atomic_add(&matrice(j0, j1), + coeff_s2 * porosite_eventuelle(j));
+                                    matrice.atomic_add(j0, j1, + coeff_s2 * porosite_eventuelle(j));
                                   }
                               }
                         }
@@ -702,7 +702,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                                   resu2 *= Tf;
 
                                 int j0 = j * nb_comp + nc, jj0 = jj * nb_comp + nc;
-                                Kokkos::atomic_add(&matrice(j0, jj0), (resu1 - resu2) * porosite_eventuelle(jj0));
+                                matrice.atomic_add(j0, jj0, (resu1 - resu2) * porosite_eventuelle(jj0));
                               }
                           }
                       }
@@ -796,14 +796,14 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
                     const int n0 = num_face * nb_comp + nc, j0 = j * nb_comp + nc;
                     if (ind_face < nb_faces_bord_reel)
                       {
-                        Kokkos::atomic_add(&matrice(n0, n0), + valA * porosite_eventuelle(num_face));
-                        Kokkos::atomic_add(&matrice(n0, j0), - valA * porosite_eventuelle(j));
+                        matrice.atomic_add(n0, n0, + valA * porosite_eventuelle(num_face));
+                        matrice.atomic_add(n0, j0, - valA * porosite_eventuelle(j));
                       }
 
                     if (j < nb_faces) // face reelle
                       {
-                        Kokkos::atomic_add(&matrice(j0, n0), - valA * porosite_eventuelle(num_face));
-                        Kokkos::atomic_add(&matrice(j0, j0), + valA * porosite_eventuelle(j));
+                        matrice.atomic_add(j0, n0, - valA * porosite_eventuelle(num_face));
+                        matrice.atomic_add(j0, j0, + valA * porosite_eventuelle(j));
                       }
 
                     // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
@@ -814,15 +814,15 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
                           if (ind_face < nb_faces_bord_reel)
                             {
                               double coeff_s = orientation * nu_turb(elem) / volumes(elem) * face_normale(num_face, nc2) * face_normale(j, nc);
-                              Kokkos::atomic_add(&matrice(n0, n1), + coeff_s * porosite_eventuelle(num_face));
-                              Kokkos::atomic_add(&matrice(n0, j1), - coeff_s * porosite_eventuelle(j));
+                              matrice.atomic_add(n0, n1, + coeff_s * porosite_eventuelle(num_face));
+                              matrice.atomic_add(n0, j1, - coeff_s * porosite_eventuelle(j));
                             }
 
                           if (j < nb_faces) // face reelle
                             {
                               double coeff_s = orientation * nu_turb(elem) / volumes(elem) * face_normale(num_face, nc) * face_normale(j, nc2);
-                              Kokkos::atomic_add(&matrice(j0, n1), - coeff_s * porosite_eventuelle(num_face));
-                              Kokkos::atomic_add(&matrice(j0, j1), + coeff_s * porosite_eventuelle(j));
+                              matrice.atomic_add(j0, n1, - coeff_s * porosite_eventuelle(num_face));
+                              matrice.atomic_add(j0, j1, + coeff_s * porosite_eventuelle(j));
                             }
                         }
                   }
@@ -922,12 +922,12 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
                             double contrib_num_face = valA * porosite_eventuelle(num_face);
                             double contrib_j = valA * porosite_eventuelle(j);
                             const int n0 = num_face * nb_comp + nc, j0 = j * nb_comp + nc;
-                            Kokkos::atomic_add(&matrice(n0, n0), contrib_num_face);
-                            Kokkos::atomic_sub(&matrice(n0, j0), contrib_j);
+                            matrice.atomic_add(n0, n0, contrib_num_face);
+                            matrice.atomic_add(n0, j0, -contrib_j);
                             if (j < nb_faces) // On traite les faces reelles
                               {
-                                Kokkos::atomic_sub(&matrice(j0, n0), contrib_num_face);
-                                Kokkos::atomic_add(&matrice(j0, j0), contrib_j);
+                                matrice.atomic_add(j0, n0, -contrib_num_face);
+                                matrice.atomic_add(j0, j0, contrib_j);
                               }
 
                             // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
@@ -943,13 +943,13 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
                                     const int j1 = j * nb_comp + nc2;
                                     double coeff_s = is_STAB ? 0. : tmp * face_normale(num_face, nc2) * face_normale_j;
 
-                                    Kokkos::atomic_add(&matrice(n0, n1), coeff_s * poro_num_face);
-                                    Kokkos::atomic_sub(&matrice(n0, j1), coeff_s * poro_j);
+                                    matrice.atomic_add(n0, n1, coeff_s * poro_num_face);
+                                    matrice.atomic_add(n0, j1, -coeff_s * poro_j);
                                     if (j < nb_faces) // On traite les faces reelles
                                       {
                                         double coeff_s2 = is_STAB ? 0. : tmp * face_normale_num_face * face_normale(j, nc2);
-                                        Kokkos::atomic_sub(&matrice(j0, n1), coeff_s2 * poro_num_face);
-                                        Kokkos::atomic_add(&matrice(j0, j1), coeff_s2 * poro_j);
+                                        matrice.atomic_add(j0, n1, -coeff_s2 * poro_num_face);
+                                        matrice.atomic_add(j0, j1, coeff_s2 * poro_j);
                                       }
                                   }
                               }

@@ -37,7 +37,7 @@ run()
 {
    gpu=$1 && [ $gpu = -nsys ] && nsys=$gpu
    np=$2
-   solveur=AmgX && [ "$TRUST_USE_ROCM" = 1 ] && solveur=rocALUTION
+   solveur=AmgX && [ "$TRUST_USE_ROCM" = 1 ] && solveur=PETSc
    jdd=OpenMP_Iterateur_BENCH_$solveur && [ "$3" != "" ] && jdd=$3
    if [ "$np" = "" ] || [ "$np" = 1 ]
    then
@@ -56,6 +56,7 @@ if [ "$1" = -nsys ]
 then
    run -nsys
 else
+   HOST=${HOST%.intra.cea.fr}
    [ "$TRUST_USE_CUDA" = 1 ] && GPU_ARCH=_cc$TRUST_CUDA_CC
    [ "$TRUST_USE_ROCM" = 1 ] && GPU_ARCH=_$ROCM_ARCH
    run $HOST$GPU_ARCH
@@ -64,7 +65,7 @@ else
    [ $HOST = is157091 ]     && run $HOST$GPU_ARCH 2
    [ "`hostname`" = petra ] && run $HOST$GPU_ARCH 2
    [ $HOST = topaze ]       && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 8 OpenMP_Iterateur_BENCH_AmgX_10
-   [ $HOST = adastra ]      && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 8 OpenMP_Iterateur_BENCH_rocALUTION_10
+   [ $HOST = adastra ]      && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 8 OpenMP_Iterateur_BENCH_PETSc_10
    [ $HOST = jean-zay ]     && run $HOST$GPU_ARCH 4
    [ $HOST = is247056 ]     && run $HOST$GPU_ARCH 2
    [ $HOST = orcus-amd ]    && run $HOST$GPU_ARCH 2

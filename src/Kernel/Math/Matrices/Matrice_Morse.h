@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -273,7 +273,6 @@ struct Matrice_Morse_View
   mutable DoubleArrView coeff_v;
   int symetrique_ = 0;
   int sorted_ = 0;
-  mutable double zero_ = 0;
   void set(Matrice_Morse& matrice)
   {
     tab1_v = matrice.get_tab1().view_ro();
@@ -282,20 +281,26 @@ struct Matrice_Morse_View
     symetrique_ = matrice.get_symmetric();
     sorted_ = matrice.sorted_;
   }
+  // Replace double &operator()(int i, int j) by several dedicated function for better performance and fix HSA error on adastra (zero_ on host)
   KOKKOS_INLINE_FUNCTION
   double& operator()(int i, int j) const
   {
-    if ((symetrique_==1) && ((j-i)<0))
-      {
-        // std::swap(i,j) refused by HIP:  reference to __host__ function 'swap<int>' in __host__ __device__ function
-        int k = j;
-        j = i;
-        i = k;
-      }
+    if (symetrique_!=2 || i!=j) Process::Kokkos_exit("Not implemented yet in Matrice_Morse_View::operator()");
+    return coeff_v(tab1_v(i)-1);
+  }
+
+  KOKKOS_INLINE_FUNCTION
+  void atomic_add(int i, int j, double coeff) const { add(i,j,coeff,true); }
+
+  KOKKOS_INLINE_FUNCTION
+  void add(int i, int j, double coeff, bool atomic=false) const
+  {
+    if (symetrique_==2 && i!=j)
+      return; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
+    else if ((symetrique_==1) && ((j-i)<0)) Kokkos::kokkos_swap(i,j);
     int k1=tab1_v(i)-1;
     int k2=tab1_v(i+1)-1;
-    // ToDo Kokkos for faster access:
-    /*
+    /* ToDo Kokkos for faster access:
     if (sorted_)
       {
         int k = (int) (std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
@@ -304,15 +309,16 @@ struct Matrice_Morse_View
       }
     else */
     for (int k=k1; k<k2; k++)
-      if (tab2_v(k)-1 == j) return(coeff_v(k));
-    if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
+      if (tab2_v(k)-1 == j)
+        {
+          if (atomic) Kokkos::atomic_add(&coeff_v(k), coeff);
+          else coeff_v(k) += coeff;
+          return;
+        }
+#ifndef NDEBUG
     printf("Error Matrice_Morse::operator(%d, %d) not defined!\n", (True_int)i, (True_int)j);
-#ifdef _OPENMP_TARGET
-    Kokkos::abort("Error");
-#else
-    abort();
+    Process::Kokkos_exit("Error");
 #endif
-    return zero_;
   }
 };
 #endif
