@@ -60,6 +60,7 @@ else
    [ "$TRUST_USE_ROCM" = 1 ] && GPU_ARCH=_$ROCM_ARCH
    run $HOST$GPU_ARCH
    # Multi-gpu:
+   unset CUDA_VISIBLE_DEVICES
    [ $HOST = is157091 ]     && run $HOST$GPU_ARCH 2
    [ "`hostname`" = petra ] && run $HOST$GPU_ARCH 2
    [ $HOST = topaze ]       && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 8 OpenMP_Iterateur_BENCH_AmgX_10
