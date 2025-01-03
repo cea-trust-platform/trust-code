@@ -75,9 +75,9 @@ define_soumission_batch()
    queue=amdq_naples && [ "`grep 'Rocky Linux 9.1' /etc/os-release 1>/dev/null 2>&1 ; echo $?`" = "0" ] && queue=amdq_milan
    if [ "$gpu" = 1 ]
    then
-      [ "$TRUST_CUDA_CC" = 90 ] && queue=gpuq_h100 && noeuds=`echo "1+($NB_PROCS-1)/4" | bc` && cpus_per_task=18 # 4GPUs/node
-      [ "$TRUST_CUDA_CC" = 80 ] && queue=gpuq_a100 && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` && cpus_per_task=16 # 2GPUs/node
-      [ "$TRUST_CUDA_CC" = 70 ] && queue=gpuq_v100 && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` && cpus_per_task=16 # 2GPUs/node
+      [ "$TRUST_CUDA_CC" = 90 ] && queue=gpuq_h100 && gpus_per_node=`echo $NB_PROCS | awk '{print $1<4?$1:4}'` && noeuds=`echo "1+($NB_PROCS-1)/4" | bc` # 4GPUs/node
+      [ "$TRUST_CUDA_CC" = 80 ] && queue=gpuq_a100 && gpus="" && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
+      [ "$TRUST_CUDA_CC" = 70 ] && queue=gpuq_v100 && gpus="" && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
    fi
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
@@ -91,9 +91,10 @@ define_soumission_batch()
    # debug      70              4 heures
    if [ "$prod" = 1 ] || [ "$NB_PROCS" -gt 40 ]
    then
-      qos=2jour && cpu=2880 && node=1 # exclusive
+      qos=2jour && cpu=2880
+      [ "$gpu" != 1 ] && node=1 # exclusif uniquement sur cpu
    else
-      qos=test	 && cpu=60   && node=0 
+      qos=test	&& cpu=60   && node=0 
    fi
    # Le binding ameliore fortement les performances sur AMD quelque soit MPI:
    if [ "$I_MPI_ROOT" != "" ] # IntelMPI
