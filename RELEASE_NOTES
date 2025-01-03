@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+20/01/25 (TRUST) New feature  : Configure flag '-64-bit-new' can be used to compile TRUST with 64b support. See Jupyter form HowTo_64b to learn how to write a 64b dataset.
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5 : Enhancements, modifications and corrected bugs since version 1.9.4 :
 --------------------------------------------------------------------------------------------------
