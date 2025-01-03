@@ -897,18 +897,18 @@ then
    rm -f $NOM.qdrep
    export NVCOMPILER_ACC_TIME=1 # Tres utile pour sortie bilan des copies sur device
    #export NVCOMPILER_ACC_NOTIFY=3
-   # Detect nsys location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
-   nsys=`ls /opt/nvidia/nsight-systems/*/bin/nsys $CUDA_ROOT/../../profilers/*/bin/nsys $CUDA_ROOT/*/bin/nsys $CUDA_ROOT/bin/nsys 2>/dev/null | tail -1`
+   # Detect nsys location:
+   nsys=`ls $CUDA_ROOT/../compilers/bin/nsys 2>/dev/null | tail -1`
    export PATH=`dirname $nsys`:$PATH
    trace="--stats=true "
    trace=$trace"--trace=cuda,nvtx" && [ $NB_PROCS -gt 1 ] && trace=$trace",mpi --mpi-impl=`basename $MPI_ROOT`"
    # Droit elevation disponible:
-   sudo ls 1>/dev/null
+   sudo -n ls 1>/dev/null 2>&1
    if [ $? = 0 ]
    then
       sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'
       # metriques GPU en plus mais necessite d'etre sudo
-      trace=$trace" --gpu-metrics-devices all"
+      trace=$trace" --gpu-metrics-device all"
       # nsight="sudo " # Mais attention fichiers ecrits root !
    else
       nsight=""
@@ -917,8 +917,8 @@ then
 elif [ "$NCU" = 1 ]
 then
    rm -f $NOM.qdrep.ncu-rep
-   # Detect ncu location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
-   ncu=`ls $TRUST_ROOT/env/gpu/install/*/*/*/compilers/bin/ncu /opt/nvidia/nsight-systems/*/bin/ncu $CUDA_ROOT/*/bin/ncu $CUDA_ROOT/bin/ncu 2>/dev/null | tail -1`
+   # Detect ncu location:
+   ncu=`ls $CUDA_ROOT/../compilers/bin/ncu 2>/dev/null | tail -1`
    export PATH=`dirname $ncu`:$PATH
    nsight="ncu --target-processes all -o $NOM.qdrep.ncu-rep"
    echo $nsight
@@ -1204,21 +1204,21 @@ then
    fi
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
-      echo "\$exec $NOM $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+      echo "$nsight \$exec $NOM $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
    else
       if [ "$mpirun" != "" ]
       then
          if [ "$sub" = "SLURM" ]
          then
-            echo "$mpirun \$exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+            echo "$nsight $mpirun \$exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
          elif [ "$sub" = "CCC" ]
          then
-            echo "$mpirun \$exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+            echo "$nsight $mpirun \$exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
          else
-            echo "$mpirun \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+            echo "$nsight $mpirun \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
          fi
       else
-         echo "$TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         echo "$nsight $TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi
    fi
    #######
@@ -1289,7 +1289,6 @@ then
       err=1
    fi
    ccc_myproject -P $queue 2>/dev/null # Sur CCRT heures de calcul
-   exit $err
 else
    # Pas de gestionnaire, example PC:
    [ "$cpus_per_task" != "" ]         && [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
@@ -1327,9 +1326,10 @@ else
    fi
 fi
 
+# Valgrind:
 [ "$log_file" != "" ] && sleep 1 && cat $(ls -rt tmp_log* | tail -$NB_PROCS)
 
-# Another tips:
+# Another tools:
 if [ "$CALLGRIND" = 1 ]
 then
    echo "Callgrind log $NOM.callgrind is created."
@@ -1364,16 +1364,7 @@ then
    echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
 elif [ "$NSYS" = 1 ]
 then
-   # Pas clair encore ces differentes versions de Nsys:
-   [ -f $NOM.qdrep ]    && nsys-ui $NOM.qdrep    # petra
-   [ -f $NOM.nsys-rep ] && nsys-ui $NOM.nsys-rep # a6000
-   #nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
-   #if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
-   #   echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
-   #   LD_PRELOAD=/lib64/libcrypto.so.1.1:/lib64/libssl.so.1.1 nsight-sys
-   #else
-   #   echo "Sorry, can't run nsight-sys GUI for GPU profiling..."
-   #fi
+   [ -f $NOM.nsys-rep ] && nsys-ui $NOM.nsys-rep
 elif [ "$NCU" = 1 ]
 then
    # Marche pas encore:
