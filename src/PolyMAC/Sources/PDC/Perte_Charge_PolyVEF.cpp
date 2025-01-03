@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,8 @@
 #include <Sous_Domaine.h>
 #include <Param.h>
 #include <Synonyme_info.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
 Implemente_base(Perte_Charge_PolyVEF, "Perte_Charge_PolyVEF_P0|Perte_Charge_PolyVEF_P0P1", Perte_Charge_PolyMAC_P0P1NC);
 Add_synonym(Perte_Charge_PolyVEF, "Perte_Charge_PolyVEF_P0P1NC");
@@ -37,6 +39,28 @@ Add_synonym(Perte_Charge_PolyVEF, "Perte_Charge_PolyVEF_P0P1NC");
 Sortie& Perte_Charge_PolyVEF::printOn(Sortie& s) const { return s << que_suis_je() << endl; }
 
 Entree& Perte_Charge_PolyVEF::readOn(Entree& is) { return Perte_Charge_PolyMAC_P0P1NC::readOn(is); }
+
+void Perte_Charge_PolyVEF::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  assert(has_interface_blocs());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis());
+  const Sous_Domaine *pssz = sous_domaine ? &le_sous_domaine.valeur() : nullptr;
+  const DoubleTab& vit = la_vitesse->valeurs();
+  const IntTab& e_f = domaine.elem_faces();
+
+  Matrice_Morse& mat = *matrices.at(equation().inconnue().le_nom().getString()), mat2;
+  IntTrav sten(0, 2);
+  /* melange les directions et les phases */
+  for (int i = 0, ND = equation().inconnue().valeurs().line_size(); i < (pssz ? pssz->nb_elem_tot() : domaine.nb_elem_tot()); i++)
+    for (int e = pssz ? (*pssz)[i] : i, j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+      if (f < domaine.nb_faces())
+        for (int nd = 0; nd < ND; nd++)
+          for (int ndb = 0; ndb < ND; ndb++)
+            sten.append_line(ND * f + nd, ND * f + ndb);
+  tableau_trier_retirer_doublons(sten);
+  Matrix_tools::allocate_morse_matrix(vit.size_totale(), vit.size_totale(), sten, mat2);
+  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
+}
 
 void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
@@ -59,15 +83,16 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
 
-  int i, j, k, f, d, D = dimension, cN = nu.dimension(0) == 1, cM = mu.dimension(0) == 1, cR = rho.dimension(0) == 1,
-                     C_dh = sub_type(Champ_Uniforme, diam_hydr.valeur()), m, n, N = vit.line_size() / D;
+  int i, j, k, l, f, d, db, D = dimension, cN = nu.dimension(0) == 1, cM = mu.dimension(0) == 1, cR = rho.dimension(0) == 1,
+                            C_dh = sub_type(Champ_Uniforme, diam_hydr.valeur()), m, n, N = vit.line_size() / D;
 
   double t = equation().schema_temps().temps_courant(), v_min = 0.1, Gm, Fm, nvm, arm, C_dir, C_iso, v_dir;
 
-  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), C(N), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2), Ts_tab, Sigma_tab;
+  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), C(N), nv(N), Cf(2, N), Cf_t(2, N), Fk(2, N), G(N), mult[2], Ts_tab, Sigma_tab;
 
-  for (n = 0; n < N; n++)
-    mult(n, 0) = 1, mult(n, 1) = 0; //valeur par defaut de mult
+  for (k = 0; k < 2; k++)
+    for (mult[k].resize(N, 2), n = 0; n < N; n++)
+      mult[k](n, 0) = 1, mult[k](n, 1) = 0; //valeur par defaut de mult
   if (fmult) //si multiplicateur -> calcul de sigma
     {
       const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
@@ -75,7 +100,7 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
       Ts_tab.resize(ne_tot, nb_max_sat), Sigma_tab.resize(ne_tot, nb_max_sat);
       for (k = 0; k < N; k++)
-        for (int l = k + 1; l < N; l++)
+        for (l = k + 1; l < N; l++)
           if (milc.has_saturation(k, l))
             {
               const Saturation_base& z_sat = milc.get_saturation(k, l);
@@ -124,28 +149,39 @@ void Perte_Charge_PolyVEF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   v_ph(d) = v(n, d);
                 /* phase seule */
                 coeffs_perte_charge(v_ph, pos, t, nv(n), dh_e, nu(!cN * e, n), Re, C_iso, C_dir, v_dir, dir);
-                Cf(n) = (C_iso + (C_dir - C_iso) * (nv(n) > 1e-8 ? std::pow(domaine.dot(&v(n, 0), &dir(0)), 2) / (nv(n) * nv(n)) : 0)) * 2 * dh_e / std::max(nv(n), 1e-10);
+                for (k = 0; k < 2; k++)
+                  Cf(k, n) = (k ? C_dir : C_iso) * 2 * dh_e / std::max(nv(n), 1e-10);
                 /* tout le melange dans la phase */
                 coeffs_perte_charge(vm, pos, t, nvm, dh_e, nu(!cN * e, n), Re_m, C_iso, C_dir, v_dir, dir);
-                Cf_t(n) = (C_iso + (C_dir - C_iso) * (nvm > 1e-8 ? std::pow(domaine.dot(&vm(0), &dir(0)), 2) / (nvm * nvm) : 0)) * 2 * dh_e / std::max(nvm, 1e-10);
-                Fk(n) = Cf(n) * G(n) * G(n) / rho(!cR * e, n) / 2.0 / dh_e; //force
+                for (k = 0; k < 2; k++)
+                  Cf_t(k, n) = (k ? C_dir : C_iso) * 2 * dh_e / std::max(nvm, 1e-10);
+                for (k = 0; k < 2; k++)
+                  Fk(k, n) = Cf(n) * G(n) * G(n) / rho(!cR * e, n) / 2.0 / dh_e; //force
               }
             Fm = Cf_t(0) * Gm * Gm / rho(!cR * e, 0) / 2.0 / dh_e; //force paroi "melange" (debit total, mais proprietes physiques du liquide)
 
             /* appel du multiplicateur diphasique (si il existe) */
             if (fmult)
-              fmult->coefficient(&(*alp)(e, 0), &rho(!cR * e, 0), &nv(0), &Cf_t(0), &mu(!cM * e, 0), dh_e, Sigma_tab(e,0), &Fk(0), Fm, mult);
+              for (k = 0; k < 2; k++)
+                fmult->coefficient(&(*alp)(e, 0), &rho(!cR * e, 0), &nv(0), &Cf_t(k, 0), &mu(!cM * e, 0), dh_e, Sigma_tab(e,0), &Fk(k, 0), Fm, mult[k]);
 
             for (n = 0; n < N; n++)
               {
-                double fac = pf(f) * vfd(f, e != f_e(f, 0)) * 0.5 / dh_e, fac_n = fac * mult(n, 0) * Cf(n) * G(n) / rho(!cR * e, n), fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
+                double fac = pf(f) * vfd(f, e != f_e(f, 0)) / (2 * dh_e * rho(!cR * e, n)), fac_n[2][2]; //fac_n[iso puis dir][par phase puis melange]
+                for (k = 0; k < 2; k++)
+                  for (l = 0; l < 2; l++)
+                    fac_n[k][l] = fac * (l ? Cf_t(k, n) : Cf(k, n)) * mult[k](n, l) * (l ? Gm : G(n)) - (k ? fac_n[0][l] : 0); //transformation : C_dir -> C_dir - C_iso
                 for (d = 0; d < D; d++)
-                  for (m = 0; m < N; m++)
-                    secmem(f, N * d + n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(f, N * d + m);
+                  for (db = 0; db < D; db++)
+                    for (m = 0; m < N; m++)
+                      secmem(f, N * d + n) -= (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1)
+                                              * (((m == n) * fac_n[0][0] + fac_n[0][1]) * (db == d) + ((m == n) * fac_n[1][0] + fac_n[1][1]) * dir(d) * dir(db)) * vit(f, N * db + m);
                 if (mat)
                   for (d = 0; d < D; d++)
-                    for (m = 0; m < N; m++)
-                      (*mat)(N * (D * f + d) + n, N * (D * f + d) + m) += ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
+                    for (db = 0; db < D; db++)
+                      for (m = 0; m < N; m++)
+                        (*mat)(N * (D * f + d) + n, N * (D * f + db) + m) += (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1)
+                                                                             * (((m == n) * fac_n[0][0] + fac_n[0][1]) * (db == d) + ((m == n) * fac_n[1][0] + fac_n[1][1]) * dir(d) * dir(db));
               }
           }
     }
