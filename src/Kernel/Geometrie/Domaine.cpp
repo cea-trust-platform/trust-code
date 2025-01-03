@@ -309,8 +309,8 @@ void Domaine_32_64<_SZ_>::check_domaine()
   elem_->associer_domaine(*this);
   fixer_premieres_faces_frontiere();
 
-  // TODO IG MP_SUM
-  const int_t nbelem = (int)mp_sum((int)mes_elems_.dimension(0));
+  const trustIdType tmp = mp_sum(mes_elems_.dimension(0));
+  const int_t nbelem = std::is_same<int_t, int>::value ? Process::check_int_overflow(tmp) : tmp;
   Cerr << "  Number of elements: " << nbelem << finl;
 
   // Verifications sanitaires:
@@ -1167,7 +1167,7 @@ void Domaine_32_64<_SZ_>::imprimer() const
   const double volmax = mp_max(vmax_local);
   double volume_total = mp_somme_vect(volumes);
   const int_t nbe = nb_elem();
-  double volmoy = volume_total / (double)Process::mp_sum(nbe);
+  double volmoy = volume_total / Process::mp_sum_as_double(nbe);
   Cerr << "sum(volume cells)= "  << volume_total << finl;
   Cerr << "mean(volume cells)= " << volmoy << finl;
   Cerr << "min(volume cells)= "  << volmin << finl;

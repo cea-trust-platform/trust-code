@@ -106,6 +106,7 @@ public:
   static void mpsum_multiple(double& x1, double& x2);
 
   static bool mp_and(bool);
+  static bool mp_or(bool);
 
   static int check_int_overflow(trustIdType);
 

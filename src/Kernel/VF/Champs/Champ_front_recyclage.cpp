@@ -658,25 +658,24 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
         count[index_to_recv[i]] ++;
       //Cerr << index_to_recv << finl;
     }
-  int error_1 = 0;
-  int error_2 = 0;
+  bool error_1 = false, error_2 = false;
   for (int i = 0; i < nb_faces2; i++)
     {
       if (count[i] < 1)
         {
           Journal() << "Champ_front_recyclage : error face (number "<< i<< ") " << remote_coords[moi](i, 0) << " " << remote_coords[moi](i, 1) << " "
                     << ((dim==3)?remote_coords[moi](i, 2):0.) << " no matching element found" << finl;
-          error_1 = 1;
+          error_1 = true;
         }
       else if (count[i]>1)
         {
           Journal() << "Champ_front_recyclage : error face (number "<< i<< ") " << remote_coords[moi](i, 0) << " " << remote_coords[moi](i, 1) << " "
                     << ((dim==3)?remote_coords[moi](i, 2):0.) << " " << count[i] << " corresponding points" << finl;
-          error_2 = 1;
+          error_2 = true;
         }
 
     }
-  if (mp_sum(error_1))
+  if (mp_or(error_1))
     {
       Cerr << "Error in Champ_front_recyclage.\n"
            << "No matching source element found for some faces of boundary " << nom_bord2
@@ -689,7 +688,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
       exit();
     }
 
-  if (mp_sum(error_2))
+  if (mp_or(error_2))
     {
       Cerr << "Error in Champ_front_recyclage.\n"
            << "At least two elements match for some faces of boundary " << nom_bord2

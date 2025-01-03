@@ -48,6 +48,35 @@ public:
   int  nb_items_to_keep_;
 };
 
+namespace
+{
+
+/** Should we use resize() or resize_dim0 to resize array ...
+ */
+template <typename _SIZE_, typename _TYPE_>
+bool resize_tab_or_vect(TRUSTVect<_TYPE_,_SIZE_>& v, int sz, int sz_r, RESIZE_OPTIONS opt)
+{
+  using TAB = TRUSTTab<_TYPE_, _SIZE_>;
+  TAB* vv = dynamic_cast<TAB*>(&v);
+  if (vv)
+    {
+      TAB& t = *vv;
+      const int n = t.dimension_tot(0);
+      if (n == sz_r || n == 0) t.resize_dim0(sz, opt);
+      else if (n == sz) { /* ok no resize */  }
+      else return true;
+    }
+  else
+    {
+      const int n = v.size_totale();
+      if (n == sz_r || n == 0) {  v.resize(sz, opt); }
+      else if (n == sz) { /* ok no resize */ }
+      else return true;
+    }
+  return false;
+}
+
+} // end anonymous NS
 
 template <class VECT, class TAB>
 static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTIONS opt)
@@ -67,23 +96,8 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTION
   // Attention, sz_r peut valoir -1 dans certains cas. Alors le test n==sz_r sera toujours faux,
   //  mais c'est bien ce qu'on veut...
   int sz_r = md->get_nb_items_reels();
-  int err = 0;
-  TAB* vv = dynamic_cast<TAB*>(&v);
-  if (vv)
-    {
-      TAB& t = *vv;
-      const int n = t.dimension_tot(0);
-      if (n == sz_r || n == 0) t.resize_dim0(sz, opt);
-      else if (n == sz) { /* ok no resize */  }
-      else {  err = 1; }
-    }
-  else
-    {
-      const int n = v.size_totale();
-      if (n == sz_r || n == 0) {  v.resize(sz, opt); }
-      else if (n == sz) { /* ok no resize */ }
-      else { err = 1; }
-    }
+  bool err = ::resize_tab_or_vect(v, sz, sz_r, opt);
+
   if (err)
     {
       Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue:\n"
@@ -96,34 +110,12 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, RESIZE_OPTION
 template <typename _TYPE_, typename _SIZE_>
 static void creer_tableau_seq_(const MD_Vector& md, TRUSTVect<_TYPE_,_SIZE_>& v, RESIZE_OPTIONS opt)
 {
-  using TAB = TRUSTTab<_TYPE_, _SIZE_>;
-
   const MD_Vector_seq * md_seq = dynamic_cast<const MD_Vector_seq *>(&md.valeur());
   assert(md_seq != nullptr); // sequential, cast should always be OK
 
-  trustIdType nb64 = md_seq->get_nb_items();
-  assert(nb64 < std::numeric_limits<int>::max());
-  int sz = (int)nb64;
+  int sz = Process::check_int_overflow(md_seq->get_nb_items());
 
-  // TODO IG FIXME factorize with above:
-  bool err = false;
-  // Should we use resize() or resize_dim0 ...:
-  TAB* vv = dynamic_cast<TAB*>(&v);
-  if (vv)
-    {
-      TAB& t = *vv;
-      const _SIZE_ n = t.dimension_tot(0);
-      if (n == 0) t.resize_dim0(sz, opt);
-      else if (n == sz) { /* ok no resize */  }
-      else {  err = true; }
-    }
-  else
-    {
-      const _SIZE_ n = v.size_totale();
-      if (n == 0) v.resize(sz, opt);
-      else if (n == sz) { /* ok no resize */ }
-      else { err = true; }
-    }
+  bool err = ::resize_tab_or_vect(v, sz, -1, opt);
   if (err)
     {
       Cerr << "Internal error in MD_Vector_tools::creer_tableau_seq_:\n"

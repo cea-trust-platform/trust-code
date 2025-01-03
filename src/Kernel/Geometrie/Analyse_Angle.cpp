@@ -134,7 +134,7 @@ void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
     }
   if (histo[nb_histo]>0)
     Process::exit();
-  int nb_elem_tot=(int)Process::mp_sum(nb_elem);
+  int nb_elem_tot = Process::check_int_overflow(Process::mp_sum(nb_elem));  // Analyse_angle only provided in 32b!
   if (nb_elem_tot>0)
     {
       double obtuse_cells_proportion=0;

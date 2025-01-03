@@ -280,8 +280,10 @@ void Domain_Graph::construire_graph_elem_elem(const Domaine_32_64<_SIZE_>& dom,
   vtxdist.resize_array(Process::nproc()+1);
   for(int p = 0; p < Process::nproc(); p++)
     vtxdist[p] = offsets[p];
-  // TODO IG mp_sum
-  vtxdist[Process::nproc()] = Process::mp_sum((int)nb_elem);
+  if(std::is_same<idx_t, int>::value)
+    vtxdist[Process::nproc()] =  Process::check_int_overflow(Process::mp_sum(nb_elem));
+  else
+    vtxdist[Process::nproc()] =  Process::mp_sum(nb_elem);
 
   Cerr << " Construction of the elem_elem connectivity" << finl;
   // ***************************************************************

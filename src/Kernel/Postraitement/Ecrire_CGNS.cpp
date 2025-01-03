@@ -14,19 +14,12 @@
 *****************************************************************************/
 
 #include <Comm_Group_MPI.h>
+#include <communications.h>
 #include <Ecrire_CGNS.h>
 #include <Domaine.h>
 #include <unistd.h>
 
 #ifdef HAS_CGNS
-
-#ifdef MPI_
-#if INT_is_64_ == 1
-#define MPI_ENTIER MPI_LONG
-#else
-#define MPI_ENTIER MPI_INT
-#endif
-#endif
 
 void Ecrire_CGNS::cgns_set_base_name(const Nom& fn)
 {

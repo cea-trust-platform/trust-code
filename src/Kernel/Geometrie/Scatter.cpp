@@ -2391,7 +2391,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
     // par l'algorithme sequentiel.
     // Pour l'instant, l'algorithme parallele a l'air de fonctionner sans probleme
     // je desactive ce test. (Benoit Mathieu)
-    int erreur = 0;
+    bool erreur = false;
     const int nbjoints = dom.nbjoints();
     for (int i = 0; i < nbjoints; i++)
       {
@@ -2404,10 +2404,10 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
                                << " Splitting algorithm: " << joint.joint_item(JOINT_ITEM::ELEMENT).items_distants()
                                << " Scatter algorithm  : " << elements_distants[pe] << finl;
 
-            erreur = 1;
+            erreur = true;
           }
       }
-    if (mp_sum(erreur))
+    if (mp_or(erreur))
       Process::exit();
 #else
     // Stockage du resultat

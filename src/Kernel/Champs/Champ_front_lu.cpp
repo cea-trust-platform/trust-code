@@ -225,7 +225,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
   Cerr<<"\rProcess "<<Process::me()<<" has read 100% of values"<<finl;
 
   // On verifie que toutes les faces de la frontiere ont ete affectees
-  int err=0;
+  bool err=false;
   for (int face=0; face<nb_faces; face++)
     if (compteur[face] != 1)
       {
@@ -237,12 +237,10 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
         Cerr << " Coordinates: " << xv(ndeb+face,0) << " " << xv(ndeb+face,1);
         if (dimension==3) Cerr << " " << xv(ndeb+face,2);
         Cerr << finl;
-        err=1;
+        err=true;
       }
-  if (Process::mp_sum(err))
-    {
-      erreur_chfront(nom_fic, dim, mon_domaine->le_nom());
-    }
+  if (Process::mp_or(err))
+    erreur_chfront(nom_fic, dim, mon_domaine->le_nom());
   les_val.echange_espace_virtuel();
   return 1;
 }

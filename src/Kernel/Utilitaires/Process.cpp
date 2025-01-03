@@ -233,6 +233,16 @@ bool Process::mp_and(bool b)
   return y == 1;
 }
 
+bool Process::mp_or(bool b)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  int x = b ? 1 : 0;
+  int y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MAX);
+  return y == 1;
+}
+
+
 int Process::check_int_overflow(trustIdType v)
 {
   if (v >= std::numeric_limits<int>::max())
@@ -295,11 +305,6 @@ void Process::exit(const Nom& message ,int i)
     {
       int abort=0;
 #ifdef MPI_
-#if INT_is_64_ == 1
-#define MPI_ENTIER MPI_LONG
-#else
-#define MPI_ENTIER MPI_INT
-#endif
       if (Process::is_parallel())
         {
           const MPI_Comm& mpi_comm=ref_cast(Comm_Group_MPI,PE_Groups::groupe_TRUST()).get_mpi_comm();

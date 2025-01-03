@@ -21,6 +21,14 @@
 #include <type_traits>
 #include <vector>
 
+#ifdef MPI_
+#if INT_is_64_ == 1
+#define MPI_ENTIER MPI_LONG
+#else
+#define MPI_ENTIER MPI_INT
+#endif /* INT_is_64_ */
+#endif /* MPI_ */
+
 // Pour Objet_U ... on buffer !!
 bool envoyer(const Objet_U& t, int source, int cible, int canal);
 bool envoyer(const Objet_U& t, int cible, int canal);

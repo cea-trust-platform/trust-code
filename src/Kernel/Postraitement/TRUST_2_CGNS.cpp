@@ -14,19 +14,12 @@
 *****************************************************************************/
 
 #include <Domaine_dis_cache.h>
+#include <communications.h>
 #include <TRUST_2_CGNS.h>
 #include <Domaine_VF.h>
 #include <Domaine.h>
 
 #ifdef HAS_CGNS
-
-#ifdef MPI_
-#if INT_is_64_ == 1
-#define MPI_ENTIER MPI_LONG
-#else
-#define MPI_ENTIER MPI_INT
-#endif /* INT_is_64_ */
-#endif /* MPI_ */
 
 std::string TRUST_2_CGNS::remove_slash_linkfile(std::string& linkfile)
 {
