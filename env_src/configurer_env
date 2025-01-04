@@ -343,24 +343,6 @@ xxx()
 }
 
 ########################################################
-cherche_include_systeme()
-{
-   # Nouveau: recherche des repertoires includes systemes pour la commande makedepend -I....
-   # PL: 1.5.7 ftsream.h->fstream, iostream.h->iostream, new.h supprime
-   echo $ECHO_OPTS "#include<fstream>\n#include<iostream>\n#include<stdarg.h>\n#include<stddef.h>\n#include<strstream>" > es.cxx
-   includes=`$TRUST_CC -M es.cxx | grep -v es.cxx | awk '{print $1}'`
-   Y=/usr/include/sys
-   # -Y ne marche que pour 1 repertoire (et on prend astucieusement /usr/include/sys pour eviter des nested includes)
-   SYSINC_DEP="-Y$Y "`for include in $includes
-   do
-      dir=\`dirname $include\`
-      cd $dir # Astuce pour ne pas avoir de chemins trops longs en ../../..
-      dir=\`pwd\` && [ "$dir" != $Y ] && echo $dir
-   done | sed "s/\/bits//g" | sort -u | awk '{printf("-I%s ",$1)}'`
-   rm -f es.cxx
-}
-
-########################################################
 print_OS()
 {
    if [ -f /etc/os-release ]
@@ -659,34 +641,30 @@ case $arch in
 	if [ "$TRUST_USE_CUDA" = 1 ]
 	then
 	   [ "$TRUST_USE_OPENMP" = 1 ] && echo "OpenMP target is not supported anymore for GPU build. Remove -openmp option." && exit -1
-        TRUST_CC_BASE="nvc++ "$TRUST_CC_BASE
-        TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
-        TRUST_cc_BASE="nvc "$TRUST_cc_BASE
-        # Si n'est pas dans le PATH, on download NVHPC (attention pas encore teste). Utile sur Fedora CEA:
-        # Normalement, sur Ubuntu on charge le PATH du module NVHPC
-        nvc++ -help 1>/dev/null 2>&1
-        if [ $? != 0 ]
-        then
-           source ../env_src/gpu/install_nvhpc_sdk_toolkit.sh
-           echo "ADD_PATH $NVHPC/bin" >>$env
-           echo "ADD_LD_LIBRARY_PATH $NVHPC/lib" >>$env
-           export PATH=$NVHPC/bin:$PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/bin
-           export LD_LIBRARY_PATH=$NVHPC/lib:$LD_LIBRARY_PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/lib
-        fi
-        nvc++ -help 1>/dev/null 2>&1
-        [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
-#     else
-#        # If Kokkos requested without OpenMP, put nvcc_wrapper in priority
-#        if [ "$TRUST_USE_KOKKOS" = 1 ]
-#        then
-#           TRUST_CC_BASE="nvcc_wrapper "$TRUST_CC_BASE
-#           TRUST_F77_BASE="gfortran "$TRUST_F77_BASE
-#           TRUST_cc_BASE="gcc "$TRUST_cc_BASE
-#
-#           # Check already done in configure, but who knows ...
-#           nvcc_wrapper --help 1>/dev/null 2>&1
-#           [ $? != 0 ] && echo "Kokkos: error, nvc_wrapper not correctly installed!" && exit -1
-#        fi
+	   USE_NVCPP=1 && [ "$TRUST_FORCE_CC" = nvcc ] && USE_NVCPP=0
+  	   if [ "$USE_NVCPP" = 1 ]
+  	   then
+              CUDA_COMPILER=nvc++
+              TRUST_CC_BASE="nvc++ "$TRUST_CC_BASE
+              TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
+              TRUST_cc_BASE="nvc "$TRUST_cc_BASE
+           else
+              CUDA_COMPILER=nvcc
+    	      # TRUST_CC_BASE="nvcc_wrapper "$TRUST_CC_BASE
+              TRUST_CC_BASE="nvcc "$TRUST_CC_BASE
+           fi
+           # Si n'est pas dans le PATH, on download NVHPC:
+           $CUDA_COMPILER --version 1>/dev/null 2>&1
+           if [ $? != 0 ]
+           then
+              source ../env_src/gpu/install_nvhpc_sdk_toolkit.sh
+              echo "ADD_PATH $NVHPC/bin" >>$env
+              echo "ADD_LD_LIBRARY_PATH $NVHPC/lib" >>$env
+              export PATH=$NVHPC/bin:$PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/bin
+              export LD_LIBRARY_PATH=$NVHPC/lib:$LD_LIBRARY_PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/lib
+           fi
+           $CUDA_COMPILER --version 1>/dev/null 2>&1
+           [ $? != 0 ] && echo "Erreur, $CUDA_COMPILER not installed." && exit -1
 	fi
 	# Support compilateur cray et AOMP de AMD: https://github.com/ROCm-Developer-Tools/aomp/blob/aomp-dev/docs/UBUNTUINSTALL.md
 	if [ "$TRUST_USE_ROCM" = 1 ]
@@ -1079,7 +1057,7 @@ fi
 if [ "$TRUST_CC_BASE_EXTP" = "" ]
 then
    CC_BASE=`basename $TRUST_CC_BASE`
-   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = hipcc ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ] || [ "$CC_BASE" = nvcc_wrapper ]
+   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = hipcc ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ] || [ "$CC_BASE" = nvcc_wrapper ] || [ "$CC_BASE" = nvcc ]
    then
       TRUST_CC_BASE_EXTP=g++
       TRUST_cc_BASE_EXTP=gcc
@@ -1847,7 +1825,7 @@ SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
-  linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc_wrapper*) TRUST_SUPPORTED=1
+  linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc*) TRUST_SUPPORTED=1
 	[ "$TRUST_STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=530 && ver<=1411) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	[ "$TRUST_STDCPP" = c++17 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=820 && ver<=1411) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
@@ -1860,13 +1838,7 @@ case $TRUST_ARCH_CC in
 	[ "$TRUST_USE_OPENMP" = 1 ] && PTHREAD="-pthread" # Pour OpenBLAS ?
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-#	if [ "$TRUST_USE_KOKKOS" = 1 ]; then
-#	    # Kokkos already adds '-std=c++14' - do not doit twice since nvcc_wrapper will complain
-#	    std_tmp_=""
-#	else
-	    std_tmp_="-std=$TRUST_STDCPP"
-#	fi
-	CppFlags="-O3 $FPIC $PTHREAD $std_tmp_ -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
+	CppFlags="-O3 $FPIC $PTHREAD -std=$TRUST_STDCPP -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
 	[ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>4)}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wshadow -Werror" # Uniquement si gcc>=5
 	[ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1==12)}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wno-use-after-free" # Uniquement si gcc12 (Erreur Kokkos sinon)
 	CppFlags=$CppFlags" -fno-math-errno" # Operations mathematiques optimisees sans ecarts crees (vient de F5)
@@ -1880,7 +1852,10 @@ case $TRUST_ARCH_CC in
 	F77Flags="$F77Flags_32b" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags_32b" -fdefault-integer-8"
 	ccFLAGS="-O3 $FPIC $PTHREAD"
 	ShLibFlag="\$(TRUST_CC) -shared"
-	#cherche_include_systeme
+	if [ "$TRUST_USE_CUDA" = 1 ]
+	then
+	   CppFlags="-O3 -x cu -arch=sm_$TRUST_CUDA_CC --extended-lambda -ccbin=g++" # -Xcompiler=\"$CppFlags\""
+	fi
 	;;
     linux_clang++|linux_armclang++|darwin_clang++) TRUST_SUPPORTED=1
         [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -ffast-math" # To add optimized machine-specific library. -ffast-math interessant sur irene-arm (*2 sur HPCG, rien sur GNU)
@@ -1906,7 +1881,6 @@ case $TRUST_ARCH_CC in
 	F77Flags="$F77Flags_32b" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags_32b" -fdefault-integer-8"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
-#	cherche_include_systeme
 	;;
    linux_crayCC|linux_amdclang++|linux_hipcc) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
@@ -1930,6 +1904,7 @@ case $TRUST_ARCH_CC in
         [ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
+        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_hipcc" ] && F77Flags=$F77Flags" -fdefault-integer-8" # gfortran
         [ "$TRUST_F77_BASE_EXTP" = gfortran ] && SYSLIBS=$SYSLIBS" -lgfortran" && rep=/usr/lib/gcc/x86_64-linux-gnu/11 && [ -d $rep ] && SYSLIBS="-L$rep "$SYSLIBS # is247793.intra.cea.fr !
         ccFLAGS="-O3 -fPIC"
         ShLibFlag="\$(TRUST_CC) -shared"
@@ -1995,7 +1970,6 @@ case $TRUST_ARCH_CC in
 	[ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
 	ccFLAGS="$flag_optim -fPIC -funroll-loops"
 	ShLibFlag="\$(TRUST_CC) -shared"
-	cherche_include_systeme
 	;;
    *) TRUST_SUPPORTED=0
         [ "$TRUST_CC_BASE" = "" ] && echo "Pas de compilateur C++ trouve!"
