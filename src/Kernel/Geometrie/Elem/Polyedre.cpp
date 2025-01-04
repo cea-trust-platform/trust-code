@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -510,23 +510,28 @@ void Polyedre_32_64<_SIZE_>::ajouter_elements(const Elem_geom_base_32_64<_SIZE_>
   Nodes_.resize_array(old_nodes_index+new_s);
 }
 
+/* Build a reduced version of the polytope connectivity when splitting domains in DomainCutter - this always produce
+ * a 32b object:
+ */
 template <typename _SIZE_>
-void Polyedre_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const
+void Polyedre_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<int>)& type_elem, const ArrOfInt_t& elems_sous_part) const
 {
   type_elem.typer("Polyedre");
-  Polyedre_32_64& reduced = ref_cast(Polyedre_32_64, type_elem.valeur());
+  Polyedre_32_64<int>& reduced = ref_cast(Polyedre_32_64<int>, type_elem.valeur());
   reduced.nb_som_elem_max_  = nb_som_elem_max_;
   reduced.nb_face_elem_max_ = nb_face_elem_max_;
   reduced.nb_som_face_max_  = nb_som_face_max_;
-  ArrOfInt_t& Pi = reduced.PolyhedronIndex_, &Fi = reduced.FacesIndex_;
-  BigArrOfInt_t& N = reduced.Nodes_;
+
+  ArrOfInt& Pi = reduced.PolyhedronIndex_, &Fi = reduced.FacesIndex_;
+  ArrOfInt& N = reduced.Nodes_;
 
   for (int_t i = 0; i < elems_sous_part.size_array(); i++)
     {
       int_t e = elems_sous_part[i];
       for (int_t f = PolyhedronIndex_[e]; f < PolyhedronIndex_[e + 1]; f++)
         {
-          for (int_t s = FacesIndex_[f]; s < FacesIndex_[f + 1]; s++) N.append_array(Nodes_[s]);
+          for (int_t s = FacesIndex_[f]; s < FacesIndex_[f + 1]; s++)
+            N.append_array(Nodes_[s]);
           Fi.append_array(N.size_array());
         }
       Pi.append_array(Fi.size_array() - 1);

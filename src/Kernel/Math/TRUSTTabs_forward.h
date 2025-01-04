@@ -77,9 +77,13 @@ template <typename _SIZE_> using ArrOfInt_T = TRUSTArray<_SIZE_, _SIZE_>;      /
 template <typename _SIZE_> using IntVect_T = TRUSTVect<_SIZE_, _SIZE_>;       // either an IntVect (32 bits) or a BigTIDVect (64b)
 template <typename _SIZE_> using IntTab_T = TRUSTTab<_SIZE_, _SIZE_>;         // either an IntTab (32 bits) or a BigTIDTab (64b)
 template <typename _TYPE_> using SmallArrOfTID_T = TRUSTArray<_TYPE_, int>;    // a small array of identifiers (small even in 64b)
+template <typename _TYPE_> using BigArrOfInt_T = TRUSTArray<int, _TYPE_>;    // a big array, but always storing small values (rarely used ...)
+template <typename _TYPE_> using BigIntVect_T = TRUSTVect<int, _TYPE_>;      // a big vect, but always storing small values (rarely used ...)
+
 template <typename _SIZE_> using ArrOfDouble_T= TRUSTArray<double, _SIZE_>;
 template <typename _SIZE_> using DoubleVect_T = TRUSTVect<double, _SIZE_>;
 template <typename _SIZE_> using DoubleTab_T = TRUSTTab<double, _SIZE_>;         // either an DoubleTab (32 bits) or a BigDoubleTab (64b)
+
 template <typename _SIZE_> using FloatVect_T = TRUSTVect<float, _SIZE_>;
 
 template <typename _SIZE_> using ArrsOfInt_T = TRUST_Vector<TRUSTArray<_SIZE_, _SIZE_>>;

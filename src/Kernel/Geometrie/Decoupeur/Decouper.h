@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,11 +18,12 @@
 
 #include <Partitionneur_base.h>
 #include <TRUST_Deriv.h>
-#include <Interprete.h>
+#include <Interprete_geometrique_base.h>
 #include <TRUST_Ref.h>
 #include <vector>
-
 #include <Domaine_forward.h>
+
+enum class DomainesFileOutputType { BINARY_MULTIPLE, HDF5_SINGLE };
 
 /*! @brief Interprete Decouper.
  *
@@ -30,43 +31,65 @@
  *   et du decoupeur. Voir la methode interprete()
  *
  */
-
-class Decouper : public Interprete
+template <typename _SIZE_>
+class Decouper_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Decouper);
+  Declare_instanciable_32_64(Decouper_32_64);
 public:
-  enum DomainesFileOutputType { BINARY_MULTIPLE, HDF5_SINGLE };
+  // Those two classes are tightly related and are just easier to code if they are allowed to access members directly:
+  friend class Decouper_multi;
 
-  Entree& interpreter(Entree& is) override;
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  static int print_more_infos;
+  using int_t = _SIZE_;
+  using BigIntVect_t = TRUSTVect<int, _SIZE_>;  // always storing 'int' (=proc num) but might have a lot of entries
+  using IntTab_t = IntTab_T<_SIZE_>;
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+  using Partitionneur_base_t = Partitionneur_base_32_64<_SIZE_>;
+  using Static_Int_Lists_t = Static_Int_Lists_32_64<_SIZE_>;
 
   Entree& lire(Entree& is);                 //lecture des parametres
-  //ecriture d'une partition elem_part donnee
-  //som_raccord (optionnel) : som_raccord[s] -> process auxquels est raccorde le sommet
-  //                                            s par un raccord a un autre domaine
-  void ecrire(IntVect& elem_part, const Static_Int_Lists *som_raccord = nullptr);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  Entree& interpreter(Entree& is) override;
 
-  Nom nom_domaine;
-  OWN_PTR(Partitionneur_base) deriv_partitionneur;
-  OBS_PTR(Domaine) ref_domaine;
-  int nb_parts_tot = -1;
-  Noms liste_bords_periodiques;
+  /** Ecriture d'une partition elem_part donnee
+   *   som_raccord (optionnel) : som_raccord[s] -> process auxquels est raccorde le sommet s par un raccord a un autre domaine
+   */
+  void ecrire(const Static_Int_Lists_t *som_raccord=nullptr);
+
+  // Whether to be more verbose:
+  static int print_more_infos_;
+
+protected:
+  // The actual tool used for partitioning (Metis, Tranche, etc.):
+  OWN_PTR(Partitionneur_base_t) deriv_partitionneur_;
+  int nb_parts_tot_ = -1;
+  Noms liste_bords_periodiques_;
+  // Result of the partitionning process:
+  BigIntVect_t elem_part_;
+
+  // Parametres du decoupage (remplis par lire()):
+  Nom nom_domaine_;
+  int epaisseur_joint_ = 1;
+  Nom nom_domaines_decoup_ = "?";
+  Nom nom_fichier_decoupage_ = "?";
+  Nom nom_fichier_decoupage_sommets_ = "?";
+  Nom nom_fichier_lata_ = "?";
+  Nom nom_fichier_med_ = "?";
+  DomainesFileOutputType format_ = DomainesFileOutputType::BINARY_MULTIPLE;
+  int reorder_ = 0;
 
 private:
-  const Domaine& find_domain(const Nom& nom);
-  // Parametres du decoupage:
+  // Does nothing, we directly override interpreter():
+  Entree& interpreter_(Entree& is) override { return is; }
 
-  //parametres remplis par lire()
-  int epaisseur_joint = 1;
-  Nom nom_domaines_decoup = "?";
-  Nom nom_fichier_decoupage = "?";
-  Nom nom_fichier_decoupage_sommets = "?";
-  Nom nom_fichier_lata = "?";
-  Nom nom_fichier_med = "?";
-  int format_binaire = 1;
-  int format_hdf = 0;
-  int reorder = 0;
+  void lire_partitionneur(Entree& is);
+  void ecrire_fichier_decoupage() const;
+  void ecrire_fichier_decoupage_som() const;
+  void postraiter_decoupage(const Nom& nom_fichier) const;
+  void ecrire_sous_domaines(const int nb_parties, const Static_Int_Lists_t* som_raccord) const;
+
 };
+
+using Decouper = Decouper_32_64<int>;
+using Decouper_64 = Decouper_32_64<trustIdType>;
 
 #endif

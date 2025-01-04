@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,128 +20,105 @@
 #include <SFichier.h>
 #include <Param.h>
 #include <communications.h>
+#include <Synonyme_info.h>
 #include <vector>
 #include <set>
 
-Implemente_instanciable(Decouper,"Decouper|Partition",Interprete);
+Implemente_instanciable_32_64(Decouper_32_64,"Decouper",Interprete);
+Add_synonym(Decouper, "Partition");
+Add_synonym(Decouper_64, "Partition_64");
 
-Sortie& Decouper::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Decouper_32_64<_SIZE_>::printOn(Sortie& os) const
 {
-  exit();
+  Process::exit();
   return os;
 }
 
-Entree& Decouper::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Decouper_32_64<_SIZE_>::readOn(Entree& is)
 {
-  exit();
+  Process::exit();
   return is;
 }
 
-/*! @brief Cherche le domaine de nom "le_nom_domaine" parmi les objets connus de l'interprete et renvoie une ref a ce domaine.
- *
- * @throws si le domaine n'a pas ete trouve, exit.
- */
-const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
-{
-  const Domaine * domaine_ptr = 0;
-
-  if (objet_existant(le_nom_domaine))
-    {
-      const Objet_U& objet_domaine = objet(le_nom_domaine);
-      if (sub_type(Domaine, objet_domaine))
-        domaine_ptr = & ref_cast(Domaine, objet_domaine);
-    }
-
-  if (domaine_ptr == 0)
-    {
-      Cerr << "Error in Decouper::interpreter\n "
-           << " Syntax:\n Decouper DOMAINNAME { ... }\n ";
-      Cerr << le_nom_domaine << " is not a domain known" << finl;
-      Process::exit();
-    }
-  return *domaine_ptr;
-}
-
 /*! @brief lecture du partitionneur dans le jeu de donnees (lecture du type et des parametres et initialisation de d_part)
- *
  */
-static void lire_partitionneur(OWN_PTR(Partitionneur_base) & d_part,
-                               const Domaine& domaine, Entree& is)
+template <typename _SIZE_>
+void Decouper_32_64<_SIZE_>::lire_partitionneur(Entree& is)
 {
   Nom n;
   is >> n;
   Nom type_partitionneur("Partitionneur_");
   type_partitionneur += n;
   Cerr << " Creation of a partitioner of type: " << type_partitionneur << finl;
-  d_part.typer(type_partitionneur);
+  deriv_partitionneur_.typer(type_partitionneur);
   // En cas d'echec (si le nom du type est invalide) : exit
-  if (! d_part.non_nul())
+  if (! deriv_partitionneur_.non_nul())
     Process::exit();
 
   // Initialisation des parametres du partitionneur
-  Partitionneur_base& part = d_part.valeur();
-  part.associer_domaine(domaine);
+  Partitionneur_base_32_64<_SIZE_>& part = deriv_partitionneur_.valeur();
+  part.associer_domaine(this->domaine());
   is >> part;
 }
 
-static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
-                                     const IntVect& elem_part,
-                                     int& nb_parts_tot)
+template <typename _SIZE_>
+void Decouper_32_64<_SIZE_>::ecrire_fichier_decoupage() const
 {
   Cerr << "Writing of the splitting array at the format IntVect ascii\n"
-       << " in the file " << nom_fichier_decoupage
+       << " in the file " << nom_fichier_decoupage_
        << "\n(for each element, number of the destination processor)" << finl;
   SFichier file; // Fichier ascii
-  if (! file.ouvrir(nom_fichier_decoupage))
+  if (! file.ouvrir(nom_fichier_decoupage_))
     {
       Cerr << " Error in the opening of the file." << finl;
       Process::exit();
     }
-  file << elem_part;
-  file << nb_parts_tot;
+  file << elem_part_;
+  file << nb_parts_tot_;
 }
 
-static void ecrire_fichier_decoupage_som(const Nom& nom_fichier_decoupage,
-                                         const Domaine& domaine,
-                                         const IntVect& elem_part
-                                        )
+template <typename _SIZE_>
+void Decouper_32_64<_SIZE_>::ecrire_fichier_decoupage_som() const
 {
   Cerr << "Writing of the splitting array at the format IntVect ascii\n"
-       << " in the file " << nom_fichier_decoupage
+       << " in the file " << nom_fichier_decoupage_sommets_
        << "\n(for each node, list of the destination processors)" << finl;
   SFichier file; // Fichier ascii
-  if (! file.ouvrir(nom_fichier_decoupage))
-    {
-      Cerr << " Error in the opening of the file." << finl;
-      Process::exit();
-    }
+  if (! file.ouvrir(nom_fichier_decoupage_sommets_))
+    Process::exit(" Error in the opening of the file.");
 
-  const IntTab& elems = domaine.les_elems();
-  int nbOfNodesPerElems = elems.dimension(1);
-  int nbSom = domaine.nb_som();
-  std::vector<std::set<int>> node_part(nbSom);
-  for(int i=0; i<elem_part.size(); i++)
+  const Domaine_t& domaine = this->domaine();
+  const IntTab_t& elems = domaine.les_elems();
+  int nbOfNodesPerElems = elems.dimension_int(1);
+  int_t nbSom = domaine.nb_som();
+  std::vector<std::set<int_t>> node_part(nbSom);
+  for(int i=0; i<elem_part_.size(); i++)
     {
       for (int j = 0; j < nbOfNodesPerElems; j++)
         {
-          int node = elems(i, j);
-          node_part[node].insert(elem_part[i]);
+          int_t node = elems(i, j);
+          node_part[node].insert(elem_part_[i]);
         }
     }
   file << domaine.nb_som() << finl;
-  for(int i=0; i<nbSom; i++)
+  for(int_t i=0; i<nbSom; i++)
     {
       file << i << " " << node_part[i].size() << " ";
-      for(std::set<int>::iterator it = node_part[i].begin(); it!=node_part[i].end(); ++it)
-        file << *it << " ";
+      for(const auto& set_elem: node_part[i])
+        file << set_elem << " ";
       file << finl;
     }
 }
 
-static void postraiter_decoupage(const Nom& nom_fichier,
-                                 const Domaine& domaine,
-                                 const IntVect& elem_part)
+template <typename _SIZE_>
+void Decouper_32_64<_SIZE_>::postraiter_decoupage(const Nom& nom_fichier) const
 {
+  if (!std::is_same<_SIZE_,int>::value)
+    Process::exit("Postprocessing of partitioning is not yet implemented for big (64b) domains!");
+
+  const Domaine& domaine = reinterpret_cast<const Domaine&>(this->domaine());
   // Check and strip ".lata" :
   Nom basename;
   if (nom_fichier.finit_par(".lata"))
@@ -155,19 +132,26 @@ static void postraiter_decoupage(const Nom& nom_fichier,
       basename.prefix(".med");
     }
   else
-    Process::exit(             "Decouper: postraiter_decoupage(): the file name for postprocessing the domain should end with extension '.lata' or '.med' !!");
+    Process::exit("Decouper: postraiter_decoupage(): the file name for postprocessing the domain should end with extension '.lata' or '.med' !!");
+
   // Compute dummy field indicating partitioning:
-  const int n = elem_part.size_reelle();
+  if (!std::is_same<_SIZE_,int>::value)
+    {
+      // FOR DEVELOPPERS : remove cast to int below if you are porting this for 64b!
+      Cerr << "did you remove cast?" << finl;
+      Process::exit(-1);
+    }
+  const int n = (int)elem_part_.size_reelle();
+
   DoubleTab data(n);
   for (int i = 0; i < n; i++)
-    data(i) = elem_part[i];
+    data(i) = static_cast<double>(elem_part_[i]);
 
   Noms units, noms_compo;
   units.add("");
   noms_compo.add("I");
   constexpr int IS_FIRST = 1;
 
-  // ToDo merge code lata and med
   if (nom_fichier.finit_par(".lata"))
     {
       Cerr << "Postprocessing of the splitting at the lata (V2) format: " << nom_fichier << finl;
@@ -215,26 +199,23 @@ static void postraiter_decoupage(const Nom& nom_fichier,
     }
 }
 
-static void ecrire_sous_domaines(const Nom& nom_domaines_decoup,
-                                 const Decouper::DomainesFileOutputType format,
-                                 const Domaine& domaine,
-                                 IntVect& elem_part,
-                                 const int nb_parties,
-                                 const int epaisseur_joint,
-                                 const int reorder,
-                                 const Noms& bords_periodiques,
-                                 const Static_Int_Lists* som_raccord)
+template <typename _SIZE_>
+void Decouper_32_64<_SIZE_>::ecrire_sous_domaines(const int nb_parties, const Static_Int_Lists_t* som_raccord) const
 {
-  DomaineCutter cutter;
-  cutter.initialiser(domaine, elem_part, nb_parties, epaisseur_joint,
-                     bords_periodiques);
+  DomaineCutter_32_64<_SIZE_> cutter;
+  cutter.initialiser(this->domaine(), elem_part_, nb_parties, epaisseur_joint_, liste_bords_periodiques_);
   // Reflexion provisoire:
   // Les joints sont construits dans ecrire_domaines -> construire_sous_domaine
-  // Donc apres renumerotation des PEs et donc de elem_part, il faudrait
+  // Donc apres renumerotation des PEs et donc de elem_part_, il faudrait
   // reinitialiser ? Ou bien, tout renumeroter apres le calcul des joints...
   // Cela parait mieux...
-  cutter.ecrire_domaines(nom_domaines_decoup, format, elem_part, reorder, som_raccord);
+  cutter.ecrire_domaines(nom_domaines_decoup_, format_, reorder_, som_raccord);
 }
+
+template<> int Decouper_32_64<int>::print_more_infos_ = 0;
+#if INT_is_64_ == 2
+template<> int Decouper_32_64<trustIdType>::print_more_infos_ = 0;
+#endif
 
 // XD partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
 // XD attr domaine ref_domaine domaine 0 Name of the domain to be cut.
@@ -246,118 +227,114 @@ static void ecrire_sous_domaines(const Nom& nom_domaines_decoup,
 // XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the domaine number for each element\'s mesh. Then you can easily permute domaine numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
 // XD attr ecrire_lata chaine ecrire_lata 1 Save the partition field in a LATA format file for visualization
 // XD attr ecrire_med chaine ecrire_med 1 Save the partition field in a MED format file for visualization
-// XD attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Domaine files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty domaines from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
+// XD attr nb_parts_tot_ entier nb_parts_tot_ 1 Keyword to generates N .Domaine files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty domaines from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
 // XD attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
 // XD attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
 // XD attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned domaines in a single file in hdf5 format.
 // XD attr print_more_infos entier print_more_infos 1 If this option is set to 1 (0 by default), print infos about number of remote elements (ghosts) and additional infos about the quality of partitionning. Warning, it slows down the cutting operations.
-int Decouper::print_more_infos = 0;
-Entree& Decouper::interpreter(Entree& is)
+template <typename _SIZE_>
+Entree& Decouper_32_64<_SIZE_>::interpreter(Entree& is)
 {
-  Cerr << "Decouper : Splitting of a domain" << finl;
-  //lecture des parametres
+  Cerr << "Decouper: Splitting of a domain" << finl;
+  // Reading parameters
   lire(is);
 
-  //generation de la partition
-  IntVect elem_part;
-  Partitionneur_base& partitionneur = deriv_partitionneur.valeur();
-  partitionneur.declarer_bords_periodiques(liste_bords_periodiques);
-  partitionneur.construire_partition(elem_part,nb_parts_tot);
+  // Generating partition
+  Partitionneur_base_t& partitionneur = deriv_partitionneur_.valeur();
+  partitionneur.declarer_bords_periodiques(liste_bords_periodiques_);
+  partitionneur.construire_partition(elem_part_,nb_parts_tot_);
 
-  //ecriture
-  ecrire(elem_part, {});
+  // Writing out various files (including .zones)
+  ecrire();
 
   Cerr << "End of the interpreter Decouper" << finl;
   return is;
 }
 
-
-Entree& Decouper::lire(Entree& is)
+template <typename _SIZE_>
+Entree& Decouper_32_64<_SIZE_>::lire(Entree& is)
 {
   // Lecture du nom du domaine a decouper:
-  is >> nom_domaine;
-  Cerr << " Domain name to split : " << nom_domaine << finl;
-  ref_domaine = find_domain(nom_domaine);
+  is >> nom_domaine_;
+  Cerr << " Domain name to split : " << nom_domaine_ << finl;
+  this->associer_domaine(nom_domaine_);
   // Avant de decouper on imprime des infos
-  ref_domaine->imprimer();
+  this->domaine().imprimer();
 
-  Param param(que_suis_je());
+  Param param(this->que_suis_je());
+  int hdf;
   param.ajouter_non_std("partitionneur|partition_tool",(this),Param::REQUIRED);
-  param.ajouter("larg_joint",&epaisseur_joint);
+  param.ajouter("larg_joint",&epaisseur_joint_);
   param.ajouter_condition("value_of_larg_joint_ge_1","The joint thickness must greater or equal to 1.");
-  param.ajouter("nom_zones|zones_name",&nom_domaines_decoup);
-  param.ajouter("ecrire_decoupage",&nom_fichier_decoupage);
-  param.ajouter("ecrire_decoupage_sommets",&nom_fichier_decoupage_sommets);
-  param.ajouter("ecrire_lata",&nom_fichier_lata);
-  param.ajouter("ecrire_med",&nom_fichier_med);
-  param.ajouter("nb_parts_tot",&nb_parts_tot);
-  param.ajouter("reorder",&reorder);
-  param.ajouter_flag("single_hdf",&format_hdf);
-  param.ajouter("periodique",&liste_bords_periodiques);
-  param.ajouter("print_more_infos",&Decouper::print_more_infos);
+  param.ajouter("nom_zones|zones_name",&nom_domaines_decoup_);
+  param.ajouter("ecrire_decoupage",&nom_fichier_decoupage_);
+  param.ajouter("ecrire_decoupage_sommets",&nom_fichier_decoupage_sommets_);
+  param.ajouter("ecrire_lata",&nom_fichier_lata_);
+  param.ajouter("ecrire_med",&nom_fichier_med_);
+  param.ajouter("nb_parts_tot",&nb_parts_tot_);
+  param.ajouter("reorder",&reorder_);
+  param.ajouter_flag("single_hdf",&hdf);
+  param.ajouter("periodique",&liste_bords_periodiques_);
+  param.ajouter("print_more_infos",&print_more_infos_);
   param.lire_avec_accolades_depuis(is);
+
+  if (hdf) format_ = DomainesFileOutputType::HDF5_SINGLE;
+
   return is;
 }
 
-
-void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
+template <typename _SIZE_>
+void Decouper_32_64<_SIZE_>::ecrire(const Static_Int_Lists_t* som_raccord)
 {
   // Calcul du nombre de parties generees par le partitionneur
   int nb_parties = 0;
-  if (elem_part.size_array() > 0)
-    nb_parties = max_array(elem_part) + 1;
-  nb_parties = mp_max(nb_parties);
+  if (elem_part_.size_array() > 0)
+    nb_parties = static_cast<int>(max_array(elem_part_)) + 1;  // cast to int, because max among number of procs (or numb of parts)
+  nb_parties = Process::mp_max(nb_parties);
   Cerr << "The partitioner has generated " << nb_parties << " parts." << finl;
 
-  // Prise en compte de la directive nb_parts_tot
-  if (nb_parts_tot >= 0)
+  // Prise en compte de la directive nb_parts_tot_
+  if (nb_parts_tot_ >= 0)
     {
-      if (nb_parties > nb_parts_tot)
+      if (nb_parties > nb_parts_tot_)
         {
-          Cerr << "Error: nb_parts_tot is less than the number of parts generated by the partitioner."
+          Cerr << "Error: nb_parts_tot_ is less than the number of parts generated by the partitioner."
                << finl;
-          exit();
+          Process::exit();
         }
-      Cerr << "Number of parts requested : " << nb_parts_tot
-           << "\nGeneration of " << nb_parts_tot - nb_parties << " empty parts." << finl;
-      nb_parties = nb_parts_tot;
+      Cerr << "Number of parts requested : " << nb_parts_tot_ << finl
+           << "Generation of " << nb_parts_tot_ - nb_parties << " empty parts." << finl;
+      nb_parties = nb_parts_tot_;
     }
   // Force un seul fichier .Zones au dela d'un certain nombre de rangs MPI:
-  if (Process::force_single_file(nb_parties, nom_domaines_decoup+".Zones"))
-    format_hdf = 1;
+  if (Process::force_single_file(nb_parties, nom_domaines_decoup_+".Zones"))
+    format_ = DomainesFileOutputType::HDF5_SINGLE;
 
-  if (nom_fichier_decoupage != "?")
-    ecrire_fichier_decoupage(nom_fichier_decoupage, elem_part, nb_parts_tot);
+  if (nom_fichier_decoupage_ != "?")
+    ecrire_fichier_decoupage();
 
-  if (nom_fichier_decoupage_sommets != "?")
-    ecrire_fichier_decoupage_som(nom_fichier_decoupage_sommets, ref_domaine.valeur(), elem_part);
+  if (nom_fichier_decoupage_sommets_ != "?")
+    ecrire_fichier_decoupage_som();
 
-  if (nom_domaines_decoup != "?")
-    {
-      Decouper::DomainesFileOutputType typ;
-      if (format_binaire) typ = BINARY_MULTIPLE;
-      if (format_hdf) typ = HDF5_SINGLE;
-      ecrire_sous_domaines(nom_domaines_decoup, typ,
-                           ref_domaine.valeur(), elem_part, nb_parties, epaisseur_joint, reorder,
-                           liste_bords_periodiques, som_raccord);
-    }
+  if (nom_domaines_decoup_ != "?")
+    ecrire_sous_domaines(nb_parties, som_raccord);
 
-  if (nom_fichier_lata != "?")
-    postraiter_decoupage(nom_fichier_lata, ref_domaine.valeur(), elem_part);
-  if (nom_fichier_med != "?")
-    postraiter_decoupage(nom_fichier_med, ref_domaine.valeur(), elem_part);
+  if (nom_fichier_lata_ != "?")
+    postraiter_decoupage(nom_fichier_lata_);
+  if (nom_fichier_med_ != "?")
+    postraiter_decoupage(nom_fichier_med_);
 
-  Cout << "\nQuality of partitioning --------------------------------------------" << finl;
-  trustIdType total_elem = Process::mp_sum(elem_part.size_reelle());
+  Cout << finl << "Quality of partitioning --------------------------------------------" << finl;
+  trustIdType total_elem = Process::mp_sum(elem_part_.size_reelle());
   Cout << "\nTotal number of elements = " << total_elem << finl;
   Cout << "Number of Domaines : " << nb_parties << finl;
 
-  if (Decouper::print_more_infos)
+  if (print_more_infos_)
     {
       DoubleVect A(nb_parties);
       A = 0;
-      for (int i = 0; i < elem_part.size_reelle(); i++)
-        A(elem_part[i]) = A(elem_part[i]) + 1;
+      for (int i = 0; i < elem_part_.size_reelle(); i++)
+        A(elem_part_[i]) = static_cast<double>(A(elem_part_[i])) + 1;
 
       if(Process::je_suis_maitre())
         {
@@ -371,46 +348,44 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
                 A(i_part) += tmp(i_part);
             }
 
-
           double mean_element_domaine = static_cast<double>(total_elem/nb_parties);
           if (mean_element_domaine>0)
             {
               double load_imbalance = double(local_max_vect(A) / mean_element_domaine);
               Cout << "Number of cells per Domaine (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_domaine << " / "
                    << local_max_vect(A) << " Load imbalance: " << load_imbalance << "\n" << finl;
-
             }
         }
       else
         envoyer(A, Process::me(), 0, Process::me()+2005);
 
-
       // we could do it as below, but if nb_parties is big, it would involve a lot of collective communication
       // for (int i = 0; i < nb_parties; i++)
       // 	A[i] = Process::mp_sum(A[i]);
-
-
     }
 
   Cerr << "End of the interpreter Decouper" << finl;
-  if (reorder==0 && nb_parties>128)
+  if (reorder_==0 && nb_parties>128)
     {
       Cerr << "Performance tip: You could add \"reorder 1\" option to have less distance between communicating processes on the network." << finl;
       Cerr << "Add also \"Ecrire_lata filename.lata\" to post-process the partition numeration and see the difference." << finl;
     }
 }
 
-int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+template <typename _SIZE_>
+int Decouper_32_64<_SIZE_>::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  int retval = 1;
   //Motcle motlu;
   if (mot=="partitionneur|partition_tool")
     {
-      Cerr<<"domaine = "<<nom_domaine<<finl;
-      const Domaine& domaine = find_domain(nom_domaine);
-      lire_partitionneur(deriv_partitionneur,domaine,is);
+      Cerr << "domaine = " << nom_domaine_ << finl;
+      lire_partitionneur(is);
+      return 1;
     }
-  else retval = -1;
-
-  return retval;
+  return -1;
 }
+
+template class Decouper_32_64<int>;
+#if INT_is_64_ == 2
+template class Decouper_32_64<trustIdType>;
+#endif

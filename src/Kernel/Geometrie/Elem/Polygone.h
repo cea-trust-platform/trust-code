@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,9 @@ class Polygone_32_64  : public Poly_geom_base_32_64<_SIZE_>
   Declare_instanciable_32_64(Polygone_32_64);
 
 public :
+  // Template classes with different template parameter do not see each other - build_reduced() needs this.
+  template <class T> friend class Polygone_32_64;
+
   using int_t = _SIZE_;
   using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
   using IntTab_t = IntTab_T<_SIZE_>;
@@ -66,7 +69,7 @@ public :
   inline const ArrOfInt_t& getPolygonIndex() const        { return PolygonIndex_; }
   inline const ArrOfInt_t& getElemIndex() const override  { return PolygonIndex_; }
   void rebuild_index();
-  void build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const override;
+  void build_reduced(OWN_PTR(Elem_geom_base_32_64<int>)& type_elem, const ArrOfInt_t& elems_sous_part) const override;
   void compute_virtual_index() override;
 
 protected:

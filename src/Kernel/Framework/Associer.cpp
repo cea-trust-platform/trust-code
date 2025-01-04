@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,8 +61,8 @@ Entree& Associer::interpreter(Entree& is)
       association21=ob2.associer_(ob1);
       if(!association21)
         {
-          Cerr << "It is not known associate " << ob1.que_suis_je()
-               << " and " << ob2.que_suis_je()  << finl;
+          Cerr << "Impossible to associate objects '" << ob1.que_suis_je()
+               << "' and '" << ob2.que_suis_je()  << "'" << finl;
           exit();
         }
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,16 +80,19 @@ void Polygone_32_64<_SIZE_>::rebuild_index()
   PolygonIndex_=PolygonIndex_OK;
 }
 
+/* Build a reduced version of the polytope connectivity when splitting domains in DomainCutter - this always produce
+ * a 32b object:
+ */
 template <typename _SIZE_>
-void Polygone_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)& type_elem, const ArrOfInt_t& elems_sous_part) const
+void Polygone_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<int>)& type_elem, const ArrOfInt_t& elems_sous_part) const
 {
-  const IntTab_t& les_elems = mon_dom->les_elems();
   type_elem.typer("Polygone");
-  Polygone_32_64<_SIZE_>& reduced = ref_cast(Polygone_32_64<_SIZE_>, type_elem.valeur());
+  Polygone_32_64<int>& reduced = ref_cast(Polygone_32_64<int>, type_elem.valeur());
   reduced.nb_som_elem_max_  = nb_som_elem_max_;
   reduced.nb_face_elem_max_ = nb_face_elem_max_;
 
-  ArrOfInt_t& Pi = reduced.PolygonIndex_, &Fi = reduced.FacesIndex_;
+  const IntTab_t& les_elems = mon_dom->les_elems();
+  ArrOfInt& Pi = reduced.PolygonIndex_, &Fi = reduced.FacesIndex_;
   Fi.resize(0);
 
   for (int_t i = 0; i < elems_sous_part.size_array(); i++)
@@ -97,10 +100,12 @@ void Polygone_32_64<_SIZE_>::build_reduced(OWN_PTR(Elem_geom_base_32_64<_SIZE_>)
       int_t e = elems_sous_part[i];
       for (int_t f = PolygonIndex_[e]; f < PolygonIndex_[e + 1]; f++)
         {
-          int nf = (int)(f - PolygonIndex_[e]);  // num of faces always an int
-          Fi.append_array(les_elems(e, nf));
+          int nf = static_cast<int>(f - PolygonIndex_[e]);  // num of faces always an int
+          // The below is not necessary (contrarly to what's done for polyedrons) since get_tab_faces_sommets_locaux() below only uses Pi
+//          Fi.append_array(les_elems(e, nf));
+          Fi.append_array(les_elems(e, nf) > 0 ? 1 : -1);
         }
-      Pi.append_array(Fi.size_array());
+      Pi.append_array(Fi.size_array());  // this is what will be used by get_tab_faces_sommets_locaux()
     }
 }
 
@@ -299,8 +304,9 @@ int Polygone_32_64<_SIZE_>::get_tab_faces_sommets_locaux(IntTab& faces_som_local
   faces_som_local=-1;
 
   // on cherche les faces de l'elt
-  int nb_face=(int)(PolygonIndex_[ele+1]-PolygonIndex_[ele]);
+  int nb_face = static_cast<int>(PolygonIndex_[ele+1]-PolygonIndex_[ele]); // always within int
 
+  // [ABN] Duh?! always assume consecutive connectivity??
   for (int fl=0; fl<nb_face-1; fl++)
     {
       faces_som_local(fl,0)=fl;

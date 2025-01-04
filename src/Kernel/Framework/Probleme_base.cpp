@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -267,17 +267,24 @@ void Probleme_base::warn_old_syntax()
 int Probleme_base::associer_(Objet_U& ob)
 {
   // Schema_Temps_base Domaine Milieu_base
-  if( sub_type(Schema_Temps_base, ob))
+  if (sub_type(Schema_Temps_base, ob))
     {
       associer_sch_tps_base(ref_cast(Schema_Temps_base, ob));
       return 1;
     }
-  if( sub_type(Domaine, ob))
+  if (sub_type(Domaine, ob))
     {
       associer_domaine(ref_cast(Domaine, ob));
       return 1;
     }
-  if( sub_type(Milieu_base, ob))
+  if (sub_type(Domaine_32_64<trustIdType>, ob))
+    {
+      Cerr << "ERROR: You are trying to associate a 64-bit Domain to a Problem!" << finl;
+      Cerr <<"  -> Keyword 'Domain_64' can *not* be used for a sequential run!" << finl;
+      Cerr<< "  -> Keyword 'Domain_64' can only be used for initial partitioning. It must be changed into 'Domain' in the PAR_xxx dataset when running the parallel computation itself!" << finl;
+      Process::exit();
+    }
+  if (sub_type(Milieu_base, ob))
     {
       warn_old_syntax();
       milieu_via_associer_ = true;

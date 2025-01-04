@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,34 +18,31 @@
 
 #include <TRUSTArray.h>
 
-/*! @brief Classe outil contenant la correspondance entre les indices de sommets et d'elements du domaine global et d'un sous-domaine.
+/*! @brief Structure outil contenant la correspondance entre les indices de sommets et d'elements du domaine global et d'un sous-domaine.
  *
  *   Les champs de cette classe sont remplis par DomaineCutter::construire_sous_domaine()
  *
  */
-class DomaineCutter_Correspondance
+template <typename _SIZE_>
+class DomaineCutter_Correspondance_32_64
 {
-  DomaineCutter_Correspondance();
-  void reset();
-  const ArrOfInt& get_liste_sommets() const;
-  const ArrOfInt& get_liste_inverse_sommets() const;
-  const ArrOfInt& get_liste_inverse_elements() const;
+public:
+  using Size_t = _SIZE_;
+  using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;  // a small number of big values -> typically an array of global indices
+  using BigArrOfInt_t = BigArrOfInt_T<_SIZE_>;      // a big number of small values -> typically a (huge) array of local indices
 
-private:
   // Le numero du sous-domaine construit
-  int partie_;
+  int partie_ = -1;
   // Correspondance sommets local/global:
   //   indice_som_global = liste_sommets[indice_local]
-  ArrOfInt liste_sommets_;
+  SmallArrOfTID_t liste_sommets_;
   // Correspondance sommets global/local:
   //   indice_local = liste_inverse_sommets_[indice_som_global]
   //   egal -1 si le sommet n'est pas dans la partie
-  ArrOfInt liste_inverse_sommets_;
+  BigArrOfInt_t liste_inverse_sommets_;
   // Correspondance elements global/local:
   //   indice_local = liste_inverse_elements_[indice_elem_global]
-  ArrOfInt liste_inverse_elements_;
-
-  // La seule classe qui construit cet objet. Pour l'instant...
-  friend class DomaineCutter;
+  BigArrOfInt_t liste_inverse_elements_;
 };
+
 #endif

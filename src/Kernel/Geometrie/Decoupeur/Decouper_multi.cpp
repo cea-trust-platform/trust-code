@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,9 +55,10 @@ int Decouper_multi::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       Decouper decoup;
       decoup.lire(is);
-      if (decoupeurs.count(decoup.nom_domaine.getString())) //decoupeur deja lu
-        Process::exit(Nom("Decouper_multi: domain ") + decoup.nom_domaine + "already read!");
-      else decoupeurs[decoup.nom_domaine.getString()] = decoup; //sinon, on l'ajoute
+      const Nom& nom = decoup.domaine().le_nom();
+      if (decoupeurs.count(nom.getString())) //decoupeur deja lu
+        Process::exit(Nom("Decouper_multi: domain ") + nom + "already read!");
+      else decoupeurs[nom.getString()] = decoup; //sinon, on l'ajoute
     }
   else return -1;
   return 0;
@@ -66,7 +67,6 @@ int Decouper_multi::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 Entree& Decouper_multi::interpreter(Entree& is)
 {
-
   //lecture des domaines et des raccords
   Param param(que_suis_je());
   param.ajouter_non_std("domaine",(this),Param::REQUIRED);
@@ -74,7 +74,6 @@ Entree& Decouper_multi::interpreter(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   /* partition des domaines */
-  std::vector<IntVect> v_proc; //partition de chaque domaine
   std::vector<Decouper*> v_dec; //decoupeurs
   std::vector<const Domaine*> v_dom; //domaines
   std::vector<Static_Int_Lists> v_se; //connectivites
@@ -83,10 +82,10 @@ Entree& Decouper_multi::interpreter(Entree& is)
   std::vector<int> off = { 0 }; //offset des sommets de chaque domaine dans le tableau aggrege
   for (auto &&n_d : decoupeurs)
     {
-      const Domaine& dom = n_d.second.ref_domaine.valeur();
+      Decouper& dec = n_d.second;
+      const Domaine& dom = dec.domaine();
       const DoubleTab& coord = dom.coord_sommets();
-      v_proc.push_back(IntVect());
-      v_dec.push_back(&n_d.second);
+      v_dec.push_back(&dec);
       v_dom.push_back(&dom);
       v_se.push_back(Static_Int_Lists());
       v_da.push_back(DataArrayDouble::New());
@@ -94,9 +93,9 @@ Entree& Decouper_multi::interpreter(Entree& is)
       v_pda.push_back(v_da.back());
       off.push_back(off.back() + coord.dimension(0));
 
-      Partitionneur_base& partitionneur = n_d.second.deriv_partitionneur.valeur();
-      partitionneur.declarer_bords_periodiques(n_d.second.liste_bords_periodiques);
-      partitionneur.construire_partition(v_proc.back(), n_d.second.nb_parts_tot);
+      Partitionneur_base& partitionneur = dec.deriv_partitionneur_.valeur();
+      partitionneur.declarer_bords_periodiques(dec.liste_bords_periodiques_);
+      partitionneur.construire_partition(dec.elem_part_, dec.nb_parts_tot_);
       construire_connectivite_som_elem(dom.nb_som(), dom.les_elems(), v_se.back(), 1);
     }
 
@@ -126,13 +125,14 @@ Entree& Decouper_multi::interpreter(Entree& is)
             // Retrouve le numero de dom dans lequel le sommet doublon est localise:
             for (s = S->getIJ(j, 0), d = 0; s >= off[d + 1]; )
               d++; //d : indice du domaine contenant s
+            const IntVect& elem_part = v_dec[d]->elem_part_;
             mcIdType som_loc0 = s - off[d]; // son numero local
             assert(som_loc0 < std::numeric_limits<int>::max());
             int som_loc = static_cast<int>(som_loc0);
             v_ds[k] = {{ d, som_loc }}; //stockage du couple (d, s)
             procs[k].clear();
             for (l = 0; l < v_se[d].get_list_size(som_loc); l++)
-              procs[k].insert(v_proc[d](v_se[d](som_loc, l))); //processeurs connectes
+              procs[k].insert(elem_part(v_se[d](som_loc, l))); //processeurs connectes
           }
         for (u_procs.clear(), k = 0; k < ns; k++)
           for (auto &&pr : procs[k])
@@ -168,7 +168,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
               i++;
             }
         }
-      v_dec[d]->ecrire(v_proc[d], &som_raccord); // * heavier lifting *
+      v_dec[d]->ecrire(&som_raccord); // * heavier lifting *
     }
   return is;
 }

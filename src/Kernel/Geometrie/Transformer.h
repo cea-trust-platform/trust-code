@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,10 +23,7 @@
  *
  *     Structure du jeu de donnee (en dimension 2) :
  *     Transformer dom expr1 expr2
- *
- *
  */
-
 template <typename _SIZE_>
 class Transformer_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
