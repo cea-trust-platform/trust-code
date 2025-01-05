@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,6 +109,7 @@ Sortie& Sortie::operator<<(const True_int ob) { return operator_template<True_in
 Sortie& Sortie::operator<<(const float ob) { return operator_template<float>(ob); }
 Sortie& Sortie::operator<<(const double ob) { return operator_template<double>(ob); }
 Sortie& Sortie::operator<<(const long ob) { return operator_template<long>(ob); }
+Sortie& Sortie::operator<<(const long long ob) { return operator_template<long long>(ob); }
 Sortie& Sortie::operator<<(const unsigned long ob) { return operator_template<unsigned long>(ob); }
 
 Sortie& Sortie::operator <<(ostream& (*f)(ostream&))
@@ -344,6 +345,7 @@ Sortie& Sortie::operator_template(const _TYPE_ &ob)
 template Sortie& Sortie::operator_template(const unsigned& ob);
 template Sortie& Sortie::operator_template(const True_int& ob);
 template Sortie& Sortie::operator_template(const long& ob);
+template Sortie& Sortie::operator_template(const long long& ob);
 template Sortie& Sortie::operator_template(const float& ob);
 template Sortie& Sortie::operator_template(const double& ob);
 template Sortie& Sortie::operator_template(const unsigned long& ob);

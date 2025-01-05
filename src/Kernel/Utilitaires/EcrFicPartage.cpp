@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -295,6 +295,7 @@ Sortie& EcrFicPartage::operator <<(const unsigned ob) { return operator_template
 Sortie& EcrFicPartage::operator <<(const float ob) { return operator_template<float>(ob);}
 Sortie& EcrFicPartage::operator <<(const double ob) { return operator_template<double>(ob);}
 Sortie& EcrFicPartage::operator <<(const long ob) { return operator_template<long>(ob);}
+Sortie& EcrFicPartage::operator <<(const long long ob) { return operator_template<long long>(ob);}
 Sortie& EcrFicPartage::operator <<(const unsigned long ob) { return operator_template<unsigned long>(ob);}
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,9 @@ protected:
   void internal_collective(const float *x, float *resu, int nx, const Collective_Op *op, int nop, int level) const;
 
 private:
-  template <typename _TYPE_, MPI_Datatype _MPITYPE_>
+  // TYP_IDX = 1: int, 2: long, 3: double, 4 :float
+  // [ABN] Can not use a MPI datatype directly because in OpenMPI for example this type is too complex to be used as a template parameter.
+  template <typename _TYPE_, int TYP_IDX>
   void mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, int n, Comm_Group::Collective_Op op,
                                  const Stat_Counter_Id& cnt_sum_id,
                                  const Stat_Counter_Id& cnt_min_id,

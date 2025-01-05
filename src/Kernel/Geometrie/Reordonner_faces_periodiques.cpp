@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,9 +84,8 @@ void build_trad_space(const Domaine_32_64<trustIdType>& domaine, IntTab_T<trustI
 }
 
 template<typename _SIZE_>
-void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<_SIZE_>& dom, const Nom& bord)
+void Reordonner_faces_periodiques_32_64<_SIZE_>::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<_SIZE_>& dom, const Nom& bord)
 {
-  using int_t = _SIZE_;
   using DoubleTab_t = DoubleTab_T<_SIZE_>;
   using IntTab_t = IntTab_T<_SIZE_>;
   using ArrOfDouble_t = ArrOfDouble_T<_SIZE_>;
@@ -136,15 +135,14 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
  * @param (faces) le tableau des faces (pour chaque face, indices de ses sommets) a reordonner Valeur de retour: 1 si ok, 0 si on n'a pas trouve de face jumelle a une face a precision_geom pres.
  */
 template<typename _SIZE_>
-int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine_32_64<_SIZE_>& domaine,
-                                                               IntTab_T<_SIZE_>& faces,
-                                                               const ArrOfDouble& direction_perio,
-                                                               const double epsilon)
+int Reordonner_faces_periodiques_32_64<_SIZE_>::reordonner_faces_periodiques(const Domaine_32_64<_SIZE_>& domaine,
+                                                                             IntTab_T<_SIZE_>& faces,
+                                                                             const ArrOfDouble& direction_perio,
+                                                                             const double epsilon)
 {
   // Modif B.M. 04/06/2010: j'autorise l'operation en parallele car c'est utilise par
   // l'interprete MaillerParallel...
   // PL 18/11/2010: Je deplace neanmoins l'interdiction de l'utilisation de l'interprete en // dans le jeu de donnees (voir ::interpreter_)
-  using int_t = _SIZE_;
   using IntTab_t = IntTab_T<_SIZE_>;
   using DoubleTab_t = DoubleTab_T<_SIZE_>;
   using ArrOfInt_t = ArrOfInt_T<_SIZE_>;
@@ -248,11 +246,10 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine_32_
  *
  */
 template <typename _SIZE_>
-int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere_32_64<_SIZE_>& frontiere,
-                                                          ArrOfDouble& vecteur_delta, ArrOfDouble& erreur,
-                                                          bool verbose)
+int Reordonner_faces_periodiques_32_64<_SIZE_>::check_faces_periodiques(const Frontiere_32_64<_SIZE_>& frontiere,
+                                                                        ArrOfDouble& vecteur_delta, ArrOfDouble& erreur,
+                                                                        bool verbose)
 {
-  using int_t = _SIZE_;
   using IntTab_t = IntTab_T<_SIZE_>;
   using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
@@ -326,10 +323,9 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere_32_64<
 }
 
 template<typename _SIZE_>
-void Reordonner_faces_periodiques::renum_som_perio(const Domaine_32_64<_SIZE_>& domaine, const Noms& liste_bords_periodiques,
-                                                   ArrOfInt_T<_SIZE_>& renum_som_perio, bool calculer_espace_virtuel)
+void Reordonner_faces_periodiques_32_64<_SIZE_>::renum_som_perio(const Domaine_32_64<_SIZE_>& domaine, const Noms& liste_bords_periodiques,
+                                                                 ArrOfInt_T<_SIZE_>& renum_som_perio, bool calculer_espace_virtuel)
 {
-  using int_t = _SIZE_;
   using IntTab_t = IntTab_T<_SIZE_>;
   using DoubleTab_t = DoubleTab_T<_SIZE_>;
 
@@ -420,14 +416,8 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine_32_64<_SIZE_>& 
 }
 
 // Explicit instanciations
-template int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine_32_64<int>& domaine, IntTab_T<int>& faces, const ArrOfDouble& direction_perio, const double epsilon);
-template void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<int>& dom, const Nom& bord);
-template int Reordonner_faces_periodiques::check_faces_periodiques<int>(const Frontiere_32_64<int>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, bool verbose);
-template void Reordonner_faces_periodiques::renum_som_perio<int>(const Domaine_32_64<int>& dom, const Noms& liste_bords_periodiques, ArrOfInt_T<int>& renum_som_perio, bool calculer_espace_virtuel);
-
+template class Reordonner_faces_periodiques_32_64<int>;
 #if INT_is_64_ == 2
-template int Reordonner_faces_periodiques::reordonner_faces_periodiques<trustIdType>(const Domaine_32_64<trustIdType>& domaine, IntTab_T<trustIdType>& faces, const ArrOfDouble& direction_perio, const double epsilon);
-template void Reordonner_faces_periodiques::chercher_direction_perio<trustIdType>(ArrOfDouble& direction_perio, const Domaine_32_64<trustIdType>& dom, const Nom& bord);
-template int Reordonner_faces_periodiques::check_faces_periodiques<trustIdType>(const Frontiere_32_64<trustIdType>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, bool verbose);
-template void Reordonner_faces_periodiques::renum_som_perio<trustIdType>(const Domaine_32_64<trustIdType>& dom, const Noms& liste_bords_periodiques, ArrOfInt_T<trustIdType>& renum_som_perio, bool calculer_espace_virtuel);
+template class Reordonner_faces_periodiques_32_64<trustIdType>;
 #endif
+

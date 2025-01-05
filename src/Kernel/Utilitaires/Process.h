@@ -56,6 +56,7 @@ public:
   static void exit(const std::string& s) { ::exit(-1); }
 
   static double mp_sum(double) { return 0; }
+  static float mp_sum(float) { return 0; }
   static double mp_max(double) { return 0; }
   static int mp_max(int) { return 0; }
   static double mp_min(double) { return 0; }
@@ -85,6 +86,7 @@ public:
   // Sum across all procs
   //
   static double mp_sum(double);
+  static float mp_sum(float);
 #if INT_is_64_ == 2
   // Careful, the sum of many 'int' on several procs, might return a 'long'!!
   static trustIdType mp_sum(int v) { return mp_sum(static_cast<trustIdType>(v)); }

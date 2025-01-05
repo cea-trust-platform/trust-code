@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -424,4 +424,37 @@ void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& 
 
   renum_inverse.resize_array(count+1);
   // FIN MODIF ELI LAUCOIN 31/01/2012
+}
+/*! @brief cherche la "valeur" dans le tableau tab par recherche binaire Le tableau tab doit etre trie dans l'ordre croissant
+ *
+*   Si elle n'est pas trouvee, renvoie -1 (y compris si tab est vide),
+ *   sinon, renvoie un index i tel que tab[i] == valeur
+ *   (si la valeur figure plusieurs fois dans le tableau, on ne renvoie
+ *   pas forcement la premiere occurence).
+ *
+ *  Utilise dans Trio !
+ */
+int array_bsearch(const ArrOfInt& tab, int valeur)
+{
+  // attention tout est important !
+  int i = 0;
+  int j = tab.size_array(); // j = fin de tableau + 1 (important)
+  while (j > i)
+    {
+      // Le tableau doit etre trie
+      assert(j == tab.size_array() || tab[i] <= tab[j]);
+      const int milieu = (i + j) / 2;
+      const int val = tab[milieu];
+      if (val > valeur)
+        j = milieu; // prendre la valeur milieu et pas milieu - 1
+      else if (val < valeur)
+        i = milieu + 1; // prendre la valeur milieu + 1 et pas milieu
+      else
+        return milieu;
+    }
+  // Si on arrive ici, c'est que i==j, donc
+  // - soit j == fin de tableau + 1 et on n'a pas trouve la valeur
+  // - soit tab[j] a ete teste et n'est pas egale a valeur
+  // Dans les deux cas, valeur n'est pas dans le tableau
+  return -1;
 }

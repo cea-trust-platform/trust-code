@@ -27,7 +27,6 @@ template <typename _SIZE_>
 class DomaineCutter_Correspondance_32_64
 {
 public:
-  using Size_t = _SIZE_;
   using SmallArrOfTID_t = SmallArrOfTID_T<_SIZE_>;  // a small number of big values -> typically an array of global indices
   using BigArrOfInt_t = BigArrOfInt_T<_SIZE_>;      // a big number of small values -> typically a (huge) array of local indices
 

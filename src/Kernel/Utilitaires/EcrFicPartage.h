@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,6 +59,7 @@ public:
   Sortie& operator <<(const True_int ob) override;
   Sortie& operator <<(const unsigned ob) override;
   Sortie& operator <<(const long ob) override;
+  Sortie& operator <<(const long long ob) override;
   Sortie& operator <<(const unsigned long ob) override;
   Sortie& operator <<(const float ob) override;
   Sortie& operator <<(const double ob) override;

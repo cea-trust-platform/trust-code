@@ -438,6 +438,8 @@ void DomaineCutter_32_64<_SIZE_>::construire_faces_raccords_ssdom(const BigArrOf
       const Frontiere_t& frontiere = itr;
       Raccord& raccord_partie = domaine_partie.faces_raccord().add(Raccord());
       Nom type_raccord = frontiere.que_suis_je();
+      // Strip away a potential "_64" suffix since we are now building a reduced 32b dom.
+      type_raccord.prefix("_64");
       if (type_raccord == "Raccord_local_homogene")
         type_raccord = "Raccord_distant_homogene";
       raccord_partie.typer(type_raccord);

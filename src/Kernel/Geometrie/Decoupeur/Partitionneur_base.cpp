@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -155,7 +155,7 @@ Partitionneur_base_32_64<_SIZE_>::calculer_graphe_connexions_periodiques(const D
       {
         ArrOfDouble delta;
         ArrOfDouble erreur;
-        const int ok = Reordonner_faces_periodiques::check_faces_periodiques<_SIZE_>(domaine.bord(i_bord), delta, erreur);
+        const int ok = Reordonner_faces_periodiques_32_64<_SIZE_>::check_faces_periodiques(domaine.bord(i_bord), delta, erreur);
         const int d = delta.size_array();
         Cerr << " Delta = ";
         for (int i = 0; i < d; i++) Cerr << delta[i] << " ";
@@ -641,8 +641,8 @@ Partitionneur_base_32_64<_SIZE_>::corriger_bords_avec_graphe(const Static_Int_Li
   for (int_t i = 0; i < nb_sommets_reels; i++)
     renum_som_perio[i] = i;
   bool parallel_algo = Process::is_parallel();
-  Reordonner_faces_periodiques::renum_som_perio(domaine, liste_bords_perio, renum_som_perio,
-                                                parallel_algo /* pas d'espace virtuel en sequentiel */);
+  Reordonner_faces_periodiques_32_64<_SIZE_>::renum_som_perio(domaine, liste_bords_perio, renum_som_perio,
+                                                              parallel_algo /* pas d'espace virtuel en sequentiel */);
 
   if (liste_bords_perio.size() > 1)
     count += corriger_multiperiodique(domaine, liste_bords_perio, renum_som_perio, som_elem, elem_part);

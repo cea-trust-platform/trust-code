@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,22 +25,24 @@
  *   meme ordre, les faces jumelles sur le bord oppose).
  *
  */
-class Reordonner_faces_periodiques : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Reordonner_faces_periodiques_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
 public:
-  template <typename _SIZE_>
+  using int_t = _SIZE_;
+
   static int reordonner_faces_periodiques(const Domaine_32_64<_SIZE_>& domaine, IntTab_T<_SIZE_>& faces, const ArrOfDouble& direction_perio, const double epsilon);
 
-  template <typename _SIZE_>
   static int check_faces_periodiques(const Frontiere_32_64<_SIZE_>& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur,
                                      bool verbose=false);
 
-  template <typename _SIZE_>
   static void renum_som_perio(const Domaine_32_64<_SIZE_>& dom, const Noms& liste_bords_periodiques,
                               ArrOfInt_T<_SIZE_>& renum_som_perio, bool calculer_espace_virtuel);
 
-  template <typename _SIZE_>
   static void chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine_32_64<_SIZE_>& dom, const Nom& bord);
 };
+
+using Reordonner_faces_periodiques = Reordonner_faces_periodiques_32_64<int>;
+using Reordonner_faces_periodiques_64 = Reordonner_faces_periodiques_32_64<trustIdType>;
 
 #endif

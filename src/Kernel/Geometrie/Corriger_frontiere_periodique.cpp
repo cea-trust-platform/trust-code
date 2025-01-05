@@ -68,7 +68,7 @@ Entree& Corriger_frontiere_periodique_32_64<_SIZE_>::interpreter_(Entree& is)
     {
       direction_perio_set=0;
       Cerr << "No direction given, searching periodicity direction automatically:" << finl;
-      Reordonner_faces_periodiques::chercher_direction_perio(direction_perio, dom, nom_bord);
+      Reordonner_faces_periodiques_32_64<_SIZE_>::chercher_direction_perio(direction_perio, dom, nom_bord);
     }
   else
     {
@@ -86,7 +86,7 @@ Entree& Corriger_frontiere_periodique_32_64<_SIZE_>::interpreter_(Entree& is)
   Bord_t& bord = dom.bord(nom_bord);
   IntTab_t& faces = bord.faces().les_sommets();
   const double epsilon = Objet_U::precision_geom;
-  const int ok = Reordonner_faces_periodiques::reordonner_faces_periodiques(dom, faces, direction_perio, epsilon);
+  const int ok = Reordonner_faces_periodiques_32_64<_SIZE_>::reordonner_faces_periodiques(dom, faces, direction_perio, epsilon);
   if (!ok)
     {
       if (direction_perio_set)

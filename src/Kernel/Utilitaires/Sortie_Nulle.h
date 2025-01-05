@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@ public:
   Sortie& operator <<(const double ob) override { return *this; }
   Sortie& operator <<(const char* ob) override { return *this; }
   Sortie& operator <<(const long ob) override { return *this; }
+  Sortie& operator <<(const long long ob) override { return *this; }
   Sortie& operator <<(const unsigned long ob) override { return *this; }
 
   int put(const unsigned* ob, std::streamsize n, std::streamsize pas=1) override { return 1; }

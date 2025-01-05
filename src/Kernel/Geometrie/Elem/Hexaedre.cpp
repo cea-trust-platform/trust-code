@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,6 @@ Entree& Hexaedre_32_64<_SIZE_>::readOn(Entree& s )
 }
 
 /*! @brief Reordonne les sommets de l'hexaedre
- *
  */
 template <typename _SIZE_>
 void Hexaedre_32_64<_SIZE_>::reordonner()
@@ -96,7 +95,6 @@ int Hexaedre_32_64<_SIZE_>::reordonner_elem()
 
   for (int_t num_poly = 0; num_poly < nb_elem; num_poly++)
     {
-
       xmin[0] = xmin[1] = xmin[2] = 1e40;
       for(int i=0; i<8; i++)
         {

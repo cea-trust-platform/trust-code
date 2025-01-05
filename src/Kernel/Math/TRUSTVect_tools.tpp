@@ -30,6 +30,7 @@ struct Block_Iter
 {
   Block_Iter() = default;
   Block_Iter(const Block_Iter& other) = default;  // default copy ctor, will copy all members
+  Block_Iter& operator=(const Block_Iter& other) = default; // default copy operator
   Block_Iter(const int * p) : int_ptr(p) {}
   Block_Iter(_SIZE_ s, _SIZE_ e) : start(s), end(e) {}
 
@@ -216,8 +217,8 @@ inline double mp_somme_vect_as_double(const TRUSTVect<int,_SIZE_>& vx)
 template<typename _SIZE_>
 inline float mp_somme_vect(const TRUSTVect<float,_SIZE_>& vx)
 {
-  double x = local_somme_vect(vx);
-  double y = Process::mp_sum(x);
+  float x = local_somme_vect(vx);
+  float y = Process::mp_sum(x);
   return y;
 }
 

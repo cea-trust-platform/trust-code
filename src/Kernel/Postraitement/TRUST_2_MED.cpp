@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -190,16 +190,21 @@ void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temp
 
 #ifdef MED_
 // renvoit le type med a partir du type trio
-med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_,med_axis_type& rep)
+med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_i,med_axis_type& rep)
 {
   rep=MED_CARTESIAN;
-  Motcle type_elem;
-  type_elem=type_elem_;
+
+  // Strip any '_64_ prefix:
+  Motcle type_elem_0 = type_elem_i;
+  type_elem_0.prefix("_64");
+
+  // Check for axi:
+  Motcle type_elem = type_elem_0;
   type_elem.prefix("_AXI");
-  if (type_elem!=Motcle(type_elem_))
+  if (type_elem != Motcle(type_elem_0))
     {
       rep=MED_SPHERICAL;
-      Cerr<<"#"<<type_elem<<"#"<<Motcle(type_elem_)<<"#"<<(type_elem!=Motcle(type_elem_))<<finl;
+      Cerr<<"#"<<type_elem<<"#"<<Motcle(type_elem_0)<<"#"<<(type_elem!=Motcle(type_elem_0))<<finl;
       if (type_elem=="QUADRILATERE_2D")
         type_elem="SEGMENT_2D";
       if (type_elem=="RECTANGLE_2D")

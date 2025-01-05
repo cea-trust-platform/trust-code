@@ -204,7 +204,7 @@ Entree& Scatter::interpreter(Entree& is)
   Objet_U& obj = objet(nomdomaine);
   if(!sub_type(Domaine, obj))
     {
-      Cerr << "obj : " << obj << " is not an object of type Domain !" << finl;
+      Cerr << "Error in Scatter: object of type '" << obj.que_suis_je() << "' when Domaine was expected!" << finl;
       exit();
     }
   Domaine& dom = ref_cast(Domaine, obj);

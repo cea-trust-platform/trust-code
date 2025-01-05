@@ -146,6 +146,14 @@ double Process::mp_sum(double x)
   return y;
 }
 
+float Process::mp_sum(float x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  float y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_SUM);
+  return y;
+}
+
 /*! @brief Calcule la somme de x sur tous les processeurs du groupe courant.
  *
  * !!! Note that the sum of many int might result in a long !!!

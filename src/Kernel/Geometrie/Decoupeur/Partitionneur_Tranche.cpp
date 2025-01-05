@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,6 @@ template const TRUSTTab<double, trustIdType> * static_qsort_DoubleTab_ptr<trustI
 template<typename _SIZE_>
 True_int trier_index_compare_fct(const void *i_, const void *j_)
 {
-
   const _SIZE_ i = *((_SIZE_*)i_);
   const _SIZE_ j = *((_SIZE_*)j_);
   const int k = static_qsort_DoubleTab_colonne;
@@ -135,7 +134,7 @@ void trier_index_colonne_i(const TRUSTTab<double, _SIZE_>& tab,
   static_qsort_DoubleTab_colonne = colonne;
   _SIZE_ * index_ptr = index.addr();
   const _SIZE_ index_size = index.size_array();
-  const int index_member_size = sizeof(int);
+  const size_t index_member_size = sizeof(_SIZE_);
 
   qsort(index_ptr, index_size, index_member_size, trier_index_compare_fct<_SIZE_>);
 }
@@ -176,7 +175,7 @@ void Partitionneur_Tranche_32_64<_SIZE_>::chercher_direction_perio(const Domaine
       ArrOfDouble delta;
       ArrOfDouble erreur;
       const double epsilon = Objet_U::precision_geom;
-      Reordonner_faces_periodiques::check_faces_periodiques<_SIZE_>(domaine.bord(num_bord), delta, erreur);
+      Reordonner_faces_periodiques_32_64<_SIZE_>::check_faces_periodiques(domaine.bord(num_bord), delta, erreur);
       int count = 0;
       for (int j = 0; j < dim; j++)
         {

@@ -38,6 +38,7 @@ class Decouper_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 public:
   // Those two classes are tightly related and are just easier to code if they are allowed to access members directly:
   friend class Decouper_multi;
+  friend class Decouper_etendu;  // For STT
 
   using int_t = _SIZE_;
   using BigIntVect_t = TRUSTVect<int, _SIZE_>;  // always storing 'int' (=proc num) but might have a lot of entries

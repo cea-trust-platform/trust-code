@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -134,15 +134,8 @@ void EcrFicPartageMPIIO::write(MPI_Datatype MPI_TYPE, const void* ob)
   // See explanations in Entree::operator_template() to understand
   // the conversions made here:
   bool convert = false;
-  switch(MPI_TYPE)
-    {
-    case MPI_INT:
-    case MPI_UNSIGNED:
-      convert = this->must_convert<int>();
-      break;
-    default:
-      convert = false;
-    }
+  if (MPI_TYPE == MPI_INT || MPI_TYPE == MPI_UNSIGNED)
+    convert = this->must_convert<int>();
 
   MPI_Datatype MPI_TYPE2 = MPI_TYPE;
   const void * ob2 = ob;
@@ -233,6 +226,13 @@ Sortie& EcrFicPartageMPIIO::operator <<(const long ob)
     write(MPI_LONG, &ob);
   else
     (*this)<<std::to_string(ob).c_str();
+  return *this;
+}
+
+Sortie& EcrFicPartageMPIIO::operator <<(const long long ob)
+{
+  // Should never be used in MPIIO context
+  throw;
   return *this;
 }
 

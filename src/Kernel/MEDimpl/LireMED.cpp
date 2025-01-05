@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,7 @@ using namespace MEDCoupling;
 // XD Read_MED interprete lire_med 1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by 'type_raccord\_'. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sub_domain keyword. NL2 NB: If the MED file contains one or several subdomaine defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subdomaines for sequential and/or parallel calculations. These subdomaines will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
 Implemente_instanciable_32_64(LireMED_32_64,"Lire_MED",Interprete_geometrique_base_32_64<_T_>);
 Add_synonym(LireMED,"Read_med");
+Add_synonym(LireMED_64,"Read_med_64");
 
 ////
 //// Anonymous namespace for local methods to this translation unit:
@@ -77,8 +78,11 @@ template <typename _SIZE_>
 void verifier_modifier_type_elem(Nom& type_elem,const IntTab_T<_SIZE_>& les_elems,const DoubleTab_T<_SIZE_>& sommets)
 {
   using int_t = _SIZE_;
+  Nom typ_elem_no64 = type_elem;
+  typ_elem_no64.prefix("_64");
+  bool is64 = type_elem != typ_elem_no64;
 
-  if ((type_elem=="Rectangle")||(type_elem=="Hexaedre"))
+  if (typ_elem_no64=="Rectangle" || typ_elem_no64=="Hexaedre")
     {
       int dimension=sommets.dimension_int(1);
       int nb_som_elem=les_elems.dimension_int(1);
@@ -117,12 +121,13 @@ void verifier_modifier_type_elem(Nom& type_elem,const IntTab_T<_SIZE_>& les_elem
       if (!ok)
         {
           // on change type_elem
-          if (type_elem=="Rectangle")
-            type_elem="Quadrangle";
-          else if  (type_elem=="Hexaedre")
-            type_elem="Hexaedre_vef";
+          if (typ_elem_no64=="Rectangle")
+            typ_elem_no64="Quadrangle";
+          else if  (typ_elem_no64=="Hexaedre")
+            typ_elem_no64="Hexaedre_vef";
         }
     }
+  type_elem = typ_elem_no64 + (is64 ? "_64" : "");
 }
 
 template <typename _SIZE_>
@@ -459,6 +464,8 @@ void LireMED_32_64<_SIZE_>::prepare_som_and_elem(DoubleTab_t& sommets2, IntTab_t
 
   int mesh_type_cell = static_cast<int>(conn[connIndex[0]]);  // type is always an int.
   Nom type_elem_n = type_medcoupling_to_type_geo_trio(mesh_type_cell, false);
+  if (!std::is_same<_SIZE_,int>::value)
+    type_elem_n += "_64";
   type_elem_.typer(type_elem_n);
   auto set_of_typs = mcumesh_->getAllGeoTypes();
   if (set_of_typs.size() > 1)
@@ -929,8 +936,10 @@ void LireMED_32_64<_SIZE_>::lire_geom(bool subDom)
 
   fill_frontieres(fac_grp_id, all_faces_bords);
 
-  //  GF au moins en polyedre il faut reordonner
-  if (sub_type(Polyedre_32_64<_SIZE_>,dom.type_elem().valeur()) || type_elem_n == "Rectangle" || type_elem_n == "Hexaedre")
+  // Fix connectivity to be compliant with TRUST connectivity conventions
+  // (see doc of Hexaedre/Rectangle for example)
+  if (type_elem_n == "Rectangle" || type_elem_n == "Hexaedre" || type_elem_n == "Rectangle_64" || type_elem_n == "Hexaedre_64"
+      || sub_type(Polyedre_32_64<_SIZE_>,dom.type_elem().valeur()))
     dom.reordonner();
 
   if (Process::nproc()==1)

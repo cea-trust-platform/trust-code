@@ -156,28 +156,30 @@ void Comm_Group_MPI::abort() const
 #endif
 }
 
-template <typename _TYPE_, MPI_Datatype _MPITYPE_>
+template <typename _TYPE_, int TYP_IDX>
 void Comm_Group_MPI::mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, int n, Comm_Group::Collective_Op op,
                                                const Stat_Counter_Id& cnt_sum_id,
                                                const Stat_Counter_Id& cnt_min_id,
                                                const Stat_Counter_Id& cnt_max_id) const
 {
+  static_assert(TYP_IDX >= 1 && TYP_IDX <= 4, "Invalid type index!");
+  MPI_Datatype mpi_typ = TYP_IDX==1 ? MPI_INT : (TYP_IDX==2 ? MPI_LONG : (TYP_IDX==3 ? MPI_DOUBLE : MPI_FLOAT));
   if (n <= 0) return;
   switch(op)
     {
     case Comm_Group::COLL_SUM:
       statistiques().begin_count(cnt_sum_id);
-      mpi_error(MPI_Allreduce(x, resu, n, _MPITYPE_, MPI_SUM, mpi_comm_));
+      mpi_error(MPI_Allreduce(x, resu, n, mpi_typ, MPI_SUM, mpi_comm_));
       statistiques().end_count(cnt_sum_id);
       break;
     case Comm_Group::COLL_MIN:
       statistiques().begin_count(cnt_min_id);
-      mpi_error(MPI_Allreduce(x, resu, n, _MPITYPE_, MPI_MIN, mpi_comm_));
+      mpi_error(MPI_Allreduce(x, resu, n, mpi_typ, MPI_MIN, mpi_comm_));
       statistiques().end_count(cnt_min_id);
       break;
     case Comm_Group::COLL_MAX:
       statistiques().begin_count(cnt_max_id);
-      mpi_error(MPI_Allreduce(x, resu, n, _MPITYPE_, MPI_MAX, mpi_comm_));
+      mpi_error(MPI_Allreduce(x, resu, n, mpi_typ, MPI_MAX, mpi_comm_));
       statistiques().end_count(cnt_max_id);
       break;
     case Comm_Group::COLL_PARTIAL_SUM:
@@ -189,21 +191,21 @@ void Comm_Group_MPI::mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, in
 void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const
 {
 #ifdef MPI_
-  mp_collective_op_template<double, MPI_DOUBLE>(x, resu, n, op, mpi_sumdouble_counter_, mpi_mindouble_counter_, mpi_maxdouble_counter_);
+  mp_collective_op_template<double, 3 /*double*/>(x, resu, n, op, mpi_sumdouble_counter_, mpi_mindouble_counter_, mpi_maxdouble_counter_);
 #endif
 }
 
 void Comm_Group_MPI::mp_collective_op(const float *x, float *resu, int n, Collective_Op op) const
 {
 #ifdef MPI_
-  mp_collective_op_template<float, MPI_FLOAT>(x, resu, n, op, mpi_sumfloat_counter_, mpi_minfloat_counter_, mpi_maxfloat_counter_);
+  mp_collective_op_template<float, 4 /*float*/>(x, resu, n, op, mpi_sumfloat_counter_, mpi_minfloat_counter_, mpi_maxfloat_counter_);
 #endif
 }
 
 void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const
 {
 #ifdef MPI_
-  mp_collective_op_template<int, MPI_INT>(x, resu, n, op, mpi_sumint_counter_, mpi_minint_counter_, mpi_maxint_counter_);
+  mp_collective_op_template<int, 1 /*int*/>(x, resu, n, op, mpi_sumint_counter_, mpi_minint_counter_, mpi_maxint_counter_);
 #endif
 }
 
@@ -211,7 +213,7 @@ void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, int n, Collective
 void Comm_Group_MPI::mp_collective_op(const trustIdType *x, trustIdType *resu, int n, Collective_Op op) const
 {
 #ifdef MPI_
-  mp_collective_op_template<trustIdType, MPI_LONG>(x, resu, n, op, mpi_sumint_counter_, mpi_minint_counter_, mpi_maxint_counter_);
+  mp_collective_op_template<trustIdType, 2 /*long*/>(x, resu, n, op, mpi_sumint_counter_, mpi_minint_counter_, mpi_maxint_counter_);
 #endif
 }
 #endif
@@ -816,13 +818,21 @@ trustIdType Comm_Group_MPI::mppartial_sum_impl(trustIdType x) const
   if (rang > 0)
     {
       // Recoit la somme partielle du precedent
+#ifndef INT_is_64_
+      mpi_error(MPI_Recv(& somme, 1, MPI_INT, rang-1, tag, mpi_comm_, &status));
+#else
       mpi_error(MPI_Recv(& somme, 1, MPI_LONG, rang-1, tag, mpi_comm_, &status));
+#endif
     }
   if (rang+1 < np)
     {
       // Envoie la somme partielle au suivant
       trustIdType s = somme + x;
+#ifndef INT_is_64_
+      mpi_error(MPI_Send(& s, 1, MPI_INT, rang+1, tag, mpi_comm_));
+#else
       mpi_error(MPI_Send(& s, 1, MPI_LONG, rang+1, tag, mpi_comm_));
+#endif
     }
   statistiques().end_count(mpi_partialsum_counter_);
   return somme;

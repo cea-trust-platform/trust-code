@@ -54,21 +54,21 @@ namespace
 /** Should we use resize() or resize_dim0 to resize array ...
  */
 template <typename _SIZE_, typename _TYPE_>
-bool resize_tab_or_vect(TRUSTVect<_TYPE_,_SIZE_>& v, int sz, int sz_r, RESIZE_OPTIONS opt)
+bool resize_tab_or_vect(TRUSTVect<_TYPE_,_SIZE_>& v, _SIZE_ sz, int sz_r, RESIZE_OPTIONS opt)
 {
   using TAB = TRUSTTab<_TYPE_, _SIZE_>;
   TAB* vv = dynamic_cast<TAB*>(&v);
   if (vv)
     {
       TAB& t = *vv;
-      const int n = t.dimension_tot(0);
+      const _SIZE_ n = t.dimension_tot(0);
       if (n == sz_r || n == 0) t.resize_dim0(sz, opt);
       else if (n == sz) { /* ok no resize */  }
       else return true;
     }
   else
     {
-      const int n = v.size_totale();
+      const _SIZE_ n = v.size_totale();
       if (n == sz_r || n == 0) {  v.resize(sz, opt); }
       else if (n == sz) { /* ok no resize */ }
       else return true;
@@ -113,7 +113,9 @@ static void creer_tableau_seq_(const MD_Vector& md, TRUSTVect<_TYPE_,_SIZE_>& v,
   const MD_Vector_seq * md_seq = dynamic_cast<const MD_Vector_seq *>(&md.valeur());
   assert(md_seq != nullptr); // sequential, cast should always be OK
 
-  int sz = Process::check_int_overflow(md_seq->get_nb_items());
+  // _SIZE_ might be int, but md_seq->get_nb_items is always trustIdType:
+  trustIdType sz0 = md_seq->get_nb_items();
+  _SIZE_ sz = std::is_same<_SIZE_, int>::value ? Process::check_int_overflow(sz0) : sz0;
 
   bool err = ::resize_tab_or_vect(v, sz, -1, opt);
   if (err)
@@ -147,11 +149,14 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
     }
 
   IntVect* intV = dynamic_cast<IntVect*>(&v);
-#if INT_is_64_ == 2
-  TIDVect* tidV = dynamic_cast<TIDVect*>(&v);
-#endif
   DoubleVect* doubleV = dynamic_cast<DoubleVect*>(&v);
   FloatVect* floatV = dynamic_cast<FloatVect*>(&v);
+#if INT_is_64_ == 2
+  BigIntVect* bintV = dynamic_cast<BigIntVect*>(&v);
+  TIDVect* tidV = dynamic_cast<TIDVect*>(&v);
+  BigTIDVect* btidV = dynamic_cast<BigTIDVect*>(&v);
+  BigDoubleVect* bdoubleV = dynamic_cast<BigDoubleVect*>(&v);
+#endif
 
   if(sub_type(MD_Vector_seq, md.valeur()))
     {
@@ -160,13 +165,15 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
        * but we can not: for example when reading a MED file we construct temporarily a dummy domain
        * which looks like a sequential one, even if we are actually running parallel ... too bad.
        */
-
       if (intV) creer_tableau_seq_<int, int>(md, *intV, opt);
-#if INT_is_64_ == 2
-      else if (tidV) creer_tableau_seq_<trustIdType, int>(md, *tidV, opt);
-#endif
       else if (doubleV) creer_tableau_seq_<double, int>(md, *doubleV, opt);
       else if (floatV) creer_tableau_seq_<float, int>(md, *floatV, opt);
+#if INT_is_64_ == 2
+      else if (bintV) creer_tableau_seq_<int, trustIdType>(md, *bintV, opt);
+      else if (tidV) creer_tableau_seq_<trustIdType, int>(md, *tidV, opt);
+      else if (btidV) creer_tableau_seq_<trustIdType, trustIdType>(md, *btidV, opt);
+      else if (bdoubleV) creer_tableau_seq_<double, trustIdType>(md, *bdoubleV, opt);
+#endif
       else
         {
           Cerr << "Internal error in MD_Vector_tools::creer_tableau_seq():\n"
@@ -178,11 +185,17 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
   else  // parallel computation **or** composite descriptor (MD_Vector_composite)
     {
       if (intV) creer_tableau_distribue_<IntVect, IntTab>(md, *intV, opt);
-#if INT_is_64_ == 2
-      else if (tidV) creer_tableau_distribue_<TIDVect, TIDTab>(md, *tidV, opt);
-#endif
       else if (doubleV) creer_tableau_distribue_<DoubleVect, DoubleTab>(md, *doubleV, opt);
       else if (floatV) creer_tableau_distribue_<FloatVect, FloatTab>(md, *floatV, opt);
+#if INT_is_64_ == 2
+      else if (tidV) creer_tableau_distribue_<TIDVect, TIDTab>(md, *tidV, opt);
+      else if (bintV || btidV || bdoubleV)
+        {
+          Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue(const MD_Vector & md, Array_base & v):" << finl
+               << "   -> Trying to create a distributed array for a 'big' array (greater than 32b) - shoud never be necessary." << finl;
+          Process::exit();
+        }
+#endif
       else
         {
           Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue(const MD_Vector & md, Array_base & v):\n"

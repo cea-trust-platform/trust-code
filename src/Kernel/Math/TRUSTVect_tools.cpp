@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -621,6 +621,7 @@ template int local_extrema_vect_generic<int, int, int, TYPE_OPERATION_VECT::MAX_
 template int local_extrema_vect_generic<int, int, int, TYPE_OPERATION_VECT::MIN_ABS_>(const TRUSTVect<int, int>& vx, Mp_vect_options opt);
 
 #if INT_is_64_ == 2
+template int local_extrema_vect_generic<int, trustIdType, int, TYPE_OPERATION_VECT::MAX_>(const TRUSTVect<int, trustIdType>& vx, Mp_vect_options opt);
 template trustIdType local_extrema_vect_generic<trustIdType, trustIdType, trustIdType, TYPE_OPERATION_VECT::MAX_>(const TRUSTVect<trustIdType, trustIdType>& vx, Mp_vect_options opt);
 #endif
 
