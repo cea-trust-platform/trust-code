@@ -32,7 +32,7 @@ AbstractIO::AbstractIO() :
  *
  * The rules are:
  *   - for 32 files, everything is read/written as 'int', even if _TYPE_ 'long' (or trustIdType) was requested - overflow is checked
- *   in Entree/Sortie classes
+ *     in Entree/Sortie classes
  *   - for 64 files, everything is read/written as 'long', even if _TYPE_ 'int' (or trustIdType) was requested
  *     This is for historical reasons: in the former 64b version of TRUST all int were replaced by long, we need to
  *     keep backward compatibility. When we read a former .sauv file written prior to 1.9.5 for example, all integer values are 'long'.

@@ -1530,8 +1530,13 @@ void DomaineCutter_32_64<_SIZE_>::ecrire_domaines(const Nom& basename, const Dom
                        << (format == DomainesFileOutputType::BINARY_MULTIPLE ? "binary" : "ascii")
                        << " file " << nom_fichier << finl;
                   SFichier os;
-                  if (format == DomainesFileOutputType::BINARY_MULTIPLE)
-                    os.set_bin(1);
+                  os.set_bin(1);
+
+                  //
+                  // Even for big computations, Zones files can always be written in 32b.
+                  //
+                  os.set_64b(false);
+
                   const int ok = os.ouvrir(nom_fichier);
                   if (!ok)
                     Process::exit("DomaineCutter_32_64<_SIZE_>::ecrire_domaines : Error while opening file!");

@@ -82,20 +82,32 @@ extern char* pwd();
 /* **************************************
             32b / 64b management
   **************************************
-  Here we define 'trustIdType', type used to store all geometrical entity indices (element index, node index, ...) that might
+  Below we define 'trustIdType', type used to store all geometrical entity indices (element index, node index, ...) that might
   exceed the 32b limit.
 
   All the TRUST libraries (LIBLATAFILTER notably) and all the main C++ source code can be compiled in either 32b or 64b depending
   on the flag set at configure time.
 
-  However the lata_tools and VisIt plugin are **only** 64b for simplicity, and because it will be provided to VisIt team for integration.
+  However the lata_tools and VisIt plugin are **only** 64b for simplicity, and because it will be provided to the VisIt team for integration.
 
   In the core TRUST C++ code, the strategy is as follows: all the C++ classes that are potentially used before the Scatter keyword
   should support both 32 or 64b mode. This is typically done by having them templatized on the SIZE parameter. In practice however
   some classes are not yet ported to 64b and will remain only functional in 32b.
   The idea is that once the computation is distributed on several processors, each proc will never need to use 64b indices. And everything
   happening after Scatter (like the operator computations, etc.) is done on one proc only.
-  (note that there are some exceptions for the postprocessing).
+  (note that there are some exceptions for the postprocessing where we still need a total number of elements for example).
+
+  The Zone files (containing splitted domains after Partition) are always written in 32b (see DomaineCutter and look for set_64b(false))
+  Similarly, the save/restart files are always 32b (see SaveRestart.cpp).
+  
+  The input/output management is sometimes tricky, since even with an executable compiled in 64b, we might need to write (/read) 32b data.
+  See what is done class AbstractIO about this.
+
+  Various types/sizes of arrays are declared in TRUSTTab_forward.h. For example you might want a small of array of (big) identifiers (=SmallArrOfTID)
+  or a big array of regular 32b int (=BigArrOfInt). Notice that for big arrays, only the first dimension (dimension 0) might be big. Other axes
+  always remain within 32b.
+  
+  For the IJK parts of the code, the rule is that : the three directions nx, ny and nz are always within 32b, but their *product* might exceed 32b.
 
   At the time of writing, there are two ways to produce a 64b version of the code:
     - either with configure flag '-with-64-bit-indices' which brutally replace all 'int' in the source code with 'long' (historical).

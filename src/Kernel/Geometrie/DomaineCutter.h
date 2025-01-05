@@ -44,7 +44,7 @@ public:
   using Static_Int_Lists_t = Static_Int_Lists_32_64<_SIZE_>;
 
   using Domaine_t = Domaine_32_64<_SIZE_>;
-  using Domaine32 = Domaine;  // To insist on the fact that we are using *both* variant of Domains. This type is typically for (small) partial domains.
+  using Domaine32 = Domaine_32_64<int>;  // To insist on the fact that we are using *both* variant of Domains. This type is typically for (small) partial domains.
   using Sous_Domaine_t = Sous_Domaine_32_64<_SIZE_>;
   using DomaineCutter_Correspondance_t = DomaineCutter_Correspondance_32_64<_SIZE_>;
   using Frontiere_t = Frontiere_32_64<_SIZE_>;
