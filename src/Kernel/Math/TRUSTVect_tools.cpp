@@ -170,7 +170,7 @@ void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, con
           }
       });
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
     }
 }
 }
@@ -256,7 +256,7 @@ void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TR
           resu_view(resu_idx) += alpha * x * x;
       });
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
     }
 }
 }
@@ -341,7 +341,7 @@ void operator_vect_vect_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRU
         if (IS_EGAL) resu_view(resu_idx) = x;
       });
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
     }
 }
 }
@@ -436,7 +436,7 @@ void operator_vect_single_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const _
         if (IS_INV) resu_view(resu_idx) = (_TYPE_) ((_TYPE_)1 /resu_view(resu_idx));
       });
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice,__KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
     }
 }
 }
@@ -583,7 +583,7 @@ void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int n
 
       //timer
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 
       //Fence (necessary for now)
       Kokkos::fence();
@@ -713,7 +713,7 @@ void local_operations_vect_bis_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx
 
       //timer
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 
       //Fence (necessary for now)
       Kokkos::fence();
@@ -795,7 +795,7 @@ void invalidate_data_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu,
       //Loop
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,KOKKOS_LAMBDA(const int count)
       {resu_view(count)=invalid;});
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
       i = items_blocs[blocs_idx+1] * line_size;
     }
   const _SIZE_ bloc_end = resu.size_array(); // Process until end of vector
@@ -805,7 +805,7 @@ void invalidate_data_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu,
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,KOKKOS_LAMBDA(const int count)
   {resu_view(count)=invalid;});
   //timer
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
 }
 #endif
@@ -877,7 +877,7 @@ void local_prodscal_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_
 
       //timer
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 
       //Fence (necessary for now)
       Kokkos::fence();

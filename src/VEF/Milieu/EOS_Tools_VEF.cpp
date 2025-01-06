@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -193,7 +193,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         Kokkos::atomic_add(&volume_int_som_v(som_glob), volumes_entrelaces_v(face));
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   //discretisation de rho sur les sommets
   tab_rhon_som = 0;
@@ -215,7 +215,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         Kokkos::atomic_add(&tab_rhonp1_som_v(som_glob), tab_rhonp1P1_v(face, 0) * pond);
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
 //Corrections pour test de la moyenne de la derivee de la masse volumique
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
@@ -246,7 +246,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
           }
         tab_dZ_v(elem) = (rnp1 - rn) / (nfe * dt);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       decal += nb_elem_tot;
     }
 
@@ -257,7 +257,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       {
         tab_dZ_v(decal + som) = ((tab_rhonp1_som_v(som)) - (tab_rhon_som_v(som))) / dt;
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       decal += nb_som_tot;
     }
 
@@ -291,7 +291,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       {
         W(elem, 0) = -coefdivelem * dZ(elem) * volumes_v(elem);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       decal+=nb_elem_tot;
     }
   if (p_has_som)
@@ -303,7 +303,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       {
         W(decal + som, 0) = -coefdivsom * dZ(decal + som) * volumes_controle_v(som);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       decal+=nb_som_tot;
     }
   if (p_has_arrete)

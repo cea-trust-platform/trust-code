@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ void remplir_items_non_calcules_kernel_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur, con
       KOKKOS_LAMBDA(const int k) {v_view[k]=valeur;});
 
       bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 
       // Sauter a la fin du bloc
       if (i<sz) j = blocs[i*2+1] * line_size;

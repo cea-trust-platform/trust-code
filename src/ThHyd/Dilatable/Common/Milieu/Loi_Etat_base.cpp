@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -191,7 +191,7 @@ void Loi_Etat_base::calculer_nu()
         rhoelem /= nfe;
         nu(i) = mu(uniforme ? 0 : i) / rhoelem;
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   tab_nu.echange_espace_virtuel();
   Debog::verifier("Loi_Etat_base::calculer_nu tab_nu",tab_nu);
@@ -214,7 +214,7 @@ void Loi_Etat_base::calculer_alpha()
   {
     alpha(i) = lambda(uniforme ? 0 : i) / (rho(i) * Cp(i));
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   tab_alpha.echange_espace_virtuel();
   Debog::verifier("Loi_Etat_base::calculer_alpha alpha",tab_alpha);
 }

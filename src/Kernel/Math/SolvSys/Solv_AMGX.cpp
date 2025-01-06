@@ -238,20 +238,12 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  if (computeOnDevice)
-    {
-      mapToDevice(rhs_);
-      computeOnTheDevice(lhs_);
-      statistiques().begin_count(gpu_library_counter_);
-      // Offer device pointers to AmgX:
-      SolveurAmgX_.solve(addrOnDevice(lhs_), addrOnDevice(rhs_), nRowsLocal, seuil_);
-      statistiques().end_count(gpu_library_counter_);
-    }
-  else
-    {
-      // Offer host pointers to AmgX:
-      SolveurAmgX_.solve(lhs_.addr(), rhs_.addr(), nRowsLocal, seuil_);
-    }
+  mapToDevice(rhs_);
+  computeOnTheDevice(lhs_);
+  statistiques().begin_count(gpu_library_counter_);
+  // Offer device pointers to AmgX:
+  SolveurAmgX_.solve(addrOnDevice(lhs_), addrOnDevice(rhs_), nRowsLocal, seuil_);
+  statistiques().end_count(gpu_library_counter_);
   Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_library_counter_) << finl;
   return nbiter(residu);
 }

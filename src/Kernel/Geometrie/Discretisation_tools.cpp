@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,7 +132,7 @@ void cells_to_faces_kernel(const Domaine_VF& domaine_vf, const DoubleTab& tabHe,
     Kokkos::atomic_add(&Hf_v(face), He_v(ele) * volume_elem);
     Kokkos::atomic_add(&vol_tot(face), volume_elem);
   });
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
 
 void Discretisation_tools::cells_to_faces(const Champ_base& He, Champ_base& Hf)
@@ -243,14 +243,14 @@ void Discretisation_tools::cells_to_faces(const Domaine_VF& domaine_vf, const Do
     for (int comp = 0; comp < nb_comp; comp++)
       Kokkos::atomic_add(&tab_face_v(face, comp), tab_elem_v(ele, comp) * volume_elem);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   CDoubleArrView volumes_entrelaces = domaine_vf.volumes_entrelaces().view_ro();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {domaine_vf.nb_faces(), nb_comp}), KOKKOS_LAMBDA(const int f, const int comp)
   {
     tab_face_v(f, comp) /= volumes_entrelaces(f) * nb_face_elem;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // tab_face /= volumes_entrelaces * nb_face_elem :
   // PL: comprends pas, ecarts sur les cas thermal_coupling_on_coincident_domain_jddX avec:

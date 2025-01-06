@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -650,7 +650,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
         valeurs(i) = parser.eval(threadId);
         parser.release(threadId);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else if (Motcle(methode_)=="vecteur")
     {
@@ -697,7 +697,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
             if (dim==3) valeurs(i) += fxyz2.eval(threadId) * face_normales(i, 2) / surface(i);
             fxyz0.release(threadId);
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else
         {
@@ -748,7 +748,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           {
             v(i) = source_so_val(i, 0) * face_normales(i, num_compo) / surface(i);
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else
         {
@@ -756,7 +756,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           {
             v(i) = source_so_val(i, num_compo);
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
   else if (Motcle(methode_)=="formule")
@@ -814,7 +814,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           }
         parser.release(threadId);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   // PL: Suppression d'une synchronisation couteuse tres souvent inutile
   // Voir Champ_Generique_Interpolation (localisation = som) pour le report de l'echange_espace_virtuel

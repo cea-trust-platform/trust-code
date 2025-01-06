@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,7 +130,7 @@ void Modele_turbulence_hyd_LES_base::calculer_energie_cinetique_turb()
   {
     k_v(elem)=visco_turb_v(elem, 0)*visco_turb_v(elem, 0)/(Cq*Cq*l_v(elem)*l_v(elem));
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue().temps();
   energie_cinetique_turb_->changer_temps(temps);

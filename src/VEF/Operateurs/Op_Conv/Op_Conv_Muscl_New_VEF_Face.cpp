@@ -208,7 +208,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
         Kij(elem,facej_loc,facej_loc)+=psc;//pour l'aspect LED
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   //
   // Correction des Kij pour Dirichlet !
@@ -427,7 +427,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 void Op_Conv_Muscl_New_VEF_Face::
@@ -587,7 +587,7 @@ void Op_Conv_Muscl_New_VEF_Face::remplir_fluent() const
       psc+=velocity(num_face,i)*face_normales(num_face,i);
     fluent(num_face)=std::fabs(psc);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 
@@ -858,7 +858,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
           Process::exit();
         }//fin du else sur les autres conditions aux limites
     }
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 DoubleTab&
@@ -904,7 +904,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
             }
         }
     });
-    end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+    end_gpu_timer(__KERNEL_NAME__);
   }
 
   if (old_centered_)
@@ -934,7 +934,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
             resuV[ligne] -= fij * transporteV[ligne];
           }
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
 
   //Faces de bord
@@ -985,7 +985,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& tab_Kij, c
                 }
 
           });//fin du for sur "face_i"
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
 
         }//fin du if sur "Neumann"
 
@@ -1047,7 +1047,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_diffusion(const DoubleTab& tab_Kij,const Dou
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   //Pour les faces de bord :
   //ON N'A RIEN a FAIRE
@@ -1171,7 +1171,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& tab_Kij, c
             }
         }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   //Pour les faces de bord
   //IL N'Y A RIEN a FAIRE TOUT EST FAIT DANS LA FONCTION AJOUTER_DIFFUSION
@@ -1289,7 +1289,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& tab_Kij, c
             }
         }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   //Pour les faces de bord
   //IL N'Y A RIEN a FAIRE TOUT EST FAIT DANS LA FONCTION AJOUTER_DIFFUSION
@@ -1427,7 +1427,7 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
                             } */
 
           });//fin du for sur "face_i"
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }//fin du if sur "Periodique"
 
     }//fin du for sur "n_bord"

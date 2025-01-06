@@ -103,7 +103,7 @@ void Champ_P1NC::cal_rot_ordre1(DoubleTab& tab_vorticite) const
         });
       }
     }
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   tab_vorticite.echange_espace_virtuel();
   return;
 }
@@ -170,7 +170,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // Division par le volume de l'element
   auto vol_div = KOKKOS_LAMBDA (int elem, int i)
@@ -178,7 +178,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
     gradient_elem(elem, i) *= inverse_volumes(elem);
   };
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {nb_elem,dimension}), vol_div);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
@@ -223,7 +223,7 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // Division par le volume de l'element
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
@@ -232,7 +232,7 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   {
     gradient_elem(elem, icomp, i) *= inverse_volumes(elem);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 void calculer_gradientP1NC(const DoubleTab& tab_variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& tab_gradient_elem)
@@ -379,7 +379,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& tab_Critere_Q) const
         }
     Critere_Q[num_elem] = crit;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect& y_plus) const
@@ -461,7 +461,7 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
             int elem = face_voisins(num_face, 0);
             y_plus_view(elem) = 0;
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
           {
             int num[3] {};
@@ -497,12 +497,12 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
               } // else yplus already computed
             Kokkos::atomic_add(&counter_view(elem), +1);
           }); // loop on faces
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, y_plus.size()), KOKKOS_LAMBDA (const int elem)
           {
             if (counter_view(elem)>0) y_plus_view(elem)/=counter_view(elem);
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
 
         } // Fin de paroi fixe
 
@@ -531,7 +531,7 @@ void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& 
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 void Champ_P1NC::calcul_grad_T(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& grad_T) const
@@ -683,7 +683,7 @@ static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
       s += uview(i, j) * uview(i, j);
     s *= volumes(i);
   }, norme);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   return sqrt(norme);
 }
@@ -744,7 +744,7 @@ double Champ_P1NC::norme_H1(const Domaine& dom) const
       } //fin du for sur "K"
 
   }, dnorme_H1); // fin du for sur "composante"
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   return sqrt(dnorme_H1);
 }
@@ -889,7 +889,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& tab_gij, const DoubleTab& 
               for (int j = 0; j < dim; j++)
                 Kokkos::atomic_add(&gij(num1, i, j), C * P[j][1] * P[i][0]);
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 
@@ -924,7 +924,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
         }
     SMA_barre_v(elem) = 2. * temp;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   return SMA_barre;
 }

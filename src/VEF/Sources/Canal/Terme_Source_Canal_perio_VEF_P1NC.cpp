@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& tab_resu) const
         for (int i=0; i<dim; i++)
           resu(num_face,i) += s(i)*vol;
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else
     {
@@ -110,7 +110,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& tab_resu) const
         resu(num_face)+= contrib;
         Kokkos::atomic_add(&bilan(0), contrib*(1-0.5*fd[num_face]));
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   return tab_resu;
 }
@@ -162,7 +162,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                   }
                 debit += (is_dilatable ? rho_face(num_face) : 1) * debit_face;
               }, Kokkos::Sum<double>(debit_e));
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
     }

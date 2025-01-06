@@ -75,7 +75,7 @@ void valeur_aux_elems_kernel(const DoubleTab& tab_values, const IntVect& tab_pol
         result(i, j) = nb_dim == 1 ? values(cell, 0) : values(cell, (line_size == nb_components) * j); // Some post-processed fields can have nb_dim() == 1
   });
   static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
 
 DoubleTab& Champ_implementation_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& tab_polys, DoubleTab& tab_result) const
@@ -115,7 +115,7 @@ void valeur_aux_elems_compo_kernel(const DoubleTab& tab_values, const IntVect& t
       result(i) = values(cell, ncomp);
   });
   static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
 
 DoubleVect& Champ_implementation_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& tab_polys, DoubleVect& tab_result, int ncomp) const
@@ -184,13 +184,13 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& tab_resul
           Kokkos::atomic_add(&result(node, k), values(i, nb_dim == 1 ? 0 : k));
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_nodes, KOKKOS_LAMBDA(const int i)
   {
     for (int j = 0; j < nb_components; j++)
       result(i, j) /= count[i];
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   return tab_result;
 }
 

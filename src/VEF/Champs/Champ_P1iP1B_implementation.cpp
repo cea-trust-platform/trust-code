@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -150,7 +150,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
               }
           }
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else // nb_compo_ > 1
     {
@@ -202,7 +202,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, D
             int som = prs+num_som;
             val(num_som,0) += champ_filtre(som);
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else // nb_compo_ > 1
         {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ void Taux_cisaillement_P0_VEF::mettre_a_jour(double tps)
   {
     S_v(i,0) = sqrt(S_barre_v(i));
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   changer_temps(tps);
   Champ_Fonc_base::mettre_a_jour(tps);
 }

@@ -98,7 +98,7 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
   return str;
 }
 
-inline void end_gpu_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
+inline void end_gpu_timer(const std::string& str, int onDevice=1, int bytes=-1) // Return in [ms]
 {
 #ifdef _OPENMP_TARGET
   if (init_device_ && timer_on)

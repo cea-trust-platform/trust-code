@@ -92,7 +92,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
                 Re(elem, i, j) = nu_turb(elem,0) * (grad(elem, i, j) + grad(elem, j, i));
           });
         }
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       Re_.echange_espace_virtuel();
     }
 }
@@ -166,7 +166,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& tab_inconnue,
               flux_bords(num_face, 0) = 0.;
           });
         }
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
 }
 
@@ -216,7 +216,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& tab_inconn
           }
       });
     }
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
@@ -317,7 +317,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
           for (int nc = 0; nc < nb_comp; nc++)
             tab_flux_bords(face, nc) = 0.;
     }
-  end_gpu_timer(0, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, 0);
   copyPartialToDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
   copyPartialToDevice(resu, 0, size, "resu on boundary");
   copyPartialToDevice(inconnue, 0, size, "inconnue on boundary");
@@ -512,7 +512,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
@@ -708,7 +708,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
                       }
                   }
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
     }
@@ -830,7 +830,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
@@ -960,7 +960,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 #endif /* Op_Dift_VEF_Face_Gen_TPP_included */

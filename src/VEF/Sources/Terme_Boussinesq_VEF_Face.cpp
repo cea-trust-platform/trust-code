@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& tab_resu) const
           resu(face,compo) += delta_param*delta_coord*face_normales(face,compo)*g(comp)*porosite_surf(face);
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   return tab_resu;
 }

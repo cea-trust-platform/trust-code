@@ -174,7 +174,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
         const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
         if (dt < dtstab) dtstab = dt;
       }, Kokkos::Min<double>(dt_stab));
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   dt_stab = Process::mp_min(dt_stab);
   return dt_stab;
@@ -271,7 +271,7 @@ void Op_Diff_VEF_base::remplir_nu(DoubleTab& tab_nu) const
       {
         nu(i, j) = diffu(j);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else
     {

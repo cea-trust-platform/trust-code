@@ -113,7 +113,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
     double dt_face = volumes_entrelaces_Cl(num_face)/(fluent(num_face)+DMINFLOAT);
     if (dt_face < dtstab) dtstab = dt_face;
   }, Kokkos::Min<double>(dt_stab));
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // On traite les faces internes standard
   int ndeb = domaine_VEF.premiere_face_std();
@@ -133,7 +133,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
     double dt_face = volumes_entrelaces(num_face) / (fluent(num_face) + DMINFLOAT);
     if (dt_face < dtstab) dtstab = dt_face;
   }, Kokkos::Min<double>(dt_stab_2));
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   if (dt_stab_2 < dt_stab) dt_stab = dt_stab_2;
 
   // Min sur l'ensemble des processeurs

@@ -280,7 +280,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
                 double u_etoile = sqrt(norm_tau);
                 tab_u_star(num_face) = u_etoile;
               });          // loop on faces
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }                      // Fin de paroi fixe
         }                      // Fin boucle sur les bords
     }

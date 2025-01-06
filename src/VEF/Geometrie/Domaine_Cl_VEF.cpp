@@ -516,7 +516,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
       Cerr << "Le type de OWN_PTR(Champ_Inc_base) " << ch.que_suis_je() << " n'est pas prevu en VEF\n" << finl;
       exit();
     }
-  end_gpu_timer(0, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, 0);
   copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
   ch_tab.echange_espace_virtuel();
 
@@ -556,7 +556,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
                         Kokkos::atomic_store(&pression(nps + som_glob), 0);
                       }
                   });
-                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+                  end_gpu_timer(__KERNEL_NAME__);
                 }
             }
 
@@ -590,7 +590,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
                         Kokkos::atomic_add(&surf_loc[som_glob], face_surf);
                       }
                   });
-                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+                  end_gpu_timer(__KERNEL_NAME__);
                 }
             }
           // On boucle une troisieme fois pour diviser par la surface
@@ -611,7 +611,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
                         surf_loc[som_glob] = 0;
                       }
                   });
-                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+                  end_gpu_timer(__KERNEL_NAME__);
                 }
             }
           tab_pression.echange_espace_virtuel();

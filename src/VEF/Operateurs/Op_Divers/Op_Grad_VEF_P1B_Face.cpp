@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -232,7 +232,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
           }
       }
     }
-  end_gpu_timer(0, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, 0);
   copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
   return grad;
 }
@@ -274,7 +274,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
                 }
             }
         }
-      end_gpu_timer(0, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__, 0);
       copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
 
@@ -304,7 +304,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   };
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, kern_elem);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   return grad;
 }
@@ -373,7 +373,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   bool has_sortie_libre = false;
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -690,7 +690,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   };
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_bord, kern_flux_bords);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const

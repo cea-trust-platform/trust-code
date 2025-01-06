@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
   {
     resu_v(i, 0) += dpth * volumes_v(i) * porosites_v(i);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   /* Ne marche pas detect inf en debug: */
   /* DoubleVect vol(volumes);
   vol*=porosites;

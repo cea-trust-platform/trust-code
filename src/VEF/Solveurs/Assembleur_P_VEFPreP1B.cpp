@@ -450,7 +450,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
             Kokkos::abort("Il y'a probabilite que le modele utilise soit mal implemente pour\nune condition de periodicite. Contacter le support TRUST.");
           }
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
 
   if (get_resoudre_en_u())
@@ -689,7 +689,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& tab_pression)
         int k=renum_som_perio(i);
         if (k!=i) pression(nps+i)=pression(nps+k);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   // pression.echange_espace_virtuel();
   // pour retirer le min de la pression si pas de Pref et si que PO sinon on filtre plus tard
@@ -1197,5 +1197,5 @@ void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& tab_v)
     if (_v_==vecteur::pression_inverse) v(k) = alpha * v(k) - beta * somme;
     if (_v_==vecteur::second_membre)    v(k) *= alpha;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }

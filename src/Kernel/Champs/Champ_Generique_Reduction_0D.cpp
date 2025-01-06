@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -273,7 +273,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)&) 
               {
                 vect(i) = valeurs(i,comp);
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else
             {
@@ -301,7 +301,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(OWN_PTR(Champ_base)&) 
               {
                 valeurs(i,comp) = val_extraite;
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else
             {

@@ -375,7 +375,7 @@ bool sameDoubleTab(const TRUSTTab<double, _SZ_>& a, const TRUSTTab<double, _SZ_>
       {
         if (a_v(i) != b_v(i)) local_same = false;
       }, Kokkos::LAnd<bool>(same));
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       return same;
     }
   else

@@ -57,7 +57,7 @@ template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice() const
 {
 #ifdef _OPENMP_TARGET
-  bool flag = isDataOnDevice() && computeOnDevice;
+  bool flag = isDataOnDevice();
   if (!flag)
     ensureDataOnHost();
   //else
@@ -72,7 +72,7 @@ template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice()
 {
 #ifdef _OPENMP_TARGET
-  bool flag = isDataOnDevice() && computeOnDevice;
+  bool flag = isDataOnDevice();
   if (!flag)
     ensureDataOnHost();
   else
@@ -87,7 +87,7 @@ template<typename _TYPE_, typename _SIZE_>
 inline bool TRUSTArray<_TYPE_,_SIZE_>::checkDataOnDevice(const TRUSTArray& tab_const)
 {
 #ifdef _OPENMP_TARGET
-  bool flag = isDataOnDevice() && tab_const.isDataOnDevice() && computeOnDevice;
+  bool flag = isDataOnDevice() && tab_const.isDataOnDevice();
   // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
   if (!flag)
     {

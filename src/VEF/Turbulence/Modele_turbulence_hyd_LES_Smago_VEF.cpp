@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ Champ_Fonc_base& Modele_turbulence_hyd_LES_Smago_VEF::calculer_viscosite_turbule
   {
     visco_turb_v(elem,0) = cs*cs*l_v(elem)*l_v(elem)*sqrt(SMA_barre_v(elem));
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   double temps = mon_equation_->inconnue().temps();
   la_viscosite_turbulente_->changer_temps(temps);

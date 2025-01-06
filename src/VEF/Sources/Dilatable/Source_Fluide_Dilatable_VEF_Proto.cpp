@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
               {
                 resu_v(face, comp) += (tab_rho_v(face) - rho_m) * volumes_entrelaces_v(face) * porosite_face_v(face) * g_v(comp);
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
       // Boucle faces internes
@@ -129,7 +129,7 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
       {
         resu_v(face, comp) += (tab_rho_v(face) - rho_m) * volumes_entrelaces_v(face) * porosite_face_v(face) * g_v(comp);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else
     {

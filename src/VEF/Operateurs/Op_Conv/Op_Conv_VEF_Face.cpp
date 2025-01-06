@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -402,7 +402,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                             }
                       }
                   });
-                  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+                  end_gpu_timer(__KERNEL_NAME__);
                 }
             }
           tab_gradient.ref(gradient_face_);
@@ -431,7 +431,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     }
               }
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
           tab_gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
         }// fin if(type_op==muscl)
     }
@@ -686,7 +686,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               } // fin de la boucle
           };
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, kern_conv_aj);
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else
         {
@@ -1027,7 +1027,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
             }
         }
     }
-  //end_gpu_timer(0, __KERNEL_NAME__);
+  //end_gpu_timer(__KERNEL_NAME__, 0);
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
   copyPartialToDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
   copyPartialToDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
@@ -1537,7 +1537,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
             Kokkos::atomic_add(&fluent[num], std::abs(psc_m));
           } // fin de la boucle sur les facettes
       }); // fin de la boucle
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else
     {
@@ -1695,7 +1695,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
             else
               fluent(num_face) -= psc;
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 }

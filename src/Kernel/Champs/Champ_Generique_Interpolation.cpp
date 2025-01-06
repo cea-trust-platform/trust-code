@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -328,7 +328,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
               {
                 espace_valeurs_v(i, j) = val_temp_v(i, j);
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else
             {
@@ -359,7 +359,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
                 if (j == ncomp)
                   espace_valeurs_v(i, j) = val_temp_v(i);
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else
             {
@@ -398,7 +398,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
               {
                 espace_valeurs_v(i, j) = val_temp_v(i, j);
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else
             {
@@ -429,7 +429,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
                 if (j == ncomp)
                   espace_valeurs_v(i, j) = val_temp_v(i);
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else
             {

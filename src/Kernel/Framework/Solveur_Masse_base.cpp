@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -348,7 +348,7 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& tab_x, const DoubleT
         if (diag[i]<1.e-12)
           x[i] = y[i];
       });
-      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
     }
   else
     {

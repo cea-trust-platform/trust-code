@@ -1429,7 +1429,7 @@ valeur_aux_elems(const DoubleTab& positions,
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   return val;
 }
 
@@ -1654,7 +1654,7 @@ valeur_aux_sommets(const Domaine& dom,
                 }
             }
         });
-        end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+        end_gpu_timer(__KERNEL_NAME__);
       }
       // Loop on nodes (~0.2ms, no gain by collapsing the 2 nested loops...)
       {
@@ -1678,7 +1678,7 @@ valeur_aux_sommets(const Domaine& dom,
                 }
             }
         });
-        end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+        end_gpu_timer(__KERNEL_NAME__);
       }
     }
   else

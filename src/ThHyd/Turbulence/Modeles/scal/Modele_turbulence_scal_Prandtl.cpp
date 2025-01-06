@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,7 @@ void Modele_turbulence_scal_Prandtl::mettre_a_jour(double)
       {
         lambda(i) *= Cp(uniforme ? 0 : i);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       if (equation().probleme().is_dilatable())
         multiplier_par_rho_si_dilatable(lambda_t, mil);
     }
@@ -190,7 +190,7 @@ Champ_Fonc_base& Modele_turbulence_scal_Prandtl::calculer_diffusivite_turbulente
           {
             alpha_t[i] = nu_t[i] * inv_LePrdt;
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 

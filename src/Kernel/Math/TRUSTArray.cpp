@@ -232,7 +232,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::inject_array(const TRUST
             Cerr << "[Host] Filling a large TRUSTArray (" << nb_elements << " items) which is slow during a GPU run! Set a breakpoint to fix." << finl;
 #endif
         }
-      if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
     }
   return *this;
 }
@@ -348,7 +348,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator=(_TYPE_ x)
       _TYPE_ *data = span_.data();
       for (_SIZE_ i = 0; i < size; i++) data[i] = x;
     }
-  if (timer) end_gpu_timer(kernelOnDevice, size>100 ? __KERNEL_NAME__ : "");
+  if (timer) end_gpu_timer(size>100 ? __KERNEL_NAME__ : "", kernelOnDevice);
   return *this;
 }
 
@@ -375,7 +375,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator+=(const TRUSTAr
       _TYPE_* dx = span_.data();
       for (_SIZE_ i = 0; i < size; i++) dx[i] += dy[i];
     }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
   return *this;
 }
 
@@ -399,7 +399,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator+=(const _TYPE_ 
       _TYPE_ *data = span_.data();
       for(_SIZE_ i = 0; i < size; i++) data[i] += dy;
     }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
   return *this;
 }
 
@@ -426,7 +426,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator-=(const TRUSTAr
       const _TYPE_ * data_y = y.span_.data();
       for (_SIZE_ i = 0; i < size; i++) data[i] -= data_y[i];
     }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
   return *this;
 }
 
@@ -459,7 +459,7 @@ TRUSTArray<_TYPE_, _SIZE_>& TRUSTArray<_TYPE_, _SIZE_>::operator*= (const _TYPE_
       _TYPE_ *data = span_.data();
       for(_SIZE_ i=0; i < size; i++) data[i] *= dy;
     }
-  if (timer) end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
   return *this;
 }
 

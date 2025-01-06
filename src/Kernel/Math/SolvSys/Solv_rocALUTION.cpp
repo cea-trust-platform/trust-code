@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -514,11 +514,11 @@ double residual(const Matrice_Base& a, const DoubleVect& b, const DoubleVect& x)
 }
 double residual_device(const GlobalMatrix<double>& a, const GlobalVector<double>& b, const GlobalVector<double>& x, GlobalVector<double>& e)
 {
-  if (Objet_U::computeOnDevice) statistiques().begin_count(gpu_library_counter_);
+  statistiques().begin_count(gpu_library_counter_);
   a.Apply(x, &e);
   e.ScaleAdd(-1.0, b);
   double norm = e.Norm();
-  if (Objet_U::computeOnDevice) statistiques().end_count(gpu_library_counter_);
+  statistiques().end_count(gpu_library_counter_);
   return norm;
 }
 #endif
@@ -528,7 +528,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 #ifdef ROCALUTION_ROCALUTION_HPP_
   if (write_system_) save++;
   double tick;
-  bool gpu = computeOnDevice && _rocalution_available_accelerator();
+  bool gpu = _rocalution_available_accelerator();
   bool solutionOnDevice = x.isDataOnDevice();
   bool keepDataOnDevice = gpu && solutionOnDevice;
   if (!keepDataOnDevice)
@@ -962,9 +962,9 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   assert(mat.Check());
 #endif
   tick = rocalution_time();
-  if (Objet_U::computeOnDevice) statistiques().begin_count(gpu_copytodevice_counter_);
+  statistiques().begin_count(gpu_copytodevice_counter_);
   mat.MoveToAccelerator(); // Important: move mat to device so after ls is built on device (best for performance)
-  if (Objet_U::computeOnDevice) statistiques().end_count(gpu_copytodevice_counter_, (int)(sizeof(int)*(N+nnz)+sizeof(double)*nnz));
+  statistiques().end_count(gpu_copytodevice_counter_, (int)(sizeof(int)*(N+nnz)+sizeof(double)*nnz));
   Cout << "[rocALUTION] Time to copy matrix on device: " << (rocalution_time() - tick) / 1e6 << finl;
 
   tick = rocalution_time();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
   {
     sm(face, comp) /= (volumes_entrelaces(face) * porosite_face(face));
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
@@ -144,7 +144,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
             sm(face,comp) /= (volumes_entrelaces_Cl(face) * porosite_face(face));
         });
     }
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        range_2D({num_int,0}, {num_std,nbcomp}),
@@ -152,7 +152,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& tab_sm) const
   {
     sm(face,comp) /= (volumes_entrelaces_Cl(face) * porosite_face(face));
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   //tab_sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, tab_sm=",tab_sm);

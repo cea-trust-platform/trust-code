@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& tab_borne_visco_turb, d
     if (coef > 0 && coef < borne_visco_turb(elem))
       borne_visco_turb(elem) = coef;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 // La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
@@ -161,7 +161,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
           }
       }, Kokkos::Min<double>(dt_stab));
     }
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   dt_stab = Process::mp_min(dt_stab);
   return dt_stab;
 }

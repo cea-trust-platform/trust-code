@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -395,7 +395,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
         // il ne faut pas remultiplier par rho
         flux_bords(face) *= (is_rho_u ? 1 : rho_face(rho_uniforme?0:face)) * Cp_face(cp_uniforme?0:face);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
 
   // On multiplie par rho si Navier Stokes incompressible
@@ -416,7 +416,7 @@ void Op_VEF_Face::modifier_flux(const Operateur_base& op) const
           {
             flux_bords(face, k) *= coef;
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 }

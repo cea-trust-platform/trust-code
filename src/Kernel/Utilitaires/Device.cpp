@@ -170,12 +170,9 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
-    {
-      if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
-      allocateOnDevice(tab_addr, tab.size_mem(), "an array "+arrayName);
-      tab.set_data_location(DataLocation::Device);
-    }
+  if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
+  allocateOnDevice(tab_addr, tab.size_mem(), "an array "+arrayName);
+  tab.set_data_location(DataLocation::Device);
 #endif
   return tab_addr;
 }
@@ -184,38 +181,35 @@ template <typename _TYPE_, typename _SIZE_>
 _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
+  assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
+  clock_start = Statistiques::get_time_now();
+  if (timer_on) statistiques().begin_count(gpu_mallocfree_counter_);
+  size_t bytes = sizeof(_TYPE_) * size;
+  size_t free_bytes  = DeviceMemory::deviceMemGetInfo(0);
+  size_t total_bytes = DeviceMemory::deviceMemGetInfo(1);
+  if (bytes>free_bytes)
     {
-      assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
-      clock_start = Statistiques::get_time_now();
-      if (timer_on) statistiques().begin_count(gpu_mallocfree_counter_);
-      size_t bytes = sizeof(_TYPE_) * size;
-      size_t free_bytes  = DeviceMemory::deviceMemGetInfo(0);
-      size_t total_bytes = DeviceMemory::deviceMemGetInfo(1);
-      if (bytes>free_bytes)
-        {
-          Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
-          Process::exit();
-        }
-      _TYPE_* device_ptr = static_cast<_TYPE_*>(Kokkos::kokkos_malloc(bytes));
-      // Map host_ptr with device_ptr:
-      DeviceMemory::add(ptr, device_ptr, size);
+      Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
+      Process::exit();
+    }
+  _TYPE_* device_ptr = static_cast<_TYPE_*>(Kokkos::kokkos_malloc(bytes));
+  // Map host_ptr with device_ptr:
+  DeviceMemory::add(ptr, device_ptr, size);
 #ifndef NDEBUG
-      const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
-      Kokkos::View<_TYPE_*> ptr_v(device_ptr, size);
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(const int i)
-      {
-        ptr_v(i) = INVALIDE_;
-      });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
+  Kokkos::View<_TYPE_*> ptr_v(device_ptr, size);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size, KOKKOS_LAMBDA(const int i)
+  {
+    ptr_v(i) = INVALIDE_;
+  });
+  end_gpu_timer(__KERNEL_NAME__);
 #endif
-      if (timer_on) statistiques().end_count(gpu_mallocfree_counter_);
-      if (clock_on)
-        {
-          std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
-          double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%ld/%ldGB free) Currently allocated: %6ld\n", clock.c_str(), ms, arrayName.c_str(), ptrToString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024), long(DeviceMemory::allocatedBytesOnDevice()));
-        }
+  if (timer_on) statistiques().end_count(gpu_mallocfree_counter_);
+  if (clock_on)
+    {
+      std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
+      double ms = 1000 * (Statistiques::get_time_now() - clock_start);
+      printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%ld/%ldGB free) Currently allocated: %6ld\n", clock.c_str(), ms, arrayName.c_str(), ptrToString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024), long(DeviceMemory::allocatedBytesOnDevice()));
     }
 #endif
   return ptr;
@@ -226,14 +220,11 @@ template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
+  _TYPE_ *tab_addr = tab.data();
+  if (init_device_ && tab_addr && isAllocatedOnDevice(tab))
     {
-      _TYPE_ *tab_addr = tab.data();
-      if (init_device_ && tab_addr && isAllocatedOnDevice(tab))
-        {
-          deleteOnDevice(tab_addr, tab.size_mem());
-          tab.set_data_location(DataLocation::HostOnly);
-        }
+      deleteOnDevice(tab_addr, tab.size_mem());
+      tab.set_data_location(DataLocation::HostOnly);
     }
 #endif
 }
@@ -242,20 +233,17 @@ template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
-    {
-      if (timer_on && statistiques_enabled()) statistiques().begin_count(gpu_mallocfree_counter_);
-      std::string clock;
-      if (PE_Groups::get_nb_groups()>0 && Process::is_parallel()) clock = "[clock]#"+std::to_string(Process::me());
-      else
-        clock = "[clock]  ";
-      _SIZE_ bytes = sizeof(_TYPE_) * size;
-      if (clock_on)
-        cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
-      Kokkos::kokkos_free(addrOnDevice(ptr));
-      DeviceMemory::del(ptr);
-      if (timer_on && statistiques_enabled()) statistiques().end_count(gpu_mallocfree_counter_);
-    }
+  if (timer_on && statistiques_enabled()) statistiques().begin_count(gpu_mallocfree_counter_);
+  std::string clock;
+  if (PE_Groups::get_nb_groups()>0 && Process::is_parallel()) clock = "[clock]#"+std::to_string(Process::me());
+  else
+    clock = "[clock]  ";
+  _SIZE_ bytes = sizeof(_TYPE_) * size;
+  if (clock_on)
+    cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
+  Kokkos::kokkos_free(addrOnDevice(ptr));
+  DeviceMemory::del(ptr);
+  if (timer_on && statistiques_enabled()) statistiques().end_count(gpu_mallocfree_counter_);
 #endif
 }
 
@@ -280,29 +268,26 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, 
 {
   _TYPE_ *tab_addr = tab.data();
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
+  DataLocation currentLocation = tab.get_data_location();
+  tab.set_data_location(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
+  // Important for ref_array/ref_tab support, we take the size of the memory allocated, not the size of the array (tab.size_array()):
+  //int memory_size = tab.size_array();
+  int memory_size = tab.size_mem();
+  if (currentLocation==DataLocation::HostOnly)
     {
-      DataLocation currentLocation = tab.get_data_location();
-      tab.set_data_location(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
-      // Important for ref_array/ref_tab support, we take the size of the memory allocated, not the size of the array (tab.size_array()):
-      //int memory_size = tab.size_array();
-      int memory_size = tab.size_mem();
-      if (currentLocation==DataLocation::HostOnly)
-        {
-          // Not a Trav which is already allocated on device:
-          if (!(tab.get_mem_storage() == STORAGE::TEMP_STORAGE && isAllocatedOnDevice(tab_addr)))
-            allocateOnDevice(tab_addr, memory_size);
-          copyToDevice(tab_addr, memory_size, "array "+arrayName);
-        }
-      else if (currentLocation==DataLocation::Host)
-        {
-          copyToDevice(tab_addr, memory_size, "array " + arrayName);
-          if (DeviceMemory::warning(memory_size)) // Warning for large array only:
-            ToDo_Kokkos("H2D update of large array! Add a breakpoint to find the reason.");
-        }
-      else if (currentLocation==DataLocation::PartialHostDevice)
-        Process::exit("Error, can't map on device an array with PartialHostDevice status!");
+      // Not a Trav which is already allocated on device:
+      if (!(tab.get_mem_storage() == STORAGE::TEMP_STORAGE && isAllocatedOnDevice(tab_addr)))
+        allocateOnDevice(tab_addr, memory_size);
+      copyToDevice(tab_addr, memory_size, "array "+arrayName);
     }
+  else if (currentLocation==DataLocation::Host)
+    {
+      copyToDevice(tab_addr, memory_size, "array " + arrayName);
+      if (DeviceMemory::warning(memory_size)) // Warning for large array only:
+        ToDo_Kokkos("H2D update of large array! Add a breakpoint to find the reason.");
+    }
+  else if (currentLocation==DataLocation::PartialHostDevice)
+    Process::exit("Error, can't map on device an array with PartialHostDevice status!");
 #endif
   return tab_addr;
 }
@@ -311,7 +296,7 @@ template <typename _TYPE_, typename _SIZE_>
 void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice && size>0)
+  if (size>0)
     {
       assert(isAllocatedOnDevice(ptr));
       _SIZE_ bytes = sizeof(_TYPE_) * size;
@@ -323,7 +308,7 @@ void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       if (timer_on) statistiques().end_count(gpu_copytodevice_counter_, bytes);
       std::stringstream message;
       message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "]";
-      end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
+      end_gpu_timer(message.str(), bytes);
     }
 #endif
 }
@@ -343,7 +328,7 @@ template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice && tab.get_data_location() == DataLocation::Device)
+  if (tab.get_data_location() == DataLocation::Device)
     {
       copyFromDevice(tab.data(), tab.size_mem(), " array " + arrayName);
       tab.set_data_location(DataLocation::HostDevice);
@@ -354,7 +339,7 @@ template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice && size>0)
+  if (size>0)
     {
       assert(isAllocatedOnDevice(ptr));
       _SIZE_ bytes = sizeof(_TYPE_) * size;
@@ -366,7 +351,7 @@ void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
       std::stringstream message;
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
-      end_gpu_timer(Objet_U::computeOnDevice, message.str(), bytes);
+      end_gpu_timer(message.str(), bytes);
       if (clock_on) printf("\n");
       if (DeviceMemory::warning(size)) // Warning for large array only:
         ToDo_Kokkos("D2H update of large array! Add a breakpoint to find the reason if not IO.");
@@ -389,23 +374,20 @@ template <typename _TYPE_>
 void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice)
+  if (tab.get_data_location()==DataLocation::Device || tab.get_data_location()==DataLocation::PartialHostDevice)
     {
-      if (tab.get_data_location()==DataLocation::Device || tab.get_data_location()==DataLocation::PartialHostDevice)
-        {
-          int bytes = sizeof(_TYPE_) * (fin-deb);
-          _TYPE_ *tab_addr = tab.data();
-          start_gpu_timer("copyPartialFromDevice",bytes);
-          if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
-          Kokkos::View<_TYPE_*> host_view(tab_addr+deb, fin-deb);
-          Kokkos::View<_TYPE_*> device_view(addrOnDevice(tab_addr)+deb, fin-deb);
-          Kokkos::deep_copy(host_view, device_view);
-          if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
-          std::string message;
-          message = "Partial update from device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
-          end_gpu_timer(Objet_U::computeOnDevice, message, bytes);
-          tab.set_data_location(DataLocation::PartialHostDevice);
-        }
+      int bytes = sizeof(_TYPE_) * (fin-deb);
+      _TYPE_ *tab_addr = tab.data();
+      start_gpu_timer("copyPartialFromDevice",bytes);
+      if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
+      Kokkos::View<_TYPE_*> host_view(tab_addr+deb, fin-deb);
+      Kokkos::View<_TYPE_*> device_view(addrOnDevice(tab_addr)+deb, fin-deb);
+      Kokkos::deep_copy(host_view, device_view);
+      if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
+      std::string message;
+      message = "Partial update from device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
+      end_gpu_timer(message, bytes);
+      tab.set_data_location(DataLocation::PartialHostDevice);
     }
 #endif
 }
@@ -415,7 +397,7 @@ template <typename _TYPE_>
 void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice && tab.get_data_location()==DataLocation::PartialHostDevice)
+  if (tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       int bytes = sizeof(_TYPE_) * (fin-deb);
       _TYPE_ *tab_addr = tab.data();
@@ -427,7 +409,7 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
       if (timer_on) statistiques().end_count(gpu_copytodevice_counter_, bytes);
       std::string message;
       message = "Partial update to device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
-      end_gpu_timer(Objet_U::computeOnDevice, message, bytes);
+      end_gpu_timer(message, bytes);
       tab.set_data_location(DataLocation::Device);
     }
 #endif
@@ -437,7 +419,7 @@ template <typename _TYPE_>
 void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
 #ifdef _OPENMP_TARGET
-  if (Objet_U::computeOnDevice && tab.get_data_location()==DataLocation::PartialHostDevice)
+  if (tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host
       const_cast<TRUSTArray<_TYPE_>&>(tab).set_data_location(DataLocation::Device);

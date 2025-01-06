@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -171,7 +171,7 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
         rho(i, 0) = 0.5 * (rho_n(i) + rho_np1(i));
         parser.release(threadId);
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   else
     {
@@ -184,7 +184,7 @@ void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
         rho_np1(i) = rho(i,0);
         masse_volumique(i, 0) = 0.5 * (rho_n(i) + rho_np1(i));
       });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
     }
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();

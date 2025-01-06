@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   };
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, kern_ajouter);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   assert_invalide_items_non_calcules(div);
   return div;
@@ -375,7 +375,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
         Kokkos::atomic_add(&div(som), signe * coeff_som * psc);
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -422,7 +422,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
                   Kokkos::atomic_add(&nb_degres_liberte(som), 1);
               }
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else
         {
@@ -448,7 +448,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
                 flux_b(face_perio, 0) = flux_perio;
               }
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
   return tab_div;
@@ -622,7 +622,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
                     div(nps + som1) = 0.;
                   }
               });
-              end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
     }
@@ -677,7 +677,7 @@ void Op_Div_VEFP1B_Elem::volumique_P0(DoubleTab& tab_div) const
   CDoubleArrView vol = domaine_VEF.volumes().view_ro();
   DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int i) { div(i) /= vol(i); });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 void Op_Div_VEFP1B_Elem::volumique(DoubleTab& tab_div) const
@@ -695,7 +695,7 @@ void Op_Div_VEFP1B_Elem::volumique(DoubleTab& tab_div) const
       CDoubleArrView vol = domaine_VEF.volume_aux_sommets().view_ro();
       DoubleArrView div = static_cast<DoubleVect&>(tab_div).view_rw();
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), size_tot, KOKKOS_LAMBDA(const int i) { div(n + i) /= vol(i); });
-      end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__);
       n += domaine_VEF.nb_som_tot();
     }
   if (domaine_VEF.get_alphaA())

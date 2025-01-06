@@ -1588,7 +1588,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
               for (int ncp = 0; ncp < nb_comp; ncp++)
                 tempo(ca, ncp) = diag(ca * nb_comp + ncp, ca * nb_comp + ncp);
             });
-            end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+            end_gpu_timer(__KERNEL_NAME__);
           }
           solveur_masse->appliquer(tab_tempo);
           tab_tempo.echange_espace_virtuel();
@@ -1608,7 +1608,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
               for (int ncpa = 0; ncpa < nb_comp; ncpa++)
                 diag(ca * nb_comp + ncpa, ca * nb_comp + ncpa) = 1. / (tmp + tempo(ca, ncpa) * aCKN);
             });
-            end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+            end_gpu_timer(__KERNEL_NAME__);
             statistiques().end_count(assemblage_sys_counter_);
           }
         }

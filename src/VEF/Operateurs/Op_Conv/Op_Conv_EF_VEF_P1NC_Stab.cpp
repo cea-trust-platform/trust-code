@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -367,7 +367,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
           }//fin du for sur "face_locj"
       }//fin du for sur "face_loci"
   });//fin du for sur "elem"
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   //
   // Correction des Kij pour Dirichlet !
   //
@@ -485,7 +485,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
 
                 });// for face
 
-                end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+                end_gpu_timer(__KERNEL_NAME__);
 
                 //
                 //Fin de la modification des coefficients de la matrice
@@ -549,7 +549,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent() const
       psc+=tab_vitesse(num_face,i)*face_normales(num_face,i);
     fluent(num_face)=std::fabs(psc);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 
@@ -659,7 +659,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
   {
     tab_vitesse_v(i,j)*=porosite_face_v(i);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   const int nb_comp=transporte.line_size();
   int nb_dim = dimension;
   int vol_etendus = volumes_etendus_;
@@ -714,7 +714,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   return resu;
 }
@@ -763,7 +763,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
             for (int dim=0; dim<nb_comp; dim++)
               flux_bords(facei,dim)=psc*transporteV[facei*nb_comp+dim];
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
 
         }//fin du if sur "Neumann", "Neumann_homogene", "Symetrie", "Echange_impose_base"
       else
@@ -812,7 +812,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& tab_Kij, con
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   return resu;
 }
 
@@ -857,7 +857,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& tab_Kij, const Doub
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   return resu;
 }
 
@@ -946,7 +946,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
             }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   return resu;
 }
 

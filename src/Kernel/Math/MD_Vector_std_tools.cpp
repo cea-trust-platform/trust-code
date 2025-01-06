@@ -73,7 +73,7 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
           }
       });
     }
-  end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
 #endif
 
@@ -173,7 +173,7 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
             else if (IS_ADD) vect_view[jj] += buffer_view[ii];
           });
         }
-      end_gpu_timer(kernelOnDevice, __KERNEL_NAME__);
+      end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
       ii_base += bloc_size;
     }
 }

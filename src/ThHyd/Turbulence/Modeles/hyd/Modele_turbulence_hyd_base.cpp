@@ -487,7 +487,7 @@ void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
     else
       corr_visco_turb(elem) = 1.;
   }, Kokkos::Sum<int>(compt));
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   corr_visco_turb_->changer_temps(mon_equation_->inconnue().temps());
   la_viscosite_turbulente_->valeurs().echange_espace_virtuel();
   Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente_->valeurs());

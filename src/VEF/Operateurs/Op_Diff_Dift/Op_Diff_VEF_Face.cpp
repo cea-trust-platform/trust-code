@@ -132,7 +132,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
                   }
               }
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else   // Il n'y a qu'une seule composante, donc on traite
         // une equation scalaire (pas la vitesse) on a pas a utiliser
@@ -166,7 +166,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
                   }
               }
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 
@@ -203,7 +203,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
           }
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // Neumann :
   copyPartialFromDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
@@ -264,7 +264,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
             tab_flux_bords(face,0) = 0.;
         }
     }
-  end_gpu_timer(0, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__, 0);
   copyPartialToDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
   copyPartialToDevice(tab_inconnue, 0, premiere_face_int, "inconnue on boundary");
 }
@@ -357,7 +357,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   };
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces, kern_ajouter);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // Update flux_bords on symmetry:
   const int nb_bords=domaine_VEF.nb_front_Cl();
@@ -820,7 +820,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
       }
   };
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),domaine_VEF.nb_faces(), ajouter_contrib);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   int premiere_face_int = domaine_VEF.premiere_face_int();
   DoubleVect tab_h_impose(premiere_face_int);
@@ -879,7 +879,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
   };
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), premiere_face_int, neumann);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   modifier_matrice_pour_periodique_apres_contribuer(tab_matrice,equation());
 }
@@ -1092,7 +1092,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
   };
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, kern_elem_faces);
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
