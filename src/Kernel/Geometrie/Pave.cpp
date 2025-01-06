@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #include <math.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Pave,"Pave",Domaine);
+Implemente_instanciable_32_64(Pave_32_64,"Pave",Domaine_32_64<_T_>);
 
 // XD mailler_base objet_lecture mailler_base -1 Basic class to mesh.
 
@@ -52,9 +52,10 @@ Implemente_instanciable(Pave,"Pave",Domaine);
 
 // XD list_bloc_mailler listobj list_bloc_mailler 1 mailler_base 1 List of block mesh.
 
-Sortie& Pave::printOn(Sortie& s ) const
+template <typename _SIZE_>
+Sortie& Pave_32_64<_SIZE_>::printOn(Sortie& s ) const
 {
-  return Domaine::printOn(s) ;
+  return Domaine_t::printOn(s) ;
 }
 
 /*! @brief Lit les specifications d'un pave a partir d'un flot d'entree.
@@ -94,33 +95,34 @@ Sortie& Pave::printOn(Sortie& s ) const
  * @throws accolade ouvrante attendue avant lecture des bords
  * @throws mot cle non reconnu
  */
-Entree& Pave::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Pave_32_64<_SIZE_>::readOn(Entree& is)
 {
-  if(dimension<0)
+  if(this->dimension<0)
     {
       Cerr << "You must give the dimension before to mesh" << finl;
       Cerr << " The syntax is \"Dimension dim\" " << finl ;
-      exit();
+      Process::exit();
     }
-  facteurs_.resize(dimension);
+  facteurs_.resize(this->dimension);
   facteurs_ = 1.;
-  symetrique_.resize(dimension);
+  symetrique_.resize(this->dimension);
   symetrique_=0;
-  origine_.resize(dimension);
-  longueurs_.resize(dimension);
-  nb_noeuds_.resize(dimension);
+  origine_.resize(this->dimension);
+  longueurs_.resize(this->dimension);
+  nb_noeuds_.resize(this->dimension);
   Motcle motlu;
   int rang;
 
   typer_();
 
-  is >> nom_;
-  Cerr << "Reading of the block " << nom_ << finl;
+  is >> this->nom_;
+  Cerr << "Reading of the block " << this->nom_ << finl;
   is >> motlu;
   if (motlu!="{")
     {
-      Cerr << "We expected a { after " << nom_ << finl;
-      exit();
+      Cerr << "We expected a { after " << this->nom_ << finl;
+      Process::exit();
     }
   {
     Motcles les_mots(18);
@@ -151,7 +153,7 @@ Entree& Pave::readOn(Entree& is)
         switch(rang)
           {
           case 0:
-            for(int i=0; i< dimension; i++)
+            for(int i=0; i< this->dimension; i++)
               is >> origine_(i);
             break;
           case 1:
@@ -161,25 +163,25 @@ Entree& Pave::readOn(Entree& is)
             lire_noeuds(is);
             break;
           case 3:
-            for(int i=0; i< dimension; i++)
+            for(int i=0; i< this->dimension; i++)
               is >> facteurs_(i);
             break;
           case 4:      // Symx
             symetrique_(0)=1;
             break;
           case 5:      // Symy
-            if(dimension<2)
+            if(this->dimension<2)
               {
                 Cerr << "Symy has meaning only in dimension >= 2" << finl;
-                exit();
+                Process::exit();
               }
             symetrique_(1)=1;
             break;
           case 6:      // Symz
-            if(dimension<3)
+            if(this->dimension<3)
               {
                 Cerr << "Symz has meaning only in dimension >= 3" << finl;
-                exit();
+                Process::exit();
               }
             symetrique_(2)=1;
             break;
@@ -218,7 +220,7 @@ Entree& Pave::readOn(Entree& is)
                           Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
                           Cerr << "You must decrease either the xtanh_taille_premiere_maille size of the first cell of the mesh " << finl;
                           Cerr << "or the nombre_de_noeuds Nx node number in the X direction." << finl;
-                          exit();
+                          Process::exit();
                         }
                       x_tmp=longueurs_(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                     }
@@ -230,7 +232,7 @@ Entree& Pave::readOn(Entree& is)
                       Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
                       Cerr << "You must decrease either the xtanh_taille_premiere_maille size of the first cell of the mesh " << finl;
                       Cerr << "or the nombre_de_noeuds Nx node number in the X direction." << finl;
-                      exit();
+                      Process::exit();
                     }
                 }
               Cerr << "The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
@@ -271,7 +273,7 @@ Entree& Pave::readOn(Entree& is)
                           Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
                           Cerr << "You must decrease either the ytanh_taille_premiere_maille size of the first cell of the mesh " << finl;
                           Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
-                          exit();
+                          Process::exit();
                         }
                       y_tmp=longueurs_(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
                     }
@@ -283,7 +285,7 @@ Entree& Pave::readOn(Entree& is)
                       Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
                       Cerr << "You must decrease either the ytanh_taille_premiere_maille size of the first cell of the mesh " << finl;
                       Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
-                      exit();
+                      Process::exit();
                     }
                 }
               Cerr << "The coefficient ya_tanh has a value of : " << a_tanh << finl ;
@@ -324,7 +326,7 @@ Entree& Pave::readOn(Entree& is)
                           Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
                           Cerr << "You must decrease either the ztanh_taille_premiere_maille size of the first cell of the mesh " << finl;
                           Cerr << "or the nombre_de_noeuds Nz node number in the Z direction." << finl;
-                          exit();
+                          Process::exit();
                         }
                       z_tmp=longueurs_(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
                     }
@@ -336,7 +338,7 @@ Entree& Pave::readOn(Entree& is)
                       Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
                       Cerr << "You must decrease either the ztanh_taille_premiere_maille size of the first cell of the mesh " << finl;
                       Cerr << "or the nombre_de_noeuds Nz node number in the Z direction." << finl;
-                      exit();
+                      Process::exit();
                     }
                 }
               Cerr << "The coefficient za_tanh has a value of : " << za_tanh << finl ;
@@ -351,28 +353,23 @@ Entree& Pave::readOn(Entree& is)
             break;
           default:
             if (motlu == "tanh" || motlu == "tanh_dilatation" || motlu == "tanh_taille_premiere_maille")
-              {
-                Cerr << "Error: '" << motlu << "' keyword is obsolete since V1.7.9. We renamed it to 'Y"<< motlu <<"'" << finl;
-              }
+              Cerr << "Error: '" << motlu << "' keyword is obsolete since V1.7.9. We renamed it to 'Y"<< motlu <<"'" << finl;
             else
               {
                 Cerr << motlu << "  is not understood " << finl;
                 Cerr << les_mots;
               }
-            exit();
+            Process::exit();
           }
       }
-    pas_.resize(dimension);
+    pas_.resize(this->dimension);
     if(min_array(facteurs_)<=0.)
       {
         Cerr << "The progression factors must be positives" << finl;
-        exit();
+        Process::exit();
       }
-    switch(dimension)
+    switch(this->dimension)
       {
-      case 1:
-        maille1D();
-        break;
       case 2:
         maille2D();
         break;
@@ -384,18 +381,18 @@ Entree& Pave::readOn(Entree& is)
   if(Mx<2)
     {
       Cerr << "There must be at least two cells on x" << finl;
-      exit();
+      Process::exit();
     }
-  if (axi)
+  if (this->axi)
     {
       // Les coordonnees sont modulo 2 pi
       double deux_pi=M_PI*2.0 ;
       {
-        int les_noeuds__dimension0_opt=sommets_.dimension(0);
-        for(int i=0; i<les_noeuds__dimension0_opt; i++)
+        int_t nb_som=this->sommets_.dimension(0);
+        for(int_t i=0; i<nb_som; i++)
           {
-            sommets_(i, 1)-=(int) sommets_(i, 1);
-            sommets_(i, 1)*=deux_pi;
+            this->sommets_(i, 1) -= static_cast<double>((int_t) this->sommets_(i, 1));  // remove integral part
+            this->sommets_(i, 1) *= deux_pi;
           }
       }
 
@@ -407,7 +404,7 @@ Entree& Pave::readOn(Entree& is)
     if (motlu!="{")
       {
         Cerr << "We expected a { before reading the boundaries" << finl;
-        exit();
+        Process::exit();
       }
     Motcles les_mots(7);
     {
@@ -427,13 +424,13 @@ Entree& Pave::readOn(Entree& is)
           {
           case 0:      // Bord
             {
-              Bord& newbord=mes_faces_bord_.add(Bord());
+              Bord_32_64<_SIZE_>& newbord=this->mes_faces_bord_.add(Bord_32_64<_SIZE_>());
               lire_front(is , newbord );
             }
             break;
           case 1:      // Raccord
             {
-              Raccord& newraccord=mes_faces_raccord_.add(Raccord());
+              OWN_PTR(Raccord_base_32_64<_SIZE_>)& newraccord=this->mes_faces_raccord_.add(OWN_PTR(Raccord_base_32_64<_SIZE_>)());
               Nom type="Raccord_";
               Nom local, homogene;
               is >> local >> homogene;
@@ -443,7 +440,7 @@ Entree& Pave::readOn(Entree& is)
               if (type == "local")
                 {
                   Cerr << "Do not use sequential local connection!" << finl;
-                  exit();
+                  Process::exit();
                 }
               newraccord.typer(type);
               lire_front(is , newraccord.valeur() );
@@ -451,13 +448,13 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 2:      // Plaques
             {
-              Bord_Interne& faces=mes_bords_int_.add(Bord_Interne());
+              Bord_Interne_32_64<_SIZE_>& faces=this->mes_bords_int_.add(Bord_Interne_32_64<_SIZE_>());
               lire_front(is , faces );
             }
             break;
           case 5:      // Groupe de Faces
             {
-              Groupe_Faces& faces=mes_groupes_faces_.add(Groupe_Faces());
+              Groupe_Faces_32_64<_SIZE_>& faces=this->mes_groupes_faces_.add(Groupe_Faces_32_64<_SIZE_>());
               lire_front(is , faces );
             }
             break;
@@ -465,7 +462,7 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 4:      // Joint
             {
-              Joint& newjoint=mes_faces_joint_.add(Joint());
+              Joint_32_64<_SIZE_>& newjoint=this->mes_faces_joint_.add(Joint_32_64<_SIZE_>());
               lire_front(is , newjoint );
             }
             break;
@@ -474,7 +471,7 @@ Entree& Pave::readOn(Entree& is)
           default:
             Cerr << motlu << "  is not understood " << finl;
             Cerr << les_mots;
-            exit();
+            Process::exit();
           }
       }
   }
@@ -482,76 +479,78 @@ Entree& Pave::readOn(Entree& is)
   return is;
 }
 
-/*! @brief Effectue un maillage 1D, du pave avec les valeurs des parametres lus par ReadOn.
- *
- */
-void Pave::maille1D()
-{
-  Cerr << "Step of 1D mesh in progress... " << finl;
-  double epsilon_geom=Objet_U::precision_geom;
-  int i;
-  if(longueurs_(0)<0)
-    {
-      origine_(0)+=longueurs_(0);
-      longueurs_(0)=-longueurs_(0);
-      facteurs_(0)=1./facteurs_(0);
-    }
-  if( (!symetrique_(0)) || (std::fabs(facteurs_(0)-1.)<epsilon_geom)   )
-    {
-      if(std::fabs(facteurs_(0)-1.)>epsilon_geom)
-        pas_(0)=longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Nx)-1);
-      else
-        pas_(0)=longueurs_(0)/Nx;
-      double dx=pas_(0);
-      double x=origine_(0);
-      for (i=0; i<Nx; i++)
-        {
-          coord_noeud(i)=x;
-          x+=dx;
-          dx*=facteurs_(0);
-        }
-      coord_noeud(Nx)=origine_(0)+longueurs_(0);
-    }
-  else
-    {
-      int Ix=Nx/2;
-      if( (Ix*2)==Nx )
-        pas_(0)=0.5*longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Ix)-1);
-      else
-        {
-          if(Ix)
-            {
-              Ix+=1;
-              pas_(0)=0.5*longueurs_(0)/( (pow(facteurs_(0),Ix-1)-1)/(facteurs_(0)-1)
-                                          +0.5*pow(facteurs_(0),Ix) );
-            }
-          else
-            {
-              Ix+=1;
-              pas_(0)=0;
-            }
-        }
-      double dx=pas_(0);
-      double x=0;
-      for (i=0; i<Ix; i++)
-        {
-          coord_noeud(i)=origine_(0)+x;
-          coord_noeud(Nx-i)=origine_(0)+longueurs_(0)-x;
-          x+=dx;
-          dx*=facteurs_(0);
-        }
-      if( (Ix*2)==Nx )
-        coord_noeud(Ix)=0.5*(coord_noeud(Ix+1)+coord_noeud(Ix-1));
-    }
-  Cerr << finl;
-  Cerr << "Step of mesh ended " << finl;
-}
+///*! @brief Effectue un maillage 1D, du pave avec les valeurs des parametres lus par ReadOn.
+// *
+// */
+//template <typename _SIZE_>
+//void Pave_32_64<_SIZE_>::maille1D()
+//{
+//  Cerr << "Step of 1D mesh in progress... " << finl;
+//  double epsilon_geom=Objet_U::precision_geom;
+//  int i;
+//  if(longueurs_(0)<0)
+//    {
+//      origine_(0)+=longueurs_(0);
+//      longueurs_(0)=-longueurs_(0);
+//      facteurs_(0)=1./facteurs_(0);
+//    }
+//  if( (!symetrique_(0)) || (std::fabs(facteurs_(0)-1.)<epsilon_geom)   )
+//    {
+//      if(std::fabs(facteurs_(0)-1.)>epsilon_geom)
+//        pas_(0)=longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Nx)-1);
+//      else
+//        pas_(0)=longueurs_(0)/Nx;
+//      double dx=pas_(0);
+//      double x=origine_(0);
+//      for (i=0; i<Nx; i++)
+//        {
+//          coord_noeud(i)=x;
+//          x+=dx;
+//          dx*=facteurs_(0);
+//        }
+//      coord_noeud(Nx)=origine_(0)+longueurs_(0);
+//    }
+//  else
+//    {
+//      int Ix=Nx/2;
+//      if( (Ix*2)==Nx )
+//        pas_(0)=0.5*longueurs_(0)*(facteurs_(0)-1)/(pow(facteurs_(0),Ix)-1);
+//      else
+//        {
+//          if(Ix)
+//            {
+//              Ix+=1;
+//              pas_(0)=0.5*longueurs_(0)/( (pow(facteurs_(0),Ix-1)-1)/(facteurs_(0)-1)
+//                                          +0.5*pow(facteurs_(0),Ix) );
+//            }
+//          else
+//            {
+//              Ix+=1;
+//              pas_(0)=0;
+//            }
+//        }
+//      double dx=pas_(0);
+//      double x=0;
+//      for (i=0; i<Ix; i++)
+//        {
+//          coord_noeud(i)=origine_(0)+x;
+//          coord_noeud(Nx-i)=origine_(0)+longueurs_(0)-x;
+//          x+=dx;
+//          dx*=facteurs_(0);
+//        }
+//      if( (Ix*2)==Nx )
+//        coord_noeud(Ix)=0.5*(coord_noeud(Ix+1)+coord_noeud(Ix-1));
+//    }
+//  Cerr << finl;
+//  Cerr << "Step of mesh ended " << finl;
+//}
 
 
 /*! @brief Effectue un maillage 2D, du pave avec les valeurs des parametres lus par ReadOn.
  *
  */
-void Pave::maille2D()
+template <typename _SIZE_>
+void Pave_32_64<_SIZE_>::maille2D()
 {
   Cerr << "Step of 2D mesh in progress... " << finl;
   double epsilon_geom=Objet_U::precision_geom;
@@ -815,9 +814,9 @@ void Pave::maille2D()
 }
 
 /*! @brief Effectue un maillage 3D, du pave avec les valeurs des parametres lus par ReadOn.
- *
  */
-void Pave::maille3D()
+template <typename _SIZE_>
+void Pave_32_64<_SIZE_>::maille3D()
 {
   Cerr << "Step of 3D mesh in progress... " << finl;
   double epsilon_geom=Objet_U::precision_geom;
@@ -1249,32 +1248,35 @@ void Pave::maille3D()
  *     En dimension 1      : le pave est maille avec des segments
  *     En dimension 2 (axi): la pave est maille avec des rectangle (axi)
  *     En dimension 3 (axi): la pave est maille avec des hexaedres (axi)
- *
  */
-void Pave::typer_()
+template <typename _SIZE_>
+void Pave_32_64<_SIZE_>::typer_()
 {
-  switch(dimension)
+  Nom typ;
+  switch(this->dimension)
     {
     case 1:
-      Domaine::typer("Segment");
+      typ = "Segment";
       break;
     case 2:
-      if (axi)
-        Domaine::typer("Rectangle_Axi");
-      else if (bidim_axi)
-        Domaine::typer("Rectangle_2D_Axi");
+      if (this->axi)
+        typ = "Rectangle_Axi";
+      else if (this->bidim_axi)
+        typ = "Rectangle_2D_Axi";
       else
-        Domaine::typer("Rectangle");
+        typ = "Rectangle";
       break;
     case 3:
-      if (axi)
-        Domaine::typer("Hexaedre_Axi");
+      if (this->axi)
+        typ = "Hexaedre_Axi";
       else
-        Domaine::typer("Hexaedre");
+        typ = "Hexaedre";
       break;
     default :
       throw;
     }
+
+  Domaine_t::typer(typ);
 }
 
 /*! @brief Lit les longueurs LX LY [LZ] du jeu de donnee a partir d'un flot d'entree.
@@ -1284,18 +1286,19 @@ void Pave::typer_()
  * @param (Entree& is) un flot d'entree
  * @throws La Longueur est en nombre de tour en axi, comprise entre 0 et 1
  */
-void Pave::lire_longueurs(Entree& is)
+template <typename _SIZE_>
+void Pave_32_64<_SIZE_>::lire_longueurs(Entree& is)
 {
   int i;
-  for(i=0; i< dimension; i++)
+  for(i=0; i< this->dimension; i++)
     is >> longueurs_(i);
-  if(axi)
+  if(this->axi)
     {
-      if(longueurs_(1) >1.+epsilon())
+      if(longueurs_(1) >1.+this->epsilon_)
         {
           Cerr << "The length \"Longueurs\" is in number of turns in axisymmetric" << finl;
           Cerr << "It must be between 0 and 1" << finl;
-          exit();
+          Process::exit();
         }
       else if(longueurs_(1)==1.)
         tour_complet=true;
@@ -1310,43 +1313,44 @@ void Pave::lire_longueurs(Entree& is)
  * @throws en coordonnees axi il faut lire les longueurs d'abord
  * @throws dimension d'espace non prevue
  */
-void Pave::lire_noeuds(Entree& is)
+template <typename _SIZE_>
+void Pave_32_64<_SIZE_>::lire_noeuds(Entree& is)
 {
   int i, j, k;
-  if( (axi) && (longueurs_(0)==0.))
+  if( (this->axi) && (longueurs_(0)==0.))
     {
       Cerr<< "You must first read the length in axisymmetric!" << finl;
-      exit();
+      Process::exit();
     }
-  for(i=0; i< dimension; i++)
+  for(i=0; i< this->dimension; i++)
     is >> nb_noeuds_(i);
   if (min_array(nb_noeuds_)<2)
     {
-      Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << nom_ << "' must be greater than 1." << finl;
+      Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << this->nom_ << "' must be greater than 1." << finl;
       Cerr << "If you want to define a unique cell in a given direction, set the number of nodes to 2 in that direction." << finl;
-      exit();
+      Process::exit();
     }
-  if(dimension==1)
+  if(this->dimension==1)
     {
       Mx=nb_noeuds_(0);
       Nx=nb_noeuds_(0)-1;
-      mes_elems_.resize(Nx,2);
-      sommets_.resize(Mx);
+      this->mes_elems_.resize(Nx,2);
+      this->sommets_.resize(Mx);
       for (i=0; i<Nx; i++)
         {
           maille_sommet(i,0)=numero_sommet(i);
           maille_sommet(i,1)=numero_sommet(i+1);
         }
     }
-  else if(dimension==2)
+  else if(this->dimension==2)
     {
       Mx=nb_noeuds_(0);
       My=nb_noeuds_(1);
       Nx=nb_noeuds_(0)-1;
       Ny=nb_noeuds_(1)-1;
       if(tour_complet) Ny++;
-      mes_elems_.resize(Nx*Ny,4);
-      sommets_.resize(Mx*My,2);
+      this->mes_elems_.resize(Nx*Ny,4);
+      this->sommets_.resize(Mx*My,2);
       for (i=0; i<Nx; i++)
         for (j=0; j<Ny; j++)
           {
@@ -1356,7 +1360,7 @@ void Pave::lire_noeuds(Entree& is)
             maille_sommet(i,j,3)=numero_sommet(i+1, j+1);
           }
     }
-  else if(dimension==3)
+  else if(this->dimension==3)
     {
       Mx=nb_noeuds_(0);
       My=nb_noeuds_(1);
@@ -1365,8 +1369,8 @@ void Pave::lire_noeuds(Entree& is)
       Ny=nb_noeuds_(1)-1;
       Nz=nb_noeuds_(2)-1;
       if(tour_complet) Ny++;
-      mes_elems_.resize(Nx*Ny*Nz,8);
-      sommets_.resize(Mx*My*Mz,3);
+      this->mes_elems_.resize(Nx*Ny*Nz,8);
+      this->sommets_.resize(Mx*My*Mz,3);
       for (i=0; i<Nx; i++)
         for ( j=0; j<Ny; j++)
           for ( k=0; k<Nz; k++)
@@ -1383,8 +1387,480 @@ void Pave::lire_noeuds(Entree& is)
     }
   else
     {
-      Cerr << "dimension = " << dimension << "not provided " << finl;
-      exit();
+      Cerr << "dimension = " << this->dimension << "not provided " << finl;
+      Process::exit();
     }
 }
+
+/*! @brief Lit les specifications d'une frontiere du jeu de donnee a partir d'un flot d'entree et la construit.
+ *
+ *     Format:
+ *     nom_front X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *
+ * @param (Entree& is) un flot d'entree
+ * @param (Frontiere& front) la frontiere lue
+ * @throws mot clef "X" attendu
+ * @throws mot clef "=" attendu
+ * @throws extremite en X invalide
+ * @throws mot clef "X" ou "Y" attendu
+ * @throws mot clef "<=" attendu
+ * @throws mot clef "Y" attendu
+ * @throws extremite en Y invalide
+ * @throws il n'y a pas de bord en teta, vous avez maille
+ * une couronne complete
+ * @throws mot clef "X" ou "Y" ou "Z" attendu
+ * @throws mot clef "Z" attendu
+ * @throws extremite en Z invalide
+ */
+template <typename _SIZE_>
+void Pave_32_64<_SIZE_>::lire_front(Entree& is, Frontiere_t& front)
+{
+  int i, j, k;
+  Nom nom_front;
+  is >> nom_front;
+  Cerr << "Reading of the boundary " << nom_front << finl;
+  front.nommer(nom_front);
+  front.typer_faces(this->elem_->type_face());
+  bool internes=(sub_type(Bord_Interne_32_64<_SIZE_>, front) || sub_type(Joint_32_64<_SIZE_>, front));
+  bool groupe_faces=sub_type(Groupe_Faces_32_64<_SIZE_>, front);
+  if(this->dimension==1)
+    {
+      Nom X, egal;
+      double coupe;
+      is  >> X >> egal >> coupe ;
+      if( X!="X")
+        {
+          Cerr << "We expected a = X instead of" << X  <<
+               " before " << egal << " " << coupe << finl;
+          Process::exit();
+        }
+      if( egal!="=")
+        {
+          Cerr << "We expected a = after " << X << finl;
+          Process::exit();
+        }
+      front.dimensionner(0);
+      IntTab_t som(1,1);
+      if ( (coupe != origine_(0)) && (coupe != (origine_(0)+longueurs_(0))) )
+        {
+          Cerr << coupe << " is not an extremity" << finl;
+          Cerr << "The extremities are : "
+               << origine_(0) << " " << origine_(0)+longueurs_(0) << finl;
+          Process::exit();
+        }
+      if(std::fabs(coupe - origine_(0))<this->epsilon_)
+        som(0,0)=0;
+      else
+        som(0,0)=Mx;
+      front.ajouter_faces(som);
+      front.associer_domaine(*this);
+    }
+  else if(this->dimension==2)
+    {
+      Nom X, Y, egal, infegal1, infegal2;
+      double coupe;
+      double xmin, xmax;
+      is  >> X >> egal >> coupe ;
+      if( (X!="X") && (X!="Y") )
+        {
+          Cerr << "We expected a = X or Y instead of" << X <<
+               " before " << egal << " " << coupe << finl;
+          Process::exit();
+        }
+      if( egal!="=")
+        {
+          Cerr << "We expected a = after " << X << finl;
+          Process::exit();
+        }
+      is >> xmin >> infegal1 >> Y >> infegal2 >> xmax;
+      if( infegal1!="<=")
+        {
+          Cerr << "We expected a <= after " << xmin << " and not " << infegal1 << finl;
+          Process::exit();
+        }
+      if (X=="X")
+        {
+          if( Y!="Y" )
+            {
+              Cerr << "We expected a Y after " << infegal1 << finl;
+              Process::exit();
+            }
+          if (this->axi)
+            {
+              double deux_pi=M_PI*2.0 ;
+              xmin*=deux_pi;
+              xmax*=deux_pi;
+            }
+        }
+      else
+        {
+          if(tour_complet)
+            {
+              Cerr << "There is no boundary in teta! " << finl;
+              Cerr << "You have meshed a complete crown! " << finl;
+              Process::exit();
+            }
+          if( Y!="X" )
+            {
+              Cerr << "We expected a X after " << infegal1 << finl;
+              Process::exit();
+            }
+        }
+      if( infegal2!="<=")
+        {
+          Cerr << "We expected a <= after " << Y << " and not " << infegal2 <<finl;
+          Process::exit();
+        }
+      front.dimensionner(0);
+      IntTab_t som;
+      if (X=="X")
+        {
+          if ( (std::fabs(origine_(0) - coupe)>this->epsilon_) &&
+               (std::fabs(coupe - origine_(0)-longueurs_(0))>this->epsilon_) && (!internes) && (!groupe_faces))
+            {
+              Cerr << "X = " << coupe << " is not a boundary" << finl;
+              Process::exit();
+            }
+          if ( ((std::fabs(origine_(0) - coupe)<this->epsilon_) ||
+                (std::fabs(coupe - origine_(0)-longueurs_(0))<this->epsilon_)) && (internes))
+            {
+              Cerr << "X = " << coupe << " is a boundary" << finl;
+              Process::exit();
+            }
+          int jmin, jmax;
+          if (std::fabs(origine_(0) - coupe)<this->epsilon_)
+            i=0;
+          else
+            i=Nx;
+          if(internes || groupe_faces)
+            for(i=0; coord_noeud(i,0,0)+this->epsilon_<coupe; i++) {};
+          jmin=0;
+          for(; coord_noeud(0,jmin,1)+this->epsilon_<xmin; jmin++) {};
+          if(std::fabs(xmax-(origine_(1)+longueurs_(1)))<this->epsilon_)
+            {
+              jmax=My-1+tour_complet;
+            }
+          else
+            {
+              jmax = jmin;
+              for(; coord_noeud(0,jmax,1)+this->epsilon_<xmax; jmax++) {};
+              //            if(jmax-jmin==0)
+              //            {
+              //               Cerr << "le bord de nom " << nom_front << "est vide !" << finl;
+              //               Process::exit();
+              //            }
+            }
+          som.resize(jmax-jmin,2);
+          for(j=jmin; j<jmax; j++)
+            {
+              som(j-jmin,0)=numero_sommet(i, j);
+              som(j-jmin,1)=numero_sommet(i, j+1);
+            }
+        }
+      else
+        {
+          if (this->axi)
+            {
+              double deux_pi=M_PI*2.0 ;
+              coupe*=deux_pi;
+            }
+          if ( (std::fabs(origine_(1) - coupe)>this->epsilon_) &&
+               (std::fabs(coupe - origine_(1)-longueurs_(1))>this->epsilon_) && (!internes) && (!groupe_faces))
+            {
+              Cerr << "Y = " << coupe << " is not a boundary" << finl;
+              Process::exit();
+            }
+          if ( ((std::fabs(origine_(1) - coupe)<this->epsilon_) ||
+                (std::fabs(coupe - origine_(1)-longueurs_(1))<this->epsilon_)) && (internes))
+            {
+              Cerr << "Y = " << coupe <<" is a boundary" << finl;
+              Process::exit();
+            }
+          int imin, imax;
+          if (std::fabs(coupe-origine_(1))<this->epsilon_)
+            j=0;
+          else
+            j=Ny;
+          if(internes || groupe_faces)
+            for(j=0; coord_noeud(0,j,1)+this->epsilon_<coupe; j++) {};
+          imin=0;
+          for(; coord_noeud(imin,0,0)+this->epsilon_<xmin; imin++) {};
+          if(std::fabs(xmax-(origine_(0)+longueurs_(0)))<this->epsilon_)
+            imax=Mx-1;
+          else
+            {
+              imax = imin;
+              for(; coord_noeud(imax,0,0)+this->epsilon_<xmax; imax++) {};
+              //            if(imax-imin==0)
+              //            {
+              //               Cerr << "le bord de nom " << nom_front << "est vide !" << finl;
+              //               Process::exit();
+              //            }
+            }
+          som.resize(imax-imin,2);
+          for(i=imin; i<imax; i++)
+            {
+              som(i-imin,0)=numero_sommet(i, j);
+              som(i-imin,1)=numero_sommet(i+1, j);
+            }
+        }
+      front.ajouter_faces(som);
+      front.associer_domaine(*this);
+    }
+  else if(this->dimension==3)
+    {
+      Nom  X, Y, Z, egal, infegal1, infegal2, infegal3, infegal4;
+      double coupe;
+      double xmin, xmax, ymin, ymax;
+      is  >> X >> egal >> coupe ;
+      if( (X!="X") && (X!="Y") && (X!="Z"))
+        {
+          Cerr << "We expected a = X or Y or Z instead of" << X  <<
+               " before " << egal << " " << coupe << finl;
+          Process::exit();
+        }
+      if( egal!="=")
+        {
+          Cerr << "We expected a = after " << X << finl;
+          Process::exit();
+        }
+      is >> xmin >> infegal1 >> Y >> infegal2 >> xmax;
+      if( infegal1!="<=")
+        {
+          Cerr << "We expected a <= after " << xmin << " and not " << infegal1 <<finl;
+          Process::exit();
+        }
+      if( infegal2!="<=")
+        {
+          Cerr << "We expected a <= after " << Y << " and not " << infegal2 << finl;
+          Process::exit();
+        }
+      is >> ymin >> infegal3 >> Z >> infegal4 >> ymax;
+      if( infegal3!="<=")
+        {
+          Cerr << "We expected a <= after " << ymin << " and not " << infegal3 << finl;
+          Process::exit();
+        }
+      if( infegal4!="<=")
+        {
+          Cerr << "We expected a <= after " << Z << " and not " << infegal4 << finl;
+          Process::exit();
+        }
+      if (X=="X")
+        {
+          if( Y!="Y" )
+            {
+              Cerr << "We expected a Y and not " << Y  << finl;
+              Process::exit();
+            }
+          if (this->axi)
+            {
+              double deux_pi=M_PI*2.0 ;
+              xmin*=deux_pi;
+              xmax*=deux_pi;
+            }
+          if( Z!="Z")
+            {
+              Cerr << "We expected a Z and not " << Z  << finl;
+              Process::exit();
+            }
+        }
+      else if(X=="Y")
+        {
+          if(tour_complet)
+            {
+              Cerr << "There is no boundary in teta! " << finl;
+              Cerr << "You have meshed a complete crown! " << finl;
+              Process::exit();
+            }
+          if( Y!="X" )
+            {
+              Cerr << "We expected a X and not " << Y  << finl;
+              Process::exit();
+            }
+          if( Z!="Z")
+            {
+              Cerr << "We expected a Z and not " << Z  << finl;
+              Process::exit();
+            }
+        }
+      else
+        {
+          if( Y!="X" )
+            {
+              Cerr << "We expected a X and not " << Y  << finl;
+              Process::exit();
+            }
+          if( Z!="Y" )
+            {
+              Cerr << "We expected a Z and not " << Z  << finl;
+              Process::exit();
+            }
+          if (this->axi)
+            {
+              double deux_pi=M_PI*2.0 ;
+              ymin*=deux_pi;
+              ymax*=deux_pi;
+            }
+        }
+      front.dimensionner(0);
+      IntTab_t som;
+      if (X=="X")
+        {
+          if ( (std::fabs(origine_(0)-coupe)>this->epsilon_) &&
+               (std::fabs(origine_(0)+longueurs_(0)-coupe)>this->epsilon_) && (!internes)  && (!groupe_faces))
+            {
+              Cerr << "X = " << coupe << " is not a boundary " << finl;
+              Process::exit();
+            }
+          if ( ((std::fabs(origine_(0)-coupe)<this->epsilon_) ||
+                (std::fabs(origine_(0)+longueurs_(0)-coupe)<this->epsilon_)) && (internes) )
+            {
+              Cerr << "X = " << coupe << " is a boundary " << finl;
+              Process::exit();
+            }
+          int jmin, jmax, kmin, kmax;
+          if (std::fabs(origine_(0)-coupe)<this->epsilon_)
+            i=0;
+          else
+            i=Nx;
+          if(internes || groupe_faces)
+            for(i=0; coord_noeud(i,0,0,0)+this->epsilon_<coupe; i++) {};
+          jmin=kmin=0;
+          for(; coord_noeud(0,jmin,0,1)+this->epsilon_<xmin; jmin++) {};
+          for(; coord_noeud(0,0,kmin,2)+this->epsilon_<ymin; kmin++) {};
+          jmax = jmin;
+          kmax=kmin;
+          if(std::fabs(xmax-(origine_(1)+longueurs_(1)))<this->epsilon_)
+            {
+              jmax=My-1+tour_complet;
+            }
+          else
+            for(; coord_noeud(0,(jmax),0,1)+this->epsilon_<xmax; jmax++) {};
+          for(; coord_noeud(0,0,(kmax),2)+this->epsilon_<ymax; kmax++) {};
+          //         if((jmax-jmin)*(kmax-kmin)==0)
+          //         {
+          //            Cerr << "le bord de nom " << nom_front << "est vide !" << finl;
+          //            Process::exit();
+          //         }
+          som.resize((jmax-jmin)*(kmax-kmin),4);
+          for(j=jmin; j<jmax; j++)
+            for(k=kmin; k<kmax; k++)
+              {
+                som((k-kmin)*(jmax-jmin)+j-jmin,0)=numero_sommet(i, j, k);
+                som((k-kmin)*(jmax-jmin)+j-jmin,1)=numero_sommet(i, j+1, k);
+                som((k-kmin)*(jmax-jmin)+j-jmin,2)=numero_sommet(i, j, k+1);
+                som((k-kmin)*(jmax-jmin)+j-jmin,3)=numero_sommet(i, j+1, k+1);
+              }
+        }
+      else if(X=="Y")
+        {
+          if (this->axi)
+            {
+              double deux_pi=M_PI*2.0 ;
+              coupe*=deux_pi;
+            }
+          if ( (std::fabs(origine_(1) - coupe)>this->epsilon_) &&
+               (std::fabs(coupe - origine_(1)-longueurs_(1))>this->epsilon_) && (!internes)  && (!groupe_faces) )
+            {
+              Cerr << "Y = " << coupe << " is not a boundary " << finl;
+              Process::exit();
+            }
+          if ( ((std::fabs(origine_(1) - coupe)<this->epsilon_) ||
+                (std::fabs(coupe - origine_(1)-longueurs_(1))<this->epsilon_)) && (internes))
+            {
+              Cerr << "Y = " << coupe << " is a boundary " << finl;
+              Process::exit();
+            }
+          int imin, imax, kmin, kmax;
+          if (std::fabs(coupe-origine_(1))<this->epsilon_)
+            j=0;
+          else
+            j=Ny;
+          if(internes || groupe_faces)
+            for(j=0; coord_noeud(0,j,0,1)+this->epsilon_<coupe; j++) {};
+          imin=kmin=0;
+          for(; coord_noeud(imin,0,0,0)+this->epsilon_<xmin; imin++) {};
+          for(; coord_noeud(0,0,kmin,2)+this->epsilon_<ymin; kmin++) {};
+          imax = imin;
+          kmax=kmin;
+          for(; coord_noeud(imax,0,0,0)+this->epsilon_<xmax; imax++) {};
+          for(; coord_noeud(0,0,(kmax),2)+this->epsilon_<ymax; kmax++) {};
+          //         if((imax-imin)*(kmax-kmin)==0)
+          //         {
+          //            Cerr << "le bord de nom " << nom_front << "est vide !" << finl;
+          //            Process::exit();
+          //         }
+          som.resize((imax-imin)*(kmax-kmin),4);
+          for(i=imin; i<imax; i++)
+            for(k=kmin; k<kmax; k++)
+              {
+                som((k-kmin)*(imax-imin)+i-imin,0)=numero_sommet(i, j, k);
+                som((k-kmin)*(imax-imin)+i-imin,1)=numero_sommet(i+1, j, k);
+                som((k-kmin)*(imax-imin)+i-imin,2)=numero_sommet(i, j, k+1);
+                som((k-kmin)*(imax-imin)+i-imin,3)=numero_sommet(i+1, j, k+1);
+              }
+        }
+      else
+        {
+          if ( (std::fabs(origine_(2)-coupe)>this->epsilon_) &&
+               (std::fabs(coupe-origine_(2)-longueurs_(2))>this->epsilon_) && (!internes)  && (!groupe_faces))
+            {
+              Cerr << "Z = " << coupe << " is not a boundary " << finl;
+              Process::exit();
+            }
+          if ( ((std::fabs(origine_(2)-coupe)<this->epsilon_) ||
+                (std::fabs(coupe-origine_(2)-longueurs_(2))<this->epsilon_)) && (internes))
+            {
+              Cerr << "Z = " << coupe << " is a boundary " << finl;
+              Process::exit();
+            }
+          int imin, imax, jmin, jmax;
+          if (std::fabs(coupe-origine_(2))<this->epsilon_)
+            k=0;
+          else
+            k=Nz;
+          if(internes || groupe_faces)
+            for(k=0; coord_noeud(0,0,k,3)+this->epsilon_<coupe; k++) {};
+          imin=jmin=0;
+          for(; coord_noeud(imin,0,0,0)+this->epsilon_<xmin; imin++) {};
+          for(; coord_noeud(0,jmin,0,1)+this->epsilon_<ymin; jmin++) {};
+          imax = imin;
+          jmax=jmin;
+          for(; coord_noeud(imax,0,0,0)+this->epsilon_<xmax; imax++) {};
+          if(std::fabs(ymax-(origine_(1)+longueurs_(1)))<this->epsilon_)
+            {
+              jmax=My-1+tour_complet;
+            }
+          else
+            for(; coord_noeud(0,jmax,0,1)+this->epsilon_<ymax; jmax++) {};
+          //         if((imax-imin)*(jmax-jmin)==0)
+          //         {
+          //            Cerr << "le bord de nom " << nom_front << "est vide !" << finl;
+          //            Process::exit();
+          //         }
+          som.resize((imax-imin)*(jmax-jmin),4);
+          for(i=imin; i<imax; i++)
+            for(j=jmin; j<jmax; j++)
+              {
+                som((j-jmin)*(imax-imin)+i-imin,0)=numero_sommet(i, j, k);
+                som((j-jmin)*(imax-imin)+i-imin,1)=numero_sommet(i+1, j, k);
+                som((j-jmin)*(imax-imin)+i-imin,2)=numero_sommet(i, j+1, k);
+                som((j-jmin)*(imax-imin)+i-imin,3)=numero_sommet(i+1, j+1, k);
+              }
+        }
+      front.ajouter_faces(som);
+      front.associer_domaine(*this);
+    }
+  else
+    {
+      Process::exit();
+    }
+  Cerr << "End of reading of the boundary : " << nom_front << finl;
+}
+
+template class Pave_32_64<int>;
+#if INT_is_64_ == 2
+template class Pave_32_64<trustIdType>;
+#endif
 

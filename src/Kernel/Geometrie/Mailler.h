@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,10 +43,13 @@
  *
  * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par TRUST pour mailler, un domaine est l'objet Pave
  */
-class Mailler : public Interprete_geometrique_base
+template <typename _SIZE_>
+class Mailler_32_64 : public Interprete_geometrique_base_32_64<_SIZE_>
 {
-  Declare_instanciable(Mailler);
+  Declare_instanciable_32_64(Mailler_32_64);
 public :
+  using Domaine_t = Domaine_32_64<_SIZE_>;
+
   Entree& interpreter_(Entree&) override;
 };
 #endif

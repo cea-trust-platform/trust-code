@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -135,8 +135,10 @@ template <typename _SIZE_>
 void Frontiere_32_64<_SIZE_>::renum(const IntVect_t& Les_Nums)
 {
   IntTab_t& les_sommets=faces().les_sommets();
-  for(int_t i=0; i<les_sommets.dimension(0); i++)
-    for(int j=0; j<les_sommets.dimension(1); j++)
+  int_t nb_som = les_sommets.dimension(0);
+  int nb_som_dim = les_sommets.dimension_int(1);
+  for(int_t i=0; i<nb_som; i++)
+    for(int j=0; j<nb_som_dim; j++)
       les_sommets(i,j)=Les_Nums[les_sommets(i,j)];
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,26 +18,27 @@
 #include <Mailler.h>
 #include <Domaine.h>
 #include <Scatter.h>
-#include <Domaine.h>
 
 #include <list>
 #include <memory>
 
-Implemente_instanciable(Mailler,"Mailler",Interprete_geometrique_base);
+Implemente_instanciable_32_64(Mailler_32_64,"Mailler",Interprete_geometrique_base_32_64<_T_>);
 // XD mailler interprete mailler -1 The Mailler (Mesh) interpretor allows a Domain type object domaine to be meshed with objects objet_1, objet_2, etc...
 // XD attr domaine ref_domaine domaine 0 Name of domain.
 // XD attr bloc list_bloc_mailler bloc 0 Instructions to mesh.
 
-
-Sortie& Mailler::printOn(Sortie& os) const
+template <typename _SIZE_>
+Sortie& Mailler_32_64<_SIZE_>::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-Entree& Mailler::readOn(Entree& is)
+template <typename _SIZE_>
+Entree& Mailler_32_64<_SIZE_>::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
+
 inline void verifie_syntaxe(Motcle& motlu)
 {
   if (motlu!="}" && motlu!=",")
@@ -61,21 +62,22 @@ inline void verifie_syntaxe(Motcle& motlu)
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
- * @throws l'objet a mailler n'est pas du type Domaine
+ * @throws l'objet a mailler n'est pas du type Domaine_t
  * @throws accolade ouvrante attendue
  * @throws accolade fermante ou virgule attendue
  */
-Entree& Mailler::interpreter_(Entree& is)
+template <typename _SIZE_>
+Entree& Mailler_32_64<_SIZE_>::interpreter_(Entree& is)
 {
   if (Process::is_parallel())
     {
       Cerr << "Mailler keyword can't be used in parallel calculation!" << finl;
       Cerr << "Use only Scatter keyword to read partitioned mesh." << finl;
-      exit();
+      Process::exit();
     }
-  double precision_geom_sa=precision_geom;
-  associer_domaine(is);
-  Domaine& dom=domaine();
+  double precision_geom_sa = this->precision_geom;
+  this->associer_domaine(is);
+  Domaine_t& dom = this->domaine();
 
   // On debloque les structures pour modifier le domaine
   Scatter::uninit_sequential_domain(dom);
@@ -85,11 +87,11 @@ Entree& Mailler::interpreter_(Entree& is)
   if (motlu != "{")
     {
       Cerr << "We expected a {" << finl;
-      exit();
+      Process::exit();
     }
   Nom typ_domaine;
-  std::list<Domaine*> dom_lst;  // the list of domains we will merge later when calling comprimer()
-  std::list<OWN_PTR(Domaine)> dom_lst2; // just for memory management
+  std::list<Domaine_t*> dom_lst;  // the list of domains we will merge later when calling comprimer()
+  std::list<OWN_PTR(Domaine_t)> dom_lst2; // just for memory management
   do
     {
       is >> typ_domaine;
@@ -100,7 +102,7 @@ Entree& Mailler::interpreter_(Entree& is)
           is >> eps;
           dom.fixer_epsilon(eps);
           // GF le eps du domaine ne sert plus quand on cherche les sommets doubles;
-          precision_geom=eps;
+          this->precision_geom=eps;
           is >> motlu;
           verifie_syntaxe(motlu);
         }
@@ -109,17 +111,17 @@ Entree& Mailler::interpreter_(Entree& is)
           Nom nom_dom;
           is >> nom_dom;
           Cerr << "Adding a domain " << nom_dom << finl;
-          Domaine& added_dom=ref_cast(Domaine, objet(nom_dom));
+          Domaine_t& added_dom=ref_cast(Domaine_t, this->objet(nom_dom));
           dom_lst.push_back(&added_dom);
           is >> motlu;
           verifie_syntaxe(motlu);
         }
       else
         {
-          dom_lst2.push_back(OWN_PTR(Domaine)()); // to keep them alive till the end of the method
-          OWN_PTR(Domaine)& un_domaine = dom_lst2.back();
+          dom_lst2.push_back(OWN_PTR(Domaine_t)()); // to keep them alive till the end of the method
+          OWN_PTR(Domaine_t)& un_domaine = dom_lst2.back();
           un_domaine.typer(typ_domaine); // Most likely a Pave ...
-          Domaine& ze_domaine = un_domaine.valeur();
+          Domaine_t& ze_domaine = un_domaine.valeur();
           is >> ze_domaine;
           dom_lst.push_back(&ze_domaine);
           is >> motlu;
@@ -129,12 +131,17 @@ Entree& Mailler::interpreter_(Entree& is)
   while(motlu != "}");
 
   // Dans le cas ou on a modifie precision geom, on le remet a la valeur d'origine
-  precision_geom=precision_geom_sa;
+  this->precision_geom=precision_geom_sa;
   dom.fill_from_list(dom_lst);
   dom.fixer_premieres_faces_frontiere();
 
-  NettoieNoeuds::nettoie(dom);
+  NettoieNoeuds_32_64<_SIZE_>::nettoie(dom);
 
   Scatter::init_sequential_domain(dom);
   return is;
 }
+
+template class Mailler_32_64<int>;
+#if INT_is_64_ == 2
+template class Mailler_32_64<trustIdType>;
+#endif

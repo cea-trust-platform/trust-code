@@ -2120,13 +2120,13 @@ void Domaine_32_64<_SIZE_>::creer_mes_domaines_frontieres(const Domaine_VF& doma
  *
  * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
  */
-template <>
-void Domaine_32_64<int>::renum(const IntVect& Les_Nums)
+template <typename _SIZE_>
+void Domaine_32_64<_SIZE_>::renum(const IntVect_t& Les_Nums)
 {
-  int dim0 = mes_elems_.dimension(0);
+  int_t dim0 = mes_elems_.dimension(0);
   int dim1 = mes_elems_.dimension_int(1);
 
-  for (int i = 0; i < dim0; i++)
+  for (int_t i = 0; i < dim0; i++)
     for (int j = 0; j < dim1; j++)
       mes_elems_(i, j) = Les_Nums[mes_elems_(i, j)];
 
@@ -2140,13 +2140,6 @@ void Domaine_32_64<int>::renum(const IntVect& Les_Nums)
     mes_bords_int_(i).renum(Les_Nums);
   for (int i = 0; i < nb_groupes_faces(); i++)
     mes_groupes_faces_(i).renum(Les_Nums);
-}
-
-template <typename _SIZE_>
-void Domaine_32_64<_SIZE_>::renum(const IntVect_t& Les_Nums)
-{
-  assert(false);
-  throw;
 }
 
 template<>
