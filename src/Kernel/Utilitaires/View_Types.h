@@ -70,15 +70,16 @@ using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualVie
 template<typename T, int _SHAPE_>
 using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
-// Its const version (const disabled for OpenMP, weird bug)
+// Its const version (const disabled for GPU: slower than non-const for Op_Conv VEF!)
 #ifdef _OPENMP_TARGET
 template<typename T, int _SHAPE_>
-using ConstView = Kokkos::View</* const */typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+using ConstView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+//using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 // Host views
 template<typename T, int _SHAPE_>
 using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
-#else //else openmp
+#else
 
 template<typename T, int _SHAPE_>
 using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
