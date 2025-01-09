@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -281,10 +281,18 @@ void TRUSTArray<_TYPE_,_SIZE_>::ref_as_big(TRUSTArray<_TYPE_,_TYPE_>& out) const
 
 /*! Conversion methods - from a big array (_SIZE_=trustIdType), return a small one (_SIZE_=int).
  * Overflow is detected in debug if array is too big to be fit into _SIZE_=int.
- * No data copied! This behaves somewhat like a ref_array. Used in LATA stuff notably.
+ * No data copied! This behaves somewhat like a ref_array. Used in LATA stuff and FT notably.
  */
 template<>
 void TRUSTArray<float, trustIdType>::ref_as_small(TRUSTArray<float, int>& out) const
+{
+  // Check size fits in 32bits:
+  assert(size_array() < std::numeric_limits<int>::max());
+  ref_conv_helper_(out);
+}
+
+template<>
+void TRUSTArray<int, trustIdType>::ref_as_small(TRUSTArray<int, int>& out) const
 {
   // Check size fits in 32bits:
   assert(size_array() < std::numeric_limits<int>::max());
