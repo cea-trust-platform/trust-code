@@ -24,6 +24,7 @@
 #include <Matrix_tools.h>
 #include <Statistiques.h>
 #include <Array_tools.h>
+#include <deque>
 
 extern Stat_Counter_Id diffusion_counter_;
 

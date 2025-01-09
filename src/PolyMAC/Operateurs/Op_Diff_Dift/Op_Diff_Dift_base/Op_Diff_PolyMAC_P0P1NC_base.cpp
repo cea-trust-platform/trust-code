@@ -22,6 +22,7 @@
 #include <Simpler_Base.h>
 #include <Milieu_base.h>
 #include <EChaine.h>
+#include <deque>
 
 Implemente_base(Op_Diff_PolyMAC_P0P1NC_base, "Op_Diff_PolyMAC_P0P1NC_base", Operateur_Diff_base);
 

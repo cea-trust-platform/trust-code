@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,17 @@ public :
   const DoubleTab& d_nucleation() const;
 
 private:
+  bool is_pb_multi_ = false, is_pb_coupl_ = false, has_echange_contact_ = false, has_flux_par_ = false;
+
+  void init_op_ext_simple() const;
+  void init_op_ext_couplage_parietal() const;
+
+  void dimensionner_blocs_simple(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void dimensionner_blocs_couplage_parietal(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+
+  void ajouter_blocs_simple(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs_couplage_parietal(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
   /* sommets connectes a un autre probleme par un Echange_contact */
   void init_s_dist() const;
   mutable std::map<int, std::map<const Operateur_Diff_base *, int>> s_dist; //s_dist[som] = { { pb1, som1 }, { pb2, som2 }, ... }
