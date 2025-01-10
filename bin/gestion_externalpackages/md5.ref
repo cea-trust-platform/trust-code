@@ -9,6 +9,7 @@ d1d137c2fce19ccc88dd118fe86287a3  Gmsh/fltk-a5f28b39842af9ceb20c85a2d75870eb556a
 e7b55a76a4dcf2faf149194cbfff82a2  MED/med-4.1.1.tar.gz
 f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 6ee1cfff98728e5160c6e78bdb1986ca  MPI/mpich-3.4.2.tar.gz
+e478b1d886935e5f836a9164ad4806d0  MPI/openmpi-4.1.6.tar.gz
 22603fcef8ba4dce7b7bb93935b02f90  MPI/openmpi-5.0.5.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 b6f9a8d4ddc1f4dd16ae3bb2e74abe36  Miniforge/Miniforge3-24.7.1-0-MacOSX-arm64.sh

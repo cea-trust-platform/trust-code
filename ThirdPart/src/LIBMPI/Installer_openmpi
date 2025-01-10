@@ -1,8 +1,7 @@
 #!/bin/bash
 # OpenMPI install script
-default_version=5.0.5
-latest_version=4.1.0 && [ "$TRUST_USE_CUDA" = 1 ] && latest_version=5.0.5
-[ `uname -s` = Darwin ] && latest_version=4.1.6
+default_version=4.1.6
+latest_version=5.0.5 && [ `uname -s` = Darwin ] && latest_version=4.1.6
 
 version=$default_version
 # Cas ou l'on force la version la plus recente:

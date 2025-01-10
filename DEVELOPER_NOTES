@@ -1,3 +1,4 @@
+XX/XX/25 (TRUST) Minor change : configure option -force_provided_openmpi use OpenMPI 4.1.6 and -force_latest_openmpi use OpenMPI 5.0.5
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
