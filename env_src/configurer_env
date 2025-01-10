@@ -1988,7 +1988,7 @@ case $TRUST_ARCH_CC in
 	F77Flags_32b="$flag_optim -fPIC"
 	F77Flags=$F77Flags_32b
 	[ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
-	ccFLAGS="$flag_optim -fPIC -unroll-loops"
+	ccFLAGS="$flag_optim -fPIC -funroll-loops"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
