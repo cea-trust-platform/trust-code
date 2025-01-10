@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,15 +130,13 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
 {
   const Champ_base& cha=le_champ();
   const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
-  int nb_compo=cha.nb_comp(), N = cha.valeurs().line_size(), D = dimension, nf_tot = domaine_VF.nb_faces_tot();
-  assert(val.line_size() == nb_compo );
+  const int N = cha.valeurs().line_size(), D = dimension, nf_tot = domaine_VF.nb_faces_tot(), M = le_champ().nb_comp();;
   // XXX : TODO Check this assert (positions and not val)
   assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
   assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
   assert((cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())||(cha.valeurs().dimension_tot(0)==nf_tot));
 
   if (val.nb_dim() > 2) Process::exit(que_suis_je() + "Le DoubleTab val a plus de 2 entrees");
-  if (nb_compo == 1) Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : A scalar field cannot be of Champ_Face type !");
 
   DoubleTab ve(0, N * D);
 
@@ -147,7 +145,7 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
       domaine_VF.domaine().creer_tableau_elements(ve);
       interp_valeurs_elem(cha.valeurs(), ve);
       for (int p = 0; p < les_polys.size(); p++)
-        for (int r = 0, e = les_polys(p); e < domaine_VF.nb_elem() && r < N * D; r++)
+        for (int r = 0, e = les_polys(p); e < domaine_VF.nb_elem() && r < N * std::min(D, M); r++)
           val(p, r) = (e==-1) ? 0. : ve(e, r);
     }
   else if (cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())
