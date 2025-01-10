@@ -88,8 +88,12 @@ Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
 {
   status_ = RESET;
   use_gpu_aware_mpi_ = getenv("TRUST_USE_MPI_GPU_AWARE") != nullptr;
-  if (use_gpu_aware_mpi_) // && PE_Groups::get_nb_groups())
+  if (use_gpu_aware_mpi_)
     {
+#ifdef CRAY_MPICH_VER
+      if (getenv("MPICH_GPU_SUPPORT_ENABLED") == nullptr)
+        Process::exit("You try to enable GPU communications on Cray MPICH with TRUST_USE_MPI_GPU_AWARE=1 but forgot to set also MPICH_GPU_SUPPORT_ENABLED=1 !");
+#endif
       std::cerr << "[MPI] Enabling GPU capability to communicate between devices." << std::endl;
       //Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
     }
