@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -294,7 +294,7 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 void Matrice_Bloc::build_stencil()
 {
   std::fill(line_offsets_.begin( ),line_offsets_.end( ), 0.);
-  std::fill(column_offsets_.begin( ),line_offsets_.end( ), 0.);
+  std::fill(column_offsets_.begin( ),column_offsets_.end( ), 0.);
   blocs_non_nuls_.clear( );
 
   const int nb_line_blocks   = nb_bloc_lignes( );

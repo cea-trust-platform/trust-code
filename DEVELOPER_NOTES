@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
+10/01/25 (TRUST) Fix          : Minor bug fix in matrice_bloc (no impact on TRUST&TrioCFD)
 -------------------------------------------------------------
 Developer notes version 1.9.5 : Changes since version 1.9.4 :
 -------------------------------------------------------------
