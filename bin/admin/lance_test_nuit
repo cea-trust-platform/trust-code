@@ -181,6 +181,7 @@ check_components()
                # Machines en mode valgrind
                valgrind_machines=`liste_machines "\-check-valgrind"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
                valgrind_machines=$valgrind_machines" "`liste_machines "\-ctest_valgrind"`
+               valgrind_machines_ctest=`liste_machines "\-ctest_mode_valgrind"`  # test pour TrioCFD sur pegasi2
                # Machines en mode gui
                gui_machines=`liste_machines "\-gui"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
                # Machines en mode check trust
@@ -284,6 +285,9 @@ check_components()
                                  valgrind_option=""
                               fi
                            fi
+                        elif [[ "$valgrind_machines_ctest" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
+                        then
+                           valgrind_option="--with-ctest-valgrind"
                         else
                            valgrind_option=""
                         fi
@@ -382,8 +386,8 @@ check_components()
                            # Debut de partie a revoir !!!!
                            WORKBETA=""
                            trustversion=""
-                           [ "$Composant" == "flica5" ] && trustversion=1.9.4
-                           [ "$Composant" == "module3D" ] && trustversion=1.9.4
+                           [ "$Composant" == "flica5" ] && trustversion=1.9.5
+                           [ "$Composant" == "module3D" ] && trustversion=1.9.5
                            [ "$Composant" == "triomc" ] && trustversion=1.9.4
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
@@ -455,7 +459,7 @@ git_push()
    repos=`git remote | grep -v irene`
    for repo in $repos
    do
-      remote_branch="triou/TMA" && Tags="--tags"
+      remote_branch="next" && Tags="--tags"
       [ "$repo" = "github_write" ] && remote_branch="next" && Tags=""
       repo_log=$REP_NUIT"/git_"$repo"_"$git_branch"_"$HOST".log"
       echo "TRUST git push on $HOST the `date` ...">$repo_log
@@ -644,7 +648,7 @@ echo "Call to "$TRUST_ROOT"/configure"
 echo "  See $config_log"
 echo "TRUST configuration on $HOST the `date` ...">$config_log
 echo>>$config_log
-./configure -force_provided_mpich -std=c++14 1>>$config_log || exit -1
+./configure -force_provided_mpich -std=c++14 -disable-trustify 1>>$config_log || exit -1
 #grep -i error $config_log
 grep KO $config_log
 tail -n24 $config_log | head -n1
@@ -829,7 +833,7 @@ echo " "
    repos=`git remote | grep -v irene`
    for repo in $repos
    do
-     remote_branch="triou/TMA" && tags_="--tags"
+     remote_branch="next" && tags_="--tags"
      echo " git push $repo TMA in `pwd`"
      git push $tags_ $repo Livraison:$remote_branch 1>tmp.log 2>&1
      cat tmp.log
@@ -847,7 +851,7 @@ echo " "
       echo " git push origin TMA in `pwd`"
       if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" && "$Composant" != "triomc" ]]
       then
-         git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
+         git push --tags origin Livraison:next 1>tmp.log 2>&1
          cat tmp.log
          [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL
          rm tmp.log 1>/dev/null 2>&1
@@ -863,7 +867,7 @@ echo " "
             [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
          fi
          cat tmp.log && rm tmp.log 1>/dev/null 2>&1
-         #git push origin_irene-ccrt Livraison:triou/TMA 1>tmp.log 2>&1
+         #git push origin_irene-ccrt Livraison:next 1>tmp.log 2>&1
          #cat tmp.log
          #[ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin_irene-ccrt TMA\" $TRUST_MAIL
          rm tmp.log 1>/dev/null 2>&1
@@ -902,13 +906,13 @@ echo " "
       then
          git remote update
          git checkout .
-         git checkout Issue5698_portage195
+         git checkout next
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5698_portage195 KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next KO \" $TRUST_MAIL
          else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5698_portage195 OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next OK \" $TRUST_MAIL
          fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
@@ -931,8 +935,8 @@ echo " "
       then
          git remote update
          git checkout .
-         git checkout portage
-         git reset --hard origin/portage
+         git checkout next
+         git reset --hard origin/next
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
          git checkout .
@@ -942,19 +946,19 @@ echo " "
       else
          git remote update
          git checkout .
-         git checkout portage 1>tmp.log 2>&1
-         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git checkout portage KO\" $TRUST_MAIL
+         git checkout next 1>tmp.log 2>&1
+         [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git checkout next KO\" $TRUST_MAIL
          rm tmp.log 1>/dev/null 2>&1
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-             git reset --hard origin/portage && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git reset hard portage \" $TRUST_MAIL
+             git reset --hard origin/next && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git reset hard next \" $TRUST_MAIL
          else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull next OK \" $TRUST_MAIL
          fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
-         #git push origin Livraison:triou/TMA 1>tmp.log 2>&1
+         #git push origin Livraison:next 1>tmp.log 2>&1
       fi
       cd - 1>/dev/null 2>&1
    done
@@ -1034,8 +1038,8 @@ echo "###############################################"
                  cd $TRUST_ROOT/../Composants/$Composant
                  git remote update
 #                On teste uniquement mpcube sur la verison Kernel !
-#                La branche est appelee portage car basee sur une version de developpement TRUST
-                 git reset --hard origin/portage
+#                La branche est appelee next car basee sur une version de developpement TRUST
+                 git reset --hard origin/next
                  cd - 1>/dev/null 2>&1
                  echo>>$rebase_log
               fi
@@ -1123,7 +1127,7 @@ echo "###############################################"
            fi
         fi
         echo "Call to configure $vue version in `pwd`"
-        ./configure -force_provided_mpich -std=c++14 1>/dev/null 2>&1
+        ./configure -force_provided_mpich -std=c++14 -disable-trustify 1>/dev/null 2>&1
         source env_TRUST.sh 1>/dev/null 2>&1
         echo "TRUST_ROOT=$TRUST_ROOT"
         echo "TRUST_VERSION=$TRUST_VERSION"
@@ -1286,6 +1290,22 @@ echo "###############################################"
               fi
            fi
         done
+
+        ########################
+        # sanity checks        #
+        ########################
+        if [ "`git grep 'python3\.' | grep -v lance_test_nuit`" != "" ] 
+        then
+           echo "You should not use python3.x in your scripts for portability" > tmp_.log
+            git grep 'python3\.' >> tmp_.log
+            cat tmp_.log | mail_ -s\"[lance_test_nuit] git grep python3.X failed in $vue\" $TRUST_MAIL
+        fi
+
+        if [ "`find . -type l -lname '/*' | grep -v '/build/' | grep -v '/bin/baltik/templates/Test_Baltik/' | grep -v equation_convection_diffusion`" != "" ] 
+        then
+           echo "You should not create absolute links. Use relative links instead to be able to relocate TRUST install" | mail_ -s\"[lance_test_nuit] Forbiden absolute links created in $vue\" $TRUST_MAIL
+        fi
+
         ########################
         # Check non regression #
         ########################
@@ -3771,7 +3791,7 @@ then
       if [ $error_rc = 0 ]
       then
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See origin/triou/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
+         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See origin/next branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
       else
          echo "" | mail_ -s\"[lance_test_nuit] TRUST - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi
@@ -3784,11 +3804,11 @@ then
       git tag $label_pose
       error_rc=$?
       echo "    Call git push origin TMA"
-      git push --tags origin Livraison:triou/TMA
+      git push --tags origin Livraison:next
       if [ $error_rc = 0 ]
       then
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See origin/triou/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER
+         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See origin/next branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER
       else
          echo "" | mail_ -s\"[lance_test_nuit] externalpackages - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi
@@ -3814,16 +3834,16 @@ then
             echo "    Call git push origin TMA"
             if [ $Composant != "flica5" ]
             then
-               git push --tags origin Livraison:triou/TMA
+               git push --tags origin Livraison:next
             else
-               git push origin Livraison:triou/TMA
+               git push origin Livraison:next
             fi
             error_rcb=$?
             if [ $error_rcb = 0 ]
             then
                # On previent l'administrateur et les project leader
                BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-               cat $WORKDIR/tuleap/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See origin/triou/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+               cat $WORKDIR/tuleap/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See origin/next branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
             else
                echo "" | mail_ -s\"[lance_test_nuit] $Composant - Tag a $release version: $label_pose KO\" $TRUST_MAIL
             fi
@@ -3895,22 +3915,22 @@ then
          echo "  Call git tag $label at "`date`
          git tag $label
          echo "  Call git push origin TMA"
-         git push --tags origin Livraison:triou/TMA
+         #git push --tags origin Livraison:next
          echo "  Call git push origin master"
-         git push --tags origin Livraison:master
+         #git push --tags origin Livraison:master
          # On pose le meme tag sur externalpackages
          cd externalpackages
          git commit --all -m"Commit for an official Release $label version."
          git tag $label_pose
-         git push --tags origin Livraison:triou/TMA
+         #git push --tags origin Livraison:next
          git tag $label
-         git push --tags origin Livraison:master
+         #git push --tags origin Livraison:master
          git fetch --all
          cd - 1>/dev/null 2>&1
          # Creation des packages TRUST et externalpackages
          echo " "
          echo "  Creation of the packages of TRUST and externalpackages"
-         echo "!!! See ARCHIVES_TRUST (Warning externalpackages) and ARCHIVES_triocfd !!!" | mail_ -s\"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for ftp website and github are correct...\" $TRUST_MAIL
+         echo "!!! See ARCHIVES_TRUST (Warning externalpackages) and ARCHIVES_triocfd !!!" | mail_ -s\"[lance_test_nuit] WARNING! TRUST v$new released: no master push for TRUST+externalpackages. Ensure that packages for ftp website and github are correct...\" $TRUST_MAIL
          mise_a_jour_TRUST_tar
          GRAVAGE=$WORKDIR/archives/ARCHIVES_TRUST
          version_arch=TRUST-$new".tar.gz"
@@ -3943,9 +3963,9 @@ then
                echo "    Call git push origin TMA"
                if [ $Composant != "flica5" ]
                then
-                  git push --tags origin Livraison:triou/TMA
+                  git push --tags origin Livraison:next
                else
-                  git push origin Livraison:triou/TMA
+                  git push origin Livraison:next
                   git push origin Livraison:triou/$label
                fi
                if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]

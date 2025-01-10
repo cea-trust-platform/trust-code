@@ -38,6 +38,7 @@ last_pb="";
 cases=""
 clean_after=0
 cible=0
+with_ctest=0
 for word in $*
   do
   case $word in
@@ -47,6 +48,7 @@ for word in $*
       --with-source-TRUST*) SOURCE_TRUST=`right $word` ;;
       --with-mode*) MODE=`right $word` ;;
       --with-valgrind) VALGRIND=1 ;;
+      --with-ctest-valgrind) VALGRIND=1 ; with_ctest=1 ;;
       --without-parallel) PAR_F=0;;
       --with-clean) doclean=1 ;;
       --with-efface-dir-before) doclean=3 ;;
@@ -94,6 +96,7 @@ source env_TRUST.sh
 # [ \$? -ne 0 ] && echo KO , TRUST_ROOT: $TRUST_ROOT false ? 
 cd $ORIG" > env.sh
 [ "$VALGRIND" != "0" ] &&  echo "# VALGRIND=1 ; export VALGRIND" >> env.sh
+[ "$with_ctest" != "0" ] &&  echo "# with_ctest=1 ; export with_ctest" >> env.sh
 export MODE
 [ "$PAR_F" != "not_set" ] && echo "PAR_F=0;export PAR_F" >> env.sh  && echo Info_global test_par OFF
 
@@ -177,8 +180,13 @@ then
     echo "cp ../liste_pb.all ." >>make_check.sh
 fi
 if [ $norun -eq 0 ]
-    then
-    echo "make check${last_pb}_$MODE" >> make_check.sh
+then
+   if [ "$with_ctest" = "0" ]
+   then
+      echo "make check${last_pb}_$MODE" >> make_check.sh
+   else # use ctest
+      echo "env TRUST_NB_PHYSICAL_CORES=10 make ctest_$MODE" >> make_check.sh
+   fi
 else
     echo "echo Info_global make_check OFF" >> make_check.sh
 fi

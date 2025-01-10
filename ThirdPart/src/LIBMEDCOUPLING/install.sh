@@ -55,7 +55,8 @@ build_and_test_mc()
     export CXXFLAGS="-Wno-narrowing -Wno-sign-conversion"
     if [[ $use_python == ON && $(uname -s) == "Darwin" ]]
     then
-       export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
+       #PYTHON_VERSION=`python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
+       #export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python$PYTHON_VERSION"
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
     echo "Applying patch for const pointer in IKDEC ..."
