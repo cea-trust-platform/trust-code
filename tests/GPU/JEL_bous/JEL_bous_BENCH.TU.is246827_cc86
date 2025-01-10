@@ -1,36 +1,36 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       38.2809
+Temps total                       45.9301
 
 Statistiques de resolution du probleme
 
-Temps total                       23.4949
+Temps total                       22.8329
 
 
 Timesteps                         10
-Secondes / pas de temps           2.34948
-Dont solveurs Ax=B                0.797468 33% (2 appels/pas de temps)
-Dont solveur diffusion_implicite  0.184618  7% (4 appels/pas de temps)
-Dont mettre_a_jour                0.049992  2% (1 appel/pas de temps)
-Dont operateurs convection        0.382458 16% (4 appels/pas de temps)
-Dont operateurs diffusion         0.475678 20% (26 appels/pas de temps)
-Dont operateurs gradient          0.089068  3% (4 appels/pas de temps)
-Dont operateurs divergence        0.046931  1% (3 appels/pas de temps)
-Dont operateurs source            0.103158  4% (2 appels/pas de temps)
-Dont operations postraitement     0.029999  1% (1 appel/pas de temps)
-Dont calcul dt                    0.128196  5% (8 appels/pas de temps)
-Dont modele turbulence            0.019273  0% (1 appel/pas de temps)
-Dont calcul divers                0.042641  1% (0 appels/pas de temps)
+Secondes / pas de temps           2.28328
+Dont solveurs Ax=B                0.788499 34% (2 appels/pas de temps)
+Dont solveur diffusion_implicite  0.182418  7% (4 appels/pas de temps)
+Dont mettre_a_jour                0.048979  2% (1 appel/pas de temps)
+Dont operateurs convection        0.338398 14% (4 appels/pas de temps)
+Dont operateurs diffusion         0.470715 20% (26 appels/pas de temps)
+Dont operateurs gradient          0.087826  3% (4 appels/pas de temps)
+Dont operateurs divergence        0.046261  2% (3 appels/pas de temps)
+Dont operateurs source            0.103749  4% (2 appels/pas de temps)
+Dont operations postraitement     0.029803  1% (1 appel/pas de temps)
+Dont calcul dt                    0.125970  5% (8 appels/pas de temps)
+Dont modele turbulence            0.018884  0% (1 appel/pas de temps)
+Dont calcul divers                0.041771  1% (0 appels/pas de temps)
 Nb solveur / pas de temps         2
-Secondes / solveur                0.398734
+Secondes / solveur                0.39425
 Iterations / solveur              51.5
 GPU statistics per time step (experimental):
-Libraries : 0.796106 s 33.9%  2.0 calls
-Kernels   : 1.453806 s 61.9% 894.7 calls
-Copy H2D  : 0.030748 s  1.3% 59.6 calls  9.2 GB/s
-Copy D2H  : 0.027549 s  1.2% 80.7 calls  6.4 GB/s
-Alloc/Free: 0.000836 s  0.0%  8.0 calls
-GPU: 95.7% Copy H<->D: 2.4% Alloc/Free: 0% Comm: 0% CPU & Others: 1.7%
+Libraries : 0.787143 s 34.5%  2.0 calls
+Kernels   : 1.397144 s 61.2% 895.4 calls
+Copy H2D  : 0.029871 s  1.3% 59.6 calls  9.5 GB/s
+Copy D2H  : 0.028435 s  1.2% 80.7 calls  6.2 GB/s
+Alloc/Free: 0.000758 s  0.0%  8.0 calls
+GPU: 95.6% Copy H<->D: 2.5% Alloc/Free: 0% Comm: 0% CPU & Others: 1.7%
 I/O:
 
 Timesteps = number of time steps
@@ -49,5 +49,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.090917
+Temps total                       0.110305
 

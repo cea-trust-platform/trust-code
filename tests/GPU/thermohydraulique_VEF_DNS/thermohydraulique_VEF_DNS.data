@@ -84,9 +84,7 @@ Lire pb
     }
     Navier_Stokes_Standard
     {
-        # solveur_pression petsc Cholesky { } #
-        # solveur_pression GCP { seuil 1.e-10 impr precond ssor { omega 1.55 } } #
-        solveur_pression petsc_gpu GCP { seuil 1.e-10 impr precond boomeramg { } }
+        solveur_pression AMG GCP { atol 1.e-10 impr }
         convection { EF_stab { alpha 0.2 } }
         diffusion { }
         sources { boussinesq_temperature { T0 2985. verif_boussinesq 0 }  }

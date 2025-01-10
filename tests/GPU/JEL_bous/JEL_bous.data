@@ -78,7 +78,7 @@ Lire pb1
 
     Navier_Stokes_turbulent
     {
-        solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr }
+        solveur_pression AMG GCP { rtol 1.e-6 impr }
         convection { muscl }
         diffusion { }
         conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }

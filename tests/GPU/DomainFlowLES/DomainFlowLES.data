@@ -138,7 +138,7 @@ Read pb_box
             preconditionnement_diag 1
             seuil_diffusion_implicite 1e-10
         }
-        solveur_pression Petsc_GPU GCP { precond boomeramg { } rtol 1.e-6 impr }
+        solveur_pression AMG GCP { rtol 1.e-6 impr }
 
         convection { muscl3 { alpha 0.8 }  }
         diffusion { }
@@ -215,7 +215,7 @@ Read pb_dom
 
         }
 
-        solveur_pression Petsc_GPU GCP {  precond boomeramg { } rtol 1.e-8 impr }
+        solveur_pression AMG GCP { rtol 1.e-8 impr }
 
         convection { muscl3 { alpha 0.8 }  }
         diffusion { }
