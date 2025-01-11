@@ -365,6 +365,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // au ELEM
       if (get_localisation()==Entity::ELEMENT)
         {
+          ToDo_Kokkos("Code but check test!");
           int nb_elem = zvf.nb_elem();
           if (methode_ =="L1_norm")
             {
@@ -392,6 +393,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         {
           // Calcul des volumes de controle a chaque face
           int nb_face = zvf.nb_faces();
+          ToDo_Kokkos("Code but check test!");
           if (!volume_controle_.size())
             {
               volume_controle_.resize(nb_face);
@@ -464,6 +466,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // au NODE
       if (get_localisation()==Entity::NODE)
         {
+          ToDo_Kokkos("Code but check test!");
           // Calcul des volumes de controle a chaque sommet
           int nb_som = zvf.nb_som();
           if (!volume_controle_.size())
@@ -529,6 +532,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // au ELEM
       if (get_localisation()==Entity::ELEMENT)
         {
+          ToDo_Kokkos("Code but check test!");
           int nb_elem = zvf.nb_elem();
           for (int i=0; i<nb_elem; i++)
             {
@@ -538,8 +542,9 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       // au FACE
-      if (get_localisation()==Entity::FACE)
+      else if (get_localisation()==Entity::FACE)
         {
+          ToDo_Kokkos("Code but check test!");
           // Calcul des volumes de controle a chaque face
           int nb_face = zvf.nb_faces();
           if (!volume_controle_.size())
@@ -555,6 +560,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
                     volume_controle_(face)+=volumes(i)/nb_faces_par_elem;
                   }
             }
+          ToDo_Kokkos("Code but check test!");
           if (composante_VDF>=0)
             {
               //const IntVect& ori = zvf.orientation();
@@ -569,16 +575,23 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
                   }
             }
           else
-            for (int i=0; i<nb_face; i++)
+            {
+              CDoubleArrView volume_controle = volume_controle_.view_ro();
+              CDoubleArrView val = val_source.view_ro();
+              Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_face, KOKKOS_LAMBDA(const int i, double & sum_tmp, double & volume_tmp)
               {
-                sum+=val_source(i)*volume_controle_(i);
-                volume+=volume_controle_(i);
-              }
+                double vc = volume_controle(i);
+                sum_tmp += val(i) * vc;
+                volume_tmp += vc;
+              }, sum, volume);
+              end_gpu_timer(__KERNEL_NAME__);
+            }
         }
 
       // au NODE
-      if (get_localisation()==Entity::NODE)
+      else if (get_localisation()==Entity::NODE)
         {
+          ToDo_Kokkos("Code but check test!");
           // Calcul des volumes de controle a chaque sommet
           int nb_som = zvf.nb_som();
           if (!volume_controle_.size())
@@ -682,6 +695,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
       else if (methode_=="moyenne" || methode_=="average")
         {
+          ToDo_Kokkos("Code but check test!");
           if (loc==Entity::FACE && composante_VDF>=0)
             {
               // Dans le cas vectoriel en VDF, il ne faut compter que les
