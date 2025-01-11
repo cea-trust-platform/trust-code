@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ template<Champ_Morceaux_Type _TYPE_>
 DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
   const Domaine& le_dom = mon_domaine;
-  IntVect les_polys(le_dom.nb_elem());
+  IntTrav les_polys;
   le_dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
