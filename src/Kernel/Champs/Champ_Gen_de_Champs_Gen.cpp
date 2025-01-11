@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,7 +127,10 @@ OWN_PTR(Champ_Fonc_base)& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const N
                                                                          const int nb_comp,
                                                                          OWN_PTR(Champ_Fonc_base)& es_tmp) const
 {
-
+  if (!es_tmp.est_nul())
+    {
+      ToDo_Kokkos("critical, call to creer_espace_stockage() is expensive on GPU (fields copy on host). Refactor like Champ_Generique_Moyenne and other advanced fields...");
+    }
   Noms noms;
   Noms unites;
   for (int c=0; c<nb_comp; c++)
@@ -146,7 +149,6 @@ OWN_PTR(Champ_Fonc_base)& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const N
       const  Domaine_Cl_dis_base& zcl = get_ref_zcl_dis_base();
       es_tmp->completer(zcl);
     }
-  ToDo_Kokkos("critical, call to creer_espace_stockage() is expensive on GPU (fields copy on host). Refactor like Champ_Generique_Moyenne and other advanced fields...");
   return es_tmp;
 }
 

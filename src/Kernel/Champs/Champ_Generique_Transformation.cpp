@@ -501,7 +501,10 @@ void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domain
 
 const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(OWN_PTR(Champ_base)&) const
 {
-  creer_espace_stockage(nature_ch,nb_comp_,espace_stockage_);
+  if (espace_stockage_.est_nul())
+    creer_espace_stockage(nature_ch,nb_comp_,espace_stockage_);
+  else
+    espace_stockage_->changer_temps(get_source(0).get_time());
   return espace_stockage_;
 }
 const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&) const
@@ -527,13 +530,19 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
   if (localisation_ == "elem")
     {
       if (zvf.xp().nb_dim() != 2) /* xp() non initialise */
-        {
-          zvf.domaine().calculer_centres_gravite(positions);
-        }
+        zvf.domaine().calculer_centres_gravite(positions);
       else
         {
           positions.resize(zvf.nb_elem(), zvf.xp().dimension(1));
-          memcpy(positions.addr(), zvf.xp().addr(), positions.size() * sizeof(double));
+          CDoubleTabView xp = zvf.xp().view_ro();
+          DoubleTabView positions_v = positions.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {zvf.nb_elem(), zvf.xp().dimension(1)}), KOKKOS_LAMBDA(const int i, const int j)
+          {
+            positions_v(i,j) = xp(i,j);
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+          // Don't work with simply: ToDo fix
+          // positions = zvf.xp();
         }
     }
   else if (localisation_ == "som")
