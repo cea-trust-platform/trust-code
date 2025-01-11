@@ -19,8 +19,7 @@
 #include <Solv_AMGX.h>
 #include <Solv_Petsc_GPU.h>
 #ifdef TRUST_USE_ROCM
-#include <hip/hip_version.h>
-#define HIP_VERSION_MAJOR (HIP_VERSION / 100000)
+#include <rocm-core/rocm_version.h>
 #endif
 
 Implemente_instanciable(Solv_AMG,"Solv_AMG",SolveurSys_base);
