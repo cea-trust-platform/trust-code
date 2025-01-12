@@ -326,41 +326,38 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
   CDoubleTabView vitesse = tab_vitesse.view_ro();
   DoubleTabView3 Kij = tab_Kij.view_rw<3>();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
-                         const int elem)
+                       range_2D({0,0}, {nb_elem_tot,nb_faces_elem}), KOKKOS_LAMBDA(
+                         const int elem, const int face_loci)
   {
-    for(int face_loci=0; face_loci<nb_faces_elem; face_loci++)
+    int face_i=elem_faces(elem,face_loci);
+
+    double signei=1.0;
+    if(face_voisins(face_i,0)!=elem) signei=-1.0;
+
+    double psci=0;
+    for(int comp=0; comp<dim; comp++)
+      psci+=vitesse(face_i,comp)*face_normales(face_i,comp);
+    psci*=signei;
+
+    //Kij(elem,face_loci,face_loci)=0.;
+    for(int face_locj=face_loci+1; face_locj<nb_faces_elem; face_locj++)
       {
-        int face_i=elem_faces(elem,face_loci);
+        int face_j=elem_faces(elem,face_locj);
+        double signej=1.0;
+        if(face_voisins(face_j,0)!=elem)
+          signej=-1.0;
 
-        double signei=1.0;
-        if(face_voisins(face_i,0)!=elem) signei=-1.0;
-
-        double psci=0;
+        double pscj=0;
+        //psci=0;
         for(int comp=0; comp<dim; comp++)
-          psci+=vitesse(face_i,comp)*face_normales(face_i,comp);
-        psci*=signei;
+          pscj+=vitesse(face_j,comp)*face_normales(face_j,comp);
+        pscj*=signej;
 
-        //Kij(elem,face_loci,face_loci)=0.;
-        for(int face_locj=face_loci+1; face_locj<nb_faces_elem; face_locj++)
-          {
-            int face_j=elem_faces(elem,face_locj);
-            double signej=1.0;
-            if(face_voisins(face_j,0)!=elem)
-              signej=-1.0;
-
-            double pscj=0;
-            //psci=0;
-            for(int comp=0; comp<dim; comp++)
-              pscj+=vitesse(face_j,comp)*face_normales(face_j,comp);
-            pscj*=signej;
-
-            Kokkos::atomic_add(&Kij(elem,face_loci,face_locj), -1./nb_faces_elem*pscj);
-            Kokkos::atomic_add(&Kij(elem,face_loci,face_loci), +1./nb_faces_elem*pscj);
-            Kokkos::atomic_add(&Kij(elem,face_locj,face_loci), -1./nb_faces_elem*psci);
-            Kokkos::atomic_add(&Kij(elem,face_locj,face_locj), +1./nb_faces_elem*psci);
-          }//fin du for sur "face_locj"
-      }//fin du for sur "face_loci"
+        Kokkos::atomic_add(&Kij(elem,face_loci,face_locj), -1./nb_faces_elem*pscj);
+        Kokkos::atomic_add(&Kij(elem,face_loci,face_loci), +1./nb_faces_elem*pscj);
+        Kokkos::atomic_add(&Kij(elem,face_locj,face_loci), -1./nb_faces_elem*psci);
+        Kokkos::atomic_add(&Kij(elem,face_locj,face_locj), +1./nb_faces_elem*psci);
+      }//fin du for sur "face_locj"
   });//fin du for sur "elem"
   end_gpu_timer(__KERNEL_NAME__);
   //
@@ -784,26 +781,23 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& tab_Kij, con
   CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
-                         const int elem)
+                       range_2D({0,0}, {nb_elem_tot,nb_faces_elem}), KOKKOS_LAMBDA(
+                         const int elem, const int facei_loc)
   {
-    for (int facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
+    int facei = elem_faces(elem, facei_loc);
+    for (int facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
       {
-        int facei = elem_faces(elem, facei_loc);
-        for (int facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
-          {
-            int facej = elem_faces(elem, facej_loc);
-            double kij = Kij(elem, facei_loc, facej_loc);
-            double kji = Kij(elem, facej_loc, facei_loc);
+        int facej = elem_faces(elem, facej_loc);
+        double kij = Kij(elem, facei_loc, facej_loc);
+        double kji = Kij(elem, facej_loc, facei_loc);
 
-            for (int dim = 0; dim < nb_comp; dim++)
-              {
-                int ligne = facei * nb_comp + dim;
-                int colonne = facej * nb_comp + dim;
-                double delta = transporteV[colonne] - transporteV[ligne];
-                Kokkos::atomic_add(&resuV[ligne], kij * delta);
-                Kokkos::atomic_sub(&resuV[colonne], kji * delta);
-              }
+        for (int dim = 0; dim < nb_comp; dim++)
+          {
+            int ligne = facei * nb_comp + dim;
+            int colonne = facej * nb_comp + dim;
+            double delta = transporteV[colonne] - transporteV[ligne];
+            Kokkos::atomic_add(&resuV[ligne], kij * delta);
+            Kokkos::atomic_sub(&resuV[colonne], kji * delta);
           }
       }
   });
@@ -825,30 +819,27 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& tab_Kij, const Doub
   CDoubleArrView alpha_tab = alpha_tab_.view_ro();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
-                         const int elem)
+                       range_2D({0,0}, {nb_elem_tot,nb_faces_elem}), KOKKOS_LAMBDA(
+                         const int elem, const int facei_loc)
   {
-    for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
+    int facei=elem_faces(elem,facei_loc);
+    for (int facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
       {
-        int facei=elem_faces(elem,facei_loc);
-        for (int facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
+        int facej=elem_faces(elem,facej_loc);
+        double dij=Dij(elem,facei_loc,facej_loc,Kij);
+        double coeffij=alpha_tab[facei]*dij;
+        double coeffji=alpha_tab[facej]*dij;
+
+        for (int dim=0; dim<nb_comp; dim++)
           {
-            int facej=elem_faces(elem,facej_loc);
-            double dij=Dij(elem,facei_loc,facej_loc,Kij);
-            double coeffij=alpha_tab[facei]*dij;
-            double coeffji=alpha_tab[facej]*dij;
+            int ligne=facei*nb_comp+dim;
+            int colonne=facej*nb_comp+dim;
+            double delta=transporteV[colonne]-transporteV[ligne];
 
-            for (int dim=0; dim<nb_comp; dim++)
-              {
-                int ligne=facei*nb_comp+dim;
-                int colonne=facej*nb_comp+dim;
-                double delta=transporteV[colonne]-transporteV[ligne];
-
-                //ATTENTION AU SIGNE : ici on code +div(uT)
-                //REMARQUE : on utilise la symetrie de l'operateur
-                Kokkos::atomic_add(&resuV[ligne], coeffij*delta);
-                Kokkos::atomic_sub(&resuV[colonne], coeffji*delta);
-              }
+            //ATTENTION AU SIGNE : ici on code +div(uT)
+            //REMARQUE : on utilise la symetrie de l'operateur
+            Kokkos::atomic_add(&resuV[ligne], coeffij*delta);
+            Kokkos::atomic_sub(&resuV[colonne], coeffji*delta);
           }
       }
   });
