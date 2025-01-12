@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 void kokkos_self_test()
 {
 #ifndef NDEBUG
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   static bool kokkos_self_tested_ = false;
 
   if (kokkos_self_tested_) return;

@@ -141,7 +141,7 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
       const int dernier_item_bloc = items_to_process[item + 1];
       const int bloc_size = dernier_item_bloc - premier_item_bloc;
       // Adresse des elements a copier dans le vecteur
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
       assert(premier_item_bloc >= 0 && bloc_size > 0 &&
              (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
 #endif

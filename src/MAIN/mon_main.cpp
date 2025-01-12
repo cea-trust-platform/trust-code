@@ -327,7 +327,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
     Process::Journal() << "Journal logging started" << finl;
   }
 
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   // PL: It will be better to do it sooner (near Cuda init or Kokkos init) but need stat and journal initialized
   // Soon obsolete:
   init_device();

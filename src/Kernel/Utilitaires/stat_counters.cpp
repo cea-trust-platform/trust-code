@@ -583,7 +583,7 @@ void print_statistics_analyse(const char * message, int mode_append)
                   Cerr << "==============================================================================================" << finl;
                 }
             }
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
           else
             {
               Cerr << "============================================================================================" << finl;

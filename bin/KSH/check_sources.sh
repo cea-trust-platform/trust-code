@@ -52,8 +52,8 @@ check_recent_src()
        erreur $?
     fi
     # Macro _OPENMP -> _OPENMP_TARGET
-    grep " _OPENMP" $file | grep -v TARGET
-    [ $? = 0 ] && echo "Replace in $file: _OPENMP macro by _OPENMP_TARGET" && erreur 1
+    grep " _OPENMP" $file
+    [ $? = 0 ] && echo "Replace in $file: _OPENMP macro by TRUST_USE_GPU" && erreur 1
 
     #################################################
     # Interdiction des include sous la forme "toto.h"

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -217,7 +217,7 @@ KOKKOS_INLINE_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
           return eval(x);
 #endif
         case RND:
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
           // ToDo Kokkos: cuRAND and hipRAND
           Process::Kokkos_exit("Rnd function is not available yet for TRUST GPU version.");
           return 0;
@@ -273,7 +273,7 @@ double Parser::evalOp(const PNodePod& node, double x, double y)
     case 4: // POWER
       if (y != (int)(y) && x<0)
         {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
           Process::Kokkos_exit("Error in the Parser: x^y calculated with negative value for x !");
 #else
           Cerr << "Error in the Parser: x^y calculated with negative value for x (x = " << x << ") and y real y (y = " << y << " )" << finl;
@@ -304,7 +304,7 @@ double Parser::evalOp(const PNodePod& node, double x, double y)
     case 15: // NEQ
       return (x != y);
     default:
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
       Process::Kokkos_exit("Method evalOp : Unknown operation during expression parsing!");
 #else
       Cerr << "Method evalOp : Unknown op " << (True_int)node.value << "!!!" << finl;

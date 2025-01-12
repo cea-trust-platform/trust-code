@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,7 +111,7 @@ public:
   inline const _CLASSE_& valeur() const
   {
     assert(pointeur_ != nullptr);
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
     assert(get_Objet_U_ptr_check() || 1);
 #endif
     return *pointeur_;
@@ -120,7 +120,7 @@ public:
   inline _CLASSE_& valeur()
   {
     assert(pointeur_ != nullptr);
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
     assert(get_Objet_U_ptr_check() || 1);
 #endif
     return *pointeur_;

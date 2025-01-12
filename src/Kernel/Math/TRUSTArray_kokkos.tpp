@@ -96,7 +96,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_view() const
                             2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                             3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
   t_dev device_view;
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   // Device memory is allocated with OpenMP: ToDo replace by allocate ?
   mapToDevice(*this, "Kokkos init_view()");
   device_view = t_dev(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0],
@@ -151,7 +151,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
   this->template init_view<_SHAPE_>();
 
   auto& view = this->get_dual_view<_SHAPE_>();
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   mapToDevice(*this, "Kokkos TRUSTTab::view_ro()");
 #else
   // Copy to device if needed (i.e. if modify() was called):
@@ -194,7 +194,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_wo()
   this->template init_view<_SHAPE_>();
   auto& view = this->get_dual_view<_SHAPE_>();
 
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   computeOnTheDevice(*this, "Kokkos TRUSTArray<_TYPE_,_SIZE_>::view_wo()"); // ToDo allouer sans copie ?
 #else
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
@@ -234,7 +234,7 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
   this->template init_view<_SHAPE_>();
   auto& view = this->get_dual_view<_SHAPE_>();
 
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   computeOnTheDevice(*this, "Kokkos view_rw()");
 #else
   // Copy to device (if needed) ...

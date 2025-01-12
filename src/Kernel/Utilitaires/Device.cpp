@@ -59,7 +59,7 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
 }
 
 
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
 void init_device()
 {
   if (init_device_) return;
@@ -122,7 +122,7 @@ void init_cuda()
 template <typename _TYPE_>
 _TYPE_* addrOnDevice(_TYPE_* ptr)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   _TYPE_ *device_ptr = static_cast<_TYPE_*>(DeviceMemory::addrOnDevice(ptr));
   return device_ptr;
 #else
@@ -132,7 +132,7 @@ _TYPE_* addrOnDevice(_TYPE_* ptr)
 template <typename _TYPE_, typename _SIZE_>
 _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (tab.get_data_location()==DataLocation::HostOnly) return tab.data();
   else return addrOnDevice(tab.data());
 #else
@@ -144,7 +144,7 @@ _TYPE_* addrOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 template <typename _TYPE_>
 bool isAllocatedOnDevice(_TYPE_* tab_addr)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   return DeviceMemory::isAllocatedOnDevice(tab_addr);
 #else
   return false;
@@ -154,7 +154,7 @@ bool isAllocatedOnDevice(_TYPE_* tab_addr)
 template <typename _TYPE_, typename _SIZE_>
 bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
   bool isAllocatedOnDevice2 = isAllocatedOnDevice(tab.data());
   if (isAllocatedOnDevice1!=isAllocatedOnDevice2) Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");
@@ -169,7 +169,7 @@ template <typename _TYPE_, typename _SIZE_>
 _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
   allocateOnDevice(tab_addr, tab.size_mem(), "an array "+arrayName);
   tab.set_data_location(DataLocation::Device);
@@ -180,7 +180,7 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 template <typename _TYPE_, typename _SIZE_>
 _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
   clock_start = Statistiques::get_time_now();
   if (timer_on) statistiques().begin_count(gpu_mallocfree_counter_);
@@ -219,7 +219,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   _TYPE_ *tab_addr = tab.data();
   if (init_device_ && tab_addr && isAllocatedOnDevice(tab))
     {
@@ -232,7 +232,7 @@ void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (timer_on && statistiques_enabled()) statistiques().begin_count(gpu_mallocfree_counter_);
   std::string clock;
   if (PE_Groups::get_nb_groups()>0 && Process::is_parallel()) clock = "[clock]#"+std::to_string(Process::me());
@@ -267,7 +267,7 @@ template <typename _TYPE_, typename _SIZE_>
 _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, std::string arrayName)
 {
   _TYPE_ *tab_addr = tab.data();
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   DataLocation currentLocation = tab.get_data_location();
   tab.set_data_location(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
   // Important for ref_array/ref_tab support, we take the size of the memory allocated, not the size of the array (tab.size_array()):
@@ -295,7 +295,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, 
 template <typename _TYPE_, typename _SIZE_>
 void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (size>0)
     {
       assert(isAllocatedOnDevice(ptr));
@@ -327,7 +327,7 @@ _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName
 template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (tab.get_data_location() == DataLocation::Device)
     {
       copyFromDevice(tab.data(), tab.size_mem(), " array " + arrayName);
@@ -338,7 +338,7 @@ void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 template <typename _TYPE_, typename _SIZE_>
 void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (size>0)
     {
       assert(isAllocatedOnDevice(ptr));
@@ -373,7 +373,7 @@ void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
 template <typename _TYPE_>
 void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (tab.get_data_location()==DataLocation::Device || tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       int bytes = sizeof(_TYPE_) * (fin-deb);
@@ -396,7 +396,7 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
 template <typename _TYPE_>
 void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       int bytes = sizeof(_TYPE_) * (fin-deb);
@@ -418,7 +418,7 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
 template <typename _TYPE_>
 void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (tab.get_data_location()==DataLocation::PartialHostDevice)
     {
       // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host

@@ -21,16 +21,14 @@
 #include <stat_counters.h>
 #include <kokkos++.h>
 
-// Use our own macro _OPENMP_TARGET instead of _OPENMP to differentiate from host OpenMP backend
+// Use our own macro TRUST_USE_GPU has there is no KOKKOS_ENABLE_GPU
 #if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
 #ifndef LATATOOLS
-#define _OPENMP_TARGET
+#define TRUST_USE_GPU
 #endif
 #endif
-#ifdef _OPENMP_TARGET
 #ifdef TRUST_USE_CUDA
 #include <nvtx3/nvToolsExt.h>
-#endif
 // See https://nvidia.github.io/NVTX/
 // See https://stackoverflow.com/questions/23230003/something-between-func-and-pretty-function/29856690#29856690
 #endif
@@ -45,7 +43,7 @@ void init_device();
 void init_cuda();
 std::string ptrToString(const void* adr);
 
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
 #define ToDo_Kokkos(str)                              \
         if (Process::je_suis_maitre()) fprintf(stderr, "[Kokkos %s] Warning, code running slow cause not ported yet: line %d in %s \n", str, __LINE__, __FILE__);
 #else
@@ -53,7 +51,7 @@ std::string ptrToString(const void* adr);
 #endif
 
 // Macro Kernel_Name
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
 inline const std::string methodName(const std::string& prettyFunction, const int line)
 {
   size_t colons = prettyFunction.find("::");
@@ -79,7 +77,7 @@ inline const std::string methodName(const std::string& prettyFunction, const int
 // Timers GPU avec OpenMP (renommer?)
 inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (init_device_ && timer_on)
     {
       timer_counter++;
@@ -100,7 +98,7 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 
 inline void end_gpu_timer(const std::string& str, int onDevice=1, int bytes=-1) // Return in [ms]
 {
-#ifdef _OPENMP_TARGET
+#ifdef TRUST_USE_GPU
   if (init_device_ && timer_on)
     {
       timer_counter--;

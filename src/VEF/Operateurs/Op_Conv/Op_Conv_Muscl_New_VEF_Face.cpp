@@ -1315,7 +1315,7 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur(CDoubleTabView3 Kij, CDoubleTabView
       if (elem!=-1)
         {
           int face_i_loc = num_fac_loc(face_i,elem_voisin);
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
           assert(face_i_loc>=0);
           assert(face_i_loc<nb_faces_elem);
 #endif
@@ -1344,7 +1344,7 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur(CDoubleTabView3 Kij, CDoubleTabView
                   if (fik_high>0) P_plus+=fik_high;
                   else       P_moins+=fik_high;
                 }
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
               assert(P_plus>=0);
               assert(Q_plus>=0);
               assert(P_moins<=0);

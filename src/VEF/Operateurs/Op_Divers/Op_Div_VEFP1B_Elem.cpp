@@ -273,7 +273,7 @@ double calculer_coef_som(True_int type_elem, True_int dimension, True_int& nb_fa
               indice_diri[2] = 2;
               break;
             default:
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
               abort();
 #endif
               break;
@@ -281,7 +281,7 @@ double calculer_coef_som(True_int type_elem, True_int dimension, True_int& nb_fa
         }
       else
         {
-#ifndef _OPENMP_TARGET
+#ifndef TRUST_USE_GPU
           abort();
 #endif
         }
