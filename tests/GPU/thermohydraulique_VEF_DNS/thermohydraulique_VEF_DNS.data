@@ -181,7 +181,7 @@ Lire pb
                 }
                 vitesse_L2normMax	reduction_0D	{ methode max sources_reference { U_L2norm } }
             }
-            Format lata
+            format lata
             Champs binaire dt_post 1e+6
             {
                 vitesse elem
@@ -240,7 +240,7 @@ Lire pb
                 tempo_Vmoy  MOY_vitesse  periode 0.1 numero_elem_sur_maitre 0
 
             } # fin sondes #
-            Format lata
+            format lata
             Fichier Cas0_DNS
             Champs dt_post 1e6	{
                 MOY_vitesse elem
@@ -421,7 +421,7 @@ Lire pb
             } # fin sondes #
 
 
-                          	Format lml
+                          	format lml
                                 Fichier thermohydraulique_VEF_DNS
                                 Champs dt_post 1e6      {
                                                         STAT_MOY_vitesse elem

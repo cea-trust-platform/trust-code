@@ -65,6 +65,8 @@ do
    sed -i "/"$pattern"/s/\/\*//g" $jdd.data
    sed -i "/"$pattern"/s/\*\///g" $jdd.data
 done
+# Replace lml format by lata for faster IO
+sed -i "1,$ s?format lml?format lata?g" $jdd.data
 
 # Liste des machines:
 if [ "$1" = -nsys ]

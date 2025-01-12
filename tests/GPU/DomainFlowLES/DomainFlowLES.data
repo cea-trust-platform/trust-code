@@ -173,7 +173,7 @@ Read pb_box
         sonde_V_seg_horiz_box vitesse periode 1e-6 segment 10 0.001 0.001 0. 0.001 0.001 0.018
         } */
         # 3D fields post processing with LATA format for VisIt #
-        Format lml
+        format lml
         fields dt_post 0.05
         {
             vitesse   elem
@@ -288,7 +288,7 @@ Read pb_dom
 
         }
         # 3D fields post processing with LATA format for VisIt #
-        Format lml
+        format lml
         fields dt_post 0.05
         {
             pression             som

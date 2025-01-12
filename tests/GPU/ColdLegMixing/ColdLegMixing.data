@@ -115,7 +115,7 @@ lire pb
 	{
 	        postraitement NR
 		{
-			fichier ColdLegMixing
+			fichier ColdLegMixing format lml
 			definition_champs	{
 						REV_1_COLD_LEG_SET_yplus_mean		moyenne		{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
 						REV_1_COLD_LEG_SET_yplus_sd		ecart_type	{ t_deb 0. t_fin 16.38 source refChamp { Pb_champ pb y_plus } }
@@ -191,8 +191,7 @@ lire pb
                 concentration_CL2_point_2	temperature periode 1e-6 point 1 0.7860  0.0000 0
                 concentration_CL2_point_3	temperature periode 1e-6 point 1 0.7860  0.0132 0
             }
-            fichier INST
-            format lata
+            fichier INST format lata
             champs binaire dt_post 1
             {
                 temperature elem
