@@ -155,33 +155,23 @@ void TRUSTArray<_TYPE_, _SIZE_>::resize_array_(_SIZE_ new_size, RESIZE_OPTIONS o
           else  // Normal (non Trav) arrays
             {
               _TYPE_ * prev_ad = span_.data(); // before resize!
-              Span_ prev_span = span_;
+              bool onDevice = isAllocatedOnDevice(*this);
+              if (onDevice)
+                {
+                  // ToDo Kokkos: resize on device is not optimal for the moment as it makes 2 copy D2H and H2D
+                  copyFromDevice(*this); // Force copie sur le host
+                  deleteOnDevice(prev_ad, sz_arr); // Delete current block
+                  set_data_location(DataLocation::HostOnly);
+                }
               mem_->resize(new_size);
               span_ = Span_(*mem_);
               // Possibly set to 0 extended part, since we have a custom Vector allocator not doing it by default (TVAlloc):
-              if (new_size > sz_arr)
+              if (new_size > sz_arr && opt == RESIZE_OPTIONS::COPY_INIT)
+                std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
+              if (onDevice)
                 {
-                  if (get_data_location() == DataLocation::HostOnly)
-                    {
-                      if (opt == RESIZE_OPTIONS::COPY_INIT)
-                        std::fill(span_.begin()+sz_arr, span_.end(), (_TYPE_) 0);
-                    }
-                  else
-                    {
-                      if (prev_ad != span_.begin())
-                        {
-                          // Delete former block before allocating a new one !
-                          ensureDataOnHost(); // Force copie sur le host
-                          deleteOnDevice(prev_ad, sz_arr);
-                          set_data_location(DataLocation::HostOnly);
-                          // Allocate new (bigger) block on device:
-                          allocateOnDevice(*this);
-                          // Copy data (use a dummy TRUSTArray just because of inject_array API)
-                          TRUSTArray dummy_src;
-                          dummy_src.span_ = prev_span;
-                          inject_array(dummy_src, sz_arr);
-                        }
-                    }
+                  // Re-allocate and copy on device:
+                  mapToDevice(*this);
                 }
             }
         }

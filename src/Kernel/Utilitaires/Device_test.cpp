@@ -406,15 +406,19 @@ void self_test()
     assert(a.get_data_location() == DataLocation::HostDevice);
     ptr_host = a.data();
     assert(isAllocatedOnDevice(ptr_host)); // Verifie que le tableau possede une zone memoire sur le device
-    a.resize(2*N);
-    a=2;
-    {
-      DoubleTab b;
-      b.ref_array(a);
-      mapToDevice(b, "b"); // Sur le device
-    }
   }
   assert(!isAllocatedOnDevice(ptr_host)); // Verifie que le tableau ne possede plus une zone memoire sur le device
+  // Test du resize_array_ dans TRUSTArray<_TYPE_, _SIZE_>::resize_array_
+  {
+    DoubleTab a(1);
+    mapToDevice(a);
+    a=1;
+    a.resize(2);
+    a+=1;
+    assert(a.isDataOnDevice());
+    assert(a(0)==2); // Check that after resize data on device is keep
+    assert(a(1)==1); // Check that resize initialize new elements to 0
+  }
   // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
   // le constructeur par copie fait un copyFromDevice du DoubleTab...
   /*

@@ -157,7 +157,8 @@ bool isAllocatedOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab)
 #ifdef TRUST_USE_GPU
   bool isAllocatedOnDevice1 = (tab.get_data_location() != DataLocation::HostOnly);
   bool isAllocatedOnDevice2 = isAllocatedOnDevice(tab.data());
-  if (isAllocatedOnDevice1!=isAllocatedOnDevice2) Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");
+  if (isAllocatedOnDevice1!=isAllocatedOnDevice2)
+    Process::exit("isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab) error! Seems tab.get_data_location() is not up-to-date !");
   return isAllocatedOnDevice2;
 #else
   return false;
