@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,32 +90,36 @@ void Elem_geom_base_32_64<_SIZE_>::creer_faces_elem(Faces_t& les_faces ,
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
 template <typename _SIZE_>
-void Elem_geom_base_32_64<_SIZE_>::calculer_centres_gravite(DoubleTab_t& xp) const
+void Elem_geom_base_32_64<_SIZE_>::calculer_centres_gravite(DoubleTab_t& tab_xp) const
 {
-  const IntTab_t& les_Polys = mon_dom->les_elems();
-  const Domaine_t& le_domaine = mon_dom.valeur();
   int_t nb_elem;
-  if(xp.dimension(0)==0)
+  if(tab_xp.dimension(0)==0)
     {
       nb_elem = mon_dom->nb_elem_tot();
-      xp.resize(nb_elem,dimension);
+      tab_xp.resize(nb_elem,dimension);
     }
   else
-    nb_elem=xp.dimension(0);
+    nb_elem=tab_xp.dimension(0);
 
-  xp = 0.;
-  ToDo_Kokkos("critical");
-  for (int_t num_elem=0; num_elem<nb_elem; num_elem++)
-    {
-      int nb_som_reel=nb_som();
-      while (les_Polys(num_elem,nb_som_reel-1)==-1)  nb_som_reel--;
-      for(int s=0; s<nb_som_reel; s++)
-        {
-          int_t num_som = les_Polys(num_elem,s);
-          for(int i=0; i<dimension; i++)
-            xp(num_elem,i) += le_domaine.coord(num_som,i)/nb_som_reel;
-        }
-    }
+  int nb_som_elem = nb_som();
+  int dim = Objet_U::dimension;
+  CIntTabView les_Polys = mon_dom->les_elems().view_ro();
+  CDoubleTabView coord = mon_dom->coord_sommets().view_ro();
+  DoubleTabView xp = tab_xp.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int_t num_elem)
+  {
+    for (int i = 0; i < dim; i++)
+      xp(num_elem, i) = 0;
+    int nb_som_reel = nb_som_elem;
+    while (les_Polys(num_elem, nb_som_reel - 1) == -1) nb_som_reel--;
+    for (int s = 0; s < nb_som_reel; s++)
+      {
+        int_t num_som = les_Polys(num_elem, s);
+        for (int i = 0; i < dim; i++)
+          xp(num_elem, i) += coord(num_som, i) / nb_som_reel;
+      }
+  });
+  end_gpu_timer(__KERNEL_NAME__);
 }
 
 /*! @brief Sort en erreur.
