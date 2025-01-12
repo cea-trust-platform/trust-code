@@ -876,71 +876,68 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
   CDoubleTabView3 Kij = tab_Kij.view_ro<3>();
   DoubleArrView resuV = static_cast<DoubleVect&>(resu).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(
-                         const int elem)
+                       range_2D({0,0}, {nb_elem_tot,nb_faces_elem}), KOKKOS_LAMBDA(
+                         const int elem, const int facei_loc)
   {
     double P_plus[3],P_moins[3],Q_plus[3],Q_moins[3];
-    for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-      {
-        int facei = elem_faces(elem, facei_loc);
-        calculer_senseur(Kij, transporteV, nb_comp, facei, elem_faces, face_voisins, num_fac_loc, P_plus, P_moins,
-                         Q_plus, Q_moins);
+    int facei = elem_faces(elem, facei_loc);
+    calculer_senseur(Kij, transporteV, nb_comp, facei, elem_faces, face_voisins, num_fac_loc, P_plus, P_moins,
+                     Q_plus, Q_moins);
 
-        for (int facej_loc = 0; facej_loc < nb_faces_elem; facej_loc++)
-          if (facej_loc != facei_loc)
+    for (int facej_loc = 0; facej_loc < nb_faces_elem; facej_loc++)
+      if (facej_loc != facei_loc)
+        {
+          int facej = elem_faces(elem, facej_loc);
+
+          double kij = Kij(elem, facei_loc, facej_loc);
+          double kji = Kij(elem, facej_loc, facei_loc);
+          double dij = Dij(elem, facei_loc, facej_loc, Kij);
+          double lij = kij + dij;
+          double lji = kji + dij;
+          assert(lij >= 0);
+          assert(lji >= 0);
+
+          if (lij <= lji) //facei est amont
             {
-              int facej = elem_faces(elem, facej_loc);
+              int face_amont = facei;
+              int face_aval = facej;
 
-              double kij = Kij(elem, facei_loc, facej_loc);
-              double kji = Kij(elem, facej_loc, facei_loc);
-              double dij = Dij(elem, facei_loc, facej_loc, Kij);
-              double lij = kij + dij;
-              double lji = kji + dij;
-              assert(lij >= 0);
-              assert(lji >= 0);
+              //Si lij==lji, on passe deux foix dans la boucle
+              //d'ou la presence du coefficient 1/2
+              double coeff = 1. * (lij < lji) + 0.5 * (lij == lji);
+              assert(coeff == 1. || coeff == 0.5);
 
-              if (lij <= lji) //facei est amont
+              // Registers for performance:
+              double alpha_beta_amont = alpha_tab[face_amont] * beta[face_amont];
+              double alpha_beta_aval  = alpha_tab[face_aval]  * beta[face_aval];
+
+              for (int dim = 0; dim < nb_comp; dim++)
                 {
-                  int face_amont = facei;
-                  int face_aval = facej;
+                  int ligne = face_aval * nb_comp + dim;
+                  int colonne = face_amont * nb_comp + dim;
 
-                  //Si lij==lji, on passe deux foix dans la boucle
-                  //d'ou la presence du coefficient 1/2
-                  double coeff = 1. * (lij < lji) + 0.5 * (lij == lji);
-                  assert(coeff == 1. || coeff == 0.5);
+                  double delta = transporteV[colonne] - transporteV[ligne];
 
-                  // Registers for performance:
-                  double alpha_beta_amont = alpha_tab[face_amont] * beta[face_amont];
-                  double alpha_beta_aval  = alpha_tab[face_aval]  * beta[face_aval];
+                  //Limiteur de pente
+                  double R;
+                  if (delta >= 0.) R = (Kokkos::fabs(P_plus[dim]) < DMINFLOAT) ? 0. : Q_plus[dim] / P_plus[dim];
+                  else R = (Kokkos::fabs(P_moins[dim]) < DMINFLOAT) ? 0. : Q_moins[dim] / P_moins[dim];
 
-                  for (int dim = 0; dim < nb_comp; dim++)
-                    {
-                      int ligne = face_aval * nb_comp + dim;
-                      int colonne = face_amont * nb_comp + dim;
+                  double limit = limiteur(R);
+                  //double daij = minimum(limit * dij, lji);
+                  double daij = Kokkos::fmin(limit * dij, lji);
+                  assert(daij >= 0);
+                  assert(daij <= lji);
 
-                      double delta = transporteV[colonne] - transporteV[ligne];
+                  double coeffij = alpha_beta_amont * daij * coeff * delta;
+                  double coeffji = alpha_beta_aval  * daij * coeff * delta;
 
-                      //Limiteur de pente
-                      double R;
-                      if (delta >= 0.) R = (Kokkos::fabs(P_plus[dim]) < DMINFLOAT) ? 0. : Q_plus[dim] / P_plus[dim];
-                      else R = (Kokkos::fabs(P_moins[dim]) < DMINFLOAT) ? 0. : Q_moins[dim] / P_moins[dim];
-
-                      double limit = limiteur(R);
-                      //double daij = minimum(limit * dij, lji);
-                      double daij = Kokkos::fmin(limit * dij, lji);
-                      assert(daij >= 0);
-                      assert(daij <= lji);
-
-                      double coeffij = alpha_beta_amont * daij * coeff * delta;
-                      double coeffji = alpha_beta_aval  * daij * coeff * delta;
-
-                      //Calcul de resu
-                      Kokkos::atomic_add(&resuV[colonne], + coeffij);
-                      Kokkos::atomic_add(&resuV[ligne],   - coeffji);
-                    }
+                  //Calcul de resu
+                  Kokkos::atomic_add(&resuV[colonne], + coeffij);
+                  Kokkos::atomic_add(&resuV[ligne],   - coeffji);
                 }
             }
-      }
+        }
   });
   end_gpu_timer(__KERNEL_NAME__);
   return resu;
