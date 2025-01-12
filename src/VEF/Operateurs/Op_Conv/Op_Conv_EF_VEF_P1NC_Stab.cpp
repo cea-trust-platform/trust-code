@@ -167,9 +167,7 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
 static KOKKOS_INLINE_FUNCTION double maximum(const double x,
                                              const double y)
 {
-  if(x<y)
-    return y;
-  return x;
+  return x<y ? y : x;
 }
 
 static KOKKOS_INLINE_FUNCTION double maximum(const double x,
@@ -182,9 +180,7 @@ static KOKKOS_INLINE_FUNCTION double maximum(const double x,
 static KOKKOS_INLINE_FUNCTION double minimum(const double x,
                                              const double y)
 {
-  if(x>y)
-    return y;
-  return x;
+  return x>y ? y : x;
 }
 
 static KOKKOS_INLINE_FUNCTION double Dij(int elem,
@@ -209,8 +205,7 @@ static inline double Dij(int elem,
 
 static KOKKOS_INLINE_FUNCTION double limiteur(double r)
 {
-  if(r<=0) return 0.;
-  return maximum(minimum(2,r),minimum(1,2*r));//SuperBee
+  return r<=0 ? 0 : Kokkos::fmax(Kokkos::fmin(2,r),Kokkos::fmin(1,2*r));//SuperBee
 }
 
 KOKKOS_INLINE_FUNCTION double formule_Id_2D(int n)
@@ -914,6 +909,10 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
                   double coeff = 1. * (lij < lji) + 0.5 * (lij == lji);
                   assert(coeff == 1. || coeff == 0.5);
 
+                  // Registers for performance:
+                  double alpha_beta_amont = alpha_tab[face_amont] * beta[face_amont];
+                  double alpha_beta_aval  = alpha_tab[face_aval]  * beta[face_aval];
+
                   for (int dim = 0; dim < nb_comp; dim++)
                     {
                       int ligne = face_aval * nb_comp + dim;
@@ -923,24 +922,21 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& tab_Kij, const 
 
                       //Limiteur de pente
                       double R;
-                      if (delta >= 0.) R = (std::fabs(P_plus[dim]) < DMINFLOAT) ? 0. : Q_plus[dim] / P_plus[dim];
-                      else R = (std::fabs(P_moins[dim]) < DMINFLOAT) ? 0. : Q_moins[dim] / P_moins[dim];
-
+                      if (delta >= 0.) R = (Kokkos::fabs(P_plus[dim]) < DMINFLOAT) ? 0. : Q_plus[dim] / P_plus[dim];
+                      else R = (Kokkos::fabs(P_moins[dim]) < DMINFLOAT) ? 0. : Q_moins[dim] / P_moins[dim];
 
                       double limit = limiteur(R);
-                      // limiteurs_(facei,dim)+=limit;
-                      // limiteurs_(facej,dim)+=limit;
-
-                      double daij = minimum(limit * dij, lji);
+                      //double daij = minimum(limit * dij, lji);
+                      double daij = Kokkos::fmin(limit * dij, lji);
                       assert(daij >= 0);
                       assert(daij <= lji);
 
-                      double coeffij = alpha_tab[face_amont] * beta[face_amont] * daij;
-                      double coeffji = alpha_tab[face_aval] * beta[face_aval] * daij;
+                      double coeffij = alpha_beta_amont * daij * coeff * delta;
+                      double coeffji = alpha_beta_aval  * daij * coeff * delta;
 
                       //Calcul de resu
-                      Kokkos::atomic_add(&resuV[colonne], + coeffij * coeff * delta);
-                      Kokkos::atomic_add(&resuV[ligne], - coeffji * coeff * delta);
+                      Kokkos::atomic_add(&resuV[colonne], + coeffij);
+                      Kokkos::atomic_add(&resuV[ligne],   - coeffji);
                     }
                 }
             }
