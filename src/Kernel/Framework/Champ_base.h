@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,8 +85,8 @@ public:
   virtual double valeur_a_compo(const DoubleVect& position, int ncomp) const;
   virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const;
 
+  virtual DoubleTab& valeur_aux_centres_de_gravite(const Domaine&, DoubleTab& valeurs) const;
   virtual DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const;
-  virtual DoubleTab& valeur_aux_centres_de_gravite(const DoubleTab& positions, DoubleTab& valeurs) const;
   virtual DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
   virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
   virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;

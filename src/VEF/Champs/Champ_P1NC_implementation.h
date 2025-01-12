@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,6 +70,8 @@ public:
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
   // Retourne la valeur de la composante ncomp du champ interpole aux coordonnees position de l'element le_poly
   double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
+  // Retourne dans valeurs les valeurs du champ interpolees aux centres de gravite
+  DoubleTab& valeur_aux_centres_de_gravite(const Domaine&, DoubleTab& valeurs) const;
   // Retourne dans valeurs les valeurs du champ interpolees aux coordonnees positions des elements les_polys
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   // Retourne les valeurs de la composante ncomp du champ interpolees aux coordonnees positions des elements les_polys

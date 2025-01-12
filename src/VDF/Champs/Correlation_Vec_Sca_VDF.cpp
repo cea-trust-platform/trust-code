@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,27 +34,25 @@ void Correlation_Vec_Sca_VDF::associer_champ_Sca(const Champ_base& le_champ_Sca)
 
 void Correlation_Vec_Sca_VDF::mettre_a_jour(double tps)
 {
-  int nb_elem=le_dom_VF->domaine().nb_elem();
-
-  const DoubleTab& centres_de_gravites = le_dom_VF->xp();
+  const Domaine& dom = le_dom_VF->domaine();
+  int nb_elem=dom.nb_elem();
 
   DoubleTab& correlation = valeurs();
-  int elem, ncom;
 
   // Interpolation du champ scalaire de la correlation au
   // centre des mailles.
   DoubleTab valeurs_Sca(nb_elem, mon_champ_Sca_->nb_comp());
-  mon_champ_Sca_->valeur_aux_centres_de_gravite(centres_de_gravites, valeurs_Sca);
+  mon_champ_Sca_->valeur_aux_centres_de_gravite(dom, valeurs_Sca);
 
   // Interpolation du champ vecteur de la correlation au
   // centre des mailles.
   DoubleTab valeurs_Vec(nb_elem, mon_champ_Vec_->nb_comp());
-  mon_champ_Vec_->valeur_aux_centres_de_gravite(centres_de_gravites, valeurs_Vec);
+  mon_champ_Vec_->valeur_aux_centres_de_gravite(dom, valeurs_Vec);
 
-  for(elem=0; elem<nb_elem; elem++)
+  for(int elem=0; elem<nb_elem; elem++)
     {
       correlation(elem,0) = valeurs_Sca(elem,0);
-      for (ncom=0; ncom<dimension; ncom++)
+      for (int ncom=0; ncom<dimension; ncom++)
         correlation(elem,ncom+1) = valeurs_Vec(elem,ncom);
     }
 

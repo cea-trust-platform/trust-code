@@ -1371,6 +1371,64 @@ valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
   return val;
 }
 
+/**
+* @brief Computes values at the centers of gravity for a P1NC field
+        *
+        * This method calculates the values of a P1NC field at the centers of gravity
+        * of the mesh elements. For each component of the field, it averages the values
+        * from the faces of each polygon.
+*
+* @param[in,out] val DoubleTab that will store the computed values.
+*                    Must have 1 or 2 dimensions.
+*                    If 1D, it will be resized to (dimension_tot(0), 1).
+*
+* @return Reference to the modified val DoubleTab containing computed values
+*
+* @throws Process::exit() if val has more than 2 dimensions
+*
+* @note Implementation uses GPU parallelization through Kokkos
+* @note For each polygon, the value is computed as average of D+1 face values,
+        *       where D is the spatial dimension
+*/
+DoubleTab& Champ_P1NC_implementation::valeur_aux_centres_de_gravite(const Domaine& dom, DoubleTab& val) const
+{
+  const Champ_base& cha = le_champ();
+  int nb_compo_ = cha.nb_comp();
+  const DoubleTab& ch = cha.valeurs();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
+  if (domaine_VEF.domaine() != dom) Process::exit("Error, you must use valeur_aux_centres_de_gravite() on the whole discretized mesh.");
+  if (val.nb_dim() > 2)
+    {
+      Cerr << "Erreur TRUST dans Champ_P1NC_implementation::valeur_aux_elems()\n";
+      Cerr << "Le DoubleTab val a plus de 2 entrees\n";
+      Process::exit();
+    }
+
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (val.nb_dim() == 1) val.resize(val.dimension_tot(0), 1);
+
+  int D = Objet_U::dimension;
+  int nb_elem = val.dimension(0);
+  CDoubleTabView ch_v = ch.view_ro();
+  CIntTabView elem_faces_v = domaine_VEF.elem_faces().view_ro();
+  DoubleTabView val_v = val.view_rw();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int le_poly)
+  {
+    for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+      {
+        double sum = 0;
+        for (int i = 0; i < D + 1; i++)
+          {
+            int face = elem_faces_v(le_poly, i);
+            sum += ch_v(face, ncomp);
+          }
+        val_v(le_poly, ncomp) = sum / (D + 1);
+      }
+  });
+  end_gpu_timer(__KERNEL_NAME__);
+  return val;
+}
 
 DoubleTab& Champ_P1NC_implementation::
 valeur_aux_elems(const DoubleTab& positions,
