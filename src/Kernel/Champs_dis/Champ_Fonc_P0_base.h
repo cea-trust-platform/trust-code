@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,6 +41,11 @@ public:
   inline double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override
   {
     return Champ_implementation_P0::valeur_a_elem_compo(position, poly, ncomp);
+  }
+
+  inline DoubleTab& valeur_aux_centres_de_gravite(const Domaine& dom, DoubleTab& tab_valeurs) const override
+  {
+    return Champ_implementation_P0::valeur_aux_centres_de_gravite(dom, tab_valeurs);
   }
 
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override

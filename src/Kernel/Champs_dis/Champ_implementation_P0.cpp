@@ -57,6 +57,39 @@ double Champ_implementation_P0::valeur_a_elem_compo(const DoubleVect& position, 
   return result;
 }
 
+/**
+ * @brief Computes field values at centers of gravity
+ * @param[in] dom Domain for computation (must match geometric domain)
+ * @param[in,out] tab_result Output table for computed values
+ * @return Reference to modified tab_result
+ * @throws Process::exit() if domain mismatch
+ */
+DoubleTab& Champ_implementation_P0::valeur_aux_centres_de_gravite(const Domaine& dom, DoubleTab& tab_result) const
+{
+  if (get_domaine_geom() != dom) Process::exit("Error, you must use valeur_aux_centres_de_gravite() on the whole discretized mesh.");
+  int nb_polys = tab_result.dimension(0);
+  if (nb_polys == 0)
+    return tab_result;
+
+  const DoubleTab& tab_values = le_champ().valeurs();
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (tab_result.nb_dim() == 1) tab_result.resize(nb_polys, 1);
+  int nb_components = le_champ().nb_comp();
+  int nb_dim = tab_values.nb_dim();
+  int line_size = tab_result.line_size();
+  assert(tab_values.line_size() == nb_components);
+  assert(tab_values.line_size() == nb_components || nb_components == 1);
+  CDoubleTabView values = tab_values.view_ro();
+  DoubleTabView result = tab_result.view_wo();
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {nb_polys, line_size}), KOKKOS_LAMBDA(const int i, const int j)
+  {
+    result(i, j) = nb_dim == 1 ? values(i, 0) : values(i, (line_size == nb_components) * j); // Some post-processed fields can have nb_dim() == 1
+  });
+  end_gpu_timer(__KERNEL_NAME__);
+  return tab_result;
+}
+
 template<typename ExecSpace>
 void valeur_aux_elems_kernel(const DoubleTab& tab_values, const IntVect& tab_polys, DoubleTab& tab_result, int nb_components)
 {

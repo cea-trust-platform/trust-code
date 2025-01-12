@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@ public:
   ~Champ_implementation_P0() override { }
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
+  DoubleTab& valeur_aux_centres_de_gravite(const Domaine&, DoubleTab& valeurs) const;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;

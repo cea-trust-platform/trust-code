@@ -136,6 +136,7 @@ double Champ_base::valeur_a_elem_compo(const DoubleVect&, int ,int ) const
 // peut etre surchargee par le champ dicretise pour une implementation beaucoup plus rapide
 DoubleTab& Champ_base::valeur_aux_centres_de_gravite(const Domaine& dom, DoubleTab& les_valeurs) const
 {
+  //Cerr << que_suis_je() << finl;
   ToDo_Kokkos("Implement valeur_aux_centres_de_gravite for the discretized field");
   int nb_elem = les_valeurs.dimension(0);
   DoubleTrav positions(nb_elem, dimension);
