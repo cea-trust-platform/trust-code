@@ -520,9 +520,8 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
       double sum=0;
       double volume=0;
-      const DoubleVect& volumes = zvf.volumes();
       //int volumes_size_tot = mp_sum(volumes.size_array());
-      if (volumes.size_array()<zvf.nb_elem())
+      if (zvf.volumes().size_array()<zvf.nb_elem())
         {
           Cerr << "The mesh volumes of the domain " << zvf.domaine().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
@@ -532,19 +531,21 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // au ELEM
       if (get_localisation()==Entity::ELEMENT)
         {
-          ToDo_Kokkos("Code but check test!");
           int nb_elem = zvf.nb_elem();
-          for (int i=0; i<nb_elem; i++)
-            {
-              sum+=val_source(i)*volumes(i);
-              volume+=volumes(i);
-            }
+          CDoubleArrView volumes = zvf.volumes().view_ro();
+          CDoubleArrView val = val_source.view_ro();
+          Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int i, double & sum_tmp, double & volume_tmp)
+          {
+            double v = volumes(i);
+            sum_tmp += val(i) * v;
+            volume_tmp += v;
+          }, sum, volume);
+          end_gpu_timer(__KERNEL_NAME__);
         }
 
       // au FACE
       else if (get_localisation()==Entity::FACE)
         {
-          ToDo_Kokkos("Code but check test!");
           // Calcul des volumes de controle a chaque face
           int nb_face = zvf.nb_faces();
           if (!volume_controle_.size())
@@ -553,16 +554,19 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
               volume_controle_=0;
               int nb_faces_par_elem = zvf.elem_faces().dimension_tot(1);
               int nb_elem = zvf.nb_elem();
-              for (int i=0; i<nb_elem; i++)
-                for (int j=0; j<nb_faces_par_elem; j++)
-                  {
-                    int face=zvf.elem_faces(i,j);
-                    volume_controle_(face)+=volumes(i)/nb_faces_par_elem;
-                  }
+              CIntTabView elem_faces = zvf.elem_faces().view_ro();
+              CDoubleArrView volumes = zvf.volumes().view_ro();
+              DoubleArrView volume_controle = volume_controle_.view_rw();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {nb_elem, nb_faces_par_elem}), KOKKOS_LAMBDA(const int i, const int j)
+              {
+                int face = elem_faces(i,j);
+                Kokkos::atomic_add(&volume_controle(face), volumes(i)/nb_faces_par_elem);
+              });
+              end_gpu_timer(__KERNEL_NAME__);
             }
-          ToDo_Kokkos("Code but check test!");
           if (composante_VDF>=0)
             {
+              ToDo_Kokkos("Code but check test!");
               //const IntVect& ori = zvf.orientation();
               int k=0;
               for (int i=0; i<nb_face; i++)
@@ -598,6 +602,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             {
               volume_controle_.resize(nb_som);
               volume_controle_=0;
+              const DoubleVect& volumes = zvf.volumes();
               int nb_som_par_elem = zvf.domaine().les_elems().dimension_tot(1);
               int nb_elem = zvf.nb_elem();
               for (int i=0; i<nb_elem; i++)
