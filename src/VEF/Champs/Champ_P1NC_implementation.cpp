@@ -1412,7 +1412,8 @@ DoubleTab& Champ_P1NC_implementation::valeur_aux_centres_de_gravite(const Domain
   int nb_elem = val.dimension(0);
   CDoubleTabView ch_v = ch.view_ro();
   CIntTabView elem_faces_v = domaine_VEF.elem_faces().view_ro();
-  DoubleTabView val_v = val.view_rw();
+  DoubleTabView val_v = val.view_wo();
+  // Warning collapsing here introduce an overhead if nb_compo_ = 1 si ideally 2 kernels should we written according to nb_compo_!
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int le_poly)
   {
     for(int ncomp=0; ncomp<nb_compo_; ncomp++)
@@ -1462,7 +1463,8 @@ valeur_aux_elems(const DoubleTab& positions,
   CIntTabView elem_faces_v = domaine_VEF.elem_faces().view_ro();
   CDoubleTabView positions_v = positions.view_ro();
   CIntArrView les_polys_v = les_polys.view_ro();
-  DoubleTabView val_v = val.view_rw();
+  DoubleTabView val_v = val.view_wo();
+  // Warning collapsing here introduce an overhead if nb_compo_ = 1 si ideally 2 kernels should we written according to nb_compo_!
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),les_polys.size(), KOKKOS_LAMBDA(
                          const int rang_poly)
   {
