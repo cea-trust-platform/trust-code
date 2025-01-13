@@ -297,7 +297,14 @@ struct Matrice_Morse_View
   {
     if (symetrique_==2 && i!=j)
       return; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
-    else if ((symetrique_==1) && ((j-i)<0)) Kokkos::kokkos_swap(i,j);
+    else if ((symetrique_==1) && ((j-i)<0))
+      {
+        // std::swap(i,j) refused by HIP:  reference to __host__ function 'swap<int>' in __host__ __device__ function
+        // Kokkos::kokkos_swap(i,j); refused by old Kokkos 3.7 (C++14)
+        int k = j;
+        j = i;
+        i = k;
+      }
     int k1=tab1_v(i)-1;
     int k2=tab1_v(i+1)-1;
     /* ToDo Kokkos for faster access:
