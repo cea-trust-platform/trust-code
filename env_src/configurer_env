@@ -609,9 +609,17 @@ fi
 #######################
 if [ "$TRUST_STDCPP" = c++14 ]
 then
-   if [ "$TRUST_USE_KOKKOS_SIMD" = 1 ] || [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ] || [ "$TRUST_USE_CUDA" = 1 ] || [ "$TRUST_USE_ROCM" = 1 ]
+   if [ "$TRUST_USE_KOKKOS_SIMD" = 1 ] || [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ] || [ "$TRUST_USE_GPU" = 1 ]
    then
       echo "You need a C++17 compiler to use Kokkos SIMD or OpenMP or CUDA or ROCM/HIP." && exit -1
+   fi
+elif [ "$TRUST_STDCPP" = c++17 ] && [ "$TRUST_VERSION_GNU" != "" ] && [ "`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver<820) print 0}'`" = 0 ]
+then
+   if [ "$TRUST_USE_KOKKOS_OPENMP" = 1 ] || [ "$TRUST_USE_GPU" = 1 ]
+   then
+      echo "You need a GNU compiler higher than 8.2.0 to use Kokkos." && exit -1
+   else
+      echo "C++17 can't be used with your GNU compiler for Kokkos. Please run ./configure -std=c++14" && exit -1
    fi
 fi
 
