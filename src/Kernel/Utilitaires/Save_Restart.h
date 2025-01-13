@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,6 +42,10 @@ public:
   bool is_restart_in_progress() const { return restart_in_progress_; }
   void set_restart_in_progress(const bool res) { restart_in_progress_ = res; }
 
+  int is_sauvegarde_simple() const { return simple_restart_; }
+  const Nom& restart_filename() const { return restart_file_name_; }
+  const Nom& restart_format() const { return restart_format_; }
+
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
   int sauver() const;
   void finir();
@@ -51,24 +55,27 @@ private:
   void lire_reprise(Entree& is, Motcle& motlu) ;
   void lire_sauvegarde(Entree& is, Motcle& motlu) ;
 
+  void setTinitFromLastTime(double last_time);
+  void prepare_PDI_restart(int resume_last_time);
+  void checkVersion(Nom nomfic);
+
   OBS_PTR(Probleme_base) pb_base_;
 
   mutable OWN_PTR(Sortie_Fichier_base) ficsauv_;
-  mutable Sortie_Brute* osauv_hdf_ = nullptr;
 
   Nom restart_file_name_;  // Name of the file for save/restart
   Nom restart_format_;     // Format for the save restart
   bool restart_done_ = false;         // Has a restart been done?
-  bool simple_restart_ = false;       // Restart file name
+  int simple_restart_ = 0;       // Do we only save the last time step (simple restart) or do we save them all ?
   int restart_version_ = 155;         // Version number, for example 155 (1.5.5) -> used to manage old restart files
   bool restart_in_progress_ = false;  //true variable only during the time step during which a resumption of computation is carried out
+  mutable bool ficsauv_created_ = false;      // flag to know if the checkpoint file has been created (useful for PDI)
 
   static long int File_size_;        // Espace disque pris par les sauvegarde XYZ
   static int Bad_allocate_;        // 1 si allocation reussi, 0 sinon
   static int Nb_pb_total_;        // Nombre total de probleme
   static int Num_pb_;                // numero du probleme
   mutable Nom error_;                // Erreur d'allocation
-
 
 };
 

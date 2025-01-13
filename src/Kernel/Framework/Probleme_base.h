@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,9 +72,9 @@ public:
   Equation_base& equation(const Nom&);
   int sauvegarder(Sortie& ) const override;
   int reprendre(Entree& ) override;
-  inline int is_sauvegarde_simple() const { return simple_restart_; }
-  inline const Nom& restart_filename() const { return restart_file_name_; }
-  inline const Nom& restart_format() const { return restart_format_; }
+  inline int is_sauvegarde_simple() const { return save_restart_.is_sauvegarde_simple(); }
+  inline const Nom& restart_filename() const { return save_restart_.restart_filename(); }
+  inline const Nom& restart_format() const { return save_restart_.restart_format(); }
   void checkVersion(Nom nomfic);
 
   virtual const Equation_base& get_equation_by_name(const Nom&) const;
