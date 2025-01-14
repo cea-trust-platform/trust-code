@@ -439,7 +439,7 @@ add_test_case_from_validation()
             cd $FICHE_ROOT
             if ls $FICHE_ROOT/src/*.prm 1>/dev/null 2>&1;
             then
-               prm=`ls $FICHE_ROOT/src/*prm`
+               prm=`ls $FICHE_ROOT/src/*.prm`
             else
                prm=`ls $FICHE_ROOT/*.ipynb`
                [ ! -d  $FICHE_ROOT/src ] && echo "Error: $prm is an orphan notebook (no src folder). Please delete it or finalize your validation form" && exit -1

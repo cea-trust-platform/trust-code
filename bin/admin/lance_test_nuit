@@ -1294,14 +1294,14 @@ echo "###############################################"
         ########################
         # sanity checks        #
         ########################
-        if [ "`git grep 'python3\.' | grep -v lance_test_nuit`" != "" ] 
+        if [ "`git grep 'python3\.' | grep -v lance_test_nuit`" != "" ] && [ $vue = tuleap/Livraison ]
         then
            echo "You should not use python3.x in your scripts for portability" > tmp_.log
             git grep 'python3\.' >> tmp_.log
             cat tmp_.log | mail_ -s\"[lance_test_nuit] git grep python3.X failed in $vue\" $TRUST_MAIL
         fi
 
-        if [ "`find . -type l -lname '/*' | grep -v '/build/' | grep -v '/bin/baltik/templates/Test_Baltik/' | grep -v equation_convection_diffusion`" != "" ] 
+        if [ "`find . -type l -lname '/*' | grep -v '/build/' | grep -v '/bin/baltik/templates/Test_Baltik/' | grep -v equation_convection_diffusion`" != "" ]  && [ $vue = tuleap/Livraison ]
         then
            echo "You should not create absolute links. Use relative links instead to be able to relocate TRUST install" | mail_ -s\"[lance_test_nuit] Forbiden absolute links created in $vue\" $TRUST_MAIL
         fi
