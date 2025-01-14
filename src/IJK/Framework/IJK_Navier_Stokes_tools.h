@@ -23,7 +23,7 @@
 #include <Probleme_base.h>
 #include <Boundary_Conditions_Thermique.h>
 
-#define select(a,x,y,z) ((a==0)?(x):((a==1)?(y):(z)))
+#define select_dir(a,x,y,z) ((a==0)?(x):((a==1)?(y):(z)))
 
 double compute_fractionnal_timestep_rk3(const double dt_tot, int step);
 
