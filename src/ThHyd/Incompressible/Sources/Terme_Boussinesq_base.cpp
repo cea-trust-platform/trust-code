@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Motcle.h>
 #include <algorithm>
 #include <Param.h>
+#include <Pb_Multiphase.h>
 
 Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
 // XD boussinesq_temperature source_base boussinesq_temperature -1 Class to describe a source term that couples the movement quantity equation and energy equation with the Boussinesq hypothesis.
@@ -52,6 +53,12 @@ void Terme_Boussinesq_base::set_param(Param& param)
 void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
 {
   int ok=0;
+  if (sub_type(Pb_Multiphase, pb))
+    {
+      Cerr << "Error: The boussinesq source term can't be defined for a problem of kind " << pb.que_suis_je() << finl;
+      Cerr << "       Use source_qdm if you want to add this source term!" << finl;
+      Process::exit();
+    }
   int n_eq=pb.nombre_d_equations();
   for (int eq=0; eq<n_eq; eq++)
     {
