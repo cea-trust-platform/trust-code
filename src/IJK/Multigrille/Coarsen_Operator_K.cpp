@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Coarsen_Operator_K.h>
-#include <IJK_Grid_Geometry.h>
+#include <Domaine_IJK.h>
 #include <EFichier.h>
 #include <communications.h>
 #include <TRUSTTab.h>

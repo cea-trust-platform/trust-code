@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,19 +16,19 @@
 #ifndef VDF_to_IJK_included
 #define VDF_to_IJK_included
 class Domaine_VF;
-class IJK_Splitting;
+class Domaine_IJK;
 
 #include <IJK_Field_forward.h>
 #include <TRUSTTabs_forward.h>
 #include <Static_Int_Lists.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 
 // This class provides methods to convert a vdf field to an ijk field and reversed
 class VDF_to_IJK
 {
 public:
-  void initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& splitting,
-                  IJK_Splitting::Localisation localisation,
+  void initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& splitting,
+                  Domaine_IJK::Localisation localisation,
                   int direction_for_x,
                   int direction_for_y,
                   int direction_for_z);

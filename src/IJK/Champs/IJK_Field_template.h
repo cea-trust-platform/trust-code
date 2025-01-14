@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 
 #include <IJK_Shear_Periodic_helpler.h>
 #include <communications.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 #include <stat_counters.h>
 #include <Statistiques.h>
 #include <TRUST_Ref.h>
@@ -51,11 +51,11 @@ protected:
 public:
   IJK_Field_template() :
     IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
-    localisation_(IJK_Splitting::Localisation::ELEM)
+    localisation_(Domaine_IJK::Localisation::ELEM)
   { }
-  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0);
-  const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
-  IJK_Splitting::Localisation get_localisation() const { return localisation_; }
+  void allocate(const Domaine_IJK&, Domaine_IJK::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0);
+  const Domaine_IJK& get_domaine() const { return domaine_ref_.valeur(); }
+  Domaine_IJK::Localisation get_localisation() const { return localisation_; }
   void echange_espace_virtuel(int ghost);
   //_TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_j, const int send_k);
   _TYPE_ interpolation_for_shear_periodicity_IJK_Field(const int send_j, const int send_k);
@@ -67,8 +67,8 @@ public:
   inline const IJK_Shear_Periodic_helpler& get_shear_BC_helpler() const { return shear_BC_helpler_; }
 
 protected:
-  OBS_PTR(IJK_Splitting) splitting_ref_;
-  IJK_Splitting::Localisation localisation_;
+  OBS_PTR(Domaine_IJK) domaine_ref_;
+  Domaine_IJK::Localisation localisation_;
   IJK_Shear_Periodic_helpler shear_BC_helpler_;
 
   void exchange_data(int pe_imin_, /* processor to send to */

@@ -23,14 +23,14 @@
 #include <Equation_base.h>
 #include <TRUSTArray.h>
 
-class IJK_Splitting;
+class Domaine_IJK;
 class Multigrille_Adrien : public Multigrille_base
 {
   Declare_instanciable_sans_constructeur(Multigrille_Adrien);
 public:
   Multigrille_Adrien();
   int completer(const Equation_base& eq);
-  void initialize(const IJK_Splitting&);
+  void initialize(const Domaine_IJK&);
   int nb_grid_levels() const override { return coarsen_operators_.size() + 1; }
 
   void set_rho(const DoubleVect& rho);
@@ -73,7 +73,7 @@ protected:
   int needed_kshift_for_jacobi(int level) const override;
 
   template <typename _TYPE_, typename _TYPE_ARRAY_>
-  void completer_template(const IJK_Splitting&);
+  void completer_template(const Domaine_IJK&);
 
   template <typename _TYPE_, typename _TYPE_ARRAY_>
   void setup_coarse_grid(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& fine, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& coarse) const;
@@ -83,7 +83,7 @@ protected:
   template <typename _TYPE_FUNC_, typename _TYPE_, typename _TYPE_ARRAY_>
   void set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& rho, bool set_coarse_matrix, bool use_coeffs_from_double);
 
-  void completer_double_for_residue(const IJK_Splitting& splitting);
+  void completer_double_for_residue(const Domaine_IJK& splitting);
 
   inline void jacobi_residu(IJK_Field_float& x,
                             const IJK_Field_float *secmem, /* if null pointer, take secmem = 0 (to compute A*x) */

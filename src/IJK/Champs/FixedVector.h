@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 #ifndef FixedVector_included
 #define FixedVector_included
 #include <assert.h>
-class IJK_Splitting;
+class Domaine_IJK;
 // Generic vector of fixed size
 template<class T, int N>
 class FixedVector
@@ -44,9 +44,9 @@ public:
     for (int i = 0; i < N; i++)
       data_[i].echange_espace_virtuel(data_[i].ghost());
   }
-  const IJK_Splitting& get_splitting() const
+  const Domaine_IJK& get_domaine() const
   {
-    return data_[0].get_splitting();
+    return data_[0].get_domaine();
   }
 #endif
 protected:

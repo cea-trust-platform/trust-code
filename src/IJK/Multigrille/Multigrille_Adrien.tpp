@@ -26,9 +26,9 @@ template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_Adrien::prepare_secmem_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x) const
 {
   double moyenne = somme_ijk(x);
-  double nb_elem_tot = (double) x.get_splitting().get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_I)
-                       * (double) x.get_splitting().get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_J)
-                       * (double) x.get_splitting().get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_K);
+  double nb_elem_tot = (double) x.get_domaine().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_I)
+                       * (double) x.get_domaine().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_J)
+                       * (double) x.get_domaine().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_K);
   double val = moyenne / nb_elem_tot;
   const int m = x.data().size_array();
   for (int i = 0; i < m; i++)
@@ -38,12 +38,6 @@ void Multigrille_Adrien::prepare_secmem_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_Adrien::dump_lata_(const Nom& field, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& data, int tstep) const
 {
-  /* const IJK_Grid_Geometry & g = grids_data_float_[0].get_grid_geometry();
-  data.dumplata(field,
-   g.get_node_coordinates(0),
-   g.get_node_coordinates(1),
-   g.get_node_coordinates(2),
-   tstep); */
   Process::exit();
 }
 
@@ -274,7 +268,7 @@ void Multigrille_Adrien::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_
 
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Multigrille_Adrien::completer_template(const IJK_Splitting& split)
+void Multigrille_Adrien::completer_template(const Domaine_IJK& split)
 {
   Cerr << "Multigrille_Adrien::completer_template" << finl;
 
@@ -315,7 +309,7 @@ void Multigrille_Adrien::alloc_field_( IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& 
   int n = 0;
   if (with_additional_layers)
     n = ghost_size_;
-  field.allocate(get_grid_data<_TYPE_>(level).get_splitting(), IJK_Splitting::ELEM, ghost_size_, n);
+  field.allocate(get_grid_data<_TYPE_>(level).get_domaine(), Domaine_IJK::ELEM, ghost_size_, n);
 }
 
 

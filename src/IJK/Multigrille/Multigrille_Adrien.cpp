@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ Entree& Multigrille_Adrien::readOn(Entree& is)
     {
       const IJK_discretization& ijkdis = ref_cast(IJK_discretization,
                                                   Interprete_bloc::objet_global(ijkdis_name));
-      const IJK_Splitting& split = ijkdis.get_IJK_splitting();
+      const Domaine_IJK& split = ijkdis.get_IJK_splitting();
 
       initialize(split);
     }
@@ -74,14 +74,14 @@ int Multigrille_Adrien::completer(const Equation_base& eq)
   const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
   const IJK_discretization& ijkdis = ref_cast(IJK_discretization,
                                               Interprete_bloc::objet_global(ijkdis_name));
-  const IJK_Splitting& split = ijkdis.get_IJK_splitting();
+  const Domaine_IJK& split = ijkdis.get_IJK_splitting();
 
   initialize(split);
 
   return 1;
 }
 
-void Multigrille_Adrien::initialize(const IJK_Splitting& split)
+void Multigrille_Adrien::initialize(const Domaine_IJK& split)
 {
   if (solver_precision_ == precision_double_)
     completer_template<double, ArrOfDouble>(split);
@@ -96,11 +96,11 @@ void Multigrille_Adrien::initialize(const IJK_Splitting& split)
   IJK_Field_float rho;
   if (IJK_Shear_Periodic_helpler::defilement_==1)
     {
-      rho.allocate(split, IJK_Splitting::ELEM, 0, 0 ,1, false, 2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
+      rho.allocate(split, Domaine_IJK::ELEM, 0, 0 ,1, false, 2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
     }
   else
     {
-      rho.allocate(split, IJK_Splitting::ELEM, 0);
+      rho.allocate(split, Domaine_IJK::ELEM, 0);
     }
 
   rho.data() = 1.;
@@ -137,7 +137,7 @@ int Multigrille_Adrien::needed_kshift_for_jacobi(int level) const
   return nsweeps_jacobi_residu(level);
 }
 
-void Multigrille_Adrien::completer_double_for_residue(const IJK_Splitting& splitting)
+void Multigrille_Adrien::completer_double_for_residue(const Domaine_IJK& splitting)
 {
   Cerr << "Multigrille_Adrien::completer_double_for_residue" << finl;
   grids_data_double_.dimensionner(1);

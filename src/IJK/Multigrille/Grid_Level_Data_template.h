@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define Grid_Level_Data_template_included
 
 #include <type_traits>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 #include <TRUST_Vector.h>
 #include <IJK_Field.h>
 
@@ -38,11 +38,10 @@ protected:
 
 public:
   Grid_Level_Data_template();
-  void initialize(const IJK_Splitting&, int ghost, int additional_k_layers);
+  void initialize(const Domaine_IJK&, int ghost, int additional_k_layers);
 
   int get_ghost_size() const { return ghost_size_; }
-  const IJK_Splitting& get_splitting() const { return grid_splitting_; }
-  const IJK_Grid_Geometry& get_grid_geometry() const { return grid_splitting_.get_grid_geometry(); }
+  const Domaine_IJK& get_domaine() const { return domaine_ijk_; }
   // Compute the ijk_faces_coefficients from ijk_rho_
   void compute_faces_coefficients_from_rho();
   void compute_faces_coefficients_from_inv_rho();
@@ -64,8 +63,8 @@ protected:
   void compute_faces_coefficients_from_rho_cst_i_cst_j_var_k();
   void compute_faces_coefficients_from_inv_rho_cst_i_cst_j_var_k();
 
-  //IJK_Grid_Geometry grid_geometry_;
-  IJK_Splitting grid_splitting_;
+  //Domaine_IJK grid_geometry_;
+  Domaine_IJK domaine_ijk_;
   int ghost_size_;
   bool perio_k_ = false;
 

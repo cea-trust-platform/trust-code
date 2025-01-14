@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #define IJK_Test_Multigrille_included
 #include <Interprete.h>
 #include <Multigrille_Adrien.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 #include <IJK_Field.h>
 #include <IJK_Lata_writer.h>
 #include <IJK_Navier_Stokes_tools.h>
@@ -30,7 +30,7 @@ class IJK_Test_Multigrille : public Interprete
 public:
   Entree& interpreter(Entree&) override;
 
-  IJK_Splitting splitting_;
+  Domaine_IJK splitting_;
   IJK_Field_double rho_;
   IJK_Field_double rhs_;
   IJK_Field_double resu_;

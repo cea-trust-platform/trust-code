@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 #ifndef Coarsen_Operator_Uniform_TPP_H
 #define Coarsen_Operator_Uniform_TPP_H
 
-#include <IJK_Grid_Geometry.h>
+#include <Domaine_IJK.h>
 #include <stat_counters.h>
 
 template<typename _TYPE_>
@@ -23,7 +23,7 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
                                                      Grid_Level_Data_template<_TYPE_>& coarse,
                                                      int additional_k_layers)
 {
-  const IJK_Grid_Geometry& src_grid_geom = fine.get_grid_geometry();
+  const Domaine_IJK& src_grid_geom = fine.get_domaine();
   VECT(ArrOfDouble) coarse_delta(3);
   ArrOfInt nlocal(3);
 
@@ -67,7 +67,7 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
         }
     }
 
-  IJK_Grid_Geometry grid_geom;
+  Domaine_IJK grid_geom;
   grid_geom.initialize_origin_deltas(src_grid_geom.get_origin(0),
                                      src_grid_geom.get_origin(1),
                                      src_grid_geom.get_origin(2),
@@ -78,21 +78,21 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
                                      src_grid_geom.get_periodic_flag(1),
                                      src_grid_geom.get_periodic_flag(2));
 
-  IJK_Splitting coarse_splitting;
+  Domaine_IJK coarse_splitting;
   // Same processor mapping as fine mesh
   IntTab processor_mapping;
-  fine.get_splitting().get_processor_mapping(processor_mapping);
+  fine.get_domaine().get_processor_mapping(processor_mapping);
   // Splitting is identical, divide ncells by the coarsening factor
   VECT(ArrOfInt) slice_sizes(3);
   for (int dir = 0; dir < 3; dir++)
     {
-      fine.get_splitting().get_slice_size(dir, IJK_Splitting::ELEM, slice_sizes[dir]);
+      fine.get_domaine().get_slice_size(dir, Domaine_IJK::ELEM, slice_sizes[dir]);
       const int n = slice_sizes[dir].size_array();
       for (int i = 0; i < n; i++)
         slice_sizes[dir][i] /= coarsen_factors_[dir];
     }
-  coarse_splitting.initialize(grid_geom, slice_sizes[0], slice_sizes[1], slice_sizes[2],
-                              processor_mapping);
+  coarse_splitting.initialize_mapping(grid_geom, slice_sizes[0], slice_sizes[1], slice_sizes[2],
+                                      processor_mapping);
   const int ghost_domaine_size = fine.get_ghost_size();
   coarse.initialize(coarse_splitting, ghost_domaine_size, additional_k_layers);
 }

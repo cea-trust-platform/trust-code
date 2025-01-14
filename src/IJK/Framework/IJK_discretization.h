@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 
 #ifndef IJK_discretization_included
 #define IJK_discretization_included
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 #include <VDF_to_IJK.h>
 #include <Objet_U.h>
 
@@ -24,8 +24,8 @@ class IJK_discretization : public Objet_U
 {
   Declare_instanciable(IJK_discretization);
 public:
-  const IJK_Splitting& get_IJK_splitting() const;
-  const VDF_to_IJK& get_vdf_to_ijk(IJK_Splitting::Localisation) const;
+  const Domaine_IJK& get_IJK_splitting() const;
+  const VDF_to_IJK& get_vdf_to_ijk(Domaine_IJK::Localisation) const;
   void nommer(const Nom& n) override
   {
     object_name_ = n;
@@ -38,7 +38,7 @@ public:
 protected:
   Nom object_name_;
 
-  IJK_Splitting splitting_;
+  Domaine_IJK splitting_;
 
   // For faces data:
   VDF_to_IJK vdf_to_ijk_i_;

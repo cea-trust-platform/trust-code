@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <FixedVector.h>
 #include <IJK_Field.h>
 #include <IJK_Field_vector.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 #include <IJK_Navier_Stokes_tools.h>
 
 Implemente_instanciable(IJK_Lata_Swap_JK,"IJK_Lata_Swap_JK",Interprete) ;
@@ -54,13 +54,13 @@ Entree& IJK_Lata_Swap_JK::interpreter(Entree& is)
   param.ajouter("fichier_sortie_vitesse", &fichier_sortie_vitesse_);
   param.lire_avec_accolades(is);
 
-  IJK_Splitting splitting_;
-  IJK_Splitting splitting_dest_;
+  Domaine_IJK splitting_;
+  Domaine_IJK splitting_dest_;
   IJK_Field_vector3_double velocity_;
   IJK_Field_vector3_double velocity_dest_;
   IJK_Field_double rho, dest_rho;
   // Recuperation des donnees de maillage
-  splitting_ = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name));
+  splitting_ = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
 
   allocate_velocity(velocity_, splitting_, 1);
   Cerr << "lecture de la vitesse" << finl;
@@ -68,7 +68,7 @@ Entree& IJK_Lata_Swap_JK::interpreter(Entree& is)
                  velocity_[0], velocity_[1], velocity_[2]); // fonction qui lit un champ a partir d'un lata .
   Cerr << "swap jk" << finl;
 
-  splitting_dest_ = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name_dest));
+  splitting_dest_ = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name_dest));
   allocate_velocity(velocity_dest_, splitting_dest_, 1);
 
   for (int direction = 0; direction < 3; direction++)
@@ -104,8 +104,8 @@ Entree& IJK_Lata_Swap_JK::interpreter(Entree& is)
   dumplata_newtime(lata_name,0. /* time */);
   dumplata_vector(lata_name,"VELOCITY", velocity_dest_[0], velocity_dest_[1], velocity_dest_[2], 0);
 
-  rho.allocate(splitting_, IJK_Splitting::ELEM, 0);
-  dest_rho.allocate(splitting_dest_, IJK_Splitting::ELEM, 0);
+  rho.allocate(splitting_, Domaine_IJK::ELEM, 0);
+  dest_rho.allocate(splitting_dest_, Domaine_IJK::ELEM, 0);
   Cerr << "lecture de rho" << finl;
   lire_dans_lata(fichier_reprise_vitesse_, timestep_reprise_vitesse_, "DOM", "RHO",
                  rho); // fonction qui lit un champ a partir d'un lata .

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
   shear_x_time_=IJK_Shear_Periodic_helpler::shear_x_time_;
   defilement_=IJK_Shear_Periodic_helpler::defilement_;
   order_interpolation_poisson_solver_=IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_;
-  const IJK_Splitting& splitting = coeffs_face.get_splitting();
+  const Domaine_IJK& splitting = coeffs_face.get_domaine();
 
   int i, j, k;
   const int ni = splitting.get_nb_elem_local(DIRECTION_I);
@@ -181,7 +181,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     for (i = 0; i < ni; i++)
       {
 
-        double DX = splitting.get_grid_geometry().get_constant_delta(0);
+        double DX = splitting.get_constant_delta(0);
         double istmp = shear_x_time_ /DX;
         int offset2 = (int) round(istmp);
         interpolation_for_shear_periodicity(i , offset2, istmp, ni, 1.);

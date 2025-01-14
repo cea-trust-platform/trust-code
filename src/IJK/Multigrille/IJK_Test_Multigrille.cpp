@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ Entree& IJK_Test_Multigrille::readOn(Entree& s)
 
 Entree& IJK_Test_Multigrille::interpreter(Entree& is)
 {
-  IJK_Splitting split;
+  Domaine_IJK split;
 
   Param param(que_suis_je());
   Nom ijk_splitting_name;
@@ -48,13 +48,13 @@ Entree& IJK_Test_Multigrille::interpreter(Entree& is)
   param.lire_avec_accolades(is);
 
   // Recuperation des donnees de maillage
-  split = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name));
+  split = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
   static Stat_Counter_Id count0 = statistiques().new_counter(0, "timing_init");
 
   statistiques().begin_count(count0);
-  rho_.allocate(split, IJK_Splitting::ELEM, 0);
-  rhs_.allocate(split, IJK_Splitting::ELEM, 0);
-  resu_.allocate(split, IJK_Splitting::ELEM, 0);
+  rho_.allocate(split, Domaine_IJK::ELEM, 0);
+  rhs_.allocate(split, Domaine_IJK::ELEM, 0);
+  resu_.allocate(split, Domaine_IJK::ELEM, 0);
 
   if (expression_rho_!="??")
     {

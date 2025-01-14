@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ void Multigrille_base::convert_from_ijk(const IJK_Field_template<_TYPE_,_TYPE_AR
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
   const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
   const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
-  ijkdis.get_vdf_to_ijk(IJK_Splitting::ELEM).convert_from_ijk(ijk_x, x);
+  ijkdis.get_vdf_to_ijk(Domaine_IJK::ELEM).convert_from_ijk(ijk_x, x);
 }
 
 // Can be further optimized for float (extend Schema_Comm_Vecteurs to float)
@@ -78,7 +78,7 @@ void Multigrille_base::convert_to_ijk(const DoubleVect& x, IJK_Field_template<_T
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
   const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
   const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
-  ijkdis.get_vdf_to_ijk(IJK_Splitting::ELEM).convert_to_ijk(x, ijk_x);
+  ijkdis.get_vdf_to_ijk(Domaine_IJK::ELEM).convert_to_ijk(x, ijk_x);
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
@@ -227,7 +227,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
             if (step[grid_level] == 0)
               {
                 Nom dom = Nom("DOM")+Nom(grid_level);
-                IJK_Grid_Geometry& geom = ref_cast_non_const(IJK_Grid_Geometry,x.get_splitting().get_grid_geometry() );
+                Domaine_IJK& geom = ref_cast_non_const(Domaine_IJK,x.get_domaine() );
                 geom.nommer(dom); // On nomme la geom pour pouvoir l'ecrire.
                 dumplata_header(lata_name, x /* on passe un champ pour ecrire la geometrie */);
               }

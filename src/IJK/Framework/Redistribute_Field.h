@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,12 +26,12 @@
 class Redistribute_Field
 {
 public:
-  void initialize(const IJK_Splitting& input,
-                  const IJK_Splitting& output,
-                  const IJK_Splitting::Localisation loc);
-  void initialize(const IJK_Splitting& input,
-                  const IJK_Splitting& output,
-                  const IJK_Splitting::Localisation loc,
+  void initialize(const Domaine_IJK& input,
+                  const Domaine_IJK& output,
+                  const Domaine_IJK::Localisation loc);
+  void initialize(const Domaine_IJK& input,
+                  const Domaine_IJK& output,
+                  const Domaine_IJK::Localisation loc,
                   const VECT(IntTab) & redistribute_maps);
   void redistribute(const IJK_Field_double& input_field,
                     IJK_Field_double& output_field)
@@ -75,9 +75,9 @@ protected:
                      IJK_Field_float& output_field,
                      bool add);
   static void intersect(const int s1, const int n1, int& s2, int& n2, int& s3);
-  void compute_send_blocs(const IJK_Splitting& input,
-                          const IJK_Splitting& output,
-                          const IJK_Splitting::Localisation localisation,
+  void compute_send_blocs(const Domaine_IJK& input,
+                          const Domaine_IJK& output,
+                          const Domaine_IJK::Localisation localisation,
                           const int dir,
                           const IntTab& global_index_mapping,
                           IntTab& send_blocs);

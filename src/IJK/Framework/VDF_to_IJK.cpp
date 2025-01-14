@@ -77,14 +77,14 @@ static int bsearch_double(const ArrOfDouble& tab, double valeur)
   return i;
 }
 
-static const DoubleTab& get_items_coords(const Domaine_VF& domaine_vf, IJK_Splitting::Localisation loc, int& nb_items)
+static const DoubleTab& get_items_coords(const Domaine_VF& domaine_vf, Domaine_IJK::Localisation loc, int& nb_items)
 {
   switch(loc)
     {
-    case IJK_Splitting::ELEM:
+    case Domaine_IJK::ELEM:
       nb_items = domaine_vf.domaine().nb_elem();
       return domaine_vf.xp();
-    case IJK_Splitting::NODES:
+    case Domaine_IJK::NODES:
       nb_items = domaine_vf.domaine().nb_som();
       return domaine_vf.domaine().les_sommets();
     default:
@@ -93,8 +93,8 @@ static const DoubleTab& get_items_coords(const Domaine_VF& domaine_vf, IJK_Split
     }
 }
 
-void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& splitting,
-                            IJK_Splitting::Localisation localisation,
+void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& splitting,
+                            Domaine_IJK::Localisation localisation,
                             int direction_for_x,
                             int direction_for_y,
                             int direction_for_z)
@@ -103,9 +103,9 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& s
   const int np = Process::nproc();
   const int moi = Process::me();
 
-  const ArrOfDouble& all_coord_i = splitting.get_grid_geometry().get_node_coordinates(0);
-  const ArrOfDouble& all_coord_j = splitting.get_grid_geometry().get_node_coordinates(1);
-  const ArrOfDouble& all_coord_k = splitting.get_grid_geometry().get_node_coordinates(2);
+  const ArrOfDouble& all_coord_i = splitting.get_node_coordinates(0);
+  const ArrOfDouble& all_coord_j = splitting.get_node_coordinates(1);
+  const ArrOfDouble& all_coord_k = splitting.get_node_coordinates(2);
 
   // For each direction, global position of the first element of each slice
   VECT(ArrOfInt) slice_offsets(3);
@@ -155,11 +155,11 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& s
   const double eps = Objet_U::precision_geom;
   for (int item_index = 0; item_index < nb_items; item_index++)
     {
-      if (localisation == IJK_Splitting::FACES_I && orientation[item_index] != srccomponent_for_direction[0])
+      if (localisation == Domaine_IJK::FACES_I && orientation[item_index] != srccomponent_for_direction[0])
         continue;
-      else if (localisation == IJK_Splitting::FACES_J && orientation[item_index] !=  srccomponent_for_direction[1])
+      else if (localisation == Domaine_IJK::FACES_J && orientation[item_index] !=  srccomponent_for_direction[1])
         continue;
-      else if (localisation == IJK_Splitting::FACES_K && orientation[item_index] != srccomponent_for_direction[2])
+      else if (localisation == Domaine_IJK::FACES_K && orientation[item_index] != srccomponent_for_direction[2])
         continue;
 
       double coord[3];

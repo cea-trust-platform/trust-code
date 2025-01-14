@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <stat_counters.h>
 #include <Statistiques.h>
 #include <TRUSTVect.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 
 /*! @brief : This class describes a scalar field in an ijk box without any parallel information.
  *

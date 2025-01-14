@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,9 +33,9 @@
  *       v.get_ptr(2) = std::make_shared<IJK_Field_template<T,TRUSTArray<T>>>();
  *
  *       // Allocation of the fields
- *       v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
- *       v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
- *       v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
+ *       v[0].allocate(s, Domaine_IJK::FACES_I, ghost);
+ *       v[1].allocate(s, Domaine_IJK::FACES_J, ghost);
+ *       v[2].allocate(s, Domaine_IJK::FACES_K, ghost);
  */
 
 template<class T, int N>
@@ -74,9 +74,9 @@ public:
     for (int i = 0; i < N; i++)
       this->data_[i]->echange_espace_virtuel(this->data_[i]->ghost());
   }
-  const IJK_Splitting& get_splitting() const
+  const Domaine_IJK& get_domaine() const
   {
-    return this->data_[0]->get_splitting();
+    return this->data_[0]->get_domaine();
   }
 #endif
 protected:

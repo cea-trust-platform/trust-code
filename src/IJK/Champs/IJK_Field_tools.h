@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <TRUSTLists.h>
 #include <TRUSTVect.h>
 #include <TRUSTArray.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 #include <IJ_layout.h>
 #include <IJK_Field_local_template.h>
 #include <IJK_Field_template.h>

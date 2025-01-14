@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,18 +17,18 @@
 #include <Linear_algebra_tools.h>
 #include <stat_counters.h>
 
-void Redistribute_Field::initialize(const IJK_Splitting& input,
-                                    const IJK_Splitting& output,
-                                    const IJK_Splitting::Localisation loc)
+void Redistribute_Field::initialize(const Domaine_IJK& input,
+                                    const Domaine_IJK& output,
+                                    const Domaine_IJK::Localisation loc)
 {
   // map vide => ok pour des maillages de tailles identiques
   VECT(IntTab) map;
   initialize(input, output, loc, map);
 }
 
-void Redistribute_Field::initialize(const IJK_Splitting& input,
-                                    const IJK_Splitting& output,
-                                    const IJK_Splitting::Localisation loc,
+void Redistribute_Field::initialize(const Domaine_IJK& input,
+                                    const Domaine_IJK& output,
+                                    const Domaine_IJK::Localisation loc,
                                     const VECT(IntTab) & redistribute_maps)
 {
   IntTab map;
@@ -153,9 +153,9 @@ void Redistribute_Field::intersect(const int s1, const int n1, int& s2, int& n2,
 //  (colonne 0: indice local du premier element a envoyer,
 //   colonne 1: numero de la tranche destination,
 //   colonne 2: nombre d'elements consecutifs a envoyer)
-void Redistribute_Field::compute_send_blocs(const IJK_Splitting& input,
-                                            const IJK_Splitting& output,
-                                            const IJK_Splitting::Localisation localisation,
+void Redistribute_Field::compute_send_blocs(const Domaine_IJK& input,
+                                            const Domaine_IJK& output,
+                                            const Domaine_IJK::Localisation localisation,
                                             const int dir,
                                             const IntTab& global_index_mapping,
                                             IntTab& send_blocs)
@@ -236,7 +236,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
           const int dest_slice_k  = send_blocs[2](ibloc[2], 1);
           const int nk            = send_blocs[2](ibloc[2], 2);
 
-          const int dest_pe = output_field.get_splitting().get_processor_by_ijk(dest_slice_i, dest_slice_j, dest_slice_k);
+          const int dest_pe = output_field.get_domaine().get_processor_by_ijk(dest_slice_i, dest_slice_j, dest_slice_k);
           // Si le processeur destination est moi meme, on prend un tableau local sans passer par MPI:
           ArrOfDouble *buf_ptr;
           if (dest_pe == Process::me())
@@ -283,7 +283,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
           const int src_slice_k   = recv_blocs[2](ibloc[2], 1);
           const int nk            = recv_blocs[2](ibloc[2], 2);
 
-          const int src_pe = input_field.get_splitting().get_processor_by_ijk(src_slice_i, src_slice_j, src_slice_k);
+          const int src_pe = input_field.get_domaine().get_processor_by_ijk(src_slice_i, src_slice_j, src_slice_k);
           ArrOfDouble *buf_ptr;
           if (src_pe == Process::me())
             {

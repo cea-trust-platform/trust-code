@@ -106,12 +106,12 @@ int Parallel_io_parameters::get_nb_writing_processes()
 void Parallel_io_parameters::run_bench_write(const Nom& ijk_splitting_name)
 {
   // Get the mesh:
-  const IJK_Splitting& splitting = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name));
+  const Domaine_IJK& splitting = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
   // Build a velocity field and a scalar field:
   IJK_Field_double vx, vy, vz;
-  vx.allocate(splitting, IJK_Splitting::FACES_I,0);
-  vy.allocate(splitting, IJK_Splitting::FACES_J,0);
-  vz.allocate(splitting, IJK_Splitting::FACES_K,0);
+  vx.allocate(splitting, Domaine_IJK::FACES_I,0);
+  vy.allocate(splitting, Domaine_IJK::FACES_J,0);
+  vz.allocate(splitting, Domaine_IJK::FACES_K,0);
 
   set_field_data(vx,Nom("x*0.9+y*0.09*0.001+z*0.009"));
   set_field_data(vy,Nom("1.+x*0.9+y*0.09+z*0.009"));
@@ -126,9 +126,9 @@ void Parallel_io_parameters::run_bench_write(const Nom& ijk_splitting_name)
   dumplata_vector("test.lata", "VELOCITY", vx, vy, vz, 1);
   statistiques().end_count(cnt);
   double t = statistiques().last_time(cnt);
-  double sz = (double) (splitting.get_grid_geometry().get_nb_elem_tot(DIRECTION_I)+1)
-              * (splitting.get_grid_geometry().get_nb_elem_tot(DIRECTION_J)+1)
-              * (splitting.get_grid_geometry().get_nb_elem_tot(DIRECTION_K)+1)
+  double sz = (double) (splitting.get_nb_elem_tot(DIRECTION_I)+1)
+              * (splitting.get_nb_elem_tot(DIRECTION_J)+1)
+              * (splitting.get_nb_elem_tot(DIRECTION_K)+1)
               * 3 * sizeof(float);
   Nom bw = (t==0)? Nom("infty") : Nom(sz/1024/1024/1024/t);
   Cerr << "Parallel_io_parameters benchmark write: data_size= " << sz/1024/1024/1024
@@ -160,12 +160,12 @@ double max_val_abs_ijk(const IJK_Field_double& residu,const IJK_Field_double& x)
 void Parallel_io_parameters::run_bench_read(const Nom& ijk_splitting_name)
 {
   // Get the mesh:
-  const IJK_Splitting& splitting = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name));
+  const Domaine_IJK& splitting = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
   // Build a velocity field and a scalar field:
   IJK_Field_double vx, vy, vz;
-  vx.allocate(splitting, IJK_Splitting::FACES_I,0);
-  vy.allocate(splitting, IJK_Splitting::FACES_J,0);
-  vz.allocate(splitting, IJK_Splitting::FACES_K,0);
+  vx.allocate(splitting, Domaine_IJK::FACES_I,0);
+  vy.allocate(splitting, Domaine_IJK::FACES_J,0);
+  vz.allocate(splitting, Domaine_IJK::FACES_K,0);
 
   vx.data() = 1e9;
   vy.data() = 1e9;
@@ -175,14 +175,14 @@ void Parallel_io_parameters::run_bench_read(const Nom& ijk_splitting_name)
   static Stat_Counter_Id cnt = statistiques().new_counter(1, "Parallel_io benchmark_read");
   statistiques().begin_count(cnt);
   lire_dans_lata("test.lata", 1 /* timestep */,
-                 splitting.get_grid_geometry().le_nom(),
+                 splitting.le_nom(),
                  "VELOCITY", vx, vy, vz);
   statistiques().end_count(cnt);
 
   double t = statistiques().last_time(cnt);
-  double sz = (double) (splitting.get_grid_geometry().get_nb_elem_tot(DIRECTION_I)+1)
-              * (splitting.get_grid_geometry().get_nb_elem_tot(DIRECTION_J)+1)
-              * (splitting.get_grid_geometry().get_nb_elem_tot(DIRECTION_K)+1)
+  double sz = (double) (splitting.get_nb_elem_tot(DIRECTION_I)+1)
+              * (splitting.get_nb_elem_tot(DIRECTION_J)+1)
+              * (splitting.get_nb_elem_tot(DIRECTION_K)+1)
               * 3 * sizeof(float);
   Nom bw = (t==0)? Nom("infty") : Nom(sz/1024/1024/1024/t);
   Cerr << "Parallel_io_parameters benchmark read: data_size= " << sz/1024/1024/1024
@@ -190,9 +190,9 @@ void Parallel_io_parameters::run_bench_read(const Nom& ijk_splitting_name)
 
   // Check values:
   IJK_Field_double vx2, vy2, vz2;
-  vx2.allocate(splitting, IJK_Splitting::FACES_I,0);
-  vy2.allocate(splitting, IJK_Splitting::FACES_J,0);
-  vz2.allocate(splitting, IJK_Splitting::FACES_K,0);
+  vx2.allocate(splitting, Domaine_IJK::FACES_I,0);
+  vy2.allocate(splitting, Domaine_IJK::FACES_J,0);
+  vz2.allocate(splitting, Domaine_IJK::FACES_K,0);
 
   set_field_data(vx2,Nom("x*0.9+y*0.09*0.001+z*0.009"));
   set_field_data(vy2,Nom("1.+x*0.9+y*0.09+z*0.009"));

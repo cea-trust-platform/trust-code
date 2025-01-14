@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 
 
 #include <IJK_Shear_Periodic_helpler.h>
-#include <IJK_Splitting.h>
+#include <Domaine_IJK.h>
 
 
 void IJK_Shear_Periodic_helpler::allocate(const int ni_local, const int nj_local, const int nk_local, int ghost_size, int ncompo, int type, double rov, double rol, int use_inv_rho_in_pressure_solver)
