@@ -242,15 +242,6 @@ then
       sed -i "1,$ s?/lib64/libcublas.so?math_libs/lib64/libcublas.so?" $CONFIG || exit -1
    fi
 fi
-#CONFIG=config/PETSc/packages
-#if [ -d $CONFIG ]
-#then
-#   #echo "Change some python scripts to force parallel build of external packages..."
-#   sed -i "s?make install?$TRUST_MAKE install?g" $CONFIG/hypre.py  #  on ne sarrete plus car si pas hypre...|| exit -1
-#else
-   # Config directory has moved (for PETSc 3.6?)
-#   CONFIG=config/BuildSystem/config/packages
-#fi
 
 # Hack to have MUMPS sequential:
 if [ "$TRUST_DISABLE_MPI" = 1 ]
@@ -547,15 +538,20 @@ then
    #######
    # Hypre
    #######
-   if [ "$TRUST_USE_CUDA" = 1 ]
+   if [ "$TRUST_USE_GPU" = 1 ]
    then
-      add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$TRUST_CUDA_CC"
-   elif [ "$TRUST_USE_ROCM" = 1 ]
+      hypre_configure="--enable-unified-memory" # Important on Adastra, else weak_scaling on OpenMP_Iterateur at 128 GPU fails (too slow)
+      [ "$TRUST_MPI_GPU_AWARE" = 1 ] && hypre_configure=$hypre_configure" --enable-gpu-aware-mpi" # Enable MPI GPU awareness for Hypre
+      # Hack pour Hypre car --download-hypre-configure-arguments difficile a faire marcher avec plusieurs arguments...
+      sed -i "1,$ s?--with-MPI-libs?$hypre_configure --with-MPI-libs?g" config/BuildSystem/config/packages/hypre.py || exit -1
+      #nedit config/BuildSystem/config/packages/hypre.py
+
+      [ "$TRUST_USE_CUDA" = 1 ] && GPU_ARCH=$TRUST_CUDA_CC
+      [ "$TRUST_USE_ROCM" = 1 ] && GPU_ARCH=$ROCM_ARCH
+      add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$GPU_ARCH"
+   elif [ $minimal_mumps = 0 ]
    then
-      # --enable-unified-memory important on Adastra, else weak_scaling on OpenMP_Iterateur at 128 GPU fails (too slow)
-      add_package hypre && with_packages=$with_packages" --with-hypre-gpu-arch=$ROCM_ARCH -download-hypre-arguments=--enable-unified-memory"
-   else
-      [ $minimal_mumps = 0 ] && add_package hypre
+      add_package hypre
    fi
 fi
 
