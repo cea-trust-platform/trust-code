@@ -27,10 +27,12 @@
 #define TRUST_USE_GPU
 #endif
 #endif
+#ifdef TRUST_USE_GPU
 #ifdef TRUST_USE_CUDA
-#include <nvtx3/nvToolsExt.h>
 // See https://nvidia.github.io/NVTX/
 // See https://stackoverflow.com/questions/23230003/something-between-func-and-pretty-function/29856690#29856690
+#include <nvtx3/nvToolsExt.h>
+#endif
 #endif
 
 // TODO - scope all this, global vars are bad.
