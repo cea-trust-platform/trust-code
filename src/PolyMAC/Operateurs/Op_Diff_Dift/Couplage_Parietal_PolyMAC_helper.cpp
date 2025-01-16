@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Couplage_Parietal_PolyMAC_helper.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Flux_interfacial_PolyMAC_P0P1NC.h>
 #include <Echange_contact_PolyMAC_P0.h>
@@ -32,15 +33,28 @@
 #include <functional>
 #include <cmath>
 
+void Couplage_Parietal_PolyMAC_helper::associer(const Op_Diff_PolyMAC_P0_Elem& op)
+{
+  op_elem_ = op;
+}
+
+void Couplage_Parietal_PolyMAC_helper::completer_d_nuc()
+{
+  const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, op_elem_->equation().inconnue());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, op_elem_->domaine_poly());
+  d_nuc_.resize(0, ch.valeurs().line_size());
+  domaine.domaine().creer_tableau_elements(d_nuc_);
+}
+
 /* construction de s_dist : sommets du porbleme coincidant avec des sommets de problemes distants */
-void Op_Diff_PolyMAC_P0_Elem::init_s_dist() const
+void Couplage_Parietal_PolyMAC_helper::init_s_dist() const
 {
   if (s_dist_init_)
     return; //deja fait
 
-  if (has_echange_contact_)
+  if (op_elem_->has_echange_contact())
     {
-      const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
+      const Conds_lim& cls = op_elem_->domaine_cl_poly().les_conditions_limites();
       for (const auto &itr : cls)
         if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
           {
@@ -58,13 +72,13 @@ void Op_Diff_PolyMAC_P0_Elem::init_s_dist() const
   s_dist_init_ = 1;
 }
 
-void Op_Diff_PolyMAC_P0_Elem::init_op_ext_couplage_parietal() const
+void Couplage_Parietal_PolyMAC_helper::init_op_ext() const
 {
   if (som_ext_init_)
     return; //deja fait
 
   /* remplissage de op_ext : de proche en proche */
-  op_ext = { this };
+  op_elem_->op_ext = { &(op_elem_.valeur()) };
   init_s_dist();
 
   /* construction de som_ext_{d, e, f} */
@@ -73,197 +87,196 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext_couplage_parietal() const
   som_ext_pe.resize(0, 2);
   som_ext_pf.resize(0, 4);
 
-  if (is_pb_coupl_ || has_flux_par_)
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, op_elem_->domaine_poly());
+  auto s_dist_full = s_dist;
+
+  for (std::set<const Op_Diff_PolyMAC_P0_Elem*> op_ext_tbd = { &(op_elem_.valeur()) }; op_ext_tbd.size();)
     {
-      const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
-      auto s_dist_full = s_dist;
+      const Op_Diff_PolyMAC_P0_Elem *op = *op_ext_tbd.begin();
+      op_ext_tbd.erase(op_ext_tbd.begin());
 
-      for (std::set<const Op_Diff_PolyMAC_P0_Elem*> op_ext_tbd = { this }; op_ext_tbd.size();)
+      //elargissement de op_ext
+      if (op_elem_->has_echange_contact())
         {
-          const Op_Diff_PolyMAC_P0_Elem *op = *op_ext_tbd.begin();
-          op_ext_tbd.erase(op_ext_tbd.begin());
+          const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
+          for (const auto &itr : cls)
+            if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
+              {
+                const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, itr.valeur());
 
-          //elargissement de op_ext
-          if (has_echange_contact_)
-            {
-              const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
-              for (const auto &itr : cls)
-                if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
+                cl.init_op();
+
+                const Op_Diff_PolyMAC_P0_Elem *o_diff = &cl.o_diff.valeur();
+                if (std::find(op_elem_->op_ext.begin(), op_elem_->op_ext.end(), o_diff) == op_elem_->op_ext.end())
                   {
-                    const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, itr.valeur());
-
-                    cl.init_op();
-
-                    const Op_Diff_PolyMAC_P0_Elem *o_diff = &cl.o_diff.valeur();
-                    if (std::find(op_ext.begin(), op_ext.end(), o_diff) == op_ext.end())
-                      {
-                        op_ext.push_back(o_diff);
-                        op_ext_tbd.insert(o_diff);
-                      }
+                    op_elem_->op_ext.push_back(o_diff);
+                    op_ext_tbd.insert(o_diff);
                   }
-            }
-
-          //elargissement de s_dist_full : aargh...
-          op->init_s_dist();
-          if (op != this)
-            for (auto &&s_op_sb : s_dist_full)
-              if (s_op_sb.second.count(op))
-                for (auto &&op_sc : op->s_dist[s_op_sb.second[op]])
-                  if (!s_op_sb.second.count(op_sc.first))
-                    s_op_sb.second[op_sc.first] = op_sc.second;
+              }
         }
 
+      //elargissement de s_dist_full : aargh...
+      op->couplage_parietal_helper().init_s_dist();
+      if (op != &(op_elem_.valeur()))
+        for (auto &&s_op_sb : s_dist_full)
+          if (s_op_sb.second.count(op))
+            for (auto &&op_sc : op->couplage_parietal_helper().s_dist[s_op_sb.second[op]])
+              if (!s_op_sb.second.count(op_sc.first))
+                s_op_sb.second[op_sc.first] = op_sc.second;
+    }
 
-      std::set<std::array<int, 2>> s_pe; // (pb, el)
-      std::set<std::array<int, 4>> s_pf; // (pb1, f1, pb2, f2)
 
-      /*
-       * XXX NO WORRIES : c'est std::vector<ref_array>
-       */
-      std::vector<std::reference_wrapper<const Domaine_PolyMAC_P0>> domaines;
-      std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
-      std::vector<std::reference_wrapper<const Static_Int_Lists>> som_elem;
+  std::set<std::array<int, 2>> s_pe; // (pb, el)
+  std::set<std::array<int, 4>> s_pf; // (pb1, f1, pb2, f2)
 
-      for (auto &&op : op_ext)
-        domaines.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op->equation().domaine_dis())));
+  /*
+   * XXX NO WORRIES : c'est std::vector<ref_array>
+   */
+  std::vector<std::reference_wrapper<const Domaine_PolyMAC_P0>> domaines;
+  std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
+  std::vector<std::reference_wrapper<const Static_Int_Lists>> som_elem;
 
-      for (auto &&op : op_ext)
-        fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue()).fcl()));
+  for (auto &&op : op_elem_->op_ext)
+    domaines.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op->equation().domaine_dis())));
 
-      for (auto &&zo : domaines)
+  for (auto &&op : op_elem_->op_ext)
+    fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue()).fcl()));
+
+  for (auto &&zo : domaines)
+    {
+      e_f.push_back(std::ref(zo.get().elem_faces()));
+      f_s.push_back(std::ref(zo.get().face_sommets()));
+      som_elem.push_back(std::ref(zo.get().som_elem()));
+    }
+
+  /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
+  const Conds_lim& cls = op_elem_->equation().domaine_Cl_dis().les_conditions_limites();
+  int has_flux = (sub_type(Energie_Multiphase, op_elem_->equation()) || sub_type(Convection_Diffusion_Temperature, op_elem_->equation())) &&
+                 op_elem_->equation().probleme().has_correlation("flux_parietal");
+
+  for (int i = 0; i < cls.size(); i++)
+    if (has_flux || sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
+      for (int j = 0; j < ref_cast(Front_VF, cls[i]->frontiere_dis()).nb_faces(); j++)
         {
-          e_f.push_back(std::ref(zo.get().elem_faces()));
-          f_s.push_back(std::ref(zo.get().face_sommets()));
-          som_elem.push_back(std::ref(zo.get().som_elem()));
+          const int f = ref_cast(Front_VF, cls[i]->frontiere_dis()).num_face(j);
+          for (int k = 0; k < f_s[0].get().dimension(1); k++)
+            {
+              const int s = f_s[0](f, k);
+              if (s < 0) continue;
+
+              if (!s_dist_full.count(s))
+                s_dist_full[s] = { }; //dans le std::map, mais pas d'operateurs distants!
+            }
         }
 
-      /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
-      const Conds_lim& cls = equation().domaine_Cl_dis().les_conditions_limites();
-      int has_flux = (sub_type(Energie_Multiphase, equation()) || sub_type(Convection_Diffusion_Temperature, equation())) && equation().probleme().has_correlation("flux_parietal");
+  for (const auto &s_op_sb : s_dist_full)
+    {
+      const int s = s_op_sb.first;
 
-      for (int i = 0; i < cls.size(); i++)
-        if (has_flux || sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
-          for (int j = 0; j < ref_cast(Front_VF, cls[i]->frontiere_dis()).nb_faces(); j++)
-            {
-              const int f = ref_cast(Front_VF, cls[i]->frontiere_dis()).num_face(j);
-              for (int k = 0; k < f_s[0].get().dimension(1); k++)
-                {
-                  const int s = f_s[0](f, k);
-                  if (s < 0) continue;
-
-                  if (!s_dist_full.count(s))
-                    s_dist_full[s] = { }; //dans le std::map, mais pas d'operateurs distants!
-                }
-            }
-
-      for (const auto &s_op_sb : s_dist_full)
+      if (s < domaine.nb_som())
         {
-          const int s = s_op_sb.first;
-
-          if (s < domaine.nb_som())
+          //elements
+          for (int i = 0; i < som_elem[0].get().get_list_size(s); i++)
             {
-              //elements
-              for (int i = 0; i < som_elem[0].get().get_list_size(s); i++)
-                {
-                  std::array<int, 2> arr = { 0, som_elem[0](s, i) };
-                  s_pe.insert( { arr }); //cote local
-                }
-
-              for (const auto &op_sb : s_op_sb.second) //cotes distants
-                {
-                  const int iop = (int) (std::find(op_ext.begin(), op_ext.end(), op_sb.first) - op_ext.begin());
-
-                  for (int i = 0; i < som_elem[iop].get().get_list_size(op_sb.second); i++)
-                    {
-                      std::array<int, 2> arr = { iop, som_elem[iop](op_sb.second, i) };
-                      s_pe.insert( { arr });
-                    }
-                }
-
-              //faces : celles des elements de s_pe
-              for (const auto &iop_e : s_pe)
-                {
-                  const int iop = iop_e[0];
-                  const int e = iop_e[1];
-                  const int s_l = iop ? s_op_sb.second.at(op_ext[iop]) : s;
-
-                  for (int i = 0; i < e_f[iop].get().dimension(1); i++)
-                    {
-                      const int f = e_f[iop](e, i);
-                      if (f < 0) continue;
-
-                      int ok = 0;
-
-                      for (int j = 0; !ok && j < f_s[iop].get().dimension(1); j++)
-                        {
-                          const int sb = f_s[iop](f, j);
-                          if (sb < 0) continue;
-
-                          ok |= sb == s_l;
-                        }
-
-                      if (!ok || fcl[iop](f, 0) != 3)
-                        continue; //face ne touchant pas le sommet ou non Echange_contact
-
-                      const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_ext[iop]->equation().domaine_Cl_dis().les_conditions_limites()[fcl[iop](f, 1)].valeur());
-
-                      //operateur / face de l'autre cote
-                      int o_iop = (int) (std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin());
-                      int o_f = cl.f_dist(fcl[iop](f, 2));
-
-                      std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f };
-                      s_pf.insert( { arr }); //stocke dans l'ordre
-                    }
-                }
-
-              int mix = 0; //melange-t-on les composantes autour de ce sommet? oui si une equation Energie_Multiphase avec correlation de flux parietal est presente autour
-              for (const auto &pe : s_pe)
-                {
-                  som_ext_pe.append_line(pe[0], pe[1]);
-                  mix |= (   sub_type(Energie_Multiphase, op_ext[pe[0]]->equation()) ||
-                             sub_type(Convection_Diffusion_Temperature, op_ext[pe[0]]->equation())   )
-                         && op_ext[pe[0]]->equation().probleme().has_correlation("flux_parietal");
-                }
-
-              for (auto &&pf : s_pf)
-                som_ext_pf.append_line(pf[0], pf[1], pf[2], pf[3]);
-
-              som_ext.append_line(s);
-              som_mix.append_line(mix);
-              som_ext_d.append_line(som_ext_pe.dimension(0), som_ext_pf.dimension(0));
-
-              s_pe.clear();
-              s_pf.clear();
+              std::array<int, 2> arr = { 0, som_elem[0](s, i) };
+              s_pe.insert( { arr }); //cote local
             }
+
+          for (const auto &op_sb : s_op_sb.second) //cotes distants
+            {
+              const int iop = (int) (std::find(op_elem_->op_ext.begin(), op_elem_->op_ext.end(), op_sb.first) - op_elem_->op_ext.begin());
+
+              for (int i = 0; i < som_elem[iop].get().get_list_size(op_sb.second); i++)
+                {
+                  std::array<int, 2> arr = { iop, som_elem[iop](op_sb.second, i) };
+                  s_pe.insert( { arr });
+                }
+            }
+
+          //faces : celles des elements de s_pe
+          for (const auto &iop_e : s_pe)
+            {
+              const int iop = iop_e[0];
+              const int e = iop_e[1];
+              const int s_l = iop ? s_op_sb.second.at(op_elem_->op_ext[iop]) : s;
+
+              for (int i = 0; i < e_f[iop].get().dimension(1); i++)
+                {
+                  const int f = e_f[iop](e, i);
+                  if (f < 0) continue;
+
+                  int ok = 0;
+
+                  for (int j = 0; !ok && j < f_s[iop].get().dimension(1); j++)
+                    {
+                      const int sb = f_s[iop](f, j);
+                      if (sb < 0) continue;
+
+                      ok |= sb == s_l;
+                    }
+
+                  if (!ok || fcl[iop](f, 0) != 3)
+                    continue; //face ne touchant pas le sommet ou non Echange_contact
+
+                  const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_elem_->op_ext[iop]->equation().domaine_Cl_dis().les_conditions_limites()[fcl[iop](f, 1)].valeur());
+
+                  //operateur / face de l'autre cote
+                  int o_iop = (int) (std::find(op_elem_->op_ext.begin(), op_elem_->op_ext.end(), &cl.o_diff.valeur()) - op_elem_->op_ext.begin());
+                  int o_f = cl.f_dist(fcl[iop](f, 2));
+
+                  std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f };
+                  s_pf.insert( { arr }); //stocke dans l'ordre
+                }
+            }
+
+          int mix = 0; //melange-t-on les composantes autour de ce sommet? oui si une equation Energie_Multiphase avec correlation de flux parietal est presente autour
+          for (const auto &pe : s_pe)
+            {
+              som_ext_pe.append_line(pe[0], pe[1]);
+              mix |= (   sub_type(Energie_Multiphase, op_elem_->op_ext[pe[0]]->equation()) ||
+                         sub_type(Convection_Diffusion_Temperature, op_elem_->op_ext[pe[0]]->equation()) )
+                     && op_elem_->op_ext[pe[0]]->equation().probleme().has_correlation("flux_parietal");
+            }
+
+          for (auto &&pf : s_pf)
+            som_ext_pf.append_line(pf[0], pf[1], pf[2], pf[3]);
+
+          ref_cast_non_const(IntTab, op_elem_->tab_som_ext()).append_line(s);
+          som_mix.append_line(mix);
+          som_ext_d.append_line(som_ext_pe.dimension(0), som_ext_pf.dimension(0));
+
+          s_pe.clear();
+          s_pf.clear();
         }
     }
+
   som_ext_init_ = 1;
 }
 
-void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs_couplage_parietal(matrices_t matrices, const tabs_t& semi_impl) const
+void Couplage_Parietal_PolyMAC_helper::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const std::string nom_inco = equation().inconnue().le_nom().getString();
-  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_poly_.valeur());
+  const std::string nom_inco = op_elem_->equation().inconnue().le_nom().getString();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, op_elem_->domaine_poly());
   const IntTab& f_e = domaine.face_voisins();
 
-  std::vector<Matrice_Morse*> mat(op_ext.size());
+  std::vector<Matrice_Morse*> mat(op_elem_->op_ext.size());
 
   //une matrice potentielle a remplir par operateur de op_ext
-  for (int i = 0; i < (int) op_ext.size(); i++)
+  for (int i = 0; i < (int) op_elem_->op_ext.size(); i++)
     {
-      const auto& nom_inco_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      const auto& nom_inco_mat = i ? nom_inco + "/" + op_elem_->op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
 
       mat[i] = matrices.count(nom_inco_mat) ? matrices.at(nom_inco_mat) : nullptr;
     }
 
-  std::vector<int> N(op_ext.size()); //nombre de composantes par probleme de op_ext
+  std::vector<int> N(op_elem_->op_ext.size()); //nombre de composantes par probleme de op_ext
 
-  std::vector<IntTab> stencil(op_ext.size()); //stencils par matrice
+  std::vector<IntTab> stencil(op_elem_->op_ext.size()); //stencils par matrice
 
-  for (int i = 0; i < (int) op_ext.size(); i++)
+  for (int i = 0; i < (int) op_elem_->op_ext.size(); i++)
     {
       stencil[i].resize(0, 2);
-      N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
+      N[i] = op_elem_->op_ext[i]->equation().inconnue().valeurs().line_size();
     }
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
@@ -281,46 +294,45 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs_couplage_parietal(matrices_t ma
         if (e < 0) continue;
 
         if (e < domaine.nb_elem()) //stencil a l'element e
-          for (int j = phif_d(f); j < phif_d(f + 1); j++)
+          for (int j = op_elem_->tab_phif_d()(f); j < op_elem_->tab_phif_d()(f + 1); j++)
             {
-              const int e_s = phif_e(j);
+              const int e_s = op_elem_->tab_phif_e()(j);
 
               if (e_s < domaine.nb_elem_tot())
                 for (int n = 0; n < N[0]; n++)
                   {
                     stencil[0].append_line(N[0] * e + n, N[0] * e_s + n);
 
-                    const int tmp = (e_s == f_e(f, 0)) || (e_s == f_e(f, 1)) || (phif_c(j, n) == 0);
+                    const int tmp = (e_s == f_e(f, 0)) || (e_s == f_e(f, 1)) || (op_elem_->tab_phif_c()(j, n) == 0);
                     tpfa(f, n) &= tmp;
                   }
             }
       }
 
   //avec som_ext : partie Echange_contact -> melange toutes les composantes si som_mix = 1
-  if (is_pb_coupl_ || has_flux_par_)
-    for (int i = 0; i < som_ext.dimension(0); i++)
-      for (int j = som_ext_d(i, 0); j < som_ext_d(i + 1, 0); j++)
-        {
-          const int e = som_ext_pe(j, 1);
+  for (int i = 0; i < op_elem_->tab_som_ext().dimension(0); i++)
+    for (int j = som_ext_d(i, 0); j < som_ext_d(i + 1, 0); j++)
+      {
+        const int e = som_ext_pe(j, 1);
 
-          if (!som_ext_pe(j, 0) && e < domaine.nb_elem())
-            for (int k = som_ext_d(i, 0); k < som_ext_d(i + 1, 0); k++)
-              {
-                const int p_s = som_ext_pe(k, 0);
-                const int e_s = som_ext_pe(k, 1);
+        if (!som_ext_pe(j, 0) && e < domaine.nb_elem())
+          for (int k = som_ext_d(i, 0); k < som_ext_d(i + 1, 0); k++)
+            {
+              const int p_s = som_ext_pe(k, 0);
+              const int e_s = som_ext_pe(k, 1);
 
-                for (int n = 0; n < N[0]; n++)
-                  for (int m = (som_mix(i) ? 0 : n); m < (som_mix(i) ? N[p_s] : n + 1); m++)
-                    stencil[p_s].append_line(N[0] * e + n, N[p_s] * e_s + m);
-              }
-        }
+              for (int n = 0; n < N[0]; n++)
+                for (int m = (som_mix(i) ? 0 : n); m < (som_mix(i) ? N[p_s] : n + 1); m++)
+                  stencil[p_s].append_line(N[0] * e + n, N[p_s] * e_s + m);
+            }
+      }
 
-  for (int i = 0; i < (int) op_ext.size(); i++)
+  for (int i = 0; i < (int) op_elem_->op_ext.size(); i++)
     if (mat[i])
       {
         tableau_trier_retirer_doublons(stencil[i]);
         Matrice_Morse mat2;
-        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_ext[i]->equation().domaine_dis().nb_elem_tot(), stencil[i], mat2);
+        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_elem_->op_ext[i]->equation().domaine_dis().nb_elem_tot(), stencil[i], mat2);
 
         if (mat[i]->nb_colonnes())
           *mat[i] += mat2;
@@ -334,15 +346,15 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs_couplage_parietal(matrices_t ma
 
   const double elem_t = static_cast<double>(domaine.domaine().md_vector_elements()->nb_items_seq_tot()),
                face_t = static_cast<double>(domaine.md_vector_faces()->nb_items_seq_tot());
-  Cerr << "width " << mp_sum_as_double(n_sten) / (N[0] * elem_t) << " "
+  Cerr << "width " << Process::mp_sum_as_double(n_sten) / (N[0] * elem_t) << " "
        << mp_somme_vect_as_double(tpfa) * 100. / (N[0] * face_t) << "% TPFA " << finl;
 }
 
-void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Couplage_Parietal_PolyMAC_helper::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = op_elem_->equation().inconnue().le_nom().getString();
 
-  const int n_ext = (int) op_ext.size(), D = dimension, un = 1;
+  const int n_ext = (int) op_elem_->op_ext.size(), D = Objet_U::dimension, un = 1;
 
   std::vector<Matrice_Morse*> mat(n_ext); //matrices
 
@@ -360,11 +372,11 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
   int M = 0;
   for (int i = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
-      std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      std::string nom_mat = i ? nom_inco + "/" + op_elem_->op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
 
       mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
 
-      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op_ext[i]->equation().domaine_dis())));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op_elem_->op_ext[i]->equation().domaine_dis())));
 
       f_e.push_back(std::ref(domaine[i].get().face_voisins()));
       e_f.push_back(std::ref(domaine[i].get().elem_faces()));
@@ -377,11 +389,11 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
       xv.push_back(std::ref(domaine[i].get().xv()));
       xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));
 
-      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
+      cls.push_back(std::ref(op_elem_->op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
 
-      diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0_Elem, *op_ext[i]).nu());
+      diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0_Elem, *(op_elem_->op_ext[i])).nu());
 
-      const Champ_Inc_base& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
+      const Champ_Inc_base& ch_inc = op_elem_->op_ext[i]->has_champ_inco() ? op_elem_->op_ext[i]->mon_inconnue() : op_elem_->op_ext[i]->equation().inconnue();
       const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, ch_inc);
 
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs()));
@@ -399,15 +411,15 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
     {
       flux = 0.;
 
-      for (int i = phif_d(f); i < phif_d(f + 1); i++)
+      for (int i = op_elem_->tab_phif_d()(f); i < op_elem_->tab_phif_d()(f + 1); i++)
         {
-          const int eb = phif_e(i);
+          const int eb = op_elem_->tab_phif_e()(i);
           const int fb = eb - domaine0.nb_elem_tot();
 
           if (fb < 0) //element
             {
               for (int n = 0; n < N[0]; n++)
-                flux(n) += phif_c(i, n) * fs[0](f) * inco[0](eb, n);
+                flux(n) += op_elem_->tab_phif_c()(i, n) * fs[0](f) * inco[0](eb, n);
 
               if (mat[0])
                 for (int j = 0; j < 2; j++)
@@ -417,24 +429,24 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
 
                     if (e < domaine[0].get().nb_elem())
                       for (int n = 0; n < N[0]; n++) //derivees
-                        (*mat[0])(N[0] * e + n, N[0] * eb + n) += (j ? 1 : -1) * phif_c(i, n) * fs[0](f);
+                        (*mat[0])(N[0] * e + n, N[0] * eb + n) += (j ? 1 : -1) * op_elem_->tab_phif_c()(i, n) * fs[0](f);
                   }
 
             }
           else if (fcl[0](fb, 0) == 1 || fcl[0](fb, 0) == 2)
             {
               for (int n = 0; n < N[0]; n++) //Echange_impose_base
-                flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Echange_impose_base, cls[0].get()[fcl[0](fb, 1)].valeur()).T_ext(fcl[0](fb, 2), n) : 0);
+                flux(n) += (op_elem_->tab_phif_c()(i, n) ? op_elem_->tab_phif_c()(i, n) * fs[0](f) * ref_cast(Echange_impose_base, cls[0].get()[fcl[0](fb, 1)].valeur()).T_ext(fcl[0](fb, 2), n) : 0);
             }
           else if (fcl[0](fb, 0) == 4)
             {
               for (int n = 0; n < N[0]; n++) //Neumann non homogene
-                flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Neumann_paroi, cls[0].get()[fcl[0](fb, 1)].valeur()).flux_impose(fcl[0](fb, 2), n) : 0);
+                flux(n) += (op_elem_->tab_phif_c()(i, n) ? op_elem_->tab_phif_c()(i, n) * fs[0](f) * ref_cast(Neumann_paroi, cls[0].get()[fcl[0](fb, 1)].valeur()).flux_impose(fcl[0](fb, 2), n) : 0);
             }
           else if (fcl[0](fb, 0) == 6)
             {
               for (int n = 0; n < N[0]; n++) //Dirichlet
-                flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Dirichlet, cls[0].get()[fcl[0](fb, 1)].valeur()).val_imp(fcl[0](fb, 2), n) : 0);
+                flux(n) += (op_elem_->tab_phif_c()(i, n) ? op_elem_->tab_phif_c()(i, n) * fs[0](f) * ref_cast(Dirichlet, cls[0].get()[fcl[0](fb, 1)].valeur()).val_imp(fcl[0](fb, 2), n) : 0);
             }
         }
 
@@ -450,15 +462,15 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
 
       if (f < domaine0.premiere_face_int())
         for (int n = 0; n < N[0]; n++)
-          flux_bords_(f, n) = flux(n); //flux aux bords
+          op_elem_->flux_bords()(f, n) = flux(n); //flux aux bords
     }
 
   d_nuc_ = 0.; //remise a zero du diametre de nucleation
 
   // remplir les tabs ... mais seulement si besoin !
-  DoubleTab *pqpi = equation().sources().size() &&
-                    sub_type(Flux_interfacial_PolyMAC_P0P1NC, equation().sources().dernier().valeur()) ?
-                    &ref_cast(Flux_interfacial_PolyMAC_P0P1NC, equation().sources().dernier().valeur()).qpi() : nullptr;
+  DoubleTab *pqpi = op_elem_->equation().sources().size() &&
+                    sub_type(Flux_interfacial_PolyMAC_P0P1NC, op_elem_->equation().sources().dernier().valeur()) ?
+                    &ref_cast(Flux_interfacial_PolyMAC_P0P1NC, op_elem_->equation().sources().dernier().valeur()).qpi() : nullptr;
 
 
   /* avec som_ext : flux autour des sommets affectes par des Echange_contact */
@@ -483,19 +495,19 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
   std::vector<DoubleTrav> Ts_tab(n_ext), Sigma_tab(n_ext), Lvap_tab(n_ext);
 
   for (int i = 0; i < n_ext; i++)
-    if (sub_type(Milieu_composite, op_ext[i]->equation().milieu()))
+    if (sub_type(Milieu_composite, op_elem_->op_ext[i]->equation().milieu()))
       {
-        const Milieu_composite& milc = ref_cast(Milieu_composite, op_ext[i]->equation().milieu());
+        const Milieu_composite& milc = ref_cast(Milieu_composite, op_elem_->op_ext[i]->equation().milieu());
 
         const int nbelem_tot = domaine[i].get().nb_elem_tot(), nb_max_sat = N[i] * (N[i] - 1) / 2; // oui !! suite arithmetique !!
 
-        if (op_ext[i]->equation().probleme().has_correlation("flux_parietal"))
+        if (op_elem_->op_ext[i]->equation().probleme().has_correlation("flux_parietal"))
           {
             Ts_tab[i].resize(nbelem_tot, nb_max_sat);
             Sigma_tab[i].resize(nbelem_tot, nb_max_sat);
             Lvap_tab[i].resize(nbelem_tot, nb_max_sat);
 
-            const DoubleTab& press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression().passe();
+            const DoubleTab& press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_elem_->op_ext[i]->equation().probleme()).equation_qdm()).pression().passe();
 
             for (int k = 0; k < N[i]; k++)
               for (int l = k + 1; l < N[i]; l++)
@@ -524,9 +536,9 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
           }
       }
 
-  for (int i_s = 0; i_s < som_ext.dimension(0); i_s++)
+  for (int i_s = 0; i_s < op_elem_->tab_som_ext().dimension(0); i_s++)
     {
-      const int s = som_ext(i_s);
+      const int s = op_elem_->tab_som_ext()(i_s);
 
       if (s < domaine0.nb_som())
         {
@@ -554,7 +566,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
               se_f[i].clear();
               int p = s_pe[i][0];
               int e = s_pe[i][1];
-              int sp = p ? s_dist[s].at(op_ext[p]) : s;
+              int sp = p ? s_dist[s].at(op_elem_->op_ext[p]) : s;
 
               for (int j = 0; j < e_f[p].get().dimension(1); j++)
                 {
@@ -680,9 +692,9 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
                   //si face de bord d'un Pb_Multiphase (hors frontiere ouverte), une inconnue supplementaire : la Tparoi (dans ce cas, mix = 1)
                   int f = s_pf[k][0] == p && (e == f_e[p](s_pf[k][1], 0) || e == f_e[p](s_pf[k][1], 1)) ? s_pf[k][1] : m_pf.at(s_pf[k])[1]; //numero de face cote e
 
-                  if (( sub_type(Energie_Multiphase, op_ext[p]->equation())
-                        || sub_type(Convection_Diffusion_Temperature, op_ext[p]->equation()) )
-                      && op_ext[p]->equation().probleme().has_correlation("flux_parietal")
+                  if (( sub_type(Energie_Multiphase, op_elem_->op_ext[p]->equation())
+                        || sub_type(Convection_Diffusion_Temperature, op_elem_->op_ext[p]->equation()) )
+                      && op_elem_->op_ext[p]->equation().probleme().has_correlation("flux_parietal")
                       && fcl[p](f, 0) && fcl[p](f, 0) != 5)
                     {
                       i_efs(i, j, M) = t_eq++;
@@ -723,17 +735,17 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
 
               if (type_f[i] && type_f[i] != 5)
                 for (int j = 0; j < 2; j++)
-                  if ( (sub_type(Energie_Multiphase, op_ext[p12[j]]->equation())
-                        || sub_type(Convection_Diffusion_Temperature, op_ext[p12[j]]->equation())) //si flux parietal et CL non Neumann, il n'y a qu'une valeur en paroi
-                       && op_ext[p12[j]]->equation().probleme().has_correlation("flux_parietal"))
+                  if ( (sub_type(Energie_Multiphase, op_elem_->op_ext[p12[j]]->equation())
+                        || sub_type(Convection_Diffusion_Temperature, op_elem_->op_ext[p12[j]]->equation())) //si flux parietal et CL non Neumann, il n'y a qu'une valeur en paroi
+                       && op_elem_->op_ext[p12[j]]->equation().probleme().has_correlation("flux_parietal"))
                     {
                       n12[j] = 1;
                     }
 
               if (n12[0] != n12[1])
                 {
-                  Cerr << "Op_Diff_PolyMAC_P0_Elem : incompatibility between " << op_ext[p1]->equation().probleme().le_nom() <<
-                       " and " << op_ext[p2]->equation().probleme().le_nom() << " ( " << n12[0]
+                  Cerr << "Op_Diff_PolyMAC_P0_Elem : incompatibility between " << op_elem_->op_ext[p1]->equation().probleme().le_nom() <<
+                       " and " << op_elem_->op_ext[p2]->equation().probleme().le_nom() << " ( " << n12[0]
                        << " vs " << n12[1] << " components)!" << finl;
 
                   Process::exit();
@@ -1044,7 +1056,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
                                 }
 
                               //equations sur les correlations
-                              const Probleme_base& pbp = op_ext[p]->equation().probleme();
+                              const Probleme_base& pbp = op_elem_->op_ext[p]->equation().probleme();
                               const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbp.get_correlation("Flux_parietal"));
 
                               const DoubleTab *alpha = sub_type(Pb_Multiphase, pbp) ? &ref_cast(Pb_Multiphase, pbp).equation_masse().inconnue().passe() : nullptr;
@@ -1313,7 +1325,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
                         secmem(e, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e); //partie constante
 
                         if (f < domaine0.premiere_face_int())
-                          flux_bords_(f, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e);
+                          op_elem_->flux_bords()(f, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e);
 
                         for (k = 0; k < n_e; k++)
                           {
@@ -1347,16 +1359,4 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs_couplage_parietal(matrices_t matrice
 
   if (pqpi)
     (*pqpi).echange_espace_virtuel();
-
-}
-
-const DoubleTab& Op_Diff_PolyMAC_P0_Elem::d_nucleation() const
-{
-  if (!d_nuc_a_jour_)
-    {
-      Cerr << "Op_Diff_PolyMAC_P0_Elem : attempt to access d_nucleation (nucleate bubble diameter) before ajouter_blocs() has been called!" << finl
-           << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl;
-      Process::exit();
-    }
-  return d_nuc_;
 }

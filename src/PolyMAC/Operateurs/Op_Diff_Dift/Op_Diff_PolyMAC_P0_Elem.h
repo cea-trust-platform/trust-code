@@ -16,7 +16,9 @@
 #ifndef Op_Diff_PolyMAC_P0_Elem_included
 #define Op_Diff_PolyMAC_P0_Elem_included
 
+#include <Couplage_Parietal_PolyMAC_helper.h>
 #include <Op_Diff_PolyMAC_P0_base.h>
+
 class Matrice_Morse;
 
 class Op_Diff_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_base
@@ -40,31 +42,12 @@ public :
   /* flux paroi_interface : d_nucleation(e, k) : diametre de nucleation de la phase k dans l'element e */
   const DoubleTab& d_nucleation() const;
 
+  inline const bool& has_echange_contact() const { return has_echange_contact_; }
+  inline const Couplage_Parietal_PolyMAC_helper& couplage_parietal_helper() const { return couplage_parietal_helper_; }
+
 private:
   bool is_pb_multi_ = false, is_pb_coupl_ = false, has_echange_contact_ = false, has_flux_par_ = false;
-
-  void init_op_ext_simple() const;
-  void init_op_ext_couplage_parietal() const;
-
-  void dimensionner_blocs_simple(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  void dimensionner_blocs_couplage_parietal(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-
-  void ajouter_blocs_simple(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void ajouter_blocs_couplage_parietal(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-
-  /* sommets connectes a un autre probleme par un Echange_contact */
-  void init_s_dist() const;
-  mutable std::map<int, std::map<const Operateur_Diff_base *, int>> s_dist; //s_dist[som] = { { pb1, som1 }, { pb2, som2 }, ... }
-  mutable int s_dist_init_ = 0;
-
-  /* tableaux op_ext et pe_ext */
-  mutable IntTab som_mix, som_ext_d, som_ext_pe, som_ext_pf; //sommet s = som_ext(i) : melange-t-il les composantes, couple (probleme, elem) dans som_ext_e([som_ext_d(i, 0), som_ext_d(i + 1, 0)[, 0/1)
-  //faces Echange_contact (pb1, face1, pb2, face2) dans som_ext_f([som_ext_d(i, 1), som_ext_d(i + 1, 1)[, 0/1/2/3)
-  mutable int som_ext_init_ = 0;
-
-  /* tableau renvoye par d_nucleation(), rempli lors de ajouter_blocs() */
-  mutable DoubleTab d_nuc_;
-  mutable int d_nuc_a_jour_ = 0; //d_nucleation() est utilisable ("a jour") entre le moment ou on a appelle ajouter_blocs() et le mettre_a_jour() suivant
+  Couplage_Parietal_PolyMAC_helper couplage_parietal_helper_;
 };
 
 /* comme des synonymes, mais avec l'info de ce qu'on est dans que_suis_je() */

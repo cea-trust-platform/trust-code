@@ -34,6 +34,18 @@ public:
   /* flux aux faces (hors Echange_contact): cf. Domaine_PolyMAC_P0::fgrad */
   void update_phif(int full_stencil = 0) const;
 
+  inline IntTab& tab_som_ext() { return som_ext; }
+  inline const IntTab& tab_som_ext() const { return som_ext; }
+
+  inline IntTab& tab_phif_d() { return phif_d; }
+  inline const IntTab& tab_phif_d() const { return phif_d; }
+
+  inline IntTab& tab_phif_e() { return phif_e; }
+  inline const IntTab& tab_phif_e() const { return phif_e; }
+
+  inline DoubleTab& tab_phif_c() { return phif_c; }
+  inline const DoubleTab& tab_phif_c() const { return phif_c; }
+
 protected:
   mutable IntTab pe_ext; // tableau aux faces de bord : (indice dans op_ext, indice d'element) pour les faces de type Echange_contact
   //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[)

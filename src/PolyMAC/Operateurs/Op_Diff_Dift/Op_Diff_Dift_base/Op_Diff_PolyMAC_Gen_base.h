@@ -56,6 +56,9 @@ public:
 
   int impr(Sortie& os) const override;
 
+  inline const Domaine_PolyMAC& domaine_poly() const { return le_dom_poly_.valeur(); }
+  inline const Domaine_Cl_PolyMAC& domaine_cl_poly() const { return la_zcl_poly_.valeur(); }
+
 protected:
   mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
   mutable DoubleTab nu_; // diffusivite aux elements
