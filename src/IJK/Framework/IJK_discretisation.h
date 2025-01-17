@@ -13,40 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_discretization_included
-#define IJK_discretization_included
-#include <Domaine_IJK.h>
-#include <VDF_to_IJK.h>
-#include <Objet_U.h>
+#ifndef IJK_discretisation_included
+#define IJK_discretisation_included
 
-// This class holds an IJK split mesh converted from a vdf source mesh and splitting
-class IJK_discretization : public Objet_U
+#include <Discretisation_base.h>
+
+/*! @brief class IJK_discretisation handles the IJK discretisation of the problem
+ *
+ * IJK configurations are so straight forward that a proper "discretization" (in the sense of what is done
+ * for VEF or VDF for example, where we compute a lot of extra geometrical quantities) is useless here.
+ *
+ * So this class is almost an empty shell.
+ *
+ */
+class IJK_discretisation: public Discretisation_base
 {
-  Declare_instanciable(IJK_discretization);
+  Declare_instanciable(IJK_discretisation);
+
 public:
-  const Domaine_IJK& get_IJK_splitting() const;
-  const VDF_to_IJK& get_vdf_to_ijk(Domaine_IJK::Localisation) const;
-  void nommer(const Nom& n) override
-  {
-    object_name_ = n;
-  }
-  const Nom& le_nom() const override
-  {
-    return object_name_;
-  }
-  static const char *get_conventional_name();
-protected:
-  Nom object_name_;
+  Nom domaine_cl_dis_type() const override { return "DO_NOT_USE"; }
 
-  Domaine_IJK splitting_;
-
-  // For faces data:
-  VDF_to_IJK vdf_to_ijk_i_;
-  VDF_to_IJK vdf_to_ijk_j_;
-  VDF_to_IJK vdf_to_ijk_k_;
-  // For cell centered data:
-  VDF_to_IJK vdf_to_ijk_elem_;
-  // For nodes data
-  VDF_to_IJK vdf_to_ijk_nodes_;
+private:
 };
+
 #endif

@@ -13,30 +13,30 @@
 *
 *****************************************************************************/
 
-#include <IJK_discretization.h>
+#include <IJK_VDF_converter.h>
 #include <Param.h>
 #include <Domaine_VF.h>
 #include <Probleme_base.h>
 #include <Interprete_bloc.h>
 
-Implemente_instanciable(IJK_discretization, "IJK_discretization", Objet_U);
+Implemente_instanciable(IJK_VDF_converter, "IJK_VDF_converter", Objet_U);
 
-Sortie& IJK_discretization::printOn(Sortie& s) const
+Sortie& IJK_VDF_converter::printOn(Sortie& s) const
 {
   return s;
 }
 
 // The object must be named like this in the interpretor. Operators will implicitely search for this name:
-const char * IJK_discretization::get_conventional_name()
+const char * IJK_VDF_converter::get_conventional_name()
 {
   return "vdf_to_ijk";
 }
 
-Entree& IJK_discretization::readOn(Entree& is)
+Entree& IJK_VDF_converter::readOn(Entree& is)
 {
   if (le_nom() != get_conventional_name())
     {
-      Cerr << "error in IJK_discretization: the object MUST be named " << get_conventional_name()
+      Cerr << "error in IJK_VDF_converter: the object MUST be named " << get_conventional_name()
            << " (sorry, this is a hack)" << finl;
       exit();
     }
@@ -74,7 +74,7 @@ Entree& IJK_discretization::readOn(Entree& is)
   // Check parameters
   if (splitting.size_array() != 3)
     {
-      Cerr << "Error in IJK_discretization::readOn: splitting must be an array of 3 (ex splitting 3 8 8 8)" << finl;
+      Cerr << "Error in IJK_VDF_converter::readOn: splitting must be an array of 3 (ex splitting 3 8 8 8)" << finl;
       exit();
     }
 
@@ -86,23 +86,19 @@ Entree& IJK_discretization::readOn(Entree& is)
                                          direction_mapping[0], direction_mapping[1], direction_mapping[2],
                                          perio_flag_x, perio_flag_y, perio_flag_z);
 
-  splitting_.initialize_splitting(grid_geom, splitting[0], splitting[1], splitting[2]);
+  domaine_ijk_.initialize_splitting(grid_geom, splitting[0], splitting[1], splitting[2]);
 
-  vdf_to_ijk_i_.initialize(domaine_vdf, splitting_, Domaine_IJK::FACES_I, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_j_.initialize(domaine_vdf, splitting_, Domaine_IJK::FACES_J, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_k_.initialize(domaine_vdf, splitting_, Domaine_IJK::FACES_K, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_elem_.initialize(domaine_vdf, splitting_, Domaine_IJK::ELEM, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_nodes_.initialize(domaine_vdf, splitting_, Domaine_IJK::NODES, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_i_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::FACES_I, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_j_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::FACES_J, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_k_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::FACES_K, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_elem_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::ELEM, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_nodes_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::NODES, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
 
   return is;
 }
 
-const Domaine_IJK& IJK_discretization::get_IJK_splitting() const
-{
-  return splitting_;
-}
 
-const VDF_to_IJK& IJK_discretization::get_vdf_to_ijk(Domaine_IJK::Localisation loc) const
+const VDF_to_IJK& IJK_VDF_converter::get_vdf_to_ijk(Domaine_IJK::Localisation loc) const
 {
   switch(loc)
     {
@@ -117,7 +113,7 @@ const VDF_to_IJK& IJK_discretization::get_vdf_to_ijk(Domaine_IJK::Localisation l
     case Domaine_IJK::NODES:
       return vdf_to_ijk_nodes_;
     default:
-      Cerr << "Error in IJK_discretization::get_vdf_to_ijk: unknown loc" << finl;
+      Cerr << "Error in IJK_VDF_converter::get_vdf_to_ijk: unknown loc" << finl;
       exit();
     }
   return vdf_to_ijk_i_;

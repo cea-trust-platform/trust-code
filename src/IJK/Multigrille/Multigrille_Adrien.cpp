@@ -21,7 +21,7 @@
 #include <communications.h>
 #include <Domaine.h>
 #include <Schema_Comm.h>
-#include <IJK_discretization.h>
+#include <IJK_VDF_converter.h>
 #include <Interprete_bloc.h>
 #include <stat_counters.h>
 
@@ -58,9 +58,8 @@ Entree& Multigrille_Adrien::readOn(Entree& is)
 
   if (ijkdis_name != Nom())
     {
-      const IJK_discretization& ijkdis = ref_cast(IJK_discretization,
-                                                  Interprete_bloc::objet_global(ijkdis_name));
-      const Domaine_IJK& split = ijkdis.get_IJK_splitting();
+      const IJK_VDF_converter& ijkdis = ref_cast(IJK_VDF_converter, Interprete_bloc::objet_global(ijkdis_name));
+      const Domaine_IJK& split = ijkdis.get_domaine();
 
       initialize(split);
     }
@@ -71,10 +70,9 @@ int Multigrille_Adrien::completer(const Equation_base& eq)
 {
   // fait dans readOn si on a lu ijkdis_name
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
-  const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
-  const IJK_discretization& ijkdis = ref_cast(IJK_discretization,
-                                              Interprete_bloc::objet_global(ijkdis_name));
-  const Domaine_IJK& split = ijkdis.get_IJK_splitting();
+  const Nom& ijkdis_name = IJK_VDF_converter::get_conventional_name();
+  const IJK_VDF_converter& ijkdis = ref_cast(IJK_VDF_converter, Interprete_bloc::objet_global(ijkdis_name));
+  const Domaine_IJK& split = ijkdis.get_domaine();
 
   initialize(split);
 

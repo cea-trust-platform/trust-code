@@ -21,7 +21,7 @@
 #include <Schema_Comm_Vecteurs.h>
 #include <communications.h>
 #include <Matrice_Morse_Sym.h>
-#include <IJK_discretization.h>
+#include <IJK_VDF_converter.h>
 #include <stat_counters.h>
 //#define DUMP_LATA_ALL_LEVELS
 #ifdef DUMP_LATA_ALL_LEVELS
