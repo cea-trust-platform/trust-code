@@ -146,7 +146,7 @@ void Echange_Thermique_Volumique_Elem::ajouter_blocs(matrices_t matrices, Double
                    &o_vals = semi_impl.count(o_nom_inc) ? semi_impl.at(o_nom_inc) : o_ech_->equation().inconnue().valeurs(), *pvals[2] = { &vals, &o_vals },
                        &lambda = equation().milieu().conductivite().passe(), &o_lambda = o_ech_->equation().milieu().conductivite().passe();
   const Domaine_VF *dom[2] = { &ref_cast(Domaine_VF, equation().domaine_dis()), &ref_cast(Domaine_VF, o_ech_->equation().domaine_dis()) };
-  int i, e, o_e, ne_tot = dom[0]->nb_elem_tot(), o_ne_tot = dom[1]->nb_elem_tot(), n, m, N[2] = { vals.line_size(), o_vals.line_size() }, semi = semi_impl.count(nom_inc), d, D = dimension,
+  int i, e, o_e, ne_tot = dom[0]->nb_elem_tot(), o_ne_tot = dom[1]->nb_elem_tot(), n, m, N[2] = { vals.line_size(), o_vals.line_size() }, semi = int(semi_impl.count(nom_inc)), d, D = dimension,
                                                                                                 cL = lambda.dimension(0) == 1, o_cL = o_lambda.dimension(0) == 1;
   Matrice_Morse *mat = !semi && matrices.count(nom_inc) ? matrices.at(nom_inc) : nullptr, *o_mat = !semi && matrices.count(o_nom_inc) ? matrices.at(o_nom_inc) : nullptr;
 
