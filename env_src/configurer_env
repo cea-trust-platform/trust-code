@@ -1335,7 +1335,7 @@ then
    then
       if [ "$TRUST_USE_CUDA" = 1 ]
       then
-         export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware by default on PC
+         export TRUST_FORCE_PROVIDED_OPENMPI=1 # OpenMPI Cuda-Aware by default on PC
       else
          if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
          then
@@ -1671,7 +1671,10 @@ else
    TRUST_MPI_GPU_AWARE=0
    if [ "$TRUST_USE_GPU" = 1 ]
    then
-     if [ "`$MPI_ROOT/bin/ompi_info --parsable --all 2>/dev/null | grep mpi_built_with_cuda_support:value:true`" != "" ]
+     if [ "`$MPI_ROOT/bin/ompi_info --parsable --all 2>/dev/null | grep mpi_built_with_cuda_support:value:true`" != "" ] # OpenMPI
+     then
+        TRUST_MPI_GPU_AWARE=1
+     elif [ "`env | grep PE_MPICH_GTL`" != "" ] # MPICH
      then
         TRUST_MPI_GPU_AWARE=1
      elif [ "$TRUST_FORCE_MPI_GPU_AWARE" = 1 ]

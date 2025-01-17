@@ -2,14 +2,7 @@
 jdd=PAR_GPU_Aware_MPI
 if [ -f $jdd.TU ]
 then
-   # Try to detect GPU aware version: ToDo for rocM
-   echo "#include <mpi.h>
-#include <mpi-ext.h>
-#ifdef MPIX_CUDA_AWARE_SUPPORT
-int main() { return 1; }
-#endif" > gpu_aware_mpi.cpp
-   $TRUST_CC -O3 -I$CUDA_ROOT/include -L$CUDA_ROOT/lib64 -lcudart -o gpu_aware_mpi gpu_aware_mpi.cpp 2>/dev/null
-   [ $? != 0 ] && echo "No GPU-Aware MPI version detected." && exit 0
+   [ "$TRUST_MPI_GPU_AWARE" = 0 ] && echo "No GPU-Aware MPI version detected." && exit 0
    echo "GPU-Aware MPI detected! Enable device-device communications in TRUST:"
    jdd2=enable_$jdd
    cp $jdd.data $jdd2.data
@@ -19,4 +12,6 @@ int main() { return 1; }
    echo "TRUST use MPI communications:                                 | TRUST use device communications:"
    sdiff $jdd.TU $jdd2.TU | grep -e "GPU:"
    sdiff $jdd.TU $jdd2.TU | grep -e "Secondes / pas de temps"   
+   sdiff $jdd.TU $jdd2.TU | grep -e "Secondes / solveur"
+   grep "Creating AMG" $jdd2.out_err
 fi

@@ -640,29 +640,15 @@ if [ "`echo $PETSC_OPTIONS | grep -i cusp`" != "" ]
 then
    gpu=1 # Activate also GPU option if some gpu option is passed through the command line option:
 fi
-
-##############
-# GPU Direct #
-##############
-if [ $NB_PROCS -gt 1 ] && [ "$TRUST_USE_MPI_GPU_AWARE" = 1 ] # On n'active pas par defaut car pas fiable encore sur plusieurs noeuds...
-then
-   if [ "$TRUST_USE_ROCM" = 1 ] && [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" != "" ]
-   then
-      # OK sur adastra, performances ameliorees
-      export MPICH_GPU_SUPPORT_ENABLED=1
-      echo "Enabling GPU support for MPI (MPICH_GPU_SUPPORT_ENABLED=1) ..."
-   elif [ "$TRUST_USE_CUDA" = 1 ]
-   then
-      # OK sur topaze, performances ameliorees
-      echo "Enabling CUDA support for MPI ..."
-   fi
-fi
 # Si MPI n'est pas GPU-Aware:
 if [ "$TRUST_USE_GPU" = 1 ]
 then
-   [ "$TRUST_MPI_GPU_AWARE" = 0 ] && PETSC_OPTIONS=$PETSC_OPTIONS" -use_gpu_aware_mpi 0"
+   if [ "$TRUST_MPI_GPU_AWARE" = 0 ] || [ "$TRUST_USE_MPI_GPU_AWARE" != 1 ]
+   then
+      PETSC_OPTIONS=$PETSC_OPTIONS" -use_gpu_aware_mpi 0"
+   fi   
 fi
-
+  
 ###########################################
 # Lancement en interactif avec monitoring #
 ###########################################
@@ -1187,6 +1173,26 @@ then
       echo "export VT_IOTRACE=yes"         >> $sub_file
       echo "export VT_MAX_FLUSHES=0"       >> $sub_file
    fi
+   ##############
+   # GPU Direct #
+   ##############
+   if [ "$TRUST_USE_MPI_GPU_AWARE" = 1 ] # On n'active pas par defaut car pas fiable encore sur plusieurs noeuds...
+   then
+      echo "Enabling GPU support for MPI"
+      echo "export TRUST_USE_MPI_GPU_AWARE=1" >> $sub_file
+      if [ "$TRUST_USE_ROCM" = 1 ] 
+      then
+         [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" = "" ] && echo "Error, binary $exec not linked correctly for MPICH_GPU_SUPPORT_ENABLED=1 !" && exit -1
+         echo "export MPICH_GPU_SUPPORT_ENABLED=1" >> $sub_file
+         # More variables for adastra to fiabilize GPU communications (it works with 128 GPUs) tips from adastra support:
+         echo "export MPICH_ASYNC_PROGRESS=1
+export FI_CXI_RX_MATCH_MODE=software
+export FI_CXI_REQ_BUF_SIZE=12582912
+export FI_CXI_REQ_BUF_MIN_POSTED=8
+export FI_CXI_DEFAULT_CQ_SIZE=393216" >> $sub_file
+      fi
+   fi
+
    ######################
    # Commandes de calculs
    ######################

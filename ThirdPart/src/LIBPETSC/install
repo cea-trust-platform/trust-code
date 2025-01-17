@@ -540,7 +540,7 @@ then
    #######
    if [ "$TRUST_USE_GPU" = 1 ]
    then
-      hypre_configure="--enable-unified-memory" # Important on Adastra, else weak_scaling on OpenMP_Iterateur at 128 GPU fails (too slow)
+      #hypre_configure="--enable-unified-memory" # Important on Adastra, else weak_scaling on OpenMP_Iterateur at 128 GPU fails (too slow)
       [ "$TRUST_MPI_GPU_AWARE" = 1 ] && hypre_configure=$hypre_configure" --enable-gpu-aware-mpi" # Enable MPI GPU awareness for Hypre
       # Hack pour Hypre car --download-hypre-configure-arguments difficile a faire marcher avec plusieurs arguments...
       sed -i "1,$ s?--with-MPI-libs?$hypre_configure --with-MPI-libs?g" config/BuildSystem/config/packages/hypre.py || exit -1

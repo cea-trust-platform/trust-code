@@ -42,33 +42,38 @@ Entree& Solv_AMG::readOn(Entree& is)
   is >> motcle;
   while (motcle != "}")
     {
-      if (motcle=="GCP" || motcle=="{") {}
+      if (motcle=="GCP" || motcle=="BICGSTAB" || motcle=="GMRES") chaine_lue_=motcle;
+      else if (motcle=="{") {}
       else if (motcle=="RTOL") is >> rtol;
       else if (motcle=="ATOL") is >> atol;
       else if (motcle=="IMPR") impr = true;
       else
         {
           Cerr << "Reading: " << motcle << finl;
-          Process::exit("Error! Waiting syntax: GCP { rtol value [impr] }");
+          Process::exit("Error! Waiting syntax: GCP|BICGSTAB|GMRES { rtol value [impr] }");
         }
       is >> motcle;
     }
   // We select the more efficient/robust one:
 #if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
   library = "petsc_gpu";
-  chaine_lue_ = "gcp { precond boomeramg { }"; // Best GPU solver
+  chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver
 #else
   library = "petsc";
-  chaine_lue_ = "gcp { precond boomeramg { }"; // Best CPU solver
+  chaine_lue_ += " { precond boomeramg { }"; // Best CPU solver
 #endif
-#if defined(ROCM_VERSION_MAJOR) && (ROCM_VERSION_MAJOR >= 6)
-  library = "petsc_gpu";
-  chaine_lue_ = "gcp { precond sa-amg { }";    // GPU Solver for ROCm >= 6 (Hypre crash)
-#endif
-#if defined(MPIX_CUDA_AWARE_SUPPORT) && (OMPI_MAJOR_VERSION == 4)
+  const char* value = std::getenv("ROCM_ARCH");
+  if (value != nullptr && std::string(value) == "gfx1100")
+    {
+      library = "petsc_gpu";
+      chaine_lue_ += " { precond sa-amg { }";    // GPU Solver for gfx1100 (Hypre crash)
+    }
+  /*
+  #if defined(MPIX_CUDA_AWARE_SUPPORT) && (OMPI_MAJOR_VERSION == 4)
   library = "amgx";
-  chaine_lue_ = "gcp { precond sa-amg { }";    // Best GPU solver on Nvidia if MPI-GPU Aware OpenMPI 4.x (Hypre diverge...)
-#endif
+  chaine_lue_ += " { precond sa-amg { }";    // Best GPU solver on Nvidia if MPI-GPU Aware OpenMPI 4.x (Hypre diverge...)
+  #endif
+  */
   if (rtol>0)
     {
       chaine_lue_ += " rtol ";
