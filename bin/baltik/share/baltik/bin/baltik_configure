@@ -402,6 +402,20 @@ then
    done < $dependencies_file
    echo "Done."
 else
+   # Ajout pour que les liens vers les cas tests dans build/tests/all soient crees si
+   # le cnofigure est appele avec -noprerequis
+   total_path=""
+   distrib_path=""
+   while read name path
+   do
+      total_path=${total_path}" "$path
+      distrib_path=${distrib_path}" "$name:$path
+      echo "Verify prerequies project "$name
+      project_directory_dep=$path
+      project_dep_configuration_file=$path/project.cfg
+   done < $dependencies_file
+   echo "Done."
+
    makefile=${project_build_directory}/make.include.atelier
 fi
 

@@ -102,7 +102,7 @@ configure_compilateur_ccache()
          if [ "$TRUST_CC_BASE" = "" ]
          then
             [ "$TRUST_STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.3.0" && exit -1
-            [ "$TRUST_STDCPP" = c++17 ] && echo "Error! No C++17 compiler found. For a GNU compiler, you would need a version>=8.2.0 or configure for a C++14 compiler with: ./configure -std=c++14" && exit -1
+            [ "$TRUST_STDCPP" = c++17 ] && echo "Error! No C++17 compiler found. For a GNU compiler, you would need a version>=8.2.0 or configure for a C++14 compiler with: ./configure -std=c++14 which needs version>=5.3.0" && exit -1
             echo "Error! -std=$TRUST_STDCPP is not supported." && exit -1
          fi
       elif [ "${chemin%nvc++}" != "$chemin" ]
