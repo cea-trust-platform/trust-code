@@ -1901,13 +1901,15 @@ void LataDB::read_data2_(LataDataFile& f, const LataDBField& fld,
 
   if (fld.nb_comp_ < 0 || fld.size_ < 0)
     {
-      Journal() << "Error in LataDB::read_data_: nb_comp_ or size_ not initialized for component " << fld.name_ << endl;
+      Journal() << "Error in LataDB::read_data2_: nb_comp_ or size_ not initialized for component " << fld.name_ << endl;
       throw;
     }
 
   if ((!lines_to_read) && (debut < 0 || debut + n > fld.size_))
     {
-      Journal() << "Error in LataDB::read_data_: [debut,debut+n] invalid range (size=" << fld.size_ << ")" << endl;
+      Journal() << "Error in LataDB::read_data2_ (reading field '" <<  fld.name_ << "' on geometry '" << fld.geometry_ << "') " << endl;
+      Journal() << " -> Requested reading of " << n << " values starting at position " << debut << " but field only has " << fld.size_ << " values!" << endl;
+      Journal() << " -> File is probably corrupted/misformatted." << endl;
       throw;
     }
 
