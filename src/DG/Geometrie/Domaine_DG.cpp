@@ -48,14 +48,15 @@ void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
 
-  calculer_h_carre();
-  compute_mesh_param();
+
   // if triangle elem
 
   // const Nom& type_elem_geom = domaine().type_elem()->que_suis_je();
   bool tri_or_quad_only = rempli_type_elem(); // bool_only_triangle_and_quadrangle + fullfield the tab type_elem
   if (tri_or_quad_only==false)
     Process::exit("General meshes not implemented yet"); // TODO : Change this if general meshes implemented
+  compute_mesh_param();
+  calculer_h_carre();
   Quadrature_base* quad1 = new Quadrature_Ord1_Polygone(*this);
   Quadrature_base* quad2 = new Quadrature_Ord3_Polygone(*this);
   Quadrature_base* quad5 = new Quadrature_Ord5_Polygone(*this);
@@ -130,53 +131,89 @@ double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
 
 void Domaine_DG::compute_mesh_param()
 {
-  /*
   int nb_elem = this->nb_elem();
-
-  DiaTri_.resize(nb_elem);
-  invDiaTri_.resize(nb_elem);
-  PerTri_.resize(nb_elem);
-  rhoTri_.resize(nb_elem);
-  sigTri_.resize(nb_elem);
+  DoubleTab& xs = domaine().les_sommets(); // facets barycentre
+  const IntTab& vert_elems = domaine().les_elems();
+  const IntTab& elem_faces=this->elem_faces();
+  const IntTab& face_som=this->face_sommets();
+  dia_.resize(nb_elem);
+  invdia_.resize(nb_elem);
+  per_.resize(nb_elem);
+  rho_.resize(nb_elem);
+  sig_.resize(nb_elem);
+  surf_.resize(nb_elem);
 
   for (int e = 0; e < nb_elem; e++)
     {
-      DiaTri_(e) = 1 / (2 * this->volumes(e));
-      int nb_elem_face = 3; // nb_elem_faces(e)
-      for (int i_f = 0; i_f < nb_elem_face; i_f++)
+      int nsom = type_elem_(e);
+      if (nsom==3)
         {
-          int f = this->elem_faces(e, i_f);
-          double sur_f = this->face_surfaces(f);
-          DiaTri_(e) *= sur_f;
-          PerTri_(e) += sur_f; //
+          dia_(e) = 1 / (2 * volumes(e));
+          int nb_elem_face = 3; // nb_elem_faces(e)
+          for (int i_f = 0; i_f < nb_elem_face; i_f++)
+            {
+              int f = elem_faces(e, i_f);
+              double sur_f = face_surfaces(f);
+              dia_(e) *= sur_f;
+              per_(e) += sur_f; //
+            }
+          invdia_(e) = 1. / dia_(e);
+          rho_(e) = 4. * volumes(e) / per_(e);
+          sig_(e) = dia_(e) / rho_(e);
+        }
+      else
+        {
+          surf_(e)=0;
+          per_(e)=0;
+          double h_e=0;
+          for (int f = 0; f < nsom; f++)  // local index of facet
+            {
+              int f_e = elem_faces(e,f);
+              int s1 = face_som(f_e,0);
+              int s2 = face_som(f_e,1);
+              double x1= xs(s1,0);
+              double y2=xs(s2,1);
+              double x2=xs(s2,0);
+              double y1=xs(s1,1);
+              double prod=x1*y2-x2*y1;
+              std::cout<< "Les sommets sont ("<<x1<<","<<y1<<") et (" <<x2<<","<<y2<<") et prod : "<<prod<<std::endl ;
+              surf_(e) +=std::abs(xs(s1,0)*xs(s2,1)-xs(s2,0)*xs(s1,1)); // It s 2 times the surface but then we need to multiply by 2 ...
+              per_(e)+= std::sqrt((xs(s1,0) - xs(s2,0)) * (xs(s1,0) - xs(s2,0)) + (xs(s1,1) - xs(s2,1)) * (xs(s1,1) - xs(s2,1)));
+
+              // calcul of h
+              for (int loc_vert2 = f+1; loc_vert2 < nsom; loc_vert2++) // That's tricky: we use the bijection between vertices and faces to loop over the vertices simultaneously.
+                h_e=std::max(h_e,std::sqrt((xs(vert_elems(e, f),0) - xs(vert_elems(e, loc_vert2),0)) * (xs(vert_elems(e, f),0) - xs(vert_elems(e, loc_vert2),0)) + (xs(vert_elems(e, f),1) - xs(vert_elems(e, loc_vert2),1)) * (xs(vert_elems(e, f),1) - xs(vert_elems(e, loc_vert2),1)))); // max between the distance of each vertices
+            }
+          surf_(e)=std::abs(surf_(e)); // can be negative otherwise
+          rho_(e)=(surf_(e)/per_(e));
+          dia_(e)=h_e;
+          invdia_(e)=1/h_e;
+          sig_(e)=h_e/rho_(e);
         }
     }
-
-  for (int e = 0; e < this->nb_elem(); e++)
-    {
-      invDiaTri_(e) = 1. / DiaTri_(e);
-      rhoTri_(e) = 4. * this->volumes(e) / PerTri_(e);
-      sigTri_(e) = DiaTri_(e) / rhoTri_(e);
-    }
-    */
 }
 
 //TODO DG h_carre with diameter
 void Domaine_DG::calculer_h_carre()
 {
+  h_carre=0;
+  int nb_elem = this->nb_elem();
+  for (int e = 0; e < nb_elem; e++)
+    {
+      h_carre=std::max(h_carre,dia_(e)*dia_(e));
+    }
   // Calcul de h_carre
-  h_carre = 1;
+  //h_carre = 1;
   if (h_carre_.size()) return; // deja fait
   h_carre_.resize(nb_elem_tot());
-
-  h_carre_ = 0.1;
+  h_carre_ = h_carre;
 //  h_carre = 1.;
 }
 
 
 bool Domaine_DG::rempli_type_elem()
 {
-  type_elem_.resize(this->nb_elem_tot());
+  type_elem_.resize(nb_elem_tot());
   bool only_tri_quad=true;
   const IntTab& elem_face = elem_faces();
   int nb_f_elem_max=elem_face.dimension(1);
@@ -185,14 +222,14 @@ bool Domaine_DG::rempli_type_elem()
     {
       if (nb_f_elem_max == 3) // que des triangles
         {
-          for (int e = 0; e < this->nb_elem_tot(); e++)
+          for (int e = 0; e < nb_elem_tot(); e++)
             {
               type_elem_(e) = 3; // triangle
             }
         }
       else if (nb_f_elem_max == 4) // que des quadrangle ou m��lange triangle et quadrangle
         {
-          for (int e = 0; e < this->nb_elem_tot(); e++)
+          for (int e = 0; e < nb_elem_tot(); e++)
             {
               if (elem_face(e, 3) == -1)
                 {
@@ -205,7 +242,7 @@ bool Domaine_DG::rempli_type_elem()
       else // melange polygone
         {
           only_tri_quad = false;
-          for (int e = 0; e < this->nb_elem_tot(); e++)
+          for (int e = 0; e < nb_elem_tot(); e++)
             {
               if (elem_face(e, 3) == -1)
                 {

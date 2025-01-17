@@ -599,37 +599,45 @@ void Champ_Elem_DG::compute_stab_param()
   int nb_elem = domaine.nb_elem();
   eta_elem.resize(nb_elem);
   eta_facet.resize(domaine.nb_faces());
-  /*
-    //          Computation of the stabilisation parameters for triangle
-    const DoubleTab& sigTri=domaine.get_sigTri();
-    for (int e = 0; e < domaine.nb_elem(); e++)
-      {
-        double ordre = get_order();
-        eta_elem(e) = 6. / M_PI * (sigTri(e)*sigTri(e))*(ordre + 1.)*(ordre + 2.);     // Todo DG : replace for generic order
-      }
+  const IntTab& type_elem = domaine.get_type_elem();  // IntTab that indicate the number of facet of each elem
 
-    for (unsigned int f = 0; f < (unsigned int) domaine.premiere_face_int(); f++) // For the boundary
-      {
-        int elem0 = domaine.face_voisins(f, 0);
-        eta_facet(f) = eta_elem(elem0); // EtaF=EtaT
-      }
-
-    for (unsigned int f = domaine.premiere_face_int(); f < (unsigned int) domaine.nb_faces(); f++)
-      {
-        unsigned int elem0 = domaine.face_voisins(f, 0);
-        unsigned int elem1 = domaine.face_voisins(f, 1);
-        double eta_t0 = eta_elem(elem0);
-        double eta_t1 = eta_elem(elem1);
-        eta_facet(f) = 2. * eta_t0 * eta_t1 / (eta_t0 + eta_t1); // Harmonique mean
-      }
-      */
+  //          Computation of the stabilisation parameters for triangle
+  const DoubleTab& sig=domaine.get_sig();
   for (int e = 0; e < domaine.nb_elem(); e++)
+    {
+      double ordre = get_order();
+      if(type_elem(e)==3)
+        {
+          eta_elem(e) = 6. / M_PI * (sig(e)*sig(e))*(ordre + 1.)*(ordre + 2.);
+        }
+      else
+        {
+          eta_elem(e) = 10*ordre*ordre; //  TODO: calculate a more optimized pen. coeff.
+        }
+    }
+
+  for (unsigned int f = 0; f < (unsigned int) domaine.premiere_face_int(); f++) // For the boundary
+    {
+      int elem0 = domaine.face_voisins(f, 0);
+      eta_facet(f) = eta_elem(elem0); // EtaF=EtaT
+    }
+
+  for (unsigned int f = domaine.premiere_face_int(); f < (unsigned int) domaine.nb_faces(); f++)
+    {
+      unsigned int elem0 = domaine.face_voisins(f, 0);
+      unsigned int elem1 = domaine.face_voisins(f, 1);
+      double eta_t0 = eta_elem(elem0);
+      double eta_t1 = eta_elem(elem1);
+      eta_facet(f) = 2. * eta_t0 * eta_t1 / (eta_t0 + eta_t1); // Harmonique mean
+    }
+
+  /*for (int e = 0; e < domaine.nb_elem(); e++)
     {
       eta_elem(e) = 50.;     // Todo DG : replace for generic order
     }
   for (unsigned int f = 0; f < (unsigned int) domaine.nb_faces(); f++) // For the boundary
     {
       eta_facet(f) = 10.; // EtaF=EtaT
-    }
+    }*/
 }
 

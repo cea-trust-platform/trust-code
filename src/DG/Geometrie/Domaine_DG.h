@@ -28,11 +28,11 @@ class Domaine_DG : public Domaine_Poly_base
 public :
   void discretiser() override;
 
-  inline const DoubleTab& get_DiaTri() const { return DiaTri_; }
-  inline const DoubleTab& get_invDiaTri() const { return invDiaTri_; }
-  inline const DoubleTab& get_PerTri() const { return PerTri_; }
-  inline const DoubleTab& get_rhoTri() const { return rhoTri_; }
-  inline const DoubleTab& get_sigTri() const { return sigTri_; }
+  inline const DoubleTab& get_dia() const { return dia_; }
+  inline const DoubleTab& get_invdia() const { return invdia_; }
+  inline const DoubleTab& get_per() const { return per_; }
+  inline const DoubleTab& get_rho() const { return rho_; }
+  inline const DoubleTab& get_sig() const { return sig_; }
   inline const IntTab& get_type_elem() const { return type_elem_; }
 
 
@@ -51,11 +51,12 @@ public :
 protected:
 
   std::map<int, const Quadrature_base*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
-  DoubleTab DiaTri_;
-  DoubleTab invDiaTri_;
-  DoubleTab PerTri_;
-  DoubleTab rhoTri_;
-  DoubleTab sigTri_;
+  DoubleTab dia_;
+  DoubleTab invdia_;
+  DoubleTab per_;
+  DoubleTab rho_;
+  DoubleTab sig_;
+  DoubleTab surf_;
   IntTab type_elem_;
 // DoubleVect h_, sigma;
 
