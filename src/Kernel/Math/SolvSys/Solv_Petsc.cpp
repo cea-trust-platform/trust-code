@@ -1392,6 +1392,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                       {
                         add_option("pc_gamg_type","agg");
                         add_option("pc_gamg_agg_nsmooths","1");
+                        add_option("pc_gamg_threshold","0.7"); // Fix in parallel:  Computed maximum singular value as zero
                         //add_option("pc_gamg_aggressive_square_graph","1");
                       }
                     else if (rang==15) // UA-AMG
