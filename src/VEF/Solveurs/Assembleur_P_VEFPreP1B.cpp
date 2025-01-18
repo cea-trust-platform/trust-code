@@ -458,8 +458,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       const Domaine_VEF& domaine_VEF =  domaine_Vef();
       const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
 
-      const DoubleVect& porosite_face = domaine_Cl.equation().milieu().porosite_face();
-      CDoubleArrView view_porosite_face = porosite_face.view_ro();
+      CDoubleArrView porosite_face = domaine_Cl.equation().milieu().porosite_face().view_ro();
 
       const int nb_cond_lim = domaine_Cl.nb_cond_lim();
 
@@ -485,16 +484,15 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
           if (sub_type(Entree_fluide_vitesse_imposee, cl_base) && champ_front.instationnaire())
             {
               Gpoint_nul = 0;
-              const DoubleTab& gpoint = champ_front.derivee_en_temps();
-              CDoubleTabView view_gpoint = gpoint.view_ro();
-              CDoubleArrView view_arr_gpoint = static_cast<const DoubleVect&>(gpoint).view_ro();
-              bool ch_unif = (gpoint.nb_dim()==1);
-              ToDo_Kokkos("To avoid copy");
+              CDoubleTabView gpoint = champ_front.derivee_en_temps().view_ro();
+              CDoubleArrView arr_gpoint = static_cast<const DoubleVect&>(champ_front.derivee_en_temps()).view_ro();
+              bool ch_unif = (champ_front.derivee_en_temps().nb_dim()==1);
+              int dimension_ = Objet_U::dimension;
               Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin),
                                    KOKKOS_LAMBDA(const int num_face)
               {
-                for (int dim=0; dim<Objet_U::dimension; dim++)
-                  view_Gpoint(num_face,dim) = view_porosite_face(num_face) * (ch_unif ? view_arr_gpoint(dim) : view_gpoint(num_face-ndeb,dim));
+                for (int dim=0; dim<dimension_; dim++)
+                  view_Gpoint(num_face,dim) = porosite_face(num_face) * (ch_unif ? arr_gpoint(dim) : gpoint(num_face-ndeb,dim));
               });
               end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
             }
@@ -527,15 +525,14 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 
 int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, DoubleTab& b)
 {
+  ToDo_Kokkos("Check we have a test case!");
   const Domaine_VEF& domaine_VEF =  domaine_Vef();
   const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
 
   const int nb_cond_lim = domaine_Cl.nb_cond_lim();
 
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  CIntTabView view_face_voisins = face_voisins.view_ro();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  CDoubleTabView view_face_normales = face_normales.view_ro();
+  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+  CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
 
   CDoubleTabView view_Gpoint = Gpoint.view_ro();
   DoubleArrView view_b = static_cast<DoubleVect&>(b).view_wo();
@@ -546,25 +543,21 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
 
       const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
       const Champ_front_base& champ_front = cl_base.champ_front();
-      // DOUBT_HARI: Can Front_VF::num_face(const int ind_face) be replaced by first obtaining
-      // an ArrOfInt via Front_VF::num_face() and then indexing that array?
-      const ArrOfInt& arr_num_face = front_VF.num_face();
-      CIntArrView view_num_face = arr_num_face.view_ro();
+      CIntArrView num_face = front_VF.num_face().view_ro();
       /* Test sur la nature du champ au bord du domaine */
       if (sub_type(Entree_fluide_vitesse_imposee, cl_base)  && champ_front.instationnaire() )
         {
           // Construction de la liste des faces a traiter (reelles + virtuelles)
           const int nb_faces_bord_tot = front_VF.nb_faces_tot();
-          ToDo_Kokkos("critical");
+          int dimension_ = Objet_U::dimension;
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_bord_tot, KOKKOS_LAMBDA(const int ind_face)
           {
-            const int num_face = view_num_face(ind_face);
-            const int elem = view_face_voisins(num_face,0);
+            const int num_face = num_face(ind_face);
+            const int elem = face_voisins(num_face,0);
             assert(elem!=-1);
 
-            for (int dim=0; dim<Objet_U::dimension; dim++)
-              // DOUBT_HARI: In parallel execution, order could matter.
-              view_b(elem) -= view_Gpoint(num_face,dim)*view_face_normales(num_face,dim);
+            for (int dim=0; dim<dimension_; dim++)
+	      Kokkos::atomic_add(&view_b(elem), -view_Gpoint(num_face,dim)*face_normales(num_face,dim)); 
           });
           end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
         }
@@ -585,26 +578,16 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
 
   const double coeff_dim = Objet_U::dimension*(Objet_U::dimension+1);
 
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  CIntTabView view_elem_faces = elem_faces.view_ro();
-  const IntTab& face_sommets = domaine_VEF.face_sommets();
-  CIntTabView view_face_sommets = face_sommets.view_ro();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  CIntTabView view_face_voisins = face_voisins.view_ro();
-  const IntTab& elem_sommets = domaine.les_elems();
-  CIntTabView view_elem_sommets = elem_sommets.view_ro();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  CDoubleTabView view_face_normales = face_normales.view_ro();
-  ArrOfDouble sigma(Objet_U::dimension);
-  DoubleArrView view_sigma = sigma.view_rw();
+  CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+  CIntTabView face_sommets = domaine_VEF.face_sommets().view_ro();
+  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+  CIntTabView elem_sommets = domaine.les_elems().view_ro();
+  CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
 
   CDoubleTabView view_Gpoint = Gpoint.view_ro();
   DoubleArrView view_b = static_cast<DoubleVect&>(b).view_wo();
 
-  CIntArrView view_renum_som_perio = domaine.get_renum_som_perio().view_ro();
-
-  // DOUBT_HARI: static member accessed without qualifier
-  // int dimension = Objet_U::dimension;
+  CIntArrView renum_som_perio = domaine.get_renum_som_perio().view_ro();
 
   for (int cond_lim=0; cond_lim<nb_cond_lim; cond_lim++)
     {
@@ -618,54 +601,52 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
         {
           // Construction de la liste des faces a traiter (reelles + virtuelles)
           const int nb_faces_bord_tot = front_VF.nb_faces_tot();
-          ToDo_Kokkos("critical");
+          CIntArrView num_face = front_VF.num_face().view_ro();
+          int dimension_ = Objet_U::dimension;
+
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_bord_tot, KOKKOS_LAMBDA(const int ind_face)
           {
-            const int num_face =  front_VF.num_face(ind_face);
-            const int elem = view_face_voisins(num_face,0);
+	    double sigma[3];
+            const int num_face = num_face(ind_face);
+            const int elem = face_voisins(num_face,0);
             assert(elem!=-1);
 
             //Calcul de la vitesse au centre de l'element
-            // DOUBT_HARI: How to set elements of view_sigma to 0?
-            // sigma=0.;
-            for (int i_sigma = 0; i_sigma < Objet_U::dimension; ++i_sigma)
-              {
-                view_sigma(i_sigma) = 0;
-              }
+            for (int i_sigma = 0; i_sigma < dimension_; ++i_sigma)
+              sigma[i_sigma] = 0;
 
             for (int face_loc=0; face_loc<nb_faces_elem; face_loc++)
               {
-                const int face = view_elem_faces(elem,face_loc);
+                const int face = elem_faces(elem,face_loc);
 
-                for(int comp=0; comp<dimension; comp++)
-                  Kokkos::atomic_add(&view_sigma(comp), view_Gpoint(face, comp));
+                for(int comp=0; comp<dimension_; comp++)
+                  sigma[comp] += view_Gpoint(face, comp);
               }
 
             //Calcul de la divergence de la vitesse
             for(int face_loc=0; face_loc<nb_faces_elem; face_loc++)
               {
-                const int som = nb_elem_tot + view_renum_som_perio(view_elem_sommets(elem,face_loc));
-                const int face = view_elem_faces(elem,face_loc);
+                const int som = nb_elem_tot + renum_som_perio(elem_sommets(elem,face_loc));
+                const int face = elem_faces(elem,face_loc);
 
                 double psc=0;
                 double signe=1.;
-                if(elem != view_face_voisins(face,0)) signe=-1.;
+                if(elem != face_voisins(face,0)) signe=-1.;
 
-                for(int comp=0; comp<dimension; comp++)
-                  psc += view_sigma(comp)*view_face_normales(face,comp);
+                for(int comp=0; comp<dimension_; comp++)
+                  psc += sigma[comp]*face_normales(face,comp);
 
-                // DOUBT_HARI: Should it be atomic?
                 Kokkos::atomic_add(&view_b(som), -signe*psc/coeff_dim);
               }
 
             double flux = 0. ;
-            for (int comp=0; comp<dimension; comp++)
-              flux += view_Gpoint(num_face,comp) * view_face_normales(num_face,comp) ;
+            for (int comp=0; comp<dimension_; comp++)
+              flux += view_Gpoint(num_face,comp) * face_normales(num_face,comp) ;
 
-            flux*=1./dimension;
+            flux*=1./dimension_;
             for(int som_loc=0; som_loc<nb_faces_elem-1; som_loc++)
               {
-                const int som = nb_elem_tot + view_renum_som_perio(view_face_sommets(num_face,som_loc));
+                const int som = nb_elem_tot + renum_som_perio(face_sommets(num_face,som_loc));
                 // DOUBT_HARI: Should it be atomic?
                 Kokkos::atomic_add(&view_b(som), -flux);
               }
