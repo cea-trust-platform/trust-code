@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,45 +84,38 @@ Entree& Source_Masse_Fluide_Dilatable_VEF::readOn(Entree& is) { return Source_Ma
  */
 void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffusion_Fluide_Dilatable_base& eqn, const Fluide_Dilatable_base& fluide, const bool is_expl, DoubleVect& resu) const
 {
-  ToDo_Kokkos("critical");
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
-  const DoubleTab& Y = eqn.inconnue().valeurs(),
-                   &rho = fluide.masse_volumique().valeurs(),
-                    &val_flux0 = ch_front_source_->valeurs();
 
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
   const int nb_faces = zvf.nb_faces();
-  const IntTab& face_voisins = zvf.face_voisins();
   DoubleTrav val_flux(nb_faces, 1);
 
-  CDoubleTabView view_val_flux0 = val_flux0.view_ro();
+  CDoubleTabView val_flux0 = ch_front_source_->valeurs().view_ro();
   DoubleTabView view_val_flux = val_flux.view_rw();
-  const int val_flux0_line_sz = val_flux0.line_size();
-  CIntTabView view_face_voisins = face_voisins.view_ro();
-  const DoubleVect& face_surfaces = zvf.face_surfaces();
-  CDoubleArrView view_face_surfaces = face_surfaces.view_ro();
-  CDoubleArrView view_rho = static_cast<const DoubleVect&>(rho).view_ro();
+  const int val_flux0_line_sz = ch_front_source_->valeurs().line_size();
+  CIntTabView face_voisins = zvf.face_voisins().view_ro();
+  CDoubleArrView face_surfaces = zvf.face_surfaces().view_ro();
+  CDoubleArrView rho = static_cast<const DoubleVect&>(fluide.masse_volumique().valeurs()).view_ro();
 
-  const DoubleVect& volumes_entrelaces = zvf.volumes_entrelaces();
-  CDoubleArrView view_volumes_entrelaces = volumes_entrelaces.view_ro();
-  DoubleArrView view_resu = resu.view_wo();
+  CDoubleArrView volumes_entrelaces = zvf.volumes_entrelaces().view_ro();
+  DoubleArrView view_resu = resu.view_rw();
 
   // pour post
   Champ_Don_base * post_src_ch = fluide.has_source_masse_espece_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
 
   bool ok_post_src_ch = post_src_ch ? true:false;
-  DoubleArrView view_valeurs;
-  if (ok_post_src_ch) view_valeurs = static_cast<DoubleVect&>((*post_src_ch).valeurs()).view_wo();
+  DoubleArrView valeurs;
+  if (ok_post_src_ch) valeurs = static_cast<DoubleVect&>((*post_src_ch).valeurs()).view_wo();
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces, KOKKOS_LAMBDA(const int i_face)
   {
     for (int ncomp = 0; ncomp < val_flux0_line_sz; ncomp++)
-      view_val_flux(i_face, 0) += is_uniforme ? view_val_flux0(0, ncomp) : view_val_flux0(i_face, ncomp);
+      view_val_flux(i_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i_face, ncomp);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
 
   for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
@@ -133,15 +126,15 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
       if (le_bord.le_nom() == nom_bord_)
         {
           const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
-          const IntTab& elem_faces = zvf.elem_faces();
-          CIntTabView view_elem_faces = elem_faces.view_ro();
-          int elem_faces_line_size = elem_faces.line_size();
+          CIntTabView elem_faces = zvf.elem_faces().view_ro();
+          CDoubleArrView Y = static_cast<const ArrOfDouble&>(eqn.inconnue().valeurs()).view_ro();
+          int elem_faces_line_size = zvf.elem_faces().line_size();
 
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
           {
-            const int elem1 = view_face_voisins(num_face, 0), elem2 = view_face_voisins(num_face, 1);
+            const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
             int elem = elem1 == -1 ? elem2 : elem1;
-            const double surface_elem = view_face_surfaces(num_face);
+            const double surface_elem = face_surfaces(num_face);
             /*
              * NOTA BENE : on cherche un facteur de correction car Y est aux faces
              * Terme source surfacique, on utilise Y face => volume entrelaces
@@ -153,19 +146,19 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
              */
             double YY = 0.;
             for (int j = 0; j < elem_faces_line_size; j++)
-              YY += Y(view_elem_faces(elem, j));
+              YY += Y(elem_faces(elem, j));
 
             YY /= elem_faces_line_size;
-            double srcmass = -(YY * view_val_flux(num_face - ndeb, 0) * surface_elem) / view_rho(num_face);
+            double srcmass = -(YY * view_val_flux(num_face - ndeb, 0) * surface_elem) / rho(num_face);
             if (is_expl)
-              srcmass /= view_volumes_entrelaces(num_face); // on divise par volume (pas de solveur masse dans l'equation ...)
+              srcmass /= volumes_entrelaces(num_face); // on divise par volume (pas de solveur masse dans l'equation ...)
             view_resu(num_face) += srcmass;
 
             // DOUBT_HARI: Could give a different result according to order of execution
             if (ok_post_src_ch)
-              view_valeurs(elem) = srcmass;
+              valeurs(elem) = srcmass;
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 
@@ -174,48 +167,43 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
     (*post_src_ch).mettre_a_jour(fluide.inco_chaleur().temps());
 }
 
-void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& resu) const
+void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatable_base& fluide, DoubleVect& tab_resu) const
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VEF& zp1b = ref_cast(Domaine_VEF, zclb.domaine_dis());
-  const DoubleTab& val_flux0 = ch_front_source_->valeurs();
   // pour post
   Champ_Don_base * post_src_ch = fluide.has_source_masse_projection_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
 
   const int nb_faces = zp1b.nb_faces();
-  const int val_flux0_line_sz = val_flux0.line_size();
-  CDoubleTabView view_val_flux0 = val_flux0.view_ro();
-  DoubleTrav val_flux(zp1b.nb_faces(), 1);
-  DoubleTabView view_val_flux = val_flux.view_rw();
+  const int val_flux0_line_sz = ch_front_source_->valeurs().line_size();
+  DoubleTrav tab_val_flux(zp1b.nb_faces(), 1);
 
   // Handle uniform case ... such a pain:
   const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
+  CDoubleTabView val_flux0 = ch_front_source_->valeurs().view_ro();
+  DoubleTabView val_flux = tab_val_flux.view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces, KOKKOS_LAMBDA(const int i_face)
   {
     for (int ncomp = 0; ncomp < val_flux0_line_sz; ncomp++)
-      view_val_flux(i_face, 0) += is_uniforme ? view_val_flux0(0, ncomp) : view_val_flux0(i_face, ncomp);
+      val_flux(i_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i_face, ncomp);
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   /*
    * Attention : ici resu est comme la Pression => P0 et P1 ... Pa peut etre
    * Le flux est aux faces
    * Donc : passage aux elems et aux sommets
    */
-  const DoubleVect& face_surfaces = zp1b.face_surfaces();
-  CDoubleArrView view_face_surfaces = face_surfaces.view_ro();
-  const DoubleVect& volumes = zp1b.volumes();
-  CDoubleArrView view_volumes = volumes.view_ro();
   DoubleTrav tab_flux_faces = fluide.inco_chaleur().valeurs(); // pour initialiser avec la bonne taille
   tab_flux_faces = 0.;
-  DoubleArrView view_flux_faces = static_cast<DoubleVect&>(tab_flux_faces).view_rw();
 
   const int nb_elem_tot = zp1b.nb_elem_tot(), nb_som_tot = zp1b.domaine().nb_som_tot(), nb_faces_tot = zp1b.nb_faces_tot();
-  const IntTab& face_voisins = zp1b.face_voisins(), &elem_faces = zp1b.elem_faces(), &face_sommets = zp1b.face_sommets();
-  const DoubleVect& volumes_entrelaces = zp1b.volumes_entrelaces();
-  CDoubleArrView view_volumes_entrelaces = volumes_entrelaces.view_ro();
-  CIntTabView view_face_voisins = face_voisins.view_ro();
-  CIntTabView view_face_sommets = face_sommets.view_ro();
+  CDoubleArrView face_surfaces = zp1b.face_surfaces().view_ro();
+  CDoubleArrView volumes = zp1b.volumes().view_ro();
+  CDoubleArrView volumes_entrelaces = zp1b.volumes_entrelaces().view_ro();
+  CIntTabView face_voisins = zp1b.face_voisins().view_ro();
+  CIntTabView face_sommets = zp1b.face_sommets().view_ro();
+  DoubleArrView flux_faces = static_cast<DoubleVect&>(tab_flux_faces).view_rw();
   // remplir flux_faces (seulement au bord !)
   for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
@@ -228,83 +216,78 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
 
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
           {
-            const int elem1 = view_face_voisins(num_face, 0), elem2 = view_face_voisins(num_face, 1);
+            const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
             int elem = elem1 == -1 ? elem2 : elem1;
-            const double surf = view_face_surfaces(num_face);
-            view_flux_faces(num_face) = view_val_flux(num_face - ndeb, 0) * surf / view_volumes(elem); // TODO multiple elements!! units val_flux(num_face-ndeb,0) *surf [kg.s-1] => gives [kg.m-3.s-1]
+            const double surf = face_surfaces(num_face);
+            flux_faces(num_face) = val_flux(num_face - ndeb, 0) * surf / volumes(elem); // TODO multiple elements!! units val_flux(num_face-ndeb,0) *surf [kg.s-1] => gives [kg.m-3.s-1]
           });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 
-  DoubleTrav tab_flux_som(nb_som_tot), volume_int_som(nb_som_tot);
+  DoubleTrav tab_flux_som(nb_som_tot), tab_volume_int_som(nb_som_tot);
+  tab_volume_int_som = 0.;
 
   const int nfe = zp1b.domaine().nb_faces_elem(), nsf = zp1b.nb_som_face();
-  const Domaine& dom = zp1b.domaine();
-  CIntArrView view_renum_som_perio = dom.get_renum_som_perio().view_ro();
   // calcul de la somme des volumes entrelacees autour d'un sommet
-  volume_int_som = 0.;
-  DoubleArrView view_volume_int_som = static_cast<DoubleVect&>(volume_int_som).view_rw();
+  CIntArrView renum_som_perio = zp1b.domaine().get_renum_som_perio().view_ro();
+  DoubleArrView volume_int_som = static_cast<DoubleVect&>(tab_volume_int_som).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA (const int face)
   {
     for (int som = 0; som < nsf; som++)
       {
-        int som_glob = view_renum_som_perio(view_face_sommets(face, som));
-        Kokkos::atomic_add(&view_volume_int_som(som_glob), view_volumes_entrelaces(face));
+        int som_glob = renum_som_perio(face_sommets(face, som));
+        Kokkos::atomic_add(&volume_int_som(som_glob), volumes_entrelaces(face));
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   // interpolation du flux aux sommets
   tab_flux_som = 0.;
-  DoubleArrView view_flux_som = static_cast<DoubleVect&>(tab_flux_som).view_rw();
-  // double pond = 1. / nsf; // version_originale
-  // DOUBT_HARI: This value is never used and treated as const inside the functor
-
+  DoubleArrView flux_som = static_cast<DoubleVect&>(tab_flux_som).view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces_tot, KOKKOS_LAMBDA (const int face)
   {
     for (int som = 0; som < nsf; som++)
       {
-        int som_glob = view_renum_som_perio(view_face_sommets(face, som));
-        double pond = view_volumes_entrelaces(face) / view_volume_int_som(som_glob); // DOUBT_HARI: pond could be
-        // declared here.
-        Kokkos::atomic_add(&view_flux_som(som_glob), view_flux_faces(face) * pond);
+        int som_glob = renum_som_perio(face_sommets(face, som));
+        double pond = volumes_entrelaces(face) / volume_int_som(som_glob);
+        Kokkos::atomic_add(&flux_som(som_glob), flux_faces(face) * pond);
       }
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
   // on passe aux elems
-  DoubleArrView view_resu = resu.view_wo();
-  CIntTabView view_elem_faces = elem_faces.view_ro();
   bool ok_post_src_ch = post_src_ch ? true:false;
-  DoubleArrView view_valeurs;
-  if (ok_post_src_ch) view_valeurs = static_cast<DoubleVect&>((*post_src_ch).valeurs()).view_wo();
   int decal = 0;
   int p_has_elem = zp1b.get_alphaE();
   int nb_case = nb_elem_tot * p_has_elem;
+  DoubleArrView valeurs;
+  if (ok_post_src_ch) valeurs = static_cast<DoubleVect&>((*post_src_ch).valeurs()).view_wo();
+  CIntTabView elem_faces = zp1b.elem_faces().view_ro();
+  DoubleArrView resu = tab_resu.view_rw();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_case, KOKKOS_LAMBDA (const int elem)
   {
     double fll = 0.;
     for (int face = 0; face < nfe; face++)
-      fll += view_flux_faces(view_elem_faces(elem, face));  // divise par nfe ??? sais pas
+      fll += flux_faces(elem_faces(elem, face));  // divise par nfe ??? sais pas
 
-    view_resu(elem) -= fll; // in [kg.m-3.s-1]
+    resu(elem) -= fll; // in [kg.m-3.s-1]
 
-    if (ok_post_src_ch) view_valeurs(elem) = fll;
+    if (ok_post_src_ch) valeurs(elem) = fll;
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
   decal += nb_case;
-  resu.echange_espace_virtuel(); // DOUBT_HARI: How will this affect view_resu?
+  tab_resu.echange_espace_virtuel();
   int p_has_som = zp1b.get_alphaS();
   nb_case = nb_som_tot * p_has_som;
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_case, KOKKOS_LAMBDA (const int som)
   {
-    view_resu(decal + som) -= view_flux_som(som); // in [kg.m-3.s-1]
+    resu(decal + som) -= flux_som(som); // in [kg.m-3.s-1]
   });
-  end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+  end_gpu_timer(__KERNEL_NAME__);
 
-  resu.echange_espace_virtuel();
+  tab_resu.echange_espace_virtuel();
 
   // pour post
   if (post_src_ch)
