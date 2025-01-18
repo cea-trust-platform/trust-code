@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ public:
   virtual void postprocess_field_values();
 
   int traiter_champs();
-  int lire_champs_a_postraiter(Entree& );                //Lance eventuellement la creation de champs generiques par macro
+  int lire_champs_a_postraiter(Entree& is, bool expect_acco);                //Lance eventuellement la creation de champs generiques par macro
   //et construit la liste noms_champs_a_post_ des champs post-traites
   int lire_champs_stat_a_postraiter(Entree&);        //idem pour statistiques
   int lire_champs_operateurs(Entree& is);                //Lecture d un champ generique, nomme et complete
@@ -181,7 +181,7 @@ public:
 protected:
 
   int est_le_premier_postraitement_pour_nom_fich_, est_le_dernier_postraitement_pour_nom_fich_;
-  double dt_post_ch_ ;           // ecriture des champs sur fichier nom_du_cas.lml tous les dt_post
+  double dt_post_ch_ ;          // ecriture des champs sur fichier nom_du_cas.lml tous les dt_post
   double dt_post_stat_;         // ecriture des statistiques sur fichier nom_du_cas.lml tous les dt_stat
   double dt_post_tab;           // ecriture des tableaux d'entiers sur fichier nom_du_cas.lml
 

@@ -34,6 +34,10 @@
 #include <EFichier.h>
 #include <EChaine.h>
 #include <Param.h>
+#include <limits>
+
+static constexpr double DT_NOT_INIT = std::numeric_limits<double>::max();
+static constexpr int NB_NOT_INIT = std::numeric_limits<int>::max();
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement|Post_processing",Postraitement_base);
 // XD corps_postraitement postraitement nul -1 not_set
@@ -270,6 +274,9 @@ Entree& Postraitement::readOn(Entree& s)
       nom_fich_ += le_nom_du_post;
     }
 
+  dt_post_ch_ = DT_NOT_INIT;
+  nb_pas_dt_post_ = NB_NOT_INIT;
+
   Probleme_base& le_pb = mon_probleme.valeur();
   le_domaine = le_pb.domaine();
 
@@ -345,13 +352,13 @@ Entree& Postraitement::readOn(Entree& s)
 
 static const std::map<std::string, std::string> keyword_dictionnary
 {
-  {"CHAMPS" 		 		 , "FIELDS"},
-  {"STATISTIQUES"   		 , "STATISTICS"},
-  {"STATISTIQUES_EN_SERIE"   , "SERIAL_STATISTICS"},
-  {"SONDES"		 	         , "PROBES"},
-  {"SONDES_MOBILES" 		 , "MOBILE_PROBES"},
-  {"SONDES_INT" 			 , "INT_PROBES"},
-  {"TABLEAUX_INT" 		     , "INT_ARRAYS"}
+  {"CHAMPS",                "FIELDS"},
+  {"STATISTIQUES",          "STATISTICS"},
+  {"STATISTIQUES_EN_SERIE", "SERIAL_STATISTICS"},
+  {"SONDES",                "PROBES"},
+  {"SONDES_MOBILES",        "MOBILE_PROBES"},
+  {"SONDES_INT",            "INT_PROBES"},
+  {"TABLEAUX_INT",          "INT_ARRAYS"}
 };
 
 static Nom translate_keyword(const Nom& french_keyword)
@@ -408,6 +415,8 @@ void Postraitement::set_param(Param& param)
 //  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
   param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","single_lata","lata_v2","med","med_major","cgns"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
+  param.ajouter("dt_post",&dt_post_ch_, Param::Nature::OPTIONAL); // XD_ADD_P entier Field\'s write frequency (as a time period) - can also be specified after the 'field' keyword.
+  param.ajouter("nb_pas_dt_post",&nb_pas_dt_post_, Param::Nature::OPTIONAL); // XD_ADD_P entier Field\'s write frequency (as a number of time steps) - can also be specified after the 'field' keyword.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter_non_std("Sous_domaine|Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sub_domaine on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
@@ -449,13 +458,13 @@ void Postraitement::set_param(Param& param)
 
 // XD champs_posts_fichier objet_lecture nul 0 Fields read from file.
 // XD   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
-// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 1 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
+// XD   attr period chaine period 1 Value of the period which can be like (2.*t).
 // XD   attr fichier chaine file 0 name of file
 
 // XD stats_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiques}}
-// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 1 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
+// XD   attr period chaine period 1 Value of the period which can be like (2.*t).
 // XD   attr champs|fields list_stat_post champs 0 Post-processed fields.
 
 // XD stats_posts_fichier objet_lecture nul 0 Statistics read from file.. \input{{statistiques}}
@@ -545,19 +554,28 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Option opt=DESCRIPTION;
       mon_probleme->get_noms_champs_postraitables(liste_noms,opt);
       s >> motlu;
+      bool expect_acco = false;
       if (motlu == "binaire")
         {
           binaire=1;
           s >> motlu;
+          expect_acco = true;
         }
       else if (motlu == "formatte")
         {
           binaire=0;
           s >> motlu;
+          expect_acco = true;
         }
 
       if (motlu == "dt_post")
         {
+          if (dt_post_ch_ != DT_NOT_INIT || nb_pas_dt_post_ != NB_NOT_INIT)
+            {
+              Cerr << "Error: in postprocessing block, 'dt_post' (or 'nb_pas_dt_post') was already set!" << finl;
+              Cerr << "  -> Set it either after 'field' or directly at the root of the postprocessing block but not both!" << finl;
+              Process::exit();
+            }
           Nom expression;
           s >> expression;
           fdt_post.setNbVar(1);
@@ -565,26 +583,40 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
           fdt_post.addVar("t");
           fdt_post.parseString();
           dt_post_ch_ = fdt_post.eval();
+          expect_acco = true;
         }
       else if (motlu == "nb_pas_dt_post")
-        s >> nb_pas_dt_post_;
-      else
+        {
+          if (dt_post_ch_ != DT_NOT_INIT || nb_pas_dt_post_ != NB_NOT_INIT)
+            {
+              Cerr << "Error: in postprocessing block, 'dt_post' (or 'nb_pas_dt_post') was already set!" << finl;
+              Cerr << "  -> Set it either after 'field' or directly at the root of the postprocessing block but not both!" << finl;
+              Process::exit();
+            }
+          s >> nb_pas_dt_post_;
+          expect_acco = true;
+        }
+
+      if (dt_post_ch_ == DT_NOT_INIT && nb_pas_dt_post_ == NB_NOT_INIT)
         {
           Cerr << "Error while reading the input data for postprocessing :" << finl;
-          Cerr << "We expected the keyword dt_post or nb_pas_dt_post" << finl;
+          Cerr << " -> We expected the keyword 'dt_post' or 'nb_pas_dt_post'" << finl;
           exit();
         }
       //La methode lire_champs_a_postraiter() va generer auatomatiquement un Champ_Generique_base
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
+      if (!expect_acco && motlu != "{")
+        Process::exit("We expected { to start the reading of the fields to postprocess!");
+
       if (keyword=="Fields_file")
         {
           Nom associated_word("Fields");
           EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
-          lire_champs_a_postraiter(file_content);
+          lire_champs_a_postraiter(file_content, expect_acco);
         }
       else
-        lire_champs_a_postraiter(s);
+        lire_champs_a_postraiter(s, expect_acco);
       champs_demande_ = 1;
       return 1;
     }
@@ -975,18 +1007,18 @@ void Postraitement::completer_sondes()
  * @return (int) renvoie toujours 1
  * @throws accolade ouvrante attendue
  */
-int Postraitement::lire_champs_a_postraiter(Entree& s)
+int Postraitement::lire_champs_a_postraiter(Entree& s, bool expect_acco)
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Motcle motlu;
   Motcle motlu2;
 
-  s >> motlu;
-  if (motlu != accolade_ouverte)
+  if (expect_acco)
     {
-      Cerr << "We expected { to start to read the fields of postprocessing with the simplified syntax" << finl;
-      exit();
+      s >> motlu;
+      if (motlu != accolade_ouverte)
+        Process::exit("We expected { to start to read the fields of postprocessing with the simplified syntax");
     }
   s >> motlu;
 
