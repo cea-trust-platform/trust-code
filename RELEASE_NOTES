@@ -32,6 +32,7 @@ Release notes version 1.9.6_beta : Enhancements, modifications and corrected bug
 03/03/25 (TRUST) MPI          : Configure option -force_provided_openmpi now use OpenMPI 4.1.6 and -force_latest_openmpi now use OpenMPI 5.0.5
 03/03/25 (TRUST) Change       : Parser rewrite can create different initialization for random fields (Champ_front_bruite, ...) or advanced fields using Rnd function
 03/03/25 (TRUST) Change       : y+ field were possibly wrong on tetraedra/triangle with more than one boundary face
+19/02/25 (TRUST) Minor change : Postprocessing: 'dt_post' and 'nb_dt_post' can now be used outside the 'fields' part of the postprocessing block. 
 18/02/25 (TRUST) Change       : dt_impr_ustar_mean_only prints now surface-averaged values instead of mean values on boundaries
 18/02/25 (TRUST) New keyword  : dt_impr_nusselt_mean_only prints into a .out file the surface-averaged Nusselt related values on all or some specified boundaries (VDF/VEF/EF discretizations)
 14/02/25 (TRUST) Major change : TRUST (and its baltiks) is now built with 64b support by default! Old 32b mode can still be built with '-with-32-bit-indices'
