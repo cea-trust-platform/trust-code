@@ -1,0 +1,174 @@
+diff --git a/src/MEDCoupling/MEDCouplingSkyLineArray.hxx b/src/MEDCoupling/MEDCouplingSkyLineArray.hxx
+index 3beab9cb0..f613d850e 100644
+--- a/src/MEDCoupling/MEDCouplingSkyLineArray.hxx
++++ b/src/MEDCoupling/MEDCouplingSkyLineArray.hxx
+@@ -146,16 +146,24 @@ namespace MEDCoupling
+   };
+ 
+   template<typename T>
+-  class SkyLineArrayGenIterator : public std::iterator< std::input_iterator_tag, const mcIdType *, mcIdType, const mcIdType **, const mcIdType *>
++  class SkyLineArrayGenIterator
+   {
+-    std::size_t _num = 0;
+-    std::vector<const MEDCouplingSkyLineArray *> *_data = nullptr;
+   public:
++    using iterator_category =  std::input_iterator_tag;
++    using value_type = const mcIdType *;
++    using difference_type = mcIdType;
++    using pointer = const mcIdType **;
++    using reference = const mcIdType *;
++
+     explicit SkyLineArrayGenIterator(std::size_t num , std::vector<const MEDCouplingSkyLineArray *> *data) : _num(num),_data(data) {}
+     SkyLineArrayGenIterator<T>& operator++() { ++_num; return *this; }
+     bool operator==(const SkyLineArrayGenIterator& other) const { return _num == other._num; }
+     bool operator!=(const SkyLineArrayGenIterator& other) const { return !(*this == other); }
+     reference operator*() const { T tt; return tt((*_data)[_num]); }
++
++  private:
++    std::size_t _num = 0;
++    std::vector<const MEDCouplingSkyLineArray *> *_data = nullptr;
+   };
+ 
+   struct SkyLineArrayIndexPtrFunctor { const mcIdType *operator()(const MEDCouplingSkyLineArray *ska) { return ska->getIndex(); } };
+diff --git a/src/MEDCoupling/MEDCouplingUMesh.hxx b/src/MEDCoupling/MEDCouplingUMesh.hxx
+index 1edce1c5f..9b3dbe80c 100644
+--- a/src/MEDCoupling/MEDCouplingUMesh.hxx
++++ b/src/MEDCoupling/MEDCouplingUMesh.hxx
+@@ -449,17 +449,24 @@ namespace MEDCoupling
+   };
+ 
+   template<typename T, typename TOUT>
+-  class UMeshGenIterator : public std::iterator< std::input_iterator_tag, const TOUT *, mcIdType, const TOUT **, const TOUT *>
++  class UMeshGenIterator
+   {
+-    std::size_t _num = 0;
+-    std::vector<const MEDCouplingUMesh *> *_data = nullptr;
+-    using my_reference = typename std::iterator< std::input_iterator_tag, const TOUT *, mcIdType, const TOUT **, const TOUT *>::reference;
+   public:
++    using iterator_category = std::input_iterator_tag;
++    using value_type = const TOUT *;
++    using difference_type = mcIdType;
++    using pointer = const TOUT **;
++    using reference = const TOUT *;
++
+     explicit UMeshGenIterator(std::size_t num , std::vector<const MEDCouplingUMesh *> *data) : _num(num),_data(data) {}
+     UMeshGenIterator<T,TOUT>& operator++() { ++_num; return *this; }
+     bool operator==(const UMeshGenIterator& other) const { return _num == other._num; }
+     bool operator!=(const UMeshGenIterator& other) const { return !(*this == other); }
+-    my_reference operator*() const { T tt; return tt((*_data)[_num]); }
++    reference operator*() const { T tt; return tt((*_data)[_num]); }
++
++  private:
++    std::size_t _num = 0;
++    std::vector<const MEDCouplingUMesh *> *_data = nullptr;
+   };
+ 
+   struct UMeshIndexConnectivityFunctor { const DataArrayIdType *operator()(const MEDCouplingUMesh *um) { return um->getNodalConnectivityIndex(); } };
+diff --git a/src/MEDLoader/MEDLoader.cxx b/src/MEDLoader/MEDLoader.cxx
+index 214b19740..06f6debb2 100644
+--- a/src/MEDLoader/MEDLoader.cxx
++++ b/src/MEDLoader/MEDLoader.cxx
+@@ -504,16 +504,24 @@ std::vector< std::pair<std::string,std::string> > MEDCoupling::GetComponentsName
+ }
+ 
+ // see reference : https://en.cppreference.com/w/cpp/iterator/iterator
+-class MEDVectorStringIterator : public std::iterator< std::input_iterator_tag, long, long, const std::string*, std::string >
++class MEDVectorStringIterator
+ {
+-  long _num = 0;
+-  char *_data = nullptr;
+ public:
++  using iterator_category = std::input_iterator_tag;
++  using value_type = long;
++  using difference_type = long;
++  using pointer = const std::string*;
++  using reference = std::string;
++
+   explicit MEDVectorStringIterator(long num , char *data) : _num(num),_data(data) {}
+   MEDVectorStringIterator& operator++() { ++_num; return *this;}
+   bool operator==(const MEDVectorStringIterator& other) const {return _num == other._num;}
+   bool operator!=(const MEDVectorStringIterator& other) const {return !(*this == other);}
+   reference operator*() const {return MEDLoaderBase::buildStringFromFortran(_data+_num*MED_LNAME_SIZE,MED_LNAME_SIZE);}
++
++private:
++  long _num = 0;
++  char *_data = nullptr;
+ };
+ 
+ void MEDCoupling::GetFamiliesGroupsInfo(const std::string& fileName, const std::string& meshName, std::map<std::string,mcIdType>& families, std::map<std::string,std::vector<std::string>>& groupsOnFam)
+diff --git a/src/MEDLoader/Swig/MEDLoaderTypemaps.i b/src/MEDLoader/Swig/MEDLoaderTypemaps.i
+index 361c83020..a654f5b38 100644
+--- a/src/MEDLoader/Swig/MEDLoaderTypemaps.i
++++ b/src/MEDLoader/Swig/MEDLoaderTypemaps.i
+@@ -21,28 +21,46 @@
+ #include <vector>
+ #include <iterator>
+ 
+-class MEDVectorMIIterator : public std::iterator< std::input_iterator_tag, long, long, const std::pair<int,mcIdType> *, std::pair<int,mcIdType> >
++class MEDVectorMIIterator
+ {
+-  long _num = 0;
+-  std::vector< std::pair<mcIdType,mcIdType> > _data;
+ public:
++  using iterator_category = std::input_iterator_tag;
++  using value_type = long;
++  using difference_type = long;
++  using pointer = const std::pair<int,mcIdType> *;
++  using reference = std::pair<int,mcIdType>;
++
+   explicit MEDVectorMIIterator(long num , std::vector< std::pair<mcIdType,mcIdType> > data) : _num(num),_data(data) {}
+   MEDVectorMIIterator& operator++() { ++_num; return *this;}
+   bool operator==(const MEDVectorMIIterator& other) const {return _num == other._num;}
+   bool operator!=(const MEDVectorMIIterator& other) const {return !(*this == other);}
+   reference operator*() const {return {(int)_data[_num].first,_data[_num].second}; }
++
++private:
++  long _num = 0;
++  std::vector< std::pair<mcIdType,mcIdType> > _data;
++
+ };
+ 
+-class MEDVectorVectorMIIterator : public std::iterator< std::input_iterator_tag, long, long, const std::vector< std::pair<int,mcIdType> >*, std::vector< std::pair<int,mcIdType> > >
++class MEDVectorVectorMIIterator
+ {
+-  long _num = 0;
+-  std::vector< std::vector< std::pair<mcIdType,mcIdType> > > _data;
+ public:
++  using iterator_category = std::input_iterator_tag;
++  using value_type = long;
++  using difference_type = long;
++  using pointer = const std::vector<std::pair<int,mcIdType>>*;
++  using reference = std::vector<std::pair<int,mcIdType>>;
++
+   explicit MEDVectorVectorMIIterator(long num , std::vector< std::vector< std::pair<mcIdType,mcIdType> > > data) : _num(num),_data(data) {}
+   MEDVectorVectorMIIterator& operator++() { ++_num; return *this;}
+   bool operator==(const MEDVectorVectorMIIterator& other) const {return _num == other._num;}
+   bool operator!=(const MEDVectorVectorMIIterator& other) const {return !(*this == other);}
+   reference operator*() const { auto data = _data[_num]; return reference(MEDVectorMIIterator(0,data),MEDVectorMIIterator(data.size(),data)); }
++
++private:
++  long _num = 0;
++  std::vector< std::vector< std::pair<mcIdType,mcIdType> > > _data;
++
+ };
+ 
+ static PyObject *convertMEDFileMesh(MEDCoupling::MEDFileMesh* mesh, int owner)
+diff --git a/src/ParaMEDMEM/InterpolationMatrix.cxx b/src/ParaMEDMEM/InterpolationMatrix.cxx
+index b8271a945..2959b93e1 100644
+--- a/src/ParaMEDMEM/InterpolationMatrix.cxx
++++ b/src/ParaMEDMEM/InterpolationMatrix.cxx
+@@ -627,10 +627,11 @@ namespace MEDCoupling
+     if(policyPartial.empty())
+       return ElementLocator::NO_POST_TREATMENT_POLICY;
+     int ref=policyPartial[0];
+-     std::vector<int>::const_iterator iter1=std::find_if(policyPartial.begin(),policyPartial.end(),std::bind2nd(std::not_equal_to<int>(),ref));
+-    if(iter1!=policyPartial.end())
++    auto iter1 = std::find_if(policyPartial.begin(),policyPartial.end(), [=](int p) { return p != ref; } );
++
++    if(iter1 != policyPartial.end())
+       {
+-        std::ostringstream msg; msg << "Incompatible policies between lazy procs each other : proc # " << iter1-policyPartial.begin();
++        std::ostringstream msg; msg << "Incompatible policies between lazy procs each other : proc # " << std::distance(policyPartial.begin(), iter1);
+         throw INTERP_KERNEL::Exception(msg.str().c_str());
+       }
+     return ref;

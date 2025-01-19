@@ -61,6 +61,8 @@ build_and_test_mc()
     fi
     echo "Applying patch for const pointer in IKDEC ..."
     (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
+    echo "Applying patch for iterators ..."
+    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/iterator.patch )
 
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`
