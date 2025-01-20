@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 #include <Param.h>
 #include <Interprete_bloc.h>
 #include <communications.h>
+#include <IJK_Navier_Stokes_tools.h>
 
 Implemente_instanciable_sans_constructeur(IJK_Splitting, "IJK_Splitting", Objet_U);
 
@@ -110,6 +111,76 @@ void IJK_Splitting::get_slice_size(int dir, Localisation loc, ArrOfInt& tab) con
     }
 }
 
+int IJK_Splitting::periodic_get_processor_by_ijk(int slice_i, int slice_j, int slice_k) const
+{
+  int periodic_slice_i = slice_i;
+  int periodic_slice_j = slice_j;
+  int periodic_slice_k = slice_k;
+
+  const IJK_Grid_Geometry& geom = get_grid_geometry();
+
+  // Correction du processeur a chercher dans le cas periodique,
+  // si le slice est plus petit que zero ou plus grand que le nombre maximal.
+  if (geom.get_periodic_flag(0) && (slice_i < 0))
+    {
+      periodic_slice_i += get_nprocessor_per_direction(0);
+    }
+  else if (geom.get_periodic_flag(0) && (slice_i >= get_nprocessor_per_direction(0)))
+    {
+      periodic_slice_i -= get_nprocessor_per_direction(0);
+    }
+
+  if (geom.get_periodic_flag(1) && (slice_j < 0))
+    {
+      periodic_slice_j += get_nprocessor_per_direction(1);
+    }
+  else if (geom.get_periodic_flag(1) && (slice_j >= get_nprocessor_per_direction(1)))
+    {
+      periodic_slice_j -= get_nprocessor_per_direction(1);
+    }
+
+  if (geom.get_periodic_flag(2) && (slice_k < 0))
+    {
+      periodic_slice_k += get_nprocessor_per_direction(2);
+    }
+  else if (geom.get_periodic_flag(2) && (slice_k >= get_nprocessor_per_direction(2)))
+    {
+      periodic_slice_k -= get_nprocessor_per_direction(2);
+    }
+
+  // Si on est pas periodique dans une direction, on retourne -1 pour indiquer l'absence de processeur
+  if ((!geom.get_periodic_flag(0)) && (slice_i < 0))
+    {
+      return -1;
+    }
+  else if ((!geom.get_periodic_flag(0)) && (slice_i >= get_nprocessor_per_direction(0)))
+    {
+      return -1;
+    }
+
+  if ((!geom.get_periodic_flag(1)) && (slice_j < 0))
+    {
+      return -1;
+    }
+  else if ((!geom.get_periodic_flag(1)) && (slice_j >= get_nprocessor_per_direction(1)))
+    {
+      return -1;
+    }
+
+  if ((!geom.get_periodic_flag(2)) && (slice_k < 0))
+    {
+      return -1;
+    }
+  else if ((!geom.get_periodic_flag(2)) && (slice_k >= get_nprocessor_per_direction(2)))
+    {
+      return -1;
+    }
+  else
+    {
+      // Sinon, on retourne le numero du processeur
+      return get_processor_by_ijk(periodic_slice_i, periodic_slice_j, periodic_slice_k);
+    }
+}
 
 
 // Builds a splitting of the given geometry on the requested number of processors in each direction
@@ -494,3 +565,163 @@ int IJK_Splitting::get_nb_items_global(Localisation loc, int dir) const
     }
   return n;
 }
+
+// independent_index adds a ghost_size to the packed index.
+// It is similar to the linear_index defined in IJK_Field_local_template, but with
+// a universal, predefined ghost_size of 256 instead of a field-dependent ghost_size.
+// Since the ghost_size_ value is larger than any ghost_size expected to be used in
+// practice, any virtual cell can be represented by the independent index.
+int IJK_Splitting::get_independent_index(int i, int j, int k) const
+{
+  int ghost_size = 256;
+  const int ni = get_nb_elem_local(0);
+  const int nj = get_nb_elem_local(1);
+
+  int offset = ghost_size + (ni + 2*ghost_size)*ghost_size + (ni + 2*ghost_size)*(nj + 2*ghost_size)*ghost_size;
+  int independent_index = offset + i + (ni + 2*ghost_size)*j + (ni + 2*ghost_size)*(nj + 2*ghost_size)*k;
+
+  return independent_index;
+}
+
+Int3 IJK_Splitting::get_ijk_from_independent_index(int independent_index) const
+{
+  int ghost_size = 256;
+  const int ni = get_nb_elem_local(0);
+  const int nj = get_nb_elem_local(1);
+
+  // Computation of the indices disregarding the offset (i goes from 0 to ni + 2*ghost_size)
+  int k = (independent_index)/((ni + 2*ghost_size)*(nj + 2*ghost_size));
+  int j = ((independent_index) - (ni + 2*ghost_size)*(nj + 2*ghost_size)*k)/(ni + 2*ghost_size);
+  int i = (independent_index) - (ni + 2*ghost_size)*(nj + 2*ghost_size)*k - (ni + 2*ghost_size)*j;
+
+  // Computation of the indices with the offset (i goes from -ghost_size_ to ni + ghost_size)
+  k -= ghost_size;
+  j -= ghost_size;
+  i -= ghost_size;
+
+  Int3 ijk = {i, j, k};
+  return ijk;
+}
+
+// signed_independent_index: encodes in the sign the phase of the cell in a
+// two-phase flow: positive sign for phase 0, and negative sign for phase 1.
+// With a cut-cell method, this can be used to disambiguate the sub-cell.
+int IJK_Splitting::get_signed_independent_index(int phase, int i, int j, int k) const
+{
+  int signed_independent_index = (phase == 1) ? -1 - get_independent_index(i,j,k) : get_independent_index(i,j,k);
+  return signed_independent_index;
+}
+
+int IJK_Splitting::get_independent_index_from_signed_independent_index(int signed_independent_index) const
+{
+  int independent_index = (signed_independent_index < 0) ? -1 - signed_independent_index : signed_independent_index;
+  return independent_index;
+}
+
+int IJK_Splitting::get_phase_from_signed_independent_index(int signed_independent_index) const
+{
+  int phase = (signed_independent_index < 0) ? 1 : 0;
+  return phase;
+}
+
+// Check whether the cell (i,j,k) is contained within the specified ghost along any direction.
+bool IJK_Splitting::within_ghost(int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const
+{
+  bool i_within_ghost = ((i >= -negative_ghost_size) && (i < get_nb_elem_local(0) + positive_ghost_size));
+  bool j_within_ghost = ((j >= -negative_ghost_size) && (j < get_nb_elem_local(1) + positive_ghost_size));
+  bool k_within_ghost = ((k >= -negative_ghost_size) && (k < get_nb_elem_local(2) + positive_ghost_size));
+
+  return (i_within_ghost && j_within_ghost && k_within_ghost);
+}
+
+// Check whether the cell (i,j,k) is contained within the specified ghost along a specific direction.
+bool IJK_Splitting::within_ghost_along_dir(int dir, int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const
+{
+  assert(dir >= 0 && dir < 3);
+
+  bool i_local = ((i >= 0) && (i < get_nb_elem_local(0)));
+  bool j_local = ((j >= 0) && (j < get_nb_elem_local(1)));
+  bool k_local = ((k >= 0) && (k < get_nb_elem_local(2)));
+
+  bool i_within_ghost = ((i >= -negative_ghost_size) && (i < get_nb_elem_local(0) + positive_ghost_size));
+  bool j_within_ghost = ((j >= -negative_ghost_size) && (j < get_nb_elem_local(1) + positive_ghost_size));
+  bool k_within_ghost = ((k >= -negative_ghost_size) && (k < get_nb_elem_local(2) + positive_ghost_size));
+
+  bool case_i_outside = (i_within_ghost && j_local && k_local);
+  bool case_j_outside = (i_local && j_within_ghost && k_local);
+  bool case_k_outside = (i_local && j_local && k_within_ghost);
+
+  return select_dir(dir, case_i_outside, case_j_outside, case_k_outside);
+}
+
+int IJK_Splitting::correct_perio_i_local(int direction, int i) const
+{
+  int n = get_nb_elem_local(direction);
+  int ng = get_grid_geometry().get_nb_elem_tot(direction);
+
+  int index = -1;
+  if (get_grid_geometry().is_uniform(direction))
+    {
+      index = i;
+
+      if (get_grid_geometry().get_periodic_flag(direction))
+        {
+          if ((index < 0) && (index + ng - n + 1 < -index))
+            {
+              index += ng;
+            }
+          else if ((index >= n) && (-(index - ng) < index - n + 1))
+            {
+              index -= ng;
+            }
+        }
+    }
+  else
+    {
+      Cerr << "Error: In correct_perio_i_local(), the case of a non-uniform mesh along direction " << direction << " is not implemented." << finl;
+      Process::exit();
+    }
+
+  return index;
+}
+
+int IJK_Splitting::get_i_along_dir_no_perio(int direction, double coord_dir, IJK_Splitting::Localisation loc) const
+{
+  bool loc_equal_dir = (((loc == IJK_Splitting::FACES_I) && (direction == 0)) || ((loc == IJK_Splitting::FACES_J) && (direction == 1)) || ((loc == IJK_Splitting::FACES_K) && (direction == 2)));
+
+  const double d = get_grid_geometry().get_constant_delta(direction);
+
+  const int offset_dir = get_offset_local(direction);
+  double origin_dir = get_grid_geometry().get_origin(direction) - .5*d*loc_equal_dir;
+
+  int index = -1;
+  if (get_grid_geometry().is_uniform(direction))
+    {
+      index = (int)(std::floor((coord_dir - origin_dir)/d)) - offset_dir;
+    }
+  else
+    {
+      Cerr << "Error: get_i_along_dir_no_perio(), the case of a non-uniform mesh along direction " << direction << " is not implemented." << finl;
+      Process::exit();
+    }
+
+  return index;
+}
+
+int IJK_Splitting::get_i_along_dir_perio(int direction, double coord_dir, IJK_Splitting::Localisation loc) const
+{
+  int index_no_perio = get_i_along_dir_no_perio(direction, coord_dir, loc);
+  int index_perio = correct_perio_i_local(direction, index_no_perio);
+  return index_perio;
+}
+
+Int3 IJK_Splitting::get_ijk_from_coord(double coord_x, double coord_y, double coord_z, IJK_Splitting::Localisation loc) const
+{
+  int i = get_i_along_dir_perio(0, coord_x, loc);
+  int j = get_i_along_dir_perio(1, coord_y, loc);
+  int k = get_i_along_dir_perio(2, coord_z, loc);
+
+  Int3 ijk = {i, j, k};
+  return ijk;
+}
+

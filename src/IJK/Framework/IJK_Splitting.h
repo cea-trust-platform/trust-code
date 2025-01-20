@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -136,6 +136,7 @@ public:
   // Returns the number of items of given location (elements, nodes, faces...) for alls slices in
   // the given direction.
   void get_slice_size(int dir, Localisation loc, ArrOfInt&) const;
+  // Returns the processor associated with slice indices i,j,k.
   int get_processor_by_ijk(const Int3& slice) const
   {
     return mapping_(slice[0], slice[1], slice[2]);
@@ -144,7 +145,12 @@ public:
   {
     return mapping_(slice_i, slice_j, slice_k);
   }
+  // Returns the processor associated with slice indices i,j,k  accounting for periodicity
+  // e.g. a slice index -1 can refer to the last slice along a periodic direction.
+  int periodic_get_processor_by_ijk(int slice_i, int slice_j, int slice_k) const;
+
   inline Vecteur3 get_coords_of_dof(int i, int j, int k, Localisation loc) const;
+  inline double get_coord_of_dof_along_dir(int dir, int i, Localisation loc) const;
 
   // Convert the ijk index to a cell number : (adapted from Maillage_FT_IJK.h)
   int convert_ijk_cell_to_packed(const Int3 ijk) const
@@ -197,6 +203,40 @@ public:
       }
     return ijk;
   }
+
+  // independent_index adds a ghost_size to the packed index.
+  // It is similar to the linear_index defined in IJK_Field_local_template, but with
+  // a universal, predefined ghost_size of 256 instead of a field-dependent ghost_size.
+  // Since the ghost_size_ value is larger than any ghost_size expected to be used in
+  // practice, any virtual cell can be represented by the independent index.
+  int get_independent_index(int i, int j, int k) const;
+  Int3 get_ijk_from_independent_index(int independent_index) const;
+
+  // signed_independent_index: encodes in the sign the phase of the cell in a
+  // two-phase flow: positive sign for phase 0, and negative sign for phase 1.
+  // With a cut-cell method, this can be used to disambiguate the sub-cell.
+  int get_signed_independent_index(int phase, int i, int j, int k) const;
+  int get_independent_index_from_signed_independent_index(int signed_independent_index) const;
+  int get_phase_from_signed_independent_index(int signed_independent_index) const;
+
+  // Check whether the cell (i,j,k) is contained within the specified ghost along any direction.
+  bool within_ghost(int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const;
+
+  // Check whether the cell (i,j,k) is contained within the specified ghost along a specific direction.
+  bool within_ghost_along_dir(int dir, int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const;
+
+  template <int _DIR_>
+  bool within_ghost_(int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const
+  {
+    int dir = static_cast<int>(_DIR_);
+    return within_ghost_along_dir(dir, i, j, k, negative_ghost_size, positive_ghost_size);
+  }
+
+  int correct_perio_i_local(int direction, int i) const;
+  int get_i_along_dir_no_perio(int direction, double coord_dir, IJK_Splitting::Localisation loc) const;
+  int get_i_along_dir_perio(int direction, double coord_dir, IJK_Splitting::Localisation loc) const;
+
+  Int3 get_ijk_from_coord(double coord_x, double coord_y, double coord_z, IJK_Splitting::Localisation loc) const;
 
   // ijk_global : the global coordinate of the cell
   // ijk_local is the local coordinate of the cell on the process ijk_processeur
@@ -276,6 +316,22 @@ inline Vecteur3 IJK_Splitting::get_coords_of_dof(int i, int j, int k, Localisati
   if (loc == ELEM || loc == FACES_I || loc == FACES_J)
     xyz[2] += grid_geom_.get_delta(2)[gk] * 0.5;
   return xyz;
+}
+
+inline double IJK_Splitting::get_coord_of_dof_along_dir(int dir, int i, Localisation loc) const
+{
+  int gi = i + offset_[dir];
+  double x = grid_geom_.get_node_coordinates(dir)[gi];
+
+  bool loc_equal_dir = (((loc == FACES_I) && (dir == 0)) || ((loc == FACES_J) && (dir == 1)) || ((loc == FACES_K) && (dir == 2)));
+  bool loc_equal_dir_or_nodes = loc_equal_dir || (loc == NODES);
+
+  if (!loc_equal_dir_or_nodes)
+    {
+      x += grid_geom_.get_delta(dir)[gi] * 0.5;
+    }
+
+  return x;
 }
 
 #endif

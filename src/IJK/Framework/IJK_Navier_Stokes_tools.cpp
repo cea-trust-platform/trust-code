@@ -252,6 +252,7 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
       result[idx] = r;
     }
 }
+
 void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result, const double value_for_bad_points)
 {
   ijk_interpolate_implementation(field, coordinates, result, 1 /* yes:skip unknown points */, value_for_bad_points);
@@ -260,6 +261,72 @@ void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const Do
 void ijk_interpolate(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result)
 {
   ijk_interpolate_implementation(field, coordinates, result, 0 /* skip unknown points=no */, 0.);
+}
+
+// Interpolate the "field" at the requested coordinate and returns the result
+static double ijk_interpolate_one_value(const IJK_Field_double& field, const Vecteur3& coordinates, int skip_unknown_points, double value_for_bad_points)
+{
+  const int ghost = field.ghost();
+  const int ni = field.ni();
+  const int nj = field.nj();
+  const int nk = field.nk();
+
+  const IJK_Splitting& splitting = field.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const double dx = geom.get_constant_delta(DIRECTION_I);
+  const double dy = geom.get_constant_delta(DIRECTION_J);
+  const double dz = geom.get_constant_delta(DIRECTION_K);
+  const IJK_Splitting::Localisation loc = field.get_localisation();
+  // L'origine est sur un noeud. Donc que la premiere face en I est sur get_origin(DIRECTION_I)
+  double origin_x = geom.get_origin(DIRECTION_I) + ((loc == IJK_Splitting::FACES_J || loc == IJK_Splitting::FACES_K || loc == IJK_Splitting::ELEM) ? (dx * 0.5) : 0.);
+  double origin_y = geom.get_origin(DIRECTION_J) + ((loc == IJK_Splitting::FACES_K || loc == IJK_Splitting::FACES_I || loc == IJK_Splitting::ELEM) ? (dy * 0.5) : 0.);
+  double origin_z = geom.get_origin(DIRECTION_K) + ((loc == IJK_Splitting::FACES_I || loc == IJK_Splitting::FACES_J || loc == IJK_Splitting::ELEM) ? (dz * 0.5) : 0.);
+  const double x = coordinates[0];
+  const double y = coordinates[1];
+  const double z = coordinates[2];
+  const double x2 = (x - origin_x) / dx;
+  const double y2 = (y - origin_y) / dy;
+  const double z2 = (z - origin_z) / dz;
+  const int index_i = (int) (floor(x2)) - splitting.get_offset_local(DIRECTION_I);
+  const int index_j = (int) (floor(y2)) - splitting.get_offset_local(DIRECTION_J);
+  const int index_k = (int) (floor(z2)) - splitting.get_offset_local(DIRECTION_K);
+  // Coordonnes barycentriques du points dans la cellule :
+  const double xfact = x2 - floor(x2);
+  const double yfact = y2 - floor(y2);
+  const double zfact = z2 - floor(z2);
+
+  // is point in the domain ? (ghost cells ok...)
+  bool ok = (index_i >= -ghost && index_i < ni + ghost - 1) && (index_j >= -ghost && index_j < nj + ghost - 1) && (index_k >= -ghost && index_k < nk + ghost - 1);
+  if (!ok)
+    {
+      if (skip_unknown_points)
+        {
+          return value_for_bad_points;
+        }
+      else
+        {
+          // Error!
+          Cerr << "Error in ijk_interpolate_implementation: request interpolation of point " << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me()
+               << finl;
+          Process::exit();
+        }
+    }
+
+  double r = (((1. - xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1. - yfact)
+              + ((1. - xfact) * field(index_i, index_j + 1, index_k) + xfact * field(index_i + 1, index_j + 1, index_k)) * (yfact)) * (1. - zfact)
+             + (((1. - xfact) * field(index_i, index_j, index_k + 1) + xfact * field(index_i + 1, index_j, index_k + 1)) * (1. - yfact)
+                + ((1. - xfact) * field(index_i, index_j + 1, index_k + 1) + xfact * field(index_i + 1, index_j + 1, index_k + 1)) * (yfact)) * (zfact);
+  return r;
+}
+
+double ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const Vecteur3& coordinates, const double value_for_bad_points)
+{
+  return ijk_interpolate_one_value(field, coordinates, 1 /* yes:skip unknown points */, value_for_bad_points);
+}
+
+double ijk_interpolate(const IJK_Field_double& field, const Vecteur3& coordinates)
+{
+  return ijk_interpolate_one_value(field, coordinates, 0 /* skip unknown points=no */, 0.);
 }
 
 // Compute, for each cell, the integral on the cell of dt times the divergence of the velocity field.

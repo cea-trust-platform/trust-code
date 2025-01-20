@@ -33,9 +33,10 @@ void build_extended_splitting(const IJK_Splitting& split, IJK_Splitting& split_e
 Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_domaine);
 
 void ijk_interpolate(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result);
+void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result, const double value_for_bad_points);
 
-void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result,
-                                         const double value_for_bad_points);
+double ijk_interpolate(const IJK_Field_double& field, const Vecteur3& coordinates);
+double ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const Vecteur3& coordinates, const double value_for_bad_points);
 
 void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz,
                                        const double constant, IJK_Field_double& resu);
