@@ -2311,3 +2311,29 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
     }
 }
 
+void force_entry_velocity(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, double v_imposed, const int& dir, const int& compo, const int& stencil)
+{
+  const Domaine_IJK& splitting = select_dir(dir, vx.get_domaine(), vy.get_domaine(), vz.get_domaine());
+  const int offset_ijk = splitting.get_offset_local(dir);
+
+  if (offset_ijk > 0)
+    return;
+
+  double imposed[3] = { v_imposed, v_imposed, v_imposed };
+  const int direction_min = (compo == -1) ? 0 : dir;
+  const int direction_max = (compo == -1) ? 3 : dir + 1;
+  for (int direction = direction_min; direction < direction_max; direction++)
+    {
+      IJK_Field_double& velocity = select_dir(direction, vx, vy, vz);
+      const int imin = select_dir(direction, 0, 0, 0);
+      const int jmin = select_dir(direction, 0, 0, 0);
+      const int kmin = select_dir(direction, 0, 0, 0);
+      const int imax = select_dir(direction, stencil, velocity.ni(), velocity.ni());
+      const int jmax = select_dir(direction, velocity.nj(), stencil, velocity.nj());
+      const int kmax = select_dir(direction, velocity.nk(), velocity.nk(), stencil);
+      for (int k = kmin; k < kmax; k++)
+        for (int j = jmin; j < jmax; j++)
+          for (int i = imin; i < imax; i++)
+            velocity(i, j, k) = imposed[direction];
+    }
+}

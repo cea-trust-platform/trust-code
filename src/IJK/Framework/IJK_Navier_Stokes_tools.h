@@ -195,4 +195,6 @@ void calculer_gradient_temperature(const IJK_Field_double& temperature, IJK_Fiel
 void add_gradient_temperature(const IJK_Field_double& temperature, const double constant, IJK_Field_double& vx,
                               IJK_Field_double& vy, IJK_Field_double& vz, const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda);
 
+void force_entry_velocity(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, double v_imposed, const int& dir, const int& compo, const int& stencil);
+
 #endif /* IJK_Navier_Stokes_tools_included */
