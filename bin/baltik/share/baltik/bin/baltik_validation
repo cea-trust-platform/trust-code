@@ -178,6 +178,12 @@ if [ $status -eq 0 ]
 then
  bash ${Validation_outil}/scripts/rapport_global archives
  mv archives/build_prov/fic.pdf ${project_directory}/validation.pdf && rm -rf archives/build_prov
+elif [ $status -eq 4 ]
+then
+   echo "Oups... Your baltik contains at least a jupyter notebook, this case not handled when generating the global report."
+   echo "This case not handled for the moment, but you can generate a global report by merging all pdf reports into a single one"
+   # ND : I set the return code to 0
+   status=0
 else
 echo 
 echo "Check   $project_validation_directory/BUILD/*/run.log and  $project_validation_directory/BUILD/*/arc.log"

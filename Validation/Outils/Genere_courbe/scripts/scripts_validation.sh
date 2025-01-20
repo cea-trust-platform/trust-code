@@ -124,6 +124,25 @@ verif_archives()
         fi
       fi
     done
+
+    # If there is a jupyter notebook, return code 4 if everything is fine to skip the generation of the global report when this function called from baltik_validation
+    # script
+    theJupyterList=""
+    if [[ "${testListValidation}" == "" ]]
+    then
+      theJupyterList=$(find $Rapports_auto_root/Validation/Rapports_automatiques/$1 \( -name '*.ipynb' ! -path '*.ipynb_checkpoints*' \) -follow)
+    else
+      for t in $(cat ${testListValidation})
+      do
+        if [[ $(echo ${t} | grep -Ev "^ *#") ]]
+        then
+          jupyterFile="${project_directory}/${t}/$(basename ${t}).ipynb"
+          [[ -f ${jupyterFile} ]] && theJupyterList+="${jupyterFile} "
+        fi
+      done
+    fi
+    [ "$theJupyterList" != "" ] && [ "$PB" = "0" ] && PB=4
+
     # echo `wc -l ../nettoie` repertoires a effacer
     chmod +x ../nettoie
     cd $org
