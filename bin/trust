@@ -899,7 +899,8 @@ then
    else
       nsight=""
    fi
-   nsight=$nsight"nsys profile $trace --force-overwrite true -o $NOM.qdrep"
+   # Sampling 0.1ms (default 1ms)
+   nsight=$nsight"nsys profile $trace --sampling-period=300000 --force-overwrite true -o $NOM.qdrep"
 elif [ "$NCU" = 1 ]
 then
    rm -f $NOM.qdrep.ncu-rep
