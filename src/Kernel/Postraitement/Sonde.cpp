@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1263,10 +1263,12 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   double dt=mon_post->probleme().schema_temps().pas_de_temps();
   double nb;
   // Le *(1+Objet_U::precision_geom) est pour eviter des erreurs d'arrondi selon les machines
+  // 21/01/25 : remplacement de Objet_U::precision_geom par 1e-15 (issue des patch M3D) suite bttrust #242895
+  // car precision_geom est un parametre que l'utilisateur peut changer via jdd
   if (periode<=dt)
     nb=nb_bip+1.;
   else
-    modf(temps_courant*(1+Objet_U::precision_geom)/periode, &nb);
+    modf(temps_courant*(1+1e-15)/periode, &nb);
 
   // On doit ecrire les sondes
   if (nb>nb_bip)
