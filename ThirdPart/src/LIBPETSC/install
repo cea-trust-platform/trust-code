@@ -454,11 +454,10 @@ then
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       # Magma limited to 1 GPU ? See https://github.com/pghysels/STRUMPACK/issues/127
-      [ "$TRUST_CUDA_CC" = 70 ] && target=Volta
-      [ "$TRUST_CUDA_CC" = 80 ] && target=Ampere
-      [ "$TRUST_CUDA_CC" = 86 ] && target=Ampere
-      [ "$TRUST_CUDA_CC" = 90 ] && target=Hopper
-      [ "$target" = "" ] && echo "Configura Magma target!" && exit -1
+      [ "${TRUST_CUDA_CC#7}" != "$TRUST_CUDA_CC" ] && target=Volta
+      [ "${TRUST_CUDA_CC#8}" != "$TRUST_CUDA_CC" ] && target=Ampere
+      [ "${TRUST_CUDA_CC#9}" != "$TRUST_CUDA_CC" ] && target=Hopper
+      [ "$target" = "" ] && echo "Configure Magma target!" && exit -1
       add_package magma && with_packages=$with_packages" --with-magma-gputarget=$target"
 
       # Slate (multi-gpu) necessite OpenMP et MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
@@ -540,8 +539,12 @@ then
    #######
    if [ "$TRUST_USE_GPU" = 1 ]
    then
-      #hypre_configure="--enable-unified-memory" # Important on Adastra, else weak_scaling on OpenMP_Iterateur at 128 GPU fails (too slow)
-      [ "$TRUST_MPI_GPU_AWARE" = 1 ] && hypre_configure=$hypre_configure" --enable-gpu-aware-mpi" # Enable MPI GPU awareness for Hypre
+       # Ne surtout pas activer UVM: lent sur AMD et CUDA :
+      #hypre_configure="--enable-unified-memory"
+
+      # Enable MPI GPU awareness for Hypre (plantage encore sur adastra). Pour re-essayer, forcer avec ./configure -force_mpi_gpu_aware
+      [ "$TRUST_FORCE_MPI_GPU_AWARE" = 1 ] && [ "$TRUST_MPI_GPU_AWARE" = 1 ] && hypre_configure=$hypre_configure" --enable-gpu-aware-mpi"
+      
       # Hack pour Hypre car --download-hypre-configure-arguments difficile a faire marcher avec plusieurs arguments...
       sed -i "1,$ s?--with-MPI-libs?$hypre_configure --with-MPI-libs?g" config/BuildSystem/config/packages/hypre.py || exit -1
       #nedit config/BuildSystem/config/packages/hypre.py

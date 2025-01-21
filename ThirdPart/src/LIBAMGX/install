@@ -48,7 +48,8 @@ then
    AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE -DCMAKE_CXX_FLAGS=-std=c++14"
    AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fno-openmp" # Important de specifier car AmgX cherche OpenMP par defaut
    # Ajout de l'architecture:
-   [ "$TRUST_CUDA_CC" = 86 ] && TRUST_CUDA_CC=80 # 86 pas supporte
+   [ "${TRUST_CUDA_CC#7}" != "$TRUST_CUDA_CC" ] && TRUST_CUDA_CC=70 # Volta
+   [ "${TRUST_CUDA_CC#8}" != "$TRUST_CUDA_CC" ] && TRUST_CUDA_CC=80 # Ampere
    AMGX_COMPILERS=$AMGX_COMPILERS" -DCUDA_ARCH=$TRUST_CUDA_CC"
    
    # Hack du CMakeLists.txt (vu sur orcus avec Cuda 12) car manque de cublasLt

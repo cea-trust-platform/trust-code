@@ -1251,6 +1251,16 @@ then
       echo "Cuda Compute Capability not detected ! TRUST_CUDA_CC should be set."
       exit -1
    fi
+   if [ "$TRUST_CUDA_CC" != 70 ] && [ "$TRUST_CUDA_CC" != 80 ] && [ "$TRUST_CUDA_CC" != 86 ] && [ "$TRUST_CUDA_CC" != 89 ] && [ "$TRUST_CUDA_CC" != 90 ]
+   then
+      echo "TRUST_CUDA_CC=$TRUST_CUDA_CC not supported yet !"
+      echo "Update the following files:"
+      echo "ThirdPart/src/LIBPETSC/install"
+      echo "ThirdPart/src/LIBAMGX/install"
+      echo "ThirdPart/src/LIBKOKKOS/install_kokkos.sh"
+      echo "env_src/configurer_env"
+      exit -1
+   fi
    #########################
    # Detection CUDA run time
    #########################
@@ -1934,7 +1944,8 @@ case $TRUST_ARCH_CC in
            CppFlags="-cuda" # nvc++ compile cuda code to avoid use of "nvcc -ccbin=nvc++"
            # Si CUDA_VERSION est specifie explicitement dans le HOST sinon on prend le SDK:
            [ "$CUDA_VERSION" = "" ] && CUDA_VERSION=`ls $CUDA_ROOT | grep "[0-9]\.[0-9]"`
-           gpu=" -gpu=nordc,cc$TRUST_CUDA_CC,cuda$CUDA_VERSION"
+           cc=cc$TRUST_CUDA_CC && [ "$TRUST_CUDA_CC" = 89 ] && cc=cc86 # Bizarre nvc++ 23.5 ne supporte pas encore cc89...
+           gpu=" -gpu=nordc,$cc,cuda$CUDA_VERSION"
            #TRUST_USE_UVM=1 # Provisoire
            [ "$TRUST_USE_UVM" = 1 ] && gpu=$gpu",managed" && Defines=$Defines" -DTRUST_USE_UVM"
            CppFlags=$CppFlags$gpu

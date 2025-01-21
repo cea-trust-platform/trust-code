@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) GPU          : Ada Nvidia architecture card (e.g. RTX 4070) supported
 XX/XX/24 (TRUST) Keyword      : Algebric Multigrid preconditioned solver keyword which select a good choice for CPU/GPU/MPI: solver AMG GCP { rtol|atol value [impr] }
 XX/XX/24 (TRUST) GPU          : Performance regression on adastra fixed by using HIP backend for Kokkos
 XX/XX/24 (TRUST) GPU          : Jean-Zay a100 partition is supported
