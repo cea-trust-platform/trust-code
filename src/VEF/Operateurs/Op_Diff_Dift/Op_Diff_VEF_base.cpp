@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,9 +22,9 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Fonc_P0_base.h>
 #include <Discretisation_base.h>
-
 #include <Check_espace_virtuel.h>
 #include <Echange_externe_impose.h>
+#include <Echange_externe_radiatif.h>
 
 Implemente_base(Op_Diff_VEF_base,"Op_Diff_VEF_base",Operateur_Diff_base);
 
