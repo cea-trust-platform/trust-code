@@ -107,56 +107,123 @@ double Champ_Fonc_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, 
 void Champ_Fonc_Face_PolyMAC::interp_valeurs_elem(const DoubleTab& inco, DoubleTab& val) const
 {
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
-  const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
+  const DoubleTab& xv = domaine.xv(), &xp = domaine.xp(), &nf = domaine.face_normales();
   const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  int e, f, j, d, D = dimension, n, N = inco.line_size();
+  const int D = dimension, N = inco.line_size(), ne = val.dimension(0);
   assert(val.line_size() == N * D);
 
   val = 0;
-  for (e = 0; e < val.dimension(0); e++)
+  for (int e = 0, f; e < ne; e++)
     {
-      for (n = 0; n < N * D; n++) val(e, n) = 0;
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        for (d = 0; d < D; d++)
-          for (n = 0; n < N; n++)
-            val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * (inco.nb_dim() == 1 ? inco(f) : inco(f, n));
+      for (int j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+        if (le_champ().nb_comp() == 1)
+          for (int d = 0; d < D; d++)
+            val(e, 0) += nf(f, d) / ve(e) * (xv(f, d) - xp(e, d)) * inco(f);
+        else
+          for (int d = 0; d < D; d++)
+            for (int n = 0; n < N; n++)
+              val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * (inco.nb_dim() == 1 ? inco(f) : inco(f, n));
     }
 }
 
-DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
-                                                     const IntVect& les_polys,
-                                                     DoubleTab& val) const
+//DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
+//                                                     const IntVect& les_polys,
+//                                                     DoubleTab& val) const
+//{
+//  const Champ_base& cha=le_champ();
+//  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
+//  const int N = cha.valeurs().line_size(), D = dimension, nf_tot = domaine_VF.nb_faces_tot(), M = le_champ().nb_comp();
+//  // XXX : TODO Check this assert (positions and not val)
+//  assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
+//  assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
+//  assert((cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())||(cha.valeurs().dimension_tot(0)==nf_tot));
+//
+//  if (val.nb_dim() > 2) Process::exit(que_suis_je() + "Le DoubleTab val a plus de 2 entrees");
+//
+//  DoubleTab ve(0, N * D);
+//
+//  if (cha.valeurs().dimension_tot(0)==nf_tot)
+//    {
+//      domaine_VF.domaine().creer_tableau_elements(ve);
+//      interp_valeurs_elem(cha.valeurs(), ve);
+//      for (int p = 0; p < les_polys.size(); p++)
+//        for (int r = 0, e = les_polys(p); e < domaine_VF.nb_elem() && r < N * std::min(D, M); r++)
+//          val(p, r) = (e==-1) ? 0. : ve(e, r);
+//    }
+//  else if (cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())
+//    for (int p = 0; p < les_polys.size(); p++)
+//      for (int e = les_polys(p), d = 0; e < domaine_VF.nb_elem() && d < D; d++)
+//        for (int n = 0; n < N; n++)
+//          val(p, N * d + n) = cha.valeurs()(nf_tot + D * e + d, n);
+//  else Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : curious number of faces !");
+//
+//  return val;
+//}
+
+
+DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
-  const Champ_base& cha=le_champ();
-  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
-  const int N = cha.valeurs().line_size(), D = dimension, nf_tot = domaine_VF.nb_faces_tot(), M = le_champ().nb_comp();;
-  // XXX : TODO Check this assert (positions and not val)
-  assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
-  assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-  assert((cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())||(cha.valeurs().dimension_tot(0)==nf_tot));
-
-  if (val.nb_dim() > 2) Process::exit(que_suis_je() + "Le DoubleTab val a plus de 2 entrees");
-
-  DoubleTab ve(0, N * D);
-
-  if (cha.valeurs().dimension_tot(0)==nf_tot)
+  if (val_elem.nb_dim() > 2)
     {
-      domaine_VF.domaine().creer_tableau_elements(ve);
-      interp_valeurs_elem(cha.valeurs(), ve);
-      for (int p = 0; p < les_polys.size(); p++)
-        for (int r = 0, e = les_polys(p); e < domaine_VF.nb_elem() && r < N * std::min(D, M); r++)
-          val(p, r) = (e==-1) ? 0. : ve(e, r);
+      Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
+      Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
+      Process::exit();
     }
-  else if (cha.valeurs().dimension_tot(0)==nf_tot+D*domaine_VF.nb_elem_tot())
-    for (int p = 0; p < les_polys.size(); p++)
-      for (int e = les_polys(p), d = 0; e < domaine_VF.nb_elem() && d < D; d++)
-        for (int n = 0; n < N; n++)
-          val(p, N * d + n) = cha.valeurs()(nf_tot + D * e + d, n);
-  else Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : curious number of faces !");
+  const Champ_base& ch = le_champ();
+  const DoubleTab& val_face = ch.valeurs();
+
+  const int N = val_face.line_size(), D = Objet_U::dimension, M = le_champ().nb_comp();
+  DoubleVect val_e(N * D), x(D);
+  val_elem = 0.0;
+
+  for (int p = 0; p < les_polys.size(); p++)
+    {
+      for (int d = 0; d < D; d++) x(d) = positions(p, d);
+      valeur_a_elem_(val_face, x, val_e, les_polys(p));
+      for (int i = 0; i < N * std::min(D, M); i++) val_elem(p, i) = val_e(i);
+    }
+
+  return val_elem;
+}
+
+double distance(const DoubleTab& x, int f, const DoubleVect& y)
+{
+  assert(x.dimension(1) == y.size());
+  double distance = 0;
+  for (int d = 0; d < x.dimension(1); d++)
+    distance += (x(f, d) - y(d)) * (x(f, d) - y(d));
+  return std::sqrt(distance);
+}
+
+DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_a_elem_(const DoubleTab& val_face, const DoubleVect& position, DoubleVect& val, int e) const
+{
+  val = 0.0;
+  if (e == -1) return val;
+
+  const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
+  const Domaine_VF& domaine_VF = domaine_vf();
+  const IntTab& e_f = domaine_VF.elem_faces(), &f_e = domaine_VF.face_voisins();
+  const DoubleTab& xv = domaine_VF.xv();
+  const DoubleVect& fs = domaine_VF.face_surfaces(), &ve = domaine_VF.volumes();
+
+  if (le_champ().nb_comp() == 1) // cas particulier interpolation sur les elements d'un domaine de bord : la position d'interpolation tombe pile sur un centre de gravite de face
+    for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+      if (distance(xv, f, position) < 1e-10)
+        {
+          val(0) = val_face(f);
+          return val;
+        }
+
+  for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+    for (int d = 0; d < D; d++)
+      for (int n = 0; n < N; n++)
+        val(N * d + n) += fs(f) / ve(e) * (xv(f, d) - position(d)) * (e == f_e(f, 0) ? 1 : -1) * (val_face.nb_dim() == 1 ? val_face(f) : val_face(f, n));
 
   return val;
 }
+
+
 
 DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_faces(DoubleTab& val) const
 {
