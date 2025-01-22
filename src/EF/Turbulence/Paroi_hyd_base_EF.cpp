@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,8 +20,6 @@
 #include <Domaine_Cl_dis_base.h>
 #include <Paroi_hyd_base_EF.h>
 #include <Schema_Temps_base.h>
-#include <communications.h>
-
 #include <EcrFicPartage.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
@@ -154,121 +152,11 @@ DoubleTab& Paroi_hyd_base_EF::corriger_derivee_impl(DoubleTab& d) const
 
 void Paroi_hyd_base_EF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
-  EcrFicPartage fichier;
-  ouvrir_fichier_partage(fichier, nom_fichier_, "out");
-  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  Nom ligne, err;
-
-  err = "";
-  ligne = "# Time   \tMean(u*) \tMean(d+)";
-
-  for (int n_bord = 0; n_bord < domaine_EF.nb_front_Cl(); n_bord++)
-    {
-      const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
-      const Nom& nom_bord = la_cl->frontiere_dis().le_nom();
-      if (je_suis_maitre() && (boundaries_list.contient(nom_bord) || boundaries_list.size() == 0))
-        {
-          if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()))
-            {
-              ligne += " \t";
-              ligne += nom_bord;
-              ligne += "(u*)";
-              ligne += " \t";
-              ligne += nom_bord;
-              ligne += "(d*)";
-            }
-          else if (boundaries_list.size() > 0)
-            {
-              err += "The boundary named '";
-              err += nom_bord;
-              err += "' is not of type Dirichlet_paroi_fixe or Dirichlet_paroi_defilante.\n";
-              err += "So TRUST will not write his u_star and d_plus means.\n\n";
-            }
-        }
-    }
-  if (je_suis_maitre())
-    {
-      fichier << err;
-      fichier << ligne;
-      fichier << finl;
-    }
-  fichier.syncfile();
+  imprimer_premiere_ligne_ustar_impl(boundaries_, boundaries_list, nom_fichier_, le_dom_EF.valeur(), le_dom_Cl_EF);
 }
 
 void Paroi_hyd_base_EF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
-  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  const Probleme_base& pb = mon_modele_turb_hyd->equation().probleme();
-  const Schema_Temps_base& sch = pb.schema_temps();
-  int ndeb, nfin, size0, num_bord;
-  num_bord = 0;
-
-  if (boundaries_list.size() != 0)
-    {
-      size0 = boundaries_list.size();
-    }
-  else
-    {
-      size0 = domaine_EF.nb_front_Cl();
-    }
-  DoubleTrav moy_bords(size0 + 1, 3);
-  moy_bords = 0.;
-
-  EcrFicPartage fichier;
-  ouvrir_fichier_partage(fichier, nom_fichier_, "out");
-
-  for (int n_bord = 0; n_bord < domaine_EF.nb_front_Cl(); n_bord++)
-    {
-      const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
-      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
-          ndeb = le_bord.num_premiere_face();
-          nfin = ndeb + le_bord.nb_faces();
-          if (boundaries_ == 0 || (boundaries_ == 1 && boundaries_list.contient(le_bord.le_nom())))
-            {
-              for (int num_face = ndeb; num_face < nfin; num_face++)
-                {
-                  // Calcul des valeurs moyennes par bord (en supposant maillage regulier)
-                  moy_bords(0, 0) += tab_u_star(num_face);
-                  moy_bords(0, 1) += 1;
-                  moy_bords(0, 2) += tab_d_plus(num_face);
-                  moy_bords(num_bord + 1, 0) += tab_u_star(num_face);
-                  moy_bords(num_bord + 1, 1) += 1;
-                  moy_bords(num_bord + 1, 2) += tab_d_plus(num_face);
-                }
-              num_bord += 1;
-            }
-        }
-    }
-  mp_sum_for_each_item(moy_bords);
-
-// affichages des lignes dans le fichier
-  if (je_suis_maitre() && moy_bords(0, 1) != 0)
-    {
-      fichier << sch.temps_courant() << " \t" << moy_bords(0, 0) / moy_bords(0, 1) << " \t" << moy_bords(0, 2) / moy_bords(0, 1);
-    }
-
-  num_bord = 0;
-  for (int n_bord = 0; n_bord < domaine_EF.nb_front_Cl(); n_bord++)
-    {
-      const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
-      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
-          if (boundaries_ == 0 || (boundaries_ == 1 && boundaries_list.contient(le_bord.le_nom())))
-            {
-              if (je_suis_maitre())
-                {
-                  fichier << " \t" << moy_bords(num_bord + 1, 0) / moy_bords(num_bord + 1, 1) << " \t" << moy_bords(num_bord + 1, 2) / moy_bords(num_bord + 1, 1);
-                }
-              num_bord += 1;
-            }
-        }
-    }
-
-  if (je_suis_maitre())
-    fichier << finl;
-  fichier.syncfile();
+  imprimer_ustar_mean_only_impl(os, boundaries_, boundaries_list, nom_fichier_, le_dom_EF.valeur(), le_dom_Cl_EF);
 }
 

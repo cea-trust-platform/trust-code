@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,8 +52,10 @@ public:
   virtual int calculer_hyd_BiK(DoubleTab&, DoubleTab&) =0;
   inline virtual DoubleTab& corriger_derivee_impl(DoubleTab& d) const { return d; }
   inline virtual void imprimer_ustar(Sortie&) const { }
-  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const { }
   inline virtual void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&) const { }
+  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const { }
+  virtual void imprimer_premiere_ligne_ustar_impl(int, const LIST(Nom)&, const Nom&, const Domaine_dis_base&, const Domaine_Cl_dis_base&) const;
+  virtual void imprimer_ustar_mean_only_impl(Sortie&, int, const LIST(Nom)&, const Nom&, const Domaine_dis_base&, const Domaine_Cl_dis_base&) const;
   // rajout pour prendre en compte Cisaillement_paroi dans la classe de base
 
   inline const DoubleTab& Cisaillement_paroi() const;
