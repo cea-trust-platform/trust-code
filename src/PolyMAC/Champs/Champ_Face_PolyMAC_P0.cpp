@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,6 @@
 #include <Domaine_VF.h>
 #include <Champ_Uniforme.h>
 #include <Domaine_PolyMAC_P0.h>
-
 #include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
@@ -137,19 +136,33 @@ Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 {
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
-  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr , *pe = pf ? &equation().milieu().porosite_elem() : nullptr;
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face)
+    return; //pas de variables auxiliaires -> rien a faire
+
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(),
+                    *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : nullptr,
+                     *pe = pf ? &equation().milieu().porosite_elem() : nullptr;
+
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
+  const int D = dimension, N = val.line_size(), ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
+
   double fac;
-  for (e = 0; e < ne_tot; e++)
+  for (int e = 0; e < ne_tot; e++)
     {
-      for (d = 0; d < D; d++)
-        for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        for (fac = (e == f_e(f, 0) ? 1 : -1) * ( pf ? (*pf)(f) : 1.0) * fs(f) / ((pe ? (*pe)(e) : 1.0) * ve(e)), d = 0; d < D; d++)
-          for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) += fac * (xv(f, d) - xp(e, d)) * val(f, n);
+      for (int d = 0; d < D; d++)
+        for (int n = 0; n < N; n++)
+          val(nf_tot + D * e + d, n) = 0;
+      for (int j = 0; j < e_f.dimension(1); j++)
+        {
+          const int f = e_f(e, j);
+          if (f < 0) continue;
+
+          fac = (e == f_e(f, 0) ? 1 : -1) * (pf ? (*pf)(f) : 1.0) * fs(f) / ((pe ? (*pe)(e) : 1.0) * ve(e));
+          for (int d = 0; d < D; d++)
+            for (int n = 0; n < N; n++)
+              val(nf_tot + D * e + d, n) += fac * (xv(f, d) - xp(e, d)) * val(f, n);
+        }
     }
 }
 
@@ -160,100 +173,187 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   Process::exit();
 #else
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  if (ve2d.dimension(0) || valeurs().get_md_vector() != domaine.mdv_ch_face) return; //deja initialise ou pas de variables auxiliaires
-  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
+
+  if (ve2d.dimension(0) || valeurs().get_md_vector() != domaine.mdv_ch_face)
+    return; //deja initialise ou pas de variables auxiliaires
+
+  const DoubleVect& pf = equation().milieu().porosite_face(),
+                    &pe = equation().milieu().porosite_elem(),
+                     &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &nf = domaine.face_normales();
-  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &e_s = domaine.domaine().les_elems(), &f_s = domaine.face_sommets();
-  int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo=0, un = 1, rank;
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(),
+                &e_s = domaine.domaine().les_elems(), &f_s = domaine.face_sommets();
+
+  int D = dimension, nl = D * (D + 1), infoo = 0, un = 1;
   double eps = 1e-8, fac;
   const double *xf;
+
   init_fcl();
 
   //position des points aux faces de bord : CG si interne ou Dirichlet, projection si Neumann
   DoubleTrav xfb(domaine.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
   IntTrav pvt;
-  for (f = 0; f < domaine.nb_faces_tot(); f++)
+
+  for (int f = 0; f < domaine.nb_faces_tot(); f++)
     if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2) //Neumann / Symetrie
       {
-        double scal = domaine.dot(&xv(f, 0), &nf(f, 0), &xp(e = f_e(f, 0), 0)) / (fs(f) * fs(f));
-        for (d = 0; d < D; d++) xfb(f, d) = xp(e, d) + scal * nf(f, d);
+        const int e = f_e(f, 0);
+        double scal = domaine.dot(&xv(f, 0), &nf(f, 0), &xp(e, 0)) / (fs(f) * fs(f));
+        for (int d = 0; d < D; d++)
+          xfb(f, d) = xp(e, d) + scal * nf(f, d);
       }
     else if (fcl_(f, 0))
-      for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
+      {
+        for (int d = 0; d < D; d++)
+          xfb(f, d) = xv(f, d); //Dirichlet
+      }
 
   /* connectivites som-elem et elem-elem */
   std::vector<std::set<int>> s_f(domaine.domaine().nb_som()), e_s_f(domaine.nb_elem());
-  for (f = 0; f < domaine.nb_faces_tot(); f++)
-    for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-      if (s < domaine.domaine().nb_som()) s_f[s].insert(f);
-  for (e = 0; e < domaine.nb_elem(); e++)
-    for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
-      for (auto &&fa : s_f[s]) e_s_f[e].insert(fa);
+  for (int f = 0; f < domaine.nb_faces_tot(); f++)
+    for (int i = 0; i < f_s.dimension(1); i++)
+      {
+        const int s = f_s(f, i);
+        if (s < 0) continue;
+
+        if (s < domaine.domaine().nb_som())
+          s_f[s].insert(f);
+      }
+
+  for (int e = 0; e < domaine.nb_elem(); e++)
+    for (int i = 0; i < e_s.dimension(1); i++)
+      {
+        const int s = e_s(e, i);
+        if (s < 0) continue;
+
+        for (auto &&fa : s_f[s])
+          e_s_f[e].insert(fa);
+      }
 
   ve2d.resize(1, 2);
   ve2bj.resize(0, 2);
   std::map<std::array<int, 2>, int> v_i; // v_i[{f, -1 (interne) ou composante }] = indice
   std::vector<std::array<int, 2>> i_v; // v_i[i_v[f]] = f
-  for (e = 0; e < domaine.nb_elem(); e++, v_i.clear(), i_v.clear())
+
+  for (int e = 0; e < domaine.nb_elem(); e++, v_i.clear(), i_v.clear())
     {
       /* stencil : faces de l'element et de ses voisins par som-elem + toutes composantes a ses faces de bord */
       for (auto &&fa : e_s_f[e])
-        if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = (int)i_v.size(), i_v.push_back({{fa, -1}});
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        if (fcl_(f, 0))
-          for (d = 0; d < D; d++)
-            v_i[ {{f, d }}] = (int)i_v.size(), i_v.push_back({{f, d}});
+        if (!v_i.count( { { fa, -1 } }))
+      v_i[ { { fa, -1 } }] = (int) i_v.size(), i_v.push_back( { { fa, -1 } });
+      for (int i = 0; i < e_f.dimension(1) ; i++)
+        {
+          const int f = e_f(e, i);
+          if (f < 0) continue;
+
+          if (fcl_(f, 0))
+            for (int d = 0; d < D; d++)
+              v_i[ { { f, d } }] = (int) i_v.size(), i_v.push_back( { { f, d } });
+        }
 
       /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Domaine_PolyMAC_P0::{e,f}grad)  */
-      ve2.resize(nc = (int)i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
-      for (ve2 = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), j = v_i.at({{ f, -1 }}), d = 0; d < D; d++)
-      ve2(j, d) += fac * (xv(f, d) - xp(e, d));
-      for (i = 0; i < nc; i++) f = i_v[i][0], xf = i_v[i][1] < 0 ? &xv(f, 0) : &xfb(f, 0), P(i) = 1. / sqrt(domaine.dot(xf, xf, &xp(e, 0), &xp(e, 0)));
+      const int nc = (int) i_v.size();
+
+      ve2.resize(nc, D);
+      A.resize(nc, nl);
+      B.resize(nc);
+      P.resize(nc);
+      pvt.resize(nc);
+      ve2 = 0.;
+
+      for (int i = 0; i < e_f.dimension(1); i++)
+        {
+          const int f = e_f(e, i);
+          if (f < 0) continue;
+
+          fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e);
+          int j = v_i.at( { { f, -1 } });
+
+          for (int d = 0; d < D; d++)
+            ve2(j, d) += fac * (xv(f, d) - xp(e, d));
+        }
+
+      for (int i = 0; i < nc; i++)
+        {
+          int f = i_v[i][0];
+          xf = i_v[i][1] < 0 ? &xv(f, 0) : &xfb(f, 0);
+          P(i) = 1. / sqrt(domaine.dot(xf, xf, &xp(e, 0), &xp(e, 0)));
+        }
 
       /* par composante : correction pour etre d'ordre 2 */
-      for (d = 0; d < D; d++)
+      for (int d = 0; d < D; d++)
         {
           /* systeme A.x = b */
-          for (B = 0, pvt = 0, i = 0; i < nc; i++)
-            for (f = i_v[i][0], db = i_v[i][1], xf = db < 0 ? &xv(f, 0) : &xfb(f, 0), j = 0, jb = 0; j < D; j++)
-              for (k = 0; k <= D; k++, jb++)
-                {
-                  fac = (db < 0 ? nf(f, j) / fs(f) : (db == j)) * (k < D ? xf[k] - xp(e, k) : 1);
-                  A(i, jb) = fac * P(i);
-                  if (k < D) B(jb) -= fac * ve2(i, d); //erreur de l'interp d'ordre 1 a corriger
-                }
+          B = 0;
+          pvt = 0;
+
+          for (int i = 0; i < nc; i++)
+            {
+              int f = i_v[i][0];
+              int db = i_v[i][1];
+              xf = db < 0 ? &xv(f, 0) : &xfb(f, 0);
+
+              int jb = 0;
+              for (int j = 0; j < D; j++)
+                for (int k = 0; k <= D; k++, jb++)
+                  {
+                    fac = (db < 0 ? nf(f, j) / fs(f) : (db == j)) * (k < D ? xf[k] - xp(e, k) : 1);
+                    A(i, jb) = fac * P(i);
+                    if (k < D)
+                      B(jb) -= fac * ve2(i, d); //erreur de l'interp d'ordre 1 a corriger
+                  }
+            }
 
           /* x de norme L2 minimale par dgels */
-          nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
-          W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+          int nw = -1, rank;
+
+          F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+
+          W.resize(nw = (int) std::lrint(W(0)));
+
+          F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
           assert(infoo == 0);
+
           /* ajout dans ve2 */
-          for (i = 0; i < nc; i++) ve2(i, d) += P(i) * B(i);
+          for (int i = 0; i < nc; i++)
+            ve2(i, d) += P(i) * B(i);
         }
 
       /* implicitation des CLs de Neumann / Symetrie */
       Matrice33 M(1, 0, 0, 0, 1, 0, 0, 0, 1), iM;
-      for (i = 0; i < nc; i++)
+
+      for (int i = 0; i < nc; i++)
         if (i_v[i][1] >= 0 && fcl_(i_v[i][0], 0) < 2)
-          for (j = 0; j < D; j++)
+          for (int j = 0; j < D; j++)
             M(j, i_v[i][1]) -= ve2(i, j);
+
       Matrice33::inverse(M, iM);
-      for (ve2i.resize(nc, D), i = 0; i < nc; i++)
-        for (j = 0; j < D; j++)
-          for (ve2i(i, j) = 0, k = 0; k < D; k++)
-            ve2i(i, j) += iM(j, k) * ve2(i, k);
+      ve2i.resize(nc, D);
+
+      for (int i = 0; i < nc; i++)
+        for (int j = 0; j < D; j++)
+          {
+            ve2i(i, j) = 0;
+            for (int k = 0; k < D; k++)
+              ve2i(i, j) += iM(j, k) * ve2(i, k);
+          }
 
       /* stockage */
-      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size()))
-        for (i = 0; i < nc; i++)
+      for (int d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size()))
+        for (int i = 0; i < nc; i++)
           if (std::fabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl_(i_v[i][0], 0) == 3))
             {
-              i_v[i][1] < 0 ? ve2j.append_line(i_v[i][0])  : ve2bj.append_line(i_v[i][0], i_v[i][1]);
+              i_v[i][1] < 0 ? ve2j.append_line(i_v[i][0]) : ve2bj.append_line(i_v[i][0], i_v[i][1]);
               (i_v[i][1] < 0 ? &ve2c : &ve2bc)->append_line(ve2i(i, d) * pf(i_v[i][0]) / pe(e));
             }
     }
-  CRIMP(ve2d), CRIMP(ve2j), CRIMP(ve2bj), CRIMP(ve2c), CRIMP(ve2bc);
+
+  CRIMP(ve2d);
+  CRIMP(ve2j);
+  CRIMP(ve2bj);
+  CRIMP(ve2c);
+  CRIMP(ve2bc);
+
 #endif
 }
 
@@ -261,22 +361,30 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 {
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return; //pas de variables auxiliaires -> on sort
-  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
-  int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = domaine.nb_faces_tot();
-  init_ve2(), init_fcl();
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face)
+    return; //pas de variables auxiliaires -> on sort
 
-  for (e = 0, ed = 0, i = nf_tot; e < domaine.nb_elem(); e++)
-    for (d = 0; d < D; d++, ed++, i++)
-      for (n = 0; n < N; n++)
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
+  const int D = dimension,  N = val.line_size(), nf_tot = domaine.nb_faces_tot();
+
+  init_ve2();
+  init_fcl();
+
+  int ed = 0, i = nf_tot;
+
+  for (int e = 0 ; e < domaine.nb_elem(); e++)
+    for (int d = 0; d < D; d++, ed++, i++)
+      for (int n = 0; n < N; n++)
         {
           /* partie "interne" */
-          for (val(i, n) = 0, j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
+          val(i, n) = 0;
+
+          for (int j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
             val(i, n) += ve2c(j) * val(ve2j(j), n);
 
           /* partie "faces de bord de Dirichlet" (sauf si on fait des increments) */
           if (!incr)
-            for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
+            for (int j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
               if (sub_type(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()))
                 val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
         }
@@ -300,12 +408,12 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_passe(const DoubleTab& positi
     return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
 }
 
-DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
+DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face, const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  int nb_compo=le_champ().nb_comp(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = val_face.line_size();
+  int nb_compo = le_champ().nb_comp(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = val_face.line_size();
 
-  assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
+  assert((positions.dimension(0) == les_polys.size()) || (positions.dimension_tot(0) == les_polys.size()));
 
   if (val_elem.nb_dim() > 2)
     Process::exit("TRUST error in Champ_Face_PolyMAC_P0::valeur_aux_elems_ : The DoubleTab val has more than 2 entries !");
@@ -322,23 +430,27 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,c
 
 DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
-  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC_P0P1NC::valeur_aux_elems_compo(positions, polys, val, ncomp);
+  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face)
+    return Champ_Face_PolyMAC_P0P1NC::valeur_aux_elems_compo(positions, polys, val, ncomp);
   int nf_tot = domaine_PolyMAC_P0().nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size_totale() >= polys.size());
 
   DoubleTab vfe(valeurs());
   update_ve(vfe);
 
-  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : vfe.addr()[N * (nf_tot + D * e) + ncomp];
+  for (int p = 0, e; p < polys.size(); p++)
+    val(p) = (e = polys(p)) < 0 ? 0. : vfe.addr()[N * (nf_tot + D * e) + ncomp];
 
   return val;
 }
 
 DoubleTab& Champ_Face_PolyMAC_P0::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
-  assert(distant==0);
+  assert(distant == 0);
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return Champ_Face_PolyMAC_P0P1NC::trace(fr, x, t, distant);
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face)
+    return Champ_Face_PolyMAC_P0P1NC::trace(fr, x, t, distant);
+
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const int dim = vectoriel ? dimension : 1, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
@@ -348,7 +460,8 @@ DoubleTab& Champ_Face_PolyMAC_P0::trace(const Frontiere_dis_base& fr, DoubleTab&
   for (int i = 0; i < fr_vf.nb_faces(); i++)
     {
       const int face = fr_vf.num_premiere_face() + i, elem = face_voisins(face, 0);
-      for (int d = 0; d < dim; d++) x(i, d) = val(vectoriel ? nf_tot + ne_tot * d + elem : face);
+      for (int d = 0; d < dim; d++)
+        x(i, d) = val(vectoriel ? nf_tot + ne_tot * d + elem : face);
     }
 
   return x;
