@@ -409,6 +409,8 @@ class TRAD2Content:
                 #  "Add_synonym(Terme_Boussinesq_VEF_Face,"Boussinesq_temperature_VEF_Face");"
                 if lin.startswith("//"): continue
                 cls_nam, s = self._parseMacro("add_synonym", l2)
+                if cls_nam.endswith("_64"):
+                  cls_nam = cls_nam[:-len("_64")]
                 if cls_nam not in impl:
                     raise Exception(pretty_error(f_name, lin_n, f"'Add_synonym' macro used before 'Implemente_instanciable'"))
                 kw = impl[cls_nam]
