@@ -224,12 +224,34 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
     }
 }
 
+inline double newton_Tbord(double eps, double T_ext, double lambda, double e, double T0, double sgn)
+{
+  double Tb = T0;
+  const double it_max = 100, tolerance = 1e-5;
+  for (int i = 0; i < it_max; i++)
+    {
+      const double f = sgn * (5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) - lambda / e * (Tb - T0));
+      const double f_p = sgn * (-4 * 5.67e-8 * eps * Tb * Tb * Tb - lambda / e);
+      const double Tb_new = Tb - f / f_p;
+      if (std::abs(Tb_new - Tb) < tolerance)
+        return Tb_new;
+      Tb = Tb_new;
+    }
+  Process::exit("Echange_Externe_radiatif : newton did not converge !");
+  return Tb;
+}
+
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_radiatif& la_cl, const int num1, Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
-  const int i = elem_(face, 0), j = elem_(face, 1), ncomp = flux.size_array();
+  double e;
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
+
+  if (DERIVED_T::IS_MODIF_DEQ) e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
+  else e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) : Dist_norm_bord_externe_(face);
+
 
   // XXX : E. Saikali 08/03/2021 : The test of a zero diffusion was not done before. I think it should be like that
   // Attention for DIFT OPERATORS : nu_2 and not nu_1 (only laminar part)
@@ -242,8 +264,8 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
             {
               const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
               const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = la_cl.T_ext(face - num1, l);
-              const double T = inco(i, l);
-              flux[k] += 5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - T * T * T * T) * surface(face);
+              const double Tb = newton_Tbord(eps, T_ext, nu_2(i, ori), e, inco(i, l), 1.0);
+              flux[k] += 5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) * surface(face);
             }
         }
     }
@@ -256,8 +278,8 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
             {
               const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
               const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = la_cl.T_ext(face - num1, l);
-              const double T = inco(j, l);
-              flux[k] += 5.67e-8 * eps * (T * T * T * T - T_ext * T_ext * T_ext * T_ext) * surface(face);
+              const double Tb = newton_Tbord(eps, T_ext, nu_2(i, ori), e, inco(j, l), -1.0);
+              flux[k] += 5.67e-8 * eps * (Tb * Tb * Tb * Tb - T_ext * T_ext * T_ext * T_ext) * surface(face);
             }
         }
     }
