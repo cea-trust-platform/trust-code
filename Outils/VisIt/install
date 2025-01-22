@@ -83,12 +83,11 @@ then
    [ "`grep 'Debian GNU/Linux trixie/sid' /etc/issue.net 2>/dev/null`" != "" ] 	&& os=debian12 && version=3_4_2
    [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8 && version=3_1_1
    [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8 && version=3_1_1
+   [ "`grep 'Rocky Linux 9' /etc/os-release 2>/dev/null`" != "" ]   		&& os=rocky9 && version=3_4_2
    [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
    [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
    [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora31 && version=3_4_1
-   # Sur fedora 40, la version fedora 31 fonctionne pour lata/med mais le test visit ne passe pas.
-   # utilisation d'une version fedora40-beta, cf https://github.com/visit-dav/visit/releases/tag/v3.4.1
-   [ "`grep 'Fedora release 4[0-1]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora40-beta && version=3_4_1
+   [ "`grep 'Fedora release 4[0-1]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora40 && version=3_4_2
    [ `uname -s` = Darwin ]                                                      && os=arm64 && version=3_3_1
 
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
