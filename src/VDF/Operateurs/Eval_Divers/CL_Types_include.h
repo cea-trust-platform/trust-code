@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,9 @@
 #include <Dirichlet_entree_fluide_leaves.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Neumann_paroi_adiabatique.h>
-#include <Scalaire_impose_paroi.h>
+#include <Echange_externe_radiatif.h>
 #include <Echange_externe_impose.h>
+#include <Scalaire_impose_paroi.h>
 #include <Echange_global_impose.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet_paroi_fixe.h>

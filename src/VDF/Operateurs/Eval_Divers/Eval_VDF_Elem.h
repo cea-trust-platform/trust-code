@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Champ_P0_VDF.h>
 #include <TRUST_Ref.h>
 
+class Echange_externe_radiatif;
 class Echange_externe_impose;
 class Champ_base;
 
@@ -32,7 +33,7 @@ class Eval_VDF_Elem
 {
 public:
   // To overload if needed ... see Eval_XXX in leaves files
-  static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = true, CALC_FLUX_FACES_ECH_GLOB_IMP = true, CALC_FLUX_FACES_ENTREE_FL  = true,
+  static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = true, CALC_FLUX_FACES_ECH_EXT_RAY = true, CALC_FLUX_FACES_ECH_GLOB_IMP = true, CALC_FLUX_FACES_ENTREE_FL  = true,
                         CALC_FLUX_FACES_PAR = true, CALC_FLUX_FACES_PAR_ADIAB = false, CALC_FLUX_FACES_PAR_DEFIL = false, CALC_FLUX_FACES_PAR_FIXE = true,
                         CALC_FLUX_FACES_SORTIE_LIB = false, CALC_FLUX_FACES_SYMM = false, CALC_FLUX_FACES_PERIO = true, CALC_FLUX_FACES_SCAL_IMPOSEE = true;
 
@@ -40,6 +41,7 @@ public:
   inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, int , const BC_TYPE&, int , Type_Double& ) const { /* Do nothing */ }
 
   template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, int , int, int, const Echange_externe_impose&, int , Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, int , int, int, const Echange_externe_radiatif&, int , Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int , Type_Double& ) const { /* Do nothing */ }
   inline void associer_inconnue(const Champ_base& );
 

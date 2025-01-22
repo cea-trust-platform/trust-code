@@ -128,6 +128,9 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
         case echange_externe_impose:
           ajouter_blocs_bords_ < Type_Double > ((const Echange_externe_impose&) la_cl.valeur(), ndeb, nfin, num_cl, ncomp, frontiere_dis, mats, resu, semi_impl);
           break;
+        case echange_externe_radiatif:
+          ajouter_blocs_bords_ < Type_Double > ((const Echange_externe_radiatif&) la_cl.valeur(), ndeb, nfin, num_cl, ncomp, frontiere_dis, mats, resu, semi_impl);
+          break;
         case periodique:
           ajouter_blocs_bords_ < Type_Double > ((const Periodique&) la_cl.valeur(), ndeb, nfin, ncomp, frontiere_dis, mats, resu, semi_impl);
           break;
@@ -338,6 +341,59 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
           {
             const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
             flux_evaluateur.coeffs_face(boundary_index, face, local_face, ndeb, cl, aii, ajj);
+            fill_coeffs_matrices(face, aii, ajj, mat, d_cc); // XXX : Attention Yannick pour d_cc c'est pas tout a fait comme avant ... N et M ...
+          }
+    }
+}
+
+// TODO FIXME TEMPLATE
+template<class _TYPE_> template<typename Type_Double>
+void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_radiatif& cl, const int ndeb, const int nfin, const int num_cl, const int N, const Front_VF& frontiere_dis,
+                                                      matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
+{
+  if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
+    {
+      // Sinon, GO !
+      const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
+
+      Type_Double flux(N), aii(N * (multiscalar_diff_ ? N : 1)), ajj(N * (multiscalar_diff_ ? N : 1)), aef(N);
+      int boundary_index = -1;
+      if (le_dom->front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
+        boundary_index = num_cl;
+
+      int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
+      for (int face = ndeb; face < nfin; face++)
+        {
+          const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
+          flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
+          fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
+        }
+
+      Matrice_Morse *m_vit = (mats.count("vitesse") && is_convective_op()) ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
+      VectorDeriv d_cc;
+      fill_derivee_cc(mats, semi_impl, d_cc);
+
+      //derivees : vitesse
+      if (m_vit)
+        {
+          DoubleTab val_b = use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords();
+          for (int face = ndeb; face < nfin; face++)
+            {
+              const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
+              flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, boundary_index, face, local_face, cl, ndeb, aef);
+
+              for (int i = 0; i < 2; i++)
+                if ((e = elem(face, i)) >= 0)
+                  for (int n = 0, m = 0; n < N; n++, m += (Mv > 1)) (*m_vit)(N * e + n, Mv * face + m) += (i ? -1.0 : 1.0) * aef(n);
+            }
+        }
+
+      //derivees : champ convecte
+      if (mat || d_cc.size() > 0)
+        for (int face = ndeb; face < nfin; face++)
+          {
+            const int local_face = le_dom->front_VF(boundary_index).num_local_face(face);
+            flux_evaluateur.coeffs_face(donnee, boundary_index, face, local_face, ndeb, cl, aii, ajj);
             fill_coeffs_matrices(face, aii, ajj, mat, d_cc); // XXX : Attention Yannick pour d_cc c'est pas tout a fait comme avant ... N et M ...
           }
     }

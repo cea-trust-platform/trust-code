@@ -225,6 +225,45 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_radiatif& la_cl, const int num1, Type_Double& flux) const
+{
+  if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
+
+  const int i = elem_(face, 0), j = elem_(face, 1), ncomp = flux.size_array();
+
+  // XXX : E. Saikali 08/03/2021 : The test of a zero diffusion was not done before. I think it should be like that
+  // Attention for DIFT OPERATORS : nu_2 and not nu_1 (only laminar part)
+  if (i != -1)
+    {
+      for (int k = 0; k < ncomp; k++)
+        {
+          flux[k] = 0.0;
+          for (int l = (DERIVED_T::IS_MULTI_SCALAR_DIFF ? 0 : k); l < (DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp : k + 1); l++)
+            {
+              const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
+              const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = la_cl.T_ext(face - num1, l);
+              const double T = inco(i, l);
+              flux[k] += 5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - T * T * T * T) * surface(face);
+            }
+        }
+    }
+  else // j != -1
+    {
+      for (int k = 0; k < ncomp; k++)
+        {
+          flux[k] = 0.0;
+          for (int l = (DERIVED_T::IS_MULTI_SCALAR_DIFF ? 0 : k); l < (DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp : k + 1); l++)
+            {
+              const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
+              const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = la_cl.T_ext(face - num1, l);
+              const double T = inco(j, l);
+              flux[k] += 5.67e-8 * eps * (T * T * T * T - T_ext * T_ext * T_ext * T_ext) * surface(face);
+            }
+        }
+    }
+}
+
+template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, const int face, Type_Double& flux) const
 {
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
@@ -424,6 +463,36 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int boundary_in
             }
           ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = heq*surface(face);
           aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = is_internal ? heq*surface(face) : 0.;
+        }
+}
+
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const DoubleTab& inco , const int boundary_index, const int face, const int local_face, const int num1, const Echange_externe_radiatif& la_cl, Type_Double& aii, Type_Double& ajj) const
+{
+  assert (aii.size_array() == ajj.size_array());
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = DERIVED_T::IS_MULTI_SCALAR_DIFF ? int(sqrt(aii.size_array())) : aii.size_array();
+
+  if (i != -1)
+    for (int k = 0; k < ncomp; k++)
+      for (int l = (DERIVED_T::IS_MULTI_SCALAR_DIFF ? 0 : k); l < (DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp : k + 1); l++)
+        {
+          const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
+          const double eps = la_cl.emissivite(face-num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
+          const double T = inco(i, l);
+
+          aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = 4 * 5.67e-8 * eps * T * T * T * surface(face);
+          ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = 0.;
+        }
+  else
+    for (int k = 0; k < ncomp; k++)
+      for (int l = (DERIVED_T::IS_MULTI_SCALAR_DIFF ? 0 : k); l < (DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp : k + 1); l++)
+        {
+          const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
+          const double eps = la_cl.emissivite(face-num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
+          const double T = inco(j, l);
+
+          ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = 4 * 5.67e-8 * eps * T * T * T * surface(face);
+          aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = 0.;
         }
 }
 
