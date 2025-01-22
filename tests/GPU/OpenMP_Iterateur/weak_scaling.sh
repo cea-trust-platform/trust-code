@@ -3,7 +3,7 @@
 # Selon machines:
 ext=$1 # Exemple: _10 pour le cas a 80 MDOF. Attention out of memory sur 2GPUs
 unset TRUST_USE_MPI_GPU_AWARE
-benchs="gpu cpu"              && mpis_gpu="2 16"          && mpis_cpu="8 64"              && int=""       && ext_gpu=""             && ext_cpu=""
+benchs="gpu cpu"              && mpis_gpu="1 2"          && mpis_cpu="1 8"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc  && TRUST_USE_MPI_GPU_AWARE=1
 if [ "$HOST" = adastra ]
 then
    [ "$TRUST_USE_ROCM" = 1 ]  && benchs="gpu"             && mpis_gpu="4 32 256"     && int="_int64" && ext_gpu=BENCH_AMD        && TRUST_USE_MPI_GPU_AWARE=1
@@ -21,13 +21,13 @@ export TRUST_USE_MPI_GPU_AWARE
 env_gpu=$TRUST_ROOT/env_TRUST.sh
 env_cpu=$local/trust/tma$int/env_TRUST.sh
 cas=`pwd`
-cas=`basename $cas .data`         
+cas=`basename $cas .data`
 jdd_cpu=$cas && [ "$ext_cpu" != "" ] && jdd_cpu=$jdd_cpu"_"$ext_cpu$ext.data
 jdd_gpu=$cas && [ "$ext_gpu" != "" ] && jdd_gpu=$jdd_gpu"_"$ext_gpu$ext.data
 [ ! -f $env_cpu ] && jdd_cpu=""
 
 mkdir -p weak_scaling$ext && cd weak_scaling$ext
-echo -e "Host     \tDOF \t\tConfig       \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s \tIters \tLoadImb Energy[J] \tGPU Direct"
+echo -e "Host     \tDOF \t\tConfig       \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s \tIters \tLoadImb Energy[J] \tGPU Direct\t DRAM[Gb] \t ms/Iter"
 for bench in $benchs
 do
    [ $bench = gpu ] && mpis=$mpis_gpu && source $env_gpu 1>/dev/null
@@ -91,11 +91,12 @@ do
       # Load balancing
       load_imbalance=`awk '/Load imbalance/ {print $NF}' $jdd.out_err | tail -1`
       dof=`awk '/Total number of elements/ {print $NF}' $jdd.out_err | tail -1`
+      dram=`awk '/allocated on a GPU/ {print $1}' $jdd.out_err | tail -1`
       its=`awk '/Iterations/ && /solveur/ {print $NF}' $jdd.TU`
       gpu="\t" && [ $bench = gpu ] && gpu="+"$mpi"GPU"
       direct="Off" && [ "`grep 'Enabling GPU' $jdd.out_err`" != "" ] && direct="On"
       kj=`grep -l $jdd myjob.* 2>/dev/null | tail -1 | awk -F. '{print $2}' | xargs -I {} sacct --format=JobID,ElapsedRaw,ConsumedEnergyRaw,NodeList --jobs={} 2>/dev/null | awk '/\.batch/ {print $3}'`
-      awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its -v direct=$direct -v kj=$kj '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu"\t"dt" \t"s" \t"b" \t"int(dof/dt*0.001*0.001)" \t"int(its)" \t"lib" \t"kj" \t\t"direct}' $jdd.TU
+      awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its -v direct=$direct -v kj=$kj -v dram=$dram '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu"\t"dt" \t"s" \t"b" \t"int(dof/dt*0.001*0.001)" \t"int(its)" \t"lib" \t"kj" \t\t"direct" \t\t"dram" \t\t"1000*s/its}' $jdd.TU
       cd - 1>/dev/null 2>&1
    done    
 done
