@@ -193,7 +193,7 @@ void Turbulence_paroi_scal_base::imprimer_premiere_ligne_nusselt(int boundaries_
 {
   EcrFicPartage fichier;
   ouvrir_fichier_partage(fichier, nom_fichier_, "out");
-  Nom ligne, err;
+  Nom ligne="", err;
   err = "";
   Noms fields(nb_fields_);
   fields[0] = "dist. carac. (m)";
@@ -202,11 +202,22 @@ void Turbulence_paroi_scal_base::imprimer_premiere_ligne_nusselt(int boundaries_
   fields[3] = "Tf cote paroi (K)";
   fields[4] = "T face de bord (K)";
   fields[5] = "Tparoi equiv.(K)";
-  ligne = "# Time  ";
+  for (int i=0; i<nb_fields_; i++)
+    {
+      ligne+="# ";
+      ligne+="field";
+      ligne += (Nom)i;
+      ligne += " : ";
+      ligne += fields[i];
+      ligne += "\n";
+    }
+  ligne += "# Time  ";
   for (int i=0; i<nb_fields_; i++)
     {
       ligne += " \tMean(";
-      ligne += fields[i];
+      //ligne += fields[i];
+      ligne += "field";
+      ligne += (Nom)i;
       ligne += ")";
     }
   for (int n_bord = 0; n_bord < le_dom_dis_->nb_front_Cl(); n_bord++)
@@ -222,7 +233,9 @@ void Turbulence_paroi_scal_base::imprimer_premiere_ligne_nusselt(int boundaries_
                   ligne += " \t";
                   ligne += nom_bord;
                   ligne += "(";
-                  ligne += fields[i];
+                  //ligne += fields[i];
+                  ligne += "field";
+                  ligne += (Nom)i;
                   ligne += ")";
                 }
             }
@@ -251,7 +264,6 @@ void Turbulence_paroi_scal_base::imprimer_premiere_ligne_nusselt(int boundaries_
  * @param boundaries_ Flag to control boundary selection (0: all boundaries, 1: specified boundaries)
  * @param boundaries_list List of boundary names to process when boundaries_=1
  * @param nom_fichier_ Output filename
- *
  * @details Calculates and writes average values for multiple thermal parameters:
  * - Characteristic distance
  * - Nusselt number
@@ -300,7 +312,7 @@ void Turbulence_paroi_scal_base::imprimer_nusselt_mean_only(Sortie& os, int boun
                   for (int i=0; i<nb_fields_; i++)
                     {
                       moy_bords(0, i) += tab_(num_face, i);
-                      moy_bords(num_bord + 1, 0) += tab_(num_face, i);
+                      moy_bords(num_bord + 1, i) += tab_(num_face, i);
                     }
                   moy_bords(0, nb_fields_) += 1;
                   moy_bords(num_bord + 1, nb_fields_) += 1;
@@ -312,11 +324,12 @@ void Turbulence_paroi_scal_base::imprimer_nusselt_mean_only(Sortie& os, int boun
   mp_sum_for_each_item(moy_bords);
 
 // affichages des lignes dans le fichier
-  if (je_suis_maitre() && moy_bords(0, nb_fields_) != 0)
+  if (je_suis_maitre())
     {
       fichier << sch.temps_courant();
-      for (int i=0; i<nb_fields_; i++)
-        fichier << " \t" << moy_bords(0, i) / moy_bords(0, nb_fields_);
+      if (moy_bords(0, nb_fields_) != 0)
+        for (int i=0; i<nb_fields_; i++)
+          fichier << " \t" << moy_bords(0, i) / moy_bords(0, nb_fields_);
     }
 
   num_bord = 0;

@@ -307,8 +307,8 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
                 }
               else
                 {
-                  tab_(num_face, 4) = -1;
-                  tab_(num_face, 5) = -1;
+                  tab_(num_face, 4) = 0.;
+                  tab_(num_face, 5) = 0.;
                   nb_fields -= 2;
                 }
               for (int i=0; i<nb_fields; i++)

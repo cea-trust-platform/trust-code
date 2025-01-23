@@ -281,7 +281,7 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
                 }
               else
                 {
-                  tab_(num_face, 5) = -1;
+                  tab_(num_face, 5) = 0.;
                   // on imprime Tfluide seulement car normalement Tface=Tparoi est connu
                   for (int i=0; i<4; i++)
                     Nusselt << "\t| " << tab_(num_face, i);

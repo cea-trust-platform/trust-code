@@ -180,7 +180,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
                   tab_(num_face, 3) = temperature(elem);
                   tab_(num_face, 4) = tparoi;
-                  tab_(num_face, 5) = -1;
+                  tab_(num_face, 5) = 0.;
                   for (int i=0; i<nb_fields_-1; i++)
                     Nusselt << "\t| " << tab_(num_face, i);
                   Nusselt << finl;
@@ -252,8 +252,8 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
                   tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
                   tab_(num_face, 3) = temperature(elem);
-                  tab_(num_face, 4) = -1;
-                  tab_(num_face, 5) = -1;
+                  tab_(num_face, 4) = 0;
+                  tab_(num_face, 5) = 0.;
                   for (int i=0; i<nb_fields_-2; i++)
                     Nusselt << "\t| " << tab_(num_face, i);
                   Nusselt << finl;

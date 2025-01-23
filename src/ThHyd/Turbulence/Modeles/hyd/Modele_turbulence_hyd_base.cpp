@@ -91,94 +91,89 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
       Turbulence_paroi_base::typer_lire_turbulence_paroi(loipar_, *this, is);
       is >> loipar_.valeur();
     }
-  else if (!loipar_->que_suis_je().contient("negligeable"))
+  else if (mot == "dt_impr_ustar")
     {
-      if (mot == "dt_impr_ustar")
+      if (loipar_->que_suis_je().contient("negligeable"))
+        Process::exit("Please remove dt_impr_ustar option if the wall law is of Negligeable type.");
+      is >> dt_impr_ustar_;
+    }
+  else if (mot == "dt_impr_ustar_mean_only")
+    {
+      if (loipar_->que_suis_je().contient("negligeable"))
+        Process::exit("Please remove dt_impr_ustar option if the wall law is of Negligeable type.");
+      // XD dt_impr_ustar_mean_only objet_lecture nul 1 not_set
+      // XD attr dt_impr floattant dt_impr 0 not_set
+      // XD attr boundaries listchaine boundaries 1 not_set
+      Nom accolade_ouverte = "{";
+      Nom accolade_fermee = "}";
+      nom_fichier_ = Objet_U::nom_du_cas() + "_" + equation().probleme().le_nom() + "_ustar_mean_only";
+      Domaine& dom = equation().probleme().domaine();
+      LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
+      int nbfr = dom.nb_front_Cl();
+      for (int b = 0; b < nbfr; b++)
         {
-          is >> dt_impr_ustar_;
+          Frontiere& org = dom.frontiere(b);
+          nlistbord_dom.add(org.le_nom());
         }
-      else if (mot == "dt_impr_ustar_mean_only")
+      is >> motlu;
+      if (motlu != accolade_ouverte)
         {
-          // XD dt_impr_ustar_mean_only objet_lecture nul 1 not_set
-          // XD attr dt_impr floattant dt_impr 0 not_set
-          // XD attr boundaries listchaine boundaries 1 not_set
-          Nom accolade_ouverte = "{";
-          Nom accolade_fermee = "}";
-          nom_fichier_ = Objet_U::nom_du_cas() + "_" + equation().probleme().le_nom() + "_ustar_mean_only";
-          Domaine& dom = equation().probleme().domaine();
-          LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
-          int nbfr = dom.nb_front_Cl();
-          for (int b = 0; b < nbfr; b++)
+          Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
+          Cerr << "A specification of kind : dt_impr_ustar_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected." << finl;
+          exit();
+        }
+      is >> motlu;
+      if (motlu != "dt_impr")
+        {
+          Cerr << "We expected dt_impr..." << finl;
+          exit();
+        }
+      is >> dt_impr_ustar_mean_only_;
+
+      is >> motlu; // boundaries ou accolade_fermee ou pasbon
+      if (motlu != accolade_fermee)
+        {
+          if (motlu == "boundaries")
             {
-              Frontiere& org = dom.frontiere(b);
-              nlistbord_dom.add(org.le_nom());
+              boundaries_ = 1;
+              int nb_bords = 0;
+              Nom nom_bord_lu;
+
+              // read boundaries number
+              is >> nb_bords;
+              if (nb_bords != 0)
+                {
+                  // read boundaries
+                  for (int i = 0; i < nb_bords; i++)
+                    {
+                      is >> nom_bord_lu;
+                      boundaries_list_.add(Nom(nom_bord_lu));
+                      //  verif nom bords
+                      if (!nlistbord_dom.contient(boundaries_list_[i]))
+                        {
+                          Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
+                          Cerr << "The boundary named '" << boundaries_list_[i] << "' is not a boundary of the domain " << dom.le_nom() << "." << finl;
+                          exit();
+                        }
+                    }
+                }
+              // lecture accolade fermee
+              is >> motlu;
+              if (motlu != accolade_fermee)
+                {
+                  Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
+                  Cerr << "TRUST wants to read a '" << accolade_fermee << "' but find '" << motlu << "'!!" << finl;
+                  exit();
+                }
             }
-          is >> motlu;
-          if (motlu != accolade_ouverte)
+          else
             {
               Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
               Cerr << "A specification of kind : dt_impr_ustar_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected." << finl;
               exit();
             }
-          is >> motlu;
-          if (motlu != "dt_impr")
-            {
-              Cerr << "We expected dt_impr..." << finl;
-              exit();
-            }
-          is >> dt_impr_ustar_mean_only_;
-
-          is >> motlu; // boundaries ou accolade_fermee ou pasbon
-          if (motlu != accolade_fermee)
-            {
-              if (motlu == "boundaries")
-                {
-                  boundaries_ = 1;
-                  int nb_bords = 0;
-                  Nom nom_bord_lu;
-
-                  // read boundaries number
-                  is >> nb_bords;
-                  if (nb_bords != 0)
-                    {
-                      // read boundaries
-                      for (int i = 0; i < nb_bords; i++)
-                        {
-                          is >> nom_bord_lu;
-                          boundaries_list_.add(Nom(nom_bord_lu));
-                          //  verif nom bords
-                          if (!nlistbord_dom.contient(boundaries_list_[i]))
-                            {
-                              Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
-                              Cerr << "The boundary named '" << boundaries_list_[i] << "' is not a boundary of the domain " << dom.le_nom() << "." << finl;
-                              exit();
-                            }
-                        }
-                    }
-                  // lecture accolade fermee
-                  is >> motlu;
-                  if (motlu != accolade_fermee)
-                    {
-                      Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
-                      Cerr << "TRUST wants to read a '" << accolade_fermee << "' but find '" << motlu << "'!!" << finl;
-                      exit();
-                    }
-                }
-              else
-                {
-                  Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
-                  Cerr << "A specification of kind : dt_impr_ustar_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected." << finl;
-                  exit();
-                }
-            }
-        } // fin dt_impr_ustar_mean_only
-      else
-        {
-          Cerr << "Please remove dt_impr_ustar option if the wall law is of Negligeable type." << finl;
-          exit();
         }
-    } // fin loi paroi negligeable
-
+    } // fin dt_impr_ustar_mean_only
   else
     retval = -1;
 
