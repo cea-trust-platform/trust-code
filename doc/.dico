@@ -237,7 +237,7 @@
  Correlation_base Correlation_base Correlation_base.h
  Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF.h
  Correlation_Vec_Sca_VEF Correlation_Vec_Sca_VEF Correlation_Vec_Sca_VEF.h
- Corriger_frontiere_periodique Corriger_frontiere_periodique Corriger_frontiere_periodique.h
+ Corriger_frontiere_periodique Corriger_frontiere_periodique_32_64 Corriger_frontiere_periodique.h
  Cos Cos StdFunction.h
  Cosh Cosh StdFunction.h
  Couplage_U Couplage_U Couplage_U.h
@@ -254,9 +254,9 @@
  DebogIJK DebogIJK DebogIJK.h
  Debog_pb Debog_Pb Debog_Pb.h
  DecoupeBord DecoupeBord_32_64 DecoupeBord.h
+ Decouper Decouper_32_64 Decouper.h
  Decouper_Bord_coincident Decouper_Bord_coincident Decouper_Bord_coincident.h
  Decouper_multi|Partition_multi Decouper_multi Decouper_multi.h
- Decouper|Partition Decouper Decouper.h
  Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0P1NC Terme_Source_Decroissance_Radioactive_Elem_PolyMAC Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.h
  Decroissance_Radioactive_VEF_P1NC Terme_Source_Decroissance_Radioactive_VEF_Face Terme_Source_Decroissance_Radioactive_VEF_Face.h
  Descripteur Descripteur Descripteur.h
@@ -286,9 +286,9 @@
  Divergence Champ_Generique_Divergence Champ_Generique_Divergence.h
  Domaine Domaine_32_64 Domaine.h
  DomaineAxi1d DomaineAxi1d_32_64 DomaineAxi1d.h
- DomaineCutter DomaineCutter DomaineCutter.h
+ DomaineCutter DomaineCutter_32_64 DomaineCutter.h
  Domaine_base Domaine_base Domaine_base.h
- Domaine_bord Domaine_bord Domaine_bord.h
+ Domaine_bord Domaine_bord_32_64 Domaine_bord.h
  Domaine_Cl_dis_base Domaine_Cl_dis_base Domaine_Cl_dis_base.h
  Domaine_Cl_EF Domaine_Cl_EF Domaine_Cl_EF.h
  Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC.h
@@ -518,7 +518,7 @@
  Lire_Fichier_Bin|Read_File_Binary Lire_Fichier_Bin Lire_Fichier_Bin.h
  Lire_Fichier|Read_file Lire_Fichier Lire_Fichier.h
  Lire_Ideas Lire_Ideas Lire_Ideas.h
- Lire_MED LireMED LireMED.h
+ Lire_MED LireMED_32_64 LireMED.h
  Lire_Tgrid Lire_Tgrid Lire_Tgrid.h
  Lire|Read Lire Lire.h
  Liste_bloc Liste_bloc Liste_bloc.h
@@ -552,7 +552,7 @@
  Loi_horaire Loi_horaire Loi_horaire.h
  Loi_paroi_base Loi_paroi_base Loi_paroi_base.h
  Loi_paroi_log Loi_paroi_log Loi_paroi_log.h
- Mailler Mailler Mailler.h
+ Mailler Mailler_32_64 Mailler.h
  MaillerParallel MaillerParallel MaillerParallel.h
  Marqueur_Lagrange_base Marqueur_Lagrange_base Marqueur_Lagrange_base.h
  Masse_ajoutee_base Masse_ajoutee_base Masse_ajoutee_base.h
@@ -584,8 +584,10 @@
  Matrice_Nulle Matrice_Nulle Matrice_Nulle.h
  Matrice_Petsc Matrice_Petsc Matrice_Petsc.h
  MD_Vector_base MD_Vector_base MD_Vector.h
- MD_Vector_base2 MD_Vector_base2 MD_Vector_base2.h
+ MD_Vector_base MD_Vector_base MD_Vector_base.h
  MD_Vector_composite MD_Vector_composite MD_Vector_composite.h
+ MD_Vector_mono MD_Vector_mono MD_Vector_mono.h
+ MD_Vector_seq MD_Vector_seq MD_Vector_seq.h
  MD_Vector_std MD_Vector_std MD_Vector_std.h
  Merge_MED Merge_MED Merge_MED.h
  Milieu_base Milieu_base Milieu_base.h
@@ -614,7 +616,7 @@
  Modele_turbulence_scal_Schmidt Modele_turbulence_scal_Schmidt Modele_turbulence_scal_Schmidt.h
  modifier_pour_QC Champ_Generique_modifier_pour_QC Champ_Generique_modifier_pour_QC.h
  ModifyDomaineAxi1D|Convert_1D_to_1Daxi ModifyDomaineAxi1D ModifyDomaineAxi1D.h
- Modif_bord_to_raccord Modif_bord_to_raccord Modif_bord_to_raccord.h
+ Modif_bord_to_raccord Modif_bord_to_raccord_32_64 Modif_bord_to_raccord.h
  Morceau_Equation Champ_Generique_Morceau_Equation Champ_Generique_Morceau_Equation.h
  Motcle Motcle Motcle.h
  Motcles Motcles Motcle.h
@@ -815,7 +817,7 @@
  Op_Grad_VEFPreP1B_P1NC|Op_Grad_VEF_P1NC Op_Grad_VEF_P1B_Face Op_Grad_VEF_P1B_Face.h
  Op_Moyenne Op_Moyenne Op_Moyenne.h
  Op_Rot_VEFPreP1B_P1NC Op_Rot_VEFP1B Op_Rot_VEFP1B.h
- OrienteFacesBord OrienteFacesBord OrienteFacesBord.h
+ OrienteFacesBord OrienteFacesBord_32_64 OrienteFacesBord.h
  Orienter_Simplexes_old Orienter_Simplexes Orienter_Simplexes.h
  Parallel_io_parameters Parallel_io_parameters Parallel_io_parameters.h
  Parametre_diffusion_implicite Parametre_diffusion_implicite Parametre_diffusion_implicite.h
@@ -857,18 +859,18 @@
  Paroi_Temperature_imposee cl_timp Cond_lim_utilisateur_base.h
  Paroi_temperature_imposee_H Temperature_imposee_paroi_H Temperature_imposee_paroi_H.h
  Parser_U Parser_U Parser_U.h
- Partitionneur_base Partitionneur_base Partitionneur_base.h
+ Partitionneur_base Partitionneur_base_32_64 Partitionneur_base.h
  Partitionneur_Fichier_Decoupage Partitionneur_Fichier_Decoupage Partitionneur_Fichier_Decoupage.h
  Partitionneur_Fichier_MED Partitionneur_Fichier_MED Partitionneur_Fichier_MED.h
- Partitionneur_Metis Partitionneur_Metis Partitionneur_Metis.h
+ Partitionneur_Metis Partitionneur_Metis_32_64 Partitionneur_Metis.h
  Partitionneur_Parmetis Partitionneur_Parmetis Partitionneur_Parmetis.h
  Partitionneur_Partition Partitionneur_Partition Partitionneur_Partition.h
  Partitionneur_Ptscotch Partitionneur_Ptscotch Partitionneur_Ptscotch.h
  Partitionneur_Sous_Dom Partitionneur_Sous_Domaine Partitionneur_Sous_Domaine.h
  Partitionneur_Sous_Domaines Partitionneur_Sous_Domaines Partitionneur_Sous_Domaines.h
- Partitionneur_Tranche Partitionneur_Tranche Partitionneur_Tranche.h
+ Partitionneur_Tranche Partitionneur_Tranche_32_64 Partitionneur_Tranche.h
  Partitionneur_Union Partitionneur_Union Partitionneur_Union.h
- Pave Pave Pave.h
+ Pave Pave_32_64 Pave.h
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h
  Pb_Conduction_Scalaires_Passifs Pb_Conduction_Scalaires_Passifs Problemes_Scalaires_Passifs.h
@@ -1000,7 +1002,7 @@
  Raccord_distant_homogene Raccord_distant_homogene_32_64 Raccord_distant_homogene.h
  Raccord_local Raccord_local_32_64 Raccord_base.h
  Raccord_local_homogene Raccord_local_homogene_32_64 Raccord_base.h
- Raffiner_anisotrope Raffiner_anisotrope Raffiner_anisotrope.h
+ Raffiner_anisotrope Raffiner_anisotrope_32_64 Raffiner_anisotrope.h
  Raffiner_isotrope_parallele Raffiner_isotrope_parallele Raffiner_isotrope_parallele.h
  Raffiner_Simplexes Raffiner_Simplexes_32_64 Raffiner_Simplexes.h
  Reaction Reaction Reaction.h
@@ -1014,7 +1016,7 @@
  Reduction_0D Champ_Generique_Reduction_0D Champ_Generique_Reduction_0D.h
  refChamp Champ_Generique_refChamp Champ_Generique_refChamp.h
  Refine_Mesh Refine_Mesh Refine_Mesh.h
- RegroupeBord RegroupeBord RegroupeBord.h
+ RegroupeBord RegroupeBord_32_64 RegroupeBord.h
  Remove_elem Remove_elem Remove_elem.h
  Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries.h
  Reordonner Reordonner_32_64 Reordonner.h
@@ -1243,7 +1245,7 @@
  Traitement_particulier_Solide_canal Traitement_particulier_Solide_canal Traitement_particulier_Solide_canal.h
  Traitement_particulier_Solide_canal_VDF Traitement_particulier_Solide_canal_VDF Traitement_particulier_Solide_canal_VDF.h
  Transformation Champ_Generique_Transformation Champ_Generique_Transformation.h
- Transformer Transformer Transformer.h
+ Transformer Transformer_32_64 Transformer.h
  Transport_Interfaces_base Transport_Interfaces_base Transport_Interfaces_base.h
  Transport_turbulent_base Transport_turbulent_base Transport_turbulent_base.h
  Transport_turbulent_GGDH|Transport_turbulent_anisotrope Transport_turbulent_GGDH Transport_turbulent_GGDH.h
@@ -1271,7 +1273,7 @@
  VDF VDF_discretisation VDF_discretisation.h
  VEFPreP1B|VEF VEF_discretisation VEF_discretisation.h
  VerifierCoin VerifierCoin VerifierCoin.h
- Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements.h
+ Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements_32_64 Verifier_Qualite_Raffinements.h
  Verifier_Simplexes Verifier_Simplexes_32_64 Verifier_Simplexes.h
  VF_inst Discr_inst Discr_inst.h
  Viscosite_turbulente_base Viscosite_turbulente_base Viscosite_turbulente_base.h
@@ -1285,7 +1287,7 @@
  Vitesse_relative_derive_constante Vitesse_derive_constante Vitesse_derive_constante.h
  Vitesse_relative_derive_Forces Vitesse_derive_Forces Vitesse_derive_Forces.h
  Vitesse_relative_derive_Ishii Vitesse_derive_Ishii Vitesse_derive_Ishii.h
- Write_MED|ecrire_med Ecrire_MED Ecrire_MED.h
+ Write_MED Ecrire_MED_32_64 Ecrire_MED.h
  Y_plus_Champ_Face Y_plus_Champ_Face Y_plus_Champ_Face.h
  Y_plus_Champ_P1NC Y_plus_Champ_P1NC Y_plus_Champ_P1NC.h
  Y_plus_Champ_Q1 Y_plus_Champ_Q1 Y_plus_Champ_Q1.h
