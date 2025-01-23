@@ -172,6 +172,7 @@ then
    then
       nb_pas_dt_max="`awk 'BEGIN {n=3} /# NB_PAS_DT_MAX/ {n=$3} END {print n}' $old`" 
    fi
+   rm -f $test.data
    $TRUST_Awk -v FT=$FT -v nb_pas_dt_max=$nb_pas_dt_max '/tinit/ {print $0;print "\tnb_pas_dt_max "nb_pas_dt_max;getline}\
     #(FT==0) && /solveur_pression/ && / [Gg][Cc][Pp] / && /seuil/ && /precond/ && /}/ {print "solveur_pression petsc cholesky { }";getline}\
     !/nb_pas_dt_max/ {print $0}\
