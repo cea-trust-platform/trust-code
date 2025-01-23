@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,6 +59,10 @@ public:
   {
     Cerr << "imprimer_nusselt non code pour " << que_suis_je() << finl;
   }
+  inline virtual void imprimer_premiere_ligne_nusselt(int, const LIST(Nom)&, const Nom&) const { }
+  inline virtual void imprimer_nusselt_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const { Cerr << "Warning: " << que_suis_je() << "::imprimer_nusselt_mean_only not implemented." << finl; }
+  virtual void imprimer_premiere_ligne_nusselt_impl(int, const LIST(Nom)&, const Nom&, const Domaine_dis_base&, const Domaine_Cl_dis_base&) const;
+  virtual void imprimer_nusselt_mean_only_impl(Sortie&, int, const LIST(Nom)&, const Nom&, const Domaine_dis_base&, const Domaine_Cl_dis_base&) const;
 
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
@@ -68,6 +72,7 @@ public:
 
   // Ecriture dans un fichier separe de u_star, Cisaillement_paroi etc...
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&) const;
+  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const Nom&) const;
   inline const int& get_flag_calcul_ldp_en_flux_impose() const { return calcul_ldp_en_flux_impose_; }
 
   virtual bool use_equivalent_distance() const;
@@ -97,7 +102,7 @@ public:
 
 protected:
   OBS_PTR(Modele_turbulence_scal_base) mon_modele_turb_scal;
-  mutable int nb_impr_;        // Compteur d'impression
+  mutable int nb_impr_ = 0, nb_impr0_ = 0;                        // Compteur d'impression
   int calcul_ldp_en_flux_impose_; // flag defenissant si on utilise la ldp en flux impose 0 par defaut
   double Prdt_sur_kappa_;         // Constante dans la loi de paroi
   inline double T_plus(double y_plus, double Pr);
@@ -115,6 +120,8 @@ protected:
   // de equivalent_distance_, on utilise tableau par bord et
   // chaque tableau est dimensionne au nombre de faces de
   // bord totales (reelles+virtuelles)
+  mutable DoubleTab tab_; // Array containing the Nusset fields
+  int nb_fields_ = 6; // Number of Nusselt fields
 
 private:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,7 @@ int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entr
       Turbulence_paroi_base::typer_lire_turbulence_paroi(loipar_, *this, is);
       is >> loipar_.valeur();
     }
-  else if (loipar_->que_suis_je() != "negligeable_VDF" && loipar_->que_suis_je() != "negligeable_VEF" && !loipar_->que_suis_je().debute_par("negligeable_PolyMAC_P0P1NC"))
+  else if (!loipar_->que_suis_je().contient("negligeable"))
     {
       if (mot == "dt_impr_ustar")
         {

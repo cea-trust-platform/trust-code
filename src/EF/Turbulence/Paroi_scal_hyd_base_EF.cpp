@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,6 +65,7 @@ int Paroi_scal_hyd_base_EF::init_lois_paroi()
 {
   int nb_faces_bord_reelles = le_dom_EF->nb_faces_bord();
   tab_d_reel_.resize(nb_faces_bord_reelles);
+  tab_.resize(nb_faces_bord_reelles, nb_fields_);
 
   // Initialisations de equivalent_distance_, tab_d_reel, positions_Pf, elems_plus
   // On initialise les distances equivalentes avec les distances geometriques
@@ -264,19 +265,29 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
 
               double d_equiv = equivalent_distance_[n_bord](num_face - ndeb);
 
-              if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
+              tab_(num_face, 0) = d_equiv;
+              tab_(num_face, 1) = (lambda + lambda_t) / lambda * tab_d_reel_[num_face] / d_equiv;
+              tab_(num_face, 2) = (lambda + lambda_t) / d_equiv;
+              tab_(num_face, 3) = tfluide;
+              tab_(num_face, 4) = tparoi;
+              if (sub_type(Neumann_paroi, la_cl_th.valeur()))
                 {
                   // dans ce cas on va imprimer Tfluide (moyenne premiere maille), Tface et on Tparoi recalcule avec d_equiv
                   const Neumann_paroi& la_cl_neum = ref_cast(Neumann_paroi, la_cl_th.valeur());
                   double flux = la_cl_neum.flux_impose(num_face - ndeb);
                   double tparoi_equiv = tfluide + flux / (lambda + lambda_t) * d_equiv;
-                  Nusselt << "\t| " << d_equiv << "\t| " << (lambda + lambda_t) / lambda * tab_d_reel_[num_face] / d_equiv << "\t| " << (lambda + lambda_t) / d_equiv << "\t| " << tfluide << "\t| "
-                          << tparoi << "\t| " << tparoi_equiv << finl;
+                  tab_(num_face, 5) = tparoi_equiv;
+                  for (int i=0; i<nb_fields_; i++)
+                    Nusselt << "\t| " << tab_(num_face, i);
+                  Nusselt << finl;
                 }
               else
                 {
+                  tab_(num_face, 5) = -1;
                   // on imprime Tfluide seulement car normalement Tface=Tparoi est connu
-                  Nusselt << "\t| " << d_equiv << "\t| " << (lambda + lambda_t) / lambda * tab_d_reel_[num_face] / d_equiv << "\t| " << (lambda + lambda_t) / d_equiv << "\t| " << tfluide << finl;
+                  for (int i=0; i<4; i++)
+                    Nusselt << "\t| " << tab_(num_face, i);
+                  Nusselt << finl;
                 }
             }
           Nusselt.syncfile();

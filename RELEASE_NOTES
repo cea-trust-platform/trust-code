@@ -1,3 +1,4 @@
+XX/01/25 (TRUST) New keyword  : dt_impr_nusselt_mean_only prints into a .out file the average of Nusselt related values on all or some specified boundaries (VDF/VEF/EF discretizations)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------

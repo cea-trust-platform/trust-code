@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,6 +65,7 @@ int Paroi_scal_hyd_base_VEF::init_lois_paroi()
 {
   int nb_faces_bord_reelles = le_dom_VEF->nb_faces_bord();
   tab_d_reel_.resize(nb_faces_bord_reelles);
+  tab_.resize(nb_faces_bord_reelles, nb_fields_);
   //  positions_Pf_.resize(nb_faces_bord_reelles,dimension);
   // elems_plus_.resize(nb_faces_bord_reelles);
 
@@ -288,8 +289,12 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
               double d_equiv = equivalent_distance_[n_bord](num_face - ndeb);
               // On imprime Tfluide (moyenne premiere maille) car Tface=Tparoi est connu
               for (int i=0; i<dimension; i++)
-                Nusselt <<  le_dom_VEF->xv(num_face, i) << "\t| ";
-              Nusselt << d_equiv << "\t| " << (lambda(ind_face) + lambda_t(ind_face)) / lambda(ind_face) * tab_d_reel_[num_face] / d_equiv << "\t| " << (lambda(ind_face) + lambda_t(ind_face)) / d_equiv << "\t| " << tfluide(ind_face);
+                Nusselt <<  le_dom_VEF->xv(num_face, i);
+              tab_(num_face, 0) = d_equiv;
+              tab_(num_face, 1) = (lambda(ind_face) + lambda_t(ind_face)) / lambda(ind_face) * tab_d_reel_[num_face] / d_equiv;
+              tab_(num_face, 2) = (lambda(ind_face) + lambda_t(ind_face)) / d_equiv;
+              tab_(num_face, 3) = tfluide(ind_face);
+              int nb_fields = nb_fields_;
               if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
                 {
                   // Et on ajoute Tface et on Tparoi recalcule avec d_equiv
@@ -297,8 +302,17 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
                   double tparoi = temperature(num_face);
                   double flux = la_cl_neum.flux_impose(num_face - ndeb);
                   double tparoi_equiv = tfluide(ind_face) + flux / (lambda(ind_face) + lambda_t(ind_face)) * d_equiv;
-                  Nusselt << "\t| " << tparoi << "\t| " << tparoi_equiv;
+                  tab_(num_face, 4) = tparoi;
+                  tab_(num_face, 5) = tparoi_equiv;
                 }
+              else
+                {
+                  tab_(num_face, 4) = -1;
+                  tab_(num_face, 5) = -1;
+                  nb_fields -= 2;
+                }
+              for (int i=0; i<nb_fields; i++)
+                Nusselt << "\t| " << tab_(num_face, i);
               Nusselt << finl;
             }
           Nusselt.syncfile();

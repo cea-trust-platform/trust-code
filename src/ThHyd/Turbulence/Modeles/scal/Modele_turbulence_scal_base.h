@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ public:
   bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
   bool has_champ(const Motcle& nom) const override;
 
-  int limpr_nusselt(double, double, double) const;
+  int limpr_nusselt(double, double, double, double) const;
   virtual void imprimer(Sortie&) const;
 
   virtual void set_param(Param&);
@@ -75,9 +75,10 @@ protected:
   OWN_PTR(Champ_Fonc_base)  conductivite_turbulente_, diffusivite_turbulente_;
   OBS_PTR(Convection_Diffusion_std) mon_equation_;
   OWN_PTR(Turbulence_paroi_scal_base) loipar_;
-  double dt_impr_nusselt_ = DMAXFLOAT;
-
-protected:
+  double dt_impr_nusselt_ = DMAXFLOAT, dt_impr_nusselt_mean_only_ = DMAXFLOAT;
+  int boundaries_ = 0;
+  LIST(Nom) boundaries_list_;
+  Nom nom_fichier_ = "";
   Champs_compris champs_compris_;
 };
 

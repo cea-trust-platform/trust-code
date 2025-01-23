@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,6 +57,7 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is)
 void Modele_turbulence_scal_base::set_param(Param& param)
 {
   param.ajouter("dt_impr_nusselt", &dt_impr_nusselt_); // XD_ADD_P floattant Keyword to print local values of Nusselt number and temperature near a wall during a turbulent calculation. The values will be printed in the _Nusselt.face file each dt_impr_nusselt time period. The local Nusselt expression is as follows : Nu = ((lambda+lambda_t)/lambda)*d_wall/d_eq where d_wall is the distance from the first mesh to the wall and d_eq is given by the wall law. This option also gives the value of d_eq and h = (lambda+lambda_t)/d_eq and the fluid temperature of the first mesh near the wall. NL2 For the Neumann boundary conditions (flux_impose), the <<equivalent>> wall temperature given by the wall law is also printed (Tparoi equiv.) preceded for VEF calculation by the edge temperature <<T face de bord>>.
+  param.ajouter_non_std("dt_impr_nusselt_mean_only", (this)); // XD attr dt_impr_nusselt_mean_only dt_impr_nusselt_mean_only dt_impr_nusselt_mean_only 1 This keyword is used to print the mean values of Nusselt ( obtained with the wall laws) on each boundary, into a file named datafile_ProblemName_nusselt_mean_only.out. periode refers to the printing period, this value is expressed in seconds. If you don\'t use the optional keyword boundaries, all the boundaries will be considered. If you use it, you must specify nb_boundaries which is the number of boundaries on which you want to calculate the mean values, then you have to specify their names.
   param.ajouter_non_std("turbulence_paroi", this); // XD_ADD_P turbulence_paroi_scalaire_base Keyword to set the wall law.
 }
 int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
@@ -69,6 +70,89 @@ int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, E
       is >> loipar_.valeur();
       return 1;
     }
+  else if (!loipar_->que_suis_je().contient("negligeable")) // ToDo factorize with Modele_turbulence_hyd_base::lire_motcle_non_standard
+    {
+      if (mot == "dt_impr_nusselt_mean_only")
+        {
+          // XD dt_impr_nusselt_mean_only objet_lecture nul 1 not_set
+          // XD attr dt_impr floattant dt_impr 0 not_set
+          // XD attr boundaries listchaine boundaries 1 not_set
+          Nom accolade_ouverte = "{";
+          Nom accolade_fermee = "}";
+          nom_fichier_ = Objet_U::nom_du_cas() + "_" + equation().probleme().le_nom() + "_nusselt_mean_only";
+          Domaine& dom = equation().probleme().domaine();
+          LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
+          int nbfr = dom.nb_front_Cl();
+          for (int b = 0; b < nbfr; b++)
+            {
+              Frontiere& org = dom.frontiere(b);
+              nlistbord_dom.add(org.le_nom());
+            }
+          is >> motlu;
+          if (motlu != accolade_ouverte)
+            {
+              Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
+              Cerr << "A specification of kind : dt_impr_nusselt_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected." << finl;
+              exit();
+            }
+          is >> motlu;
+          if (motlu != "dt_impr")
+            {
+              Cerr << "We expected dt_impr..." << finl;
+              exit();
+            }
+          is >> dt_impr_nusselt_mean_only_;
+
+          is >> motlu; // boundaries ou accolade_fermee ou pasbon
+          if (motlu != accolade_fermee)
+            {
+              if (motlu == "boundaries")
+                {
+                  boundaries_ = 1;
+                  int nb_bords = 0;
+                  Nom nom_bord_lu;
+
+                  // read boundaries number
+                  is >> nb_bords;
+                  if (nb_bords != 0)
+                    {
+                      // read boundaries
+                      for (int i = 0; i < nb_bords; i++)
+                        {
+                          is >> nom_bord_lu;
+                          boundaries_list_.add(Nom(nom_bord_lu));
+                          //  verif nom bords
+                          if (!nlistbord_dom.contient(boundaries_list_[i]))
+                            {
+                              Cerr << "Problem in the dt_impr_nusselt_mean_only instruction:" << finl;
+                              Cerr << "The boundary named '" << boundaries_list_[i] << "' is not a boundary of the domain " << dom.le_nom() << "." << finl;
+                              exit();
+                            }
+                        }
+                    }
+                  // lecture accolade fermee
+                  is >> motlu;
+                  if (motlu != accolade_fermee)
+                    {
+                      Cerr << "Problem in the dt_impr_nusselt_mean_only instruction:" << finl;
+                      Cerr << "TRUST wants to read a '" << accolade_fermee << "' but find '" << motlu << "'!!" << finl;
+                      exit();
+                    }
+                }
+              else
+                {
+                  Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard" << finl;
+                  Cerr << "A specification of kind : dt_impr_nusselt_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected." << finl;
+                  exit();
+                }
+            }
+        } // fin dt_impr_nusselt_mean_only
+      else
+        {
+          Cerr << "Please remove dt_impr_nusselt option if the wall law is of Negligeable type." << finl;
+          exit();
+        }
+    } // fin loi paroi negligeable
   else
     {
       Cerr << mot << "n'est pas un mot compris par " << que_suis_je() << "dans lire_motcle_non_standard" << finl;
@@ -251,21 +335,21 @@ void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom, Optio
  * @param (double temps_courant, double dt) un flot d'entree
  * @return (int) renvoie 1 si on imprime, 0 sinon
  */
-int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temps_prec, double dt) const
+int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temps_prec, double dt, double dt_nusselt) const
 {
   const Schema_Temps_base& sch = mon_equation_->schema_temps();
   if (sch.nb_pas_dt() == 0)
     return 0;
-  if (dt_impr_nusselt_ <= dt
+  if (dt_nusselt <= dt
       || ((sch.temps_cpu_max_atteint() || (!get_disable_stop() && sch.stop_lu()) || sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt() == 1 || sch.stationnaire_atteint())
-          && dt_impr_nusselt_ != DMAXFLOAT))
+          && dt_nusselt != DMAXFLOAT))
     return 1;
   else
     {
       // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
       double i, j, epsilon = 1.e-8;
-      modf(temps_courant / dt_impr_nusselt_ + epsilon, &i);
-      modf(temps_prec / dt_impr_nusselt_ + epsilon, &j);
+      modf(temps_courant / dt_nusselt + epsilon, &i);
+      modf(temps_prec / dt_nusselt + epsilon, &j);
       return (i > j);
     }
 }
@@ -279,6 +363,8 @@ void Modele_turbulence_scal_base::imprimer(Sortie& os) const
   const Schema_Temps_base& sch = mon_equation_->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt = sch.pas_de_temps();
-  if (limpr_nusselt(temps_courant, sch.temps_precedent(), dt))
+  if (limpr_nusselt(temps_courant, sch.temps_precedent(), dt, dt_impr_nusselt_))
     loipar_->imprimer_nusselt(os);
+  if (limpr_nusselt(temps_courant, sch.temps_precedent(), dt, dt_impr_nusselt_mean_only_))
+    loipar_->imprimer_nusselt_mean_only(os, boundaries_, boundaries_list_, nom_fichier_);
 }

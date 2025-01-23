@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,6 +46,8 @@ void Paroi_scal_hyd_base_VDF::associer(const Domaine_dis_base& domaine_dis, cons
 
 int Paroi_scal_hyd_base_VDF::init_lois_paroi()
 {
+  int nb_faces_bord_reelles = le_dom_VDF->nb_faces_bord();
+  tab_.resize(nb_faces_bord_reelles, nb_fields_);
   const Domaine_VDF& zvdf = le_dom_VDF.valeur();
 
   int nb_front = zvdf.nb_front_Cl();
@@ -173,8 +175,15 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                   int local_face = domaine_VDF.front_VF(boundary_index).num_local_face(global_face);
                   double tparoi = temperature(elem) + flux / lambda * equivalent_distance_[boundary_index](local_face);
 
-                  Nusselt << "\t| " << equivalent_distance_[boundary_index](local_face) << "\t| " << dist / equivalent_distance_[boundary_index](local_face) << "\t| "
-                          << lambda / equivalent_distance_[boundary_index](local_face) << "\t| " << temperature(elem) << "\t|" << tparoi << finl;
+                  tab_(num_face, 0) = equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 3) = temperature(elem);
+                  tab_(num_face, 4) = tparoi;
+                  tab_(num_face, 5) = -1;
+                  for (int i=0; i<nb_fields_-1; i++)
+                    Nusselt << "\t| " << tab_(num_face, i);
+                  Nusselt << finl;
                 }
             }
           else
@@ -238,8 +247,16 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
 
                   int global_face = num_face;
                   int local_face = domaine_VDF.front_VF(boundary_index).num_local_face(global_face);
-                  Nusselt << "\t| " << equivalent_distance_[boundary_index](local_face) << "\t| " << dist / equivalent_distance_[boundary_index](local_face) << "\t| "
-                          << lambda / equivalent_distance_[boundary_index](local_face) << "\t| " << temperature(elem) << finl;
+
+                  tab_(num_face, 0) = equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 3) = temperature(elem);
+                  tab_(num_face, 4) = -1;
+                  tab_(num_face, 5) = -1;
+                  for (int i=0; i<nb_fields_-2; i++)
+                    Nusselt << "\t| " << tab_(num_face, i);
+                  Nusselt << finl;
                 }
             }
           Nusselt.syncfile();
