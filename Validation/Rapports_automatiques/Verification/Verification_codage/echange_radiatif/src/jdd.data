@@ -86,6 +86,7 @@ Read pb
             probes
             {
                 T_prof   grav temperature periode 1e8 segment 1000 0.5 0 0.5 0.1
+                T        temperature_paroi periode 1e8 point 1 0.5 0.1
             }
             Format lata
             fields dt_post 1e8
@@ -114,10 +115,6 @@ Read pb
                     domaine dom_boundaries_haut
                     source refChamp { Pb_Champ pb temperature }
                 }
-            }
-            probes
-            {
-                T   tbord periode 1e8 point 1 0.5 0.1
             }
             format lata
 
