@@ -1,22 +1,23 @@
 arch	maj		recup	hostname		Update	lance_test	baltiks						Tasks		Options	
 linux	rsync_ssh	tache	altair-valgrind.intra.cea.fr    -limited  	-FLICA5 		 		    -ctest_valgrind 	-without-pdflatex 			# Rocky 9 serveur rackable pour TRUST titania
-linux   rsync_ssh       cible   is246427.intra.cea.fr 			   -TrioCFD	 		   -semi_opt			-without-pdflatex  					# Ubuntu 24 MF titania 
+linux   rsync_ssh       cible   is246427.intra.cea.fr 			   -TrioCFD -FLICA5 -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO -TrioMC   	 		   -semi_opt			-without-pdflatex  					# Ubuntu 24 MF titania 
 linux	rsync_ssh	tache	unitas20-mv-install.intra.cea.fr		-all		  	 	-force_provided_mpich  -move-install -disable-valgrind	  							# Ubuntu 20	rack triocfd
 linux	rsync_ssh	tache	is234617-intel.intra.cea.fr	-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -TrioMC  		-intel23  -disable-plot2d -force_system_mpi -disable-mpi4py -without-visit  		# Ubuntu 22 TMA TRUST
 linux	rsync_ssh	tache	is245198-intel21.intra.cea.fr	-all 		-TRUST                                                              		-intel21  -disable-plot2d -force_system_mpi -disable-mpi4py -without-visit  		# Ubuntu 20 TMA EOS formation titania 
 linux	rsync_ssh	tache	is245198-intel22.intra.cea.fr	-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -TrioMC  		-intel22  -disable-plot2d -force_system_mpi -disable-mpi4py -without-visit  		# Ubuntu 20 TMA EOS
+linux	rsync_ssh	tache	is245198.intra.cea.fr			-FLICA5   		  -disable-plot2d -without-visit  		# Ubuntu 20 TMA EOS
 linux   rsync_ssh	non	rockefellia9-build64.intra.cea.fr 	-all		-TrioCFD    			-build_64_bit -disable-plot2d  -without-pdflatex -disable-mpi4py -disable-gmsh -without-visit  						# Rocky 9 titania 
-linux	rsync_ssh		tache	is241479.intra.cea.fr		-all 		 -TrioCFD  	-g 				-disable-valgrind -disable-plot2d -without-pdflatex -disable-vc 	# UB 22  salle de formation titania
+linux	rsync_ssh		tache	is246434.intra.cea.fr		-all 		 -TrioCFD -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -SIDES -SCORPIO    	-g -force_even_unsupported  				-without-pdflatex  	# Debian testing MF titania
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 	-FLICA5 			-semi_opt 				-coolprop -eos 				# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit   								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux   rsync_ssh       tache   is157083-clang.intra.cea.fr 		-all	   -TrioCFD -FLICA5 	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 38 GF 
-linux   rsync_ssh       tache   is245205-clang.intra.cea.fr 		-all	   -TrioCFD -FLICA5 	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 38 GF 
+linux   rsync_ssh       tache   is245205-clang.intra.cea.fr 		-all	   -TrioCFD -FLICA5 	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 41 GA 
 linux   rsync_ssh       tache   is234637-clang.intra.cea.fr 		-all	   -TrioCFD -FLICA5	 		   		-clang  	 -force_latest_mpich -without-pdflatex -without-visit -disable-plot2d -disable-gmsh   					# Fedora 40 GA 
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
 linux	rsync_ssh	tache	is157083-cpp14.intra.cea.fr	-all 		-FLICA5 -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO -TrioMC    		-stdcpp14 			 -without-pdflatex    							# Fedora 38 	Bat 454 LMEC titania  GF
 linux	rsync_ssh	tache	is231001-cpp14.intra.cea.fr	-all 		-FLICA5 -GENEPI3 -C3D     		-stdcpp14 			 -without-pdflatex    							# Fedora 26 	Bat 454 LMEC titania  CP
-linux	rsync_ssh	tache	is245205.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO -TrioMC    		 			 -without-pdflatex    							# Fedora 38 	Bat 454 LMEC titania  GF
+linux	rsync_ssh	tache	is245205.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO     		 	 -force_even_unsupported -without-pdflatex    							# Fedora 41 	Bat 454 SGLS titania  GA
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD  -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D -TrioMC   -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
 linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-disable-gnuplot -without-doc -disable-plot2d -without-conda -disable-hwloc  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD 						-build_64_bit -disable-gnuplot -without-doc -disable-plot2d -without-conda -disable-hwloc  						# RedHat 7.6	CEA CCRT
@@ -36,6 +37,7 @@ linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD   			-cuda -openmp 	
 linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d -disable-hwloc  	 				# Redhat 8.5	CEA Cad
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD   		-ctest_mode_valgrind 		 		     -without-pdflatex			# Redhat 9 serveur rackable pour validation TrioCFD titania
 linux	ssh_pass	cible	rhodia8-4.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -FLICA5   	 		     -force_latest_openmpi -without-pdflatex  			# Redhat 8.4 serveur rackable titania
+linux	ssh_pass	tache	rhodia8-4-woconda.intra.cea.fr  		-FLICA5 -C3D    	 		     -without-conda -without-pdflatex  			# Redhat 8.4 serveur rackable titania
 linux	rsync_ssh	tache	unitas20-coolprop-eos.intra.cea.fr		-all 		-TrioCFD -FLICA5  						 -coolprop -eos   						# Ubuntu 20 pilote titania 
 linux	rsync_ssh	tache	is246145.intra.cea.fr		-all	 -TrioCFD  -GENEPI3 -FLICA5 -MPCube   						 -platform -without-pdflatex -force_provided_mpich -without-visit -gcc8    					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind -without-pdflatex								# UB 22 titania 	Bat 451	LGLS	salle de formation

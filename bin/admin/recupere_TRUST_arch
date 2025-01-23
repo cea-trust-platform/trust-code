@@ -271,7 +271,7 @@ do
 	TRIOXDATA=$TRIOXDATA && [ "`grep TRIOXDATA:error $CR`" != "" ] && TRIOXDATA="<TD $ROUGE>KO</TD>"
 	GNUPLOT="<TD $BLANC>NOT</TD>" && [ "`grep gnuplot:OK $CR`" != "" ] && GNUPLOT="<TD $VERT>OK</TD>"
 	GNUPLOT=$GNUPLOT && [ "`grep gnuplot:error $CR`" != "" ] && GNUPLOT="<TD $ROUGE>KO</TD>"
-	nvidia=`grep " Device " $CR | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
+	nvidia=`grep " Device " $CR | grep -v "Device compiler exited with error" | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
 	[ "$nvidia" = "" ] && nvidia=`$TRUST_Awk -F= '/Nvidia=/ {print $2}' $CR`
 	COL2="";taux=$vide
 	ptaux=""	

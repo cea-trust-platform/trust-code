@@ -1664,7 +1664,7 @@ else
 	 echo "ADD_PATH $MPI_ROOT/bin" >> $env
 	 MPI_LIB="";export MPI_LIB
 	 # Allow to relocate mpich installed by TRUST
-	 for mpicompiler in mpicc mpicxx mpif77
+	 for mpicompiler in mpicc mpicxx mpif77 mpifort
 	 do
 	   if [ "`grep "${TRUST_ROOT}" $TRUST_ROOT/lib/src/LIBMPI/mpich/bin/$mpicompiler 2>/dev/null`" != "" ]
 	   then
