@@ -50,6 +50,8 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   echo "Pathcin to support hdf5 1.14 ..."
   patch -p1 < $curr_dir/med-hdf5_1_14.patch  
 
+  patch -p1 < $curr_dir/patch_med_for_gcc15 || exit 1
+
   # fPIC is not there by default in MED autotools ...
   Wno="-Wno-error -Wno-implicit-function-declaration"
   CFLAGS="${CFLAGS} -fPIC $Wno"

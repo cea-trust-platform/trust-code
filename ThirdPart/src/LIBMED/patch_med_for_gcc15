@@ -1,0 +1,83 @@
+diff -pu -r med-4.1.1.org/include/med_hdfi.h med-4.1.1/include/med_hdfi.h
+--- med-4.1.1.org/include/med_hdfi.h	2021-09-20 14:52:26.000000000 +0200
++++ med-4.1.1/include/med_hdfi.h	2025-01-22 15:56:34.000000000 +0100
+@@ -351,12 +351,12 @@ typedef struct {
+ extern MEDC_EXPORT
+ void * _MEDcheckAttributeStringInit( med_string_itdatas * const itdatas, const char * const attname, med_int attsize);
+ extern MEDC_EXPORT
+-med_err _MEDcheckAttributeStringFunc(med_idt id,const char *lname, const H5L_info_t *linfo, med_string_itdatas *data);
++med_err _MEDcheckAttributeStringFunc(med_idt id,const char *lname, const H5L_info_t *linfo, void *data);
+ extern MEDC_EXPORT
+ void  _MEDcheckAttributeStringFin( med_string_itdatas * const itdatas);
+ 
+ extern MEDC_EXPORT
+-med_err _MEDchecknSublinkFunc(med_idt id,const char *lname, const H5L_info_t *linfo, med_bool *data);
++med_err _MEDchecknSublinkFunc(med_idt id,const char *lname, const H5L_info_t *linfo, void *data);
+ 
+ #define MED_CHECK_ATTRIBUTE_FUNC(_check_med_type_) _MEDcheckAttributeFunc##_check_med_type_
+ #define MED_CHECK_ATTRIBUTE_INIT(_check_med_type_,_check_med_itdata_,_check_med_attname_,_check_med_attsize_) _MEDcheckAttributeInit##_check_med_type_ (_check_med_itdata_,_check_med_attname_,_check_med_attsize_)
+@@ -409,7 +409,8 @@ extern MEDC_EXPORT
+ med_err _MEDvisit(const med_idt fid, const char * const srcpath, const char * const dstpath,
+ 		  medvisitorfunc);
+ extern MEDC_EXPORT
+-med_err _MEDiterate(const med_idt fid, herr_t (*func)(), void * itdatas );
++med_err
++_MEDiterate(const med_idt fid,  herr_t (*func)( hid_t g_id, const char *name, const H5L_info_t *info, void *op_data), void * itdatas );
+ 
+ extern MEDC_EXPORT
+ med_err
+diff -pu -r med-4.1.1.org/src/hdfi/_MEDcheckAttributeStringFunc.c med-4.1.1/src/hdfi/_MEDcheckAttributeStringFunc.c
+--- med-4.1.1.org/src/hdfi/_MEDcheckAttributeStringFunc.c	2021-09-20 14:52:30.000000000 +0200
++++ med-4.1.1/src/hdfi/_MEDcheckAttributeStringFunc.c	2025-01-22 15:58:55.000000000 +0100
+@@ -22,7 +22,9 @@
+ #include <hdf5.h>
+ #include <string.h>
+ 
+-med_err _MEDcheckAttributeStringFunc(med_idt id,const char *lname, const H5L_info_t *linfo, med_string_itdatas  *data) {
++med_err _MEDcheckAttributeStringFunc(med_idt id,const char *lname, const H5L_info_t *linfo, void *argdata) {
++
++  med_string_itdatas  *data= (med_string_itdatas*) argdata;
+ 
+   med_err  _ret=-1;
+   H5O_info_t oinfo;
+diff -pu -r med-4.1.1.org/src/hdfi/_MEDchecknSublinkFunc.c med-4.1.1/src/hdfi/_MEDchecknSublinkFunc.c
+--- med-4.1.1.org/src/hdfi/_MEDchecknSublinkFunc.c	2021-09-20 14:52:30.000000000 +0200
++++ med-4.1.1/src/hdfi/_MEDchecknSublinkFunc.c	2025-01-22 15:58:10.000000000 +0100
+@@ -22,7 +22,8 @@
+ #include <hdf5.h>
+ #include <string.h>
+ 
+-med_err _MEDchecknSublinkFunc(med_idt id,const char *lname, const H5L_info_t *linfo, med_bool  *data) {
++med_err _MEDchecknSublinkFunc(med_idt id,const char *lname, const H5L_info_t *linfo, void  *argdata) {
++  med_bool* data =(med_bool*) argdata;
+ 
+   med_err  _ret=-1;
+   H5O_info_t oinfo;
+diff -pu -r med-4.1.1.org/src/hdfi/_MEDiterate.c med-4.1.1/src/hdfi/_MEDiterate.c
+--- med-4.1.1.org/src/hdfi/_MEDiterate.c	2021-09-20 14:52:30.000000000 +0200
++++ med-4.1.1/src/hdfi/_MEDiterate.c	2025-01-22 15:50:26.000000000 +0100
+@@ -25,7 +25,7 @@
+ /* 	  herr_t (*func)( hid_t g_id, const char *name, const H5L_info_t *info, void *op_data) ) */
+ 
+ med_err
+-_MEDiterate(const med_idt fid,  herr_t (*func)(), void * itdatas )
++_MEDiterate(const med_idt fid,  herr_t (*func)( hid_t g_id, const char *name, const H5L_info_t *info, void *op_data), void * itdatas )
+ {
+ 
+   med_err    _ret=-1;
+diff -pu -r med-4.1.1.org/src/hdfi/_MEDvisit.c med-4.1.1/src/hdfi/_MEDvisit.c
+--- med-4.1.1.org/src/hdfi/_MEDvisit.c	2021-09-20 14:52:30.000000000 +0200
++++ med-4.1.1/src/hdfi/_MEDvisit.c	2025-01-22 15:46:00.000000000 +0100
+@@ -22,11 +22,10 @@
+ #include <hdf5.h>
+ 
+ 
+-/* 	  herr_t (*func)( hid_t g_id, const char *name, const H5L_info_t *info, void *op_data) ) */
+ 
+ med_err
+ _MEDvisit(const med_idt fid, const char * const srcpath, const char * const dstpath,
+-	  herr_t (*func)() )
++ 	  herr_t (*func)( hid_t g_id, const char *name, const H5L_info_t *info, void *op_data) ) 
+ {
+ 
+   med_err    _ret=-1;
