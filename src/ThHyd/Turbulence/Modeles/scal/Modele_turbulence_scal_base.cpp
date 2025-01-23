@@ -60,15 +60,14 @@ void Modele_turbulence_scal_base::set_param(Param& param)
   param.ajouter_non_std("dt_impr_nusselt_mean_only", (this)); // XD attr dt_impr_nusselt_mean_only dt_impr_nusselt_mean_only dt_impr_nusselt_mean_only 1 This keyword is used to print the mean values of Nusselt ( obtained with the wall laws) on each boundary, into a file named datafile_ProblemName_nusselt_mean_only.out. periode refers to the printing period, this value is expressed in seconds. If you don\'t use the optional keyword boundaries, all the boundaries will be considered. If you use it, you must specify nb_boundaries which is the number of boundaries on which you want to calculate the mean values, then you have to specify their names.
   param.ajouter_non_std("turbulence_paroi", this); // XD_ADD_P turbulence_paroi_scalaire_base Keyword to set the wall law.
 }
-int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
+int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Motcle mot = "turbulence_paroi";
-  if (motlu == mot)
+  Motcle motlu;
+  int retval = 1;
+  if (mot == "turbulence_paroi")
     {
       Turbulence_paroi_scal_base::typer_lire_turbulence_paroi_scal(loipar_, *this, is);
-
       is >> loipar_.valeur();
-      return 1;
     }
   else if (!loipar_->que_suis_je().contient("negligeable")) // ToDo factorize with Modele_turbulence_hyd_base::lire_motcle_non_standard
     {
@@ -154,12 +153,8 @@ int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, E
         }
     } // fin loi paroi negligeable
   else
-    {
-      Cerr << mot << "n'est pas un mot compris par " << que_suis_je() << "dans lire_motcle_non_standard" << finl;
-      exit();
-    }
-  return -1;
-
+    retval = -1;
+  return retval;
 }
 
 /*! @brief Associe l'equation passe en parametre au modele de turbulence.

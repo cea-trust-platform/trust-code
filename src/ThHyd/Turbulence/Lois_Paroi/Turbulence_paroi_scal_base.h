@@ -59,10 +59,8 @@ public:
   {
     Cerr << "imprimer_nusselt non code pour " << que_suis_je() << finl;
   }
-  inline virtual void imprimer_premiere_ligne_nusselt(int, const LIST(Nom)&, const Nom&) const { }
-  inline virtual void imprimer_nusselt_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const { Cerr << "Warning: " << que_suis_je() << "::imprimer_nusselt_mean_only not implemented." << finl; }
-  virtual void imprimer_premiere_ligne_nusselt_impl(int, const LIST(Nom)&, const Nom&, const Domaine_dis_base&, const Domaine_Cl_dis_base&) const;
-  virtual void imprimer_nusselt_mean_only_impl(Sortie&, int, const LIST(Nom)&, const Nom&, const Domaine_dis_base&, const Domaine_Cl_dis_base&) const;
+  void imprimer_premiere_ligne_nusselt(int, const LIST(Nom)&, const Nom&) const;
+  void imprimer_nusselt_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const;
 
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
@@ -123,6 +121,8 @@ protected:
   mutable DoubleTab tab_; // Array containing the Nusset fields
   int nb_fields_ = 6; // Number of Nusselt fields
 
+  OBS_PTR(Domaine_VF) le_dom_dis_;
+  OBS_PTR(Domaine_Cl_dis_base) le_dom_Cl_dis_;
 private:
 
   Champs_compris champs_compris_;

@@ -38,17 +38,17 @@ Entree& Paroi_scal_hyd_base_VDF::readOn(Entree& s) { return s; }
 
 void Paroi_scal_hyd_base_VDF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis);
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
+  le_dom_dis_ = ref_cast(Domaine_VF, domaine_dis);
+  le_dom_Cl_dis_ = domaine_Cl_dis;
   // On initialise tout de suite la loi de paroi
   Paroi_scal_hyd_base_VDF::init_lois_paroi();
 }
 
 int Paroi_scal_hyd_base_VDF::init_lois_paroi()
 {
-  int nb_faces_bord_reelles = le_dom_VDF->nb_faces_bord();
+  int nb_faces_bord_reelles = le_dom_dis_->nb_faces_bord();
   tab_.resize(nb_faces_bord_reelles, nb_fields_);
-  const Domaine_VDF& zvdf = le_dom_VDF.valeur();
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, le_dom_dis_.valeur());
 
   int nb_front = zvdf.nb_front_Cl();
   equivalent_distance_.dimensionner(nb_front);
@@ -56,7 +56,7 @@ int Paroi_scal_hyd_base_VDF::init_lois_paroi()
   //loop over boundaries (number)
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
       int n_faces = le_bord.nb_faces();
       equivalent_distance_[n_bord].resize(n_faces);
@@ -75,7 +75,7 @@ int Paroi_scal_hyd_base_VDF::init_lois_paroi()
 
 void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
 {
-  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_dis_.valeur());
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   int ndeb, nfin, elem;
   const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
@@ -89,7 +89,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
 
   for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
 
       if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
@@ -269,10 +269,10 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
 
 DoubleVect& Paroi_scal_hyd_base_VDF::equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const
 {
-  int nb_boundaries = le_dom_VDF->domaine().nb_front_Cl();
+  int nb_boundaries = le_dom_dis_->domaine().nb_front_Cl();
   for (int n_bord = 0; n_bord < nb_boundaries; n_bord++)
     {
-      const Front_VF& fr_vf = le_dom_VDF->front_VF(n_bord);
+      const Front_VF& fr_vf = le_dom_dis_->front_VF(n_bord);
       int nb_faces = fr_vf.nb_faces();
       if (fr_vf.le_nom() == nom_bord)
         {

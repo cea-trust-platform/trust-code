@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,6 @@ public:
   inline DoubleVect& tab_d_reel();
   DoubleVect& equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const override;
 protected:
-  OBS_PTR(Domaine_EF) le_dom_EF;
-  OBS_PTR(Domaine_Cl_EF) le_dom_Cl_EF;
-
   DoubleVect tab_d_reel_;   // tableau des distances (dimenssionnelles) du
   // point y+ = 1
 };
