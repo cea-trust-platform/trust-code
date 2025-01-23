@@ -13,18 +13,53 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_h_conv_included
-#define Champ_h_conv_included
+#include <Modele_turbulence_hyd_base.h>
+#include <T_paroi_Champ_P1NC.h>
+#include <Champ_P1NC.h>
 
-/*! @brief classe Champ_h_conv Permet d'avoir une visualisation du gradient de temperature
- *
- * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
- */
-class Champ_h_conv
+Implemente_instanciable(T_paroi_Champ_P1NC, "T_paroi_Champ_P1NC", Champ_Fonc_P0_VEF);
+
+Sortie& T_paroi_Champ_P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+
+Entree& T_paroi_Champ_P1NC::readOn(Entree& s) { return s; }
+
+void T_paroi_Champ_P1NC::mettre_a_jour(double tps)
 {
-public :
-  virtual ~Champ_h_conv() {}
-  virtual void me_calculer(double ) =0;
-};
+  me_calculer(tps);
+  changer_temps(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
+}
 
-#endif
+void T_paroi_Champ_P1NC::associer_champ(const Champ_P1NC& un_champ)
+{
+  mon_champ_ = un_champ;
+}
+
+void T_paroi_Champ_P1NC::me_calculer(double tps)
+{
+  const Domaine_dis_base& ds = mon_champ().equation().domaine_dis();
+  const IntTab& face_voisins = ds.face_voisins();
+  const int nb_bords = ds.nb_front_Cl();
+  const DoubleTab& temp = mon_champ_->valeurs();
+  DoubleTab& val = valeurs(tps);
+  val = -1.;
+
+  for (int n_bord = 0; n_bord < nb_bords; n_bord++)
+    {
+      const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+
+      for (int face = ndeb; face < nfin; face++)
+        {
+          const int elem = face_voisins(face, 0);
+          val(elem) = temp(face);
+        }
+    }
+}
+
+const Domaine_Cl_dis_base& T_paroi_Champ_P1NC::domaine_Cl_dis_base() const
+{
+  return le_dom_Cl_VEF.valeur();
+}

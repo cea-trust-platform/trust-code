@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ public:
   void courant_maille(const Domaine_dis_base&, const Schema_Temps_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
   void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
   void y_plus(const Domaine_dis_base&, const Domaine_Cl_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
-//  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Equation_base& eqn,OWN_PTR(Champ_Fonc_base)& ch) const;
+  void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& , OWN_PTR(Champ_Fonc_base)& ch) const override;
   void residu(const Domaine_dis_base&, const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
   bool is_vdf() const override { return true; }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,8 @@
 #include <Navier_Stokes_std.h>
 #include <Domaine_VDF.h>
 #include <Probleme_base.h>
+#include <Champ_P0_VDF.h>
+#include <T_paroi_Champ_P0_VDF.h>
 
 Implemente_instanciable(VDF_discretisation, "VDF", Discret_Thyd);
 // XD vdf discretisation_base vdf -1 Finite difference volume discretization.
@@ -441,21 +443,24 @@ void VDF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_
     }
 }
 
-/* void VDF_discretisation::t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Equation_base& eqn,Champ_Fonc_base& ch) const
- {
- const Domaine_VDF& domaine_vdf=ref_cast(Domaine_VDF, z);
- const Domaine_Cl_VDF& domaine_cl_vdf=ref_cast(Domaine_Cl_VDF, zcl);
- ch.typer("Champ_Temperature_Paroi_Face");
- Champ_T_Paroi_Face& ch_tp=ref_cast(Champ_T_Paroi_Face,ch.valeur());
- ch_tp.associer_eqn(eqn);
- ch_tp.associer_domaine_dis_base(domaine_vdf);
- ch_tp.associer_domaine_Cl_dis_base(domaine_cl_vdf);
- ch_tp.nommer("temperature_paroi");
- ch_tp.fixer_nb_comp(1);
- ch_tp.fixer_nb_valeurs_nodales(domaine_vdf.nb_faces());
- ch_tp.fixer_unite("K");
- ch_tp.changer_temps(eqn.inconnue().temps());
- } */
+void VDF_discretisation::t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temp, OWN_PTR(Champ_Fonc_base)& ch) const
+{
+  Cerr << "Discretisation de temperature_paroi" << finl;
+  const Champ_P0_VDF& temp = ref_cast(Champ_P0_VDF, ch_temp);
+  const Domaine_VDF& domaine_vdf = ref_cast(Domaine_VDF, z);
+  const Domaine_Cl_VDF& domaine_cl_vdf = ref_cast(Domaine_Cl_VDF, zcl);
+  ch.typer("T_paroi_Champ_P0_VDF");
+  T_paroi_Champ_P0_VDF& ch_tp = ref_cast(T_paroi_Champ_P0_VDF, ch.valeur());
+  ch_tp.associer_domaine_dis_base(domaine_vdf);
+  ch_tp.associer_domaine_Cl_dis_base(domaine_cl_vdf);
+  ch_tp.associer_champ(temp);
+  ch_tp.nommer("temperature_paroi");
+  ch_tp.add_synonymous("wall_temperature");
+  ch_tp.fixer_nb_comp(ch_temp.valeurs().line_size()); // pour multiphase ...
+  ch_tp.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
+  ch_tp.fixer_unite("K-C");
+  ch_tp.changer_temps(ch_temp.temps());
+}
 
 void VDF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(OBS_PTR(Champ_base)) &ch_inc) const
 {

@@ -13,18 +13,34 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_h_conv_included
-#define Champ_h_conv_included
+#ifndef T_paroi_Champ_P0_VDF_included
+#define T_paroi_Champ_P0_VDF_included
 
-/*! @brief classe Champ_h_conv Permet d'avoir une visualisation du gradient de temperature
- *
- * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
- */
-class Champ_h_conv
+#include <Champ_Fonc_P0_VDF.h>
+#include <Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
+
+class Champ_P0_VDF;
+
+class T_paroi_Champ_P0_VDF: public Champ_Fonc_P0_VDF
 {
-public :
-  virtual ~Champ_h_conv() {}
-  virtual void me_calculer(double ) =0;
+  Declare_instanciable(T_paroi_Champ_P0_VDF);
+public:
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_P0_VDF&);
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const { return le_dom_Cl_VDF.valeur(); }
+
+  inline const Champ_P0_VDF& mon_champ() const { return mon_champ_.valeur(); }
+
+  inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
+  {
+    le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_dis_base);
+  }
+
+protected:
+  void me_calculer(double);
+  OBS_PTR(Champ_P0_VDF) mon_champ_;
+  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
 };
 
-#endif
+#endif /* T_paroi_Champ_P0_VDF_included */

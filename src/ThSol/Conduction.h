@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,6 +76,7 @@ public:
 private :
   OBS_PTR(Solide) le_solide;
   OWN_PTR(Champ_Inc_base) la_temperature;
+  OWN_PTR(Champ_Fonc_base) temperature_paroi_;
   Operateur_Diff terme_diffusif;
 
 protected :

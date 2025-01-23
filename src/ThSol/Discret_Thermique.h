@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,12 @@ public :
   void flux_neutronique(const Schema_Temps_base& sch, Domaine_dis_base& z, OWN_PTR(Champ_Inc_base)& ch, int nb_comp=1) const;
   void Fluctu_Temperature(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Inc_base)&) const ;
   void Flux_Chaleur_Turb(const Schema_Temps_base&, Domaine_dis_base&, OWN_PTR(Champ_Inc_base)&) const;
+  virtual void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& , OWN_PTR(Champ_Fonc_base)& ch) const
+  {
+    Cerr << "Discret_Thermique::t_paroi() does nothing" << finl;
+    Cerr << que_suis_je() << " needs to overload it !" << finl;
+    Process::exit();
+  }
 };
 
 #endif

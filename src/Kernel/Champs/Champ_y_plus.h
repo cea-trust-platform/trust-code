@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,6 @@
 #ifndef Champ_y_plus_included
 #define Champ_y_plus_included
 
-
-
-
 /*! @brief classe Champ_y_plus Permet d'avoir une visualisation de la taille de la premiere maille de paroi en unites de parois.
  *
  *        y+ = y u_tau/nu
@@ -27,12 +24,9 @@
  */
 class Champ_y_plus
 {
-
 public :
-
-  virtual ~Champ_y_plus() {};
+  virtual ~Champ_y_plus() {}
   virtual void me_calculer(double ) =0;
-
 };
 
 #endif

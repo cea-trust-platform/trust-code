@@ -13,18 +13,39 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_h_conv_included
-#define Champ_h_conv_included
+#ifndef T_paroi_Champ_P1NC_included
+#define T_paroi_Champ_P1NC_included
 
-/*! @brief classe Champ_h_conv Permet d'avoir une visualisation du gradient de temperature
+#include <Champ_Fonc_P0_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VEF;
+class Champ_P1NC;
+
+/*! @brief classe T_paroi_Champ_P1NC
  *
- * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
+ * @sa Champ_y_plus Champ_Fonc_P0_VEF
  */
-class Champ_h_conv
+class T_paroi_Champ_P1NC: public Champ_Fonc_P0_VEF
 {
-public :
-  virtual ~Champ_h_conv() {}
-  virtual void me_calculer(double ) =0;
+  Declare_instanciable(T_paroi_Champ_P1NC);
+public:
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_P1NC&);
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const;
+
+  inline const Champ_P1NC& mon_champ() const { return mon_champ_.valeur(); }
+
+  inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
+  {
+    le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_dis_base);
+  }
+
+protected:
+  void me_calculer(double);
+  OBS_PTR(Champ_P1NC) mon_champ_;
+  OBS_PTR(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
-#endif
+#endif /* T_paroi_Champ_P1NC_included */

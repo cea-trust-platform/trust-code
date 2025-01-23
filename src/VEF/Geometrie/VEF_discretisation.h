@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ public :
   void h_conv(const Domaine_dis_base& z,const Domaine_Cl_dis_base&,const Champ_Inc_base& temperature, OWN_PTR(Champ_Fonc_base)& ch, Motcle& nom, int temp_ref) const override;
   void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base&,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)&) const override;
   void residu(const Domaine_dis_base& , const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-
+  void t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& , OWN_PTR(Champ_Fonc_base)& ch) const override;
   bool is_vef() const override { return true; }
 
   inline int get_P1Bulle() const { return P1Bulle_; }

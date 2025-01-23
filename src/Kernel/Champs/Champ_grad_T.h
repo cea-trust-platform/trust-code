@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,21 +16,15 @@
 #ifndef Champ_grad_T_included
 #define Champ_grad_T_included
 
-
-
-
 /*! @brief classe Champ_grad_T Permet d'avoir une visualisation du gradient de temperature
  *
  * @sa Classe abstraite, Methode abstraite, void me_calculer(double )
  */
 class Champ_grad_T
 {
-
 public :
-
-  virtual ~Champ_grad_T() {};
+  virtual ~Champ_grad_T() {}
   virtual void me_calculer(double ) =0;
-
 };
 
 #endif

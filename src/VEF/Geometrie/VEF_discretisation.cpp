@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Rotationnel_Champ_P1NC.h>
 #include <Rotationnel_Champ_Q1NC.h>
 #include <Critere_Q_Champ_P1NC.h>
+#include <T_paroi_Champ_P1NC.h>
 #include <VEF_discretisation.h>
 #include <Y_plus_Champ_P1NC.h>
 #include <Navier_Stokes_std.h>
@@ -690,6 +691,25 @@ void VEF_discretisation::y_plus(const Domaine_dis_base& z, const Domaine_Cl_dis_
   ch_yp.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
   ch_yp.fixer_unite("adimensionnel");
   ch_yp.changer_temps(ch_vitesse.temps());
+}
+
+void VEF_discretisation::t_paroi(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_temp, OWN_PTR(Champ_Fonc_base)& ch) const
+{
+  Cerr << "Discretisation de temperature_paroi" << finl;
+  const Champ_P1NC& temp = ref_cast(Champ_P1NC, ch_temp);
+  const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, z);
+  const Domaine_Cl_VEF& domaine_cl_vef = ref_cast(Domaine_Cl_VEF, zcl);
+  ch.typer("T_paroi_Champ_P1NC");
+  T_paroi_Champ_P1NC& ch_tp = ref_cast(T_paroi_Champ_P1NC, ch.valeur());
+  ch_tp.associer_domaine_dis_base(domaine_vef);
+  ch_tp.associer_domaine_Cl_dis_base(domaine_cl_vef);
+  ch_tp.associer_champ(temp);
+  ch_tp.nommer("temperature_paroi");
+  ch_tp.add_synonymous("wall_temperature");
+  ch_tp.fixer_nb_comp(1);
+  ch_tp.fixer_nb_valeurs_nodales(domaine_vef.nb_elem());
+  ch_tp.fixer_unite("K-C");
+  ch_tp.changer_temps(ch_temp.temps());
 }
 
 void VEF_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
