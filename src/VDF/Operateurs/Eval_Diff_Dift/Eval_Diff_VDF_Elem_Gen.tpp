@@ -224,6 +224,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
     }
 }
 
+// TODO FIXME factorize
 inline double newton_Tbord(double eps, double T_ext, double lambda, double e, double T0, double sgn)
 {
   double Tb = T0;
@@ -249,8 +250,10 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
   double e;
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
 
-  if (DERIVED_T::IS_MODIF_DEQ) e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
-  else e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) : Dist_norm_bord_externe_(face);
+  if (DERIVED_T::IS_MODIF_DEQ)
+    e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
+  else
+    e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) : Dist_norm_bord_externe_(face);
 
 
   // XXX : E. Saikali 08/03/2021 : The test of a zero diffusion was not done before. I think it should be like that
@@ -278,7 +281,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
             {
               const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
               const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = la_cl.T_ext(face - num1, l);
-              const double Tb = newton_Tbord(eps, T_ext, nu_2(i, ori), e, inco(j, l), -1.0);
+              const double Tb = newton_Tbord(eps, T_ext, nu_2(j, ori), e, inco(j, l), -1.0);
               flux[k] += 5.67e-8 * eps * (Tb * Tb * Tb * Tb - T_ext * T_ext * T_ext * T_ext) * surface(face);
             }
         }
