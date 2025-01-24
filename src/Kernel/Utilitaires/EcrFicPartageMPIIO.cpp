@@ -233,7 +233,6 @@ Sortie& EcrFicPartageMPIIO::operator <<(const long long ob)
 {
   // Should never be used in MPIIO context
   throw;
-  return *this;
 }
 
 Sortie& EcrFicPartageMPIIO::operator <<(const unsigned long ob)
