@@ -218,15 +218,13 @@ void Turbulence_paroi_base::ouvrir_fichier_partage(EcrFicPartage& fichier, const
  * @param boundaries_ Flag to control boundary selection (0: all boundaries, 1: specified boundaries)
  * @param boundaries_list List of boundary names to process
  * @param nom_fichier_ Output filename
- * @param domaine_dis Domain discretization
- * @param domaine_cl_dis Boundary conditions discretization
  *
  * @details Creates header line with column names for u* and d+ statistics.
  * Format: "Time Mean(u*) Mean(d+) [boundary1(u*) boundary1(d+) ...]"
  * Writes warning messages if specified boundaries are not of correct wall type
  * (Dirichlet_paroi_fixe or Dirichlet_paroi_defilante).
  */
-void Turbulence_paroi_base::imprimer_premiere_ligne_ustar_impl(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_, const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis) const
+void Turbulence_paroi_base::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
   EcrFicPartage fichier;
   ouvrir_fichier_partage(fichier, nom_fichier_, "out");
@@ -234,9 +232,9 @@ void Turbulence_paroi_base::imprimer_premiere_ligne_ustar_impl(int boundaries_, 
   err = "";
   ligne = "# Time   \tMean(u*) \tMean(d+)";
 
-  for (int n_bord = 0; n_bord < domaine_dis.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < le_dom_dis_->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl_dis.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
       const Nom& nom_bord = la_cl->frontiere_dis().le_nom();
       if (je_suis_maitre() && (boundaries_list.contient(nom_bord) || boundaries_list.size() == 0))
         {
@@ -274,15 +272,13 @@ void Turbulence_paroi_base::imprimer_premiere_ligne_ustar_impl(int boundaries_, 
  * @param boundaries_ Flag to control boundary selection (0: all boundaries, 1: specified boundaries)
  * @param boundaries_list List of boundary names to process when boundaries_=1
  * @param nom_fichier_ Output filename
- * @param domaine_dis Domain discretization
- * @param domaine_cl_dis Boundary conditions discretization
  *
  * @details Calculates and writes average u* (friction velocity) and d+ values for wall boundaries.
  * Results are written for all boundaries combined and then for each boundary separately.
  * Only processes fixed walls (Dirichlet_paroi_fixe) and moving walls (Dirichlet_paroi_defilante).
  * Output format: time mean_u* mean_d+ [boundary1_u* boundary1_d+ boundary2_u* boundary2_d+ ...]
  */
-void Turbulence_paroi_base::imprimer_ustar_mean_only_impl(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_, const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis) const
+void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
   const Probleme_base& pb = mon_modele_turb_hyd->equation().probleme();
   const Schema_Temps_base& sch = pb.schema_temps();
@@ -295,7 +291,7 @@ void Turbulence_paroi_base::imprimer_ustar_mean_only_impl(Sortie& os, int bounda
     }
   else
     {
-      size0 = domaine_dis.nb_front_Cl();
+      size0 = le_dom_dis_->nb_front_Cl();
     }
   DoubleTrav moy_bords(size0 + 1, 3);
   moy_bords = 0.;
@@ -303,9 +299,9 @@ void Turbulence_paroi_base::imprimer_ustar_mean_only_impl(Sortie& os, int bounda
   EcrFicPartage fichier;
   ouvrir_fichier_partage(fichier, nom_fichier_, "out");
 
-  for (int n_bord = 0; n_bord < domaine_dis.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < le_dom_dis_->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl_dis.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
       if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
@@ -336,9 +332,9 @@ void Turbulence_paroi_base::imprimer_ustar_mean_only_impl(Sortie& os, int bounda
     }
 
   num_bord = 0;
-  for (int n_bord = 0; n_bord < domaine_dis.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < le_dom_dis_->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = domaine_cl_dis.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
       if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());

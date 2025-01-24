@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,15 @@ int Paroi_negligeable_VEF::init_lois_paroi()
 
   // Dimensionnement du tableau elem_paroi
   int num_cl, fac, i;
-  const Conds_lim& les_cl = le_dom_Cl_VEF->les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_dis_->les_conditions_limites();
   //  const IntTab& elem_faces = le_dom_VEF->elem_faces();
-  const IntTab& face_voisins = le_dom_VEF->face_voisins();
+  const IntTab& face_voisins = le_dom_dis_->face_voisins();
 
-  DoubleTrav Verif_elem_double(le_dom_VEF->nb_elem());
+  DoubleTrav Verif_elem_double(le_dom_dis_->nb_elem());
   compteur_elem_paroi = 0;
   Verif_elem_double = 0;
-  elem_paroi.resize(le_dom_VEF->nb_faces_bord());
-  elem_paroi_double.resize(le_dom_VEF->nb_faces_bord());
+  elem_paroi.resize(le_dom_dis_->nb_faces_bord());
+  elem_paroi_double.resize(le_dom_dis_->nb_faces_bord());
 
   for (num_cl = 0; num_cl < les_cl.size(); num_cl++)
     {
@@ -115,7 +115,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_k_eps)
       double norm_tau, u_etoile, norm_v = 0, dist = 0, val1, val2, val3, d_visco, visco = 1.;
       IntVect num(dimension);
 
-      const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+      const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_dis_.valeur());
       const IntTab& face_voisins = domaine_VEF.face_voisins();
       const IntTab& elem_faces = domaine_VEF.elem_faces();
       const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
@@ -141,7 +141,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_k_eps)
 
       for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
 
           if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
             {
@@ -216,7 +216,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
   const Equation_base& eqn_hydr = mon_modele_turb_hyd->equation();
   if (sub_type(Fluide_base, eqn_hydr.milieu()))
     {
-      const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+      const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_dis_.valeur());
       const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
       const Champ_Don_base& ch_visco_cin = le_fluide.viscosite_cinematique();
       const DoubleTab& tab_visco = ch_visco_cin.valeurs();
@@ -244,7 +244,7 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
 
       for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
           if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
             {
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());

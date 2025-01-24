@@ -71,7 +71,7 @@ bool Paroi_hyd_base_EF::has_champ(const Motcle& nom) const
 
 const Champ_base& Paroi_hyd_base_EF::get_champ(const Motcle& nom) const
 {
-  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, le_dom_dis_.valeur());
   const IntTab& face_voisins = domaine_EF.face_voisins();
   if (nom == champ_u_star_.le_nom())
     {
@@ -115,14 +115,14 @@ void Paroi_hyd_base_EF::get_noms_champs_postraitables(Noms& nom, Option opt) con
 
 void Paroi_hyd_base_EF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
-  le_dom_EF = ref_cast(Domaine_EF, domaine_dis);
-  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
+  le_dom_dis_ = ref_cast(Domaine_VF, domaine_dis);
+  le_dom_Cl_dis_ = domaine_Cl_dis;
 }
 
 void Paroi_hyd_base_EF::init_lois_paroi_()
 {
-  const Domaine_VF& zvf = le_dom_EF.valeur();
-  const int nb_faces_bord = le_dom_EF->nb_faces_bord();
+  const Domaine_VF& zvf = le_dom_dis_.valeur();
+  const int nb_faces_bord = le_dom_dis_->nb_faces_bord();
   tab_u_star_.resize(nb_faces_bord);
   tab_d_plus_.resize(nb_faces_bord);
   if (!Cisaillement_paroi_.get_md_vector().non_nul())
@@ -149,14 +149,3 @@ DoubleTab& Paroi_hyd_base_EF::corriger_derivee_impl(DoubleTab& d) const
     }
   return d;
 }
-
-void Paroi_hyd_base_EF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
-{
-  imprimer_premiere_ligne_ustar_impl(boundaries_, boundaries_list, nom_fichier_, le_dom_EF.valeur(), le_dom_Cl_EF);
-}
-
-void Paroi_hyd_base_EF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
-{
-  imprimer_ustar_mean_only_impl(os, boundaries_, boundaries_list, nom_fichier_, le_dom_EF.valeur(), le_dom_Cl_EF);
-}
-

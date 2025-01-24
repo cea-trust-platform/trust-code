@@ -30,27 +30,17 @@ Entree& Paroi_hyd_base_VDF::readOn(Entree& s) { return Turbulence_paroi_base::re
 
 void Paroi_hyd_base_VDF::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis);
-  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis);
+  le_dom_dis_ = ref_cast(Domaine_VF, domaine_dis);
+  le_dom_Cl_dis_ = domaine_Cl_dis;
 }
 
 void Paroi_hyd_base_VDF::init_lois_paroi_()
 {
-  tab_u_star_.resize(le_dom_VDF->nb_faces_bord());
-  tab_d_plus_.resize(le_dom_VDF->nb_faces_bord());
+  tab_u_star_.resize(le_dom_dis_->nb_faces_bord());
+  tab_d_plus_.resize(le_dom_dis_->nb_faces_bord());
   if (!Cisaillement_paroi_.get_md_vector().non_nul())
     {
       Cisaillement_paroi_.resize(0, dimension);
-      le_dom_VDF->creer_tableau_faces_bord(Cisaillement_paroi_);
+      le_dom_dis_->creer_tableau_faces_bord(Cisaillement_paroi_);
     }
-}
-
-void Paroi_hyd_base_VDF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
-{
-  imprimer_premiere_ligne_ustar_impl(boundaries_, boundaries_list, nom_fichier_, le_dom_VDF.valeur(), le_dom_Cl_VDF);
-}
-
-void Paroi_hyd_base_VDF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
-{
-  imprimer_ustar_mean_only_impl(os, boundaries_, boundaries_list, nom_fichier_, le_dom_VDF.valeur(), le_dom_Cl_VDF);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,6 @@ class Paroi_hyd_base_VDF : public Turbulence_paroi_base
 public:
   void associer(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
   void init_lois_paroi_();
-  void imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const override;
-  void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom& ) const override;
 
   /**
    * OC 09/2004 :
@@ -54,8 +52,6 @@ public:
      void calculer_u_star_avec_cisaillement(DoubleVect& tab_u_star) const ;
   */
 protected:
-  OBS_PTR(Domaine_VDF) le_dom_VDF;
-  OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
 };
 
 #endif /* Paroi_hyd_base_VDF_included */
