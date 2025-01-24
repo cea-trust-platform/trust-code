@@ -13,7 +13,7 @@ def extract_cases(book):
    import json
    import re
 
-   with open(book, "r") as f:
+   with open(book, "r", encoding='utf-8') as f:
      root = json.loads(f.read())
      # Now parse tree to retrieve all Python up to the invocation of "runCases()":
      cells = root.get("cells", [])

@@ -7,7 +7,7 @@ def get_nb_procs( filename ) :
     test_cases=["TESTCASE","CASTEST"]
 
     all_nb_procs=[]
-    with open( filename, "r" ) as f:
+    with open( filename, "r", encoding='utf-8' ) as f:
         for line in f :
             split = line.split( )
             nb_words = len( split )

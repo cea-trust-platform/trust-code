@@ -20,7 +20,7 @@ def interprete_file(file,fileout,traitement_special):
     try:
     # or codecs.open on Python <= 2.5
     # or io.open on Python > 2.5 and <= 2.7
-       filedata = open(file, encoding='UTF-8').read() 
+       filedata = open(file, encoding='utf-8').read()
     except:
        print("Error! Convert",file,"to UTF-8 format.")
        exit(1)
@@ -57,7 +57,7 @@ def interprete_file(file,fileout,traitement_special):
     sys.stderr.write(s.getvalue())
     sys.stdout = sys.__stdout__
     if (fileout!=sys.stdout):
-        f3=open(fileout,'w')
+        f3=open(fileout,'w',encoding='utf-8')
         f3.write(''.join(str_in))
         f3.close()
     else:
@@ -136,7 +136,7 @@ def cherche_pattern(str_in,list_pattern,list_vars,debut=0):
 
 def read_file(file):
     ''' lit le fichier et le convertit en chaine de caractere'''
-    f=open(file,'r')
+    f=open(file,'r',encoding='utf-8')
     strin=''.join(f.readlines())
     if (strin.find('#Pset (')>0):
         print("attention votre fichier",file,"contient '#Pset (' au lieu de '#Pset(', on substitue")
