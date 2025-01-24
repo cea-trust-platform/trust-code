@@ -1197,15 +1197,15 @@ then
    # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
    # -Drivers NVidia installed
    # -Cuda Compilateur nvcc found or installed
-   # SDK     : CUDA_ROOT=/opt/nvidia/hpc_sdk	$CUDA_ROOT/include
+   # -Nvidia HPC SDK installed:
    ################
    # Detection nvcc
    ################
-   # Ajout du nvcc local en priorite si trouve pour coherence avec driver
-   # local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
-   m="# Wrapper to CUDA compiler";e="`cherche_file TRUST_NVCC nvcc`";eval $e;CUDA_NVCC=$TRUST_NVCC;configure_compilateur_ccache
+   e="`cherche_file TRUST_NVCC nvcc`";eval $e
+   NVHPC_ROOT=${TRUST_NVCC%/compilers/bin/nvcc}
+   echo "NVHPC_ROOT=\"$NVHPC_ROOT\" && export NVHPC_ROOT # Path to Nvidia HPC SDK" >> $env
+   m="# Wrapper to CUDA compiler";CUDA_NVCC=$TRUST_NVCC;configure_compilateur_ccache
    ecrit $m"|"$e"|"$env;eval $e
-   #m="# Path to CUDA compiler";e="CUDA_NVCC=\"$CUDA_NVCC\" && export CUDA_NVCC";ecrit $m"|"$e"|"$env
    # Version que le compilateur fonctionne (typiquement GNU trop recent par rapport a nvcc, build echoue ensuite dans PETSc ou AmgX)
    CCBIN=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CCBIN=$TRUST_CC_BASE_EXTP
    check_nvcc="touch test.cu && $CUDA_NVCC -ccbin $CCBIN -c ./test.cu -o test"
@@ -1264,13 +1264,7 @@ then
    #########################
    # Detection CUDA run time
    #########################
-   # On se base sur nvcc pour trouver les librairies
-   # CUDA Toolkit:		NVIDIA HPC SDK:
-   # ROOT/bin/nvcc		ROOT/compilers/bin/nvcc
-   # ROOT/lib64 		ROOT/cuda/lib64
-   ROOT=${CUDA_NVCC%/bin/nvcc}
-   ROOT=${ROOT%/compilers}
-   CUDA_LIB=`ls $ROOT/lib64/libcudart.so.*.* $ROOT/cuda/lib64/libcudart.so.*.* 2>/dev/null | head -1`
+   CUDA_LIB=`ls $NVHPC_ROOT/cuda/lib64/libcudart.so.*.* $NVHPC_ROOT/lib64/libcudart.so.*.* 2>/dev/null | head -1`
    [ "$CUDA_LIB" = "" ] && echo "Cuda lib libcudart.so not found!" && exit -1
    CUDA_LIB=`dirname $CUDA_LIB 2>/dev/null`
    echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
@@ -1298,6 +1292,18 @@ then
       [ -d $CUDA_ROOT/$lib ] && echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT/$lib " >> $env
    done
    echo "ADD_LD_LIBRARY_PATH \$TRUST_ROOT/lib/src/LIBAMGX/AmgX/lib" >> $env
+
+   # On prend le MPI Cuda-Aware du NVHPC SDK telecharge:
+   # Actuellement OpenMPI 3.1.5, un peu lent au demarrage et use_mpirun=1 !
+   [ "$USE_NVHPC_MPI" = "" ] && USE_NVHPC_MPI=0 # && [ ${NVHPC_ROOT#$TRUST_ROOT} != $NVHPC_ROOT ] && USE_NVHPC_MPI=1
+   if [ "$USE_NVHPC_MPI" = 1 ]
+   then
+      export TRUST_FORCE_SYSTEM_MPI=1
+      export PATH=$NVHPC_ROOT/comm_libs/mpi/bin:$PATH
+      export LD_LIBRARY_PATH=$NVHPC_ROOT/comm_libs/mpi/lib:$LD_LIBRARY_PATH
+      echo "ADD_PATH \$NVHPC_ROOT/comm_libs/mpi/bin" >> $env
+      echo "ADD_LD_LIBRARY_PATH \$NVHPC_ROOT/comm_libs/mpi/lib" >> $env
+   fi
 fi
 m="# TRUST will use CUDA ?";e="TRUST_USE_CUDA=\"$TRUST_USE_CUDA\" && export TRUST_USE_CUDA";ecrit $m"|"$e"|"$env
 
