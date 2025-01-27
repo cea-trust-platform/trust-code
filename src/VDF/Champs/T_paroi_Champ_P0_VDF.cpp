@@ -14,7 +14,8 @@
 *****************************************************************************/
 
 #include <Echange_externe_radiatif.h>
-#include <Eval_Diff_VDF.h>
+#include <Champ_front_calc_interne.h>
+#include <Echange_interne_impose.h>
 #include <T_paroi_Champ_P0_VDF.h>
 #include <Echange_impose_base.h>
 #include <Dirichlet_homogene.h>
@@ -23,6 +24,7 @@
 #include <Op_Diff_VDF_base.h>
 #include <Equation_base.h>
 #include <Neumann_paroi.h>
+#include <Eval_Diff_VDF.h>
 #include <Champ_P0_VDF.h>
 #include <Periodique.h>
 #include <Operateur.h>
@@ -150,9 +152,62 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                 val(elem, k) = Tb;
               }
           }
-        else if (sub_type(Echange_impose_base, la_cl.valeur()))
+        else if (sub_type(Echange_externe_impose, la_cl.valeur()))
           {
-            // FIXME TODO
+            const Echange_externe_impose& la_cl_ext = ref_cast(Echange_externe_impose, la_cl.valeur());
+            for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
+              {
+                const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
+                int elem_opp = -1; // si Echange_interne_impose
+
+                if (sub_type(Echange_interne_impose, la_cl_ext))
+                  {
+                    const Echange_interne_impose& la_cl_int = ref_cast(Echange_interne_impose, la_cl_ext);
+                    const Champ_front_calc_interne& Text_int = ref_cast(Champ_front_calc_interne, la_cl_int.T_ext());
+                    const IntTab& fmap = Text_int.face_map();
+                    int opp_face = fmap[num_face_cl]+ num_face - num_face_cl ;  // num1 is the index of the first face
+                    int e1 = face_voisins(opp_face, 0);
+                    elem_opp = (e1 != -1) ? e1 : face_voisins(opp_face, 1);
+                  }
+
+                const double signe = elem1 > -1 ? 1.0 : -1.0;
+
+                const int elem = elem1 > -1 ? elem1 : elem2;
+
+                const double e = Objet_U::axi ? dvdf.dist_norm_bord_axi(num_face) : dvdf.dist_norm_bord(num_face);
+
+                const double h_imp = la_cl_ext.h_imp(num_face_cl, k) , T_ext = (elem_opp == -1) ? la_cl_ext.T_ext(num_face_cl, k) : temp(elem_opp, k);
+
+                const double nu = eval.nu_2_impl(elem, k), t_elem = temp(elem, k);
+
+                const double heq = (nu == 0.) ? 0. : 1.0 / (1.0 / h_imp + e / nu);
+
+                const double phi = heq * (T_ext - t_elem);
+
+                val(elem, k) = signe * e * phi / nu + t_elem;
+              }
+          }
+        else if (sub_type(Echange_global_impose, la_cl.valeur()))
+          {
+            const Echange_global_impose& la_cl_glob = ref_cast(Echange_global_impose, la_cl.valeur());
+            for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
+              {
+                const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
+
+                const int elem = elem1 > -1 ? elem1 : elem2;
+
+                const double e = Objet_U::axi ? dvdf.dist_norm_bord_axi(num_face) : dvdf.dist_norm_bord(num_face);
+
+                const double h_imp = la_cl_glob.h_imp(num_face_cl, k) , T_ext = la_cl_glob.T_ext(num_face_cl, k);
+
+                const double nu = eval.nu_2_impl(elem, k), t_elem = temp(elem, k);
+
+                const double phi_ext = la_cl_glob.has_phi_ext() ? la_cl_glob.flux_exterieur_impose(num_face_cl,k) : 0;
+
+                const double phi = phi_ext + h_imp * (T_ext - t_elem);
+
+                val(elem, k) = e * phi / nu + t_elem;
+              }
           }
         else if (sub_type(Neumann_paroi, la_cl.valeur()))
           for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
