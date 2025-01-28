@@ -992,6 +992,17 @@ then
              i=""
           fi
        fi
+       # Discard test case for new mode
+       # ND: should be removed when this is the default mode
+       if [ "$TRUST_INT64_NEW" = "0" ]
+       then
+          if [ "`grep -i -e Domaine_64 $REP/* 2>/dev/null | grep -v hierarchie.dump`" != "" ]
+          then
+             echo "Test $i skipped (not cleaner 64 bits integer indices)"
+             liste_skipped=$liste_skipped" $i"
+             i=""
+          fi
+       fi
        # Discard PETSc test case if no PETSc capabilities
        if [ "$TRUST_DISABLE_PETSC" = 1 ]
        then
