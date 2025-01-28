@@ -229,20 +229,13 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue
               flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.surface(face);
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
-            }
-        }
-      else if (sub_type(Echange_externe_radiatif,la_cl.valeur()))
-        {
-          const Echange_externe_radiatif& la_cl_paroi = ref_cast(Echange_externe_radiatif, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int face = ndeb; face < nfin; face++)
-            {
-              const double text = la_cl_paroi.T_ext(face - ndeb), T = inconnue(face);
-              flux = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
-              resu[face] += flux;
-              tab_flux_bords(face, 0) = flux;
+              if (la_cl_paroi.has_emissivite())
+                {
+                  const double text = la_cl_paroi.T_ext(face - ndeb), T = inconnue(face);
+                  flux = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                  resu[face] += flux;
+                  tab_flux_bords(face, 0) += flux;
+                }
             }
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
@@ -473,23 +466,14 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
                   flux0=la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*domaine_VEF.surface(face);
                   resu(face,nc) += flux0;
                   tab_flux_bords(face,nc) = flux0;
-                }
-            }
-        }
-      else if (sub_type(Echange_externe_radiatif,la_cl.valeur()))
-        {
-          const Echange_externe_radiatif& la_cl_paroi = ref_cast(Echange_externe_radiatif, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int face = ndeb; face < nfin; face++)
-            {
-              for (int nc = 0; nc < nb_comp; nc++)
-                {
-                  const double text = la_cl_paroi.T_ext(face - ndeb, nc), T = inconnue(face, nc);
-                  flux0 = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
-                  resu(face, nc) += flux0;
-                  tab_flux_bords(face, nc) = flux0;
+
+                  if (la_cl_paroi.has_emissivite())
+                    {
+                      const double text = la_cl_paroi.T_ext(face - ndeb, nc), T = inconnue(face, nc);
+                      flux0 = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                      resu(face, nc) += flux0;
+                      tab_flux_bords(face, nc) += flux0;
+                    }
                 }
             }
         }

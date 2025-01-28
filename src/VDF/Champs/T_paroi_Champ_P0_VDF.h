@@ -43,4 +43,21 @@ protected:
   OBS_PTR(Domaine_Cl_VDF) le_dom_Cl_VDF;
 };
 
+inline double newton_T_paroi_VDF(double eps, double T_ext, double lambda, double e, double T0, double sgn)
+{
+  double Tb = T0;
+  const double it_max = 100, tolerance = 1e-5;
+  for (int i = 0; i < it_max; i++)
+    {
+      const double f = sgn * (5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) - lambda / e * (Tb - T0));
+      const double f_p = sgn * (-4 * 5.67e-8 * eps * Tb * Tb * Tb - lambda / e);
+      const double Tb_new = Tb - f / f_p;
+      if (std::abs(Tb_new - Tb) < tolerance)
+        return Tb_new;
+      Tb = Tb_new;
+    }
+  Process::exit("newton_T_paroi_VDF : newton did not converge !");
+  return Tb;
+}
+
 #endif /* T_paroi_Champ_P0_VDF_included */

@@ -18,7 +18,6 @@
 #include <Dirichlet_paroi_defilante.h>
 #include <Entree_fluide_T_h_imposee.h>
 #include <Neumann_paroi_adiabatique.h>
-#include <Echange_externe_radiatif.h>
 #include <Neumann_paroi_flux_nul.h>
 #include <Echange_global_impose.h>
 #include <Echange_externe_impose.h>
@@ -27,6 +26,7 @@
 #include <Dirichlet_paroi_fixe.h>
 #include <Domaine_Cl_dis_base.h>
 #include <Frontiere_dis_base.h>
+
 #include <Neumann_paroi.h>
 #include <Periodique.h>
 #include <Verif_Cl.h>
@@ -47,7 +47,6 @@
  *     =================================> Neumann_paroi
  *     =================================> Echange_global_impose
  *     =================================> Echange_externe_impose
- *     =================================> Echange_externe_radiatif
  *     =================================> Scalaire_impose_paroi
  *     -----------------------------------------------------------------------
  *     Neumann_sortie_libre ============> Entree_fluide_temperature_imposee
@@ -57,7 +56,6 @@
  *     =================================> Neumann_paroi
  *     =================================> Echange_global_impose
  *     =================================> Echange_externe_impose
- *     =================================> Echange_externe_radiatif
  *     =================================> Scalaire_impose_paroi
  *     =================================> Symetrie
  *     -----------------------------------------------------------------------
@@ -110,7 +108,7 @@ int tester_compatibilite_hydr_thermique(const Domaine_Cl_dis_base& domaine_Cl_hy
       else if ((sub_type(Dirichlet_paroi_fixe, la_cl_hydr.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl_hydr.valeur())))
         {
           if ((sub_type(Neumann_paroi_adiabatique, la_cl_th.valeur())) || (sub_type(Neumann_paroi, la_cl_th.valeur())) || (sub_type(Echange_global_impose, la_cl_th.valeur()))
-              || (sub_type(Echange_externe_impose, la_cl_th.valeur()))  || (sub_type(Echange_externe_radiatif, la_cl_th.valeur())) || (sub_type(Scalaire_impose_paroi, la_cl_th.valeur())))
+              || (sub_type(Echange_externe_impose, la_cl_th.valeur())) || (sub_type(Scalaire_impose_paroi, la_cl_th.valeur())))
             { /* Do nothing */ }
           else
             {
@@ -129,8 +127,7 @@ int tester_compatibilite_hydr_thermique(const Domaine_Cl_dis_base& domaine_Cl_hy
       else if (sub_type(Symetrie, la_cl_hydr.valeur()))
         {
           if ((sub_type(Neumann_paroi_adiabatique, la_cl_th.valeur())) || (sub_type(Neumann_paroi, la_cl_th.valeur())) || (sub_type(Echange_global_impose, la_cl_th.valeur()))
-              || (sub_type(Echange_externe_impose, la_cl_th.valeur()))  || (sub_type(Echange_externe_radiatif, la_cl_th.valeur()))
-              || (sub_type(Scalaire_impose_paroi, la_cl_th.valeur())) || (sub_type(Symetrie, la_cl_th.valeur())))
+              || (sub_type(Echange_externe_impose, la_cl_th.valeur())) || (sub_type(Scalaire_impose_paroi, la_cl_th.valeur())) || (sub_type(Symetrie, la_cl_th.valeur())))
             { /* Do nothing */}
           else
             {
@@ -236,8 +233,7 @@ int tester_compatibilite_hydr_concentration(const Domaine_Cl_dis_base& domaine_C
         }
       else if (sub_type(Symetrie, la_cl_hydr.valeur()))
         {
-          if ((sub_type(Symetrie, la_cl_co.valeur())) || (sub_type(Neumann_paroi_flux_nul, la_cl_co.valeur()))
-              || (sub_type(Echange_externe_impose, la_cl_co.valeur())) || (sub_type(Echange_externe_radiatif, la_cl_co.valeur())))
+          if ((sub_type(Symetrie, la_cl_co.valeur())) || (sub_type(Neumann_paroi_flux_nul, la_cl_co.valeur()))|| (sub_type(Echange_externe_impose, la_cl_co.valeur())))
             { /* Do nothing */}
           else
             {
@@ -283,13 +279,11 @@ int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, in
  *     Entree_fluide_vitesse_imposee ===> Entree_fluide_fraction_massique_imposee
  *     Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
  *     Entree_fluide_vitesse_imposee ===> Echange_externe_impose
- *     Entree_fluide_vitesse_imposee ===> Echange_externe_radiatif
  *     Entree_fluide_vitesse_imposee ===> Neumann_paroi
  *     -----------------------------------------------------------------------
  *     Dirichlet_paroi_fixe |
  *     Dirichlet_paroi_defilante =======> Neumann_paroi_flux_nul
  *     =================================> Echange_externe_impose
- *     =================================> Echange_externe_radiatif
  *     -----------------------------------------------------------------------
  *     Neumann_sortie_libre ============> Entree_fluide_fraction_massique_imposee
  *     =================================> Neumann_sortie_libre
@@ -324,8 +318,8 @@ int tester_compatibilite_hydr_fraction_massique(const Domaine_Cl_dis_base& domai
       const Cond_lim& la_cl_fm = domaine_Cl_fm.les_conditions_limites(num_Cl);
       if (sub_type(Entree_fluide_vitesse_imposee_libre, la_cl_hydr.valeur()))
         {
-          if ((sub_type(Entree_fluide_fraction_massique_imposee, la_cl_fm.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_fm.valeur()))
-              || (sub_type(Echange_externe_impose, la_cl_fm.valeur())) || (sub_type(Echange_externe_radiatif, la_cl_fm.valeur())) || (sub_type(Neumann_paroi, la_cl_fm.valeur())))
+          if ((sub_type(Entree_fluide_fraction_massique_imposee, la_cl_fm.valeur())) || (sub_type(Neumann_sortie_libre, la_cl_fm.valeur())) || (sub_type(Echange_externe_impose, la_cl_fm.valeur()))
+              || (sub_type(Neumann_paroi, la_cl_fm.valeur())))
             { /* Do nothing */ }
           else
             {
@@ -343,8 +337,8 @@ int tester_compatibilite_hydr_fraction_massique(const Domaine_Cl_dis_base& domai
         }
       else if ((sub_type(Dirichlet_paroi_fixe, la_cl_hydr.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl_hydr.valeur())))
         {
-          if ((!sub_type(Neumann_paroi_flux_nul, la_cl_fm.valeur())) && (!sub_type(Neumann_paroi, la_cl_fm.valeur()))  && (!sub_type(Scalaire_impose_paroi, la_cl_fm.valeur()))
-              && (!sub_type(Echange_externe_radiatif, la_cl_fm.valeur())) && (!sub_type(Echange_externe_impose, la_cl_fm.valeur())))
+          if ((!sub_type(Neumann_paroi_flux_nul, la_cl_fm.valeur())) && (!sub_type(Neumann_paroi, la_cl_fm.valeur())) && (!sub_type(Scalaire_impose_paroi, la_cl_fm.valeur()))
+              && (!sub_type(Echange_externe_impose, la_cl_fm.valeur())))
             {
               message_erreur_fraction_massique(la_cl_hydr, la_cl_fm, num_Cl);
             }

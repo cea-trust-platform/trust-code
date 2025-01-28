@@ -24,7 +24,6 @@
 #include <Discretisation_base.h>
 #include <Check_espace_virtuel.h>
 #include <Echange_externe_impose.h>
-#include <Echange_externe_radiatif.h>
 
 Implemente_base(Op_Diff_VEF_base,"Op_Diff_VEF_base",Operateur_Diff_base);
 

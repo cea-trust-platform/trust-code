@@ -25,7 +25,7 @@ class Eval_Conv_VDF_Elem : public Eval_VDF_Elem
 public:
   static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false;
   // Overload Eval_VDF_Elem
-  static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_EXT_RAY = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
+  static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
                         CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true;
 
   /* ************************************** *
@@ -40,7 +40,6 @@ public:
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_radiatif&, const int, Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void flux_faces_interne(const DoubleTab&, const int, Type_Double& ) const;
 
   /* ************************************** *
@@ -54,8 +53,7 @@ public:
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_entree_fluide&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Neumann_sortie_libre&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Periodique&, Type_Double&, Type_Double& ) const;
-  template <typename Type_Double> inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, Type_Double&, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void coeffs_face(const DoubleTab&, const int, const int, const int, const int, const Echange_externe_radiatif&, Type_Double&, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_face(const DoubleTab&, const int, const int, const int, const int, const Echange_externe_impose&, Type_Double&, Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void coeffs_faces_interne(const int, Type_Double&, Type_Double& ) const;
 
   // contribution de la derivee en vitesse d'une equation scalaire
@@ -67,13 +65,11 @@ public:
   template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const Neumann_sortie_libre&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
-  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, const int, const int, const int, const Echange_externe_radiatif&, const int, Type_Double& ) const { /* Do nothing */ }
   template <typename Type_Double> inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, const int, Type_Double& ) const;
 
   // A virer un jour .. voir avec le baltik Rayonnement
   template <typename BC, typename Type_Double> inline void secmem_face(const int, const BC&, const int, Type_Double& ) const { throw; }
   template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { throw; }
-  template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_radiatif&, const int, Type_Double& ) const { throw; }
   template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const { throw; }
 
 private:

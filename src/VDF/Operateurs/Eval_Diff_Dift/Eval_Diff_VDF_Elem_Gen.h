@@ -75,7 +75,6 @@ public:
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Echange_global_impose&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_paroi_fixe&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_radiatif&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_faces_interne(const DoubleTab&, const int, Type_Double& ) const;
 
   /* ************************************** *
@@ -92,8 +91,7 @@ public:
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Periodique&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Echange_global_impose&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_paroi_fixe&, Type_Double&, Type_Double& ) const;
-  template <typename Type_Double> inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, Type_Double&, Type_Double& ) const;
-  template <typename Type_Double> inline void coeffs_face(const DoubleTab&, const int, const int, const int, const int, const Echange_externe_radiatif&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const DoubleTab&, const int, const int, const int, const int, const Echange_externe_impose&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_faces_interne(const int, Type_Double&, Type_Double& ) const;
 
   // A virer un jour .. voir avec le baltik Rayonnement
@@ -104,7 +102,6 @@ public:
   template <typename Type_Double> inline void secmem_face(const int, const Neumann_paroi&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void secmem_face(const int, const Echange_global_impose&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const;
-  template <typename Type_Double> inline void secmem_face(const DoubleTab&, const int, const int, const int, const Echange_externe_radiatif&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const { /* Do nothing */ }
 
 private:

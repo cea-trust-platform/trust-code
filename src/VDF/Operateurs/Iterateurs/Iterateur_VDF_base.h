@@ -48,7 +48,6 @@ enum Type_Cl_VDF
   paroi_adiabatique, // Neumann_paroi_adiabatique ou derivees
   paroi, // Neumann_paroi
   echange_externe_impose, // Echange_externe_impose
-  echange_externe_radiatif, // Echange_externe_radiatif
   echange_global_impose, // Echange_global_impose
   periodique, // periodique
   nouvelle_Cl_VDF // Nouvelle_Cl_VDF
@@ -134,7 +133,6 @@ inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
   else if (sub_type(Neumann_paroi_adiabatique, la_cl.valeur())) retour = paroi_adiabatique;
   else if (sub_type(Neumann_paroi, la_cl.valeur())) retour = paroi;
   else if (sub_type(Echange_externe_impose, la_cl.valeur())) retour = echange_externe_impose;
-  else if (sub_type(Echange_externe_radiatif, la_cl.valeur())) retour = echange_externe_radiatif;
   else if (sub_type(Echange_global_impose, la_cl.valeur())) retour = echange_global_impose;
   else if (sub_type(Periodique, la_cl.valeur())) retour = periodique;
 

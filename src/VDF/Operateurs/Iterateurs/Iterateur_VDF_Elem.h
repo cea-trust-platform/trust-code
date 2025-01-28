@@ -59,7 +59,6 @@ private:
   template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_blocs_bords_(const BC& , const int , const int , const int , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
   template <typename Type_Double> void ajouter_blocs_bords_(const Periodique& , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
   template <typename Type_Double> void ajouter_blocs_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
-  template <typename Type_Double> void ajouter_blocs_bords_(const Echange_externe_radiatif& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
 
   void modifier_flux() const;
   template <typename Type_Double> inline void fill_flux_tables_(const int, const int , const double , const Type_Double& , DoubleTab& ) const;

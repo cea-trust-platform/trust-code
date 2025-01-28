@@ -247,17 +247,14 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
               double flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-tab_inconnue(face))*domaine_VEF.surface(face);
               tab_resu[face] += flux;
               tab_flux_bords(face,0) = flux;
-            }
-        }
-      else if (sub_type(Echange_externe_radiatif,la_cl.valeur()))
-        {
-          const Echange_externe_radiatif& la_cl_paroi = ref_cast(Echange_externe_radiatif, la_cl.valeur());
-          for (int face=ndeb; face<nfin; face++)
-            {
-              const double text = la_cl_paroi.T_ext(face - ndeb), T = tab_inconnue(face);
-              double flux = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
-              tab_resu[face] += flux;
-              tab_flux_bords(face, 0) = flux;
+
+              if (la_cl_paroi.has_emissivite())
+                {
+                  const double text = la_cl_paroi.T_ext(face - ndeb), T = tab_inconnue(face);
+                  flux = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                  tab_resu[face] += flux;
+                  tab_flux_bords(face, 0) += flux;
+                }
             }
         }
       else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
@@ -564,23 +561,14 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                   flux0=la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*domaine_VEF.surface(face);
                   resu(face,nc) += flux0;
                   tab_flux_bords(face,nc) = flux0;
-                }
-            }
-        }
-      else if (sub_type(Echange_externe_radiatif,la_cl.valeur()))
-        {
-          const Echange_externe_radiatif& la_cl_paroi = ref_cast(Echange_externe_radiatif, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int face=ndeb; face<nfin; face++)
-            {
-              for (int nc=0; nc<nb_comp; nc++)
-                {
-                  const double text = la_cl_paroi.T_ext(face - ndeb, nc), T = inconnue(face, nc);
-                  flux0 = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
-                  resu(face, nc) += flux0;
-                  tab_flux_bords(face, nc) = flux0;
+
+                  if (la_cl_paroi.has_emissivite())
+                    {
+                      const double text = la_cl_paroi.T_ext(face - ndeb, nc), T = inconnue(face, nc);
+                      flux0 = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                      resu(face, nc) += flux0;
+                      tab_flux_bords(face, nc) += flux0;
+                    }
                 }
             }
         }
@@ -881,39 +869,16 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
           for (int face = ndeb; face < nfin; face++)
             {
               tab_h_impose(face) = la_cl_paroi.h_imp(face - ndeb);
+
+              if (la_cl_paroi.has_emissivite())
+                {
+                  const DoubleTab& inconnue = equation().inconnue().valeurs();
+
+                  const double T = inconnue(face);
+                  tab_h_impose(face) = 4 * 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * T * T * T;
+                }
             }
         }
-
-      if (sub_type(Echange_externe_radiatif,la_cl.valeur()))
-        {
-          const Echange_externe_radiatif& la_cl_paroi = ref_cast(Echange_externe_radiatif, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int face = ndeb; face < nfin; face++)
-            {
-              const DoubleTab& inconnue = equation().inconnue().valeurs();
-
-              const double T = inconnue(face);
-              tab_h_impose(face) = 4 * 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * T * T * T;
-            }
-        }
-      // [ABN]: a finir il faut encore corriger le dimensionnement de la matrice ...
-//      else if (sub_type(Echange_interne_global_impose,la_cl.valeur()))
-//        {
-//          const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
-//          const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-//          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext());
-//          const IntTab& fmap = Text.face_map();
-//          int ndeb = le_bord.num_premiere_face();
-//          int nfin = ndeb + le_bord.nb_faces();
-//          for (int face=ndeb; face<nfin; face++)
-//            {
-//              int opp_face = fmap(face-ndeb)+ndeb;
-//              tab_matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
-//              tab_matrice(opp_face,face) -= la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
-//            }
-//        }
       else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
         {
           const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
