@@ -165,7 +165,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite) : La C.L fournit h_imp ; il faut calculer e/diffusivite
-  double heq, h_total_inv, e;
+  double e;
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
 
   if (DERIVED_T::IS_MODIF_DEQ) e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
@@ -198,20 +198,16 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
               const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
               const double h_imp = la_cl.h_imp(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = (elem_opp == -1) ? la_cl.T_ext(face - num1, l) : inco(elem_opp, l);
 
-              if (nu_2(i, ori) == 0.0 || h_imp == 0.0)
-                heq = 0.0;
-              else
-                {
-                  h_total_inv = 1.0 / h_imp + e / nu_2(i, ori);
-                  heq = 1.0 / h_total_inv;
-                }
-              flux[k] += heq * (T_ext - inco(i, l)) * surface(face);
-
               if (is_radiatif)
                 {
                   const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
-                  const double Tb = newton_T_paroi_VDF(eps, T_ext, nu_2(i, ori), e, inco(i, l), 1.0);
-                  flux[k] += 5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) * surface(face);
+                  const double Tb = newton_T_paroi_VDF(eps, h_imp, T_ext, nu_2(i, ori), e, inco(i, l));
+                  flux[k] += (5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) + h_imp * (T_ext - Tb)) * surface(face);
+                }
+              else
+                {
+                  const double heq = (nu_2(i, ori) == 0.0 || h_imp == 0.0) ? 0.0 : 1.0 / (1.0 / h_imp + e / nu_2(i, ori));
+                  flux[k] += heq * (T_ext - inco(i, l)) * surface(face);
                 }
             }
         }
@@ -225,20 +221,17 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
             {
               const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
               const double h_imp = la_cl.h_imp(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k), T_ext = (elem_opp == -1) ? la_cl.T_ext(face - num1, l) : inco(elem_opp, l);
-              if (nu_2(j, ori) == 0.0 || h_imp == 0.0)
-                heq = 0.0;
-              else
-                {
-                  h_total_inv = 1.0 / h_imp + e / nu_2(j, ori);
-                  heq = 1.0 / h_total_inv;
-                }
-              flux[k] += heq * (inco(j, l) - T_ext) * surface(face);
 
               if (is_radiatif)
                 {
                   const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
-                  const double Tb = newton_T_paroi_VDF(eps, T_ext, nu_2(j, ori), e, inco(j, l), -1.0);
-                  flux[k] += 5.67e-8 * eps * (Tb * Tb * Tb * Tb - T_ext * T_ext * T_ext * T_ext) * surface(face);
+                  const double Tb = newton_T_paroi_VDF(eps, h_imp, T_ext, nu_2(j, ori), e, inco(j, l));
+                  flux[k] += (5.67e-8 * eps * (Tb * Tb * Tb * Tb - T_ext * T_ext * T_ext * T_ext) + h_imp * (Tb - T_ext)) * surface(face);
+                }
+              else
+                {
+                  const double heq = (nu_2(j, ori) == 0.0 || h_imp == 0.0) ? 0.0 : 1.0 / (1.0 / h_imp + e / nu_2(j, ori));
+                  flux[k] += heq * (inco(j, l) - T_ext) * surface(face);
                 }
             }
         }

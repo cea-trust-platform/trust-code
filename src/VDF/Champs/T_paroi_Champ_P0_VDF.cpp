@@ -131,23 +131,12 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
 
                 const bool is_radiatif = la_cl_ext.has_emissivite();
 
-                const double signe = elem1 > -1 ? 1.0 : -1.0;
                 const int elem = elem1 > -1 ? elem1 : elem2;
                 const double e = Objet_U::axi ? dvdf.dist_norm_bord_axi(num_face) : dvdf.dist_norm_bord(num_face);
                 const double h_imp = la_cl_ext.h_imp(num_face_cl, k) , T_ext = (elem_opp == -1) ? la_cl_ext.T_ext(num_face_cl, k) : temp(elem_opp, k);
                 const double nu = eval.nu_2_impl(elem, k), t_elem = temp(elem, k);
-                const double heq = (nu == 0. || h_imp == 0.0) ? 0. : 1.0 / (1.0 / h_imp + e / nu);
-                const double phi = heq * (T_ext - t_elem);
-
-                val(elem, k) = signe * e * phi / nu + t_elem;
-
-                if (is_radiatif)
-                  {
-                    const double eps = la_cl_ext.emissivite(num_face_cl, k);
-                    const double Tb = newton_T_paroi_VDF(eps, T_ext, nu, e, t_elem, signe);
-
-                    val(elem, k) += Tb;
-                  }
+                const double eps = is_radiatif ? la_cl_ext.emissivite(num_face_cl, k) : 0;
+                val(elem, k) = newton_T_paroi_VDF(eps, h_imp, T_ext, nu, e, t_elem);
               }
           }
         else if (sub_type(Echange_global_impose, la_cl.valeur()))
