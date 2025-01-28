@@ -1,8 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
-20/01/25 (TRUST) New feature  : Configure flag '-64-bit-new' can be used to compile TRUST with 64b support. Many Interprete_geometrique templatized to have both a 32 and 64b version.
-20/01/25 (TRUST) Refactor     : Clearer class structure for MD_Vector, and introduction of the MD_Vector_seq class used as a dummy MD structure for sequential parts.
+28/01/25 (TRUST) New feature  : Configure flag '-64-bit-new' can be used to compile TRUST with 64b support. Many Interprete_geometrique templatized to have both a 32 and 64b version.
+28/01/25 (TRUST) Refactor     : Clearer class structure for MD_Vector, and introduction of the MD_Vector_seq class used as a dummy MD structure for sequential parts.
 14/01/25 (TRUST) Minor change : Creation of a type for IJK vector fields
 10/01/25 (TRUST) Fix          : Minor bug fix in matrice_bloc (no impact on TRUST&TrioCFD)
 -------------------------------------------------------------
