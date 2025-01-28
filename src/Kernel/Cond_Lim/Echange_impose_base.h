@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,14 +41,33 @@ class Echange_impose_base : public Cond_lim_base
 {
   Declare_base_sans_constructeur(Echange_impose_base);
 public:
-  virtual double h_imp(int num) const;
-  virtual double h_imp(int num,int k) const;
 
-  virtual bool has_h_imp_grad() const { return false; }
-  virtual double h_imp_grad(int num) const { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !" ) ; return -1.e10 ;};
-  virtual double h_imp_grad(int num,int k) const  { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !") ; return -1.e10 ;};
+  inline bool has_emissivite() const { return emissivite_.non_nul(); }
+  inline bool has_h_imp() const { return h_imp_.non_nul(); }
+
   virtual double T_ext(int num) const;
   virtual double T_ext(int num,int k) const;
+  virtual double h_imp(int num) const;
+  virtual double h_imp(int num,int k) const;
+  double emissivite(int num) const;
+  double emissivite(int num,int k) const;
+
+  /*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
+   *
+   * @return (Champ_front_base&) le champ T_ext de temperature imposee a la frontiere
+   */
+  inline virtual Champ_front_base& T_ext() { return le_champ_front.valeur(); }
+  inline virtual const Champ_front_base& T_ext() const { return le_champ_front.valeur(); }
+
+  inline virtual Champ_front_base& h_imp() { assert (has_h_imp()); return h_imp_.valeur(); }
+  inline virtual const Champ_front_base& h_imp() const { assert (has_h_imp()); return h_imp_.valeur(); }
+
+  inline Champ_front_base& emissivite() {  assert (has_emissivite()); return emissivite_.valeur(); }
+  inline const Champ_front_base& emissivite() const  {  assert (has_emissivite()); return emissivite_.valeur(); }
+
+  // Utilise dans les CAL de calcul des flux pour les lois de paroi
+  virtual void liste_faces_loi_paroi(IntTab&) { }
+
   void mettre_a_jour(double ) override;
   int initialiser(double temps) override;
   int a_mettre_a_jour_ss_pas_dt() override { return 1; }
@@ -62,53 +81,12 @@ public:
   int reculer(double temps) override;
   void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
 
-  inline virtual Champ_front_base& T_ext();
-  inline virtual const Champ_front_base& T_ext() const;
-  inline virtual Champ_front_base& h_imp();
-  inline virtual const Champ_front_base& h_imp() const;
-
-  // Utilise dans les CAL de calcul des flux pour les lois de paroi
-  virtual void liste_faces_loi_paroi(IntTab&) {};
+  virtual bool has_h_imp_grad() const { return false; }
+  virtual double h_imp_grad(int num) const { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !" ) ; return -1.e10 ;};
+  virtual double h_imp_grad(int num,int k) const  { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !") ; return -1.e10 ;};
 
 protected :
-  OWN_PTR(Champ_front_base) h_imp_;
+  OWN_PTR(Champ_front_base) h_imp_, emissivite_ /* si Echange_externe_radiatif */;
 };
 
-
-/*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
- *
- * @return (Champ_front_base&) le champ T_ext de temperature imposee a la frontiere
- */
-inline Champ_front_base& Echange_impose_base::T_ext()
-{
-  return le_champ_front;
-}
-
-/*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
- *
- * (version const)
- *
- * @return (Champ_front_base&) le champ T_ext de temperature imposee a la frontiere
- */
-inline const Champ_front_base& Echange_impose_base::T_ext() const
-{
-  return le_champ_front;
-}
-
-/*! @brief Constructeur par defaut de la classe Echange_impose_base.
- *
- * Ne construit rien, initialise le champ init a 0.
- *
- */
-
-inline Champ_front_base& Echange_impose_base::h_imp()
-{
-  return h_imp_;
-}
-
-inline const Champ_front_base& Echange_impose_base::h_imp() const
-{
-  return h_imp_;
-}
-
-#endif
+#endif /* Echange_impose_base_included */

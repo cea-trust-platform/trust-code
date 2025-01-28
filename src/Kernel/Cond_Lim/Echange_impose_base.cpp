@@ -111,7 +111,7 @@ double Echange_impose_base::T_ext(int i, int j) const
  */
 double Echange_impose_base::h_imp(int i) const
 {
-
+  assert (has_h_imp());
   if (h_imp_->valeurs().size() == 1)
     return h_imp_->valeurs()(0, 0);
   else if (h_imp_->valeurs().dimension(1) == 1)
@@ -133,12 +133,49 @@ double Echange_impose_base::h_imp(int i) const
  */
 double Echange_impose_base::h_imp(int i, int j) const
 {
-
+  assert (has_h_imp());
   if (h_imp_->valeurs().dimension(0) == 1)
     return h_imp_->valeurs()(0, j);
   else
     return h_imp_->valeurs()(i, j);
+}
 
+/*! @brief Renvoie la valeur de l'emissivite impose sur la i-eme composante
+ *
+ *     du champ de frontiere.
+ *
+ * @param (int i)
+ * @return (double)
+ */
+double Echange_impose_base::emissivite(int i) const
+{
+  assert (has_emissivite());
+  if (emissivite_->valeurs().size() == 1)
+    return emissivite_->valeurs()(0, 0);
+  else if (emissivite_->valeurs().dimension(1) == 1)
+    return emissivite_->valeurs()(i, 0);
+  else
+    Cerr << "Echange_impose_base::emissivite erreur" << finl;
+
+  exit();
+  return 0.;
+}
+
+/*! @brief Renvoie la valeur de l'emissivite impose sur la i-eme composante
+ *
+ *     du champ de frontiere.
+ *
+ * @param (int i)
+ * @param (int j)
+ * @return (double)
+ */
+double Echange_impose_base::emissivite(int i, int j) const
+{
+  assert (has_emissivite());
+  if (emissivite_->valeurs().dimension(0) == 1)
+    return emissivite_->valeurs()(0, j);
+  else
+    return emissivite_->valeurs()(i, j);
 }
 
 /*! @brief Effectue une mise a jour en temps des conditions aux limites.
@@ -151,52 +188,69 @@ double Echange_impose_base::h_imp(int i, int j) const
 void Echange_impose_base::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
-  h_imp_->mettre_a_jour(temps);
+  if (has_h_imp())
+    h_imp_->mettre_a_jour(temps);
+  if (has_emissivite())
+    emissivite_->mettre_a_jour(temps);
 }
 
 int Echange_impose_base::initialiser(double temps)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->initialiser(temps, domaine_Cl_dis().equation().inconnue()), h_imp_->mettre_a_jour(temps);
+  if (has_emissivite())
+    emissivite_->initialiser(temps, domaine_Cl_dis().equation().inconnue()), emissivite_->mettre_a_jour(temps);
   return Cond_lim_base::initialiser(temps);
 }
 
 // ajout de methode pour ne pas operer directement su le champ_front
 void Echange_impose_base::set_temps_defaut(double temps)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->set_temps_defaut(temps);
+  if (has_emissivite())
+    emissivite_->set_temps_defaut(temps);
   Cond_lim_base::set_temps_defaut(temps);
 }
 void Echange_impose_base::fixer_nb_valeurs_temporelles(int nb_cases)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->fixer_nb_valeurs_temporelles(nb_cases);
+  if (has_emissivite())
+    emissivite_->fixer_nb_valeurs_temporelles(nb_cases);
   Cond_lim_base::fixer_nb_valeurs_temporelles(nb_cases);
 }
 //
 void Echange_impose_base::changer_temps_futur(double temps, int i)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->changer_temps_futur(temps, i);
+  if (has_emissivite())
+    emissivite_->changer_temps_futur(temps, i);
   Cond_lim_base::changer_temps_futur(temps, i);
 }
 int Echange_impose_base::avancer(double temps)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->avancer(temps);
+  if (has_emissivite())
+    emissivite_->avancer(temps);
   return Cond_lim_base::avancer(temps);
 }
 
 int Echange_impose_base::reculer(double temps)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->reculer(temps);
+  if (has_emissivite())
+    emissivite_->reculer(temps);
   return Cond_lim_base::reculer(temps);
 }
 void Echange_impose_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
-  if (h_imp_.non_nul())
+  if (has_h_imp())
     h_imp_->associer_fr_dis_base(fr);
+  if (has_emissivite())
+    emissivite_->associer_fr_dis_base(fr);
   Cond_lim_base::associer_fr_dis_base(fr);
 }

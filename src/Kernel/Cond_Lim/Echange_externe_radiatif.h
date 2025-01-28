@@ -16,49 +16,16 @@
 #ifndef Echange_externe_radiatif_included
 #define Echange_externe_radiatif_included
 
-#include <Cond_lim_base.h>
+#include <Echange_externe_impose.h>
 
 /*! @brief classe Echange_externe_radiatif: // TODO Yannick FIXME
  *
- * @sa Cond_lim_base
+ * @sa Echange_externe_impose
  */
-class Echange_externe_radiatif : public Cond_lim_base
+class Echange_externe_radiatif : public Echange_externe_impose
 {
   Declare_instanciable(Echange_externe_radiatif);
 public:
-  /*! @brief Renvoie le champ T_ext de temperature imposee a la frontiere.
-   *
-   * @return (Champ_front_base&) le champ T_ext de temperature imposee a la frontiere
-   */
-  inline Champ_front_base& T_ext() { return le_champ_front; }
-  inline const Champ_front_base& T_ext() const { return le_champ_front; }
-
-  inline Champ_front_base& emissivite() { return emissivite_; }
-  inline const Champ_front_base& emissivite() const  { return emissivite_; }
-
-  double emissivite(int num) const;
-  double emissivite(int num,int k) const;
-
-  double T_ext(int num) const;
-  double T_ext(int num,int k) const;
-
-  void verifie_ch_init_nb_comp() const override;
-
-  void mettre_a_jour(double ) override;
-  int initialiser(double temps) override;
-  int a_mettre_a_jour_ss_pas_dt() override { return 1; }
-
-  // ajout de methode pour ne pas operer directement sur champ_front
-  void set_temps_defaut(double temps) override;
-  void fixer_nb_valeurs_temporelles(int nb_cases) override;
-
-  void changer_temps_futur(double temps,int i) override;
-  int avancer(double temps) override;
-  int reculer(double temps) override;
-  void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
-
-protected :
-  OWN_PTR(Champ_front_base) emissivite_;
 };
 
 #endif /* Echange_externe_radiatif_included */
