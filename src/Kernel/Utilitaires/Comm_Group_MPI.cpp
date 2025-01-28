@@ -156,6 +156,7 @@ void Comm_Group_MPI::abort() const
 #endif
 }
 
+#ifdef MPI_
 template <typename _TYPE_, int TYP_IDX>
 void Comm_Group_MPI::mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, int n, Comm_Group::Collective_Op op,
                                                const Stat_Counter_Id& cnt_sum_id,
@@ -187,6 +188,7 @@ void Comm_Group_MPI::mp_collective_op_template(const _TYPE_ *x, _TYPE_ *resu, in
       break;
     }
 }
+#endif
 
 void Comm_Group_MPI::mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const
 {

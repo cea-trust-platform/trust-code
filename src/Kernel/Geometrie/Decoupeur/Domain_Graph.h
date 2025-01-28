@@ -17,6 +17,15 @@
 
 #include <metis.h>   // to have idx_t, the entity index of METIS (32 or 64b depending on how METIS/PETSc was compiled)
 
+#ifndef MPI_
+
+#ifdef idx_t
+#error Type idx_t is alreay defined without MPI, and hence without PETSc - this Should not happen
+#endif
+
+#define idx_t trustIdType
+#endif
+
 /*! @brief Build the graph of the domain that the METIS/PARMETIS/PTSCOTCH libraries need.
  *
  */
