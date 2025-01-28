@@ -77,7 +77,7 @@ Read pb
         boundary_conditions
         {
             gauche  paroi_flux_impose champ_front_uniforme 1 1e5
-            droite  echange_externe_radiatif emissivite champ_front_uniforme 1 0.7 T_ext champ_front_uniforme 1 20
+            droite  echange_externe_radiatif h_imp champ_front_uniforme 1 0 emissivite champ_front_uniforme 1 0.7 T_ext champ_front_uniforme 1 20
             avant   paroi_adiabatique
             arriere paroi_temperature_imposee champ_front_uniforme 1 30
             bas     paroi_echange_externe_impose h_imp champ_front_uniforme 1 10 T_ext champ_front_uniforme 1 20

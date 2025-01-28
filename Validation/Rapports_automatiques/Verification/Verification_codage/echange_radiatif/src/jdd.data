@@ -8,7 +8,7 @@ mailler  dom
     pave w
     {
         origine  0 0
-        nombre_de_noeuds   2 11
+        nombre_de_noeuds   2 $ny
         longueurs  1 0.1
     }
     {
@@ -44,7 +44,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    seuil_statio 1e-5
+    seuil_statio 1e-6
     dt_impr 1e-10
     dt_max $dt
     facsec 1e30
@@ -64,7 +64,7 @@ Read pb
     solide
     {
         rho     champ_uniforme 1 1000
-        cp      champ_uniforme 1 100
+        cp      champ_uniforme 1 1
         lambda  champ_uniforme 1 10
     }
 
@@ -75,7 +75,7 @@ Read pb
         boundary_conditions
         {
             bas  paroi_flux_impose champ_front_uniforme 1 $flux
-            haut echange_externe_radiatif emissivite champ_front_uniforme 1 $eps T_ext champ_front_uniforme 1 $Text
+            haut echange_externe_radiatif h_imp champ_front_uniforme 1 $h emissivite champ_front_uniforme 1 $e T_ext champ_front_uniforme 1 $Text
             sym  paroi_adiabatique
         }
     }
