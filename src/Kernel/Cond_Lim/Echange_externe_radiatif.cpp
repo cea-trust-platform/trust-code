@@ -16,7 +16,7 @@
 #include <Echange_externe_radiatif.h>
 
 Implemente_instanciable(Echange_externe_radiatif, "Echange_externe_radiatif", Echange_externe_impose);
-// XD paroi_echange_externe_radiatif paroi_echange_externe_impose paroi_echange_externe_radiatif -1 External type Radiation exchange condition with an emissivity coefficient and an imposed external temperature.
+// XD paroi_echange_externe_radiatif paroi_echange_externe_impose paroi_echange_externe_radiatif -1 Combines radiative (sigma * eps * (T^4 - T_ext^4)) and convective (h * (T - T_ext)) heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant, eps is the emissivity, h is the convective heat transfer coefficient, T is the surface temperature, and T_ext is the external temperature.
 // XD attr emissivite chaine emissivite 0 Emissivity coefficient value.
 // XD attr emissivitebc front_field_base emissivitebc 0 Boundary field type.
 

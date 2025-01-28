@@ -162,9 +162,89 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_impose& la_cl, const int num1, Type_Double& flux) const
 {
-  if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
+  /**
+   * Approach to computing the equivalent heat transfer coefficient and heat flux.
+   *
+   * The problem consists of a solid exchanging heat with an external medium. Heat transfer
+   * occurs via conduction within the solid and convection at the surface. Our objective
+   * is to express the total heat flux in terms of an equivalent heat transfer coefficient `h_eq`.
+   *
+   * ### Step-by-step Demonstration:
+   * 1. **Expression for convective flux at the surface**:
+   *    \f[
+   *    \phi = h_{imp} (T_b - T_{ext})
+   *    \f]
+   *    where:
+   *    - `h_{imp}` is the convective heat transfer coefficient (W/m².K),
+   *    - `T_b` is the temperature at the solid’s surface,
+   *    - `T_{ext}` is the external temperature.
+   *
+   * 2. **Expression for conductive flux inside the solid**:
+   *    \f[
+   *    \phi = \frac{\lambda}{e} (T_{elem} - T_b)
+   *    \f]
+   *    where:
+   *    - `\lambda` is the thermal conductivity of the solid (W/m.K),
+   *    - `e` is the distance between the reference point inside the solid and the surface,
+   *    - `T_{elem}` is the internal temperature of the solid element.
+   *
+   * 3. **Equating the two flux expressions** (continuity of heat transfer):
+   *    \f[
+   *    h_{imp} (T_b - T_{ext}) = \frac{\lambda}{e} (T_{elem} - T_b)
+   *    \f]
+   *
+   * 4. **Solving for \( T_b \)**:
+   *    \f[
+   *    T_b - T_{ext} = \frac{1}{h_{imp}} \phi
+   *    \f]
+   *    \f[
+   *    T_{elem} - T_b = \frac{e}{\lambda} \phi
+   *    \f]
+   *    By adding these two equations:
+   *    \f[
+   *    (T_{elem} - T_{ext}) = \frac{1}{h_{imp}} \phi + \frac{e}{\lambda} \phi
+   *    \f]
+   *
+   * 5. **Extracting \( \phi \)**:
+   *    \f[
+   *    \phi \left( \frac{1}{h_{imp}} + \frac{e}{\lambda} \right) = T_{elem} - T_{ext}
+   *    \f]
+   *    \f[
+   *    \phi = \frac{T_{elem} - T_{ext}}{\frac{1}{h_{imp}} + \frac{e}{\lambda}}
+   *    \f]
+   *
+   * 6. **Defining the equivalent heat transfer coefficient \( h_{eq} \)**:
+   *    \f[
+   *    h_{eq} = \frac{1}{\frac{1}{h_{imp}} + \frac{e}{\lambda}}
+   *    \f]
+   *
+   * 7. **Final flux expression**:
+   *    \f[
+   *    \phi = h_{eq} (T_{elem} - T_{ext})
+   *    \f]
+   *
+   * This demonstrates that the system can be treated as a single equivalent convection
+   * problem with `h_eq`, which accounts for both conduction inside the solid and convection
+   * at the surface, involving the VDF unknown `T_{elem}`
+   *
+   * ### Case of Convection + Radiative Transfer:
+   * When radiative heat transfer is also present, the substitution method used above is
+   * no longer valid because the radiative flux depends non-linearly on the surface temperature
+   * \( T_b \). The total flux at the surface then becomes:
+   *    \f[
+   *    \phi = h_{imp} (T_b - T_{ext}) + \sigma \varepsilon (T_b^4 - T_{ext}^4)
+   *    \f]
+   * where:
+   * - \( \sigma \) is the Stefan-Boltzmann constant,
+   * - \( \varepsilon \) is the emissivity of the surface,
+   * - \( T_{ext} \) is the effective radiative temperature of the surroundings.
+   *
+   * Since this equation is non-linear in \( T_b \), we cannot directly substitute it
+   * as in the purely convective case. Instead, we solve for \( T_b \) using an iterative
+   * method such as Newton-Raphson. Once \( T_b \) is found, we use it to determine the heat flux.
+   */
 
-  // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite) : La C.L fournit h_imp ; il faut calculer e/diffusivite
+  if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
   double e;
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
 
