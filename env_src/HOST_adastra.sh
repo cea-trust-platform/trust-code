@@ -27,7 +27,8 @@ define_modules_config()
       #module="develop GCC-CPU-3.1.0 swig/4.1.1-fortran craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc-native/12.1 cray-python/3.10.10 cmake/3.27.7"
       # ND : 30/04/2024 : ne plus utiliser develop car les modules sont assez souvent supprimes
       module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0"
-   fi   
+   fi
+   module=$module" swig" # Pour -without-conda
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

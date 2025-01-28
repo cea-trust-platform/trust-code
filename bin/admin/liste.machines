@@ -1,5 +1,6 @@
 arch	maj		recup	hostname		Update	lance_test	baltiks						Tasks		Options	
 linux	rsync_ssh	tache	altair-valgrind.intra.cea.fr    -limited  	-FLICA5 		 		    -ctest_valgrind 	-without-pdflatex 			# Rocky 9 serveur rackable pour TRUST titania
+linux	rsync_ssh	tache	petra.intra.cea.fr    -all  	-FLICA5 		 		     	-without-pdflatex 			# Ubuntu 20 TRUST
 linux   rsync_ssh       cible   is246427.intra.cea.fr 			   -TrioCFD -FLICA5 -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO -TrioMC   	 		   -semi_opt			-without-pdflatex  					# Ubuntu 24 MF titania 
 linux	rsync_ssh	tache	unitas20-mv-install.intra.cea.fr		-all		  	 	-force_provided_mpich  -move-install -disable-valgrind	  							# Ubuntu 20	rack triocfd
 linux	rsync_ssh	tache	is234617-intel.intra.cea.fr	-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -TrioMC  		-intel23  -disable-plot2d -force_system_mpi -disable-mpi4py -without-visit  		# Ubuntu 22 TMA TRUST
@@ -29,14 +30,14 @@ linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		 -TrioCFD  				-benchma
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD            						-benchmark -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD          			-benchmark -build_64_bit -cuda -openmp 		-without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD           		 		-build_64_bit -without-doc -disable-plot2d -without-visit -disable-hwloc                					# RedHat 8.1
-linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit   
-linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit 
+linux	ssh_pass 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-conda -without-doc -disable-hwloc -disable-plot2d -disable-gmsh -without-visit   
+linux	ssh_pass 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-benchmark -rocm   -openmp -without-doc -without-conda -disable-hwloc -disable-plot2d -disable-gmsh -without-visit 
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr	-limited	-TrioCFD  -STT -PEMFC -FLICA5    				 -disable-plot2d -disable-hwloc    		-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD    				-build_64_bit -without-doc -disable-hwloc -disable-plot2d		 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD   			-cuda -openmp 											# Rocky 9	CEA Saclay
 linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d -disable-hwloc  	 				# Redhat 8.5	CEA Cad
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD   		-ctest_mode_valgrind 		 		     -without-pdflatex			# Redhat 9 serveur rackable pour validation TrioCFD titania
-linux	ssh_pass	cible	rhodia8-4.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -FLICA5   	 		     -force_latest_openmpi -without-pdflatex  			# Redhat 8.4 serveur rackable titania
+linux	ssh_pass	cible	rhodia8-4.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -FLICA5   	 		     -64_bit_new -without-pdflatex  			# Redhat 8.4 serveur rackable titania
 linux	ssh_pass	tache	rhodia8-4-woconda.intra.cea.fr  		-FLICA5 -C3D    	 		     -without-conda -without-pdflatex  			# Redhat 8.4 serveur rackable titania
 linux	rsync_ssh	tache	unitas20-coolprop-eos.intra.cea.fr		-all 		-TrioCFD -FLICA5  						 -coolprop -eos   						# Ubuntu 20 pilote titania 
 linux	rsync_ssh	tache	is246145.intra.cea.fr		-all	 -TrioCFD  -GENEPI3 -FLICA5 -MPCube   						 -platform -without-pdflatex -force_provided_mpich -without-visit -gcc8    					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
@@ -58,7 +59,7 @@ linux   ssh_pass	non	    scania11.intra.cea.fr 		-all		-TrioCFD  -STT -PEMFC -GE
 linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-pdflatex 								# Ub 22 salle de formation titania
 linux   rsync_ssh   tache   is233822.intra.cea.fr 			  					            -Semi_opt_gcov      	-force_provided_mpich 								# Fedora 26 titania 	pour Cath3D
 linux   rsync_ssh	non	is232973-gui.intra.cea.fr 		-all		-TrioCFD  -GENEPI3        -gui   	 		-remote_install_TRUST_with_source -force_provided_mpich  								# Ubuntu 20.04	Bat 451	LMSF	Bureau TMA TRUST
-linux   rsync_ssh	cible	petra.intra.cea.fr 		-all	-benchmark 	   	 		-CUDA_VISIBLE_DEVICES=0 -cuda=download -openmp -without-pdflatex -without-visit     # Ubuntu 20.04 serveur rackable titania
+linux   rsync_ssh	cible	petra-gpu.intra.cea.fr 		-all	-benchmark 	   	 		-CUDA_VISIBLE_DEVICES=0 -cuda=download -openmp -without-pdflatex -without-visit     # Ubuntu 20.04 serveur rackable titania
 linux   rsync_ssh	tache	is210376-tmpnoexe.intra.cea.fr 		-all	   	 		   								# Fedora 34 titania tmp no exec
 linux   rsync_ssh	tache	is210376-noconda.intra.cea.fr 		-all	  -C3D  	 		   		-without-conda						# Fedora 34 tmp no exec, sans conda
 linux   rsync_ssh	tache	unitas24.intra.cea.fr 		-all	    -TrioCFD  -GENEPI3 -STT -PEMFC 	 		   	-gcov							# ubuntu 24 
