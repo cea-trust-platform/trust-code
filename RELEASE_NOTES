@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+28/01/25 (TRUST) New feature  : Add new PolyMAC option "Maillage_VDF" or "VDF_Mesh" that can be used when using a PolyMAC scheme with a VDF-like mesh.
+28/01/25 (TRUST) New Change   : Option_PolyMAC_P0 should be now replaced by Option_PolyMAC.
 28/01/25 (TRUST) New feature  : Configure flag '-64-bit-new' can be used to compile TRUST with 64b support. See Jupyter form HowTo_64b to learn how to write a 64b dataset.
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.5 : Enhancements, modifications and corrected bugs since version 1.9.4 :
