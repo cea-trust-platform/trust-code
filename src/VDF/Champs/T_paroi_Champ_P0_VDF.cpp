@@ -60,10 +60,19 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
 
   const DoubleTab& temp = mon_champ_->valeurs();
   DoubleTab& val = valeurs(tps);
-  val = -1; // interne ou cl pas traitees
+  val = 0.; // interne ou cl pas traitees
+
+  /*
+   * Traitement bord/coin :-)
+   *
+   * On moyenne la contribution ... comment tu fais sinon ?
+   */
+
+  const int N = temp.line_size(), n_elem = temp.dimension(0);
+  IntTrav indx_pond(n_elem, N);
 
   for (int n_bord = 0; n_bord < dvdf.nb_front_Cl(); n_bord++)
-    for (int k = 0; k < temp.line_size(); k++) // pour multiphase
+    for (int k = 0; k < N; k++) // pour multiphase
       {
         const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
         const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
@@ -75,7 +84,11 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
               {
                 const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
 
-                val(elem1, k) = val(elem2, k) = (vol(elem1) * temp(elem1, k) + vol(elem2) * temp(elem2, k)) / (vol(elem1) + vol(elem2)); // moyenne volumique
+                val(elem1, k) += (vol(elem1) * temp(elem1, k) + vol(elem2) * temp(elem2, k)) / (vol(elem1) + vol(elem2)); // moyenne volumique
+                val(elem2, k) = val(elem1, k);
+
+                indx_pond(elem1, k)++;
+                indx_pond(elem1, k)++;
               }
           }
         else if (sub_type(Dirichlet, la_cl.valeur()))
@@ -86,7 +99,9 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                 if (elem < 0)
                   elem = face_voisins(num_face, 1);
 
-                val(elem, k) = ref_cast(Dirichlet, la_cl.valeur()).val_imp(num_face_cl, k);
+                val(elem, k) += ref_cast(Dirichlet, la_cl.valeur()).val_imp(num_face_cl, k);
+
+                indx_pond(elem, k)++;
               }
           }
         else if (sub_type(Dirichlet_homogene, la_cl.valeur()))
@@ -97,7 +112,8 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                 if (elem < 0)
                   elem = face_voisins(num_face, 1);
 
-                val(elem, k) = 0.;
+                val(elem, k) += 0.;
+                indx_pond(elem, k)++;
               }
           }
         else if (sub_type(Neumann_homogene, la_cl.valeur()) || sub_type(Navier, la_cl.valeur())) // grad nulle
@@ -108,7 +124,8 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                 if (elem < 0)
                   elem = face_voisins(num_face, 1);
 
-                val(elem, k) = temp(elem, k);
+                val(elem, k) += temp(elem, k);
+                indx_pond(elem, k)++;
               }
           }
         else if (sub_type(Echange_externe_impose, la_cl.valeur()))
@@ -136,7 +153,9 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                 const double h_imp = la_cl_ext.h_imp(num_face_cl, k) , T_ext = (elem_opp == -1) ? la_cl_ext.T_ext(num_face_cl, k) : temp(elem_opp, k);
                 const double nu = eval.nu_2_impl(elem, k), t_elem = temp(elem, k);
                 const double eps = is_radiatif ? la_cl_ext.emissivite(num_face_cl, k) : 0;
-                val(elem, k) = newton_T_paroi_VDF(eps, h_imp, T_ext, nu, e, t_elem);
+
+                val(elem, k) += newton_T_paroi_VDF(eps, h_imp, T_ext, nu, e, t_elem);
+                indx_pond(elem, k)++;
               }
           }
         else if (sub_type(Echange_global_impose, la_cl.valeur()))
@@ -152,7 +171,8 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                 const double phi_ext = la_cl_glob.has_phi_ext() ? la_cl_glob.flux_exterieur_impose(num_face_cl,k) : 0;
                 const double phi = phi_ext + h_imp * (T_ext - t_elem);
 
-                val(elem, k) = e * phi / nu + t_elem;
+                val(elem, k) += e * phi / nu + t_elem;
+                indx_pond(elem, k)++;
               }
           }
         else if (sub_type(Neumann_paroi, la_cl.valeur()))
@@ -164,7 +184,14 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
               const double e = Objet_U::axi ? dvdf.dist_norm_bord_axi(num_face) : dvdf.dist_norm_bord(num_face);
               const double nu = eval.nu_2_impl(elem, k), t_elem = temp(elem, k);
 
-              val(elem, k) = signe * e * ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k) / nu + t_elem;
+              val(elem, k) += signe * e * ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k) / nu + t_elem;
+              indx_pond(elem, k)++;
             }
       }
+
+  // On moyenne la contribution
+  for (int elem = 0; elem < n_elem; elem++)
+    for (int k = 0; k < N; k++) // pour multiphase
+      if (indx_pond(elem, k) > 0)
+        val(elem, k) /= (double)indx_pond(elem, k);
 }

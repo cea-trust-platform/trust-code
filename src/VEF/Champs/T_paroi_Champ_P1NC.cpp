@@ -42,7 +42,7 @@ void T_paroi_Champ_P1NC::me_calculer(double tps)
   const int nb_bords = ds.nb_front_Cl();
   const DoubleTab& temp = mon_champ_->valeurs();
   DoubleTab& val = valeurs(tps);
-  val = -1.;
+  val = 0.;
 
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
