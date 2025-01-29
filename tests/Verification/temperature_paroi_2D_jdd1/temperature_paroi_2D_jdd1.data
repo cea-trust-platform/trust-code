@@ -1,0 +1,106 @@
+# PARALLEL OK 8 #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave w
+    {
+        origine  0 0 
+        nombre_de_noeuds 16 16
+        longueurs  1 1 
+    }
+    {
+        Bord gauche  X = 0   0 <= Y <= 1 
+        Bord droite  X = 1   0 <= Y <= 1 
+        Bord bas   Y = 0   0 <= X <= 1 
+        Bord haut Y = 1   0 <= X <= 1 
+    }
+}
+
+# END MESH #
+
+# BEGIN PARTITION
+system "rm -rf decoup; mkdir -p decoup"
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 1
+    Nom_Zones decoup/dom
+    ecrire_decoupage dom.txt
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter decoup/dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    seuil_statio 1e-5
+    dt_impr 1e-10
+    dt_max 1
+    facsec 1e30
+    solveur implicite
+    {
+        solveur petsc cli { }
+    }
+}
+
+pb_conduction pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    solide
+    {
+        rho     champ_uniforme 1 1000
+        cp      champ_uniforme 1 1
+        lambda  champ_uniforme 1 10
+    }
+
+    conduction
+    {
+        diffusion { }
+        initial_conditions { temperature champ_uniforme 1 0 }
+        boundary_conditions
+        {
+            gauche  paroi_flux_impose champ_front_uniforme 1 1e3
+            droite
+            echange_externe_radiatif h_imp champ_front_uniforme 1 0 emissivite champ_front_uniforme 1 0.7 T_ext champ_front_uniforme 1 20
+            bas   paroi_adiabatique
+            haut paroi_temperature_imposee champ_front_uniforme 1 30
+            /* bas     paroi_echange_externe_impose h_imp champ_front_uniforme 1 10 T_ext champ_front_uniforme 1 20
+            haut    paroi_echange_global_impose h_imp champ_front_uniforme 1 10 T_ext champ_front_uniforme 1 20 */
+        }
+    }
+    Post_processing
+    {
+        probes
+        {
+            T_gauche  temperature_paroi periode 1e8 segment 1000 0 0 0 1 
+            T_droite  temperature_paroi periode 1e8 segment 1000 1 0 1 1 
+            T_bas   temperature_paroi periode 1e8 segment 1000 0 0 1  0  
+            T_haut temperature_paroi periode 1e8 segment 1000 0 1 1 1
+        }
+        Format lml
+        fields dt_post 1e8
+        {
+            temperature elem
+            temperature_paroi elem
+        }
+    }
+}
+
+Solve pb
+End

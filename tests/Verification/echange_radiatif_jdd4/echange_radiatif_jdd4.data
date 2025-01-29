@@ -1,0 +1,138 @@
+# PARALLEL OK 8 #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave w
+    {
+        origine  0 0
+        nombre_de_noeuds   4 11
+        longueurs  1 0.1
+    }
+    {
+        Bord sym     X = 0   0 <= Y <= 0.1
+        Bord sym     X = 1   0 <= Y <= 0.1
+        Bord bas     Y = 0   0 <= X <= 1
+        Bord haut    Y = 0.1 0 <= X <= 1
+    }
+}
+trianguler_h dom
+# END MESH #
+
+# BEGIN PARTITION
+system "rm -rf decoup; mkdir -p decoup"
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 1
+    Nom_Zones decoup/dom
+    ecrire_decoupage dom.txt
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter decoup/dom.Zones dom
+END SCATTER #
+
+VEF dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    seuil_statio 1e-6
+    dt_impr 1e-10
+    dt_max 0.1
+    facsec 1e30
+    solveur implicite
+    {
+        solveur petsc cli { }
+    }
+}
+
+pb_conduction pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    solide
+    {
+        rho     champ_uniforme 1 1000
+        cp      champ_uniforme 1 1
+        lambda  champ_uniforme 1 10
+    }
+
+    conduction
+    {
+        diffusion { }
+        initial_conditions { temperature champ_uniforme 1 500 }
+        boundary_conditions
+        {
+            bas  paroi_flux_impose champ_front_uniforme 1 100000.0
+            haut echange_externe_radiatif h_imp champ_front_uniforme 1 100 emissivite champ_front_uniforme 1 0 T_ext champ_front_uniforme 1 500
+            sym  paroi_adiabatique
+        }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            T_prof   grav temperature periode 1e8 segment 1000 0.5 0 0.5 0.1
+            T        temperature_paroi periode 1e8 point 1 0.5 0.1
+        }
+        Format lml
+        fields dt_post 1e8
+        {
+            temperature elem
+            wall_temperature elem
+        }
+    }
+
+    Post_processings
+    {
+        post_2D
+        {
+             domaine dom_boundaries_haut
+            definition_champs
+            {
+                flux_surfacique Interpolation
+                {
+                    localisation elem
+                    domaine dom_boundaries_haut
+                    source Morceau_equation
+                    {
+                        type operateur numero 0 option flux_surfacique_bords
+                        source refChamp { Pb_Champ pb temperature }
+                    }
+                }
+                tbord Interpolation
+                {
+                    localisation elem
+                    domaine dom_boundaries_haut
+                    source refChamp { Pb_Champ pb temperature }
+                }
+            }
+            format lml
+
+            fichier bord_w
+            fields dt_post 1e8
+            {
+                flux_surfacique elem
+                tbord elem
+                wall_temperature elem
+                 temperature elem
+            }
+        }
+    }
+}
+
+Solve pb
+End
