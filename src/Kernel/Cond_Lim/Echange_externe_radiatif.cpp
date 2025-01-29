@@ -15,12 +15,17 @@
 
 #include <Echange_externe_radiatif.h>
 
-Implemente_instanciable(Echange_externe_radiatif, "Echange_externe_radiatif", Echange_externe_impose);
-// XD paroi_echange_externe_radiatif paroi_echange_externe_impose paroi_echange_externe_radiatif -1 Combines radiative (sigma * eps * (T^4 - T_ext^4)) and convective (h * (T - T_ext)) heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant, eps is the emissivity, h is the convective heat transfer coefficient, T is the surface temperature, and T_ext is the external temperature.
-// XD attr emissivite chaine emissivite 0 Emissivity coefficient value.
+Implemente_instanciable(Echange_externe_radiatif, "Echange_externe_radiatif|Paroi_echange_externe_radiatif", Echange_externe_impose);
+
+// XD echange_externe_radiatif condlim_base echange_externe_radiatif -1 Combines radiative (sigma * eps * (T^4 - T_ext^4)) and convective (h * (T - T_ext)) heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant, eps is the emi
+// XD attr h_imp chaine(into=["h_imp","t_ext","emissivite"]) h_imp 0 Heat exchange coefficient value (expressed in W.m-2.K-1).
+// XD attr himpc front_field_base himpc 0 Boundary field type.
+// XD attr emissivite chaine(into=["emissivite","h_imp","t_ext"]) emissivite 0 Emissivity coefficient value.
 // XD attr emissivitebc front_field_base emissivitebc 0 Boundary field type.
-// XD attr temperature_unit chaine temperature_unit 0 Key word top precise the unit of the temperature.
-// XD attr temperatureunitval chaine temperatureunitval 0 Temperature unit, Kelvin or Celsius.
+// XD attr t_ext chaine(into=["t_ext","h_imp","emissivite"]) t_ext 0 External temperature value (expressed in oC or K).
+// XD attr ch front_field_base ch 0 Boundary field type.
+// XD attr temp_unit chaine(into=["temperature_unit"]) temp_unit 0 Temperature unit
+// XD attr temp_unit_val chaine(into=["kelvin","celsius"]) temp_unit_val 0 Temperature unit
 
 Sortie& Echange_externe_radiatif::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

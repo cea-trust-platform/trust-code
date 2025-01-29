@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,9 +19,9 @@
 
 Implemente_instanciable(Echange_externe_impose, "Paroi_echange_externe_impose", Echange_impose_base);
 // XD paroi_echange_externe_impose condlim_base paroi_echange_externe_impose -1 External type exchange condition with a heat exchange coefficient and an imposed external temperature.
-// XD attr h_imp chaine h_imp 0 Heat exchange coefficient value (expressed in W.m-2.K-1).
+// XD attr h_or_t chaine(into=["h_imp","t_ext"]) h_imp 0 Heat exchange coefficient value (expressed in W.m-2.K-1).
 // XD attr himpc front_field_base himpc 0 Boundary field type.
-// XD attr text chaine text 0 External temperature value (expressed in oC or K).
+// XD attr t_or_h chaine(into=["t_ext","h_imp"]) text 0 External temperature value (expressed in oC or K).
 // XD attr ch front_field_base ch 0 Boundary field type.
 
 
