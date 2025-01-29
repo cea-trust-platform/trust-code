@@ -238,9 +238,10 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
 
   int n_sten = stencil.dimension(0);
 
-  Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N * domaine.domaine().md_vector_elements()->nb_items_seq_tot())
-       << " "
-       << mp_somme_vect(tpfa) * 100. / (N * domaine.md_vector_faces()->nb_items_seq_tot()) << "% TPFA " << finl;
+  const double elem_t = static_cast<double>(domaine.domaine().md_vector_elements()->nb_items_seq_tot()),
+               face_t = static_cast<double>(domaine.md_vector_faces()->nb_items_seq_tot());
+  Cerr << "width " << Process::mp_sum_as_double(n_sten) / (N * elem_t) << " "
+       << mp_somme_vect_as_double(tpfa) * 100. / (N * face_t) << "% TPFA " << finl;
 }
 
 void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
