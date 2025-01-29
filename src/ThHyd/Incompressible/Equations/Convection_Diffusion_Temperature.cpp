@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,35 +31,12 @@
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
 
-Implemente_instanciable_sans_constructeur(Convection_Diffusion_Temperature,"Convection_Diffusion_Temperature",Convection_Diffusion_std);
+Implemente_instanciable(Convection_Diffusion_Temperature,"Convection_Diffusion_Temperature",Convection_Diffusion_std);
 // XD convection_diffusion_temperature eqn_base convection_diffusion_temperature -1 Energy equation (temperature diffusion convection).
 // XD attr penalisation_l2_ftd penalisation_l2_ftd penalisation_l2_ftd 1 to activate or not (the default is Direct Forcing method) the Penalized Direct Forcing method to impose the specified temperature on the solid-fluid interface.
 
+Sortie& Convection_Diffusion_Temperature::printOn(Sortie& is) const { return Convection_Diffusion_std::printOn(is); }
 
-Convection_Diffusion_Temperature::Convection_Diffusion_Temperature()
-{
-  eta = 1.0;
-  is_penalized = 0;
-  tag_indic_pena_global = -1;
-  indic_pena_global = 0;
-  indic_face_pena_global = 0;
-  choix_pena = 0;
-}
-/*! @brief Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Convection_Diffusion_Temperature::printOn(Sortie& is) const
-{
-  return Convection_Diffusion_std::printOn(is);
-}
-
-/*! @brief Verifie si l'equation a une temperature et un fluide associe cf Convection_Diffusion_std::readOn(Entree&).
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree& is) le flot d'entree modifie
- */
 Entree& Convection_Diffusion_Temperature::readOn(Entree& is)
 {
   assert(la_temperature.non_nul());
@@ -151,10 +128,6 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
   else Process::exit(que_suis_je() + " : le fluide " + un_milieu.que_suis_je() + " n'est pas de type Fluide_base!");
 }
 
-
-/*! @brief Discretise l'equation.
- *
- */
 void Convection_Diffusion_Temperature::discretiser()
 {
   if (!sub_type(Fluide_reel_base,le_fluide.valeur()))
@@ -201,7 +174,6 @@ const Fluide_base& Convection_Diffusion_Temperature::fluide() const
   return le_fluide.valeur();
 }
 
-
 /*! @brief Renvoie le fluide incompressible associe a l'equation.
  *
  * @return (Fluide_base&) le fluide incompressible associe a l'equation
@@ -245,27 +217,29 @@ void Convection_Diffusion_Temperature::get_noms_champs_postraitables(Noms& nom,O
   Noms noms_compris = champs_compris_.liste_noms_compris();
   noms_compris.add("gradient_temperature");
   noms_compris.add("h_echange_");
+  noms_compris.add("TEMPERATURE_PAROI");
+  noms_compris.add("WALL_TEMPERATURE");
+
   if (opt==DESCRIPTION)
     Cerr<<" Convection_Diffusion_Temperature : "<< noms_compris <<finl;
   else
     nom.add(noms_compris);
 }
 
-
 void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
 {
   Convection_Diffusion_std::creer_champ(motlu);
 
-  Motcle nom_mot(motlu),temp_mot(nom_mot);
-  /*  if (motlu == "temperature_paroi")
-      {
-        if (!temperature_paroi.non_nul())
-          {
-            const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-            dis.t_paroi(domaine_dis(),domaine_Cl_dis(),*this,temperature_paroi);
-            champs_compris_.ajoute_champ(temperature_paroi);
-          }
-      } */
+  if (motlu == "temperature_paroi" || motlu == "wall_temperature")
+    {
+      if (temperature_paroi_.est_nul())
+        {
+          const Discret_Thermique& dis = ref_cast(Discret_Thermique, discretisation());
+          dis.t_paroi(domaine_dis(), domaine_Cl_dis(), la_temperature, temperature_paroi_);
+          champs_compris_.ajoute_champ(temperature_paroi_);
+        }
+    }
+
   if (motlu == "gradient_temperature")
     {
       if (gradient_temperature.est_nul())
@@ -275,6 +249,8 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(gradient_temperature);
         }
     }
+
+  Motcle nom_mot(motlu),temp_mot(nom_mot);
   if (nom_mot.debute_par("H_ECHANGE"))
     {
       if (h_echange.est_nul())
@@ -291,6 +267,12 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
 
 bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const
 {
+  if (nom == "temperature_paroi" || nom == "wall_temperature")
+    {
+      ref_champ = Convection_Diffusion_Temperature::get_champ(nom);
+      return true;
+    }
+
   if (nom == "gradient_temperature")
     {
       ref_champ = Convection_Diffusion_Temperature::get_champ(nom);
@@ -312,6 +294,9 @@ bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom, OBS_PTR(Cham
 
 bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom) const
 {
+  if (nom == "temperature_paroi" || nom == "wall_temperature")
+    return true;
+
   if (nom == "gradient_temperature")
     return true;
 
@@ -327,14 +312,15 @@ bool Convection_Diffusion_Temperature::has_champ(const Motcle& nom) const
 
 const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom) const
 {
-  /*  if (nom=="temperature_paroi")
-      {
-        double temps_init = schema_temps().temps_init();
-        Champ_Fonc_base& ch_tp=ref_cast_non_const(Champ_Fonc_base,temperature_paroi.valeur());
-        if (((ch_tp.temps()!=la_temperature->temps()) || (ch_tp.temps()==temps_init)) && ((la_temperature->mon_equation_non_nul())))
-          ch_tp.mettre_a_jour(la_temperature->temps());
-        return champs_compris_.get_champ(nom);
-      } */
+  if (nom == "temperature_paroi" || nom == "wall_temperature")
+    {
+      double temps_init = schema_temps().temps_init();
+      Champ_Fonc_base& ch_tp = ref_cast_non_const(Champ_Fonc_base, temperature_paroi_.valeur());
+      if (((ch_tp.temps() != la_temperature->temps()) || (ch_tp.temps() == temps_init)) && ((la_temperature->mon_equation_non_nul())))
+        ch_tp.mettre_a_jour(la_temperature->temps());
+      return champs_compris_.get_champ(nom);
+    }
+
   if (nom == "gradient_temperature")
     {
       double temps_init = schema_temps().temps_init();
