@@ -88,7 +88,7 @@ Read pb
                 T_prof   grav temperature periode 1e8 segment 1000 0.5 0 0.5 0.1
                 T        temperature_paroi periode 1e8 point 1 0.5 0.1
             }
-            Format lata
+            Format lml
             fields dt_post 1e8
             {
                 temperature elem
@@ -116,7 +116,7 @@ Read pb
                     source refChamp { Pb_Champ pb temperature }
                 }
             }
-            format lata
+            format lml
 
             fichier bord_w
             fields dt_post 1e8
