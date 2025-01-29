@@ -943,6 +943,14 @@ then
     # Error medcoupling library build on Fedora30 => force python3
     #ze_python=`which python`
     ze_python=`which python3`
+    PYTHON_VERSION_OK=`$ze_python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2];print (v>=306?1:0)}'`
+    if [ "$PYTHON_VERSION_OK" != 1 ]
+    then
+       echo "ERROR: Installing without conda - The following (automatically detected)"
+       echo "       $ze_python"
+       echo "       is older than minimum required (3.6); you need to provide at least python 3.6 to install TRUST"
+       exit -1
+    fi
     echo "WARNING: Installing without conda - The following (automatically detected) Python will be used and is sym-linked in exec/python/bin:"
     echo "         $ze_python"
     mkdir -p $TRUST_ROOT/exec/python/bin
