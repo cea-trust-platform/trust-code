@@ -123,7 +123,7 @@ void T_paroi_Champ_P0_VDF::me_calculer(double tps)
                   {
                     const Echange_interne_impose& la_cl_int = ref_cast(Echange_interne_impose, la_cl_ext);
                     const Champ_front_calc_interne& Text_int = ref_cast(Champ_front_calc_interne, la_cl_int.T_ext());
-                    const IntTab& fmap = Text_int.face_map();
+                    const IntVect& fmap = Text_int.face_map();
                     int opp_face = fmap[num_face_cl]+ num_face - num_face_cl ;  // num1 is the index of the first face
                     int e1 = face_voisins(opp_face, 0);
                     elem_opp = (e1 != -1) ? e1 : face_voisins(opp_face, 1);

@@ -46,7 +46,7 @@ protected:
 inline double newton_T_paroi_VDF(double eps, double h, double T_ext, double lambda, double e, double T0)
 {
   double Tb = T0;
-  const double it_max = 100, tolerance = 1e-5;
+  const double it_max = 100, tolerance = 1e-8;
   for (int i = 0; i < it_max; i++)
     {
       const double f = 5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) + h * (T_ext - Tb) - lambda / e * (Tb - T0);
