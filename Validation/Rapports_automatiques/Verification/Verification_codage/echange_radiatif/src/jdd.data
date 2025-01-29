@@ -8,7 +8,7 @@ mailler  dom
     pave w
     {
         origine  0 0
-        nombre_de_noeuds   2 $ny
+        nombre_de_noeuds   4 $ny
         longueurs  1 0.1
     }
     {
@@ -79,21 +79,24 @@ Read pb
             sym  paroi_adiabatique
         }
     }
+
+    Post_processing
+    {
+        probes
+        {
+            T_prof   grav temperature periode 1e8 segment 1000 0.5 0 0.5 0.1
+            T        temperature_paroi periode 1e8 point 1 0.5 0.1
+        }
+        Format lml
+        fields dt_post 1e8
+        {
+            temperature elem
+            wall_temperature elem
+        }
+    }
+
     Post_processings
     {
-        post_solide
-        {
-            probes
-            {
-                T_prof   grav temperature periode 1e8 segment 1000 0.5 0 0.5 0.1
-                T        temperature_paroi periode 1e8 point 1 0.5 0.1
-            }
-            Format lml
-            fields dt_post 1e8
-            {
-                temperature elem
-            }
-        }
         post_2D
         {
              domaine dom_boundaries_haut
@@ -123,6 +126,8 @@ Read pb
             {
                 flux_surfacique elem
                 tbord elem
+                wall_temperature elem
+                 temperature elem
             }
         }
     }

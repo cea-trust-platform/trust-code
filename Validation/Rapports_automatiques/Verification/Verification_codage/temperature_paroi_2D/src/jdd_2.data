@@ -1,5 +1,5 @@
 # PARALLEL OK 8 #
-dimension 3
+dimension 2
 Domaine dom
 
 # BEGIN MESH #
@@ -7,17 +7,15 @@ mailler  dom
 {
     pave w
     {
-        origine  0 0 0
+        origine  0 0 
         nombre_de_noeuds $Nb
-        longueurs  1 1 1
+        longueurs  1 1 
     }
     {
-        Bord gauche  X = 0   0 <= Y <= 1 0 <= Z <= 1
-        Bord droite  X = 1   0 <= Y <= 1 0 <= Z <= 1
-        Bord avant   Y = 0   0 <= X <= 1 0 <= Z <= 1
-        Bord arriere Y = 1   0 <= X <= 1 0 <= Z <= 1
-        Bord bas     Z = 0   0 <= X <= 1 0 <= Y <= 1
-        Bord haut    Z = 1   0 <= X <= 1 0 <= Y <= 1
+        Bord gauche  X = 0   0 <= Y <= 1 
+        Bord droite  X = 1   0 <= Y <= 1 
+        Bord bas   Y = 0   0 <= X <= 1 
+        Bord haut Y = 1   0 <= X <= 1 
     }
 }
 $mesh
@@ -76,10 +74,10 @@ Read pb
         initial_conditions { temperature champ_uniforme 1 0 }
         boundary_conditions
         {
-            gauche  paroi_flux_impose champ_front_uniforme 1 1e5
+            gauche  paroi_flux_impose champ_front_uniforme 1 1e3
             droite  echange_externe_radiatif h_imp champ_front_uniforme 1 0 emissivite champ_front_uniforme 1 0.7 T_ext champ_front_uniforme 1 20
-            avant   paroi_adiabatique
-            arriere paroi_temperature_imposee champ_front_uniforme 1 30
+            /* bas   paroi_adiabatique
+            haut paroi_temperature_imposee champ_front_uniforme 1 30 */
             bas     paroi_echange_externe_impose h_imp champ_front_uniforme 1 10 T_ext champ_front_uniforme 1 20
             haut    echange_externe_radiatif h_imp champ_front_uniforme 1 100 emissivite champ_front_uniforme 1 0.7 T_ext champ_front_uniforme 1 20
         }
@@ -88,12 +86,10 @@ Read pb
     {
         probes
         {
-            T_gauche  temperature_paroi periode 1e8 segment 1000 0 0 0.5 0 1 0.5
-            T_droite  temperature_paroi periode 1e8 segment 1000 1 0 0.5 1 1 0.5
-            T_avant   temperature_paroi periode 1e8 segment 1000 0.5 0 0 0.5 0 1
-            T_arriere temperature_paroi periode 1e8 segment 1000 0.5 1 0 0.5 1 1
-            T_bas     temperature_paroi periode 1e8 segment 1000 0 0.5 0 1 0.5 0
-            T_haut    temperature_paroi periode 1e8 segment 1000 0 0.5 1 1 0.5 1
+            T_gauche  temperature_paroi periode 1e8 segment 1000 0 0 0 1 
+            T_droite  temperature_paroi periode 1e8 segment 1000 1 0 1 1 
+            T_bas   temperature_paroi periode 1e8 segment 1000 0 0 1  0  
+            T_haut temperature_paroi periode 1e8 segment 1000 0 1 1 1
         }
         Format lml
         fields dt_post 1e8
