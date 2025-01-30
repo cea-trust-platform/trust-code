@@ -13,26 +13,17 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Fonc_Elem_PolyVEF_P0_rot_included
-#define Champ_Fonc_Elem_PolyVEF_P0_rot_included
+#ifndef Echange_contact_PolyVEF_P0_included
+#define Echange_contact_PolyVEF_P0_included
 
-#include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
+#include <Echange_contact_PolyMAC_P0.h>
+#include <Op_Diff_PolyVEF_P0_Elem.h>
 
-/*! @brief class Champ_Fonc_Elem_PolyVEF_P0_rot for the calculation of the vorticity
- *       This field is a Champ_Fonc_Elem_PolyVEF_P0 with 1 value per element and per phase in 2D and 3 in 3D
- *
- *       It isn't a Champ_Fonc_Face_PolyVEF_P0 as there is no physical justification to project the vorticity on a face
- *       In 3D, Champ_Fonc_Elem_PolyVEF_P0_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
- *       The vorticity is calculated by hand in 2D and 3D using the values of the gradient
- *
- */
-
-class Champ_Fonc_Elem_PolyVEF_P0_rot: public Champ_Fonc_Elem_PolyMAC_P0_rot
+class Echange_contact_PolyVEF_P0  : public Echange_contact_PolyMAC_P0
 {
-  Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_rot);
+  Declare_instanciable(Echange_contact_PolyVEF_P0);
 public:
-  void me_calculer_2D();
-  void me_calculer_3D();
+  mutable OBS_PTR(Op_Diff_PolyVEF_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 };
 
-#endif /* Champ_Fonc_Elem_PolyVEF_P0_rot_included */
+#endif /* Echange_contact_PolyVEF_P0_included */
