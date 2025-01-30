@@ -16,16 +16,15 @@
 #ifndef PolyVEF_P0_discretisation_included
 #define PolyVEF_P0_discretisation_included
 
-#include <PolyMAC_P0P1NC_discretisation.h>
+#include <PolyMAC_P0_discretisation.h>
 
-class PolyVEF_P0_discretisation : public PolyMAC_P0P1NC_discretisation
+class PolyVEF_P0_discretisation : public PolyMAC_P0_discretisation
 {
   Declare_instanciable(PolyVEF_P0_discretisation);
 public :
   void grad_u(const Domaine_dis_base& z,const Domaine_Cl_dis_base& zcl,const Champ_Inc_base& ch_vitesse,OWN_PTR(Champ_Fonc_base)& ) const override;
   void taux_cisaillement(const Domaine_dis_base&, const Domaine_Cl_dis_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
-  void residu(const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, OWN_PTR(Champ_Fonc_base)& ch) const override ;
 
   bool is_polyvef_p0() const override { return true; }
   bool is_polymac_p0() const override { return false; } // attention heritage !
