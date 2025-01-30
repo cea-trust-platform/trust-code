@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@ class Op_Diff_PolyVEF_P0_Elem : public Op_Diff_PolyVEF_P0_base
 public :
   Op_Diff_PolyVEF_P0_Elem();
   void completer() override;
-  void init_op_ext() const override; //fait plus de travail qu'en PolyVEF_P0P1NC: op_ext + som_ext, pe_ext...
+  void init_op_ext() const override; //fait plus de travail qu'en PolyMAC_P0P1NC: op_ext + som_ext, pe_ext...
 
   /* interface {dimensionner,ajouter}_blocs */
   int has_interface_blocs() const override { return 1; }
