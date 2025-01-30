@@ -25,24 +25,23 @@
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
 #include <DescStructure.h>
-#include <Champ_Inc.h>
-#include <Schema_Temps.h>
+#include <Champ_Inc_base.h>
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+#include <Domaine_Cl_dis_base.h>
 
-Implemente_instanciable(PolyVEF_P0_discretisation, "PolyVEF_P0", PolyVEF_P0P1NC_discretisation);
+Implemente_instanciable(PolyVEF_P0_discretisation, "PolyVEF_P0", PolyMAC_P0P1NC_discretisation);
 
 Entree& PolyVEF_P0_discretisation::readOn(Entree& s) { return s; }
 
 Sortie& PolyVEF_P0_discretisation::printOn(Sortie& s) const { return s; }
 
-void PolyVEF_P0_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyVEF_P0_discretisation::grad_u(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
-  const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, ch_vitesse.valeur());
-  const Domaine_PolyVEF_P0& domaine_poly = ref_cast(Domaine_PolyVEF_P0, z.valeur());
-  const Domaine_Cl_PolyMAC& domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, ch_vitesse);
+  const Domaine_PolyVEF_P0& domaine_poly = ref_cast(Domaine_PolyVEF_P0, z);
+  const Domaine_Cl_PolyMAC& domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl);
   ch.typer("grad_Champ_Face_PolyVEF_P0");
 
   grad_Champ_Face_PolyVEF_P0& ch_grad_u = ref_cast(grad_Champ_Face_PolyVEF_P0, ch.valeur()); //
@@ -80,9 +79,9 @@ void PolyVEF_P0_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_di
   ch_grad_u.changer_temps(-1.e8);
 }
 
-void PolyVEF_P0_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyVEF_P0_discretisation::taux_cisaillement(const Domaine_dis_base& z, const Domaine_Cl_dis_base& zcl, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
-  const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, ch_vitesse.valeur());
+  const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, ch_vitesse);
 //  const Domaine_PolyVEF_P0&          domaine_poly = ref_cast(Domaine_PolyVEF_P0, z.valeur());
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, vit.domaine_dis_base());
 
@@ -100,9 +99,9 @@ void PolyVEF_P0_discretisation::taux_cisaillement(const Domaine_dis& z, const Do
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
 
-void PolyVEF_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyVEF_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc_base& ch_vitesse, OWN_PTR(Champ_Fonc_base)& ch) const
 {
-  const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, ch_vitesse.valeur());
+  const Champ_Face_PolyVEF_P0& vit = ref_cast(Champ_Face_PolyVEF_P0, ch_vitesse);
   const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, vit.domaine_dis_base());
   int N = vit.valeurs().line_size()/dimension;
 
@@ -131,13 +130,13 @@ void PolyVEF_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
   ch_rot_u.changer_temps(-1.e8); // so it is calculated at time 0
 }
 
-void PolyVEF_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
+void PolyVEF_P0_discretisation::residu( const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, OWN_PTR(Champ_Fonc_base)& champ) const
 {
   Nom ch_name(ch_inco.le_nom());
   ch_name += "_residu";
   Cerr << "Discretization of " << ch_name << finl;
 
-  Nom type_ch = ch_inco.valeur().que_suis_je();
+  Nom type_ch = ch_inco.que_suis_je();
   if (type_ch.debute_par("Champ_Face"))
     {
       Motcle loc = "champ_face";
@@ -146,7 +145,7 @@ void PolyVEF_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& c
       unites[0] = "units_not_defined";
       int nb_comp = ch_inco.valeurs().line_size()*dimension;
 
-      discretiser_champ(loc,z.valeur(), vectoriel, nom ,unites,nb_comp,ch_inco.temps(),champ);
+      discretiser_champ(loc,z, vectoriel, nom ,unites,nb_comp,ch_inco.temps(),champ);
 
       Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
       DoubleTab& tab=ch_fonc.valeurs();
@@ -155,5 +154,5 @@ void PolyVEF_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& c
     }
 
   else
-    PolyVEF_P0P1NC_discretisation::residu(z, ch_inco, champ);
+    PolyMAC_P0P1NC_discretisation::residu(z, ch_inco, champ);
 }

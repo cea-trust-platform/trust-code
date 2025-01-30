@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ class Op_Grad_PolyVEF_P0_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& , const Champ_Inc_base& ) override;
   void completer() override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
@@ -61,8 +61,8 @@ public:
 private:
 
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
-  REF(Domaine_PolyVEF_P0) ref_domaine;
-  REF(Domaine_Cl_PolyMAC) ref_dcl;
+  OBS_PTR(Domaine_PolyVEF_P0) ref_domaine;
+  OBS_PTR(Domaine_Cl_PolyMAC) ref_dcl;
 };
 
 #endif
