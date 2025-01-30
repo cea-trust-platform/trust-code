@@ -16,35 +16,21 @@
 #ifndef Op_Div_PolyVEF_P0_included
 #define Op_Div_PolyVEF_P0_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyVEF_P0.h>
-#include <Operateur_Div.h>
-#include <TRUST_Ref.h>
+#include <Op_Div_PolyMAC_P0.h>
 
 /*! @brief class Op_Div_PolyVEF_P0
  *
- *   Cette classe represente l'operateur de divergence
- *   La discretisation est PolyVEF_P0
+ *   Cette classe represente l'operateur de divergence. La discretisation est PolyVEF_P0
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
  *
  *
- * @sa Operateur_Div_base
+ * @sa Op_Div_PolyMAC_P0
  */
 
-class Op_Div_PolyVEF_P0 : public Operateur_Div_base
+class Op_Div_PolyVEF_P0 : public Op_Div_PolyMAC_P0
 {
-
   Declare_instanciable(Op_Div_PolyVEF_P0);
-
 public:
-
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base&,const Champ_Inc_base&) override;
-
-  /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   /* version etendue de ajouter_blocs pour pouvoir donner en argument le champ dont on prend la divergence */
   void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
@@ -56,15 +42,6 @@ public:
   /* contrairement au cas usuel, ces methodes ne peuvent pas etre reimplementees a partir d'ajouter_blocs(),
      car elles sont souvent appelees avec un tableau inco arbitraire */
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-
-  int impr(Sortie& os) const override;
-  void volumique(DoubleTab& ) const override;
-
-protected:
-
-  OBS_PTR(Domaine_PolyVEF_P0) le_dom_PolyVEF_P0;
-  OBS_PTR(Domaine_Cl_PolyMAC) le_dcl_PolyVEF_P0;
 };
 
-#endif
+#endif /* Op_Div_PolyVEF_P0_included */

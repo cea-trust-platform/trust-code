@@ -37,69 +37,20 @@
 #include <vector>
 #include <cmath>
 
-Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_P0_Elem, "Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_PolyMAC_base);
+Implemente_instanciable(Op_Conv_EF_Stab_PolyVEF_P0_Elem, "Op_Conv_EF_Stab_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyVEF_P0_Elem, "Op_Conv_Amont_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0_Elem);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyVEF_P0_Elem, "Op_Conv_Centre_PolyVEF_P0_Elem", Op_Conv_EF_Stab_PolyVEF_P0_Elem);
 
-Op_Conv_Amont_PolyVEF_P0_Elem::Op_Conv_Amont_PolyVEF_P0_Elem() { alpha = 1.0; }
-Op_Conv_Centre_PolyVEF_P0_Elem::Op_Conv_Centre_PolyVEF_P0_Elem() { alpha = 0.0; }
+Op_Conv_Amont_PolyVEF_P0_Elem::Op_Conv_Amont_PolyVEF_P0_Elem() { alpha_ = 1.0; }
+Op_Conv_Centre_PolyVEF_P0_Elem::Op_Conv_Centre_PolyVEF_P0_Elem() { alpha_ = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyVEF_P0_Elem interprete Op_Conv_EF_Stab_PolyVEF_P0_Elem 1 Class Op_Conv_EF_Stab_PolyVEF_P0_Elem
-Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(os); }
+Entree& Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn(is); }
 Sortie& Op_Conv_Amont_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(os); }
 Sortie& Op_Conv_Centre_PolyVEF_P0_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::printOn(os); }
 Entree& Op_Conv_Amont_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(is); }
 Entree& Op_Conv_Centre_PolyVEF_P0_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(is); }
-
-Entree& Op_Conv_EF_Stab_PolyVEF_P0_Elem::readOn(Entree& is)
-{
-  Op_Conv_PolyMAC_base::readOn(is);
-  if (que_suis_je().debute_par("Op_Conv_EF_Stab")) //on n'est pas dans Op_Conv_Amont/Centre
-    {
-      Param param(que_suis_je());
-      param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
-      param.lire_avec_accolades_depuis(is);
-    }
-  return is;
-}
-
-void Op_Conv_EF_Stab_PolyVEF_P0_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const
-{
-  Op_Conv_PolyMAC_base::get_noms_champs_postraitables(nom,opt);
-  Noms noms_compris;
-
-  if (sub_type(Masse_Multiphase, equation()))
-    {
-      const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
-
-      for (int i = 0; i < pb.nb_phases(); i++)
-        {
-          noms_compris.add(noms_cc_phases_[i]);
-          noms_compris.add(noms_vd_phases_[i]);
-          noms_compris.add(noms_x_phases_[i]);
-        }
-    }
-  if (opt==DESCRIPTION)
-    Cerr<<" Op_Conv_EF_Stab_PolyVEF_P0_Elem : "<< noms_compris <<finl;
-  else
-    nom.add(noms_compris);
-}
-
-void Op_Conv_EF_Stab_PolyVEF_P0_Elem::preparer_calcul()
-{
-  Op_Conv_PolyMAC_base::preparer_calcul();
-
-  /* au cas ou... */
-  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  equation().init_champ_convecte();
-  flux_bords_.resize(domaine.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
-
-  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
-    {
-      Cerr << "Op_Conv_EF_Stab_PolyVEF_P0_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
-      Process::exit();
-    }
-}
 
 double Op_Conv_EF_Stab_PolyVEF_P0_Elem::calculer_dt_stab() const
 {
@@ -204,7 +155,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::ajouter_blocs(matrices_t mats, DoubleTab& 
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++)
           for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (Mv > 1))
             {
-              double fac = pf(f) * (1. + ((fvn(m) ? fvn(m) : DBL_MIN) * (i ? -1 : 1) > 0 ? 1. : -1) * alpha) / 2;
+              double fac = pf(f) * (1. + ((fvn(m) ? fvn(m) : DBL_MIN) * (i ? -1 : 1) > 0 ? 1. : -1) * alpha_) / 2;
               dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
               dc_flux(i, n) = e >= 0 ? fac * fvn(m) : 0;
             }
@@ -231,27 +182,6 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::ajouter_blocs(matrices_t mats, DoubleTab& 
       }
 }
 
-void Op_Conv_EF_Stab_PolyVEF_P0_Elem::creer_champ(const Motcle& motlu)
-{
-  Op_Conv_PolyMAC_base::creer_champ(motlu);
-  int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
-  if (i >= 0 && !cc_phases_[i].non_nul())
-    {
-      equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_cc_phases_[i], "kg/m2/s", dimension, 1, 0, cc_phases_[i]);
-      champs_compris_.ajoute_champ(cc_phases_[i]);
-    }
-  if (j >= 0 && !vd_phases_[j].non_nul())
-    {
-      equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_vd_phases_[j], "m/s", dimension, 1, 0, vd_phases_[j]);
-      champs_compris_.ajoute_champ(vd_phases_[j]);
-    }
-  if (k >= 0 && !x_phases_[k].non_nul())
-    {
-      equation().discretisation().discretiser_champ("temperature", equation().domaine_dis(), noms_x_phases_[k], "m/s", 1, 1, 0, x_phases_[k]);
-      champs_compris_.ajoute_champ(x_phases_[k]);
-    }
-}
-
 void Op_Conv_EF_Stab_PolyVEF_P0_Elem::mettre_a_jour(double temps)
 {
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
@@ -276,7 +206,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::mettre_a_jour(double temps)
       for (cc_f = 0, i = 0; i < 2; i++)
         for (e = f_e(f, i), d = 0; d < D; d++)
           for (n = 0, m = 0; n < N; n++, m += (M > 1))
-            cc_f(n) += (1. + (fvn(m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
+            cc_f(n) += (1. + (fvn(m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
 
       for (d = 0; d < D; d++)
         for (n = 0, m = 0; n < N; n++, m += (M > 1))
@@ -295,7 +225,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::mettre_a_jour(double temps)
                 fv += nf(f, d) * vit(f, M * d + m);
               for (d = 0; d < D; d++)
                 for (v_ph(f, d) = 0, i = 0; i < 2; i++)
-                  v_ph(f, d) += pf(f) * vit(f, M * d + m) * (1. + (fv * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
+                  v_ph(f, d) += pf(f) * vit(f, M * d + m) * (1. + (fv * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
             }
           c_ph.changer_temps(temps);
         }
@@ -313,7 +243,7 @@ void Op_Conv_EF_Stab_PolyVEF_P0_Elem::mettre_a_jour(double temps)
                 fv += nf(f, d) * vit(f, M * d + m);
               for (d = 0; d < D; d++)
                 for (v_ph(f, d) = 0, i = 0; i < 2; i++)
-                  v_ph(f, d) += pf(f) * vit(f, M * d + m) * (1. + (fv * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
+                  v_ph(f, d) += pf(f) * vit(f, M * d + m) * (1. + (fv * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha_) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
             }
           c_ph.changer_temps(temps);
         }
