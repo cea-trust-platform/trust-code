@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,8 +36,8 @@ Entree& Dispersion_bulles_PolyVEF_P0::readOn(Entree& is)
 
 void Dispersion_bulles_PolyVEF_P0::dimensionner_blocs_aux(IntTrav& stencil) const
 {
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
-  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
 
   int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = domaine.nb_faces_tot();
@@ -53,8 +53,8 @@ void Dispersion_bulles_PolyVEF_P0::dimensionner_blocs_aux(IntTrav& stencil) cons
 void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
-  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const DoubleVect& pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir(), &xp = domaine.xp(), &xv = domaine.xv(), &n_f = domaine.face_normales();
@@ -66,23 +66,23 @@ void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
-  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL ;
-  DoubleTab const * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
-  DoubleTab const * k_WIT = (equation().probleme().has_champ("k_WIT")) ? &equation().probleme().get_champ("k_WIT").passe() : NULL ;
+  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr ;
+  DoubleTab const * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
+  DoubleTab const * k_WIT = (equation().probleme().has_champ("k_WIT")) ? &equation().probleme().get_champ("k_WIT").passe() : nullptr ;
 
   int Np = press.line_size(), D = dimension, N = pbm.nb_phases(), nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
   DoubleTrav nut(domaine.nb_elem_tot(), N); //viscosite turbulente
-  if (is_turb) ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyVEF_P0_Face, equation().operateur(0).l_op_base()).correlation().valeur()).eddy_viscosity(nut); //remplissage par la correlation
+  if (is_turb) ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyVEF_P0_Face, equation().operateur(0).l_op_base()).correlation()).eddy_viscosity(nut); //remplissage par la correlation
 
   // Input-output
-  const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_->valeur());
+  const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
   Dispersion_bulles_base::input_t in;
   Dispersion_bulles_base::output_t out;
   in.alpha.resize(N), in.T.resize(N), in.p.resize(N), in.rho.resize(N), in.mu.resize(N), in.sigma.resize(N*(N-1)/2), in.k_turb.resize(N), in.nut.resize(N), in.d_bulles.resize(N), in.nv.resize(N, N);
   out.Ctd.resize(N, N);
 
   /* calculaiton of the gradient of alpha at the face */
-  const Champ_Elem_PolyVEF_P0& ch_a = ref_cast(Champ_Elem_PolyVEF_P0, pbm.equation_masse().inconnue().valeur());
+  const Champ_Elem_PolyVEF_P0& ch_a = ref_cast(Champ_Elem_PolyVEF_P0, pbm.equation_masse().inconnue());
   DoubleTrav grad_f_a(nf_tot + D*ne_tot, N);
   DoubleTrav grad_loc(N,D);
   double scal_grad_loc;

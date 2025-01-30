@@ -13,17 +13,37 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Evanescence_Homogene_PolyVEF_P0_Face_included
-#define Op_Evanescence_Homogene_PolyVEF_P0_Face_included
+#ifndef Champ_Fonc_Elem_PolyVEF_P0_TC_included
+#define Champ_Fonc_Elem_PolyVEF_P0_TC_included
 
-#include <Op_Evanescence_Homogene_Face_base.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Face_PolyVEF_P0.h>
+#include <TRUST_Ref.h>
 
-class Op_Evanescence_Homogene_PolyVEF_P0_Face: public Op_Evanescence_Homogene_Face_base
+/*! @brief class Champ_Fonc_Elem_PolyVEF_P0_TC for the calculation of the shear rate (taux de cisaillement)
+ *
+ *    This field is a Champ_Fonc_Elem_PolyVEF_P0 with 1 value per element and per phase :
+ *
+ *       Champ_Fonc_Elem_PolyVEF_P0_TC::valeurs()(e, n) returns the value of phase n in element e
+ *       The shear rate is calculated using
+ *         shear rate = sqrt(2*Sij*Sij)
+ *         Sij = 1/2(grad(u)+t grad(u))
+ *
+ */
+
+class Champ_Fonc_Elem_PolyVEF_P0_TC: public Champ_Fonc_Elem_PolyMAC
 {
-  Declare_instanciable(Op_Evanescence_Homogene_PolyVEF_P0_Face);
+  Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_TC);
 public:
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void mettre_a_jour(double) override;
+  void me_calculer(double tps);
+
+  inline void associer_champ(const Champ_Face_PolyVEF_P0& ch) { champ_ = ch; }
+  inline virtual Champ_Face_PolyVEF_P0& champ_a_deriver() { return champ_.valeur(); }
+  inline virtual const Champ_Face_PolyVEF_P0& champ_a_deriver() const { return champ_.valeur(); }
+
+protected:
+  OBS_PTR(Champ_Face_PolyVEF_P0) champ_;
 };
 
-#endif /* Op_Evanescence_Homogene_PolyVEF_P0_Face_included */
+#endif /* Champ_Fonc_Elem_PolyVEF_P0_TC_included */

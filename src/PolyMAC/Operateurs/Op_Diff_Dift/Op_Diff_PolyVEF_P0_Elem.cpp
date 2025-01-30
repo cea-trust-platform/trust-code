@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,9 +13,9 @@
 *
 *****************************************************************************/
 
-#include <Flux_interfacial_PolyVEF_P0P1NC.h>
+#include <Flux_interfacial_PolyMAC_P0P1NC.h>
 #include <Modele_turbulence_scal_base.h>
-#include <Echange_contact_PolyVEF_P0.h>
+#include <Echange_contact_PolyMAC_P0.h>
 #include <Op_Diff_PolyVEF_P0_Elem.h>
 #include <Echange_externe_impose.h>
 #include <Champ_Elem_PolyVEF_P0.h>
@@ -59,7 +59,7 @@ void Op_Diff_PolyVEF_P0_Elem::completer()
 {
   Op_Diff_PolyVEF_P0_base::completer();
   const Equation_base& eq = equation();
-  const Champ_Elem_PolyVEF_P0& ch = ref_cast(Champ_Elem_PolyVEF_P0, eq.inconnue().valeur());
+  const Champ_Elem_PolyVEF_P0& ch = ref_cast(Champ_Elem_PolyVEF_P0, eq.inconnue());
   const Domaine_PolyVEF_P0& domaine = le_dom_poly_.valeur();
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
@@ -72,7 +72,7 @@ void Op_Diff_PolyVEF_P0_Elem::completer()
   if (sub_type(Energie_Multiphase, eq))
     if (pbm)
       if (pbm->has_correlation("Flux_parietal"))
-        if (ref_cast(Flux_parietal_base, pbm->get_correlation("Flux_parietal").valeur()).calculates_bubble_nucleation_diameter())
+        if (ref_cast(Flux_parietal_base, pbm->get_correlation("Flux_parietal")).calculates_bubble_nucleation_diameter())
           d_nuc_.resize(0, ch.valeurs().line_size()), domaine.domaine().creer_tableau_elements(d_nuc_);
 }
 
@@ -111,7 +111,7 @@ void Op_Diff_PolyVEF_P0_Elem::init_op_ext() const
       const Op_Diff_PolyVEF_P0_Elem *op = *op_ext_tbd.begin();
       op_ext_tbd.erase(op_ext_tbd.begin());
       //elargissement de op_ext
-      const Conds_lim& cls = op->equation().domaine_Cl_dis()->les_conditions_limites();
+      const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
       for (const auto &itr : cls)
         if (sub_type(Echange_contact_PolyVEF_P0, itr.valeur()))
           {
@@ -132,22 +132,22 @@ void Op_Diff_PolyVEF_P0_Elem::init_op_ext() const
     }
 
   /* construction de som_ext_{d, e, f} */
-  som_ext.set_smart_resize(1), som_ext_d.resize(0, 2), som_ext_d.set_smart_resize(1), som_ext_d.append_line(0, 0);
-  som_ext_pe.resize(0, 2), som_ext_pf.resize(0, 4), som_ext_pe.set_smart_resize(1), som_ext_pf.set_smart_resize(1);
+  som_ext_d.resize(0, 2), som_ext_d.append_line(0, 0);
+  som_ext_pe.resize(0, 2), som_ext_pf.resize(0, 4);
   std::set<std::array<int, 2>> s_pe; // (pb, el)
   std::set<std::array<int, 4>> s_pf; // (pb1, f1, pb2, f2)
   std::vector<std::reference_wrapper<const Domaine_PolyVEF_P0>> domaines;
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
   std::vector<std::reference_wrapper<const Static_Int_Lists>> som_elem;
   for (auto &&op : op_ext)
-    domaines.push_back(std::ref(ref_cast(Domaine_PolyVEF_P0, op->equation().domaine_dis().valeur())));
+    domaines.push_back(std::ref(ref_cast(Domaine_PolyVEF_P0, op->equation().domaine_dis())));
   for (auto &&op : op_ext)
-    fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyVEF_P0, op->equation().inconnue().valeur()).fcl()));
+    fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyVEF_P0, op->equation().inconnue()).fcl()));
   for (auto &&zo : domaines)
     e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets())), som_elem.push_back(std::ref(zo.get().som_elem()));
 
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
-  const Conds_lim& cls = equation().domaine_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = equation().domaine_Cl_dis().les_conditions_limites();
   int has_flux = sub_type(Energie_Multiphase, equation()) && ref_cast(Pb_Multiphase, equation().probleme()).has_correlation("flux_parietal");
   for (i = 0; i < cls.size(); i++)
     if (has_flux || sub_type(Echange_contact_PolyVEF_P0, cls[i].valeur()))
@@ -179,7 +179,7 @@ void Op_Diff_PolyVEF_P0_Elem::init_op_ext() const
                 ok |= sb == s_l;
               if (!ok || fcl[iop](f, 0) != 3)
                 continue; //face ne touchant pas le sommet ou non Echange_contact
-              const Echange_contact_PolyVEF_P0& cl = ref_cast(Echange_contact_PolyVEF_P0, op_ext[iop]->equation().domaine_Cl_dis()->les_conditions_limites()[fcl[iop](f, 1)].valeur());
+              const Echange_contact_PolyVEF_P0& cl = ref_cast(Echange_contact_PolyVEF_P0, op_ext[iop]->equation().domaine_Cl_dis().les_conditions_limites()[fcl[iop](f, 1)].valeur());
               int o_iop = (int) (std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin()), o_f = cl.f_dist(fcl[iop](f, 2)); //operateur / face de l'autre cote
               std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f };
               s_pf.insert( { arr }); //stocke dans l'ordre
@@ -198,10 +198,10 @@ void Op_Diff_PolyVEF_P0_Elem::init_op_ext() const
 double Op_Diff_PolyVEF_P0_Elem::calculer_dt_stab() const
 {
   const Domaine_PolyVEF_P0& domaine = le_dom_poly_.valeur();
-  const Champ_Elem_PolyVEF_P0& 	ch	= ref_cast(Champ_Elem_PolyVEF_P0, equation().inconnue().valeur());
+  const Champ_Elem_PolyVEF_P0& 	ch	= ref_cast(Champ_Elem_PolyVEF_P0, equation().inconnue());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr),
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
@@ -242,7 +242,7 @@ void Op_Diff_PolyVEF_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   std::vector<int> N(op_ext.size()); //nombre de composantes par probleme de op_ext
   std::vector<IntTrav> stencil(op_ext.size()); //stencils par matrice
   for (i = 0; i < (int) op_ext.size(); i++)
-    stencil[i].resize(0, 2), stencil[i].set_smart_resize(1), N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
+    stencil[i].resize(0, 2), N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
   domaine.creer_tableau_faces(tpfa), tpfa = 1;
@@ -271,7 +271,7 @@ void Op_Diff_PolyVEF_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
       {
         tableau_trier_retirer_doublons(stencil[i]);
         Matrice_Morse mat2;
-        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_ext[i]->equation().domaine_dis()->nb_elem_tot(), stencil[i], mat2);
+        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_ext[i]->equation().domaine_dis().nb_elem_tot(), stencil[i], mat2);
         mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;
       }
 
@@ -302,21 +302,21 @@ void Op_Diff_PolyVEF_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : nullptr;
-      domaine.push_back(std::ref(ref_cast(Domaine_PolyVEF_P0, op_ext[i]->equation().domaine_dis().valeur())));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyVEF_P0, op_ext[i]->equation().domaine_dis())));
       f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
       fs.push_back(std::ref(domaine[i].get().face_surfaces())), nf.push_back(std::ref(domaine[i].get().face_normales()));
       xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv())), xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));
       cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyVEF_P0_Elem, *op_ext[i]).nu());
-      const Champ_Inc& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
-      const Champ_Elem_PolyVEF_P0& ch = ref_cast(Champ_Elem_PolyVEF_P0, ch_inc.valeur());
+      const Champ_Inc_base& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
+      const Champ_Elem_PolyVEF_P0& ch = ref_cast(Champ_Elem_PolyVEF_P0, ch_inc);
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs()));
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
   const Domaine_PolyVEF_P0& domaine0 = domaine[0];
   DoubleTab *pqpi =
-    equation().sources().size() && sub_type(Flux_interfacial_PolyVEF_P0P1NC, equation().sources().dernier().valeur()) ?
-    &ref_cast(Flux_interfacial_PolyVEF_P0P1NC, equation().sources().dernier().valeur()).qpi() : nullptr;
+    equation().sources().size() && sub_type(Flux_interfacial_PolyMAC_P0P1NC, equation().sources().dernier().valeur()) ?
+    &ref_cast(Flux_interfacial_PolyMAC_P0P1NC, equation().sources().dernier().valeur()).qpi() : nullptr;
   d_nuc_ = 0; //remise a zero du diametre de nucleation
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */
@@ -365,10 +365,6 @@ void Op_Diff_PolyVEF_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   //i_eq_{flux,cont}(i, n) -> n-ieme equation de flux/de continuite a la face i de s_pf
   //i_eq_pbm(i_efs(i, j, n)) -> n-ieme equation "flux = correlation" a la face j de l'elem i de s_pe (seulement si Pb_Multiphase)
   DoubleTrav A, B, mA, mB, Ff, Fec, Qf, Qec, Tefs, C, X, Y, W(1), S, x_fs;
-  i_efs.set_smart_resize(1), i_e.set_smart_resize(1), i_eq_flux.set_smart_resize(1), i_eq_cont.set_smart_resize(1), i_eq_pbm.set_smart_resize(1);
-  A.set_smart_resize(1), B.set_smart_resize(1), Ff.set_smart_resize(1), Fec.set_smart_resize(1), C.set_smart_resize(1), X.set_smart_resize(1);
-  Y.set_smart_resize(1), piv.set_smart_resize(1), W.set_smart_resize(1), x_fs.set_smart_resize(1), Tefs.set_smart_resize(1), S.set_smart_resize(1);
-  mA.set_smart_resize(1), mB.set_smart_resize(1), Qf.set_smart_resize(1), Qec.set_smart_resize(1);
 
   // Et pour les methodes span de la classe Saturation pour le flux parietal
   std::vector<DoubleTrav> Ts_tab(n_ext), Sigma_tab(n_ext), Lvap_tab(n_ext);
@@ -381,7 +377,7 @@ void Op_Diff_PolyVEF_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
         if (ref_cast(Pb_Multiphase,op_ext[i]->equation().probleme()).has_correlation("flux_parietal"))
           {
             Ts_tab[i].resize(nbelem_tot, nb_max_sat), Sigma_tab[i].resize(nbelem_tot, nb_max_sat), Lvap_tab[i].resize(nbelem_tot, nb_max_sat);
-            ConstDoubleTab_parts ppart(ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression()->passe());
+            ConstDoubleTab_parts ppart(ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression().passe());
             for (k = 0; k < N[i]; k++)
               for (l = k + 1; l < N[i]; l++)
                 if (milc.has_saturation(k, l))
@@ -636,7 +632,7 @@ void Op_Diff_PolyVEF_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                               B(0, t_e, i_eq) += sgn * Tefs(0, i_efs(i, j, M)), A(0, i_efs(i, j, M), i_eq) -= sgn;
                             //equations sur les correlations
                             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme());
-                            const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbm.get_correlation("Flux_parietal").valeur());
+                            const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbm.get_correlation("Flux_parietal"));
                             const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(), &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit =
                                                                                                       pbm.equation_qdm().inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho =
                                                                                                             pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
