@@ -32,39 +32,16 @@
 #include <SFichier.h>
 #include <cfloat>
 
-Implemente_instanciable(Op_Grad_PolyVEF_P0_Face,"Op_Grad_PolyVEF_P0_Face",Operateur_Grad_base);
+Implemente_instanciable(Op_Grad_PolyVEF_P0_Face, "Op_Grad_PolyVEF_P0_Face", Op_Grad_PolyMAC_P0_Face);
 
-//// printOn
-//
+Sortie& Op_Grad_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-Sortie& Op_Grad_PolyVEF_P0_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Op_Grad_PolyVEF_P0_Face::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-
-/*! @brief
- *
- */
-void Op_Grad_PolyVEF_P0_Face::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_cl_dis, const Champ_Inc_base& ch)
-{
-  ref_domaine = ref_cast(Domaine_PolyVEF_P0, domaine_dis);
-  ref_dcl = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis);
-}
+Entree& Op_Grad_PolyVEF_P0_Face::readOn(Entree& s) { return s; }
 
 void Op_Grad_PolyVEF_P0_Face::completer()
 {
   Operateur_Grad_base::completer();
-  const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
+  const Domaine_PolyMAC& dom = ref_domaine.valeur();
   /* besoin d'un joint de 1 */
   if (dom.domaine().nb_joints() && dom.domaine().joint(0).epaisseur() < 1)
     {
@@ -77,13 +54,14 @@ void Op_Grad_PolyVEF_P0_Face::completer()
 
 void Op_Grad_PolyVEF_P0_Face::update_grad(int full_stencil) const
 {
-  const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
+  const Domaine_PolyVEF_P0& dom = ref_cast(Domaine_PolyVEF_P0, ref_domaine.valeur());
   const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
-  const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+  const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
+                             sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const int M = press.line_size();
   double t_past = equation().inconnue().recuperer_temps_passe();
-  if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return; //deja calcule a ce temps -> rien a faire
+  if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX)))
+    return; //deja calcule a ce temps -> rien a faire
 
   /* gradient */
   dom.fgrad(M, 1, 1, ref_dcl->les_conditions_limites(), ch.fcl(), nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
@@ -92,11 +70,14 @@ void Op_Grad_PolyVEF_P0_Face::update_grad(int full_stencil) const
 
 void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
+  const Domaine_PolyMAC& dom = ref_domaine.valeur();
   const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   const IntTab& fcl = ch.fcl();
-  int i, e, f, fb = 0, ne_tot = dom.nb_elem_tot(), nf_tot = dom.nb_faces_tot(), nfb_tot = dom.nb_faces_bord_tot(), d, D = dimension, n, N = ch.valeurs().line_size() / D,
-               m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
+  int i, e, f, fb = 0, ne_tot = dom.nb_elem_tot(),
+               nf_tot = dom.nb_faces_tot(), nfb_tot = dom.nb_faces_bord_tot(), d,
+               D = dimension, n, N = ch.valeurs().line_size() / D, m,
+               M = ( le_champ_inco.non_nul() ? le_champ_inco->valeurs() :
+                     ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
   update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
   IntTrav sten(0, 2); //stencil (NS, pression)
@@ -113,18 +94,20 @@ void Op_Grad_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 
   /* allocation / remplissage */
   tableau_trier_retirer_doublons(sten);
-  if (mat) Matrix_tools::allocate_morse_matrix(N * D * nf_tot, M * (ne_tot + nfb_tot), sten, mat2), mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+  if (mat)
+    Matrix_tools::allocate_morse_matrix(N * D * nf_tot, M * (ne_tot + nfb_tot), sten, mat2), mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }
 
 void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Domaine_PolyVEF_P0& dom = ref_domaine.valeur();
+  const Domaine_PolyMAC& dom = ref_domaine.valeur();
   const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   const Conds_lim& cls = ref_dcl->les_conditions_limites();
   const IntTab& f_e = dom.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& vfd = dom.volumes_entrelaces_dir(),
-                   &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
+                   &press = semi_impl.count("pression") ? semi_impl.at("pression") :
+                            (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()), *alp =
+                              sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, e, f, fb, ne_tot = dom.nb_elem_tot(), d, D = dimension, n, N = secmem.line_size() / D, m, M = press.line_size();
   update_grad();
@@ -135,9 +118,11 @@ void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   /* aux faces */
   for (f = 0; f < dom.nb_faces(); f++)
     {
-      if (fgrad_d(f + 1) == fgrad_d(f)) abort();
+      if (fgrad_d(f + 1) == fgrad_d(f))
+        abort();
       for (a_v = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (n = 0; n < N; n++) a_v(n) += vfd(f, i) * (alp ? (*alp)(e, n) : 1);
+        for (n = 0; n < N; n++)
+          a_v(n) += vfd(f, i) * (alp ? (*alp)(e, n) : 1);
 
       /* |f| grad p */
       for (i = fgrad_d(f); i < fgrad_d(f + 1); i++)
@@ -150,9 +135,4 @@ void Op_Grad_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 (*mat)(N * (D * f + d) + n, M * (e < ne_tot ? e : ne_tot + dom.fbord(fb)) + m) += fac;
             }
     }
-}
-
-int Op_Grad_PolyVEF_P0_Face::impr(Sortie& os) const
-{
-  return 0;
 }
