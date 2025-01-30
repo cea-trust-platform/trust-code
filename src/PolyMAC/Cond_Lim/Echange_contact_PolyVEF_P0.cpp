@@ -13,26 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Fonc_Elem_PolyVEF_P0_rot_included
-#define Champ_Fonc_Elem_PolyVEF_P0_rot_included
+#include <Echange_contact_PolyVEF_P0.h>
 
-#include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
 
-/*! @brief class Champ_Fonc_Elem_PolyVEF_P0_rot for the calculation of the vorticity
- *       This field is a Champ_Fonc_Elem_PolyVEF_P0 with 1 value per element and per phase in 2D and 3 in 3D
- *
- *       It isn't a Champ_Fonc_Face_PolyVEF_P0 as there is no physical justification to project the vorticity on a face
- *       In 3D, Champ_Fonc_Elem_PolyVEF_P0_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
- *       The vorticity is calculated by hand in 2D and 3D using the values of the gradient
- *
- */
+Implemente_instanciable(Echange_contact_PolyVEF_P0,"Echange_contact_PolyVEF_P0",Echange_contact_PolyMAC_P0);
+using namespace MEDCoupling;
 
-class Champ_Fonc_Elem_PolyVEF_P0_rot: public Champ_Fonc_Elem_PolyMAC_P0_rot
+Sortie& Echange_contact_PolyVEF_P0::printOn(Sortie& s ) const
 {
-  Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_rot);
-public:
-  void me_calculer_2D();
-  void me_calculer_3D();
-};
+  return s << que_suis_je() << finl;
+}
 
-#endif /* Champ_Fonc_Elem_PolyVEF_P0_rot_included */
+Entree& Echange_contact_PolyVEF_P0::readOn(Entree& s )
+{
+  Process::exit("Echange_contact_PolyVEF_P0 not yet available ! Call the 911 !");
+  return Echange_contact_PolyMAC_P0::readOn(s);
+}
+

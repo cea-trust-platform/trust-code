@@ -27,15 +27,27 @@
 #include <EChaine.h>
 #include <TRUSTTab_parts.h>
 #include <Linear_algebra_tools_impl.h>
-#include <Probleme_base.h>
-#include <Equation_base.h>
+#include <Champ_Face_PolyVEF_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyVEF_P0.h>
+#include <Dirichlet_homogene.h>
+#include <Champ_Fonc_reprise.h>
 #include <Option_PolyVEF_P0.h>
 #include <Schema_Temps_base.h>
-#include <Champ_Fonc_reprise.h>
+#include <TRUSTTab_parts.h>
+#include <Champ_Uniforme.h>
+#include <Probleme_base.h>
+#include <Equation_base.h>
+#include <TRUSTLists.h>
+#include <Domaine_VF.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <EChaine.h>
+#include <Domaine.h>
 #include <array>
 #include <cmath>
 
-Implemente_instanciable(Champ_Face_PolyVEF_P0,"Champ_Face_PolyVEF_P0",Champ_Face_PolyMAC_P0P1NC) ;
+Implemente_instanciable(Champ_Face_PolyVEF_P0, "Champ_Face_PolyVEF_P0", Champ_Face_PolyMAC_P0);
 
 Sortie& Champ_Face_PolyVEF_P0::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
@@ -45,9 +57,7 @@ int Champ_Face_PolyVEF_P0::fixer_nb_valeurs_nodales(int n)
 {
   // j'utilise le meme genre de code que dans Champ_Fonc_P0_base sauf que je recupere le nombre de faces au lieu du nombre d'elements
   // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer le domaine discrete...
-
   assert(n == domaine_PolyVEF_P0().nb_faces() || n < 0);
-
   creer_tableau_distribue(domaine_PolyVEF_P0().md_vector_faces());
   return n;
 }
@@ -60,22 +70,25 @@ Champ_base& Champ_Face_PolyVEF_P0::affecter_(const Champ_base& ch)
 
   if (sub_type(Champ_Fonc_reprise, ch))
     {
-      for (int num_face=0; num_face<dom.nb_faces(); num_face++)
-        for (int i = 0; i< val.dimension(1); i++)
+      for (int num_face = 0; num_face < dom.nb_faces(); num_face++)
+        for (int i = 0; i < val.dimension(1); i++)
           val(num_face, i) = ch.valeurs()(num_face, i);
     }
   else
     {
       int f, i, ND = val.line_size(), unif = sub_type(Champ_Uniforme, ch);
 
-      if (unif) eval = ch.valeurs();
-      else eval.resize(val.dimension_tot(0), ND), ch.valeur_aux(xv,eval);
+      if (unif)
+        eval = ch.valeurs();
+      else
+        eval.resize(val.dimension_tot(0), ND), ch.valeur_aux(xv, eval);
       for (f = 0; f < dom.nb_faces_tot(); f++)
         for (i = 0; i < ND; i++)
           val(f, i) = eval(unif ? 0 : f, i);
       //copie dans toutes les cases
       valeurs().echange_espace_virtuel();
-      for(i = 1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
+      for (i = 1; i < les_valeurs->nb_cases(); i++)
+        les_valeurs[i].valeurs() = valeurs();
     }
   return *this;
 }
@@ -88,14 +101,15 @@ DoubleTab& Champ_Face_PolyVEF_P0::valeur_aux_elems(const DoubleTab& positions, c
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins();
   int i, j, e, f, d, db, D = dimension, n, N = valeurs().line_size() / D;
 
-  if (Option_PolyVEF_P0::interp_postraitement_no_poro)// Cas sans porosite : on fait une moyenne volumique
+  if (Option_PolyVEF_P0::interp_postraitement_no_poro)  // Cas sans porosite : on fait une moyenne volumique
     for (val = 0, i = 0; i < les_polys.size(); i++) //element
       for (e = les_polys(i), j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) //face de l'element
         for (d = 0; d < D; d++)
           for (n = 0; n < N; n++)
-            val(i, N * d + n) += src(f, N * d + n) * vf_dir(f, e == f_e(f,0) ? 0 : 1) / ve(e) ;
+            val(i, N * d + n) += src(f, N * d + n) * vf_dir(f, e == f_e(f, 0) ? 0 : 1) / ve(e);
 
-  else   // Cas general : on utilise que les normales de vitesse aux faces
+  else
+    // Cas general : on utilise que les normales de vitesse aux faces
     for (val = 0, i = 0; i < les_polys.size(); i++) //element
       for (e = les_polys(i), j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) //face de l'element
         for (d = 0; d < D; d++)
@@ -114,13 +128,14 @@ DoubleVect& Champ_Face_PolyVEF_P0::valeur_aux_elems_compo(const DoubleTab& posit
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins();
   int i, j, e, f, db, D = dimension, N = src.line_size() / D, d = ncomp / N, n = ncomp % N;
 
-  if (Option_PolyVEF_P0::interp_postraitement_no_poro)// Cas sans porosite : on fait une moyenne volumique
+  if (Option_PolyVEF_P0::interp_postraitement_no_poro) // Cas sans porosite : on fait une moyenne volumique
     for (val = 0, i = 0; i < les_polys.size(); i++) //element
       for (e = les_polys(i), j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) //face de l'element
         for (n = 0; n < N; n++)
-          val(i) += src(f, N * d + n) * vf_dir(f,e == f_e(f,0) ? 0 : 1) / ve(e) ;
+          val(i) += src(f, N * d + n) * vf_dir(f, e == f_e(f, 0) ? 0 : 1) / ve(e);
 
-  else   // Cas general : on utilise que les normales de vitesse aux faces
+  else
+    // Cas general : on utilise que les normales de vitesse aux faces
     for (val = 0, i = 0; i < les_polys.size(); i++) //element
       for (e = les_polys(i), j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) //face de l'element
         for (db = 0; db < D; db++)
@@ -132,14 +147,15 @@ DoubleVect& Champ_Face_PolyVEF_P0::valeur_aux_elems_compo(const DoubleTab& posit
 
 DoubleTab& Champ_Face_PolyVEF_P0::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
-  assert(distant==0);
+  assert(distant == 0);
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
   const DoubleTab& val = valeurs(t);
 
   for (int i = 0, N = val.dimension(1); i < fr_vf.nb_faces(); i++)
     {
       const int f = fr_vf.num_face(i);
-      for (int n = 0; n < N; n++) x(i, n) = val(f, n);
+      for (int n = 0; n < N; n++)
+        x(i, n) = val(f, n);
     }
 
   return x;
@@ -152,11 +168,12 @@ void Champ_Face_PolyVEF_P0::init_vf2() const
   Process::exit();
 #else
   const Domaine_PolyVEF_P0& dom = domaine_PolyVEF_P0();
-  if (vf2d.dimension(0)) return; //deja initialise
+  if (vf2d.dimension(0))
+    return; //deja initialise
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = dom.face_surfaces(), &ve = dom.volumes(), &vf = dom.volumes_entrelaces();
   const DoubleTab& xp = dom.xp(), &xv = dom.xv(), &nf = dom.face_normales();
   const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces(), &f_s = dom.face_sommets();
-  int i, j, jb, k, e, f, fb, s, sb, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo=0, un = 1, rank;
+  int i, j, jb, k, e, f, fb, s, sb, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo = 0, un = 1, rank;
   double eps = 1e-8, fac, vol;
   init_fcl();
 
@@ -167,7 +184,7 @@ void Champ_Face_PolyVEF_P0::init_vf2() const
   std::map<std::array<int, 2>, std::vector<int>> a_f;
   for (f = 0; f < dom.nb_faces_tot(); f++)
     for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-      sb = D < 3 ? -1 : f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0), a_f[ {{ std::min(s, sb), std::max(s, sb)}}].push_back(f);
+      sb = D < 3 ? -1 : f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0), a_f[ { { std::min(s, sb), std::max(s, sb) } }].push_back(f);
 
   vf2d.resize(1, 2), vf2bj.resize(0, 2), vf2c.resize(0, D), vf2bc.resize(0, D);
   std::map<std::array<int, 2>, int> v_i; // v_i[{f, -1 (interne) ou composante }] = indice
@@ -180,13 +197,15 @@ void Champ_Face_PolyVEF_P0::init_vf2() const
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
           for (k = fcl_(fb, 0) < 3 ? -1 : 0; k < (fcl_(fb, 0) < 3 ? 0 : D); k++) //toutes les composantes si face de bord de Dirichlet, composante normale sinon
-            if (!v_i.count({{ fb, k }})) v_i[ {{fb, k }}] = (int)i_v.size(), i_v.push_back({{fb, k }});
+            if (!v_i.count( { { fb, k } }))
+      v_i[ { { fb, k } }] = (int) i_v.size(), i_v.push_back( { { fb, k } });
       for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
         {
           sb = D < 3 ? -1 : f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0);
-          for (auto &&fa : a_f.at({{ std::min(s, sb), std::max(s, sb)}}))
+          for (auto &&fa : a_f.at( { { std::min(s, sb), std::max(s, sb) } }))
           for (k = fcl_(fa, 0) < 3 ? -1 : 0; k < (fcl_(fa, 0) < 3 ? 0 : D); k++) //toutes les composantes si face de bord de Dirichlet, composante normale sinon
-            if (!v_i.count({{ fa, k }})) v_i[ {{fa, k }}] = (int)i_v.size(), i_v.push_back({{fa, k }});
+            if (!v_i.count( { { fa, k } }))
+          v_i[ { { fa, k } }] = (int) i_v.size(), i_v.push_back( { { fa, k } });
         }
       vf2.resize(nc = (int) i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
 
@@ -196,15 +215,18 @@ void Champ_Face_PolyVEF_P0::init_vf2() const
           x_cg(d) += ve(e) / vol * xp(e, d);
       for (vf2 = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          if (fb == f && f_e(f, 1) >= 0) continue;
-          else if (v_i.count({{ fb, -1 }}))
-      for (k = v_i[ {{ fb, -1}}], fac = (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / vol, d = 0; d < D; d++)
+          if (fb == f && f_e(f, 1) >= 0)
+            continue;
+          else if (v_i.count( { { fb, -1 } }))
+      for (k = v_i[ { { fb, -1 } }], fac = (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / vol, d = 0; d < D; d++)
       vf2(k, d) += fac * (xv(fb, d) - x_cg(d));
-      else for (db = 0; db < D; db++)
-          for (k = v_i[ {{ fb, db }}], fac = (e == f_e(fb, 0) ? 1 : -1) * nf(fb, db) / vol, d = 0; d < D; d++)
+      else
+        for (db = 0; db < D; db++)
+          for (k = v_i[ { { fb, db } }], fac = (e == f_e(fb, 0) ? 1 : -1) * nf(fb, db) / vol, d = 0; d < D; d++)
       vf2(k, d) += fac * (xv(fb, d) - x_cg(d));
       /* ponderations (comme dans Domaine_PolyVEF_P0::{e,f}grad) */
-      for (i = 0; i < nc; i++) fb = i_v[i][0], P(i) = 1. / std::max(sqrt(dom.dot(&xv(fb, 0), &xv(fb, 0), &xv(f, 0), &xv(f, 0))), 1e-8 * vf(f) / fs(f));
+      for (i = 0; i < nc; i++)
+        fb = i_v[i][0], P(i) = 1. / std::max(sqrt(dom.dot(&xv(fb, 0), &xv(fb, 0), &xv(f, 0), &xv(f, 0))), 1e-8 * vf(f) / fs(f));
 
       /* par composante, si on a assez de voisins : correction pour etre d'ordre 2 */
       if (nc >= nl)
@@ -217,28 +239,31 @@ void Champ_Face_PolyVEF_P0::init_vf2() const
                   {
                     fac = (db < 0 ? nf(fb, j) / fs(fb) : (db == j)) * (k < D ? xv(fb, k) - xv(f, k) : 1);
                     A(i, jb) = fac * P(i);
-                    if (k < D) B(jb) -= fac * vf2(i, d); //erreur de l'interp d'ordre 1 a corriger
+                    if (k < D)
+                      B(jb) -= fac * vf2(i, d); //erreur de l'interp d'ordre 1 a corriger
                   }
 
             /* x de norme L2 minimale par dgels */
-            nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
-            W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+            nw = -1, F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+            W.resize(nw = (int) std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
             assert(infoo == 0);
             /* ajout dans ve2 */
-            for (i = 0; i < nc; i++) vf2(i, d) += P(i) * B(i);
+            for (i = 0; i < nc; i++)
+              vf2(i, d) += P(i) * B(i);
           }
 
       /* preservation de la composante normale */
       for (i = 0; i < nc; i++) //on la retire partout...
         for (fac = dom.dot(&vf2(i, 0), &nf(f, 0)) / (fs(f) * fs(f)), d = 0; d < D; d++)
           vf2(i, d) -= fac * nf(f, d);
-      for (i = v_i.at({{ f, -1}}), d = 0; d < D; d++) vf2(i, d) += nf(f, d) / fs(f); //et on la remet sur f
+      for (i = v_i.at( { { f, -1 } }), d = 0; d < D; d++)
+      vf2(i, d) += nf(f, d) / fs(f); //et on la remet sur f
 
       /* stockage */
       for (i = 0; i < nc; i++)
         if (dom.dot(&vf2(i, 0), &vf2(i, 0)) > 1e-16)
           {
-            i_v[i][1] < 0 ? vf2j.append_line(i_v[i][0])  : vf2bj.append_line(i_v[i][0], i_v[i][1]);
+            i_v[i][1] < 0 ? vf2j.append_line(i_v[i][0]) : vf2bj.append_line(i_v[i][0], i_v[i][1]);
             fac = pf(i_v[i][0]) / pf(f);
             DoubleTab& tab = i_v[i][1] < 0 ? vf2c : vf2bc;
             D < 3 ? tab.append_line(fac * vf2(i, 0), fac * vf2(i, 1)) : tab.append_line(fac * vf2(i, 0), fac * vf2(i, 1), fac * vf2(i, 2));
@@ -251,11 +276,12 @@ void Champ_Face_PolyVEF_P0::init_vf2() const
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
 void Champ_Face_PolyVEF_P0::update_vf2(DoubleTab& val, int incr) const
 {
-  if (!Option_PolyVEF_P0::interp_vf2 || 1) return;
+  if (!Option_PolyVEF_P0::interp_vf2 || 1)
+    return;
   const Domaine_PolyVEF_P0& dom = domaine_PolyVEF_P0();
   const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = dom.face_normales();
-  const DoubleVect& fs = dom.face_surfaces();//, &pf = equation().milieu().porosite_face();
+  const DoubleVect& fs = dom.face_surfaces(); //, &pf = equation().milieu().porosite_face();
   int i, f, fb, d, db, D = dimension, N = val.line_size() / D, n;
   DoubleTrav vn(N), nv(D, N); //vitesse normale (a une face), nouvelle vitesse
   init_vf2(), init_fcl();

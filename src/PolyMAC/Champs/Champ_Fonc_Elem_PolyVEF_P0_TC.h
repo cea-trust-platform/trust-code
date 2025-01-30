@@ -16,9 +16,7 @@
 #ifndef Champ_Fonc_Elem_PolyVEF_P0_TC_included
 #define Champ_Fonc_Elem_PolyVEF_P0_TC_included
 
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Champ_Face_PolyVEF_P0.h>
-#include <TRUST_Ref.h>
+#include <Champ_Fonc_Elem_PolyMAC_P0_TC.h>
 
 /*! @brief class Champ_Fonc_Elem_PolyVEF_P0_TC for the calculation of the shear rate (taux de cisaillement)
  *
@@ -31,19 +29,9 @@
  *
  */
 
-class Champ_Fonc_Elem_PolyVEF_P0_TC: public Champ_Fonc_Elem_PolyMAC
+class Champ_Fonc_Elem_PolyVEF_P0_TC: public Champ_Fonc_Elem_PolyMAC_P0_TC
 {
   Declare_instanciable(Champ_Fonc_Elem_PolyVEF_P0_TC);
-public:
-  void mettre_a_jour(double) override;
-  void me_calculer(double tps);
-
-  inline void associer_champ(const Champ_Face_PolyVEF_P0& ch) { champ_ = ch; }
-  inline virtual Champ_Face_PolyVEF_P0& champ_a_deriver() { return champ_.valeur(); }
-  inline virtual const Champ_Face_PolyVEF_P0& champ_a_deriver() const { return champ_.valeur(); }
-
-protected:
-  OBS_PTR(Champ_Face_PolyVEF_P0) champ_;
 };
 
 #endif /* Champ_Fonc_Elem_PolyVEF_P0_TC_included */
