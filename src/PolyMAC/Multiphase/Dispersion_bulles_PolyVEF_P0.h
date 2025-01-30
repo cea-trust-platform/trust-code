@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,13 @@
 #ifndef Dispersion_bulles_PolyVEF_P0_included
 #define Dispersion_bulles_PolyVEF_P0_included
 
-#include <Source_Dispersion_bulles_base.h>
+#include <Dispersion_bulles_PolyMAC_P0.h>
 
-class Dispersion_bulles_PolyVEF_P0: public Source_Dispersion_bulles_base
+class Dispersion_bulles_PolyVEF_P0: public Dispersion_bulles_PolyMAC_P0
 {
   Declare_instanciable(Dispersion_bulles_PolyVEF_P0);
 protected:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void dimensionner_blocs_aux(IntTrav&) const override;
 };
 
 #endif /* Dispersion_bulles_PolyVEF_P0_included */
