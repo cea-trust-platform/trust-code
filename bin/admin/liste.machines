@@ -8,7 +8,8 @@ linux	rsync_ssh	tache	is245198-intel21.intra.cea.fr	-all 		-TRUST               
 linux	rsync_ssh	tache	is245198-intel22.intra.cea.fr	-all 		-TRUST -TrioCFD  -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -TrioMC  		-intel22  -disable-plot2d -force_system_mpi -disable-mpi4py -without-visit  		# Ubuntu 20 TMA EOS
 linux	rsync_ssh	tache	is245198.intra.cea.fr			-FLICA5   		  -disable-plot2d -without-visit  		# Ubuntu 20 TMA EOS
 linux   rsync_ssh	non	rockefellia9-build64.intra.cea.fr 	-all		-TrioCFD    			-build_64_bit -disable-plot2d  -without-pdflatex -disable-mpi4py -disable-gmsh -without-visit  						# Rocky 9 titania 
-linux	rsync_ssh		tache	is246434.intra.cea.fr		-all 		 -TrioCFD -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -SIDES -SCORPIO    	-g -force_even_unsupported  				-without-pdflatex  	# Debian testing MF titania
+linux	rsync_ssh		tache	is246434.intra.cea.fr		-all 		 -TrioCFD -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -SIDES -SCORPIO -TrioMC     	-g -force_even_unsupported  				-without-pdflatex  	# Debian testing MF titania
+linux	rsync_ssh		tache	is246434-clang.intra.cea.fr		-all 		 -TrioCFD -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -SIDES -SCORPIO -TrioMC     	-clang -force_even_unsupported  				-force_latest_mpich -without-pdflatex -without-visit   	# Debian testing MF 
 linux	rsync_ssh	tache	is242981-clang.intra.cea.fr			-TrioCFD  					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 	-FLICA5 			-semi_opt 				-coolprop -eos 				# Fedora 32	Bat 451 LGLS titania bureau Pierre Ledac
 linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit   								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST

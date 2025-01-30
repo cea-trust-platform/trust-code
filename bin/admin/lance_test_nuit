@@ -648,7 +648,7 @@ echo "Call to "$TRUST_ROOT"/configure"
 echo "  See $config_log"
 echo "TRUST configuration on $HOST the `date` ...">$config_log
 echo>>$config_log
-./configure -force_provided_mpich -std=c++14 -disable-trustify 1>>$config_log || exit -1
+./configure -force_provided_mpich 1>>$config_log || exit -1
 #grep -i error $config_log
 grep KO $config_log
 tail -n24 $config_log | head -n1
@@ -946,7 +946,7 @@ echo " "
       else
          git remote update
          git checkout .
-         git checkout next 1>tmp.log 2>&1
+         #git checkout next 1>tmp.log 2>&1
          [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git checkout next KO\" $TRUST_MAIL
          rm tmp.log 1>/dev/null 2>&1
          git pull 1>tmp.log 2>&1
@@ -1127,7 +1127,7 @@ echo "###############################################"
            fi
         fi
         echo "Call to configure $vue version in `pwd`"
-        ./configure -force_provided_mpich -std=c++14 -disable-trustify 1>/dev/null 2>&1
+        ./configure -force_provided_mpich 1>/dev/null 2>&1
         source env_TRUST.sh 1>/dev/null 2>&1
         echo "TRUST_ROOT=$TRUST_ROOT"
         echo "TRUST_VERSION=$TRUST_VERSION"
@@ -4086,6 +4086,7 @@ fi
 # Envoi d'un message aux developpeurs
 #####################################
 cd $TRUST_ROOT
+git_branch_tested=`git branch --show-current 2>/dev/null` && [ "$git_branch_tested" = "Livraison" ] && git_branch_tested=next
 dest=$ALL_DEVELOPERS_TRUST_MAIL
 #for dest in $ALL_DEVELOPERS_TRUST_MAIL
 #do
@@ -4094,7 +4095,7 @@ dest=$ALL_DEVELOPERS_TRUST_MAIL
    then
       if [ $accord_beta = 0 ]
       then
-         mail_ -s \"Release criteria of TRUST $new on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
+         mail_ -s \"Release criteria of TRUST $new branch $git_branch_tested on `date '+%d/%m/%y'` \" $dest < $MESSAGES_NUIT
       else
          mail_ -s \"Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
       fi
