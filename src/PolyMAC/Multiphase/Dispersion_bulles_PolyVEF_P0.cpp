@@ -23,31 +23,13 @@
 #include <Pb_Multiphase.h>
 #include <Neumann_paroi.h>
 
-Implemente_instanciable(Dispersion_bulles_PolyVEF_P0,"Dispersion_bulles_Face_PolyVEF_P0", Source_Dispersion_bulles_base);
+Implemente_instanciable(Dispersion_bulles_PolyVEF_P0,"Dispersion_bulles_Face_PolyVEF_P0", Dispersion_bulles_PolyMAC_P0);
 
 Sortie& Dispersion_bulles_PolyVEF_P0::printOn(Sortie& os) const { return os; }
 
 Entree& Dispersion_bulles_PolyVEF_P0::readOn(Entree& is)
 {
-  Source_Dispersion_bulles_base::readOn(is);
-  if sub_type(Op_Diff_Turbulent_PolyVEF_P0_Face, equation().operateur(0).l_op_base()) is_turb = 1;
-  return is;
-}
-
-void Dispersion_bulles_PolyVEF_P0::dimensionner_blocs_aux(IntTrav& stencil) const
-{
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
-  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis());
-  const DoubleTab& inco = ch.valeurs();
-
-  int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = domaine.nb_faces_tot();
-
-  /* elements */
-  for (e = 0, i = nf_tot; e < domaine.nb_elem_tot(); e++)
-    for (d = 0; d < D; d++, i++)
-      for (db = 0, j = nf_tot + D * e; db < D; db++, j++)
-        for (k = 0; k < N; k++)
-          for (l = 0; l < N; l++) stencil.append_line(N * i + k, N * j + l);
+  return Dispersion_bulles_PolyMAC_P0::readOn(is);
 }
 
 void Dispersion_bulles_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
