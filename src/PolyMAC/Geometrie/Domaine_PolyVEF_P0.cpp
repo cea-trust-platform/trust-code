@@ -58,7 +58,7 @@
 #include <set>
 #include <map>
 
-Implemente_instanciable(Domaine_PolyVEF_P0, "Domaine_PolyVEF_P0", Domaine_PolyMAC_P0P1NC);
+Implemente_instanciable(Domaine_PolyVEF_P0, "Domaine_PolyVEF_P0", Domaine_PolyMAC_P0);
 
 Sortie& Domaine_PolyVEF_P0::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 
