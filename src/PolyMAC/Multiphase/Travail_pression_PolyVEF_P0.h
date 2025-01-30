@@ -13,24 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Source_Generique_Face_PolyVEF_P0.h>
-#include <Domaine_PolyVEF_P0.h>
-#include <Equation_base.h>
-#include <Milieu_base.h>
+#ifndef Travail_pression_PolyVEF_P0_included
+#define Travail_pression_PolyVEF_P0_included
 
-Implemente_instanciable(Source_Generique_Face_PolyVEF_P0, "Source_Generique_Face_PolyVEF_P0", Source_Generique_Face_PolyMAC_P0P1NC);
+#include <Travail_pression_PolyMAC_P0P1NC.h>
 
-Sortie& Source_Generique_Face_PolyVEF_P0::printOn(Sortie& os) const { return os << que_suis_je(); }
-
-Entree& Source_Generique_Face_PolyVEF_P0::readOn(Entree& is) { return Source_Generique_base::readOn(is); }
-
-DoubleTab& Source_Generique_Face_PolyVEF_P0::ajouter(DoubleTab& resu) const
+class Travail_pression_PolyVEF_P0 : public Travail_pression_PolyMAC_P0P1NC
 {
-  OWN_PTR(Champ_base) espace_stockage;
-  const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
-  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
-  for (int f = 0; f < domaine.nb_faces(); f++)
-    resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
-  return resu;
-}
+  Declare_instanciable(Travail_pression_PolyVEF_P0);
+public:
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+};
+
+#endif /* Travail_pression_PolyVEF_P0_included */
