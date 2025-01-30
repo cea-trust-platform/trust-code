@@ -16,9 +16,8 @@
 #ifndef Champ_Face_PolyVEF_P0_included
 #define Champ_Face_PolyVEF_P0_included
 
-#include <Champ_Face_PolyMAC_P0P1NC.h>
+#include <Champ_Face_PolyMAC_P0.h>
 #include <Domaine_PolyVEF_P0.h>
-#include <SolveurSys.h>
 
 /*! @brief : class Champ_Face_PolyVEF_P0
  *
@@ -29,7 +28,7 @@
  *
  */
 
-class Champ_Face_PolyVEF_P0 : public Champ_Face_PolyMAC_P0P1NC
+class Champ_Face_PolyVEF_P0 : public Champ_Face_PolyMAC_P0
 {
   Declare_instanciable(Champ_Face_PolyVEF_P0) ;
 
@@ -46,7 +45,6 @@ public :
   void update_vf2(DoubleTab& val, int incr = 0) const;
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
-  // DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
   DoubleTab& valeur_aux_faces(DoubleTab& result) const override
   {
