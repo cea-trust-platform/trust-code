@@ -16,16 +16,19 @@
 #ifndef Assembleur_P_PolyVEF_P0_included
 #define Assembleur_P_PolyVEF_P0_included
 
-#include <Assembleur_P_PolyMAC_P0P1NC.h>
+#include <Assembleur_P_PolyMAC_P0.h>
 
-class Assembleur_P_PolyVEF_P0 : public Assembleur_P_PolyMAC_P0P1NC
+class Assembleur_P_PolyVEF_P0 : public Assembleur_P_PolyMAC_P0
 {
   Declare_instanciable(Assembleur_P_PolyVEF_P0);
-
 public:
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
   void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
   void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override
+  {
+    Assembleur_P_PolyMAC_P0P1NC::modifier_secmem_pour_incr_p(press, fac, incr);
+  }
 };
 
 #endif /* Assembleur_P_PolyVEF_P0_included */
