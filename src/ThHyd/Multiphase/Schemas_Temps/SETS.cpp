@@ -84,9 +84,11 @@ Sortie& SETS::printOn(Sortie& os) const
 Entree& SETS::readOn(Entree& is)
 {
   /* valeurs par defaut des criteres de convergence */
-  crit_conv_ = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "enthalpie", 1e2 }, { "vitesse", 1e-2 }, { "pression", 100 }, { "k", 1e-2 }, { "tau", 1e-2 }, { "omega", 1e-2 }, { "k_WIT", 1e-2 }, {
-      "interfacial_area", 1e2
-    }
+  crit_conv_ = {{ "alpha", 1e-2 }, { "temperature", 1e-1 },
+    { "enthalpie", 1e2 }, { "vitesse", 1e-2 },
+    { "pression", 100 }, { "k", 1e-2 },
+    { "tau", 1e-2 }, { "omega", 1e-2 },
+    { "k_WIT", 1e-2 }, { "interfacial_area", 1e2 }
   };
   return Simpler::readOn(is);
 }
@@ -98,10 +100,8 @@ Entree& SETS::lire(const Motcle& mot, Entree& is)
       Nom nom;
       is >> nom;
       if (nom != "{")
-        {
-          Cerr << "SETS::lire() : { expected instead of " << nom << finl;
-          Process::exit();
-        }
+        Process::exit(Nom("SETS::lire() : { expected instead of ") + nom);
+
       for (is >> nom; nom != "}"; is >> nom)
         {
           double val;
@@ -134,24 +134,41 @@ Entree& ICE::readOn(Entree& is)
 
 static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr, double& err_a_sum)
 {
-  int i, n, N = alpha.line_size();
+  const int N = alpha.line_size();
   double a_sum, corr_max = 0;
   DoubleTrav n_a(N);
-  for (i = 0, err_a_sum = 0; i < alpha.dimension_tot(0); i++)
+
+  err_a_sum = 0;
+
+  for (int i = 0; i < alpha.dimension_tot(0); i++)
     {
-      for (a_sum = 0, n = 0; n < N; n++)
-        n_a(n) = alpha(i, n) + incr(i, n), a_sum += n_a(n);
+      a_sum = 0;
+      for (int n = 0; n < N; n++)
+        {
+          n_a(n) = alpha(i, n) + incr(i, n);
+          a_sum += n_a(n);
+        }
       err_a_sum = std::max(err_a_sum, std::abs(a_sum - 1));
-      for (a_sum = 0, n = 0; n < N; n++)
-        n_a(n) = std::max(n_a(n), 0.), a_sum += n_a(n);
-      if (a_sum)
-        for (n = 0; n < N; n++)
+
+      a_sum = 0;
+      for (int n = 0; n < N; n++)
+        {
+          n_a(n) = std::max(n_a(n), 0.);
+          a_sum += n_a(n);
+        }
+      if (static_cast<bool>(a_sum))
+        for (int n = 0; n < N; n++)
           n_a(n) /= a_sum;
       else
-        for (n = 0; n < N; n++)
+        for (int n = 0; n < N; n++)
           n_a(n) = 1. / N;
-      for (n = 0; n < N; n++)
-        corr_max = std::max(corr_max, std::fabs(alpha(i, n) + incr(i, n) - n_a(n))), incr(i, n) = n_a(n) - alpha(i, n);
+
+      for (int n = 0; n < N; n++)
+        {
+          corr_max = std::max(corr_max,
+                              std::fabs(alpha(i, n) + incr(i, n) - n_a(n)));
+          incr(i, n) = n_a(n) - alpha(i, n);
+        }
     }
   err_a_sum = Process::mp_max(err_a_sum);
   return Process::mp_max(corr_max);
@@ -160,7 +177,7 @@ static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr
 double SETS::unknown_positivation(const DoubleTab& uk, DoubleTab& incr)
 {
   double corr_max = 0;
-  int N = uk.line_size();
+  const int N = uk.line_size();
   for (int i = 0; i < uk.dimension_tot(0); i++)
     for (int n = 0; n < N; n++)
       if (uk(i, n) + incr(i, n) < 0)
@@ -176,23 +193,32 @@ double SETS::unknown_positivation(const DoubleTab& uk, DoubleTab& incr)
 void SETS::init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norme)
 {
   cv_ctx = (SETS::cv_test_t *) calloc(1, sizeof(SETS::cv_test_t));
-  cv_ctx->obj = this, cv_ctx->eps_alpha = crit_conv_["alpha"];
-  norm = norme, residu = secmem, cv_ctx->t = nullptr, cv_ctx->v = nullptr;
+  cv_ctx->obj = this;
+  cv_ctx->eps_alpha = crit_conv_["alpha"];
+  norm = norme;
+  residu = secmem;
+  cv_ctx->t = nullptr;
+  cv_ctx->v = nullptr;
   /* numerotation pour recuperer le residu : on fait comme dans Solv_Petsc */
   ArrOfBit items_to_keep;
-  int i, size = secmem.size_array();
+  const int size = secmem.size_array();
   trustIdType idx = mppartial_sum(secmem.get_md_vector()->get_sequential_items_flags(items_to_keep, secmem.line_size()));
-  for (ix.resize(size), i = 0; i < size; i++)
-    if (items_to_keep[i]) ix[i] = idx, idx++;
-    else ix[i] = -1;
+  ix.resize(size);
+  for (int i = 0; i < size; i++)
+    if (items_to_keep[i])
+      ix[i] = idx, idx++;
+    else
+      ix[i] = -1;
   KSPConvergedDefaultCreate(&cv_ctx->defctx);
 }
 
 PetscErrorCode destroy_cvctx(void *mctx)
 {
   SETS::cv_test_t *ctx = (SETS::cv_test_t *)mctx;
-  if (ctx->v) VecDestroy(&ctx->v);
-  if (ctx->t) VecDestroy(&ctx->t);
+  if (ctx->v)
+    VecDestroy(&ctx->v);
+  if (ctx->t)
+    VecDestroy(&ctx->t);
   PetscErrorCode err =  KSPConvergedDefaultDestroy(ctx->defctx);
   free(ctx);
   return err;
@@ -224,15 +250,22 @@ PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConver
 }
 #endif
 
-bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& current, double dt, int numero_iteration, int& ok)
+bool SETS::iterer_eqn(Equation_base& eqn,
+                      const DoubleTab& inut,
+                      DoubleTab& current,
+                      double dt,
+                      int numero_iteration,
+                      int& ok)
 {
-  int cv;
   /* on ne traite que Pb_Multiphase ou Pb_conduction */
   if (!sub_type(Pb_Multiphase, eqn.probleme()) && !sub_type(Pb_Conduction, eqn.probleme()))
-    Process::exit(que_suis_je() + " cannot be applied to the problem " + eqn.probleme().le_nom() + " of type " + eqn.probleme().que_suis_je() + "!");
+    Process::exit(que_suis_je() + " cannot be applied to the problem "
+                  + eqn.probleme().le_nom() + " of type " + eqn.probleme().que_suis_je() + "!");
 
   /* equations non resolues directement : Masse_Multiphase (toujours), Energie_Multiphase (en ICE), Convection_Diffusion_std i.e. quantites turbulentes (en ICE) */
-  if (sub_type(Masse_Multiphase, eqn) || (!sets_ && sub_type(Energie_Multiphase, eqn)) || (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
+  if (sub_type(Masse_Multiphase, eqn) ||
+      (!sets_ && sub_type(Energie_Multiphase, eqn)) ||
+      (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
     {
       if (eqn.positive_unkown() == 1)
         {
@@ -247,18 +280,22 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
     }
 
   /* QDM_Multiphase: resolue par iterer_NS */
+  int cv {0};
   if (sub_type(QDM_Multiphase, eqn))
     {
       Matrice_Morse matrix_unused;
       DoubleTrav secmem_unused;
-      iterer_NS(eqn, current, ref_cast(QDM_Multiphase, eqn).pression().valeurs(), dt, matrix_unused, 0, secmem_unused, numero_iteration, cv, ok);
+      iterer_NS(eqn, current, ref_cast(QDM_Multiphase, eqn).pression().valeurs(),
+                dt, matrix_unused, 0, secmem_unused, numero_iteration, cv, ok);
       return cv;
     }
 
   /* cas restant : equation thermique d'un Pb_Multi ou d'un Pb_conduction -> on regle semi_impl si necessaire, puis on resout */
-  const std::string& nom_inco = eqn.inconnue().le_nom().getString(), nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
+  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
+  const std::string nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
   tabs_t semi_impl; /* en ICE, les temperatures de tous les problemes sont explicites */
   const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
+
   if (!sets_)
     for (auto &&op_ext : op_diff.op_ext)
       semi_impl[nom_inco + (op_ext != &op_diff ? "/" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue().passe();
@@ -294,22 +331,29 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
 //Sortie Un+1 = U***_k ; Pn+1 = P**_k
 //n designe une etape temporelle
 
-void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression, double dt, Matrice_Morse& matrice_unused, double seuil_resol, DoubleTrav& secmem_unused, int nb_ite, int& cv, int& ok)
+void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current,
+                     DoubleTab& pression, double dt,
+                     Matrice_Morse& matrice_unused, double seuil_resol,
+                     DoubleTrav& secmem_unused, int nb_ite, int& cv, int& ok)
 {
   Pb_Multiphase& pb = *(Pb_Multiphase*) &ref_cast(Pb_Multiphase, eqn.probleme());
   const bool res_en_T = pb.resolution_en_T();
 
-  int i, j, &it = iteration_, n_eq = pb.nombre_d_equations();
+  const int n_eq = pb.nombre_d_equations();
+  int& it = iteration_;
   QDM_Multiphase& eq_qdm = ref_cast(QDM_Multiphase, eqn);
-  double t = eqn.schema_temps().temps_courant(), err_a_sum = 0;
+  double err_a_sum = 0;
 
   std::vector<Equation_base*> eq_list; //ordres des equations
-  for (i = 0; i < n_eq; i++)
+  for (int i = 0; i < n_eq; i++)
     eq_list.push_back(&pb.equation(i));
   std::map<std::string, Equation_base*> eqs; //eqs[inconnue] = equation
   std::vector<std::string> noms; //ordre des inconnues : le meme que les equations, puis la pression
-  for (i = 0; i < n_eq; i++)
-    noms.push_back(eq_list[i]->inconnue().le_nom().getString()), eqs[noms[i]] = eq_list[i];
+  for (int i = 0; i < n_eq; i++)
+    {
+      noms.push_back(eq_list[i]->inconnue().le_nom().getString());
+      eqs[noms[i]] = eq_list[i];
+    }
   noms.push_back("pression"); //pas d'equation associee a la pression!
 
   std::map<std::string, Champ_Inc_base*> inco; //tous les Champ_Inc
@@ -317,6 +361,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
     inco[i_eq.first] = &i_eq.second->inconnue();
   inco["pression"] = &eq_qdm.pression();
   //initialisation du Newton avec les valeurs presentes (stockees dans passe() en implicite), dimensionnement de incr / sec
+  double t = eqn.schema_temps().temps_courant();
   pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
 
   /* valeurs semi-implicites : inconnues (alpha, v, T, ..) et champs conserves (alpha_rho, alpha_rho_e, ..) */
@@ -368,43 +413,51 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
   if (!mat_semi_impl_.nb_lignes())
     {
       mat_semi_impl_.dimensionner(n_eq + 1, n_eq + 1); //derniere ligne -> continuite
-      for (i = 0; i <= n_eq; i++)
-        for (j = 0; j <= n_eq; j++)
+      for (int i = 0; i <= n_eq; i++)
+        for (int j = 0; j <= n_eq; j++)
           mat_semi_impl_.get_bloc(i, j).typer("Matrice_Morse"), mats_[noms[i]][noms[j]] = &ref_cast(Matrice_Morse, mat_semi_impl_.get_bloc(i, j).valeur());
       for (auto &&i_eq : eqs)
         i_eq.second->dimensionner_blocs(mats_[i_eq.first], semi_impl); //option semi-implicite
       eq_qdm.assembleur_pression()->dimensionner_continuite(mats_["pression"]);
       /* si utilisation directe de mat_semi_impl : dimensionnement des blocs vides */
       if (!pressure_reduction_)
-        for (i = 0; i <= n_eq; i++)
-          for (j = 0; j <= n_eq; j++)
+        for (int i = 0; i <= n_eq; i++)
+          for (int j = 0; j <= n_eq; j++)
             if (!mats_[noms[i]][noms[j]]->nb_lignes() && !mats_[noms[i]][noms[j]]->nb_colonnes())
               mats_[noms[i]][noms[j]]->dimensionner(inco[noms[i]]->valeurs().size_totale(), inco[noms[j]]->valeurs().size_totale(), 0);
 
       MD_Vector_composite mdc;
-      for (i = 0; i <= n_eq; i++)
+      for (int i = 0; i <= n_eq; i++)
         mdc.add_part(inco[noms[i]]->valeurs().get_md_vector(), inco[noms[i]]->valeurs().line_size());
       mdv_semi_impl_.copy(mdc);
 
       /* reglage de p_degen si non lu : si incompressible sans CLs de pression imposee, alors la pression est degeneree */
       if (p_degen_ < 0)
-        for (p_degen_ = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.domaine_Cl_dis().nb_cond_lim(); i++)
-          p_degen_ &= !sub_type(Neumann_val_ext, eq_qdm.domaine_Cl_dis().les_conditions_limites(i).valeur());
+        {
+          p_degen_ = sub_type(Fluide_base, eq_qdm.milieu());
+          for (int i = 0; i < eq_qdm.domaine_Cl_dis().nb_cond_lim(); i++)
+            p_degen_ &= !sub_type(Neumann_val_ext, eq_qdm.domaine_Cl_dis().les_conditions_limites(i).valeur());
+        }
     }
 
   /* increments et residus pour l'algorithme de Newton */
   DoubleTrav v_inco, v_incr, v_sec; //format "vecteur complet"
-  MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl_, v_incr), MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl_, v_sec);
+  MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl_, v_incr);
+  MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl_, v_sec);
 
-  DoubleTab_parts p_incr(v_incr), p_sec(v_sec);
+  DoubleTab_parts p_incr(v_incr);
+  DoubleTab_parts p_sec(v_sec);
   ptabs_t incr, sec; //format "std::map"
-  for (i = 0; i <= n_eq; i++)
-    incr[noms[i]] = &p_incr[i], sec[noms[i]] = &p_sec[i];
+  for (int i = 0; i <= n_eq; i++)
+    {
+      incr[noms[i]] = &p_incr[i];
+      sec[noms[i]] = &p_sec[i];
+    }
   if (!pressure_reduction_) /* v_inco : rempli en copiant les inconnues si on ne fait pas de reduction en pression */
     {
       MD_Vector_tools::creer_tableau_distribue(mdv_semi_impl_, v_inco);
       DoubleTab_parts p_inco(v_inco);
-      for (i = 0; i <= n_eq; i++)
+      for (int i = 0; i <= n_eq; i++)
         p_inco[i] = inco[noms[i]]->valeurs();
     }
   /* Newton : assemblage de mat_semi_impl -> assemblage de la matrice en pression -> resolution -> substitution */
@@ -434,7 +487,8 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
       tp.PrintHeader();
     }
 
-  for (it = 0, cv = 0; it < iter_min_ || (!cv && it < iter_max_); it++)
+  cv = 0;
+  for (it = 0; it < iter_min_ || (!cv && it < iter_max_); it++)
     {
       /* remplissage par assembler_blocs */
       //equation d'energie en premier pour pouvoir utiliser q_pi dans d'autres equations
@@ -513,7 +567,9 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
       incr_var_convergence_.clear(); // clear if new time-step or Newton incr !
       for (auto &&n_v : incr)
         {
-          double vm = mp_min_vect(*n_v.second), vM = mp_max_vect(*n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
+          const double vm = mp_min_vect(*n_v.second);
+          const double vM = mp_max_vect(*n_v.second);
+          const double x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
           if (!Process::me())
             {
               tp << x;
@@ -558,7 +614,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
   //ha ha ha
   if (ok && cv)
     {
-      for (i = 0; i < pb.nombre_d_equations(); i++)
+      for (int i = 0; i < pb.nombre_d_equations(); i++)
         if (pb.equation(i).positive_unkown() == 1)
           {
             std::string nom_inco = pb.equation(i).inconnue().le_nom().getString();
@@ -586,12 +642,13 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pression
   return;
 }
 
-int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats, const ptabs_t& sec,
-                   std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p)
+int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre,
+                   const std::string inco_p,
+                   const std::map<std::string, matrices_t>& mats,
+                   const ptabs_t& sec,
+                   std::map<std::string, Matrice_Morse>& A_p,
+                   tabs_t& b_p)
 {
-  int i, j, jb, k, l, lb, m, oMl, oMg, M, n, oNl, oNg, N, prems = !A_p.size(), infoo = 0; //si A_p est vide, premier passage -> on doit dimensionner
-  const Matrice_Morse *A;
-  char trans = 'T';
 
   /* decoupage des inconnues de sec en parties par DoubleTab_parts */
   std::map<std::pair<std::string, int>, int> offs; //offs[{inco, bloc}] : offset du bloc k de l'inconnue inco
@@ -599,7 +656,7 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
   for (auto &&n_v : sec)
     {
       ConstDoubleTab_parts part(*n_v.second);
-      for (i = 0; i < part.size(); i++)
+      for (int i = 0; i < part.size(); i++)
         {
           offs[ { n_v.first, i }] = offs.count( { n_v.first, i - 1 }) ? offs[ { n_v.first, i - 1 }] + dims[ { n_v.first, i - 1 }][0] * dims[ { n_v.first, i - 1 }][1] : 0;
           dims[ { n_v.first, i }] = { part[i].dimension_tot(0), part[i].line_size() };
@@ -609,6 +666,12 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
   /* boucle sur les blocs */
   std::set<std::pair<std::string, int>> e_ib; //liste des { variable, bloc } deja elimines
   std::set<std::string> e_i; //liste des variables deja eliminees
+  int infoo {0}; // in fortran call
+  int prems = !A_p.size(); //si A_p est vide, premier passage -> on doit dimensionner
+  int oMg {0}, M {0};
+  const Matrice_Morse *A;
+  char trans = 'T';
+
   for (auto &&bloc : ordre)
     {
       std::set<std::string> i_bloc, dep; //variables du bloc, variables deja eliminees dont le bloc depend
@@ -622,7 +685,10 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
       /* lignes du bloc a traiter */
       std::pair<std::string, int> i_b0 = *bloc.begin(); //premiere inconnue du bloc
       IntTrav calc(dims[i_b0][0]); //calc[i] = 1 si on doit traiter l'item i
-      for (A = mats.at(i_b0.first).at(i_b0.first), oMg = offs[i_b0], M = dims[i_b0][1], i = 0; i < calc.size_array(); i++)
+      A = mats.at(i_b0.first).at(i_b0.first);
+      oMg = offs[i_b0];
+      M = dims[i_b0][1];
+      for (int i = 0; i < calc.size_array(); i++)
         if (A->get_tab1()(oMg + M * i + 1) > A->get_tab1()(oMg + M * i))
           calc(i) = 1; //on traite toutes les lignes dont la matrice est remplie
 
@@ -641,28 +707,33 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
             for (auto &&v_m : mats.at(i_b.first))
               if (v_m.second->nb_coeff())
                 {
-                  oMg = offs[i_b], M = dims[i_b][1];
+                  oMg = offs[i_b];
+                  M = dims[i_b][1];
                   if (v_m.first == inco_p) //dependance directe en inco_p
                     {
-                      for (i = 0; i < calc.size_array(); i++)
+                      for (int i = 0; i < calc.size_array(); i++)
                         if (calc[i])
-                          for (j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++) //dependances de toutes les lignes
+                          for (int j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++) //dependances de toutes les lignes
                             stencil[i].insert(v_m.second->get_tab2()(j) - 1);
                     }
                   else if (e_i.count(v_m.first) || i_bloc.count(v_m.first)) //dependance en une variable partiellement / totalement eliminee
                     {
                       A = A_p.count(v_m.first) ? &A_p.at(v_m.first) : nullptr;
-                      for (i = 0; i < calc.size_array(); i++)
+                      for (int i = 0; i < calc.size_array(); i++)
                         if (calc[i])
-                          for (j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++)
+                          for (int j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++)
                             {
-                              for (jb = v_m.second->get_tab2()(j) - 1, k = 0; offs.count( { v_m.first, k + 1 }) && jb >= offs.at( { v_m.first, k + 1 });)
+                              const int jb = v_m.second->get_tab2()(j) - 1;
+                              int k = 0;
+                              while (offs.count( { v_m.first, k + 1 }) && jb >= offs.at( { v_m.first, k + 1 }))
                                 k++; //l : bloc de l'inconnue dont on depend
-                              oNg = offs[ { v_m.first, k }], N = dims[ { v_m.first, k }][1], n = jb - oNg - N * i;
+                              const int oNg = offs[ { v_m.first, k }];
+                              const int N = dims[ { v_m.first, k }][1];
+                              const int n = jb - oNg - N * i;
                               if (bloc.count( { v_m.first, k }) && n >= 0 && n < N)
                                 continue; //(variable, bloc) en cours d'elimination et coeff bloc-diagonal -> ok
                               else if (e_ib.count( { v_m.first, k }))  //(variable, bloc) elimine -> dependance en inco_p dans A_p
-                                for (l = A->get_tab1()(jb) - 1; l < A->get_tab1()(jb + 1) - 1; l++)
+                                for (int l = A->get_tab1()(jb) - 1; l < A->get_tab1()(jb + 1) - 1; l++)
                                   stencil[i].insert(A->get_tab2()(l) - 1);
                               else
                                 {
@@ -682,9 +753,11 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
             {
               IntTab sten(0, 2);
 
-              for (oMg = offs[i_bl], M = dims[i_bl][1], i = 0; i < calc.size_array(); i++)
+              oMg = offs[i_bl];
+              M = dims[i_bl][1];
+              for (int i = 0; i < calc.size_array(); i++)
                 if (calc[i])
-                  for (m = 0; m < M; m++)
+                  for (int m = 0; m < M; m++)
                     for (auto &&col : stencil[i])
                       sten.append_line(oMg + M * i + m, col);
               Matrice_Morse mat2;
@@ -693,11 +766,18 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
             }
         }
 
-      std::vector<std::string> vbloc(i_bloc.begin(), i_bloc.end()), vdep(dep.begin(), dep.end()); //sous forme de liste
-      int nv = (int) vbloc.size(), nd = (int) vdep.size(), nb = 0; //nombre de variables du bloc, de dependances, taille totale
+      std::vector<std::string> vbloc(i_bloc.begin(), i_bloc.end());
+      std::vector<std::string> vdep(dep.begin(), dep.end()); //sous forme de liste
+      const int nv = (int) vbloc.size(), nd = (int) vdep.size(); //nombre de variables du bloc, de dependances, taille totale
       std::vector<int> size, off_l, off_g; //par (variable, bloc) : taille dans le systeme local, offset dans le systeme local, offset dans les systemes globaux
+      int nb {0};
       for (auto &&i_b : bloc)
-        off_l.push_back(nb), size.push_back(dims[i_b][1]), off_g.push_back(offs[i_b]), nb += size.back();
+        {
+          off_l.push_back(nb);
+          size.push_back(dims[i_b][1]);
+          off_g.push_back(offs[i_b]);
+          nb += size.back();
+        }
 
       std::vector<const Matrice_Morse*> pmat(nv), dAp(nd); //par variable : dependance directe en inco_p, des variables du bloc / deja resolues
       std::vector<std::vector<const Matrice_Morse*>> mat(nv), dmat(nv); //matrices des variables du bloc, des dependances
@@ -706,87 +786,137 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
       std::vector<Matrice_Morse*> Ap(nv); //resultats : d{inco} = A_p[inco].d{inco_p} + b_p[inco] pour les variables du bloc
       std::vector<DoubleTab*> bp(nv);
 
-      for (i = 0; i < nv; i++)
+      for (int i = 0; i < nv; i++)
         {
-          Ap[i] = &A_p[vbloc[i]], vsec[i] = sec.at(vbloc[i]);
+          Ap[i] = &A_p[vbloc[i]];
+          vsec[i] = sec.at(vbloc[i]);
           if (!b_p.count(vbloc[i]))
             b_p[vbloc[i]] = *vsec[i]; //creation des b_p
           bp[i] = &b_p[vbloc[i]];
           const matrices_t& line = mats.at(vbloc[i]);
           pmat[i] = line.count(inco_p) && line.at(inco_p)->nb_colonnes() ? line.at(inco_p) : nullptr;
-          for (mat[i].resize(nv), j = 0; j < nv; j++)
+          mat[i].resize(nv);
+          for (int j = 0; j < nv; j++)
             mat[i][j] = line.count(vbloc[j]) && line.at(vbloc[j])->nb_colonnes() ? line.at(vbloc[j]) : nullptr;
-          for (dmat[i].resize(nd), j = 0; j < nd; j++)
+          dmat[i].resize(nd);
+          for (int j = 0; j < nd; j++)
             dmat[i][j] = line.count(vdep[j]) && line.at(vdep[j])->nb_colonnes() ? line.at(vdep[j]) : nullptr;
         }
-      for (i = 0; i < nd; i++)
-        dbp[i] = &b_p.at(vdep[i]), dAp[i] = &A_p.at(vdep[i]); //b_p / A_p des dependances
 
-      DoubleTrav D(nb, nb), S; //bloc diagonal, seconds membres
+      //b_p / A_p des dependances
+      for (int i = 0; i < nd; i++)
+        {
+          dbp[i] = &b_p.at(vdep[i]);
+          dAp[i] = &A_p.at(vdep[i]);
+        }
+
+      DoubleTrav D(nb, nb); // bloc diagonal
+      DoubleTrav S; // seconds membres
 
       IntTrav piv(nb);
-      for (i = 0; i < calc.size_array(); i++)
+      for (int i = 0; i < calc.size_array(); i++)
         if (calc[i])
           {
-            int deb = Ap[0]->get_tab1()(off_g[0] + size[0] * i) - 1, fin = Ap[0]->get_tab1()(off_g[0] + size[0] * i + 1) - 1, ic = fin - deb, nc = ic + 1, pos, col;
+            const int deb = Ap[0]->get_tab1()(off_g[0] + size[0] * i) - 1;
+            const int fin = Ap[0]->get_tab1()(off_g[0] + size[0] * i + 1) - 1;
+            const int ic = fin - deb;
+            const int nc = ic + 1;
             S.resize(nc, nb), S = 0; //second membre : 5(i, .) -> dependance en la i-eme colonne du stencil des Ap du bloc, S(ic, .) -> partie constante
             //partie "second membre des equations"
-            for (j = 0; j < nv; j++)
-              for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
-                S(ic, oMl + m) = vsec[j]->addr()[oMg + M * i + m];
+            for (int j = 0; j < nv; j++)
+              {
+                M = size[j];
+                oMg = off_g[j];
+                const int oMl = off_l[j];
+                for (int m = 0; m < M; m++)
+                  S(ic, oMl + m) = vsec[j]->addr()[oMg + M * i + m];
+              }
 
             /* remplissage par les matrices du bloc : diagonale, second membre (si partie d'une variable deja eliminee) */
-            for (D = 0, j = 0; j < nv; j++)
-              for (M = size[j], oMg = off_g[j], oMl = off_l[j], k = 0; k < nv; k++)
-                if (mat[j][k])
-                  {
-                    for (N = size[k], oNg = off_g[k], oNl = off_l[k], m = 0; m < M; m++)
-                      for (l = mat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < mat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
-                        if ((n = (jb = mat[j][k]->get_tab2()(l) - 1) - oNg - N * i) >= 0 && n < N) //on est dans le bloc diagonal
-                          D(oMl + m, oNl + n) = mat[j][k]->get_coeff()(l);
-                        else //dependance en un bloc deja elimine
+            D = 0;
+            for (int j = 0; j < nv; j++)
+              {
+                M = size[j];
+                oMg = off_g[j];
+                const int oMl = off_l[j];
+                for (int k = 0; k < nv; k++)
+                  if (mat[j][k])
+                    {
+                      const int N = size[k];
+                      const int oNg = off_g[k];
+                      const int oNl = off_l[k];
+                      for (int m = 0; m < M; m++)
+                        for (int l = mat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < mat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
                           {
-                            double coeff = mat[j][k]->get_coeff()(l);
-                            S(ic, oMl + m) -= coeff * bp[k]->addr()[jb];
-                            for (lb = Ap[k]->get_tab1()(jb) - 1, pos = deb - 1; lb < Ap[k]->get_tab1()(jb + 1) - 1; lb++)
+                            const int jb = mat[j][k]->get_tab2()(l) - 1;
+                            const int n = jb - oNg - N * i;
+                            if (n >= 0 && n < N) //on est dans le bloc diagonal
+                              D(oMl + m, oNl + n) = mat[j][k]->get_coeff()(l);
+                            else //dependance en un bloc deja elimine
                               {
-                                for (col = Ap[k]->get_tab2()(lb), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin;)
-                                  pos++;
-                                assert(Ap[0]->get_tab2()(pos) == col);
-                                S(pos - deb, oMl + m) -= coeff * Ap[k]->get_coeff()(lb);
+                                const double coeff = mat[j][k]->get_coeff()(l);
+                                S(ic, oMl + m) -= coeff * bp[k]->addr()[jb];
+                                int pos = deb - 1;
+                                for (int lb = Ap[k]->get_tab1()(jb) - 1; lb < Ap[k]->get_tab1()(jb + 1) - 1; lb++)
+                                  {
+                                    const int col = Ap[k]->get_tab2()(lb);
+                                    pos++;
+                                    while(Ap[0]->get_tab2()(pos) != col && pos < fin)
+                                      pos++;
+                                    assert(Ap[0]->get_tab2()(pos) == col);
+                                    S(pos - deb, oMl + m) -= coeff * Ap[k]->get_coeff()(lb);
+                                  }
                               }
                           }
-                  }
-
-            //partie "dependance directe en inco_p" -> dans S([0, ic[, .)
-            for (j = 0; j < nv; j++)
-              if (pmat[j])
-                for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
-                  for (k = pmat[j]->get_tab1()(oMg + M * i + m) - 1, pos = deb - 1; k < pmat[j]->get_tab1()(oMg + M * i + m + 1) - 1; k++)
-                    {
-                      for (col = pmat[j]->get_tab2()(k), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin;)
-                        pos++;
-                      assert(Ap[0]->get_tab2()(pos) == col);
-                      S(pos - deb, oMl + m) -= pmat[j]->get_coeff()(k);
                     }
+              }
+            //partie "dependance directe en inco_p" -> dans S([0, ic[, .)
+            for (int j = 0; j < nv; j++)
+              if (pmat[j])
+                {
+                  M = size[j];
+                  oMg = off_g[j];
+                  const int oMl = off_l[j];
+                  for (int m = 0; m < M; m++)
+                    {
+                      int pos = deb - 1;
+                      for (int k = pmat[j]->get_tab1()(oMg + M * i + m) - 1; k < pmat[j]->get_tab1()(oMg + M * i + m + 1) - 1; k++)
+                        {
+                          int col = pmat[j]->get_tab2()(k);
+                          pos++;
+                          while (Ap[0]->get_tab2()(pos) != col && pos < fin)
+                            pos++;
+                          assert(Ap[0]->get_tab2()(pos) == col);
+                          S(pos - deb, oMl + m) -= pmat[j]->get_coeff()(k);
+                        }
+                    }
+                }
             //partie "dependance en une variable hors bloc eliminee" -> b_p contribue a S(0, .), A_p contribue a S(1..nc, .)
-            for (j = 0; j < nv; j++)
-              for (k = 0; k < nd; k++)
+            for (int j = 0; j < nv; j++)
+              for (int k = 0; k < nd; k++)
                 if (dmat[j][k])
-                  for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
-                    for (l = dmat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < dmat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
-                      {
-                        double coeff = dmat[j][k]->get_coeff()(l);
-                        jb = dmat[j][k]->get_tab2()(l) - 1, S(ic, oMl + m) -= coeff * dbp[k]->addr()[jb]; //partie "constante"
-                        for (lb = dAp[k]->get_tab1()(jb) - 1, pos = deb - 1; lb < dAp[k]->get_tab1()(jb + 1) - 1; lb++) //partie "dependance en inco_p"
-                          {
-                            for (col = dAp[k]->get_tab2()(lb), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin;)
+                  {
+                    M = size[j];
+                    oMg = off_g[j];
+                    const int oMl = off_l[j];
+                    for (int m = 0; m < M; m++)
+                      for (int l = dmat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < dmat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
+                        {
+                          const double coeff = dmat[j][k]->get_coeff()(l);
+                          const int jb = dmat[j][k]->get_tab2()(l) - 1;
+                          S(ic, oMl + m) -= coeff * dbp[k]->addr()[jb]; //partie "constante"
+                          int pos = deb - 1;
+                          for (int lb = dAp[k]->get_tab1()(jb) - 1; lb < dAp[k]->get_tab1()(jb + 1) - 1; lb++) //partie "dependance en inco_p"
+                            {
+                              const int col = dAp[k]->get_tab2()(lb);
                               pos++;
-                            assert(Ap[0]->get_tab2()(pos) == col);
-                            S(pos - deb, oMl + m) -= coeff * dAp[k]->get_coeff()(lb);
-                          }
-                      }
-
+                              while (Ap[0]->get_tab2()(pos) != col && pos < fin)
+                                pos++;
+                              assert(Ap[0]->get_tab2()(pos) == col);
+                              S(pos - deb, oMl + m) -= coeff * dAp[k]->get_coeff()(lb);
+                            }
+                        }
+                  }
             /* factorisation et resolution */
             // DoubleTrav D_back = D;
             F77NAME(dgetrf)(&nb, &nb, &D(0, 0), &nb, &piv(0), &infoo);
@@ -795,10 +925,18 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
             F77NAME(dgetrs)(&trans, &nb, &nc, &D(0, 0), &nb, &piv(0), &S(0, 0), &nb, &infoo);
 
             /* stockage : S(0, .) dans b_p, S(1..nc, .) dans A_p */
-            for (j = 0; j < nv; j++)
-              for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
-                for (bp[j]->addr()[oMg + M * i + m] = S(ic, oMl + m), k = 0, l = Ap[j]->get_tab1()(oMg + M * i + m) - 1; k < ic; k++, l++)
-                  Ap[j]->get_set_coeff()(l) = S(k, oMl + m);
+            for (int j = 0; j < nv; j++)
+              {
+                M = size[j];
+                oMg = off_g[j];
+                const int oMl = off_l[j];
+                for (int m = 0; m < M; m++)
+                  {
+                    bp[j]->addr()[oMg + M * i + m] = S(ic, oMl + m);
+                    for (int k = 0, l = Ap[j]->get_tab1()(oMg + M * i + m) - 1; k < ic; k++, l++)
+                      Ap[j]->get_set_coeff()(l) = S(k, oMl + m);
+                  }
+              }
           }
 
       for (auto &&i_b : bloc)
@@ -807,11 +945,18 @@ int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordr
   return 1;
 }
 
-void SETS::assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p, const std::map<std::string, matrices_t>& mats, const ptabs_t& sec, Matrice_Morse& P,
-                     DoubleTab& secmem, int p_degen)
+void SETS::assembler(const std::string inco_p,
+                     const std::map<std::string, Matrice_Morse>& A_p,
+                     const tabs_t& b_p,
+                     const std::map<std::string, matrices_t>& mats,
+                     const ptabs_t& sec,
+                     Matrice_Morse& P,
+                     DoubleTab& secmem,
+                     int p_degen)
 {
   secmem = *sec.at(inco_p);
-  int i, ib, j, k, l, np = secmem.dimension_tot(0), m, M = secmem.line_size(), deb, fin, pos, col;
+  const int np = secmem.dimension_tot(0);
+  const int M = secmem.line_size();
 
   /* calc(i) = 1 si on doit remplir les lignes [N * i, (N + 1) * i[ de la matrice */
   ArrOfBit calc(np);
@@ -828,12 +973,18 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
         if (n_m.second && n_m.second->nb_colonnes())
           {
             const Matrice_Morse& Mp = *n_m.second, *Ap = n_m.first != inco_p ? &A_p.at(n_m.first) : nullptr;
-            for (i = 0; i < np; i++)
+            for (int i = 0; i < np; i++)
               if (calc[i])
-                for (ib = M * i, m = 0; m < M; m++, ib++)
-                  for (j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
-                    for (k = Mp.get_tab2()(j) - 1, l = (Ap ? Ap->get_tab1()(k) - 1 : 0); l < (Ap ? Ap->get_tab1()(k + 1) - 1 : 1); l++)
-                      stencil.append_line(ib, Ap ? Ap->get_tab2()(l) - 1 : k);
+                {
+                  int ib = M * i;
+                  for (int m = 0; m < M; m++, ib++)
+                    for (int j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
+                      {
+                        const int k = Mp.get_tab2()(j) - 1;
+                        for (int l = (Ap ? Ap->get_tab1()(k) - 1 : 0); l < (Ap ? Ap->get_tab1()(k + 1) - 1 : 1); l++)
+                          stencil.append_line(ib, Ap ? Ap->get_tab2()(l) - 1 : k);
+                      }
+                }
           }
       tableau_trier_retirer_doublons(stencil);
       Matrix_tools::allocate_morse_matrix(secmem.size_totale(), secmem.size_totale(), stencil, P);
@@ -848,21 +999,34 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
       {
         const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
         const DoubleTab& bp = b_p.at(n_m.first);
-        for (i = 0; i < np; i++)
+        for (int i = 0; i < np; i++)
           if (calc[i])
-            for (ib = M * i, m = 0; m < M; m++, ib++)
-              for (deb = P.get_tab1()(ib) - 1, fin = P.get_tab1()(ib + 1) - 1, j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
-                for (k = Mp.get_tab2()(j) - 1, secmem(i, m) -= Mp.get_coeff()(j) * bp.addr()[k], l = Ap.get_tab1()(k) - 1, pos = deb - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
-                  {
-                    for (col = Ap.get_tab2()(l), pos++; P.get_tab2()(pos) != col && pos < fin;)
-                      pos++;
-                    assert(P.get_tab2()(pos) == col);
-                    P.get_set_coeff()(pos) += Mp.get_coeff()(j) * Ap.get_coeff()(l);
-                  }
-
+            {
+              int ib = M * i;
+              for (int m = 0; m < M; m++, ib++)
+                {
+                  const int deb = P.get_tab1()(ib) - 1;
+                  const int fin = P.get_tab1()(ib + 1) - 1;
+                  for (int j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
+                    {
+                      const int k = Mp.get_tab2()(j) - 1;
+                      secmem(i, m) -= Mp.get_coeff()(j) * bp.addr()[k];
+                      int pos = deb - 1;
+                      for (int l = Ap.get_tab1()(k) - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
+                        {
+                          const int col = Ap.get_tab2()(l);
+                          pos++;
+                          while (P.get_tab2()(pos) != col && pos < fin)
+                            pos++;
+                          assert(P.get_tab2()(pos) == col);
+                          P.get_set_coeff()(pos) += Mp.get_coeff()(j) * Ap.get_coeff()(l);
+                        }
+                    }
+                }
+            }
       }
-  double diag = P.get_coeff()(0);
+  const double diag = P.get_coeff()(0);
   if (p_degen && !Process::me())
-    for (i = 0; i < P.get_tab1()(1) - 1; i++)
+    for (int i = 0; i < P.get_tab1()(1) - 1; i++)
       P.get_set_coeff()(i) += diag; //de-degeneration de la matrice
 }
