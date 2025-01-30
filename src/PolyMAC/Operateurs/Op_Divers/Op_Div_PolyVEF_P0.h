@@ -27,21 +27,13 @@
  * @sa Op_Div_PolyMAC_P0
  */
 
-class Op_Div_PolyVEF_P0 : public Op_Div_PolyMAC_P0
+class Op_Div_PolyVEF_P0 : public Op_Div_PolyMAC
 {
   Declare_instanciable(Op_Div_PolyVEF_P0);
 public:
+  int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  /* version etendue de ajouter_blocs pour pouvoir donner en argument le champ dont on prend la divergence */
-  void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override
-  {
-    return ajouter_blocs_ext(equation().inconnue().valeurs(), matrices, secmem, semi_impl);
-  }
-  /* contrairement au cas usuel, ces methodes ne peuvent pas etre reimplementees a partir d'ajouter_blocs(),
-     car elles sont souvent appelees avec un tableau inco arbitraire */
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
 #endif /* Op_Div_PolyVEF_P0_included */
