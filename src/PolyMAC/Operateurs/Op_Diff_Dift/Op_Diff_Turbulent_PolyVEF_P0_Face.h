@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,8 @@
 #ifndef Op_Diff_Turbulent_PolyVEF_P0_Face_included
 #define Op_Diff_Turbulent_PolyVEF_P0_Face_included
 
-#include <Op_Diff_PolyVEF_P0_Face.h>
-#include <Correlation.h>
-#include <Champ_Fonc.h>
-#include <vector>
+#include <Op_Dift_Multiphase_proto.h>
+#include <Op_Diff_PolyMAC_P0_Face.h>
 
 /*! @brief : class Op_Diff_Turbulent_PolyVEF_P0_Face
  *
@@ -28,23 +26,19 @@
  *
  */
 
-class Op_Diff_Turbulent_PolyVEF_P0_Face: public Op_Diff_PolyVEF_P0_Face
+class Op_Diff_Turbulent_PolyVEF_P0_Face: public Op_Diff_PolyMAC_P0_Face, public Op_Dift_Multiphase_proto
 {
   Declare_instanciable( Op_Diff_Turbulent_PolyVEF_P0_Face );
 
 public:
   void creer_champ(const Motcle& motlu) override;
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
+  void preparer_calcul() override;
   void mettre_a_jour(double temps) override;
   void completer() override;
   void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
-  inline const Correlation& correlation() const { return corr; }
   bool is_turb() const override { return true; }
-  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
-
-protected:
-  Correlation corr; //correlation de viscosite turbulente
-  std::vector<Champ_Fonc> nu_t_post_; //flux massiques (kg/m2/s)
-  Motcles noms_nu_t_post_; //leurs noms
+  const Correlation_base* correlation_viscosite_turbulente() const override { return &(corr_.valeur()); }
 };
 
-#endif /* Op_Diff_PolyVEF_P0_Face_included */
+#endif /* Op_Diff_PolyMAC_P0_Face_included */

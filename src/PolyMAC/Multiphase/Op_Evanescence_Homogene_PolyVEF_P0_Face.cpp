@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,8 +38,8 @@ Entree& Op_Evanescence_Homogene_PolyVEF_P0_Face::readOn(Entree& is) { return Op_
 
 void Op_Evanescence_Homogene_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
@@ -49,7 +49,6 @@ void Op_Evanescence_Homogene_PolyVEF_P0_Face::dimensionner_blocs(matrices_t matr
     if (n_m.second->nb_colonnes())
       {
         IntTrav sten(0, 2);
-        sten.set_smart_resize(1);
 
         std::set<int> idx;
         Matrice_Morse& mat = *n_m.second, mat2;
@@ -74,8 +73,8 @@ void Op_Evanescence_Homogene_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices,
 
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins();
   const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
                    &rho = equation().milieu().masse_volumique().passe(),
@@ -103,7 +102,7 @@ void Op_Evanescence_Homogene_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices,
   Vitesse_relative_base::input_t in;
   Vitesse_relative_base::output_t out;
   out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
-  const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur()) : nullptr;
+  const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative")) : nullptr;
   DoubleTrav gradAlpha, vort, nut, fvn(N);
   const int is_turb = ref_cast(Operateur_Diff_base, ref_cast(QDM_Multiphase, pbm.equation_qdm()).operateur_diff().l_op_base()).is_turb();
   if (correlation_vd)
@@ -126,7 +125,7 @@ void Op_Evanescence_Homogene_PolyVEF_P0_Face::ajouter_blocs(matrices_t matrices,
       if (is_turb)
         {
           nut.resize(domaine.nb_elem_tot(), N);
-          ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation
+          ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente())).eddy_viscosity(nut); //remplissage par la correlation
         }
     }
 
