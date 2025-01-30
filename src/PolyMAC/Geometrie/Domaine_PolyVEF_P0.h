@@ -16,9 +16,9 @@
 #ifndef Domaine_PolyVEF_P0_included
 #define Domaine_PolyVEF_P0_included
 
-#include <Domaine_PolyVEF_P0P1NC.h>
+#include <Domaine_PolyMAC_P0P1NC.h>
 
-class Domaine_PolyVEF_P0 : public Domaine_PolyVEF_P0P1NC
+class Domaine_PolyVEF_P0 : public Domaine_PolyMAC_P0P1NC
 {
   Declare_instanciable(Domaine_PolyVEF_P0);
 public :
