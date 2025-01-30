@@ -24,10 +24,6 @@ class Domaine_PolyVEF_P0 : public Domaine_PolyMAC_P0
 public :
   void discretiser() override;
 
-  //stencil du gradient aux faces fgrad : fsten_eb([fsten_d(f), fsten_d(f + 1)[]) -> elements e, faces de bord ne_tot + f
-  void init_stencils() const;
-  mutable IntTab fsten_d, fsten_eb;
-
   //pour u.n champ T aux elements, interpole [n_f.nu.grad T]_f
   //en preservant exactement les champs verifiant [nu grad T]_e = cte.
   //Entrees : N             : nombre de composantes
@@ -46,9 +42,6 @@ public :
 
   //MD_Vectors pour la pression (elems + faces de bord), pour Champ_Elem_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_fbord, mdv_elems_faces, mdv_faces_aretes;
-
-private:
-  mutable int first_fgrad_ = 1; //pour n'afficher le message "MPFA-O MPFA-O(h) VFSYM" qu'une seule fois par calcul
 };
 
 #endif /* Domaine_PolyVEF_P0_included */
