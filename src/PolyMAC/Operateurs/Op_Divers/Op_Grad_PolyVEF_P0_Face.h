@@ -16,11 +16,7 @@
 #ifndef Op_Grad_PolyVEF_P0_Face_included
 #define Op_Grad_PolyVEF_P0_Face_included
 
-#include <Domaine_PolyVEF_P0.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Operateur_Grad.h>
-#include <TRUST_Ref.h>
-#include <cfloat>
+#include <Op_Grad_PolyMAC_P0_Face.h>
 
 class Champ_Face_PolyVEF_P0;
 
@@ -33,36 +29,14 @@ class Champ_Face_PolyVEF_P0;
  *
  * @sa Operateur_Grad_base
  */
-class Op_Grad_PolyVEF_P0_Face : public Operateur_Grad_base
+class Op_Grad_PolyVEF_P0_Face : public Op_Grad_PolyMAC_P0_Face
 {
-
   Declare_instanciable(Op_Grad_PolyVEF_P0_Face);
-
 public:
-
-  void associer(const Domaine_dis_base& , const Domaine_Cl_dis_base& , const Champ_Inc_base& ) override;
   void completer() override;
-
-  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const override { return 1; };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-  int impr(Sortie& os) const override;
-
   void update_grad(int full_stencil = 0) const;
-
-  /* public pour utilisation par Assembleur_P_PolyVEF_P0 : [grad p]_f */
-  mutable IntTab fgrad_d, fgrad_e;
-  mutable DoubleTab fgrad_c;
-
-  void check_multiphase_compatibility() const override { }; //ok
-
-private:
-
-  mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
-  OBS_PTR(Domaine_PolyVEF_P0) ref_domaine;
-  OBS_PTR(Domaine_Cl_PolyMAC) ref_dcl;
 };
 
-#endif
+#endif /* Op_Grad_PolyVEF_P0_Face_included */
