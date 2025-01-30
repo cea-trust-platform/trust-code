@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,15 +28,14 @@ Entree& Frottement_interfacial_PolyVEF_P0::readOn(Entree& is) { return Source_Fr
 
 void Frottement_interfacial_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
+  const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue());
   if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
   Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
   const DoubleTab& inco = ch.valeurs();
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
-  stencil.set_smart_resize(1);
   int f, k, l, d, D = dimension, N = inco.line_size() / D;
   /* faces */
   for (f = 0; f < domaine.nb_faces(); f++)
@@ -53,9 +52,9 @@ void Frottement_interfacial_PolyVEF_P0::dimensionner_blocs(matrices_t matrices, 
 void Frottement_interfacial_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
-  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis().valeur());
+  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &dh_e = equation().milieu().diametre_hydraulique_elem();
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(),

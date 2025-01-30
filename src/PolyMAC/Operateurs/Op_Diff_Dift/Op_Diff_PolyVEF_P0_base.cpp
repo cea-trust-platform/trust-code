@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 
 #include <Op_Diff_PolyVEF_P0_base.h>
 #include <Motcle.h>
-#include <Champ_Don.h>
+
 #include <Champ_Uniforme.h>
 #include <Champ_Don_Fonc_xyz.h>
 #include <TRUSTTrav.h>
@@ -34,7 +34,7 @@
 #include <Champ_Face_PolyVEF_P0.h>
 #include <Op_Diff_PolyVEF_P0_Face.h>
 #include <Pb_Multiphase.h>
-#include <Echange_contact_PolyVEF_P0.h>
+#include <Echange_contact_PolyMAC_P0.h>
 #include <Flux_parietal_base.h>
 #include <Frottement_impose_base.h>
 
@@ -71,7 +71,7 @@ void Op_Diff_PolyVEF_P0_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size() / (sub_type(Champ_Face_PolyVEF_P0, equation().inconnue().valeur()) ? dimension : 1), N_mil = eq.milieu().masse_volumique().non_nul() ? eq.milieu().masse_volumique().valeurs().line_size() : N;
+  int N = eq.inconnue().valeurs().line_size() / (sub_type(Champ_Face_PolyVEF_P0, equation().inconnue()) ? dimension : 1), N_mil = eq.milieu().has_masse_volumique() ? eq.milieu().masse_volumique().valeurs().line_size() : N;
   int N_diff = diffusivite().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
   if ( (N_nu == N_mil) | (N_nu == N) ) nu_.resize(0, N); //isotrope
   else if ( (N_nu == N_mil * D) | (N_nu == N*D) ) nu_.resize(0, N, D); //diagonal
@@ -106,7 +106,7 @@ int Op_Diff_PolyVEF_P0_base::impr(Sortie& os) const
   for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       for (face=ndeb; face<nfin; face++)
@@ -176,9 +176,9 @@ int Op_Diff_PolyVEF_P0_base::impr(Sortie& os) const
       ouvrir_fichier_partage(Flux_face,"",impr_bord);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl).frontiere_dis();
+          const Frontiere_dis_base& la_fr = la_zcl_poly_->les_conditions_limites(num_cl)->frontiere_dis();
           const Cond_lim& la_cl = la_zcl_poly_->les_conditions_limites(num_cl);
-          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
           if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
@@ -211,10 +211,10 @@ void Op_Diff_PolyVEF_P0_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base&
   la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 */
-void Op_Diff_PolyVEF_P0_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
+void Op_Diff_PolyVEF_P0_base::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& zcl,const Champ_Inc_base& )
 {
-  le_dom_poly_ = ref_cast(Domaine_PolyVEF_P0,domaine_dis.valeur());
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
+  le_dom_poly_ = ref_cast(Domaine_PolyVEF_P0,domaine_dis);
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 
 /*! @brief calcule la contribution de la diffusion, la range dans resu renvoie resu
@@ -231,7 +231,7 @@ void Op_Diff_PolyVEF_P0_base::update_nu() const
   const Domaine_PolyVEF_P0& domaine = le_dom_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
-  int N = equation().inconnue().valeurs().line_size() / (sub_type(Champ_Face_PolyVEF_P0, equation().inconnue().valeur()) ? D : 1), N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
+  int N = equation().inconnue().valeurs().line_size() / (sub_type(Champ_Face_PolyVEF_P0, equation().inconnue()) ? D : 1), N_mil = equation().milieu().has_masse_volumique() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
       N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
 
@@ -252,7 +252,7 @@ void Op_Diff_PolyVEF_P0_base::update_nu() const
   else abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
-  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (n = 0, i = 0; n < N; n++)
       for (m = 0; m < mult; m++, i++)
@@ -267,7 +267,7 @@ void Op_Diff_PolyVEF_P0_base::update_nu() const
 void Op_Diff_PolyVEF_P0_base::update_phif(int full_stencil) const
 {
   if (!full_stencil && phif_a_jour_) return; //deja fait, sauf si on demande tout le stencil
-  const Champ_Inc_base& ch = equation().inconnue().valeur();
+  const Champ_Inc_base& ch = equation().inconnue();
   const IntTab& fcl = sub_type(Champ_Face_PolyVEF_P0, ch) ? ref_cast(Champ_Face_PolyVEF_P0, ch).fcl() : ref_cast(Champ_Elem_PolyVEF_P0, ch).fcl();
   le_dom_poly_->fgrad(ch.valeurs().line_size(), 0, 0, la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &som_ext, sub_type(Champ_Face_PolyVEF_P0, ch), full_stencil, phif_d, phif_e, phif_c);
   phif_a_jour_ = 1;

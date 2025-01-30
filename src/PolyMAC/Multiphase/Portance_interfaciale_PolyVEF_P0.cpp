@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,8 @@ Entree& Portance_interfaciale_PolyVEF_P0::readOn(Entree& is) {  return Source_Po
 void Portance_interfaciale_PolyVEF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
-  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis().valeur());
+  const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+  const Domaine_PolyVEF_P0& domaine = ref_cast(Domaine_PolyVEF_P0, equation().domaine_dis());
   const IntTab& f_e = domaine.face_voisins();
   const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
@@ -39,8 +39,8 @@ void Portance_interfaciale_PolyVEF_P0::ajouter_blocs(matrices_t matrices, Double
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                         &vort  = equation().probleme().get_champ("vorticite").passe(),
-                         *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : NULL,
-                          *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
+                         *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : nullptr,
+                          *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
   int e, f, c, d, i, k, l, n, N = pbm.nb_phases(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
@@ -154,16 +154,16 @@ void Portance_interfaciale_PolyVEF_P0::mettre_a_jour(double temps)
   /* Wobble si besoin */
   if ((wobble.non_nul()) || (C_lift.non_nul()))
     {
-      const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue().valeur());
-      const DoubleTab& pvit = equation().inconnue().valeur().passe(),
+      const Champ_Face_PolyVEF_P0& ch = ref_cast(Champ_Face_PolyVEF_P0, equation().inconnue());
+      const DoubleTab& pvit = equation().inconnue().passe(),
                        &alpha = pbm.equation_masse().inconnue().passe(),
                         &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                          &rho   = equation().milieu().masse_volumique().passe(),
                           &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
                            &temp  = pbm.equation_energie().inconnue().passe(),
-                            *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : NULL,
-                             *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
-      const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+                            *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : nullptr,
+                             *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
+      const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
       const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
       int i, k, l, e, n,
