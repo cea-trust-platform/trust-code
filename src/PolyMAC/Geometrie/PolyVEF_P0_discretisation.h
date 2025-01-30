@@ -27,7 +27,8 @@ public :
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc_base&, OWN_PTR(Champ_Fonc_base)& ) const override;
   void residu(const Domaine_dis_base& z, const Champ_Inc_base& ch_inco, OWN_PTR(Champ_Fonc_base)& ch) const override ;
 
-  bool is_polymac_p0() const override { return true; }
+  bool is_polyvef_p0() const override { return true; }
+  bool is_polymac_p0() const override { return false; } // attention heritage !
   bool is_polymac_p0p1nc() const override { return false; } // attention heritage !
   bool is_polymac() const override { return false; } // attention heritage !
 };
