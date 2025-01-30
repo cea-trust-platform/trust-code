@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,41 +13,57 @@
 *
 *****************************************************************************/
 
-#include <Source_dep_inco_base.h>
-#include <Equation_base.h>
+#include<Prepro_IBM_base.h>
 
-Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
+Implemente_base(Prepro_IBM_base, "Prepro_IBM_base", Objet_U); // createur
 
-//// printOn
-//
-
-Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
+Entree& Prepro_IBM_base::readOn(Entree& s)
 {
-  return s ;
+  Param param(que_suis_je());
+  set_param(param);
+  return s;
 }
 
-
-//// readOn
-//
-
-Entree& Source_dep_inco_base::readOn(Entree& s )
+void Prepro_IBM_base::set_param(Param& param)
 {
-  return s ;
+  param.ajouter("epsilon_prepro_IBM",&eps_,Param::OPTIONAL);  //
+  param.ajouter("constante_c_IBM",&c_prepro_,Param::OPTIONAL);  //
+  param.ajouter_non_std("directions_pt_fluid",(this),Param::OPTIONAL);
+  param.ajouter("MESH_Euler",&aDomUMesh_, Param::OPTIONAL); // maillage volumique
+  param.ajouter("MESH_Lagrange",&aSkinUMesh_, Param::OPTIONAL); // maillage surfacique
+  param.ajouter_flag("sauvegarde_resultats_prepro",&save_prepro_);
 }
 
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
+int Prepro_IBM_base::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
 {
-  if(has_interface_blocs())
+  Cout << "Prepro_IBM => " << finl;
+  Cout<<"epsilon_prepro_IBM = "<<eps_<<endl;
+  Cout<<"constante_prepro_c_IBM = "<<c_prepro_<<endl;
+  if (un_mot == "directions_pt_fluid")
     {
-      ajouter_blocs({}, secmem);
-      return secmem;
+      Cout << "reading search directions for reference fluid pt... " << finl;
+      int dim_lu;
+      is >> dim_lu;
+      int dim_geom = Objet_U::dimension;
+      if(dim_lu != dim_geom)
+        {
+          Cerr<<"Prepro_IBM : dim_lu <> dim_geom = "<<dim_geom<<endl;
+          abort();
+        }
+      dimTab_.resize(dim_lu);
+      for (int i = 0; i < dim_lu; i++) is >> dimTab_(i);
+      for (int i = 0; i < dim_lu; i++)
+        {
+          if (i == 0) Cout<<"directions : "<<dimTab_(0);
+          else Cout<<" "<<dimTab_(i);
+          if (i == (dim_lu-1)) Cout<<endl;
+        }
     }
-  return ajouter_(equation().inconnue().valeurs(),secmem);
-}
-DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(resu);
+
+  return 1;
 }
 
+Sortie& Prepro_IBM_base::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}

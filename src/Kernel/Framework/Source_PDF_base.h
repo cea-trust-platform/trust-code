@@ -39,10 +39,10 @@ class Source_PDF_base : public Source_dep_inco_base
 
 public:
   inline const int& getInterpolationBool() const { return interpolation_bool_; }
-  inline const bool& get_matrice_pression_variable_bool_() const { return  matrice_pression_variable_bool_; }
   void associer_pb(const Probleme_base& ) override;
+  DoubleTab& ajouter(DoubleTab&) const override;
   DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const override;
-  virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const;
+  virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const ;
   DoubleTab& calculer(DoubleTab&) const override;
   DoubleTab& calculer(DoubleTab&, const int) const;
   DoubleTab& calculer_pdf(DoubleTab& ) const;
@@ -50,13 +50,11 @@ public:
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
   double fonct_coeff(const double, const double, const double) const;
   virtual DoubleVect diag_coeff_elem(ArrOfDouble&, const DoubleTab&, int) const ;
-  virtual DoubleTab compute_coeff_elem() const;
-  virtual DoubleTab compute_coeff_matrice_pression() const;
-  virtual void multiply_coeff_volume(DoubleTab&) const;
-  virtual void correct_pressure(const DoubleTab&,DoubleTab&,const DoubleTab&) const;
-  virtual void correct_incr_pressure(const DoubleTab&,DoubleTab&) const;
-  virtual void correct_vitesse(const DoubleTab&,DoubleTab&) const;
-  void calculer_vitesse_imposee();
+  virtual DoubleTab compute_coeff_elem() const ;
+  virtual DoubleTab compute_coeff_matrice() const;
+  virtual void multiply_coeff_volume(DoubleTab&) const ;
+  virtual void correct_variable(const DoubleTab&,DoubleTab&) const;
+  void calculer_variable_imposee();
   void updateChampRho();
   inline const PDF_model& get_modele() const { return modele_lu_; }
   int impr(Sortie&) const override;
@@ -64,30 +62,37 @@ public:
   inline const DoubleTab& get_sec_mem_pdf() const { return sec_mem_pdf; }
   inline void set_sec_mem_pdf(DoubleTab& it) { sec_mem_pdf = it; }
 
+  inline const bool& get_matrice_pression_variable_bool_() const { return  matrice_pression_variable_bool_; }
+  inline void set_matrice_pression_variable_bool_(bool& flag) { matrice_pression_variable_bool_ = flag; }
+  virtual void correct_pressure(const DoubleTab&,DoubleTab&,const DoubleTab&) const;
+  virtual void correct_incr_pressure(const DoubleTab&,DoubleTab&) const;
+
 protected:
-  virtual void compute_vitesse_imposee_projete(const DoubleTab&, const DoubleTab&, double, double);
-  virtual void calculer_vitesse_imposee_hybrid();
-  virtual void calculer_vitesse_imposee_elem_fluid();
-  virtual void calculer_vitesse_imposee_mean_grad();
-  virtual void calculer_vitesse_imposee_power_law_tbl();
-  virtual void calculer_vitesse_imposee_power_law_tbl_u_star();
-  virtual void rotate_imposed_velocity(DoubleTab&);
+  virtual void compute_variable_imposee_projete(const DoubleTab&, const DoubleTab&, double, double);
   ArrOfDouble get_tuvw_local() const;
   void associer_domaines(const Domaine_dis_base&, const Domaine_Cl_dis_base&) override;
   virtual void compute_indicateur_nodal_champ_aire();
-  int type_vitesse_imposee_ = -1;
+  virtual void rotate_imposed_velocity(DoubleTab&);
+  virtual void calculer_variable_imposee_elem_fluid();
+  virtual void calculer_variable_imposee_hybrid();
+  virtual void calculer_variable_imposee_mean_grad();
+  virtual void calculer_vitesse_imposee_power_law_tbl();
+  virtual void calculer_vitesse_imposee_power_law_tbl_u_star();
+  int type_variable_imposee_ = -1;
 
   OWN_PTR(Champ_Don_base) champ_rotation_lu_, champ_rotation_, champ_aire_lu_, champ_aire_, champ_rho_;
 
   int transpose_rotation_ = -1;
   DoubleTab indicateur_nodal_champ_aire_;
-  DoubleTab vitesse_imposee_;
+  DoubleTab variable_imposee_;
   PDF_model modele_lu_;
   double temps_relax_ = -100.;
   double echelle_relax_ = -100.;
-  bool matrice_pression_variable_bool_ = false;
   bool penalized_ = false;
-  DoubleTab sec_mem_pdf; // part of the source term computed with the imposed velocity
+  DoubleTab sec_mem_pdf; // part of the source term computed with the imposed variable
+
+  bool matrice_pression_variable_bool_ = false;
+  bool imm_wall_law_ = false;
 
   // FOR THE INTERPOLATION
   OWN_PTR(Interpolation_IBM_base) interpolation_lue_;

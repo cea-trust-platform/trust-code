@@ -12,42 +12,41 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-
-#include <Source_dep_inco_base.h>
-#include <Equation_base.h>
-
-Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
-
-//// printOn
+//////////////////////////////////////////////////////////////////////////////
 //
-
-Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
-{
-  return s ;
-}
-
-
-//// readOn
+// File:        Pb_Couple_Optimisation_IBM.h
 //
+//////////////////////////////////////////////////////////////////////////////
 
-Entree& Source_dep_inco_base::readOn(Entree& s )
-{
-  return s ;
-}
+#ifndef Pb_Couple_Optimisation_IBM_included
+#define Pb_Couple_Optimisation_IBM_included
 
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
-{
-  if(has_interface_blocs())
-    {
-      ajouter_blocs({}, secmem);
-      return secmem;
-    }
-  return ajouter_(equation().inconnue().valeurs(),secmem);
-}
-DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(resu);
-}
+#include <Probleme_Couple.h>
+#include <Interpolation_IBM_base.h>
+#include <TRUST_Ref.h>
 
+class Cond_lim_base;
+
+class Schema_Temps_base;
+class Discretisation_base;
+
+class Pb_Couple_Optimisation_IBM: public Probleme_Couple
+{
+  Declare_instanciable(Pb_Couple_Optimisation_IBM);
+
+public:
+  int  associer_(Objet_U&) override;
+  void validateTimeStep() override;
+  void initialize() override;
+  void le_modele_interpolation_IBM(const Interpolation_IBM_base&);
+  inline Interpolation_IBM_base& my_interpolation_IBM();
+
+protected:
+  OBS_PTR(Interpolation_IBM_base) my_interpolation_IBM_;
+};
+
+inline Interpolation_IBM_base& Pb_Couple_Optimisation_IBM::my_interpolation_IBM()
+{
+  return my_interpolation_IBM_;
+}
+#endif

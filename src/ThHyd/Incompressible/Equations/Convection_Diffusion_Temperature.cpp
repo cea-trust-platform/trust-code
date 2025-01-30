@@ -357,6 +357,7 @@ double Convection_Diffusion_Temperature::get_time_factor() const
 void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
   const double rhoCp = get_time_factor();
+  int size_s = sources().size();
 
   // Test de verification de la methode contribuer_a_avec
   for (int op=0; op<nombre_d_operateurs(); op++)
@@ -374,9 +375,32 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
         {
           // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
           // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
-          sources().contribuer_a_avec(inco,matrice);
+          if (! is_IBM() )
+            sources().contribuer_a_avec(inco,matrice);
+          else
+            {
+              for (int i = 0; i < size_s; i++)
+                {
+                  if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                    {
+                      const Source_base& src_base = sources()(i).valeur();
+                      src_base.contribuer_a_avec(inco,matrice);
+                    }
+                }
+            }
           statistiques().end_count(assemblage_sys_counter_,0,0);
-          sources().ajouter(resu);
+          if (! is_IBM() )
+            sources().ajouter(resu);
+          else
+            {
+              for (int i = 0; i < size_s; i++)
+                {
+                  if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                    {
+                      sources()(i).ajouter(resu);
+                    }
+                }
+            }
           statistiques().begin_count(assemblage_sys_counter_);
           matrice.ajouter_multvect(inco, resu); // Add source residual first
           for (int op = 0; op < nombre_d_operateurs(); op++)
@@ -426,9 +450,32 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
           }
           statistiques().begin_count(assemblage_sys_counter_);
         }
-      sources().contribuer_a_avec(inco,matrice);
+      if (! is_IBM() )
+        sources().contribuer_a_avec(inco,matrice);
+      else
+        {
+          for (int i = 0; i < size_s; i++)
+            {
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                {
+                  const Source_base& src_base = sources()(i).valeur();
+                  src_base.contribuer_a_avec(inco,matrice);
+                }
+            }
+        }
       statistiques().end_count(assemblage_sys_counter_,0,0);
-      sources().ajouter(resu);
+      if (! is_IBM() )
+        sources().ajouter(resu);
+      else
+        {
+          for (int i = 0; i < size_s; i++)
+            {
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                {
+                  sources()(i).ajouter(resu);
+                }
+            }
+        }
       statistiques().begin_count(assemblage_sys_counter_);
       matrice.ajouter_multvect(inco, resu); // Ajout de A*Inco(n)
       // PL (11/04/2018): On aimerait bien calculer la contribution des sources en premier
@@ -439,6 +486,22 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
     {
       Cerr << "Unknown value in Equation_base::assembler for " << (int)type_codage << finl;
       Process::exit();
+    }
+
+  // for IBM methods
+  if ( is_IBM() )
+    {
+      // pour ne pas avoir des termes PDF infinis lors de l'ajout de A*Inco(n)
+      for (int i = 0; i < size_s; i++)
+        {
+          if (sources()(i).valeur().que_suis_je().find("Source_PDF") > -1)
+            {
+              const Source_base& src_base = sources()(i).valeur();
+              src_base.contribuer_a_avec(inco,matrice);
+            }
+        }
+      // ajouter source PDF avec le bon signe
+      derivee_en_temps_inco_IBM(resu);
     }
 }
 

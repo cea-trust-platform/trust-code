@@ -12,42 +12,64 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Pb_Couple_Optimisation_IBM.cpp
+//
+//////////////////////////////////////////////////////////////////////////////
 
-#include <Source_dep_inco_base.h>
-#include <Equation_base.h>
+////////////////////////////////////////////////////////////////////
 
-Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
-
-//// printOn
+// Description de Pb_Couple_Optimisation_IBM:Classe heritant de Pb_Couple
+// Precondition :
+// Parametre :
+//     Signification :
+//     Valeurs par defaut :
+//     Contraintes :
+//     Entree :
+//     Entree/Sortie :
+//     Sortie :
+// Retour :
+//     Signification :
+//     Contraintes :
+// Exception :
+// Effets de bord :
+// Postcondition :
 //
 
-Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
+#include <Pb_Couple_Optimisation_IBM.h>
+#include <verif_cast.h>
+#include <Probleme_base.h>
+
+Implemente_instanciable(Pb_Couple_Optimisation_IBM,"Pb_Couple_Optimisation_IBM",Probleme_Couple);
+
+Entree& Pb_Couple_Optimisation_IBM::readOn(Entree& is)
 {
-  return s ;
+  return is;
 }
 
-
-//// readOn
-//
-
-Entree& Source_dep_inco_base::readOn(Entree& s )
+Sortie& Pb_Couple_Optimisation_IBM::printOn(Sortie& os) const
 {
-  return s ;
+  return Probleme_Couple::printOn(os);
 }
 
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
+void Pb_Couple_Optimisation_IBM::initialize( )
 {
-  if(has_interface_blocs())
-    {
-      ajouter_blocs({}, secmem);
-      return secmem;
-    }
-  return ajouter_(equation().inconnue().valeurs(),secmem);
-}
-DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(resu);
+  Probleme_Couple::initialize();
 }
 
+int Pb_Couple_Optimisation_IBM::associer_(Objet_U& ob)
+{
+  Probleme_Couple::associer_(ob);
+  return 1;
+}
+
+void Pb_Couple_Optimisation_IBM::le_modele_interpolation_IBM(const Interpolation_IBM_base& un_modele_d_interpolation)
+{
+  my_interpolation_IBM_ = un_modele_d_interpolation;
+}
+
+void Pb_Couple_Optimisation_IBM::validateTimeStep()
+{
+  Probleme_Couple::validateTimeStep();
+}

@@ -13,41 +13,44 @@
 *
 *****************************************************************************/
 
-#include <Source_dep_inco_base.h>
-#include <Equation_base.h>
+#ifndef PDF_model_included
+#define PDF_model_included
 
-Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
+#include <TRUSTTabs_forward.h>
 
-//// printOn
-//
+#include <Parser_U.h>
+#include <Domaine_VF.h>
+#include <Motcle.h>
 
-Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
+/*! @brief : class PDF_model
+ *
+ *  <Description of class PDF_model>
+ */
+class PDF_model : public Objet_U
 {
-  return s ;
-}
+  Declare_instanciable(PDF_model) ;
+public :
+  double get_variable_imposee(ArrOfDouble&,int);
+  void affecter_variable_imposee(Domaine_VF&, const DoubleTab&);
+  double eta() const { return eta_; }
+  int pdf_bilan() const { return pdf_bilan_; }
 
+protected :
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  OWN_PTR(Champ_Don_base) variable_imposee_lu_;
+  OWN_PTR(Champ_Don_base) variable_imposee_;
+  int dim_variable_=-1;
+  double eta_ = -100.;
+  double coefku_= -100.;
+  double temps_relax_=1.0e+12;
+  double echelle_relax_=5.0e-2;
+  int type_variable_imposee_= -1;
+  int local_ = -1;
+  int pdf_bilan_ = 0; // 0: terme pdf; 1: termes pdf + temps; 2: termes pdf + temps + conv
+  friend class Source_PDF_base;
+  friend class Source_PDF_EF;
+private:
+  VECT(Parser_U) parsers_;
+};
 
-//// readOn
-//
-
-Entree& Source_dep_inco_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
-{
-  if(has_interface_blocs())
-    {
-      ajouter_blocs({}, secmem);
-      return secmem;
-    }
-  return ajouter_(equation().inconnue().valeurs(),secmem);
-}
-DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(resu);
-}
-
+#endif /* PDF_model */

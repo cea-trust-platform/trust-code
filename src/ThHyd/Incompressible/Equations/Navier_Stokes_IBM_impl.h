@@ -18,6 +18,7 @@
 
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
+#include <Equation_base_IBM_impl.h>
 
 class Navier_Stokes_std;
 class Entree;
@@ -28,30 +29,25 @@ class Navier_Stokes_IBM_impl
 
 public:
 
-  void set_param_IBM(Param& param);
-  Entree& readOn_IBM(Entree& is, Navier_Stokes_std& eq);
-  void modify_initial_velocity_IBM( DoubleTab& );
-  void modify_initial_gradP_IBM( DoubleTrav& );
-  void reprise_calcul_IBM( DoubleTrav& );
-  void pression_initiale_IBM( DoubleTrav& );
-  void pression_correction_IBM( DoubleTrav& );
-  void matrice_pression_IBM ();
-  void preparer_calcul_IBM(const bool&);
+  void set_param_IBM_NS(Param& param);
+  Entree& readOn_IBM_NS(Entree& is, Navier_Stokes_std& eq);
+  void modify_initial_gradP_IBM_NS( DoubleTrav& );
+  void reprise_calcul_IBM_NS( DoubleTrav& );
+  void pression_initiale_IBM_NS( DoubleTrav& );
+  void pression_correction_IBM_NS( DoubleTrav& );
+  void matrice_pression_IBM_NS ();
+  void preparer_calcul_IBM_NS(const bool&);
 
-  bool initTimeStep_IBM(bool ddt);
+  bool initTimeStep_IBM_NS(bool ddt);
 
   inline const int& get_matrice_pression_penalisee_H1() const { return matrice_pression_penalisee_H1_; }
   inline const int& get_correction_matrice_pression() const { return correction_matrice_pression_; }
   inline const int& get_correction_vitesse_modifie() const { return correction_vitesse_modifie_; }
   inline const int& get_correction_pression_modifie() const { return correction_pression_modifie_; }
   inline const int& get_gradient_pression_qdm_modifie() const { return gradient_pression_qdm_modifie_; }
-  inline const int& get_i_source_pdf() const { return i_source_pdf_; }
-  inline const DoubleTab& get_champ_coeff_pdf_som() const { return champ_coeff_pdf_som_; }
   inline const int& get_correction_vitesse_projection_initiale() const { return correction_vitesse_projection_initiale_; }
   inline const int& get_correction_calcul_pression_initiale() const { return correction_calcul_pression_initiale_; }
   inline const int& get_correction_matrice_projection_initiale() const { return correction_matrice_projection_initiale_; }
-
-  inline bool is_IBM() { return (i_source_pdf_ != -1) ? true : false ;}
 
 protected:
   int postraiter_gradient_pression_sans_masse_=0;
@@ -63,8 +59,6 @@ protected:
   int correction_vitesse_modifie_=1;
   int correction_pression_modifie_=0;
   int gradient_pression_qdm_modifie_=0;
-  int i_source_pdf_=-1;
-  DoubleTab champ_coeff_pdf_som_;
 
   OBS_PTR(Navier_Stokes_std) eq_NS;
 };

@@ -133,7 +133,7 @@ Lire pb
                     temps_relaxation_coefficient_pdf 1
                     eta 1.E-10
                     local
-                    vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
+                    vitesse_imposee_fonction 3 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
                 interpolation IBM_gradient_moyen
                 {

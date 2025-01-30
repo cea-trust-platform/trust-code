@@ -1,0 +1,267 @@
+# Conduction 2D : Diverses conditions limites thermiques #
+# PARALLEL OK 4 #
+dimension 3
+
+Pb_conduction pb
+Domaine Mesh_dom
+# BEGIN MESH #
+READ_MED
+{
+domain Mesh_dom
+file res_dom_432_ib_740.med
+mesh Mesh_dom
+}
+
+regroupebord Mesh_dom Bords { sides }
+regroupebord Mesh_dom Bords_Z { top bottom }
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition Mesh_dom
+{
+    Partition_tool tranche { tranches 2 2 1 }
+    Larg_joint 4
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones Mesh_dom
+END SCATTER #
+
+EF dis
+
+Schema_Euler_explicite sch_exp
+Read sch_exp
+{
+    tinit 0
+    tmax 300.
+    nb_pas_dt_max 3
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 5
+    dt_sauv 100
+    seuil_statio 1.e-10
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-12
+    dt_start  dt_fixe 1.e-2
+    facsec 2.5
+}
+
+Schema_Euler_implicite sch_imp
+Read sch_imp
+{
+    tinit 0
+    tmax 300.
+    nb_pas_dt_max 3
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 5
+    dt_sauv 100
+    seuil_statio 1.e-10
+    solveur implicite
+    {
+        seuil_convergence_implicite 1.e-8
+        seuil_convergence_solveur  1e-8
+        solveur gcp { precond_diagonal nb_it_max 40 seuil 1e-12 }
+    }
+    dt_start  dt_fixe 1.e-2
+    facsec 2.5
+}
+
+Associate pb Mesh_dom
+Associate pb sch_imp
+Discretize pb dis
+
+Read pb
+{
+
+    solide {
+        rho Champ_Uniforme 1 2
+        lambda champ_fonc_fonction pb temperature 1 (0.01*(val_LE_7.0)+0.001*(val_GT_7.0))
+        Cp Champ_Uniforme 1 0.5
+    }
+
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_fonc_xyz Mesh_dom 1 (((x-0)*(x-0)+(y-0)*(y-0))_LT_0.04)*20.
+        }
+        boundary_conditions {
+            Bords_Z paroi_adiabatique
+            Bords paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
+	
+	correction_variable_initiale 1
+	sources {
+	puissance_thermique champ_fonc_fonction pb temperature 1 (1*(val_GT_7.)) ,
+        Source_PDF
+            {
+            aire Champ_Fonc_MED {
+            domain Mesh_dom
+            file res_dom_432_ib_740.med
+            field aire
+            use_existing_domain
+            last_time
+            loc elem
+             }
+            rotation Champ_Fonc_MED {
+            domain Mesh_dom
+            file res_dom_432_ib_740.med
+            field rotation
+            use_existing_domain
+            last_time
+            loc elem
+             }
+            modele
+                {
+                    eta 1.0e-10
+		    bilan_PDF 0
+                    # variable_imposee_data champ_uniforme 1 7. #
+                    variable_imposee_fonction 1 (((x*x)+(y*y))_LE_(0.5*0.5))*7.0
+                }
+            interpolation Interpolation_IBM_element_fluide
+       		{
+         	    points_solides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field projection_Solid 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    points_fluides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field projection_Fluid 
+                    use_existing_domain
+                    last_time
+                    loc som
+		    }
+         	    elements_fluides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field fl_elem_number 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    correspondance_elements Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field TRUST_SALOME_correspondance 
+                    use_existing_domain 
+                    last_time
+                    loc elem
+		    }
+		}
+            # interpolation Interpolation_IBM_gradient_moyen
+       		{
+         	    points_solides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field projection_Solid 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    est_dirichlet Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field is_node_dirichlet 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    elements_solides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field so_elem_number 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    correspondance_elements Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field TRUST_SALOME_correspondance 
+                    use_existing_domain 
+                    last_time
+                    loc elem
+		    }
+		} #
+            # interpolation Interpolation_IBM_hybride
+       		{
+         	    points_solides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field projection_Solid 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    points_fluides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field projection_Fluid 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    est_dirichlet Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field is_node_dirichlet 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    elements_fluides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field fl_elem_number 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    elements_solides Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field so_elem_number 
+                    use_existing_domain 
+                    last_time
+                    loc som
+		    }
+         	    correspondance_elements Champ_Fonc_MED { 
+                    domain Mesh_dom
+                    file res_dom_432_ib_740.med
+                    field TRUST_SALOME_correspondance 
+                    use_existing_domain 
+                    last_time
+                    loc elem
+		    }
+		} #
+	    }
+	}
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_temp_central temperature periode 5. points 1 0. 0. 0.5
+            sonde_temp_radial  temperature periode 5. segment 50 0. 0. 0.5 0.5 0. 0.5
+        }
+        fields dt_post 3.
+        {
+            conductivite elem 
+            puissance_volumique elem
+            temperature som
+        }
+    }
+}
+Solve pb
+End

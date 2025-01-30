@@ -34,15 +34,18 @@ Entree& PDF_model::readOn(Entree& is)
   // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
   Param param(que_suis_je());
   param.ajouter("eta",&eta_, Param::REQUIRED); // XD_ADD_P floattant penalization coefficient
+  param.ajouter("bilan_PDF",&pdf_bilan_,Param::OPTIONAL); // XD_ADD_P type de bilan du terme PDF (seul/avec temps/avec convection)
   param.ajouter("temps_relaxation_coefficient_PDF",&temps_relax_,Param::OPTIONAL); // XD_ADD_P floattant time relaxation on the forcing term to help
   param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL); // XD_ADD_P floattant time relaxation on the forcing term to help convergence
   param.ajouter_flag("local",&local_); // XD_ADD_P rien whether the prescribed velocity is expressed in the global or local basis
   param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL); // XD_ADD_P field_base Prescribed velocity as a field
   param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P troismots Prescribed velocity as a set of ananlytical component
+  param.ajouter_non_std("variable_imposee_data",(this),Param::OPTIONAL); // XD_ADD_P field_base Prescribed variable as a field
+  param.ajouter_non_std("variable_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P troismots Prescribed variable as a set of ananlytical component
   param.lire_avec_accolades_depuis(is);
-  if (type_vitesse_imposee_ == -1)
+  if (type_variable_imposee_ == -1)
     {
-      Cerr << "PDF_model: you must specify either 'vitesse_imposee_data' or 'vitesse_imposee_fonction'" << finl;
+      Cerr << "PDF_model: you must specify either 'variable(vitesse)_imposee_data' or 'variable(vitesse)_imposee_fonction'" << finl;
       Process::exit();
     }
   coefku_ = 1./eta_;
@@ -51,14 +54,14 @@ Entree& PDF_model::readOn(Entree& is)
 
 int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
 {
-  if (un_mot == "vitesse_imposee_fonction")
+  Cerr << " PDF_model is reading imposed variable... " << finl;
+  if (un_mot == "variable_imposee_fonction" || un_mot == "vitesse_imposee_fonction")
     {
-      Cerr << " PDF_model is reading imposed velocity... " << finl;
-      type_vitesse_imposee_ = 1;
+      type_variable_imposee_ = 1;
       Nom expr_vit_imp;
-      int dim = Objet_U::dimension;
-      parsers_.dimensionner(dim);
-      for (int i = 0; i < dim; i++)
+      is >> dim_variable_;
+      parsers_.dimensionner(dim_variable_);
+      for (int i = 0; i < dim_variable_; i++)
         {
           is >> expr_vit_imp;
           std::string sx(expr_vit_imp);
@@ -72,26 +75,44 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
           parsers_[i].parseString();
         }
     }
-  else if (un_mot == "vitesse_imposee_data")
+  else if (un_mot == "variable_imposee_data" || un_mot == "vitesse_imposee_data")
     {
-      type_vitesse_imposee_ = 0;
-      is >> vitesse_imposee_lu_;
+      type_variable_imposee_ = 0;
+      is >> variable_imposee_lu_;
+      dim_variable_ = variable_imposee_lu_->valeurs().dimension(1);
     }
   else
     {
       Cerr << "PDF_model: token not understood: " << un_mot << finl;
       Process::exit();
     }
+
+  if (un_mot == "vitesse_imposee_fonction" || un_mot == "vitesse_imposee_data")
+    {
+      if (dim_variable_ != Objet_U::dimension)
+        {
+          Cerr << "PDF_model pour un vecteur: Objet_U::dimension != dim_variable_: " << dim_variable_ << finl;
+          Process::exit();
+        }
+    }
+  Cerr << " imposed variable dimension = " << dim_variable_ << finl;
+  if (local_ == 1 && (dim_variable_ != Objet_U::dimension))
+    {
+      Cerr << "PDF_model avec repere local pour un vecteur seulement (Objet_U::dimension != dim_variable_) = " << dim_variable_ << finl;
+      Process::exit();
+    }
+
   return 1;
 }
 
-void PDF_model::affecter_vitesse_imposee(Domaine_VF& le_dom, const DoubleTab& coords)
+void PDF_model::affecter_variable_imposee(Domaine_VF& le_dom, const DoubleTab& coords)
 {
-  if (type_vitesse_imposee_ == 1)
+  if (type_variable_imposee_ == 1)
     {
+      // pour des data aux sommets
       int nb_som_tot = le_dom.nb_som_tot();
 
-      DoubleTab& vitesse_imposee_ref = vitesse_imposee_->valeurs();
+      DoubleTab& variable_imposee_ref = variable_imposee_->valeurs();
 
       int dim = Objet_U::dimension;
 
@@ -103,10 +124,11 @@ void PDF_model::affecter_vitesse_imposee(Domaine_VF& le_dom, const DoubleTab& co
             {
               x[j] = coords(i,j);
             }
-          for (int j = 0; j < dim; j++)
+          for (int j = 0; j < dim_variable_; j++)
             {
-              vitesse_imposee_ref(i,j) = get_vitesse_imposee(x,j);
+              variable_imposee_ref(i,j) = get_variable_imposee(x,j);
             }
+          // Cerr << "variable_imposee_ref(i)  = " << variable_imposee_ref(i,0)<<" "<< variable_imposee_ref(i,1)<<" " << variable_imposee_ref(i,2) << finl;
         }
     }
   else
@@ -116,7 +138,7 @@ void PDF_model::affecter_vitesse_imposee(Domaine_VF& le_dom, const DoubleTab& co
     }
 }
 
-double PDF_model::get_vitesse_imposee(ArrOfDouble& x,int comp)
+double PDF_model::get_variable_imposee(ArrOfDouble& x,int comp)
 {
   int dim = Objet_U::dimension;
   for (int i = 0; i < dim; i++)

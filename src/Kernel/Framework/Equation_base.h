@@ -35,6 +35,7 @@
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
+#include <Equation_base_IBM_impl.h>
 
 class Schema_Temps_base;
 class Cond_lim_base;
@@ -71,7 +72,7 @@ enum Type_modele { TURBULENCE };
  *        Entree& lire(const Motcle&, Entree&) [protegee]
  *
  */
-class Equation_base : public Champs_compris_interface, public Objet_U
+class Equation_base : public Champs_compris_interface, public Objet_U, public Equation_base_IBM_impl
 {
   Declare_base(Equation_base);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,11 +32,9 @@
 #include <Interpolation_IBM_power_law_tbl_u_star.h>
 #include <Dirichlet.h>
 #include <SFichier.h>
-#include <Navier_Stokes_std.h>
 #include <Op_Conv_EF.h>
 
 Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
-// XD source_pdf source_pdf_base source_pdf 1 Source term for Penalised Direct Forcing (PDF) method.
 
 /*##################################################################################################
 ####################################################################################################
@@ -57,158 +55,38 @@ Sortie& Source_PDF_EF::printOn(Sortie& s ) const
 
 /*##################################################################################################
 ####################################################################################################
-################################# POSTRAITEMENT ####################################################
-####################################################################################################
-##################################################################################################*/
-
-void Source_PDF_EF::creer_champ(const Motcle& motlu)
-{
-  if (motlu=="u_star_ibm" && !champ_u_star_ibm_.non_nul())
-    {
-      int nb_comp = 1;
-      Noms noms(1);
-      noms[0]="u_star_ibm";
-      Noms unites(1);
-      unites[0] = "m/s";
-      double temps=0.;
-      const Discretisation_base& discr = equation().probleme().discretisation();
-      discr.discretiser_champ("champ_sommets",equation().domaine_dis(),scalaire,noms,unites,nb_comp,temps,champ_u_star_ibm_);
-      champs_compris_.ajoute_champ(champ_u_star_ibm_);
-    }
-  else if (motlu=="y_plus_ibm" && !champ_y_plus_ibm_.non_nul())
-    {
-      int nb_comp = 1;
-      Noms noms(1);
-      noms[0]="y_plus_ibm";
-      Noms unites(1);
-      unites[0] = "-";
-      double temps=0.;
-      const Discretisation_base& discr = equation().probleme().discretisation();
-      discr.discretiser_champ("champ_sommets",equation().domaine_dis(),scalaire,noms,unites,nb_comp,temps,champ_y_plus_ibm_);
-      champs_compris_.ajoute_champ(champ_y_plus_ibm_);
-    }
-}
-
-bool Source_PDF_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
-{
-  if (nom == "u_star_ibm" && champ_u_star_ibm_.non_nul())
-    {
-      ref_champ = Source_PDF_EF::get_champ(nom);
-      return true;
-    }
-  else if (nom == "y_plus_ibm" && champ_y_plus_ibm_.non_nul())
-    {
-      ref_champ = Source_PDF_EF::get_champ(nom);
-      return true;
-    }
-  else if (champs_compris_.has_champ(nom, ref_champ))
-    return true;
-  else
-    return false;
-}
-
-bool Source_PDF_EF::has_champ(const Motcle& nom) const
-{
-  if (nom == "u_star_ibm" && champ_u_star_ibm_.non_nul())
-    return true;
-  else if (nom == "y_plus_ibm" && champ_y_plus_ibm_.non_nul())
-    return true;
-  else
-    return champs_compris_.has_champ(nom);
-}
-
-const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
-{
-  if (nom=="u_star_ibm")
-    {
-      if (champ_u_star_ibm_.est_nul())
-        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
-
-      // Initialisation a 0 du champ volumique u_star
-      DoubleTab& valeurs = champ_u_star_ibm_->valeurs();
-      valeurs=0;
-      if (tab_u_star_ibm_.size_array()>0)
-        {
-          const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-          int nb_som=domaine_EF.domaine().nb_som();
-          for (int num_node=0; num_node<nb_som; num_node++)
-            valeurs(num_node)=tab_u_star_ibm_(num_node);
-        }
-      valeurs.echange_espace_virtuel();
-      // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_u_star_ibm_);
-      champ_u_star_ibm_->mettre_a_jour(equation().probleme().schema_temps().temps_courant());
-      return champs_compris_.get_champ(nom);
-    }
-  else if (nom=="y_plus_ibm")
-    {
-      if (champ_y_plus_ibm_.est_nul())
-        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
-
-      // Initialisation a 0 du champ volumique u_star
-      DoubleTab& valeurs = champ_y_plus_ibm_->valeurs();
-      valeurs=0;
-      if (tab_y_plus_ibm_.size_array()>0)
-        {
-          const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-          int nb_som=domaine_EF.domaine().nb_som();
-          for (int num_node=0; num_node<nb_som; num_node++)
-            valeurs(num_node)=tab_y_plus_ibm_(num_node);
-        }
-      valeurs.echange_espace_virtuel();
-      // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_y_plus_ibm_);
-      champ_y_plus_ibm_->mettre_a_jour(equation().probleme().schema_temps().temps_courant());
-      return champs_compris_.get_champ(nom);
-    }
-  else
-    return champs_compris_.get_champ(nom);
-}
-
-void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
-{
-  Source_base::get_noms_champs_postraitables(nom,opt);
-
-  Noms noms_compris = champs_compris_.liste_noms_compris();
-  noms_compris.add("u_star_ibm");
-  noms_compris.add("y_plus_ibm");
-  if (opt==DESCRIPTION)
-    Cerr<<" Source_PDF_EF : "<< noms_compris <<finl;
-  else
-    nom.add(noms_compris);
-}
-
-
-/*##################################################################################################
-####################################################################################################
 ################################# PROBLEM ASSOCIATION AND ZONES ####################################
 ####################################################################################################
 ##################################################################################################*/
 
 void Source_PDF_EF::associer_pb(const Probleme_base& pb)
 {
-  assert(Objet_U::dimension==3);
-  int nb_comp=dimension*dimension;
-  nb_comp=9;
+  // Matrice Rotation
+  int dim_esp = Objet_U::dimension;
+  assert(dim_esp==3);
+  int nb_comp=dim_esp*dim_esp;
   Noms nom_c(nb_comp);
   Noms unites(nb_comp);
   pb.discretisation().discretiser_champ("champ_elem",le_dom_EF.valeur(),vectoriel,nom_c,unites,nb_comp,0.,champ_rotation_);
   champ_rotation_->affecter(champ_rotation_lu_);
-  nb_comp=3;
-  Noms nom_c1(nb_comp);
-  Noms unites1(nb_comp);
+
+  // Aire
   pb.discretisation().discretiser_champ("champ_elem",le_dom_EF.valeur(),"aire","m-1",1,0., champ_aire_);
   champ_aire_->affecter(champ_aire_lu_);
   pb.discretisation().discretiser_champ("champ_elem",le_dom_EF.valeur(),"rho","kg.m-3",1,0., champ_rho_);
+
   Source_PDF_base::updateChampRho();
+
+  // Transposition Matrice Rotation
   if (transpose_rotation_)
     {
 
       DoubleTab& val=champ_rotation_->valeurs();
 
       int nb_case=val.dimension_tot(0);
-      int nb_dim=dimension;
       for (int ele=0; ele<nb_case; ele++)
-        for (int k=0; k<nb_dim; k++)
-          for (int i=k+1; i<nb_dim; i++)
+        for (int k=0; k<dim_esp; k++)
+          for (int i=k+1; i<dim_esp; i++)
             {
               double tmp=val(ele,3*k+i);
               val(ele,3*k+i)=val(ele,3*i+k);
@@ -217,67 +95,143 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
 
     }
 
+  // Relaxation
   temps_relax_ = modele_lu_.temps_relax_;
   echelle_relax_ = modele_lu_.echelle_relax_;
-  matrice_pression_variable_bool_ = false;
-  if (temps_relax_ != 1.0e+12) matrice_pression_variable_bool_ = true;
-  type_vitesse_imposee_ = modele_lu_.type_vitesse_imposee_;
-  pb.discretisation().discretiser_champ("vitesse",le_dom_EF.valeur(),vectoriel,nom_c1,unites1,nb_comp,0.,modele_lu_.vitesse_imposee_);
+
+  // Variable Imposee sur IB
+  const DoubleTab& variable=equation().inconnue().valeurs();
+  Motcle directive("temperature");
+  if (equation().inconnue().nature_du_champ()==vectoriel) directive="vitesse";
+  nb_comp=variable.dimension(1);
+  assert(nb_comp==modele_lu_.dim_variable_);
+  Nom nom_c1(equation().inconnue().le_nom());
+  Nom unites1(equation().inconnue().unites()[0]);
+  type_variable_imposee_ = modele_lu_.type_variable_imposee_;
+  pb.discretisation().discretiser_champ(directive,le_dom_EF.valeur(),nom_c1,unites1,nb_comp,0.,modele_lu_.variable_imposee_);
 
   if (interpolation_bool_)
     {
       Domaine_dis_base& le_dom_dis_base = ref_cast(Domaine_dis_base,le_dom_EF.valeur());
       interpolation_lue_->discretise(pb.discretisation(),le_dom_dis_base);
-      if (type_vitesse_imposee_ == 1)
+      if (type_variable_imposee_ == 1)
         {
           if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_gradient_moyen" || interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star")
             {
               const Interpolation_IBM_mean_gradient& interp = ref_cast(Interpolation_IBM_mean_gradient,interpolation_lue_.valeur());
-              this->compute_vitesse_imposee_projete(interp.solid_elems_->valeurs(), interp.solid_points_->valeurs(), -2.0, 1e-6);
+              this->compute_variable_imposee_projete(interp.solid_elems_->valeurs(), interp.solid_points_->valeurs(), -2.0, 1e-6);
             }
           else
             {
               const Interpolation_IBM_elem_fluid& interp = ref_cast(Interpolation_IBM_elem_fluid,interpolation_lue_.valeur());
-              compute_vitesse_imposee_projete(interp.fluid_elems_->valeurs(), interp.solid_points_->valeurs(), -2.0, 1e-6);
+              compute_variable_imposee_projete(interp.fluid_elems_->valeurs(), interp.solid_points_->valeurs(), -2.0, 1e-6);
             }
         }
       else
         {
-          modele_lu_.vitesse_imposee_->affecter(modele_lu_.vitesse_imposee_lu_);
+          modele_lu_.variable_imposee_->affecter(modele_lu_.variable_imposee_lu_);
         }
     }
   else
     {
-      if (type_vitesse_imposee_ != 1)
+      if (type_variable_imposee_ != 1)
         {
-          modele_lu_.vitesse_imposee_->affecter(modele_lu_.vitesse_imposee_lu_);
+          modele_lu_.variable_imposee_->affecter(modele_lu_.variable_imposee_lu_);
         }
       else
         {
           const DoubleTab& coords = le_dom_EF->domaine().coord_sommets();
-          modele_lu_.affecter_vitesse_imposee(le_dom_EF.valeur(), coords);
+          modele_lu_.affecter_variable_imposee(le_dom_EF.valeur(), coords);
         }
     }
-
   if (modele_lu_.local_ == 1)
     {
-      rotate_imposed_velocity(modele_lu_.vitesse_imposee_->valeurs());
+      if (nb_comp != dim_esp)
+        {
+          Cerr<<"Source_PDF_EF::associer_pb: dimension variable differente "<<dim_esp<<"! "<<finl;
+          abort();
+        }
+      rotate_imposed_velocity(modele_lu_.variable_imposee_->valeurs());
     }
 
-  /*pb.discretisation().discretiser_champ("vitesse",la_zone_EF,vectoriel,nom_c1,unites1,nb_comp,0.,vitesse_imposee_);
-  vitesse_imposee_->affecter(mod_.vitesse_imposee_);*/
-  vitesse_imposee_ = modele_lu_.vitesse_imposee_->valeurs();
+  variable_imposee_ = modele_lu_.variable_imposee_->valeurs();
   pb.discretisation().discretiser_champ("champ_sommets",le_dom_EF.valeur(),"","",1,0., champ_nodal_);
 
   compute_indicateur_nodal_champ_aire();
+
+  matrice_pression_variable_bool_ = false;
+  if (temps_relax_ != 1.0e+12) matrice_pression_variable_bool_ = true;
 
   int nb_som=le_dom_EF->domaine().nb_som();
   tab_u_star_ibm_.resize(nb_som);
   tab_y_plus_ibm_.resize(nb_som);
 }
 
+void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
+{
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const IntTab& elems= domaine_EF.domaine().les_elems();
+  int nb_som_elem=domaine_EF.domaine().nb_som_elem();
+  int nb_elem_tot=domaine_EF.domaine().nb_elem_tot();
+  DoubleTab& rotation = champ_rotation_->valeurs();
+  int nb_som_tot=domaine_EF.domaine().nb_som_tot();
+
+
+  // COPIES
+  DoubleTab vitesse = vitesse_imposee;
+  assert(Objet_U::dimension==3);
+  int dim_var=vitesse_imposee.dimension(1);
+  assert(Objet_U::dimension==dim_var);
+
+  //vitesse_imposee.echange_espace_virtuel();
+  DoubleTrav marqueur=equation().probleme().get_champ("vitesse").valeurs();
+  vitesse_imposee = 0.;
+  marqueur = 0.;
+
+  for (int num_elem=0; num_elem<nb_elem_tot; num_elem++)
+    {
+      double norm =  sqrt(rotation(num_elem,0)*rotation(num_elem,0)
+                          +rotation(num_elem,1)*rotation(num_elem,1)
+                          +rotation(num_elem,2)*rotation(num_elem,2)
+                          +rotation(num_elem,3)*rotation(num_elem,3)
+                          +rotation(num_elem,4)*rotation(num_elem,4)
+                          +rotation(num_elem,5)*rotation(num_elem,5)
+                          +rotation(num_elem,6)*rotation(num_elem,6)
+                          +rotation(num_elem,7)*rotation(num_elem,7)
+                          +rotation(num_elem,8)*rotation(num_elem,8));
+      if (norm > 1e-6)
+        {
+          for (int i=0; i<nb_som_elem; i++)
+            {
+              int s = elems(num_elem,i);
+              for (int c=0; c<dim_var; c++)
+                {
+                  for (int k=0; k<dim_var; k++)
+                    {
+                      vitesse_imposee(s,c) += rotation(num_elem,3*c+k)*vitesse(s,k);
+                      //Cerr << "k = " << k << ", c = " << c << ", 3*c+k = " << 3*c+k << ", rotation = " << rotation(num_elem,3*c+k) << finl;
+                    }
+                }
+              marqueur(s,0) += 1.0;
+            }
+        }
+    }
+  for (int i=0; i<nb_som_tot; i++)
+    {
+      if(marqueur(i,0) > 0.)
+        {
+          for (int c=0; c<dim_var; c++)
+            {
+              vitesse_imposee(i,c) /= marqueur(i,0);
+            }
+        }
+    }
+}
+
 void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
 {
+  // indicateur_nodal_champ_aire_ = 1 si sommet appartient a un element dont l'aire <> 0
+  // 0 sinon
   const DoubleTab& aire=champ_aire_->valeurs();
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
@@ -301,12 +255,13 @@ void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
   indicateur_nodal_champ_aire_ = indic;
 }
 
-void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
+void Source_PDF_EF::compute_variable_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
 {
   int nb_som=le_dom_EF->domaine().nb_som();
   int dim = Objet_U::dimension;
   const DoubleTab& coords = le_dom_EF->domaine().coord_sommets();
   ArrOfDouble x(dim);
+  int dim_var = equation().inconnue().valeurs().dimension(1);
   for (int i = 0; i < nb_som; i++)
     {
       if ((marqueur(i) >= val + eps) || (marqueur(i) <= val - eps))
@@ -315,9 +270,9 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
             {
               x[j] = points(i,j);
             }
-          for (int j = 0; j < dim; j++)
+          for (int j = 0; j < dim_var; j++)
             {
-              modele_lu_.vitesse_imposee_->valeurs()(i,j) = modele_lu_.get_vitesse_imposee(x,j);
+              modele_lu_.variable_imposee_->valeurs()(i,j) = modele_lu_.get_variable_imposee(x,j);
             }
         }
       else
@@ -326,67 +281,9 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
             {
               x[j] = coords(i,j);
             }
-          for (int j = 0; j < dim; j++)
+          for (int j = 0; j < dim_var; j++)
             {
-              modele_lu_.vitesse_imposee_->valeurs()(i,j) = modele_lu_.get_vitesse_imposee(x,j);
-            }
-        }
-    }
-}
-
-void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
-{
-  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  const IntTab& elems= domaine_EF.domaine().les_elems();
-  int nb_som_elem=domaine_EF.domaine().nb_som_elem();
-  int nb_elem_tot=domaine_EF.domaine().nb_elem_tot();
-  DoubleTab& rotation = champ_rotation_->valeurs();
-  int nb_som_tot=domaine_EF.domaine().nb_som_tot();
-
-
-  // COPIES
-  DoubleTab vitesse = vitesse_imposee;
-
-  //vitesse_imposee.echange_espace_virtuel();
-  DoubleTrav marqueur=equation().probleme().get_champ("vitesse").valeurs();
-  vitesse_imposee = 0.;
-  marqueur = 0.;
-
-  for (int num_elem=0; num_elem<nb_elem_tot; num_elem++)
-    {
-      double norm =  sqrt(rotation(num_elem,0)*rotation(num_elem,0)
-                          +rotation(num_elem,1)*rotation(num_elem,1)
-                          +rotation(num_elem,2)*rotation(num_elem,2)
-                          +rotation(num_elem,3)*rotation(num_elem,3)
-                          +rotation(num_elem,4)*rotation(num_elem,4)
-                          +rotation(num_elem,5)*rotation(num_elem,5)
-                          +rotation(num_elem,6)*rotation(num_elem,6)
-                          +rotation(num_elem,7)*rotation(num_elem,7)
-                          +rotation(num_elem,8)*rotation(num_elem,8));
-      if (norm > 1e-6)
-        {
-          for (int i=0; i<nb_som_elem; i++)
-            {
-              int s = elems(num_elem,i);
-              for (int c=0; c<3; c++)
-                {
-                  for (int k=0; k<3; k++)
-                    {
-                      vitesse_imposee(s,c) += rotation(num_elem,3*c+k)*vitesse(s,k);
-                      //Cerr << "k = " << k << ", c = " << c << ", 3*c+k = " << 3*c+k << ", rotation = " << rotation(num_elem,3*c+k) << finl;
-                    }
-                }
-              marqueur(s,0) += 1.0;
-            }
-        }
-    }
-  for (int i=0; i<nb_som_tot; i++)
-    {
-      if(marqueur(i,0) > 0.)
-        {
-          for (int c=0; c<3; c++)
-            {
-              vitesse_imposee(i,c) /= marqueur(i,0);
+              modele_lu_.variable_imposee_->valeurs()(i,j) = modele_lu_.get_variable_imposee(x,j);
             }
         }
     }
@@ -399,7 +296,75 @@ void Source_PDF_EF::associer_domaines(const Domaine_dis_base& domaine_dis,
   le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis);
 }
 
-DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const
+DoubleTab Source_PDF_EF::compute_coeff_elem() const
+{
+  // coeff = 1 si aire dans element <= 0
+  // coeff = 1 + (Ksi/eta) * coeff_relax sinon
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const IntTab& elems= domaine_EF.domaine().les_elems() ;
+  int nb_som_elem=domaine_EF.domaine().nb_som_elem();
+  int nb_elems=domaine_EF.domaine().nb_elem_tot();
+  const DoubleTab& rotation=champ_rotation_->valeurs();
+  const DoubleTab& aire = champ_aire_->valeurs();
+
+  int dim_var = equation().inconnue().valeurs().dimension(1);
+  ArrOfDouble variable_elem(dim_var);
+  int dim_esp = Objet_U::dimension ;
+  if (dim_var != 1 && dim_var != dim_esp)
+    {
+      Cerr<<"compute_coeff_elem: dimension variable differente 1 ou "<<dim_esp<<"! "<<finl;
+      exit();
+    }
+  DoubleTab coeff(nb_elems, dim_var);
+
+  const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
+  const double dt_min = equation().probleme().schema_temps().pas_temps_min();
+  double dt = std::max(dt_ref,dt_min);
+  const DoubleTab& rho_m=champ_rho_->valeurs();
+  if (equation().probleme().schema_temps().temps_courant()==0)
+    {
+      dt = 1.0;
+    }
+  // Cerr<<"dt pour compute_coeff_elem : "<< dt <<finl;
+
+  double val_coeff ;
+  DoubleVect val_diag_coef(dim_var);
+  for (int num_elem=0; num_elem<nb_elems; num_elem++)
+    {
+      if (aire(num_elem)<=0.)
+        {
+          for (int comp=0; comp<dim_var; comp++) coeff(num_elem, comp) = 1. ;
+        }
+      else
+        {
+          const DoubleTab& variable=equation().inconnue().valeurs();
+          variable_elem=0;
+          for (int s=0; s<nb_som_elem; s++)
+            {
+              int som_glob=elems(num_elem,s);
+              for (int comp=0; comp<dim_var; comp++)
+                variable_elem[comp]+=variable(som_glob,comp);
+            }
+          // rho/dt * coeff_relax
+          val_coeff = fonct_coeff(rho_m(num_elem), aire(num_elem), dt) ;
+          // 1/eta
+          if (dim_var == dim_esp)
+            {
+              val_diag_coef = diag_coeff_elem(variable_elem, rotation, num_elem) ;
+            }
+          else
+            {
+              val_diag_coef(0) = 1.0 / modele_lu_.eta_ ;
+            }
+          // coeff = 1 + (Ksi/eta) * coeff_relax
+          for (int comp=0; comp<dim_esp; comp++)
+            coeff(num_elem, comp) = 1.+ val_coeff * val_diag_coef(comp) * dt / rho_m(num_elem) ;
+        }
+    }
+  return coeff;
+}
+
+DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& variable_elem, const DoubleTab& rotation, int num_elem) const
 {
   assert(Objet_U::dimension==3);
   ArrOfDouble tuvw(dimension);
@@ -425,71 +390,30 @@ DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const Doubl
   return diag_coef ;
 }
 
-DoubleTab Source_PDF_EF::compute_coeff_elem() const
+DoubleTab Source_PDF_EF::compute_coeff_matrice() const
 {
-  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
-  const IntTab& elems= domaine_EF.domaine().les_elems() ;
-  int nb_som_elem=domaine_EF.domaine().nb_som_elem();
-  int nb_elems=domaine_EF.domaine().nb_elem_tot();
-  ArrOfDouble vitesse_elem(dimension);
-  const DoubleTab& rotation=champ_rotation_->valeurs();
-  const DoubleTab& aire = champ_aire_->valeurs();
-
-  int dim_esp = Objet_U::dimension ;
-  DoubleTab coeff(nb_elems, dim_esp);
-
-  const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
-  const double dt_min = equation().probleme().schema_temps().pas_temps_min();
-  double dt = std::max(dt_ref,dt_min);
-  const DoubleTab& rho_m=champ_rho_->valeurs();
-  if (equation().probleme().schema_temps().temps_courant()==0)
-    {
-      dt = 1.0;
-    }
-  // Cerr<<"dt pour compute_coeff_elem : "<< dt <<finl;
-
-  double val_coeff ;
-  DoubleVect val_diag_coef(dim_esp);
-  for (int num_elem=0; num_elem<nb_elems; num_elem++)
-    {
-      if (aire(num_elem)<=0.)
-        {
-          for (int comp=0; comp<dim_esp; comp++) coeff(num_elem, comp) = 1. ;
-        }
-      else
-        {
-          const DoubleTab& vitesse=equation().inconnue().valeurs();
-          vitesse_elem=0;
-          for (int s=0; s<nb_som_elem; s++)
-            {
-              int som_glob=elems(num_elem,s);
-              for (int comp=0; comp<dimension; comp++)
-                vitesse_elem[comp]+=vitesse(som_glob,comp);
-            }
-          val_coeff = fonct_coeff(rho_m(num_elem), aire(num_elem), dt) ;
-          val_diag_coef = diag_coeff_elem(vitesse_elem, rotation, num_elem) ;
-          for (int comp=0; comp<dim_esp; comp++)
-            coeff(num_elem, comp) = 1.+ val_coeff * val_diag_coef(comp) * dt / rho_m(num_elem) ;
-        }
-    }
-  return coeff;
-}
-
-DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
-{
+  // coeff sommet = Sigma_elem coeff_elem / Nb contributions;  avec :
+  // coeff_elem = Ksi/eta * coeff_relax si element dont l'aire <>= 0
+  // coeff_elem = 0 sinon
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   const IntTab& elems= domaine_EF.domaine().les_elems();
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   int nb_som_tot=domaine_EF.domaine().nb_som_tot();
-  ArrOfDouble vitesse_elem(dimension);
   const DoubleTab& rotation=champ_rotation_->valeurs();
   const DoubleTab& aire = champ_aire_->valeurs();
 
   int dim_esp = Objet_U::dimension ;
-  const DoubleTab& vitesse=equation().inconnue().valeurs();
-  DoubleTab coeff(vitesse);
-  IntTab contrib(nb_som_tot, dim_esp);
+  const DoubleTab& variable=equation().inconnue().valeurs();
+  int dim_var = variable.dimension(1);
+  if (dim_var != 1 && dim_var != dim_esp)
+    {
+      Cerr<<"compute_coeff_matrice: dimension variable differente 1 ou "<<dim_esp<<"! "<<finl;
+      exit();
+    }
+  ArrOfDouble variable_elem(dim_var);
+  DoubleTab coeff(variable);
+  IntTab contrib(nb_som_tot, dim_var);
   contrib = 0;
   coeff = 0.;
 
@@ -501,40 +425,51 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
     {
       dt = 1.0;
     }
-  // Cerr<<"dt pour compute_coeff_matrice_pression : "<< dt <<finl;
+  // Cerr<<"dt pour compute_coeff_matrice : "<< dt <<finl;
 
   double val_coeff ;
-  DoubleVect val_diag_coef(dim_esp), coeff_el(dim_esp) ;
+  DoubleVect val_diag_coef(dim_var), coeff_el(dim_var) ;
   for (int num_elem=0; num_elem<nb_elems; num_elem++)
     {
       if (aire(num_elem)<=0.)
         {
-          for (int comp=0; comp<dim_esp; comp++) coeff_el(comp) = 0. ;
+          for (int comp=0; comp<dim_var; comp++) coeff_el(comp) = 0. ;
         }
       else
         {
-          vitesse_elem=0.;
+          variable_elem=0.;
           for (int s=0; s<nb_som_elem; s++)
             {
               int som_glob=elems(num_elem,s);
-              for (int comp=0; comp<dimension; comp++)
-                vitesse_elem[comp]+=vitesse(som_glob,comp);
+              for (int comp=0; comp<dim_var; comp++)
+                variable_elem[comp]+=variable(som_glob,comp);
             }
+          // rho/dt * coeff_relax
           val_coeff = fonct_coeff(rho_m(num_elem), aire(num_elem), dt) ;
-          val_diag_coef = diag_coeff_elem(vitesse_elem, rotation, num_elem) ;
-          for (int comp=0; comp<dim_esp; comp++)
+          //  1/eta
+          if (dim_var == dim_esp)
+            {
+              val_diag_coef = diag_coeff_elem(variable_elem, rotation, num_elem) ;
+            }
+          else
+            {
+              val_diag_coef(0) = 1.0 / modele_lu_.eta_ ;
+            }
+          // coeff = Ksi/eta * coeff_relax
+          for (int comp=0; comp<dim_var; comp++)
             coeff_el(comp) = val_coeff * val_diag_coef(comp) * dt / rho_m(num_elem) ;
         }
       for (int i = 0; i<nb_som_elem; i++)
         {
           int s = elems(num_elem,i);
-          for (int comp=0; comp<dim_esp; comp++)
+          for (int comp=0; comp<dim_var; comp++)
             {
               if (coeff_el(comp) > 0.)
                 {
                   coeff(s,comp)+= coeff_el(comp);
                   contrib(s, comp) += 1;
                 }
+              // Cerr<<"Source_PDF_EF: coeff_el ("<<comp<<"): "<<" "<<coeff_el(comp)<<finl;
             }
         }
     }
@@ -542,7 +477,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
   double val = 0.;
   for (int s = 0; s<nb_som_tot; s++)
     {
-      for (int comp=0; comp<dim_esp; comp++)
+      for (int comp=0; comp<dim_var; comp++)
         {
           val = 1.;
           if (contrib(s,comp) != 0)
@@ -550,6 +485,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
               val += coeff(s,comp)/contrib(s,comp);
             }
           coeff(s,comp) = val;
+          // Cerr<<"Source_PDF_EF: contrib coeff ("<<s<<","<<comp<<"): "<<contrib(s,comp)<<" "<<coeff(s,comp)<<finl;
         }
     }
   return coeff;
@@ -574,6 +510,8 @@ void Source_PDF_EF::multiply_coeff_volume(DoubleTab& coeff) const
 
 DoubleTab Source_PDF_EF::compute_pond(const DoubleTab& rho_m, const DoubleTab& aire, const DoubleVect& volume_thilde, int& nb_som_elem, int& nb_elems) const
 {
+  // return = 0 si aire dans element <= 0
+  // return = rho/dt * coeff_relax * volume_thilde / (8*8)  sinon
   DoubleTab pond = rho_m;
   double inv_nb_som = 1. / nb_som_elem;
 
@@ -596,26 +534,6 @@ DoubleTab Source_PDF_EF::compute_pond(const DoubleTab& rho_m, const DoubleTab& a
 
 /*##################################################################################################
 ####################################################################################################
-################################# TENSOR CALCULATION ###############################################
-####################################################################################################
-##################################################################################################*/
-
-/* static inline void calcul_vitesse_locale(const ArrOfDouble& vitesse, ArrOfDouble& vitesse_locale,const DoubleTab& rotation,int elem)
-{
-  assert(Objet_U::dimension==3);
-  // VL=rot*V
-  // la matrice rotation est stockee comme un tabeau de taille 9 et non 3 3
-  for (int i=0; i<3; i++)
-    {
-      vitesse_locale(i)=0;
-      for (int k=0; k<3; k++)
-        vitesse_locale(i)+=rotation(elem,3*i+k)*vitesse(k);
-    }
-  assert(est_egal(norme_array(vitesse_locale),norme_array(vitesse),1e-7));
-} */
-
-/*##################################################################################################
-####################################################################################################
 ################################# AJOUTER_ #########################################################
 ####################################################################################################
 ##################################################################################################*/
@@ -624,8 +542,9 @@ DoubleTab Source_PDF_EF::compute_pond(const DoubleTab& rho_m, const DoubleTab& a
 This function redirects toward the ajouter_ which correspond to the model chosen.
 */
 
-DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, const int i_traitement_special) const
+DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& variable, DoubleTab& resu, const int i_traitement_special) const
 {
+  // calcul de : coefficient rho/dt * coeff_relax * (volume_thilde / 8) * variable
   /* i_traitement_special = 0 => traitement classique; coefficient (1/eta) */
   /* i_traitement_special = 1 => coefficient (1/eta -> 1) */
   /* i_traitement_special = 2 => coefficient (1/eta -> 1 + 1/eta) */
@@ -635,8 +554,14 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   const DoubleVect& volume_thilde=domaine_EF.volumes_thilde();
-  int ncomp=dimension;
-  ArrOfDouble tuvw(dimension);
+  int dim_esp = Objet_U::dimension ;
+  int dim_var = variable.dimension(1);
+  if (dim_var != 1 && dim_var != dim_esp)
+    {
+      Cerr<<"ajouter_: dimension variable differente 1 ou "<<dim_esp<<"! "<<finl;
+      exit();
+    }
+  ArrOfDouble tuvw(dim_var);
   const DoubleTab& rotation=champ_rotation_->valeurs();
   const DoubleTab& aire=champ_aire_->valeurs();
   //OWN_PTR(Champ_Don_base) rho_test;
@@ -644,6 +569,7 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
   const DoubleTab& rho_m=champ_rho_->valeurs();
   DoubleTab pond;
 
+  // return = rho/dt * coeff_relax * volume_thilde / (8*8)
   pond = compute_pond(rho_m, aire, volume_thilde, nb_som_elem, nb_elems);
 
   for (int num_elem=0; num_elem<nb_elems; num_elem++)
@@ -652,54 +578,55 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
         {
           if (i_traitement_special == 0)
             {
-              tuvw[0] =  1.0 / modele_lu_.eta_;
-              tuvw[1] =  1.0 / modele_lu_.eta_;
-              tuvw[2] =  1.0 / modele_lu_.eta_;
+              for (int k=0; k<dim_var; k++) tuvw[k] =  1.0 / modele_lu_.eta_;
             }
           else if (i_traitement_special == 1) //terme temps en rho v
             {
-              tuvw[0] =  1.0;
-              tuvw[1] =  1.0;
-              tuvw[2] =  1.0;
+              for (int k=0; k<dim_var; k++) tuvw[k] =  1.0;
             }
           else if (i_traitement_special == 101) //terme temps en v
             {
-              tuvw[0] =  1.0 / rho_m(num_elem);
-              tuvw[1] =  1.0 / rho_m(num_elem);
-              tuvw[2] =  1.0 / rho_m(num_elem);
+              for (int k=0; k<dim_var; k++) tuvw[k] =  1.0 / rho_m(num_elem);
             }
           else if (i_traitement_special == 2)
             {
-              tuvw[0] =  1.0 + 1.0 / modele_lu_.eta_;
-              tuvw[1] =  1.0 + 1.0 / modele_lu_.eta_;
-              tuvw[2] =  1.0 + 1.0 / modele_lu_.eta_;
+              for (int k=0; k<dim_var; k++) tuvw[k] =  1.0 + 1.0 / modele_lu_.eta_;
             }
           else if (i_traitement_special == 102)
             {
-              tuvw[0] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
-              tuvw[1] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
-              tuvw[2] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+              for (int k=0; k<dim_var; k++) tuvw[k] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
             }
           else
             {
               Cerr << "Source_PDF_EF::ajouter_ : i_traitement_special should be 0, 1, 2, 101 or 102" << finl;
               exit();
             }
-          for (int comp=0; comp<ncomp; comp++)
+          for (int comp=0; comp<dim_var; comp++)
             {
               double tijvj=0;
-              for (int c=0; c<ncomp; c++)
+              if (dim_var == 1)
                 {
-                  double coeff_im=0;
-                  for(int k=0; k<ncomp; k++)
-                    {
-                      coeff_im+=rotation(num_elem,3*k+comp)*tuvw[k]*rotation(num_elem,3*k+c);
-                    }
-                  tijvj+=coeff_im ;
+                  tijvj = tuvw[0];
                 }
+              else
+                // dim_var = dim_esp
+                {
+                  for (int c=0; c<dim_var; c++)
+                    {
+                      double coeff_im=0;
+                      for(int k=0; k<dim_esp; k++)
+                        {
+                          coeff_im+=rotation(num_elem,3*k+comp)*tuvw[k]*rotation(num_elem,3*k+c);
+                        }
+                      tijvj+=coeff_im ;
+                    }
+                }
+              // Cerr<< "Source_PDF_EF::ajouter_ tijvj=" <<tijvj<<" pond("<<num_elem<<") = "<<pond(num_elem)<< finl;
+              // cas generique : 1/eta rho/dt * coeff_relax * (volume_thilde / 8) * variable
               for (int i=0; i<nb_som_elem; i++)
                 {
-                  resu(elems(num_elem,i),comp)-=pond(num_elem)*nb_som_elem*tijvj*vitesse(elems(num_elem,i),comp);
+                  resu(elems(num_elem,i),comp)-=pond(num_elem)*nb_som_elem*tijvj*variable(elems(num_elem,i),comp);
+                  // Cerr<< "Source_PDF_EF::ajouter_ noeud: "<<i <<" "<<pond(num_elem)*nb_som_elem*tijvj*variable(elems(num_elem,i),comp)<<" variable = "<<variable(elems(num_elem,i),comp)<< finl;
                 }
             }
         }
@@ -707,10 +634,10 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
   return resu;
 }
 
-DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
+DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& variable, DoubleTab& resu) const
 {
   const int i_traitement_special = 0 ;
-  ajouter_(vitesse, resu, i_traitement_special) ;
+  ajouter_(variable, resu, i_traitement_special) ;
   return resu;
 }
 
@@ -726,33 +653,40 @@ This function redirects toward the contribuer_avec_ which correspond to the mode
 
 void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
+  // calcul : 1/eta rho/dt * coeff_relax * volume_thilde / (8 * 8)
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   const IntTab& elems= domaine_EF.domaine().les_elems();
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   int nb_elems=domaine_EF.domaine().nb_elem_tot();
   const DoubleVect& volume_thilde=domaine_EF.volumes_thilde();
-  int ncomp=dimension;
-  ArrOfDouble tuvw(dimension);
-  // const DoubleTab& vitesse=equation().inconnue().valeurs();
+  const DoubleTab& variable=equation().inconnue().valeurs();
+  int dim_var = variable.dimension(1);
+  int dim_esp = Objet_U::dimension ;
+  if (dim_var != 1 && dim_var != dim_esp)
+    {
+      Cerr<<"contribuer_a_avec: dimension variable differente 1 ou "<<dim_esp<<"! "<<finl;
+      exit();
+    }
+  ArrOfDouble tuvw(dim_var);
   const DoubleTab& rotation=champ_rotation_->valeurs();
   const DoubleTab& aire=champ_aire_->valeurs();
   //champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
   const DoubleTab& rho_m=champ_rho_->valeurs();
   DoubleTab pond ;
 
+  // return = rho/dt * coeff_relax * volume_thilde / (8*8) pour elements interceptes
   pond = compute_pond(rho_m, aire, volume_thilde, nb_som_elem, nb_elems);
 
   for (int num_elem=0; num_elem<nb_elems; num_elem++) //elements loop
     {
       if (aire(num_elem)>0.)
         {
-          tuvw[0] = 1.0 / modele_lu_.eta_;
-          tuvw[1] = 1.0 / modele_lu_.eta_;
-          tuvw[2] = 1.0 / modele_lu_.eta_;
+          for (int k=0; k<dim_var; k++) tuvw[k] = 1.0 / modele_lu_.eta_;
+          // Cerr<< "Source_PDF_EF::contribuer_a_avec: tuvw=" <<tuvw<<" pond("<<num_elem<<") = "<<pond(num_elem)<< finl;
 
-          for (int comp=0; comp<ncomp; comp++)
+          for (int comp=0; comp<dim_var; comp++)
             {
-              for (int comp2=0; comp2<ncomp; comp2++)
+              for (int comp2=0; comp2<dim_var; comp2++)
                 {
                   for (int i=0; i<nb_som_elem; i++)
                     {
@@ -761,23 +695,33 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
                           int s1=elems(num_elem,i);
 
                           double coeff_im=0;
-                          for (int k=0; k<3; k++)
+                          if (dim_var == 1)
                             {
-                              coeff_im+=rotation(num_elem,3*k+comp)*tuvw[k]*rotation(num_elem,3*k+comp2);
+                              coeff_im = tuvw[0];
                             }
-                          int c1=s1*ncomp+comp;
+                          else
+                            // dim_var = dim_esp
+                            {
+                              for (int k=0; k<dim_esp; k++)
+                                {
+                                  coeff_im+=rotation(num_elem,3*k+comp)*tuvw[k]*rotation(num_elem,3*k+comp2);
+                                }
+                            }
+                          int c1=s1*dim_var+comp;
 
+                          // 1.0/eta * rho/dt * coeff_relax * volume_thilde / (8*8)
                           matrice.coef(c1,c1)+=pond(num_elem)*coeff_im;
+                          // Cerr<< "Source_PDF_EF::contribuer_a_avec: contribution matrice c1c1 : "<<c1<<" = "<<pond(num_elem)*coeff_im<< finl;
                         }
                     }
                 }
             }
         }
     }
-  // verif_ajouter_contrib(vitesse, matrice) ;
+  // verif_ajouter_contrib(variable, matrice) ;
 }
 
-void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse& matrice) const
+void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& variable, Matrice_Morse& matrice) const
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   const IntTab& elems= domaine_EF.domaine().les_elems() ;
@@ -785,10 +729,11 @@ void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Mor
   int nb_som_elem=domaine_EF.domaine().nb_som_elem();
   const DoubleTab& aire=champ_aire_->valeurs();
 
-  DoubleTrav force(vitesse);
-  ajouter_(vitesse,force);
-  DoubleTrav force2(vitesse);
-  matrice.ajouter_multvect_(vitesse, force2) ;
+  DoubleTrav force(variable);
+  int dim_var = variable.dimension(1);
+  ajouter_(variable,force);
+  DoubleTrav force2(variable);
+  matrice.ajouter_multvect_(variable, force2) ;
   DoubleTab diforce(force);
   diforce += force2 ;
   double difmax = 0.;
@@ -799,13 +744,12 @@ void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Mor
           for (int i=0; i<nb_som_elem; i++)
             {
               int s1=elems(num_elem,i);
-              double difmod2 = diforce(s1,0)*diforce(s1,0) + diforce(s1,1)*diforce(s1,1) + diforce(s1,2)*diforce(s1,2);
+              double difmod2 = 0.;
+              for (int k=0; k<dim_var; k++) difmod2 += diforce(s1,k)*diforce(s1,k);
               if (difmod2 > 1.0e-5)
                 {
                   if (difmod2 > difmax) difmax = difmod2 ;
-                  // Cerr << " ajouter multvect diforce x = "<< force(s1,0) << " "<< force2(s1,0) << " " << diforce(s1,0)<<endl;
-                  // Cerr << " ajouter multvect diforce y = "<< force(s1,1) << " "<< force2(s1,1) << " " << diforce(s1,1)<<endl;
-                  // Cerr << " ajouter multvect diforce z = "<< force(s1,2) << " "<< force2(s1,2) << " " << diforce(s1,2)<<endl;
+                  // for (int k=0; k<dim_var; k++) Cerr << " ajouter multvect diforce x = "<< force(s1,k) << " "<< force2(s1,k) << " " << diforce(s1,k)<<endl;
                 }
             }
         }
@@ -816,24 +760,55 @@ void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Mor
     }
 }
 
-void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
+void Source_PDF_EF::correct_variable(const DoubleTab& coeff_node, DoubleTab& variable) const
+{
+  int nb_data_vit = variable.size();
+  int nb_node_2 = coeff_node.dimension(0) ;
+  int ncomp = coeff_node.dimension(1) ;
+  if (nb_data_vit != nb_node_2 * ncomp)
+    {
+      Cerr<<"Source_PDF: numbers of nodes are different for variable and champ_coeff_tfsdia_gb_som_"<<finl;
+      abort();
+    }
+  const DoubleTab& vit_dir=variable_imposee_;
+  for(int i=0; i<nb_node_2; i++)
+    {
+      for (int j=0; j<ncomp; j++)
+        {
+          if (coeff_node(i,j)!= 1.0)
+            {
+              variable(i,j)=vit_dir(i,j);
+            }
+          // Cerr<<"Source_PDF: coeff_node variable("<<i<<","<<j<<"): "<<coeff_node(i,j)<<" "<<variable(i,j)<<finl;
+        }
+    }
+}
+
+/*##################################################################################################
+####################################################################################################
+################################# calculer_variable_imposee ########################################
+####################################################################################################
+##################################################################################################*/
+
+void Source_PDF_EF::calculer_variable_imposee_elem_fluid()
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_som=domaine_EF.domaine().nb_som();
-  int nb_comp = dimension;
+  int dim_esp = Objet_U::dimension;
   const Domaine& dom = domaine_EF.domaine();
   // const IntTab& elems= zone_EF.zone().les_elems();
-  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_->valeurs();
-  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  DoubleTab& variable_imposee_mod = modele_lu_.variable_imposee_->valeurs();
+  DoubleTab& variable_imposee_calculee = variable_imposee_;
   Interpolation_IBM_elem_fluid& interp = ref_cast(Interpolation_IBM_elem_fluid,interpolation_lue_.valeur());
   DoubleTab& fluid_points = interp.fluid_points_->valeurs();
   DoubleTab& solid_points = interp.solid_points_->valeurs();
   DoubleTab& fluid_elems = interp.fluid_elems_->valeurs();
 
-  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
-  DoubleTab& val_vitesse_inconnue = champ_vitesse_inconnue.valeurs();
+  Champ_Q1_EF& champ_variable_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
+  DoubleTab& val_variable_inconnue = champ_variable_inconnue.valeurs();
+  int nb_comp = val_variable_inconnue.dimension(1);
 
-  DoubleTab xf(1, nb_comp);
+  DoubleTab xf(1, dim_esp);
   DoubleTab vf(1, nb_comp);
   ArrOfInt cells(1);
   double eps = 1e-12;
@@ -844,7 +819,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
         {
           double d1 = 0.0;
           double d2 = 0.0;
-          for(int j = 0; j < nb_comp; j++)
+          for(int j = 0; j < dim_esp; j++)
             {
               double xj = dom.coord(i,j);
               double xjf = fluid_points(i,j);
@@ -859,40 +834,43 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
           if ( (d1 + d2) > eps ) inv_d = 1.0 / (d1 + d2);
           else inv_d = 0. ;
           cells[0] = int(fluid_elems(i));
-          champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf);
+          champ_variable_inconnue.value_interpolation(xf,cells, val_variable_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
             {
-              double vjs = vitesse_imposee_mod(i,j);
-              vitesse_imposee_calculee(i,j) = vjs + (vf(0, j)-vjs)*inv_d*d1;
+              double vjs = variable_imposee_mod(i,j);
+              variable_imposee_calculee(i,j) = vjs + (vf(0, j)-vjs)*inv_d*d1;
             }
+          // for(int j = 0; j < nb_comp; j++) Cerr<<"variable_imposee_calculee("<<i<<","<<j<<") =  "<<variable_imposee_calculee(i,j)<<finl;
         }
       else
         {
           for(int j = 0; j < nb_comp; j++)
             {
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+              variable_imposee_calculee(i,j) = variable_imposee_mod(i,j);
             }
+          // for(int j = 0; j < nb_comp; j++) Cerr<<"variable_imposee_calculee("<<i<<","<<j<<") = variable_imposee_mod = "<<variable_imposee_calculee(i,j)<< finl;
         }
     }
-  //vitesse_imposee_calculee.echange_espace_virtuel();
+  //variable_imposee_calculee.echange_espace_virtuel();
 }
 
-void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
+void Source_PDF_EF::calculer_variable_imposee_mean_grad()
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_som=domaine_EF.domaine().nb_som();
-  int nb_comp = dimension;
+  int dim_esp = Objet_U::dimension;
   const Domaine& dom = domaine_EF.domaine();
   // const IntTab& elems= zone_EF.zone().les_elems();
-  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_->valeurs();
-  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  DoubleTab& variable_imposee_mod = modele_lu_.variable_imposee_->valeurs();
+  DoubleTab& variable_imposee_calculee = variable_imposee_;
   Interpolation_IBM_mean_gradient& interp = ref_cast(Interpolation_IBM_mean_gradient,interpolation_lue_.valeur());
   DoubleTab& solid_points = interp.solid_points_->valeurs();
   DoubleTab& is_dirichlet = interp.is_dirichlet_->valeurs();
   double eps = 1e-12;
-  DoubleTab& vitesse_inconnue = equation().inconnue().valeurs();
+  DoubleTab& variable_inconnue = equation().inconnue().valeurs();
+  int nb_comp = variable_inconnue.dimension(1);
 
-  vitesse_imposee_mod.echange_espace_virtuel();
+  variable_imposee_mod.echange_espace_virtuel();
 
   // DoubleTrav nb_vois(is_dirichlet);
   for (int i = 0; i < nb_som; i++)
@@ -900,13 +878,13 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
       if (is_dirichlet(i) > 0.0)
         {
           double d2 = 0.0;
-          for(int j = 0; j < nb_comp; j++)
+          for(int j = 0; j < dim_esp; j++)
             {
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
               double x = dom.coord(i,j);
               double xp = solid_points(i,j);
               d2 += (x - xp)*(x - xp);
             }
+          for(int j = 0; j <nb_comp ; j++) variable_imposee_calculee(i,j) = variable_imposee_mod(i,j);
           d2 = sqrt(d2);
           if (d2 > eps)
             {
@@ -922,7 +900,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                     {
                       int num_som = voisins[k];
                       double d1 = 0.0;
-                      for (int j = 0; j < nb_comp; j++)
+                      for (int j = 0; j < dim_esp; j++)
                         {
                           double xf = dom.coord(num_som,j);
                           double xpf = solid_points(num_som,j);
@@ -933,8 +911,8 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                         {
                           for (int j = 0; j < nb_comp; j++)
                             {
-                              double vpf = vitesse_imposee_mod(num_som,j);
-                              double vf = vitesse_inconnue(num_som,j);
+                              double vpf = variable_imposee_mod(num_som,j);
+                              double vf = variable_inconnue(num_som,j);
                               mean_grad[j] += (vf - vpf)/d1;
                             }
                           nb_contrib += 1;
@@ -943,7 +921,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                   for (int j = 0; j < nb_comp; j++)
                     {
                       mean_grad[j] /= nb_contrib;
-                      vitesse_imposee_calculee(i,j) += mean_grad[j]*d2;
+                      variable_imposee_calculee(i,j) += mean_grad[j]*d2;
                     }
                 }
             }
@@ -952,32 +930,33 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
         {
           for(int j = 0; j < nb_comp; j++)
             {
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+              variable_imposee_calculee(i,j) = variable_imposee_mod(i,j);
             }
         }
     }
-  //vitesse_imposee_calculee.echange_espace_virtuel();
+  //variable_imposee_calculee.echange_espace_virtuel();
   //Cerr<<"Min/max/norme : nb_vois "<< mp_min_vect(nb_vois) << " " << mp_max_vect(nb_vois) << " " << mp_norme_vect(nb_vois) << finl;
 }
 
-void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
+void Source_PDF_EF::calculer_variable_imposee_hybrid()
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_som=domaine_EF.domaine().nb_som();
-  int nb_comp = dimension;
+  int dim_esp = Objet_U::dimension;
   const Domaine& dom = domaine_EF.domaine();
   // const IntTab& elems= zone_EF.zone().les_elems();
-  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_->valeurs();
-  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  DoubleTab& variable_imposee_mod = modele_lu_.variable_imposee_->valeurs();
+  DoubleTab& variable_imposee_calculee = variable_imposee_;
   Interpolation_IBM_hybrid& interp = ref_cast(Interpolation_IBM_hybrid,interpolation_lue_.valeur());
   DoubleTab& solid_points = interp.solid_points_->valeurs();
   DoubleTab& fluid_elems = interp.fluid_elems_->valeurs();
   DoubleTab& fluid_points = interp.fluid_points_->valeurs();
   double eps = 1e-12;
-  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
-  DoubleTab& vitesse_inconnue = champ_vitesse_inconnue.valeurs();
+  Champ_Q1_EF& champ_variable_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
+  DoubleTab& variable_inconnue = champ_variable_inconnue.valeurs();
+  int nb_comp = variable_inconnue.dimension(1);
 
-  DoubleTab xf(1, nb_comp);
+  DoubleTab xf(1, dim_esp);
   DoubleTab vf(1, nb_comp);
   ArrOfInt cells(1);
 
@@ -987,7 +966,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
         {
           double d1 = 0.0;
           double d2 = 0.0;
-          for(int j = 0; j < nb_comp; j++)
+          for(int j = 0; j < dim_esp; j++)
             {
               double xj = dom.coord(i,j);
               double xjf = fluid_points(i,j);
@@ -1000,24 +979,24 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
           d2 = sqrt(d2);
           double inv_d = 1.0 / (d1 + d2);
           cells[0] = int(fluid_elems(i));
-          champ_vitesse_inconnue.value_interpolation(xf,cells, vitesse_inconnue, vf);
+          champ_variable_inconnue.value_interpolation(xf,cells, variable_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
             {
-              double vjs = vitesse_imposee_mod(i,j);
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j) + (vf(0, j)-vjs)*inv_d*d1;
+              double vjs = variable_imposee_mod(i,j);
+              variable_imposee_calculee(i,j) = variable_imposee_mod(i,j) + (vf(0, j)-vjs)*inv_d*d1;
             }
         }
       else if (fluid_elems(i) > -1.5 && fluid_elems(i) < -0.5)
         {
           double d2 = 0.0;
-          for(int j = 0; j < nb_comp; j++)
+          for(int j = 0; j < dim_esp; j++)
             {
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
               double x = dom.coord(i,j);
               double xp = solid_points(i,j);
               d2 += (x - xp)*(x - xp);
             }
           d2 = sqrt(d2);
+          for(int j = 0; j <nb_comp ; j++) variable_imposee_calculee(i,j) = variable_imposee_mod(i,j);
           if (d2 > eps)
             {
               IntList& voisins = interp.getSommetsVoisinsOf(i);
@@ -1031,7 +1010,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
                     {
                       int num_som = voisins[k];
                       double d1 = 0.0;
-                      for (int j = 0; j < nb_comp; j++)
+                      for (int j = 0; j < dim_esp; j++)
                         {
                           double xjf = dom.coord(num_som,j);
                           double xpf = solid_points(num_som,j);
@@ -1042,8 +1021,8 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
                         {
                           for (int j = 0; j < nb_comp; j++)
                             {
-                              double vpf = vitesse_imposee_mod(num_som,j);
-                              double vjf = vitesse_inconnue(num_som,j);
+                              double vpf = variable_imposee_mod(num_som,j);
+                              double vjf = variable_inconnue(num_som,j);
                               mean_grad[j] += (vjf - vpf)/d1;
                             }
                           nb_contrib += 1;
@@ -1052,7 +1031,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
                   for (int j = 0; j < nb_comp; j++)
                     {
                       mean_grad[j] /= nb_contrib;
-                      vitesse_imposee_calculee(i,j) += mean_grad[j]*d2;
+                      variable_imposee_calculee(i,j) += mean_grad[j]*d2;
                     }
                 }
             }
@@ -1061,22 +1040,29 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
         {
           for(int j = 0; j < nb_comp; j++)
             {
-              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+              variable_imposee_calculee(i,j) = variable_imposee_mod(i,j);
             }
         }
     }
-  //vitesse_imposee_calculee.echange_espace_virtuel();
+  //variable_imposee_calculee.echange_espace_virtuel();
 }
+
+/*##################################################################################################
+####################################################################################################
+################################# calculer_vitesse_imposee #########################################
+####################################################################################################
+##################################################################################################*/
 
 void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 {
+  assert(Objet_U::dimension==3);
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_som=domaine_EF.domaine().nb_som();
-  int nb_comp = dimension;
+  int nb_comp = Objet_U::dimension;
   const Domaine& dom = domaine_EF.domaine();
   // const IntTab& elems= zone_EF.zone().les_elems();
-  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_->valeurs();
-  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  DoubleTab& vitesse_imposee_mod = modele_lu_.variable_imposee_->valeurs();
+  DoubleTab& vitesse_imposee_calculee = variable_imposee_;
   Interpolation_IBM_power_law_tbl& interp = ref_cast(Interpolation_IBM_power_law_tbl,interpolation_lue_.valeur());
   DoubleTab& fluid_points = interp.fluid_points_->valeurs();
   DoubleTab& solid_points = interp.solid_points_->valeurs();
@@ -1087,6 +1073,11 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
   int impr_yplus = interp.get_impr() ;
   Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue());
   DoubleTab& val_vitesse_inconnue = champ_vitesse_inconnue.valeurs();
+  if (nb_comp != val_vitesse_inconnue.dimension(1))
+    {
+      Cerr<<"Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl: variable must be a vector of dimension "<<Objet_U::dimension<<" ! "<<finl;
+      abort();
+    }
   double form_lin_pwl = interp.get_formulation_linear_pwl();
 
   DoubleTab xf(1, nb_comp);
@@ -1345,12 +1336,13 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 
 void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
 {
+  assert(Objet_U::dimension==3);
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int nb_som=domaine_EF.domaine().nb_som();
-  int nb_comp = dimension;
+  int nb_comp = Objet_U::dimension;
   const Domaine& dom = domaine_EF.domaine();
-  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_->valeurs();
-  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  DoubleTab& vitesse_imposee_mod = modele_lu_.variable_imposee_->valeurs();
+  DoubleTab& vitesse_imposee_calculee = variable_imposee_;
   Interpolation_IBM_power_law_tbl_u_star& interp = ref_cast(Interpolation_IBM_power_law_tbl_u_star,interpolation_lue_.valeur());
   DoubleTab& is_dirichlet = interp.is_dirichlet_->valeurs();
   DoubleTab& solid_points = interp.solid_points_->valeurs();
@@ -1360,6 +1352,11 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
   double y_c_p_pwl = interp.get_y_c_p_pwl();
   int impr_yplus = interp.get_impr() ;
   DoubleTab& vitesse_inconnue = equation().inconnue().valeurs();
+  if (nb_comp != vitesse_inconnue.dimension(1))
+    {
+      Cerr<<"Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star: variable must be a vector of dimension "<<Objet_U::dimension<<" ! "<<finl;
+      abort();
+    }
 
   ArrOfInt cells(1);
 
@@ -1636,6 +1633,11 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
     }
 }
 
+/*##################################################################################################
+####################################################################################################
+################################# Pression #########################################################
+####################################################################################################
+##################################################################################################*/
 
 void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
 {
@@ -1648,31 +1650,9 @@ void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab
   int ncomp = coeff_node.dimension(1) ;
   DoubleTrav coef_elem(nb_elem);
 
-  const Domaine_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
-  int nb_cond_lim = le_dom_cl.nb_cond_lim();
-  const IntTab& faces_sommets=domaine_EF.face_sommets();
-  int nb_som_face=faces_sommets.dimension(1);
   DoubleTrav flag_cl(coeff_node);
-  flag_cl = 1.;
-  for (int ij=0; ij<nb_cond_lim; ij++)
-    {
-      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
-      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij)->frontiere_dis());
-      int nfaces = le_bord.nb_faces_tot();
-      if (sub_type(Dirichlet,la_cl_base))
-        {
-          for (int ind_face=0; ind_face < nfaces; ind_face++)
-            {
-              for (int s=0; s<nb_som_face; s++)
-                {
-                  int face=le_bord.num_face(ind_face);
-                  int som=faces_sommets(face,s);
-                  for (int comp=0; comp<ncomp; comp++) flag_cl(som,comp) = 0. ;
-                }
-            }
-        }
-    }
-  le_dom_cl.imposer_symetrie(flag_cl,0);
+  filtre_CLD(flag_cl);
+
   // int nb_som=domaine_EF.domaine().nb_som();
   // for(int som=0; som<nb_som; som++)Cerr<<"som flag_c = "<<som<<" "<<flag_cl(som,0)<<" "<<flag_cl(som,1)<<" "<<flag_cl(som,2)<<finl;
 
@@ -1708,31 +1688,8 @@ void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pre
   int ncomp = coeff_node.dimension(1) ;
   DoubleTrav coef_elem(nb_elem);
 
-  const Domaine_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
-  int nb_cond_lim = le_dom_cl.nb_cond_lim();
-  const IntTab& faces_sommets=domaine_EF.face_sommets();
-  int nb_som_face=faces_sommets.dimension(1);
   DoubleTrav flag_cl(coeff_node);
-  flag_cl = 1.;
-  for (int ij=0; ij<nb_cond_lim; ij++)
-    {
-      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
-      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij)->frontiere_dis());
-      int nfaces = le_bord.nb_faces_tot();
-      if (sub_type(Dirichlet,la_cl_base))
-        {
-          for (int ind_face=0; ind_face < nfaces; ind_face++)
-            {
-              for (int s=0; s<nb_som_face; s++)
-                {
-                  int face=le_bord.num_face(ind_face);
-                  int som=faces_sommets(face,s);
-                  for (int comp=0; comp<ncomp; comp++) flag_cl(som,comp) = 0. ;
-                }
-            }
-        }
-    }
-  le_dom_cl.imposer_symetrie(flag_cl,0);
+  filtre_CLD(flag_cl);
 
   for(int num_elem=0; num_elem<nb_elem; num_elem++)
     {
@@ -1752,28 +1709,44 @@ void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pre
     }
 }
 
-void Source_PDF_EF::correct_vitesse(const DoubleTab& coeff_node, DoubleTab& vitesse) const
+void Source_PDF_EF::filtre_CLD(DoubleTab& flag_cl) const
 {
-  int nb_data_vit = vitesse.size();
-  int nb_node_2 = coeff_node.dimension(0) ;
-  int ncomp = coeff_node.dimension(1) ;
-  if (nb_data_vit != nb_node_2 * ncomp)
+  const Domaine_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
+  int nb_cond_lim = le_dom_cl.nb_cond_lim();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const IntTab& faces_sommets=domaine_EF.face_sommets();
+  int nb_som_face=faces_sommets.dimension(1);
+  int nb_comp = flag_cl.dimension(1);
+  flag_cl = 1.;
+  for (int ij=0; ij<nb_cond_lim; ij++)
     {
-      Cerr<<"Source_PDF: numbers of nodes are different for vitesse and champ_coeff_tfsdia_gb_som_"<<finl;
-      abort();
-    }
-  const DoubleTab& vit_dir=vitesse_imposee_;
-  for(int i=0; i<nb_node_2; i++)
-    {
-      for (int j=0; j<ncomp; j++)
+      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
+      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij)->frontiere_dis());
+      int nfaces = le_bord.nb_faces_tot();
+      if (sub_type(Dirichlet,la_cl_base))
         {
-          if (coeff_node(i,j)!= 1.0)
+          for (int ind_face=0; ind_face < nfaces; ind_face++)
             {
-              vitesse(i,j)=vit_dir(i,j);
+              for (int s=0; s<nb_som_face; s++)
+                {
+                  int face=le_bord.num_face(ind_face);
+                  int som=faces_sommets(face,s);
+                  for (int comp=0; comp<nb_comp; comp++) flag_cl(som,comp) = 0. ;
+                }
             }
         }
     }
+  //vector; NS
+  if (nb_comp == Objet_U::dimension) le_dom_cl.imposer_symetrie(flag_cl,0);
+  flag_cl.echange_espace_virtuel();
+  return;
 }
+
+/*##################################################################################################
+####################################################################################################
+################################# Impression #######################################################
+####################################################################################################
+##################################################################################################*/
 
 int Source_PDF_EF::impr(Sortie& os) const
 {
@@ -1800,46 +1773,226 @@ int Source_PDF_EF::impr(Sortie& os) const
           double temps=sch.temps_courant();
           double pdtps = sch.pas_de_temps();
           if (temps == pdtps) return 0;
-          const DoubleTab& vitesse=equation().inconnue().valeurs();
+          const DoubleTab& variable=equation().inconnue().valeurs();
           int nb_som=le_dom_EF->domaine().nb_som();
           Nom espace=" \t";
 
-          Navier_Stokes_std& eq_NS = ref_cast_non_const(Navier_Stokes_std, equation());
-          DoubleTrav secmem_conv(vitesse);
-          int transport_rhou=0;
-          if (eq_NS.nombre_d_operateurs() > 1)
+          int nb_comp = variable.dimension(1);
+          assert(nb_comp == modele_lu_.dim_variable_);
+          int pdf_dt_conv = modele_lu_.pdf_bilan();
+
+          DoubleTrav secmem_conv(variable);
+          // defaut pdf_dt_conv = 0
+          secmem_conv = 0.;
+          int i_traitement_special = 0;
+
+          if (pdf_dt_conv == 1 || pdf_dt_conv == 2)
+            // pdf_dt_conv = 1 ou 2
             {
-              transport_rhou= (eq_NS.vitesse_pour_transport().le_nom()=="rho_u"?1:0);
-              eq_NS.derivee_en_temps_conv(secmem_conv , vitesse);
+              if (nb_comp == Objet_U::dimension)
+                {
+                  //vector; NS
+                  Navier_Stokes_std& eq_NS = ref_cast_non_const(Navier_Stokes_std, equation());
+                  int transport_rhou=0;
+                  if (eq_NS.nombre_d_operateurs() > 1)
+                    {
+                      transport_rhou= (eq_NS.vitesse_pour_transport().le_nom()=="rho_u"?1:0);
+                      if (pdf_dt_conv == 2) eq_NS.derivee_en_temps_conv(secmem_conv , variable);
+                    }
+                  i_traitement_special = (transport_rhou==1?2:102);
+                }
+              else if (nb_comp == 1)
+                {
+                  //scalar; temps en rho
+                  Equation_base& eq_Ba = ref_cast_non_const(Equation_base, equation());
+                  if (equation().nombre_d_operateurs() > 1)
+                    {
+                      if (pdf_dt_conv == 2) eq_Ba.derivee_en_temps_conv(secmem_conv , variable);
+                    }
+                  i_traitement_special = 2;
+                }
+              else
+                {
+                  Cerr << "Source_PDF_EF: for scalar or vector only; dim = " <<nb_comp<< finl;
+                  Process::exit();
+                }
+            }
+          else if(pdf_dt_conv != 0 )
+            {
+              Cerr<<"Source_PDF_EF: Modele pdf_bilan must be 0; 1 or 2 only"<<endl;
+              Process::exit();
             }
 
-          int pdf_dt_conv = 0;
-          if (!pdf_dt_conv) secmem_conv *= 0.;
-          int i_traitement_special = (pdf_dt_conv==1?(transport_rhou==1?2:102):0);
-          DoubleTrav resu(vitesse);
+          DoubleTrav resu(variable);
           calculer(resu, i_traitement_special);
+          DoubleTrav flag_cl(resu);
+          filtre_CLD(flag_cl);
 
+          assert(Objet_U::dimension <= 3);
           DoubleVect source_term[3];
           bilan_ = 0.0;
-          for (int i=0; i<dimension; i++)
+          for (int i=0; i<nb_comp; i++)
             {
               source_term[i] = champ_nodal_->valeurs();
               source_term[i] = 0.;
               for (int j=0; j<nb_som; j++)
                 {
-                  int filter = (std::fabs(resu(j,i)) > 1.e-6?1:0);
-                  source_term[i](j) = resu(j,i) - sec_mem_pdf(j,i) + secmem_conv(j,i)*filter;
+                  double  filter = (std::fabs(resu(j,i)) > 0?1.:0.);
+                  filter *= flag_cl(j,i);
+                  source_term[i](j) = (resu(j,i) - sec_mem_pdf(j,i) + secmem_conv(j,i))*filter;
+                  // if(  (abs(resu(j,i)) > 1.0) )
+                  //   {
+                  // Cerr<<"i,j = "<<i<<" "<<j<<" ; resu = "<<resu(j,i)<<" ; sec_mem_pdf = "<<sec_mem_pdf(j,i)<<" ; bilan = "<<source_term[i](j)<<endl;
+                  // Cerr<<"secmem_conv = "<<secmem_conv(j,i)<<endl;
+                  // }
                 }
               bilan_(i) = mp_somme_vect(source_term[i]);
             }
+          // mp_sum_for_each_item(bilan_);
           int flag = Process::je_suis_maitre();
           if(flag)
             {
               ouvrir_fichier(Flux,"",flag);
-              Flux << temps << espace << bilan_(0) << espace << bilan_(1) << espace << bilan_(2) << finl;
+              if(nb_comp == Objet_U::dimension)
+                {
+                  // vector
+                  assert(Objet_U::dimension==3);
+                  Flux << temps << espace << bilan_(0) << espace << bilan_(1) << espace << bilan_(2) << finl;
+                }
+              else
+                {
+                  // scalar
+                  Flux << temps << espace << bilan_(0) << finl;
+                }
             }
         }
       return 1;
     }
 }
 //  void imprimer_ustar_yplus__mean_only(Sortie&, const Nom& ) const override;
+
+
+/*##################################################################################################
+####################################################################################################
+################################# POSTRAITEMENT ####################################################
+####################################################################################################
+##################################################################################################*/
+
+void Source_PDF_EF::creer_champ(const Motcle& motlu)
+{
+  if (motlu=="u_star_ibm" && !champ_u_star_ibm_.non_nul() && imm_wall_law_)
+    {
+      int nb_comp = 1;
+      Noms noms(1);
+      noms[0]="u_star_ibm";
+      Noms unites(1);
+      unites[0] = "m/s";
+      double temps=0.;
+      const Discretisation_base& discr = equation().probleme().discretisation();
+      discr.discretiser_champ("champ_sommets",equation().domaine_dis(),scalaire,noms,unites,nb_comp,temps,champ_u_star_ibm_);
+      champs_compris_.ajoute_champ(champ_u_star_ibm_);
+    }
+  else if (motlu=="y_plus_ibm" && !champ_y_plus_ibm_.non_nul() && imm_wall_law_)
+    {
+      int nb_comp = 1;
+      Noms noms(1);
+      noms[0]="y_plus_ibm";
+      Noms unites(1);
+      unites[0] = "-";
+      double temps=0.;
+      const Discretisation_base& discr = equation().probleme().discretisation();
+      discr.discretiser_champ("champ_sommets",equation().domaine_dis(),scalaire,noms,unites,nb_comp,temps,champ_y_plus_ibm_);
+      champs_compris_.ajoute_champ(champ_y_plus_ibm_);
+    }
+}
+
+bool Source_PDF_EF::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const
+{
+  if (nom == "u_star_ibm" && champ_u_star_ibm_.non_nul())
+    {
+      ref_champ = Source_PDF_EF::get_champ(nom);
+      return true;
+    }
+  else if (nom == "y_plus_ibm" && champ_y_plus_ibm_.non_nul())
+    {
+      ref_champ = Source_PDF_EF::get_champ(nom);
+      return true;
+    }
+  else if (champs_compris_.has_champ(nom, ref_champ))
+    return true;
+  else
+    return false;
+}
+
+bool Source_PDF_EF::has_champ(const Motcle& nom) const
+{
+  if (nom == "u_star_ibm" && champ_u_star_ibm_.non_nul())
+    return true;
+  else if (nom == "y_plus_ibm" && champ_y_plus_ibm_.non_nul())
+    return true;
+  else
+    return champs_compris_.has_champ(nom);
+}
+
+const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
+{
+  if (nom=="u_star_ibm")
+    {
+      if (champ_u_star_ibm_.est_nul())
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
+
+      // Initialisation a 0 du champ volumique u_star
+      DoubleTab& valeurs = champ_u_star_ibm_->valeurs();
+      valeurs=0;
+      if (tab_u_star_ibm_.size_array()>0)
+        {
+          const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+          int nb_som=domaine_EF.domaine().nb_som();
+          for (int num_node=0; num_node<nb_som; num_node++)
+            valeurs(num_node)=tab_u_star_ibm_(num_node);
+        }
+      valeurs.echange_espace_virtuel();
+      // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_u_star_ibm_);
+      champ_u_star_ibm_->mettre_a_jour(equation().probleme().schema_temps().temps_courant());
+      return champs_compris_.get_champ(nom);
+    }
+  else if (nom=="y_plus_ibm")
+    {
+      if (champ_y_plus_ibm_.est_nul())
+        throw std::runtime_error(std::string("Field ") + nom.getString() + std::string(" not found !"));
+
+      // Initialisation a 0 du champ volumique u_star
+      DoubleTab& valeurs = champ_y_plus_ibm_->valeurs();
+      valeurs=0;
+      if (tab_y_plus_ibm_.size_array()>0)
+        {
+          const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+          int nb_som=domaine_EF.domaine().nb_som();
+          for (int num_node=0; num_node<nb_som; num_node++)
+            valeurs(num_node)=tab_y_plus_ibm_(num_node);
+        }
+      valeurs.echange_espace_virtuel();
+      // Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,champ_y_plus_ibm_);
+      champ_y_plus_ibm_->mettre_a_jour(equation().probleme().schema_temps().temps_courant());
+      return champs_compris_.get_champ(nom);
+    }
+  else
+    return champs_compris_.get_champ(nom);
+}
+
+void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Source_base::get_noms_champs_postraitables(nom,opt);
+
+  Noms noms_compris = champs_compris_.liste_noms_compris();
+  if(imm_wall_law_)
+    {
+      Cerr<<" imm_wall_law_ : "<<finl;
+      noms_compris.add("u_star_ibm");
+      noms_compris.add("y_plus_ibm");
+    }
+  if (opt==DESCRIPTION)
+    Cerr<<" Source_PDF_EF : "<< noms_compris <<finl;
+  else
+    nom.add(noms_compris);
+}

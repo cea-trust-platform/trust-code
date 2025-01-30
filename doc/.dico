@@ -867,6 +867,7 @@
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h
  Pb_Conduction_Scalaires_Passifs Pb_Conduction_Scalaires_Passifs Problemes_Scalaires_Passifs.h
+ Pb_Couple_Optimisation_IBM Pb_Couple_Optimisation_IBM Pb_Couple_Optimisation_IBM.h
  Pb_Dilatable_base Pb_Dilatable_base Pb_Dilatable_base.h
  Pb_Fluide_base Pb_Fluide_base Pb_Fluide_base.h
  Pb_HEM|Pb_Multiphase_HEM Pb_Multiphase_HEM Pb_Multiphase_HEM.h

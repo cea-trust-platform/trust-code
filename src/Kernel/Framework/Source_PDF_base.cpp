@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 
 
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
-// XD source_pdf_base source_base source_pdf_base 1 Base class of the source term for the Immersed Boundary Penalized Direct Forcing method (PDF)
+// XD source_PDF_base source_dep_inco_base source_PDF_base -1 Basic class of source_PDF terms introduced in the equation.
 
 Entree& Source_PDF_base::readOn(Entree& s)
 {
@@ -43,6 +43,7 @@ Entree& Source_PDF_base::readOn(Entree& s)
       if (!(interpolation_lue_->que_suis_je() == "Interpolation_IBM_aucune"))
         {
           interpolation_bool_ = true;
+          if ((interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl") || (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star") ) imm_wall_law_ = true;
         }
     }
   return s;
@@ -59,13 +60,13 @@ void Source_PDF_base::associer_pb(const Probleme_base& pb)
   abort();
 }
 
-void Source_PDF_base::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
+void Source_PDF_base::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
 }
 
-void Source_PDF_base::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
+void Source_PDF_base::compute_variable_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
@@ -86,6 +87,8 @@ void Source_PDF_base::compute_indicateur_nodal_champ_aire()
 
 double Source_PDF_base::fonct_coeff(const double rho_m, const double aire, const double dt) const
 {
+  // return = 0 si aire dans element <= 0
+  // return = rho/dt * coeff_relax sinon
   double val_coeff = 0.;
   if (aire<=0.)
     {
@@ -110,7 +113,39 @@ double Source_PDF_base::fonct_coeff(const double rho_m, const double aire, const
   return val_coeff;
 }
 
-DoubleVect Source_PDF_base::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const
+/*##################################################################################################
+####################################################################################################
+################################# TENSOR CALCULATION ###############################################
+####################################################################################################
+##################################################################################################*/
+
+/* static inline void calcul_vitesse_locale(const ArrOfDouble& vitesse, ArrOfDouble& vitesse_locale,const DoubleTab& rotation,int elem)
+{
+  assert(Objet_U::dimension==3);
+  // VL=rot*V
+  // la matrice rotation est stockee comme un tabeau de taille 9 et non 3 3
+  for (int i=0; i<3; i++)
+    {
+      vitesse_locale(i)=0;
+      for (int k=0; k<3; k++)
+        vitesse_locale(i)+=rotation(elem,3*i+k)*vitesse(k);
+    }
+  assert(est_egal(norme_array(vitesse_locale),norme_array(vitesse),1e-7));
+} */
+
+// TENSOR CALCULATION
+// Pour pouvoir eventuellement traiter differements les directions d'espace
+ArrOfDouble Source_PDF_base::get_tuvw_local() const
+{
+  assert(Objet_U::dimension==3);
+  ArrOfDouble tuvw(dimension) ;
+  tuvw[0] = 1.0 / modele_lu_.eta_;
+  tuvw[1] = 1.0 / modele_lu_.eta_;
+  tuvw[2] = 1.0 / modele_lu_.eta_;
+  return tuvw ;
+}
+
+DoubleVect Source_PDF_base::diag_coeff_elem(ArrOfDouble& variable_elem, const DoubleTab& rotation, int num_elem) const
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
@@ -124,7 +159,7 @@ DoubleTab Source_PDF_base::compute_coeff_elem() const
   return DoubleTab();
 }
 
-DoubleTab Source_PDF_base::compute_coeff_matrice_pression() const
+DoubleTab Source_PDF_base::compute_coeff_matrice() const
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
@@ -137,31 +172,29 @@ void Source_PDF_base::multiply_coeff_volume(DoubleTab& coeff) const
   abort();
 }
 
-// TENSOR CALCULATION
-ArrOfDouble Source_PDF_base::get_tuvw_local() const
+DoubleTab& Source_PDF_base::ajouter(DoubleTab& secmem) const
 {
-  assert(Objet_U::dimension==3);
-  ArrOfDouble tuvw(dimension) ;
-  tuvw[0] = 1.0 / modele_lu_.eta_;
-  tuvw[1] = 1.0 / modele_lu_.eta_;
-  tuvw[2] = 1.0 / modele_lu_.eta_;
-  return tuvw ;
+  if(has_interface_blocs())
+    {
+      ajouter_blocs({}, secmem);
+      return secmem;
+    }
+  return ajouter_(variable_imposee_,secmem);
 }
 
-DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu) const
-{
-  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
-  abort();
-  return resu;
-}
-
-DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, const int i_traitement_special) const
+DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& variable, DoubleTab& resu) const
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
   return resu;
 }
 
+DoubleTab& Source_PDF_base::ajouter_(const DoubleTab& variable, DoubleTab& resu, const int i_traitement_special) const
+{
+  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+  return resu;
+}
 
 void  Source_PDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
@@ -172,30 +205,30 @@ void  Source_PDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 DoubleTab& Source_PDF_base::calculer(DoubleTab& resu) const
 {
   resu = 0;
-  const DoubleTab& vitesse=equation().inconnue().valeurs();
-  return ajouter_(vitesse,resu);
+  const DoubleTab& variable=equation().inconnue().valeurs();
+  return ajouter_(variable,resu);
 }
 
 DoubleTab& Source_PDF_base::calculer(DoubleTab& resu, const int i_traitement_special) const
 {
   resu = 0;
-  const DoubleTab& vitesse=equation().inconnue().valeurs();
-  return ajouter_(vitesse,resu, i_traitement_special);
+  const DoubleTab& variable=equation().inconnue().valeurs();
+  return ajouter_(variable,resu, i_traitement_special);
 }
 
-void Source_PDF_base::calculer_vitesse_imposee_elem_fluid()
+void Source_PDF_base::calculer_variable_imposee_elem_fluid()
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
 }
 
-void Source_PDF_base::calculer_vitesse_imposee_mean_grad()
+void Source_PDF_base::calculer_variable_imposee_mean_grad()
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
 }
 
-void Source_PDF_base::calculer_vitesse_imposee_hybrid()
+void Source_PDF_base::calculer_variable_imposee_hybrid()
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
@@ -213,21 +246,21 @@ void Source_PDF_base::calculer_vitesse_imposee_power_law_tbl_u_star()
   abort();
 }
 
-void Source_PDF_base::calculer_vitesse_imposee()
+void Source_PDF_base::calculer_variable_imposee()
 {
   if (interpolation_bool_)
     {
       if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_element_fluide")
         {
-          calculer_vitesse_imposee_elem_fluid();
+          calculer_variable_imposee_elem_fluid();
         }
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_gradient_moyen")
         {
-          calculer_vitesse_imposee_mean_grad();
+          calculer_variable_imposee_mean_grad();
         }
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_hybride")
         {
-          calculer_vitesse_imposee_hybrid();
+          calculer_variable_imposee_hybrid();
         }
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl")
         {
@@ -243,7 +276,7 @@ void Source_PDF_base::calculer_vitesse_imposee()
 DoubleTab& Source_PDF_base::calculer_pdf(DoubleTab& resu) const
 {
   resu = 0;
-  ajouter_(vitesse_imposee_,resu);
+  ajouter_(variable_imposee_,resu);
   return resu;
 }
 
@@ -252,19 +285,7 @@ void Source_PDF_base::mettre_a_jour(double temps)
   //la_source->mettre_a_jour(temps);
 }
 
-void Source_PDF_base::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
-{
-  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
-  abort();
-}
-
-void Source_PDF_base::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pression, const DoubleTab& correction_en_pression) const
-{
-  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
-  abort();
-}
-
-void Source_PDF_base::correct_vitesse(const DoubleTab& coeff_node, DoubleTab& vitesse) const
+void Source_PDF_base::correct_variable(const DoubleTab& coeff_node, DoubleTab& variable) const
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
@@ -291,14 +312,30 @@ void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int fl
   nomfichier+=".out";
 
   // On cree le fichier a la premiere impression avec l'en tete
-  if (sch.nb_impr()==1 && !pb.reprise_effectuee())
+  // if (sch.nb_impr()==1 && !pb.reprise_effectuee())
+  if (!pb.reprise_effectuee())
     {
       os.ouvrir(nomfichier);
       SFichier& fic=os;
       Nom espace="\t\t";
       fic << (Nom)"# Printing of the source term "+que_suis_je()+" of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
       fic << "# " << description() << finl;
-      fic << "# Time" << espace << "Fx" << espace << "Fy" << espace << "Fz";
+      if(modele_lu_.dim_variable_ == Objet_U::dimension)
+        {
+          // vector
+          assert(Objet_U::dimension==3);
+          fic << "# Time" << espace << "Fx" << espace << "Fy" << espace << "Fz";
+        }
+      else if(modele_lu_.dim_variable_ == 1)
+        {
+          // scalar
+          fic << "# Time" << espace << "Sum";
+        }
+      else
+        {
+          Cerr << "Source_PDF_base: for scalar or vector only; dim = " << modele_lu_.dim_variable_ << finl;
+          Process::exit();
+        }
       fic << finl;
     }
   // Sinon on l'ouvre
@@ -320,4 +357,16 @@ void Source_PDF_base::updateChampRho()
     {
       champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
     }
+}
+
+void Source_PDF_base::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
+{
+  Cerr << "Source_PDF_NS_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+}
+
+void Source_PDF_base::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pression, const DoubleTab& correction_en_pression) const
+{
+  Cerr << "Source_PDF_NS_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
 }

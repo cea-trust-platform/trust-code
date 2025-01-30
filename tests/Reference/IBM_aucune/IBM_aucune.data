@@ -131,7 +131,7 @@ Lire pb
                 {
                     eta 1.E-12
                     local
-                    vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
+                    vitesse_imposee_fonction 3 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
                 # Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
                 interpolation IBM_aucune

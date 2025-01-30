@@ -40,14 +40,6 @@
 
 Implemente_instanciable_sans_constructeur(Navier_Stokes_std,"Navier_Stokes_standard",Equation_base);
 // XD navier_stokes_standard eqn_base navier_stokes_standard -1 Navier-Stokes equations.
-// XD attr correction_matrice_projection_initiale entier correction_matrice_projection_initiale 1 (IBM advanced) fix matrix of initial projection for PDF
-// XD attr correction_calcul_pression_initiale entier correction_calcul_pression_initiale 1 (IBM advanced) fix initial pressure computation for PDF
-// XD attr correction_vitesse_projection_initiale entier correction_vitesse_projection_initiale 1 (IBM advanced) fix initial velocity computation for PDF
-// XD attr correction_matrice_pression entier correction_matrice_pression 1 (IBM advanced) fix pressure matrix for PDF
-// XD attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
-// XD attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
-// XD attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
-// XD attr postraiter_gradient_pression_sans_masse rien postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
 
 Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_u_nul_et_non_dsurdt_divu_(0),postraitement_gradient_P_(0)
 {
@@ -104,7 +96,7 @@ Entree& Navier_Stokes_std::readOn(Entree& is)
   gradient.set_fichier("Force_pression");
   gradient.set_description("Pressure drag exerted by the fluid=Integral(P*ndS) [N] if SI units used");
 
-  readOn_IBM(is,*this);
+  readOn_IBM_NS(is,*this);
 
   return is;
 }
@@ -128,7 +120,7 @@ void Navier_Stokes_std::set_param(Param& param)
   param.ajouter_non_std("methode_calcul_pression_initiale",(this));  // XD attr methode_calcul_pression_initiale chaine(into=["avec_les_cl","avec_sources","avec_sources_et_operateurs","sans_rien"]) methode_calcul_pression_initiale 1 Keyword to select an option for the pressure calculation before the fist time step. Options are : avec_les_cl (default option lapP=0 is solved with Neuman boundary conditions on pressure if any), avec_sources (lapP=f is solved with Neuman boundaries conditions and f integrating the source terms of the Navier-Stokes equations) and avec_sources_et_operateurs (lapP=f is solved as with the previous option avec_sources but f integrating also some operators of the Navier-Stokes equations). The two last options are useful and sometime necessary when source terms are implicited when using an implicit time scheme to solve the Navier-Stokes equations.
 
   // for IBM methods
-  set_param_IBM(param);
+  set_param_IBM_NS(param);
 }
 
 int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -838,7 +830,11 @@ void Navier_Stokes_std::projeter()
       //  B u = 0
       //  => e B(M-1)Bt l = Bv
       //
-      if ( is_IBM() ) modify_initial_velocity_IBM(tab_vitesse);
+      if ( is_IBM() )
+        {
+          correction_variable_initiale_ = correction_vitesse_projection_initiale_;
+          modify_initial_variable_IBM(tab_vitesse);
+        }
 
       divergence.calculer(tab_vitesse, secmem);
       // Desormais on calcule le pas de temps avant la projection
@@ -869,7 +865,7 @@ void Navier_Stokes_std::projeter()
       // M-1 Bt l
       gradient->multvect(lagrange, gradP);
 
-      if ( is_IBM() ) modify_initial_gradP_IBM(gradP);
+      if ( is_IBM() ) modify_initial_gradP_IBM_NS(gradP);
 
       gradP.echange_espace_virtuel();
 
@@ -941,7 +937,7 @@ int Navier_Stokes_std::preparer_calcul()
   bool is_dilatable = probleme().is_dilatable();
   if ( is_IBM () )
     {
-      preparer_calcul_IBM(is_dilatable);
+      preparer_calcul_IBM_NS(is_dilatable);
     }
   else
     {
@@ -978,7 +974,7 @@ int Navier_Stokes_std::preparer_calcul()
       DoubleTrav vpoint(gradient_P->valeurs());
       gradient.calculer(la_pression->valeurs(), gradient_P->valeurs());
       vpoint-=gradient_P->valeurs();
-      if ( is_IBM() ) reprise_calcul_IBM(vpoint);
+      if ( is_IBM() ) reprise_calcul_IBM_NS(vpoint);
       if (methode_calcul_pression_initiale_>=2)
         for (int op=0; op<nombre_d_operateurs(); op++)
           operateur(op).ajouter(vpoint);
@@ -992,8 +988,19 @@ int Navier_Stokes_std::preparer_calcul()
               le_schema_en_temps->set_dt()=(dt);
               mod=1;
             }
-          sources().ajouter(vpoint);
-          if (is_IBM() && projection_initiale==0) pression_initiale_IBM(vpoint);
+          if (! is_IBM() )
+            sources().ajouter(vpoint);
+          else
+            {
+              for (int i = 0; i < sources().size(); i++)
+                {
+                  if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                    {
+                      sources()(i).ajouter(vpoint);
+                    }
+                }
+            }
+          if (is_IBM() && projection_initiale==0) pression_initiale_IBM_NS(vpoint);
           if (mod)
             le_schema_en_temps->set_dt()=0;
         }
@@ -1009,7 +1016,7 @@ int Navier_Stokes_std::preparer_calcul()
       solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
       Cerr << "Pressure increment computed successfully" << finl;
 
-      if ( is_IBM() ) pression_correction_IBM( inc_pre );
+      if ( is_IBM() ) pression_correction_IBM_NS( inc_pre );
 
       // On veut que l'espace virtuel soit a jour, donc all_items
       operator_add(la_pression->valeurs(), inc_pre, VECT_ALL_ITEMS);
@@ -1034,7 +1041,7 @@ int Navier_Stokes_std::preparer_calcul()
   Debog::verifier("Navier_Stokes_std::preparer_calcul, vitesse", inconnue());
   Debog::verifier("Navier_Stokes_std::preparer_calcul, pression", la_pression);
 
-  if ( is_IBM() ) matrice_pression_IBM();
+  if ( is_IBM() ) matrice_pression_IBM_NS();
 
   return 1;
 }
@@ -1192,7 +1199,7 @@ bool Navier_Stokes_std::initTimeStep(double dt)
         pression_pa().futur(i)=pression_pa().valeurs();
       }
 
-  if ( is_IBM() ) initTimeStep_IBM(ddt);
+  if ( is_IBM() ) initTimeStep_IBM_NS(ddt);
 
   return ddt;
 }

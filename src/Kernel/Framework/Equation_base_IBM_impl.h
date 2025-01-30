@@ -13,41 +13,41 @@
 *
 *****************************************************************************/
 
-#include <Source_dep_inco_base.h>
-#include <Equation_base.h>
+#ifndef Equation_base_IBM_impl_included
+#define Equation_base_IBM_impl_included
 
-Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
+#include <TRUST_Ref.h>
+#include <TRUSTTab.h>
 
-//// printOn
-//
+class Equation_base;
+class Entree;
+class Param;
 
-Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
+class Equation_base_IBM_impl
 {
-  return s ;
-}
+
+public:
+
+  void set_param_IBM(Param& param);
+  Entree& readOn_IBM(Entree& is, Equation_base& eq);
+  bool initTimeStep_IBM(double ddt);
+  DoubleTab& derivee_en_temps_inco_IBM(DoubleTab& );
+  void preparer_calcul_IBM();
+  void modify_initial_variable_IBM( DoubleTab& );
+
+  inline const int& get_i_source_pdf() const { return i_source_pdf_; }
+  inline const DoubleTab& get_champ_coeff_pdf_som() const { return champ_coeff_pdf_som_; }
+  inline void set_champ_coeff_pdf_som(DoubleTab& coeff) { champ_coeff_pdf_som_ = coeff; }
+  inline bool is_IBM() { return (i_source_pdf_ != -1) ? true : false ;}
+  inline const int& get_correction_variable_initiale() const { return correction_variable_initiale_; }
+
+protected:
+  int i_source_pdf_=-1;
+  DoubleTab champ_coeff_pdf_som_;
+  int correction_variable_initiale_=-1;
+
+  OBS_PTR(Equation_base) eq_IBM;
+};
 
 
-//// readOn
-//
-
-Entree& Source_dep_inco_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
-{
-  if(has_interface_blocs())
-    {
-      ajouter_blocs({}, secmem);
-      return secmem;
-    }
-  return ajouter_(equation().inconnue().valeurs(),secmem);
-}
-DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(resu);
-}
-
+#endif /* Equation_base_IBM_impl_included */

@@ -156,22 +156,22 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (i_source_PDF != -1)
     {
       Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eqnNS.sources())[i_source_PDF].valeur());
-      Cerr<<"Immersed Interface: Dirichlet velocity in momentum equation for PDF (if any)."<<finl;
-      // Terme PDF IB value : -rho/delta_t  ksi_gamma/epsilon U_gamma
       DoubleTab secmem_pdf(resu);
       src.calculer_pdf(secmem_pdf);
-      resu -= secmem_pdf;
-      resu.echange_espace_virtuel();
 
       // Terme en temps : -rho/delta_t ksi_gamma Un
-      int i_traitement_special = 101;
-      if (eqnNS.nombre_d_operateurs() > 1)
+      int pdf_bilan = src.get_modele().pdf_bilan();
+      if (pdf_bilan == 1)
         {
-          if (eqnNS.vitesse_pour_transport().le_nom()=="rho_u") i_traitement_special = 1;
+          int i_traitement_special = 101;
+          if (eqnNS.nombre_d_operateurs() > 1)
+            {
+              if (eqnNS.vitesse_pour_transport().le_nom()=="rho_u") i_traitement_special = 1;
+            }
+          DoubleTrav secmem_pdf_time(resu);
+          src.calculer(secmem_pdf_time, i_traitement_special);
+          secmem_pdf += secmem_pdf_time;
         }
-      DoubleTrav secmem_pdf_time(resu);
-      src.calculer(secmem_pdf_time, i_traitement_special);
-      secmem_pdf += secmem_pdf_time;
 
       // Sauvegarde de secmem_pdf
       secmem_pdf.echange_espace_virtuel();

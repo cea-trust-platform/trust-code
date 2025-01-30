@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,41 +13,53 @@
 *
 *****************************************************************************/
 
-#ifndef PDF_model_included
-#define PDF_model_included
+#include <Prepro_IBM_Ponderation.h>
 
-#include <TRUSTTabs_forward.h>
+Implemente_instanciable( Prepro_IBM_Ponderation," Prepro_IBM_Ponderation|methode_IBM_ponderation",Prepro_IBM_base ) ;
 
-#include <Parser_U.h>
-#include <Domaine_VF.h>
-#include <Motcle.h>
-
-/*! @brief : class PDF_model
- *
- *  <Description of class PDF_model>
- */
-class PDF_model : public Objet_U
+Sortie& Prepro_IBM_Ponderation::printOn(Sortie& os) const
 {
-  Declare_instanciable(PDF_model) ;
-public :
-  double get_vitesse_imposee(ArrOfDouble&,int);
-  void affecter_vitesse_imposee(Domaine_VF&, const DoubleTab&);
-  double eta() const { return eta_; }
+  Prepro_IBM_base::printOn(os);
+  return os;
+}
 
-protected :
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  OWN_PTR(Champ_Don_base) vitesse_imposee_lu_;
-  OWN_PTR(Champ_Don_base) vitesse_imposee_;
-  double eta_ = -100.;
-  double coefku_= -100.;
-  double temps_relax_=1.0e+12;
-  double echelle_relax_=5.0e-2;
-  int type_vitesse_imposee_= -1;
-  int local_ = -1;
-  friend class Source_PDF_base;
-  friend class Source_PDF_EF;
-private:
-  VECT(Parser_U) parsers_;
-};
+void Prepro_IBM_Ponderation::set_param(Param& param)
+{
+  Prepro_IBM_base::set_param(param);
+  param.ajouter("type_de_ponderation",&pond_,Param::OPTIONAL); // choix de la methode de ponderation
+}
 
-#endif /* PDF_model */
+Entree& Prepro_IBM_Ponderation::readOn(Entree& is)
+{
+  Prepro_IBM_base::readOn(is);
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
+
+  if(pond_==1)
+    {
+      Cout<<"Weighting method = arimethic weight"<<endl;
+    }
+  else if(pond_==2)
+    {
+      Cout<<"Weighting method = area weight"<<endl;
+    }
+  else if(pond_==3)
+    {
+      Cout<<"Weighting method =  inverse distance weight"<<endl;
+    }
+  else if(pond_==4)
+    {
+      Cout<<"Weighting method = area and inverse distance weight"<<endl;
+    }
+  else
+    {
+      Cerr<<"Prepro_IBM_ponderation : Type_de_ponderation : invalide argument = "<<pond_<<endl;
+      abort();
+    }
+  return is;
+}
+
+void intersect_ponderation( )
+{
+}

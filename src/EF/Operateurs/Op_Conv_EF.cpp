@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -353,6 +353,7 @@ double Op_Conv_EF::calculer_dt_stab() const
     {
       if (&valeurs_diffusivite_p == &valeurs_diffusivite)
         autre_eq=1;
+      if (equation().probleme().nombre_d_equations() <= 1) autre_eq=0;
     }
   const DoubleVect& valeurs_diffusivite_2 = ref_cast(Operateur_Diff_base,equation().probleme().equation(autre_eq).operateur(0).l_op_base()).diffusivite().valeurs();
 

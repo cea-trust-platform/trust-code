@@ -1,16 +1,16 @@
 # PARALLEL OK #
-# Hydraulique 2D laminaire POISEUILLE_ALIGNED
+# Thermohydraulique 2D laminaire POISEUILLE_ALIGNED_temp
 Re = (rho*U_max*L)/mu
-rho = 1.0 kg/m^3
-U_max = 1 m/s
-L = 1 m
-Re = 1
-mu = (rho*U_max*L)/Re
-A.N.
-mu = 1.0 #
+      rho = 1.0 kg/m^3
+      U_max = 1 m/s
+      L = 1 m
+      Re = 1
+      mu = (rho*U_max*L)/Re
+      A.N.
+      mu = 1.0 #
 
 dimension 3
-Pb_Hydraulique pb
+Pb_Thermohydraulique pb
 Domaine dom
 system "mkdir -p results"
 
@@ -46,23 +46,6 @@ EF dis
 
 # SCHEMA EN TEMPS ------------------------------------ #
 
-Schema_Euler_explicite sch_exp
-Read sch_exp
-{
-    tinit 0
-    tmax 300.
-    nb_pas_dt_max 3
-    dt_min 0.00001
-    dt_max 0.1
-    dt_impr 5
-    dt_sauv 100
-    seuil_statio 1.e-10
-    diffusion_implicite 1
-    seuil_diffusion_implicite 1.e-12
-    dt_start  dt_fixe 1.e-2
-    facsec 2.5
-}
-
 Schema_Euler_implicite sch
 Read sch
 {
@@ -79,8 +62,8 @@ Read sch
         solveur Petsc IBICGSTAB { precond diag { } seuil 1e-10 }
     }
     dt_start dt_calc
-    dt_max 0.1
-    nb_pas_dt_max 10
+    dt_max 0.5
+    nb_pas_dt_max 5
     facsec 2.5
 }
 
@@ -95,28 +78,21 @@ Read pb
     fluide_incompressible {
         mu  Champ_Uniforme 1 1.0
         rho Champ_Uniforme 1 1.0
+        lambda Champ_Uniforme 1 1.e-3
+        Cp Champ_Uniforme 1 1
+        beta_th Champ_Uniforme 1 3.e-3
     }
-
 
     Navier_Stokes_standard
     {
-        correction_matrice_projection_initiale 0
-        correction_calcul_pression_initiale 0
-        correction_vitesse_projection_initiale 1
-        projection_initiale 1
-        correction_matrice_pression 1
-        correction_vitesse_modifie 1
-        gradient_pression_qdm_modifie 0
-        correction_pression_modifie 0
         postraiter_gradient_pression_sans_masse
+	
+        projection_initiale 1
         methode_calcul_pression_initiale avec_sources
         solveur_pression petsc cholesky { }
+	
         convection { generic centre }
         diffusion { option { grad_u_transpose_partout 1 } }
-        initial_conditions
-        {
-            vitesse Champ_fonc_xyz dom  3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
-        }
         sources
         {
             Source_PDF
@@ -136,6 +112,7 @@ Read pb
                 modele
                 {
                     eta 1.0e-12
+		    bilan_PDF 2
                     vitesse_imposee_data champ_uniforme 3 0. 0. 0.
                 }
                 interpolation IBM_element_fluide
@@ -170,6 +147,10 @@ Read pb
                 }
             }
         }
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom  3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+        }
         boundary_conditions
         {
             Wall Symetrie
@@ -179,24 +160,85 @@ Read pb
         }
     }
 
+    Convection_Diffusion_Temperature
+    {
+        diffusion {  }
+        convection { btd { btd 2. facteur 1. } }
+        sources
+        {
+            Source_PDF
+            {
+                aire Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_pl_mesh_1.med
+                    field aire
+                    last_time
+                }
+                rotation Champ_Fonc_MED {
+                    domain domain_mesh
+                    file res_domain_mesh_40_pl_mesh_1.med
+                    field rotation
+                    last_time
+                }
+                modele
+                {
+                    eta 1.0e-10
+		    bilan_PDF 2
+                    variable_imposee_data champ_uniforme 1 0.
+                }
+                interpolation IBM_element_fluide
+                {
+                    points_fluides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field projection_Fluid
+                        loc som
+                        last_time
+                    }
+                    points_solides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field projection_Solid
+                        loc som
+                        last_time
+                    }
+                    elements_fluides Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field fl_elem_number
+                        loc som
+                        last_time
+                    }
+                    correspondance_elements Champ_Fonc_MED {
+                        domain domain_mesh
+                        file res_domain_mesh_40_pl_mesh_1.med
+                        field TRUST_SALOME_correspondance
+                        last_time
+                    }
+                }
+            }
+	}
+        boundary_conditions
+        {
+            Wall Symetrie
+            Postpro Symetrie
+            Sortie frontiere_ouverte t_ext Champ_front_fonc_txyz 1  1.e12
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 (x_GT_0.5)*(x_LT_1.5)*1.00+(x_GT_0.6)*(x_LT_1.4)*1
+        }
+        initial_conditions { Temperature champ_fonc_xyz dom 1 (x_GT_0.5)*(x_LT_1.5)*1.0 }
+    }
+
     Post_processings
     {
-        med {
-            format med
-            fichier results/postdom
-            Champs binaire dt_post 1e0
-            {
-                pression elem
-                vitesse som
-            }
-        }
         lml
         {
-            format lml fichier POISEUILLE_ALIGNED
+            format lml fichier POISEUILLE_ALIGNED_th
             Champs dt_post 1e0
             {
+                pression_Pa elem
                 pression elem
                 vitesse som
+                temperature som
             }
         }
     }

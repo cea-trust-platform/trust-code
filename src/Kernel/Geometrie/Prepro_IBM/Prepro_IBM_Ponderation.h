@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,42 +12,24 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+#ifndef Prepro_IBM_Ponderation_included
+#define Prepro_IBM_Ponderation_included
 
-#include <Source_dep_inco_base.h>
-#include <Equation_base.h>
+#include <Prepro_IBM_base.h>
 
-Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
-
-//// printOn
-//
-
-Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
+class Prepro_IBM_Ponderation :public Prepro_IBM_base
 {
-  return s ;
-}
+  Declare_instanciable( Prepro_IBM_Ponderation ) ;
 
+public:
 
-//// readOn
-//
+private:
+  void set_param(Param&);
+  void intersect_ponderation( );
+  int pond_= 2 ; // choix de la methode de ponderation par defaut
 
-Entree& Source_dep_inco_base::readOn(Entree& s )
-{
-  return s ;
-}
+  friend class Source_PDF_EF;
 
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
-{
-  if(has_interface_blocs())
-    {
-      ajouter_blocs({}, secmem);
-      return secmem;
-    }
-  return ajouter_(equation().inconnue().valeurs(),secmem);
-}
-DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(resu);
-}
+};
 
+#endif

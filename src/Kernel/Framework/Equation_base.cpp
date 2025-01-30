@@ -253,6 +253,10 @@ Entree& Equation_base::readOn(Entree& is)
   equation_non_resolue_.setString(expr_equation_non_resolue);
   param.lire_avec_accolades_depuis(is);
   matrice_init = 0;
+
+  // for IBM methods
+  readOn_IBM(is,*this);
+
   return is;
 }
 
@@ -267,6 +271,10 @@ void Equation_base::set_param(Param& param)
   param.ajouter("parametre_equation",&parametre_equation_); // XD attr parametre_equation parametre_equation_base parametre_equation 1 Keyword used to specify additional parameters for the equation
   param.ajouter_non_std("equation_non_resolue",(this)); // XD attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
   param.ajouter_non_std("rename_equation|renommer_equation",(this)); // XD attr renommer_equation chaine rename_equation 1 Rename the equation with a specific name.
+
+  // for IBM methods
+  set_param_IBM(param);
+
 }
 
 int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -505,8 +513,12 @@ void Equation_base::imprimer(Sortie& os) const
 DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
 {
   derivee = 0.;
+
   DoubleTrav secmem(derivee);
   // secmem = sum(operators) + sources + equation specific terms
+
+  // for IBM methods; on ajoute source PDF au RHS
+  if ( is_IBM() ) derivee_en_temps_inco_IBM(secmem);
   const double time_factor = get_time_factor();
 
   bool calcul_explicite = false;
@@ -531,6 +543,14 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
     }
   else
     {
+
+      // for IBM methods
+      if ( is_IBM() && equation_non_resolue() == 0)
+        {
+          Cerr<<"*******(IBM) Use an implicit time scheme (at least Euler explicit + diffusion) with Source_PDF_base.*******"<<finl;
+          abort();
+        }
+
       // Add all explicit operators
       for(int i=0; i<nombre_d_operateurs(); i++)
         if(operateur(i).l_op_base().get_decal_temps()!=1)
@@ -658,6 +678,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
       Cerr << "Contact TRUST support." << finl;
       Process::exit();
     }
+
   return derivee;
 }
 
@@ -927,6 +948,9 @@ int Equation_base::preparer_calcul()
   msg+=" dans Equation_base::preparer_calcul ";
   Debog::verifier(msg ,inconnue());
 
+  // for IBM methods
+  if ( is_IBM() ) preparer_calcul_IBM();
+
   return 1;
 }
 
@@ -975,6 +999,9 @@ bool Equation_base::initTimeStep(double dt)
   // Mise a jour du solveur masse au temps present
   if (solveur_masse.non_nul())
     solveur_masse->mettre_a_jour(temps_present);
+
+  // for IBM methods
+  if ( is_IBM() ) initTimeStep_IBM(dt);
 
   return true;
 }
@@ -1936,6 +1963,8 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
   for (int op=0; op<nombre_d_operateurs(); op++)
     operateur(op).l_op_base().tester_contribuer_a_avec(inco, matrice);
 
+  int size_s = sources().size();
+
   // Contribution des operateurs et des sources:
   // [Vol/dt+A]Inco(n+1)=somme(residu)+Vol/dt*Inco(n)
   // Typiquement: si Op=flux(Inco) alors la matrice implicite A contient une contribution -dflux/dInco
@@ -1946,9 +1975,32 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
     {
       // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
       // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
-      sources().contribuer_a_avec(inco,matrice);
+      if (! is_IBM() )
+        sources().contribuer_a_avec(inco,matrice);
+      else
+        {
+          for (int i = 0; i < size_s; i++)
+            {
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                {
+                  const Source_base& src_base = sources()(i).valeur();
+                  src_base.contribuer_a_avec(inco,matrice);
+                }
+            }
+        }
       statistiques().end_count(assemblage_sys_counter_,0,0);
-      sources().ajouter(resu);
+      if (! is_IBM() )
+        sources().ajouter(resu);
+      else
+        {
+          for (int i = 0; i < size_s; i++)
+            {
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                {
+                  sources()(i).ajouter(resu);
+                }
+            }
+        }
       statistiques().begin_count(assemblage_sys_counter_);
       matrice.ajouter_multvect(inco, resu); // Add source residual first
       for (int op = 0; op < nombre_d_operateurs(); op++)
@@ -1969,9 +2021,32 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
           operateur(op).ajouter(resu);
           statistiques().begin_count(assemblage_sys_counter_);
         }
-      sources().contribuer_a_avec(inco,matrice);
+      if (! is_IBM() )
+        sources().contribuer_a_avec(inco,matrice);
+      else
+        {
+          for (int i = 0; i < size_s; i++)
+            {
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                {
+                  const Source_base& src_base = sources()(i).valeur();
+                  src_base.contribuer_a_avec(inco,matrice);
+                }
+            }
+        }
       statistiques().end_count(assemblage_sys_counter_,0,0);
-      sources().ajouter(resu);
+      if (! is_IBM() )
+        sources().ajouter(resu);
+      else
+        {
+          for (int i = 0; i < size_s; i++)
+            {
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                {
+                  sources()(i).ajouter(resu);
+                }
+            }
+        }
       statistiques().begin_count(assemblage_sys_counter_);
       matrice.ajouter_multvect(inco, resu); // Ajout de A*Inco(n)
       // PL (11/04/2018): On aimerait bien calculer la contribution des sources en premier
@@ -1982,6 +2057,22 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
     {
       Cerr << "Unknown value in Equation_base::assembler for " << (int)type_codage << finl;
       Process::exit();
+    }
+
+  // for IBM methods
+  if ( is_IBM() )
+    {
+      // pour ne pas avoir des termes PDF infinis lors de l'ajout de A*Inco(n)
+      for (int i = 0; i < size_s; i++)
+        {
+          if (sources()(i).valeur().que_suis_je().find("Source_PDF") > -1)
+            {
+              const Source_base& src_base = sources()(i).valeur();
+              src_base.contribuer_a_avec(inco,matrice);
+            }
+        }
+      // ajouter source PDF avec le bon signe
+      derivee_en_temps_inco_IBM(resu);
     }
 }
 
