@@ -15,7 +15,7 @@
 
 #include <Flux_interfacial_PolyMAC_P0P1NC.h>
 #include <Modele_turbulence_scal_base.h>
-#include <Echange_contact_PolyMAC_P0.h>
+#include <Echange_contact_PolyVEF_P0.h>
 #include <Op_Diff_PolyVEF_P0_Elem.h>
 #include <Echange_externe_impose.h>
 #include <Champ_Elem_PolyVEF_P0.h>
