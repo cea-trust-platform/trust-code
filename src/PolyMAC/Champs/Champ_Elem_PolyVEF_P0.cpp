@@ -18,11 +18,11 @@
 #include <Domaine_PolyVEF_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
 
-Implemente_instanciable(Champ_Elem_PolyVEF_P0,"Champ_Elem_PolyVEF_P0",Champ_Elem_PolyMAC_P0P1NC);
+Implemente_instanciable(Champ_Elem_PolyVEF_P0,"Champ_Elem_PolyVEF_P0",Champ_Elem_PolyMAC_P0);
 
 Sortie& Champ_Elem_PolyVEF_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Elem_PolyVEF_P0::readOn(Entree& s) { return Champ_Elem_PolyMAC_P0P1NC::readOn(s) ; }
+Entree& Champ_Elem_PolyVEF_P0::readOn(Entree& s) { return Champ_Elem_PolyMAC_P0::readOn(s) ; }
 
 const Domaine_PolyVEF_P0& Champ_Elem_PolyVEF_P0::domaine_PolyVEF_P0() const
 {
@@ -46,12 +46,6 @@ void Champ_Elem_PolyVEF_P0::init_auxiliary_variables()
             vals(ne_tot + f, m) = vals(e, m);
         vals.echange_espace_virtuel();
       }
-}
-
-inline void Champ_Elem_PolyVEF_P0::mettre_a_jour(double tps)
-{
-  if (tps_last_calc_grad_ != tps) grad_a_jour = 0;
-  Champ_Inc_P0_base::mettre_a_jour(tps);
 }
 
 void Champ_Elem_PolyVEF_P0::init_grad(int full_stencil) const
