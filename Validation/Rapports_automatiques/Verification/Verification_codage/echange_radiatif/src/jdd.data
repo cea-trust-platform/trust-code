@@ -75,7 +75,7 @@ Read pb
         boundary_conditions
         {
             bas  paroi_flux_impose champ_front_uniforme 1 $flux
-            haut echange_externe_radiatif h_imp champ_front_uniforme 1 $h emissivite champ_front_uniforme 1 $e T_ext champ_front_uniforme 1 $Text
+            haut echange_externe_radiatif h_imp champ_front_uniforme 1 $h emissivite champ_front_uniforme 1 $e T_ext champ_front_uniforme 1 $Text Temperature_unit kelvin
             sym  paroi_adiabatique
         }
     }
