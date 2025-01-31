@@ -24,7 +24,7 @@
 #include <Pb_Multiphase.h>
 #include <Milieu_base.h>
 
-Implemente_base(Op_Diff_PolyMAC_P0_base, "Op_Diff_PolyMAC_P0_base", Operateur_Diff_base);
+Implemente_base(Op_Diff_PolyMAC_P0_base, "Op_Diff_PolyMAC_P0_base", Op_Diff_PolyMAC_Gen_base);
 
 Sortie& Op_Diff_PolyMAC_P0_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 

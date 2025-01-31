@@ -23,7 +23,7 @@
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
 
-Implemente_base(Op_Diff_PolyMAC_base, "Op_Diff_PolyMAC_base", Operateur_Diff_base);
+Implemente_base(Op_Diff_PolyMAC_base, "Op_Diff_PolyMAC_base", Op_Diff_PolyMAC_Gen_base);
 
 Sortie& Op_Diff_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 

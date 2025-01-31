@@ -24,7 +24,7 @@
 #include <EChaine.h>
 #include <deque>
 
-Implemente_base(Op_Diff_PolyMAC_P0P1NC_base, "Op_Diff_PolyMAC_P0P1NC_base", Operateur_Diff_base);
+Implemente_base(Op_Diff_PolyMAC_P0P1NC_base, "Op_Diff_PolyMAC_P0P1NC_base", Op_Diff_PolyMAC_Gen_base);
 
 Sortie& Op_Diff_PolyMAC_P0P1NC_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
