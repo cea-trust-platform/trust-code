@@ -30,6 +30,11 @@ static constexpr double COEFF_STEFAN_BOLTZMANN = 5.670374419e-8; // W·m⁻²·K
 class Echange_externe_radiatif : public Echange_externe_impose
 {
   Declare_instanciable(Echange_externe_radiatif);
+public:
+  inline bool temperature_en_kelvin() const { return t_en_kelvin_; }
+
+private:
+  bool t_en_kelvin_ = true;
 };
 
 #endif /* Echange_externe_radiatif_included */

@@ -19,6 +19,8 @@ Implemente_instanciable(Echange_externe_radiatif, "Echange_externe_radiatif", Ec
 // XD paroi_echange_externe_radiatif paroi_echange_externe_impose paroi_echange_externe_radiatif -1 Combines radiative (sigma * eps * (T^4 - T_ext^4)) and convective (h * (T - T_ext)) heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant, eps is the emissivity, h is the convective heat transfer coefficient, T is the surface temperature, and T_ext is the external temperature.
 // XD attr emissivite chaine emissivite 0 Emissivity coefficient value.
 // XD attr emissivitebc front_field_base emissivitebc 0 Boundary field type.
+// XD attr Temperature_unit chaine Temperature_unit 0 Key word top precise the unit of the temperature.
+// XD attr Temperature_unit_val chaine Temperature_unit_val 0 Temperature unit, Kelvin or Celsius.
 
 Sortie& Echange_externe_radiatif::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
@@ -30,16 +32,17 @@ Entree& Echange_externe_radiatif::readOn(Entree& s)
   if (supp_discs.size() == 0)
     supp_discs = { Nom("VDF"), Nom("VEFPreP1B")};
 
-  Motcle motlu;
-  Motcles les_motcles(3);
+  Motcle motlu, T_unit;
+  Motcles les_motcles(4);
   {
     les_motcles[0] = "emissivite";
     les_motcles[1] = "h_imp";
     les_motcles[2] = "T_ext";
+    les_motcles[3] = "Temperature_unit";
   }
 
   int ind = 0;
-  while (ind < 3)
+  while (ind < 4)
     {
       s >> motlu;
       int rang = les_motcles.search(motlu);
@@ -59,6 +62,29 @@ Entree& Echange_externe_radiatif::readOn(Entree& s)
         case 2:
           {
             s >> le_champ_front;
+            break;
+          }
+        case 3:
+          {
+            s >> T_unit;
+
+            if (T_unit == "CELSIUS")
+              {
+                // TODO FIXME LATER
+                Cerr << "Error in Echange_externe_radiatif::readOn !!! This boundary condition requires temperature in Kelvin !" << finl;
+                Cerr << "Please update your data file ..." << finl;
+                Process::exit();
+                t_en_kelvin_ = false;
+              }
+            else if (T_unit == "KELVIN")
+              t_en_kelvin_ = true;
+            else
+              {
+                Cerr << "Unkown option in Echange_externe_radiatif::readOn !!!" << finl;
+                Cerr << "   - Temperature_unit can either be CELSIUS or KELVIN !!!" << finl;
+                Process::exit();
+              }
+
             break;
           }
         default:
