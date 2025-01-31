@@ -232,7 +232,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue
               if (la_cl_paroi.has_emissivite())
                 {
                   const double text = la_cl_paroi.T_ext(face - ndeb), T = inconnue(face);
-                  flux = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                  flux = COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
                   resu[face] += flux;
                   tab_flux_bords(face, 0) += flux;
                 }
@@ -470,7 +470,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
                   if (la_cl_paroi.has_emissivite())
                     {
                       const double text = la_cl_paroi.T_ext(face - ndeb, nc), T = inconnue(face, nc);
-                      flux0 = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                      flux0 = COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
                       resu(face, nc) += flux0;
                       tab_flux_bords(face, nc) += flux0;
                     }
@@ -724,7 +724,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
               const DoubleTab& inconnue = equation().inconnue().valeurs();
 
               const double T = inconnue(face);
-              matrice(face,face) += 4 * 5.67e-8 * la_cl_paroi.emissivite(face-ndeb) * T * T * T *domaine_VEF.face_surfaces(face);
+              matrice(face,face) += 4 * COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face-ndeb) * T * T * T *domaine_VEF.face_surfaces(face);
             }
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())

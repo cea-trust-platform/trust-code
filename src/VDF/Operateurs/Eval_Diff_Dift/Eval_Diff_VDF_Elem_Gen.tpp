@@ -282,7 +282,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
                 {
                   const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
                   const double Tb = newton_T_paroi_VDF(eps, h_imp, T_ext, nu_2(i, ori), e, inco(i, l));
-                  flux[k] += (5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) + h_imp * (T_ext - Tb)) * surface(face);
+                  flux[k] += (COEFF_STEFAN_BOLTZMANN * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) + h_imp * (T_ext - Tb)) * surface(face);
                 }
               else
                 {
@@ -306,7 +306,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
                 {
                   const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
                   const double Tb = newton_T_paroi_VDF(eps, h_imp, T_ext, nu_2(j, ori), e, inco(j, l));
-                  flux[k] += (5.67e-8 * eps * (Tb * Tb * Tb * Tb - T_ext * T_ext * T_ext * T_ext) + h_imp * (Tb - T_ext)) * surface(face);
+                  flux[k] += (COEFF_STEFAN_BOLTZMANN * eps * (Tb * Tb * Tb * Tb - T_ext * T_ext * T_ext * T_ext) + h_imp * (Tb - T_ext)) * surface(face);
                 }
               else
                 {
@@ -509,7 +509,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const DoubleTab& inco
             {
               const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
               const double T = inco(i, l);
-              aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] += 4 * 5.67e-8 * eps * T * T * T * surface(face);
+              aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] += 4 * COEFF_STEFAN_BOLTZMANN * eps * T * T * T * surface(face);
             }
         }
   else
@@ -532,7 +532,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const DoubleTab& inco
             {
               const double eps = la_cl.emissivite(face-num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
               const double T = inco(j, l);
-              ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] += 4 * 5.67e-8 * eps * T * T * T * surface(face);
+              ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] += 4 * COEFF_STEFAN_BOLTZMANN * eps * T * T * T * surface(face);
             }
         }
 }

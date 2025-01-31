@@ -16,6 +16,7 @@
 #ifndef T_paroi_Champ_P0_VDF_included
 #define T_paroi_Champ_P0_VDF_included
 
+#include <Echange_externe_radiatif.h>
 #include <Champ_Fonc_P0_VDF.h>
 #include <Domaine_Cl_VDF.h>
 #include <TRUST_Ref.h>
@@ -49,8 +50,8 @@ inline double newton_T_paroi_VDF(double eps, double h, double T_ext, double lamb
   const double it_max = 100, tolerance = 1e-8;
   for (int i = 0; i < it_max; i++)
     {
-      const double f = 5.67e-8 * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) + h * (T_ext - Tb) - lambda / e * (Tb - T0);
-      const double f_p = -4 * 5.67e-8 * eps * Tb * Tb * Tb - h - lambda / e;
+      const double f = COEFF_STEFAN_BOLTZMANN * eps * (T_ext * T_ext * T_ext * T_ext - Tb * Tb * Tb * Tb) + h * (T_ext - Tb) - lambda / e * (Tb - T0);
+      const double f_p = -4 * COEFF_STEFAN_BOLTZMANN * eps * Tb * Tb * Tb - h - lambda / e;
       const double Tb_new = Tb - f / f_p;
       if (std::abs(Tb_new - Tb) < tolerance)
         return Tb_new;

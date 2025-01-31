@@ -251,7 +251,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
               if (la_cl_paroi.has_emissivite())
                 {
                   const double text = la_cl_paroi.T_ext(face - ndeb), T = tab_inconnue(face);
-                  flux = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                  flux = COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
                   tab_resu[face] += flux;
                   tab_flux_bords(face, 0) += flux;
                 }
@@ -565,7 +565,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                   if (la_cl_paroi.has_emissivite())
                     {
                       const double text = la_cl_paroi.T_ext(face - ndeb, nc), T = inconnue(face, nc);
-                      flux0 = 5.67e-8 * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                      flux0 = COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb, nc) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
                       resu(face, nc) += flux0;
                       tab_flux_bords(face, nc) += flux0;
                     }
@@ -875,7 +875,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
                   const DoubleTab& inconnue = equation().inconnue().valeurs();
 
                   const double T = inconnue(face);
-                  tab_h_impose(face) = 4 * 5.67e-8 * la_cl_paroi.emissivite(face - ndeb) * T * T * T;
+                  tab_h_impose(face) = 4 * COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb) * T * T * T;
                 }
             }
         }

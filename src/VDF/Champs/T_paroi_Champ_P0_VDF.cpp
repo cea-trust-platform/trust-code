@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-#include <Echange_externe_radiatif.h>
 #include <Champ_front_calc_interne.h>
 #include <Echange_interne_impose.h>
 #include <T_paroi_Champ_P0_VDF.h>
