@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    trust prepare || exit -1
