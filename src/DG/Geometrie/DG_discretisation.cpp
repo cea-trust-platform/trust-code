@@ -173,7 +173,7 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
   Nom type;
   int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
   int rang = motcles.search(directive);
-  const Quadrature_base& quad = domaine_DG.get_quadrature(2);
+  const Quadrature_base& quad = domaine_DG.get_quadrature(5); // TODO: Make this depend from the order of discretization ... 
   int nb_pts_integ_max = quad.nb_pts_integ_max();
 
 //  const int order_DG = Option_DG::Get_order_for(directive);

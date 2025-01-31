@@ -63,6 +63,13 @@ void Domaine_DG::discretiser()
   set_quadrature(1, quad1);
   set_quadrature(2, quad2);
   set_quadrature(5, quad5);
+
+
+}
+
+void Domaine_DG::set_default_order(int order)
+{
+  order_quad_=order;
 }
 
 
@@ -80,14 +87,14 @@ void Domaine_DG::get_position(DoubleTab& positions) const
 
 void Domaine_DG::get_nb_integ_points(IntTab& nb_integ_points) const
 {
-  const Quadrature_base& quad = get_quadrature(2);
+  const Quadrature_base& quad = get_quadrature();
   nb_integ_points = quad.get_tab_nb_pts_integ();
 //  nb_integ_points.ref(tab_pts_integ);
 }
 
 void Domaine_DG::get_ind_integ_points(IntTab& ind_integ_points) const
 {
-  const Quadrature_base& quad = get_quadrature(2);
+  const Quadrature_base& quad = get_quadrature();
   ind_integ_points = quad.get_ind_pts_integ();
 //  ind_integ_points.ref(ind_pts_integ);
 }
@@ -95,7 +102,7 @@ void Domaine_DG::get_ind_integ_points(IntTab& ind_integ_points) const
 
 double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 {
-  const Quadrature_base& quad = get_quadrature(2);
+  const Quadrature_base& quad = get_quadrature();
   int nb_pts_integ_max = quad.nb_pts_integ_max();
   int nelem = nb_elem();
 
@@ -116,7 +123,7 @@ double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 
 double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
 {
-  const Quadrature_base& quad = get_quadrature(2);
+  const Quadrature_base& quad = get_quadrature();
   int nb_pts_integ_max = quad.nb_pts_integ_max();
   int nelem = nb_elem();
 

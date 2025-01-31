@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,6 +56,7 @@ public:
   inline const DoubleTab& get_eta_facet() const { return eta_facet; }
 
   const Matrice_Dense eval_invMassMatrix(const Quadrature_base& quad, const int& nelem) const;
+  const Matrice_Dense build_local_mass_matrix(const Quadrature_base& quad, const int nelem) const;
 
   /* fonctions pour reconstruire la valeur du champ selon la localisation */
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;

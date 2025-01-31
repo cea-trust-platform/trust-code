@@ -38,8 +38,12 @@ public :
 
 
   inline void set_quadrature(int order, const Quadrature_base* quad);
-  inline const Quadrature_base& get_quadrature(int order) const;
 
+  inline const Quadrature_base& get_quadrature(int order) const;
+  inline const Quadrature_base& get_quadrature() const;
+
+
+  void set_default_order(int order);
   void get_position(DoubleTab& positions) const override;
   double compute_L1_norm(const DoubleVect& val_source) const override;
   double compute_L2_norm(const DoubleVect& val_source) const override;
@@ -59,6 +63,7 @@ protected:
   DoubleTab sig_;
   DoubleTab surf_;
   IntTab type_elem_;
+  int order_quad_=-1;
 // DoubleVect h_, sigma;
 
   void compute_mesh_param(); // Compute the stabilization parameters
@@ -76,6 +81,10 @@ const Quadrature_base& Domaine_DG::get_quadrature(int order) const
   return *quad_map_.at(order);
 }
 
+const Quadrature_base& Domaine_DG::get_quadrature() const // overloaded to give the defaut order, depending of the order of the method
+{
+  return *quad_map_.at(order_quad_);
+}
 
 
 #endif /* Domaine_DG_included */
