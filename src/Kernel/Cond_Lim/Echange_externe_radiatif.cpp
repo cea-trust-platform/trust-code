@@ -17,7 +17,7 @@
 
 Implemente_instanciable(Echange_externe_radiatif, "Echange_externe_radiatif|Paroi_echange_externe_radiatif", Echange_externe_impose);
 
-// XD echange_externe_radiatif condlim_base echange_externe_radiatif -1 Combines radiative (sigma * eps * (T^4 - T_ext^4)) and convective (h * (T - T_ext)) heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant, eps is the emi
+// XD echange_externe_radiatif condlim_base echange_externe_radiatif -1 Combines radiative $(sigma * eps * (T^4 - T_ext^4))$ and convective $(h * (T - T_ext))$ heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant, eps is the emi
 // XD attr h_imp chaine(into=["h_imp","t_ext","emissivite"]) h_imp 0 Heat exchange coefficient value (expressed in W.m-2.K-1).
 // XD attr himpc front_field_base himpc 0 Boundary field type.
 // XD attr emissivite chaine(into=["emissivite","h_imp","t_ext"]) emissivite 0 Emissivity coefficient value.
