@@ -150,7 +150,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
 
   for (const auto &i_m : mats)
     {
-      // Vérification des conditions sur "vitesse" ou les dérivées semi-implicites
+      // Verification des conditions sur "vitesse" ou les derivees semi-implicites
       if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
         {
           Matrice_Morse mat;
@@ -160,7 +160,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
 
           if (i_m.first == "vitesse")
             {
-              // Traitement spécifique pour "vitesse"
+              // Traitement specifique pour "vitesse"
               for (int f = 0; f < domaine.nb_faces_tot(); f++)
                 if (fcl_v(f, 0) < 2) // CL mais pas dirichlet ou face interne
                   for (int i = 0; i < 2; i++)
@@ -201,7 +201,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
                                               (i_m.first == "vitesse" ? vitesse_->valeurs().size_totale() : cc.derivees().at(i_m.first).size_totale()),
                                               stencil, mat);
 
-          // Mise à jour de la matrice dans la collection
+          // Mise a jour de la matrice dans la collection
           if (i_m.second->nb_colonnes())
             *i_m.second += mat;
           else
@@ -241,7 +241,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
   // Convection aux faces internes, Neumann_val_ext ou Dirichlet
   for (int f = 0; f < domaine.nb_faces(); f++)
     {
-      // Vérification de la condition pour traiter cette face
+      // Verification de la condition pour traiter cette face
       if (fcl(f, 0) == 0 || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
         {
           dv_flux = 0.;
@@ -259,12 +259,12 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
                   const double v = vit_f ? vit_f : DBL_MIN;
                   const double fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha_) / 2;
 
-                  dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n));  // f est réelle -> indice trivial dans bcc
+                  dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n));  // f est reelle -> indice trivial dans bcc
                   dc_flux(i, n) = e >= 0 ? fac * vit_f : 0;
                 }
             }
 
-          // Mise à jour du second membre
+          // Mise a jour du second membre
           for (int i = 0; i < 2; i++)
             {
               int e = f_e(f, i);
@@ -278,7 +278,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
                 }
             }
 
-          // Mise à jour des dérivées : vitesse
+          // Mise a jour des derivees : vitesse
           if (m_vit && fcl_v(f, 0) < 2)
             for (int i = 0; i < 2; i++)
               {
@@ -293,7 +293,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
                   }
               }
 
-          // Mise à jour des dérivées : champ convecté
+          // Mise a jour des derivees : champ convecte
           for (auto &&d_m_i : d_cc)
             {
               int M = std::get<2>(d_m_i);

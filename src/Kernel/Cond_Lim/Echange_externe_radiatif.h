@@ -18,7 +18,7 @@
 
 #include <Echange_externe_impose.h>
 
-static constexpr double COEFF_STEFAN_BOLTZMANN = 5.670374419e-8; // W·m⁻²·K⁻⁴
+static constexpr double COEFF_STEFAN_BOLTZMANN = 5.670374419e-8; // W.m-2.K-4
 
 /*! @brief classe Echange_externe_radiatif: Combines radiative (sigma * eps * (T^4 - T_ext^4))
  *    and convective (h * (T - T_ext)) heat transfer boundary conditions, where sigma is the Stefan-Boltzmann constant,

@@ -133,7 +133,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   {
     int type_face = est_face_bord(fac);
 
-    // Faces de bord périodiques
+    // Faces de bord periodiques
     if (type_face == 2)
       {
         int elem1 = face_voisins(fac, 0);
@@ -146,7 +146,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
             Kokkos::atomic_add(&gradient_elem(elem2, i), -grad);
           }
       }
-    // Faces de bord non périodiques
+    // Faces de bord non periodiques
     else if (type_face == 1)
       {
         int elem1 = face_voisins(fac,0);
@@ -173,7 +173,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-  // Division par le volume de l'élément
+  // Division par le volume de l'element
   auto vol_div = KOKKOS_LAMBDA (int elem, int i)
   {
     gradient_elem(elem, i) *= inverse_volumes(elem);
@@ -226,7 +226,7 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   });
   end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
 
-  // Division par le volume de l'élément
+  // Division par le volume de l'element
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
                        range_3D({0,0,0}, {nb_elem,nb_comp,dimension}),
                        KOKKOS_LAMBDA (int elem, int icomp, int i)

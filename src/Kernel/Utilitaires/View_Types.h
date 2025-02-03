@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ memory_space;
 using host_mirror_space = DualViewArr<double>::host_mirror_space;
 
 //for host views:
-//"You do not need to explicitly specify host_execution_space because host_mirror_space already implies that you’re using the host execution space."
+//"You do not need to explicitly specify host_execution_space because host_mirror_space already implies that you are using the host execution space."
 //memory space implies execution space
 
 using random_unmanaged_memory = Kokkos::MemoryTraits<Kokkos::RandomAccess | Kokkos::Unmanaged>;

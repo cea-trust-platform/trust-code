@@ -175,8 +175,8 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
    *    \phi = h_{imp} (T_b - T_{ext})
    *    \f]
    *    where:
-   *    - `h_{imp}` is the convective heat transfer coefficient (W/m².K),
-   *    - `T_b` is the temperature at the solid’s surface,
+   *    - `h_{imp}` is the convective heat transfer coefficient (W/m2.K),
+   *    - `T_b` is the temperature at the solid's surface,
    *    - `T_{ext}` is the external temperature.
    *
    * 2. **Expression for conductive flux inside the solid**:

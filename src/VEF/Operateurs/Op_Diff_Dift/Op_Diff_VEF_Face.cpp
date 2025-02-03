@@ -681,9 +681,9 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
   Matrice_Morse_View matrice;
   matrice.set(tab_matrice);
 
-  // Récupérer les indices des faces de bord périodiques et les
-  // faces associées dans des tableaux au préalable pour
-  // permettre un accès structuré dans le kernel ensuite
+  // Recuperer les indices des faces de bord periodiques et les
+  // faces associees dans des tableaux au pealable pour
+  // permettre un acces structure dans le kernel ensuite
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -949,9 +949,9 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
   IntVect tab_face_associee(domaine_VEF.premiere_face_int());
   IntVect tab_fac2b_idx(domaine_VEF.nb_faces_tot());
 
-  // Récupérer les indices des faces de bord périodiques et les
-  // faces associées dans des tableaux au préalable pour accès
-  // structuré dans le kernel ensuite
+  // Recuperer les indices des faces de bord periodiques et les
+  // faces associees dans des tableaux au pealable pour acces
+  // structure dans le kernel ensuite
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1047,7 +1047,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
               }
           }
       }
-    // Faces de bord non périodiques
+    // Faces de bord non periodiques
     else if (type_face == 1)
       {
         int elem1 = face_voisins(fac, 0);

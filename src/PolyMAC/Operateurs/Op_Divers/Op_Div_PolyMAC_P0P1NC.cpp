@@ -47,13 +47,13 @@ void Op_Div_PolyMAC_P0P1NC::dimensionner_blocs(matrices_t matrices, const tabs_t
   IntTab sten_v(0, 2), sten_p(0, 2);
   DoubleTab w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
 
-  // Dépendance en v : divergence par élément et v = v_imp aux faces de Dirichlet
+  // Dependance en v : divergence par element et v = v_imp aux faces de Dirichlet
   if (matv)
     for (int f = 0; f < domaine.nb_faces(); f++)
       {
-        if (fcl(f, 0) > 1) // v imposé par les conditions limites
+        if (fcl(f, 0) > 1) // v impose par les conditions limites
           sten_v.append_line(ne_tot + f, f);
-        else // v calculé : contribution à la divergence aux éléments
+        else // v calcule : contribution a la divergence aux elements
           for (int i = 0; i < 2; i++)
             {
               const int e = f_e(f, i);
@@ -64,7 +64,7 @@ void Op_Div_PolyMAC_P0P1NC::dimensionner_blocs(matrices_t matrices, const tabs_t
             }
       }
 
-  // Dépendance en p : équation sur p_f
+  // Dependance en p : equation sur p_f
   if (matp)
     {
       for (int e = 0; e < domaine.nb_elem_tot(); e++)
@@ -78,7 +78,7 @@ void Op_Div_PolyMAC_P0P1NC::dimensionner_blocs(matrices_t matrices, const tabs_t
                 sten_p.append_line(ne_tot + f, ne_tot + f);
               else if (!fcl(f, 0))
                 {
-                  // Aux faces internes : égalité des deux gradients
+                  // Aux faces internes : egalite des deux gradients
                   sten_p.append_line(ne_tot + f, e);
                   for (int j = 0; j < w2.dimension(1); j++)
                     if (w2(i, j, 0))

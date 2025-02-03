@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -301,7 +301,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   //
   Champ_P1NC::calcul_gradient(tab_transporte,gradient_elem_,domaine_Cl_VEF);
 
-  //Déclaration des vues sur les tableaux TRUSTS
+  //Declaration des vues sur les tableaux TRUSTS
   CIntArrView rang_elem_non_std = tab_rang_elem_non_std.view_ro();
   CIntTabView elem_faces = tab_elem_faces.view_ro();
   CIntTabView KEL = tab_KEL.view_ro();
@@ -315,7 +315,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CDoubleTabView coord_sommets = tab_coord_sommets.view_ro();
   CDoubleTabView xv = tab_xv.view_ro();
   DoubleTabView4 Fij = tab_Fij.view4_wo();
-  CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro(); //Gradient elem déclaré plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissée ici
+  CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro(); //Gradient elem declare plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissee ici
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),

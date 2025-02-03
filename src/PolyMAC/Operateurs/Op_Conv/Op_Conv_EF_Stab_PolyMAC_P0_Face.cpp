@@ -87,7 +87,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
               }
         }
 
-      // Mise à jour du pas de temps minimal
+      // Mise a jour du pas de temps minimal
       for (int n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12)
           dt = std::min(dt, vol / flux(n));
@@ -121,7 +121,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
   for (int f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
       {
-        // Parcourt des deux éléments adjacents à la face
+        // Parcourt des deux elements adjacents a la face
         for (int i = 0; i < 2; i++)
           {
             const int e = f_e(f, i);
@@ -130,7 +130,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
             for (int j = 0; j < 2; j++)
               {
                 const int eb = f_e(f, j);
-                // Contribution des faces connectées à l'élément
+                // Contribution des faces connectees a l'element
                 if (eb < 0) continue; // elem virtuel
 
                 for (int k = 0; k < e_f.dimension(1); k++)
@@ -143,14 +143,14 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
                         int fc = equiv(f, i, k);
                         if (fc >= 0) // face reel
                           {
-                            // Cas d'équivalence : face -> face
+                            // Cas d'equivalence : face -> face
                             for (int n = 0; n < N; n++)
                               for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
                                 stencil.append_line(N * fb + n, N * fc + m);
                           }
                         else if (f_e(f, 1) >= 0) // bord
                           {
-                            // Pas d'équivalence : élément -> face
+                            // Pas d'equivalence : element -> face
                             for (int d = 0; d < D; d++)
                               if (std::fabs(nf(fb, d)) > 1e-6 * fs(fb))
                                 for (int n = 0; n < N; n++)
@@ -160,7 +160,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
                       }
                   }
 
-                // Contribution élément -> élément
+                // Contribution element -element
                 for (int d = 0; d < D; d++)
                   for (int n = 0; n < N; n++)
                     for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
@@ -218,7 +218,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
               if (corr)
                 corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
 
-              // Contribution à dfac
+              // Contribution a dfac
               const int eb = f_e(f, i);
               for (int n = 0; n < N; n++)
                 for (int m = 0; m < N; m++)
@@ -228,7 +228,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                   }
             }
 
-          // Calcul des contributions à la matrice et au second membre
+          // Calcul des contributions a la matrice et au second membre
           for (int i = 0; i < 2 ; i++)
             {
               const int e = f_e(f, i);
@@ -242,7 +242,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
 
                   if (fb < domaine.nb_faces() && fcl(fb, 0) < 2)
                     {
-                      // Cas d'équivalence : face -> face
+                      // Cas d'equivalence : face -> face
                       int fc = equiv(f, i, k);
                       if (fc >= 0 || f_e(f, 1) < 0)
                         {
@@ -260,7 +260,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                                     {
                                       const double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
 
-                                      // Mise à jour du second membre
+                                      // Mise a jour du second membre
                                       if (fd >= 0)
                                         secmem(fb, n) -= fac * mult * inco(fd, m);
                                       else
@@ -271,7 +271,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                                       if (!incompressible_)
                                         secmem(fb, n) += fac * inco(fb, m);
 
-                                      // Mise à jour de la matrice
+                                      // Mise a jour de la matrice
                                       if (mat && fac)
                                         {
                                           if (fd >= 0 && fcl(fd, 0) < 2)
@@ -282,7 +282,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                                     }
                             }
                         }
-                      // Cas sans équivalence : éléments connectés
+                      // Cas sans equivalence :elements connectes
                       else
                         {
                           for (int j = 0; j < 2; j++)
@@ -296,12 +296,12 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                                         {
                                           const double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e) * nf(fb, d) / fs(fb);
 
-                                          // Mise à jour du second membre
+                                          // Mise a jour du second membre
                                           secmem(fb, n) -= fac * inco(nf_tot + D * eb + d, m);
                                           if (!incompressible_)
                                             secmem(fb, n) += fac * inco(nf_tot + D * e + d, m);
 
-                                          // Mise à jour de la matrice
+                                          // Mise a jour de la matrice
                                           if (mat && fac)
                                             {
                                               (*mat)(N * fb + n, N * (nf_tot + D * eb + d) + m) += fac;
@@ -325,7 +325,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                           {
                             const double fac = (i ? -1 : 1) * dfac(j, n, m);
 
-                            // Mise à jour du second membre
+                            // Mise a jour du second membre
                             secmem(nf_tot + D * e + d, n) -= fac * (eb >= 0 ? inco(nf_tot + D * eb + d, m) : ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m));
                             if (!incompressible_)
                               secmem(nf_tot + D * e + d, n) += fac * inco(nf_tot + D * e + d, m); //partie v div(alpha rho v)

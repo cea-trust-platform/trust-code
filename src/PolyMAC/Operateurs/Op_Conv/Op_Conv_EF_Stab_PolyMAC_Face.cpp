@@ -109,7 +109,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
                 if (ch.fcl()(fb, 0) < 2)
                   stencil.append_line(f, fb);
 
-                // Cas d'équivalence ou bord : convection de m2
+                // Cas d'equivalence ou bord : convection de m2
                 int fc = equiv(fb, e != f_e(fb, 0), i);
                 if (fc  >= 0 || f_e(fb, 1) < 0)
                   {
@@ -136,7 +136,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
                   }
                 else
                   {
-                    // Cas général : convection de ve.(xv - xp)
+                    // Cas general : convection de ve.(xv - xp)
                     for (int k = 0; k < 2; k++)
                       {
                         int eb = f_e(fb, k);
@@ -276,7 +276,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
     {
       double div = 0.;
 
-      // Calcul de la divergence et contributions aux équations
+      // Calcul de la divergence et contributions aux equations
       for (int i = 0; i < e_f.dimension(1); i++)
         {
           int f = e_f(e, i);
@@ -301,7 +301,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
                           int fc = equiv(fb, e != f_e(fb, 0), i);
                           if (fc  >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0)
                             {
-                              // Convection pour les équivalences ou bords
+                              // Convection pour les equivalences ou bords
                               if (eb < 0) continue;
 
                               int fam = (eb == e ? f : fc);
@@ -316,7 +316,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
                             }
                           else
                             {
-                              // Convection pour les faces internes sans équivalence
+                              // Convection pour les faces internes sans equivalence
                               for (int l = domaine.vedeb(eb); l < domaine.vedeb(eb + 1); l++)
                                 {
                                   fc = domaine.veji(l);

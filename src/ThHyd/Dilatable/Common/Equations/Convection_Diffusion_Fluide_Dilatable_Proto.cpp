@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -180,7 +180,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   // si schema implicite
   if (!is_expl && has_mass_flux)
-    derivee += mass_source_term; // pour ça on traite le volume par le solveur de masse plus tard ...
+    derivee += mass_source_term; // pour ca on traite le volume par le solveur de masse plus tard ...
 
   if (diffusion_implicite)
     {

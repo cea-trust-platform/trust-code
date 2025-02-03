@@ -251,7 +251,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               int e = f_e(f, i);
               if (e < 0) continue;
 
-              // Recherche de i_f : indice de la face f dans l'élément e
+              // Recherche de i_f : indice de la face f dans l'element e
               int i_f = -1;
               for (int j = 0; i_f < 0 && j < e_f.dimension(1); j++)
                 {
@@ -262,7 +262,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                     i_f = j;
                 }
 
-              // Contribution de la diffusion à la face fb
+              // Contribution de la diffusion a la face fb
               for (int j = 0; j < e_f.dimension(1); j++)
                 {
                   int fb = e_f(e, j);
@@ -304,7 +304,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                         }
                       else if (tpfa && fc >= 0)
                         {
-                          // Amont/aval si équivalence : opérateur entre faces
+                          // Amont/aval si equivalence : operateur entre faces
                           int f_s = (e_s == e) ? f : fc;
                           int sgn = (domaine.dot(&nf(f_s, 0), &nf(f, 0)) > 0) ? 1 : -1;
                           for (int n = 0; n < N; n++)
@@ -316,7 +316,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                         }
                       else
                         {
-                          // Sinon : élément -> face, avec traitement particulier
+                          // Sinon : element -> face, avec traitement particulier
                           double f_eps = (e_s != e) ? 0 : tpfa && fcl(fb, 0) ? 1 : std::min(eps, 1000 * std::pow(vf(f) / fs(f), 2));
 
                           for (int d = 0; d < D; d++)

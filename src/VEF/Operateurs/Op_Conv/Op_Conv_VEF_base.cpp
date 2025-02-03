@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,9 +121,9 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
 
   const DoubleVect& tab_volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   CDoubleArrView volumes_entrelaces = tab_volumes_entrelaces.view_ro();
-  // Nécessaire car Kokkos::parallel_reduce() réécrit dt_stab avec le
-  // résultat de la réduction quelle que soit la valeur de départ (en
-  // particulier, celle d'une réduction précédente, comme ici).
+  // Necessaire car Kokkos::parallel_reduce() reecrit dt_stab avec le
+  // resultat de la eduction quelle que soit la valeur de depart (en
+  // particulier, celle d'une reduction precedente, comme ici).
   double dt_stab_2 = dt_stab;
   Kokkos::parallel_reduce(
     start_gpu_timer(__KERNEL_NAME__),
