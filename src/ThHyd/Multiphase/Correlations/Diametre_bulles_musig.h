@@ -13,42 +13,30 @@
 *
 *****************************************************************************/
 
-#ifndef Fluide_MUSIG_included
-#define Fluide_MUSIG_included
+#ifndef Diametre_bulles_musig_included
+#define Diametre_bulles_musig_included
 
-#include <Fluide_base.h>
-#include <TRUST_Deriv.h>
-#include <vector>
-#include <map>
+#include <Correlation_base.h>
+#include <Champ_Fonc_base.h>
 
-/*! @brief Classe Fluide_MUSIG
+/*! @brief classe Diametre_bulles_musig Contient les diamétres de Sauter du champ de bulles/gouttes (phase dispersée) pour l'algorithme de style MUSIG
  *
- *  Cette classe permettant d'instancier plusieurs phases d'un coup
  *
- *  Chaque sous phase possede la meme loi d'etat
  *
- *  Deux parametres : 'nbPhases' et 'fluide'
- *
- * @sa Fluide_base
  */
-class Fluide_MUSIG : public Fluide_base
+
+class Diametre_bulles_musig : public Correlation_base
 {
-  Declare_instanciable( Fluide_MUSIG ) ;
-public :
-  //inline DoubleTab& get_Diametres() { return diametres_; }
-  inline const DoubleTab& get_Diametres() const { return diametres_; }
+  Declare_instanciable(Diametre_bulles_musig);
+public:
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  bool has_champ(const Motcle& nom, OBS_PTR(Champ_base) &ref_champ) const override;
+  bool has_champ(const Motcle& nom) const override;
 
-  inline const int& get_NbSubPhase() const { return nbSubPhases_; }
-
-  //inline OWN_PTR(Fluide_base)& get_Fluide() { return fluide_; }
-  inline const OWN_PTR(Fluide_base)& get_Fluide() const { return fluide_; }
-
-  int initialiser(const double temps) override;
-
-protected :
-  DoubleTab diametres_;
-  int nbSubPhases_ = -1;
-  OWN_PTR(Fluide_base) fluide_;
+protected:
+  double d_bulle_ = -100.;
+  OWN_PTR(Champ_Fonc_base)  diametres_;
+  int n_l = -1 ; // liquid phase
 };
 
-#endif /* Fluide_MUSIG_included */
+#endif

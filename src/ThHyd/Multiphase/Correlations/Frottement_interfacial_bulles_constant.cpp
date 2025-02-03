@@ -16,6 +16,7 @@
 #include <Frottement_interfacial_bulles_constant.h>
 #include <Pb_Multiphase.h>
 #include <TRUSTTab.h>
+#include <Milieu_MUSIG.h>
 
 Implemente_instanciable(Frottement_interfacial_bulles_constant, "Frottement_interfacial_bulles_constant", Frottement_interfacial_base);
 
@@ -38,6 +39,19 @@ Entree& Frottement_interfacial_bulles_constant::readOn(Entree& is)
   for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
     if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+
+  // Traitement milieu MUSIG (phase dispersee)
+  const Milieu_MUSIG *milMusig = sub_type(Milieu_MUSIG, pbm->milieu()) ? &ref_cast(Milieu_MUSIG, pbm->milieu()) : nullptr;
+  if (milMusig)
+    {
+      for (int k = 0; k < pbm->nb_phases(); k++)
+        {
+          if (milMusig->has_carrier_gas(k)) n_l = k;
+          if (milMusig->has_carrier_liquid(k)) n_l = k;
+        }
+    }
+
+  if ((r_bulle_<0.) && (!pbm->has_champ("diametre_bulles"))) Process::exit(que_suis_je() + " : there must be a bubble diameter defined in the problem or a bubble radius defined in the force !");
 
   return is;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,9 +57,9 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
           if(fluide->que_suis_je() == "Fluide_MUSIG")
             {
               Fluide_MUSIG& fluide_cast = ref_cast(Fluide_MUSIG,fluide.valeur());
-              for(int k =0; k<fluide_cast.getNbSubPhase(); k++)
+              for(int k =0; k<fluide_cast.get_NbSubPhase(); k++)
                 {
-                  OWN_PTR(Fluide_base) subFluide(fluide_cast.getFluide());
+                  OWN_PTR(Fluide_base) subFluide(fluide_cast.get_Fluide());
 
                   if (subFluide->has_porosites())
                     {
@@ -83,7 +83,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
                     }
                   noms_phases_.add(nomPhase+"_"+std::to_string(k));
                   subFluide->set_id_composite(i++);
-                  subFluide->nommer(nomPhase+"_"+std::to_string(k)); // XXX
+                  subFluide->nommer(nomPhase);
                   fluides_.push_back(subFluide);
                   std::vector<int> lineIndex;
                   lineIndex.push_back((int)fluides_.size()-1);
@@ -184,24 +184,119 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
   return is;
 }
 
-double Milieu_MUSIG::getDiameter(int iPhaseMilieu)
+double Milieu_MUSIG::get_Diameter_Inf(int iPhaseMilieu) const
 {
   std::vector<int> index = indexMilieuToIndexFluide_[iPhaseMilieu];
   double diametre = -1;
   if(index[2] < 0)
     {
-      Cerr << que_suis_je() + " : the function getDiameter is only available with FluideMusig" << finl;
+      Cerr << que_suis_je() + " : the function get_Diameter is only available with FluideMusig" << finl;
       Process::exit();
     }
 
   Fluide_MUSIG fluideMUSIG = fluidesMUSIG_[index[1]];
 
-  if(fluideMUSIG.getdiametres().size()<1)
+  if(fluideMUSIG.get_Diametres().size()<1)
     {
       Cerr << que_suis_je() + " : you need to define diameters for this fluideMusig" << finl;
       Process::exit();
     }
-  diametre = fluideMUSIG.getdiametres()[index[2]];
+  diametre = fluideMUSIG.get_Diametres()[index[2]];
+
+  // A decommenter si verification du tableau indexMilieuToIndexFluide_
+  // std::vector<int> indexPhase;
+  // const int N = (int)fluides_.size();
+  // for (int n = 0; n < N; n++)
+  //   {
+  //     indexPhase = indexMilieuToIndexFluide_[n];
+  //     cout << "Phase N° "<< indexPhase[0] << " Nom Phase " << noms_phases_[n]<< endl;
+  //     cout << "  Fluide N° "<< indexPhase[1] << " Nom Fluide " << fluides_[n].le_nom()<< endl;
+  //     cout << "  Index Fluide Musig N° "<< indexPhase[2] << endl;
+  //     cout << endl;
+  //   }
+
+  // A decommenter si necessaire
+  //const int N = (int)fluides_.size();
+  // for (int k = 0; k < N; k++)
+  //   {
+  //     int phase = fluides_[k].le_nom().debute_par("gaz_dispersee");
+  //     Nom espece = phase ? fluides_[k].le_nom().getSuffix("gaz_") : fluides_[k].le_nom().getSuffix("liquide_");
+  //     cout << "nom " << espece << endl;
+  //   }
 
   return diametre;
+}
+
+double Milieu_MUSIG::get_Diameter_Sup(int iPhaseMilieu) const
+{
+  std::vector<int> index = indexMilieuToIndexFluide_[iPhaseMilieu];
+  double diametre = -1;
+  if(index[2] < 0)
+    {
+      Cerr << que_suis_je() + " : the function get_Diameter is only available with FluideMusig" << finl;
+      Process::exit();
+    }
+
+  Fluide_MUSIG fluideMUSIG = fluidesMUSIG_[index[1]];
+
+  if(fluideMUSIG.get_Diametres().size()<1)
+    {
+      Cerr << que_suis_je() + " : you need to define diameters for this fluideMusig" << finl;
+      Process::exit();
+    }
+  diametre = fluideMUSIG.get_Diametres()[index[2]+1];
+
+  return diametre;
+}
+
+double Milieu_MUSIG::get_Diameter_Sauter(int iPhaseMilieu) const
+{
+  double diametre = -1;
+
+  double dInf = get_Diameter_Inf(iPhaseMilieu);
+  double dSup = get_Diameter_Sup(iPhaseMilieu);
+
+  diametre = dInf;
+  if (dSup != dInf) diametre = (dSup-dInf)/log(dSup/dInf);
+
+  // test
+  // if (iPhaseMilieu == 1) diametre = get_Diameter_Inf(1);
+  // if (iPhaseMilieu == 2) diametre = get_Diameter_Inf(1);
+  // if (iPhaseMilieu == 3) diametre = get_Diameter_Sup(3);
+
+  if ((diametre < dInf) || (diametre > dSup))
+    {
+      Cerr << que_suis_je() + " : Diam Sauter < dInf or Diam Sauter > dSup of phase =" << iPhaseMilieu << finl;
+      Process::exit();
+    }
+
+  return diametre;
+}
+
+bool Milieu_MUSIG::has_dispersed_gas(int k) const
+{
+  bool dispersedGas = false;
+  if (fluides_[k].le_nom().debute_par("gaz_dispersee")) dispersedGas = true;
+  return dispersedGas;
+}
+
+bool Milieu_MUSIG::has_dispersed_liquid(int k) const
+{
+  bool dispersedLiquid = false;
+  if (fluides_[k].le_nom().debute_par("liquide_dispersee")) dispersedLiquid = true;
+  return dispersedLiquid;
+}
+
+bool Milieu_MUSIG::has_carrier_liquid(int k) const
+{
+  bool carrierLiquid = false;
+  if (fluides_[k].le_nom().debute_par("liquide_continu")) carrierLiquid = true;
+  return carrierLiquid;
+}
+
+bool Milieu_MUSIG::has_carrier_gas(int k) const
+{
+  bool carrierGas = false;
+  if (fluides_[k].le_nom().debute_par("gaz_continu")) carrierGas = true;
+  return carrierGas;
 }

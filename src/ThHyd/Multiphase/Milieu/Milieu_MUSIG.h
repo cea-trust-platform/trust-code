@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,13 @@ class Milieu_MUSIG : public Milieu_composite
 {
   Declare_instanciable( Milieu_MUSIG ) ;
 public :
-  double getDiameter(int iPhaseMilieu);
-
+  double get_Diameter_Inf(int iPhaseMilieu) const;
+  double get_Diameter_Sup(int iPhaseMilieu) const;
+  double get_Diameter_Sauter(int iPhaseMilieu) const;
+  bool has_dispersed_gas(int k) const;
+  bool has_carrier_liquid(int k) const;
+  bool has_dispersed_liquid(int k) const;
+  bool has_carrier_gas(int k) const;
 private :
   std::vector<Fluide_MUSIG> fluidesMUSIG_;
 
