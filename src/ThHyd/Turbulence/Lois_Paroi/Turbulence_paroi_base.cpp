@@ -311,13 +311,14 @@ void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie& os, int boundaries_
             {
               for (int num_face = ndeb; num_face < nfin; num_face++)
                 {
-// Calcul des valeurs moyennes par bord (en supposant maillage regulier)
-                  moy_bords(0, 0) += tab_u_star(num_face);
-                  moy_bords(0, 1) += 1;
-                  moy_bords(0, 2) += tab_d_plus(num_face);
-                  moy_bords(num_bord + 1, 0) += tab_u_star(num_face);
-                  moy_bords(num_bord + 1, 1) += 1;
-                  moy_bords(num_bord + 1, 2) += tab_d_plus(num_face);
+                  // surface-averaged values:
+                  double aire = le_dom_dis_->face_surfaces(num_face);
+                  moy_bords(0, 0) += aire * tab_u_star(num_face);
+                  moy_bords(0, 1) += aire;
+                  moy_bords(0, 2) += aire * tab_d_plus(num_face);
+                  moy_bords(num_bord + 1, 0) += aire * tab_u_star(num_face);
+                  moy_bords(num_bord + 1, 1) += aire;
+                  moy_bords(num_bord + 1, 2) += aire * tab_d_plus(num_face);
                 }
               num_bord += 1;
             }

@@ -309,14 +309,15 @@ void Turbulence_paroi_scal_base::imprimer_nusselt_mean_only(Sortie& os, int boun
             {
               for (int num_face = ndeb; num_face < nfin; num_face++)
                 {
-                  // Calcul des valeurs moyennes par bord (en supposant maillage regulier)
+                  // surface-averaged values:
+                  double aire = le_dom_dis_->face_surfaces(num_face);
                   for (int i=0; i<nb_fields_; i++)
                     {
-                      moy_bords(0, i) += tab_(num_face, i);
-                      moy_bords(num_bord + 1, i) += tab_(num_face, i);
+                      moy_bords(0, i) += aire * tab_(num_face, i);
+                      moy_bords(num_bord + 1, i) += aire * tab_(num_face, i);
                     }
-                  moy_bords(0, nb_fields_) += 1;
-                  moy_bords(num_bord + 1, nb_fields_) += 1;
+                  moy_bords(0, nb_fields_) += aire;
+                  moy_bords(num_bord + 1, nb_fields_) += aire;
                 }
               num_bord += 1;
             }
