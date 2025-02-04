@@ -320,6 +320,7 @@ echo "   -disable-hwloc                    Disable hwloc installation."
 echo "   -disable-vc                       Disable VC installation, might be necessary for intel compilers with lower version than 17."
 echo "   -disable-mpi                      Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "   -disable-mpi4py                   Disable mpi4py installation."
+echo "   -disable-gtest                    Disable GoogleTest library installation."
 echo "   -disable-ccache                   Disable ccache detection/installation."
 echo "   -disable-mpiio                    Disable MPI-IO mode for writing of .xyz binary output file."
 echo "   -disable-cgns                     Disable the build/link of the CGNS library."
@@ -360,7 +361,7 @@ cc=""
 F77=""
 clean=""
 
-LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D DOXYGEN TRUSTIFY"
+LIST_THIRD_PARTY="PETSC MED MPI GTEST METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D DOXYGEN TRUSTIFY"
 
 #[ -f configure.log ] && sed "s/^/# /" -i  configure.log
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
@@ -378,7 +379,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-trustify $*
+  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-trustify -disable-gtest $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]

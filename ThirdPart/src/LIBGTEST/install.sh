@@ -32,8 +32,15 @@ src_dir="$build_root/$src_dir_rel"
 
 OPTIONS=""
 
+if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "$TRUST_USE_CUDA" = 1 ]
+then
+   OPTIONS="-DCMAKE_C_COMPILER=$TRUST_cc_BASE_EXTP -DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP"
+else
+   OPTIONS="-DCMAKE_C_COMPILER=$TRUST_cc_BASE -DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
+fi
+
 # Run CMake to configure the project
-cmake "$src_dir" $OPTIONS -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release || exit 1
+cmake "$src_dir" $OPTIONS -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_BUILD_TYPE=Release || exit 1
 
 # Compile and install
 $TRUST_MAKE || exit 1
