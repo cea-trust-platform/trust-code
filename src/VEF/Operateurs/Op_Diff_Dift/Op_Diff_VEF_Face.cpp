@@ -682,7 +682,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& tab_transporte, Mat
   matrice.set(tab_matrice);
 
   // Recuperer les indices des faces de bord periodiques et les
-  // faces associees dans des tableaux au pealable pour
+  // faces associees dans des tableaux au prealable pour
   // permettre un acces structure dans le kernel ensuite
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
@@ -950,7 +950,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
   IntVect tab_fac2b_idx(domaine_VEF.nb_faces_tot());
 
   // Recuperer les indices des faces de bord periodiques et les
-  // faces associees dans des tableaux au pealable pour acces
+  // faces associees dans des tableaux au prealable pour acces
   // structure dans le kernel ensuite
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {

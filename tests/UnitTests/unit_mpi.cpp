@@ -25,7 +25,9 @@
 #include <assert.h>
 #include <numeric>
 
+#ifdef __NVCOMPILER
 #pragma diag_suppress 177
+#endif
 
 void init_parallel_vect()
 {
@@ -106,6 +108,7 @@ TEST(MPI, Simple2procs) {
 
 }
 
+#ifdef __NVCOMPILER
 #pragma diag_default 177
-
+#endif
 

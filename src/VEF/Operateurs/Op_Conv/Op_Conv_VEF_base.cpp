@@ -122,7 +122,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   const DoubleVect& tab_volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   CDoubleArrView volumes_entrelaces = tab_volumes_entrelaces.view_ro();
   // Necessaire car Kokkos::parallel_reduce() reecrit dt_stab avec le
-  // resultat de la eduction quelle que soit la valeur de depart (en
+  // resultat de la reduction quelle que soit la valeur de depart (en
   // particulier, celle d'une reduction precedente, comme ici).
   double dt_stab_2 = dt_stab;
   Kokkos::parallel_reduce(
