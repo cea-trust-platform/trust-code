@@ -165,7 +165,7 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
     {
       if (init_petsc(argc, argv, with_mpi,trio_began_mpi_))
         {
-          must_mpi_initialize = 0; // Deja fait par Petsc
+          must_mpi_initialize = false; // Deja fait par Petsc
           arguments_info += "Petsc initialization succeeded.\n";
         }
       else
@@ -179,9 +179,6 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
     }
 #ifdef MPI_
   Comm_Group_MPI::set_must_mpi_initialize(must_mpi_initialize);
-#else
-  // GF pour eviter warning
-  if (must_mpi_initialize>10) abort();
 #endif
   // ***************** Initialisation du parallele *************************
   Comm_Group::set_check_enabled(check_enabled);

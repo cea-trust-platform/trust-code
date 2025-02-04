@@ -78,7 +78,7 @@ public:
                    void *dest_buffer, int *recv_data_size, int *recv_data_offset) const;
   static void set_trio_u_world(MPI_Comm world);
   static MPI_Comm get_trio_u_world();
-  static void set_must_mpi_initialize(int flag);
+  static void set_must_mpi_initialize(bool flag);
 
   void ptop_send_recv(const void * send_buf, int send_buf_size, int send_proc,
                       void * recv_buf, int recv_buf_size, int recv_proc) const;
@@ -105,7 +105,7 @@ private:
   trustIdType mppartial_sum_impl(trustIdType x) const;
 
   // Voir set_must_mpi_initialize() et init_group_trio()
-  static int must_mpi_initialize_;
+  static bool must_mpi_initialize_;
   // Le groupe trio_u global est associe a ce communicateur
   //  (different de MPI_COMM_WORLD pour du couplage par exemple)
   static MPI_Comm trio_u_world_;

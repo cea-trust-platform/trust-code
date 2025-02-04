@@ -132,7 +132,7 @@ bool ProblemTrio::initialize()
       Comm_Group_MPI::set_trio_u_world((*my_params).comm);
 
     }
-  Comm_Group_MPI::set_must_mpi_initialize(0); // ???
+  Comm_Group_MPI::set_must_mpi_initialize(false); // ???
 #endif
   int argc=2;
   char** argv=new char*[argc];

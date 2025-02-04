@@ -35,7 +35,7 @@ int Comm_Group_MPI::mpi_maxrequests_ = -1;
 int Comm_Group_MPI::current_msg_size_;
 MPI_Comm Comm_Group_MPI::trio_u_world_ = MPI_COMM_WORLD;
 // By default, we initialize mpi at statup (see set_must_mpi_initialize())
-int Comm_Group_MPI::must_mpi_initialize_ = 1;
+bool Comm_Group_MPI::must_mpi_initialize_ = true;
 
 namespace
 {
@@ -514,7 +514,7 @@ void Comm_Group_MPI::all_gatherv(const void *src_buffer, void *dest_buffer, int 
 /*! @brief constructeur du groupe "tous" Attention, ce constructeur ne doit etre appele qu'une seule fois.
  *
  *   Le groupe est associe a trio_u_world_
- *   Si must_mpi_initialize_==0, on suppose que MPI_Init a deja ete appele.
+ *   Si must_mpi_initialize_==false, on suppose que MPI_Init a deja ete appele.
  *   Apres l'appel a init_group_trio, il faut enregistrer le groupe dans PE_Groups
  *   Voir PE_Groups::initialize()
  *
@@ -656,7 +656,7 @@ MPI_Comm Comm_Group_MPI::get_trio_u_world()
 
 
 
-void Comm_Group_MPI::set_must_mpi_initialize(int flag)
+void Comm_Group_MPI::set_must_mpi_initialize(bool flag)
 {
   if (mpi_status_ != 0)
     {
