@@ -164,7 +164,6 @@ protected:
   virtual void discretiser_assembleur_pression();
   virtual void modify_initial_variable() { /* Do nothing */ }
   virtual void modify_initial_gradP( DoubleTrav& ) { /* Do nothing */ }
-  virtual void postraiter_gradient_pression_avec_masse() { /* Do nothing */ }
 
   OBS_PTR(Fluide_base) le_fluide;
 
@@ -188,7 +187,7 @@ protected:
 
   void uzawa(const DoubleTab&, const Matrice_Base&, SolveurSys&, DoubleTab&, DoubleTab&);
   Nom chaine_champ_combi;
-  int methode_calcul_pression_initiale_;
+  int methode_calcul_pression_initiale_, postraiter_gradient_pression_sans_masse_ = 0;
   // pour genepi il est important d avoir divu =0 car accumulation d'erreur
   // meme si c'est pas faisable avec tous les schemas
   int div_u_nul_et_non_dsurdt_divu_;

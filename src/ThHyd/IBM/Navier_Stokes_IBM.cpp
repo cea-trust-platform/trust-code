@@ -26,7 +26,9 @@
 Implemente_instanciable(Navier_Stokes_IBM, "Navier_Stokes_IBM", Navier_Stokes_std);
 
 // XD penalisation_l2_ftd_lec objet_lecture nul 0 not_set
-// XD attr postraiter_gradient_pression_sans_masse entier postraiter_gradient_pression_sans_masse 1 (IBM advanced) avoid mass matrix multiplication for the gradient postprocessing
+// XD penalisation_l2_ftd listobj pp 1 penalisation_l2_ftd_lec 0 not_set
+
+// XD navier_stokes_ibm navier_stokes_standard navier_stokes_ibm -1 IBM Navier-Stokes equations.
 // XD attr correction_matrice_projection_initiale entier correction_matrice_projection_initiale 1 (IBM advanced) fix matrix of initial projection for PDF
 // XD attr correction_calcul_pression_initiale entier correction_calcul_pression_initiale 1 (IBM advanced) fix initial pressure computation for PDF
 // XD attr correction_vitesse_projection_initiale entier correction_vitesse_projection_initiale 1 (IBM advanced) fix initial velocity computation for PDF
@@ -35,9 +37,6 @@ Implemente_instanciable(Navier_Stokes_IBM, "Navier_Stokes_IBM", Navier_Stokes_st
 // XD attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
 // XD attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
 // XD attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
-// XD attr bord chaine bord 0 not_set
-// XD attr val list val 0 not_set
-// XD penalisation_l2_ftd listobj pp 1 penalisation_l2_ftd_lec 0 not_set
 
 Sortie& Navier_Stokes_IBM::printOn(Sortie& is) const
 {
@@ -53,7 +52,6 @@ Entree& Navier_Stokes_IBM::readOn(Entree& is)
 
 void Navier_Stokes_IBM::set_param(Param& param)
 {
-  param.ajouter_flag("postraiter_gradient_pression_sans_masse", &postraiter_gradient_pression_sans_masse_, Param::OPTIONAL);
   param.ajouter("correction_matrice_projection_initiale", &correction_matrice_projection_initiale_, Param::OPTIONAL);
   param.ajouter("correction_calcul_pression_initiale", &correction_calcul_pression_initiale_, Param::OPTIONAL);
   param.ajouter("correction_vitesse_projection_initiale", &correction_vitesse_projection_initiale_, Param::OPTIONAL);
@@ -245,12 +243,6 @@ int Navier_Stokes_IBM::preparer_calcul()
   assembleur_pression()->assembler_mat(matrice_pression(), coeff, 1, 1);
 
   return 1;
-}
-
-void Navier_Stokes_IBM::postraiter_gradient_pression_avec_masse()
-{
-  if (!postraiter_gradient_pression_sans_masse_)
-    solveur_masse->appliquer(gradient_P->valeurs());
 }
 
 bool Navier_Stokes_IBM::initTimeStep(double dt)

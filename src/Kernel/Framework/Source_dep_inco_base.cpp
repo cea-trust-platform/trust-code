@@ -17,19 +17,12 @@
 #include <Equation_base.h>
 
 Implemente_base(Source_dep_inco_base,"Source_dep_inco_base",Source_base);
-// XD Source_dep_inco_base Source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
-
-//// printOn
-//
+// XD Source_dep_inco_base source_base Source_dep_inco_bases -1 Basic class of source terms depending of inknown.
 
 Sortie& Source_dep_inco_base::printOn(Sortie& s ) const
 {
   return s ;
 }
-
-
-//// readOn
-//
 
 Entree& Source_dep_inco_base::readOn(Entree& s )
 {

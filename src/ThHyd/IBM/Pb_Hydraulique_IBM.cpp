@@ -17,6 +17,9 @@
 #include <Fluide_Ostwald.h>
 
 Implemente_instanciable(Pb_Hydraulique_IBM,"Pb_Hydraulique_IBM",Pb_Fluide_base);
+// XD pb_hydraulique_ibm Pb_base pb_hydraulique_ibm -1 Resolution of the IBM Navier-Stokes equations.
+// XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+// XD   attr navier_stokes_ibm navier_stokes_ibm navier_stokes_ibm 0 IBM Navier-Stokes equations.
 
 Sortie& Pb_Hydraulique_IBM::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 Entree& Pb_Hydraulique_IBM::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }

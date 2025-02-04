@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ Entree& Solv_GCP::readOn(Entree& is )
   param.ajouter_flag("save_matrice|save_matrix",&save_matrice_); // XD attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   param.ajouter("precond",&le_precond_);  // XD attr precond precond_base precond 1 Keyword to define system preconditioning in order to accelerate resolution by the conjugated gradient. Many parallel preconditioning methods are not equivalent to their sequential counterpart, and you should therefore expect differences, especially when you select a high value of the final residue (seuil). The result depends on the number of processors and on the mesh splitting. It is sometimes useful to run the solver with no preconditioning at all. In particular: NL2 - when the solver does not converge during initial projection, NL2 - when comparing sequential and parallel computations. NL2 With no preconditioning, except in some particular cases (no open boundary), the sequential and the parallel computations should provide exactly the same results within fpu accuracy. If not, there might be a coding error or the system of equations is singular.
   param.ajouter_flag("precond_nul",&precond_nul);  // XD attr precond_nul rien precond_nul 1 Keyword to not use a preconditioning method.
-  param.ajouter_flag("precond_diagonal", &precond_diag_);
+  param.ajouter_flag("precond_diagonal", &precond_diag_); // XD attr precond_diagonal rien precond_diagonal 1 Keyword to use diagonal preconditioning.
   param.ajouter_flag("optimized", &optimized_);  // XD attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
   param.lire_avec_accolades_depuis(is);
   // Obligation de definir un precond

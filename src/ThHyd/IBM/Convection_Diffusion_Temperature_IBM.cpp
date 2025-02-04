@@ -19,6 +19,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Convection_Diffusion_Temperature_IBM, "Convection_Diffusion_Temperature_IBM", Convection_Diffusion_Temperature);
+// XD convection_diffusion_temperature_ibm convection_diffusion_temperature convection_diffusion_temperature_ibm -1 IBM Energy equation (temperature diffusion convection).
 
 Sortie& Convection_Diffusion_Temperature_IBM::printOn(Sortie& is) const
 {

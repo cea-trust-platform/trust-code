@@ -22,7 +22,7 @@
 #include <Param.h>
 
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
-// XD source_PDF_base source_dep_inco_base source_PDF_base -1 Basic class of source_PDF terms introduced in the equation.
+// XD source_pdf_base Source_dep_inco_base source_pdf_base 1 Basic class of source_PDF terms introduced in the equation.
 
 Entree& Source_PDF_base::readOn(Entree& s)
 {

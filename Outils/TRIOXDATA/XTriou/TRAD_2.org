@@ -13,6 +13,11 @@ troismots objet_lecture nul 0 Three words.
   attr mot_1 chaine mot_1 0 First word.
   attr mot_2 chaine mot_2 0 Snd word.
   attr mot_3 chaine mot_3 0 Third word.
+quatremots objet_lecture nul 0 Three words.
+  attr mot_1 chaine mot_1 0 First word.
+  attr mot_2 chaine mot_2 0 Snd word.
+  attr mot_3 chaine mot_3 0 Third word.
+  attr mot_4 chaine mot_4 0 Fourth word.
 format_file objet_lecture nul 0 File formatted.
   attr format chaine(into=["binaire","formatte","xyz","single_hdf"]) format 1 Type of file (the file format).
   attr name_file chaine name_file 0 Name of file.

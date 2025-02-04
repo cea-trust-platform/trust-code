@@ -18,6 +18,11 @@
 #include <Verif_Cl.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_IBM, "Pb_Thermohydraulique_IBM", Pb_Hydraulique_IBM);
+// XD pb_thermohydraulique_ibm Pb_base pb_thermohydraulique_ibm -1 Resolution of IBM thermohydraulic problem.
+// XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 1 The fluid medium associated with the problem (only one possibility).
+// XD   attr fluide_ostwald fluide_ostwald fluide_ostwald 1 The fluid medium associated with the problem (only one possibility).
+// XD   attr navier_stokes_ibm navier_stokes_ibm navier_stokes_ibm 1 IBM Navier-Stokes equations.
+// XD   attr convection_diffusion_temperature_ibm convection_diffusion_temperature_ibm convection_diffusion_temperature_ibm 1 IBM Energy equation (temperature diffusion convection).
 
 Sortie& Pb_Thermohydraulique_IBM::printOn(Sortie& os) const { return Pb_Hydraulique_IBM::printOn(os); }
 Entree& Pb_Thermohydraulique_IBM::readOn(Entree& is) { return Pb_Hydraulique_IBM::readOn(is); }

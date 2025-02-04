@@ -17,6 +17,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Conduction_IBM, "Conduction_IBM", Conduction);
+// XD Conduction_ibm Conduction Conduction_ibm -1 IBM Heat equation.
 
 Sortie& Conduction_IBM::printOn(Sortie& s) const
 {

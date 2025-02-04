@@ -41,7 +41,6 @@ public:
   inline int get_correction_matrice_projection_initiale() const { return correction_matrice_projection_initiale_; }
 
 protected:
-  int postraiter_gradient_pression_sans_masse_ = 0;
   int correction_matrice_projection_initiale_ = 0;
   int correction_calcul_pression_initiale_ = 0;
   int correction_vitesse_projection_initiale_ = 1;
@@ -53,7 +52,6 @@ protected:
 
   void modify_initial_variable() override;
   void modify_initial_gradP( DoubleTrav& ) override;
-  void postraiter_gradient_pression_avec_masse() override;
 };
 
 #endif /* Navier_Stokes_IBM_included */

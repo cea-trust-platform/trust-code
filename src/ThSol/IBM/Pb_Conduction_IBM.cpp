@@ -16,6 +16,9 @@
 #include <Pb_Conduction_IBM.h>
 
 Implemente_instanciable(Pb_Conduction_IBM, "Pb_Conduction_IBM", Pb_Conduction);
+// XD Pb_Conduction_ibm Pb_base Pb_Conduction_ibm -1 Resolution of the IBM heat equation.
+// XD  attr solide solide solide 1 The medium associated with the problem.
+// XD   attr Conduction_ibm Conduction_ibm Conduction_ibm 1 IBM Heat equation.
 
 Sortie& Pb_Conduction_IBM::printOn(Sortie& s) const { return s; }
 
