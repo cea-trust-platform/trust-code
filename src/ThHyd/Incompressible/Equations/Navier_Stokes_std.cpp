@@ -53,16 +53,10 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   raison_seuil_divU=-100;
 }
 
-/*! @brief Simple appel a:  Equation_base::printOn(Sortie&) Ecrit l'equation sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Navier_Stokes_std::printOn(Sortie& is) const
 {
   return Equation_base::printOn(is);
 }
-
 
 /*! @brief Appel Equation_base::readOn(Entree& is) En sortie verifie que l'on a bien lu:
  *
@@ -96,8 +90,6 @@ Entree& Navier_Stokes_std::readOn(Entree& is)
   gradient.set_fichier("Force_pression");
   gradient.set_description("Pressure drag exerted by the fluid=Integral(P*ndS) [N] if SI units used");
 
-  readOn_IBM_NS(is,*this);
-
   return is;
 }
 
@@ -118,9 +110,6 @@ void Navier_Stokes_std::set_param(Param& param)
   param.ajouter_non_std("solveur_bar",(this)); // XD attr solveur_bar solveur_sys_base solveur_bar 1 This keyword is used to define when filtering operation is called (typically for EF convective scheme, standard diffusion operator and Source_Qdm_lambdaup ). A file (solveur.bar) is then created and used for inversion procedure. Syntax is the same then for pressure solver (GCP is required for multi-processor calculations and, in a general way, for big meshes).
   param.ajouter("projection_initiale",&projection_initiale); // XD attr projection_initiale entier projection_initiale 1 Keyword to suppress, if boolean equals 0, the initial projection which checks DivU=0. By default, boolean equals 1.
   param.ajouter_non_std("methode_calcul_pression_initiale",(this));  // XD attr methode_calcul_pression_initiale chaine(into=["avec_les_cl","avec_sources","avec_sources_et_operateurs","sans_rien"]) methode_calcul_pression_initiale 1 Keyword to select an option for the pressure calculation before the fist time step. Options are : avec_les_cl (default option lapP=0 is solved with Neuman boundary conditions on pressure if any), avec_sources (lapP=f is solved with Neuman boundaries conditions and f integrating the source terms of the Navier-Stokes equations) and avec_sources_et_operateurs (lapP=f is solved as with the previous option avec_sources but f integrating also some operators of the Navier-Stokes equations). The two last options are useful and sometime necessary when source terms are implicited when using an implicit time scheme to solve the Navier-Stokes equations.
-
-  // for IBM methods
-  set_param_IBM_NS(param);
 }
 
 int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -796,7 +785,6 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
   return derivee;
 }
 
-
 /*! @brief Calcule la solution U des equations: | M(U-V)/dt + BtP = 0
  *
  *           |-BU=0
@@ -830,11 +818,7 @@ void Navier_Stokes_std::projeter()
       //  B u = 0
       //  => e B(M-1)Bt l = Bv
       //
-      if ( is_IBM() )
-        {
-          correction_variable_initiale_ = correction_vitesse_projection_initiale_;
-          modify_initial_variable_IBM(tab_vitesse);
-        }
+      modify_initial_variable();
 
       divergence.calculer(tab_vitesse, secmem);
       // Desormais on calcule le pas de temps avant la projection
@@ -865,7 +849,7 @@ void Navier_Stokes_std::projeter()
       // M-1 Bt l
       gradient->multvect(lagrange, gradP);
 
-      if ( is_IBM() ) modify_initial_gradP_IBM_NS(gradP);
+      modify_initial_gradP(gradP);
 
       gradP.echange_espace_virtuel();
 
@@ -926,30 +910,22 @@ int Navier_Stokes_std::projection_a_faire()
  *
  *      initialisation de la pression.
  *
+ *      assemblage du systeme en pression
+ *
  * @return (int) renvoie toujours 1
  */
 int Navier_Stokes_std::preparer_calcul()
-// assemblage du systeme en pression
 {
   const double temps = schema_temps().temps_courant();
   sources().mettre_a_jour(temps);
   Equation_base::preparer_calcul();
   bool is_dilatable = probleme().is_dilatable();
-  if ( is_IBM () )
-    {
-      preparer_calcul_IBM_NS(is_dilatable);
-    }
+  if (!is_dilatable)
+    assembleur_pression_->assembler(matrice_pression_);
   else
     {
-      if (!is_dilatable)
-        {
-          assembleur_pression_->assembler(matrice_pression_);
-        }
-      else
-        {
-          Cerr<<"Assembling for quasi-compressible"<<finl;
-          assembleur_pression_->assembler_QC(fluide().masse_volumique().valeurs(),matrice_pression_);
-        }
+      Cerr << "Assembling for quasi-compressible" << finl;
+      assembleur_pression_->assembler_QC(fluide().masse_volumique().valeurs(), matrice_pression_);
     }
 
   // GF en cas de reprise on conserve la valeur de la pression
@@ -967,56 +943,42 @@ int Navier_Stokes_std::preparer_calcul()
 
   // Initialisation du champ de pression (resolution de Laplacien(P)=0 avec les conditions limites en pression)
   // Permet de demarrer la resolution avec une bonne approximation de la pression (important pour le Piso ou P!=0)
-  if  (!probleme().reprise_effectuee() && methode_calcul_pression_initiale_!=3)
+  if (!probleme().reprise_effectuee() && methode_calcul_pression_initiale_ != 3)
     {
-      Cout<<"Estimation du champ de pression au demarrage:" <<finl;
+      Cout << "Estimation du champ de pression au demarrage:" << finl;
       DoubleTrav secmem(la_pression->valeurs());
       DoubleTrav vpoint(gradient_P->valeurs());
       gradient.calculer(la_pression->valeurs(), gradient_P->valeurs());
-      vpoint-=gradient_P->valeurs();
-      if ( is_IBM() ) reprise_calcul_IBM_NS(vpoint);
-      if (methode_calcul_pression_initiale_>=2)
-        for (int op=0; op<nombre_d_operateurs(); op++)
+      vpoint -= gradient_P->valeurs();
+
+      if (methode_calcul_pression_initiale_ >= 2)
+        for (int op = 0; op < nombre_d_operateurs(); op++)
           operateur(op).ajouter(vpoint);
-      if (methode_calcul_pression_initiale_>=1)
+      if (methode_calcul_pression_initiale_ >= 1)
         {
-          int mod=0;
-          if (le_schema_en_temps->pas_de_temps()==0)
+          int mod = 0;
+          if (le_schema_en_temps->pas_de_temps() == 0)
             {
-              double dt = std::max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
+              double dt = std::max(le_schema_en_temps->pas_temps_min(), calculer_pas_de_temps());
               dt = std::min(dt, le_schema_en_temps->pas_temps_max());
-              le_schema_en_temps->set_dt()=(dt);
-              mod=1;
+              le_schema_en_temps->set_dt() = (dt);
+              mod = 1;
             }
-          if (! is_IBM() )
-            sources().ajouter(vpoint);
-          else
-            {
-              for (int i = 0; i < sources().size(); i++)
-                {
-                  if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                    {
-                      sources()(i).ajouter(vpoint);
-                    }
-                }
-            }
-          if (is_IBM() && projection_initiale==0) pression_initiale_IBM_NS(vpoint);
+          sources().ajouter(vpoint);
           if (mod)
-            le_schema_en_temps->set_dt()=0;
+            le_schema_en_temps->set_dt() = 0;
         }
 
       solveur_masse->appliquer(vpoint);
       vpoint.echange_espace_virtuel();
       divergence.calculer(vpoint, secmem);
-      secmem*=-1;
+      secmem *= -1;
       secmem.echange_espace_virtuel();
 
       assembleur_pression_->modifier_secmem_pour_incr_p(la_pression->valeurs(), 1, secmem);
       DoubleTrav inc_pre(la_pression->valeurs());
-      solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
+      solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmem, inc_pre);
       Cerr << "Pressure increment computed successfully" << finl;
-
-      if ( is_IBM() ) pression_correction_IBM_NS( inc_pre );
 
       // On veut que l'espace virtuel soit a jour, donc all_items
       operator_add(la_pression->valeurs(), inc_pre, VECT_ALL_ITEMS);
@@ -1028,11 +990,11 @@ int Navier_Stokes_std::preparer_calcul()
   gradient->calculer_flux_bords();
 
   // Calcul gradient_P (ToDo rendre coherent avec ::mettre_a_jour()):
-  gradient.calculer(la_pression->valeurs(),gradient_P->valeurs());
+  gradient.calculer(la_pression->valeurs(), gradient_P->valeurs());
   gradient_P->changer_temps(temps);
 
   // Calcul divergence_U
-  divergence.calculer(la_vitesse->valeurs(),divergence_U->valeurs());
+  divergence.calculer(la_vitesse->valeurs(), divergence_U->valeurs());
   divergence_U->changer_temps(temps);
 
   if (le_traitement_particulier.non_nul())
@@ -1040,8 +1002,6 @@ int Navier_Stokes_std::preparer_calcul()
 
   Debog::verifier("Navier_Stokes_std::preparer_calcul, vitesse", inconnue());
   Debog::verifier("Navier_Stokes_std::preparer_calcul, pression", la_pression);
-
-  if ( is_IBM() ) matrice_pression_IBM_NS();
 
   return 1;
 }
@@ -1074,10 +1034,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
   if (postraitement_gradient_P_)
     {
       gradient.calculer(la_pression->valeurs(), gradient_P->valeurs());
-      if (!postraiter_gradient_pression_sans_masse_)
-        {
-          solveur_masse->appliquer(gradient_P->valeurs());
-        }
+      postraiter_gradient_pression_avec_masse();
       gradient_P->mettre_a_jour(temps);
     }
 
@@ -1186,7 +1143,7 @@ bool Navier_Stokes_std::initTimeStep(double dt)
         }
     }
 
-  double ddt = Equation_base::initTimeStep(dt);
+  bool ddt = Equation_base::initTimeStep(dt);
 
   for (int i=1; i<=sch_tps.nb_valeurs_futures(); i++)
     if (i <= pression().nb_valeurs_temporelles())
@@ -1198,8 +1155,6 @@ bool Navier_Stokes_std::initTimeStep(double dt)
         pression().futur(i)=pression().valeurs();
         pression_pa().futur(i)=pression_pa().valeurs();
       }
-
-  if ( is_IBM() ) initTimeStep_IBM_NS(ddt);
 
   return ddt;
 }

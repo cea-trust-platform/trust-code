@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,15 +17,12 @@
 #define Navier_Stokes_std_included
 
 #include <Traitement_particulier_NS_base.h>
-#include <Navier_Stokes_IBM_impl.h>
 #include <Assembleur_base.h>
 #include <Operateur_Grad.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
 #include <Operateur_Div.h>
 #include <TRUST_Deriv.h>
-
-
 #include <TRUST_Ref.h>
 
 class Fluide_base;
@@ -55,7 +52,7 @@ class Fluide_base;
  *
  * @sa Equation_base Pb_Hydraulique Pb_Thermohydraulique
  */
-class Navier_Stokes_std : public Equation_base, public Navier_Stokes_IBM_impl
+class Navier_Stokes_std : public Equation_base
 {
   Declare_instanciable_sans_constructeur(Navier_Stokes_std);
 
@@ -165,6 +162,10 @@ public :
 
 protected:
   virtual void discretiser_assembleur_pression();
+  virtual void modify_initial_variable() { /* Do nothing */ }
+  virtual void modify_initial_gradP( DoubleTrav& ) { /* Do nothing */ }
+  virtual void postraiter_gradient_pression_avec_masse() { /* Do nothing */ }
+
   OBS_PTR(Fluide_base) le_fluide;
 
   OWN_PTR(Champ_Inc_base) la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;

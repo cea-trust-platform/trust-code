@@ -12,64 +12,71 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Pb_Couple_Optimisation_IBM.cpp
-//
-//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////
-
-// Description de Pb_Couple_Optimisation_IBM:Classe heritant de Pb_Couple
-// Precondition :
-// Parametre :
-//     Signification :
-//     Valeurs par defaut :
-//     Contraintes :
-//     Entree :
-//     Entree/Sortie :
-//     Sortie :
-// Retour :
-//     Signification :
-//     Contraintes :
-// Exception :
-// Effets de bord :
-// Postcondition :
-//
-
-#include <Pb_Couple_Optimisation_IBM.h>
-#include <verif_cast.h>
+#include <Convection_Diffusion_Temperature_IBM.h>
+#include <Discretisation_base.h>
 #include <Probleme_base.h>
+#include <Param.h>
 
-Implemente_instanciable(Pb_Couple_Optimisation_IBM,"Pb_Couple_Optimisation_IBM",Probleme_Couple);
+Implemente_instanciable(Convection_Diffusion_Temperature_IBM, "Convection_Diffusion_Temperature_IBM", Convection_Diffusion_Temperature);
 
-Entree& Pb_Couple_Optimisation_IBM::readOn(Entree& is)
+Sortie& Convection_Diffusion_Temperature_IBM::printOn(Sortie& is) const
 {
+  return Convection_Diffusion_Temperature::printOn(is);
+}
+
+Entree& Convection_Diffusion_Temperature_IBM::readOn(Entree& is)
+{
+  Convection_Diffusion_Temperature::readOn(is);
+  readOn_IBM(is, *this);
   return is;
 }
 
-Sortie& Pb_Couple_Optimisation_IBM::printOn(Sortie& os) const
+void Convection_Diffusion_Temperature_IBM::set_param(Param& param)
 {
-  return Probleme_Couple::printOn(os);
+  Convection_Diffusion_Temperature::set_param(param);
+  set_param_IBM(param);
 }
 
-void Pb_Couple_Optimisation_IBM::initialize( )
+int Convection_Diffusion_Temperature_IBM::preparer_calcul()
 {
-  Probleme_Couple::initialize();
-}
+  Equation_base::preparer_calcul();
 
-int Pb_Couple_Optimisation_IBM::associer_(Objet_U& ob)
-{
-  Probleme_Couple::associer_(ob);
+  if (is_IBM())
+    preparer_calcul_IBM();
+
   return 1;
 }
 
-void Pb_Couple_Optimisation_IBM::le_modele_interpolation_IBM(const Interpolation_IBM_base& un_modele_d_interpolation)
+bool Convection_Diffusion_Temperature_IBM::initTimeStep(double dt)
 {
-  my_interpolation_IBM_ = un_modele_d_interpolation;
+  Convection_Diffusion_Temperature::initTimeStep(dt);
+
+  if (is_IBM())
+    initTimeStep_IBM(dt);
+
+  return true;
 }
 
-void Pb_Couple_Optimisation_IBM::validateTimeStep()
+// ajoute les contributions des operateurs et des sources
+void Convection_Diffusion_Temperature_IBM::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  Probleme_Couple::validateTimeStep();
+  assembler_proto(matrice, inco, resu);
+}
+
+// for IBM methods; on ajoute source PDF au RHS
+void Convection_Diffusion_Temperature_IBM::derivee_en_temps_inco_sources(DoubleTrav& secmem)
+{
+  if (is_IBM())
+    derivee_en_temps_inco_IBM(secmem);
+}
+
+void Convection_Diffusion_Temperature_IBM::verify_scheme()
+{
+  // for IBM methods
+  if (is_IBM() && equation_non_resolue() == 0)
+    {
+      Cerr << "*******(IBM) Use an implicit time scheme (at least Euler explicit + diffusion) with Source_PDF_base.*******" << finl;
+      abort();
+    }
 }

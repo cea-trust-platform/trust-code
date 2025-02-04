@@ -12,41 +12,39 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Pb_Couple_Optimisation_IBM.h
-//
-//////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_Couple_Optimisation_IBM_included
-#define Pb_Couple_Optimisation_IBM_included
+#include <Pb_Couple_Optimisation_IBM.h>
+#include <Probleme_base.h>
 
-#include <Probleme_Couple.h>
-#include <Interpolation_IBM_base.h>
-#include <TRUST_Ref.h>
+Implemente_instanciable(Pb_Couple_Optimisation_IBM,"Pb_Couple_Optimisation_IBM",Probleme_Couple);
 
-class Cond_lim_base;
-
-class Schema_Temps_base;
-class Discretisation_base;
-
-class Pb_Couple_Optimisation_IBM: public Probleme_Couple
+Entree& Pb_Couple_Optimisation_IBM::readOn(Entree& is)
 {
-  Declare_instanciable(Pb_Couple_Optimisation_IBM);
-
-public:
-  int  associer_(Objet_U&) override;
-  void validateTimeStep() override;
-  void initialize() override;
-  void le_modele_interpolation_IBM(const Interpolation_IBM_base&);
-  inline Interpolation_IBM_base& my_interpolation_IBM();
-
-protected:
-  OBS_PTR(Interpolation_IBM_base) my_interpolation_IBM_;
-};
-
-inline Interpolation_IBM_base& Pb_Couple_Optimisation_IBM::my_interpolation_IBM()
-{
-  return my_interpolation_IBM_;
+  return is;
 }
-#endif
+
+Sortie& Pb_Couple_Optimisation_IBM::printOn(Sortie& os) const
+{
+  return Probleme_Couple::printOn(os);
+}
+
+void Pb_Couple_Optimisation_IBM::initialize()
+{
+  Probleme_Couple::initialize();
+}
+
+int Pb_Couple_Optimisation_IBM::associer_(Objet_U& ob)
+{
+  Probleme_Couple::associer_(ob);
+  return 1;
+}
+
+void Pb_Couple_Optimisation_IBM::le_modele_interpolation_IBM(const Interpolation_IBM_base& un_modele_d_interpolation)
+{
+  my_interpolation_IBM_ = un_modele_d_interpolation;
+}
+
+void Pb_Couple_Optimisation_IBM::validateTimeStep()
+{
+  Probleme_Couple::validateTimeStep();
+}

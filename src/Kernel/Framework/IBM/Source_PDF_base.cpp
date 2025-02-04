@@ -16,12 +16,10 @@
 #include <Domaine_Cl_dis_base.h>
 #include <Schema_Temps_base.h>
 #include <Source_PDF_base.h>
-
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <SFichier.h>
 #include <Param.h>
-
 
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);
 // XD source_PDF_base source_dep_inco_base source_PDF_base -1 Basic class of source_PDF terms introduced in the equation.
@@ -112,26 +110,6 @@ double Source_PDF_base::fonct_coeff(const double rho_m, const double aire, const
     }
   return val_coeff;
 }
-
-/*##################################################################################################
-####################################################################################################
-################################# TENSOR CALCULATION ###############################################
-####################################################################################################
-##################################################################################################*/
-
-/* static inline void calcul_vitesse_locale(const ArrOfDouble& vitesse, ArrOfDouble& vitesse_locale,const DoubleTab& rotation,int elem)
-{
-  assert(Objet_U::dimension==3);
-  // VL=rot*V
-  // la matrice rotation est stockee comme un tabeau de taille 9 et non 3 3
-  for (int i=0; i<3; i++)
-    {
-      vitesse_locale(i)=0;
-      for (int k=0; k<3; k++)
-        vitesse_locale(i)+=rotation(elem,3*i+k)*vitesse(k);
-    }
-  assert(est_egal(norme_array(vitesse_locale),norme_array(vitesse),1e-7));
-} */
 
 // TENSOR CALCULATION
 // Pour pouvoir eventuellement traiter differements les directions d'espace
@@ -251,25 +229,15 @@ void Source_PDF_base::calculer_variable_imposee()
   if (interpolation_bool_)
     {
       if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_element_fluide")
-        {
-          calculer_variable_imposee_elem_fluid();
-        }
+        calculer_variable_imposee_elem_fluid();
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_gradient_moyen")
-        {
-          calculer_variable_imposee_mean_grad();
-        }
+        calculer_variable_imposee_mean_grad();
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_hybride")
-        {
-          calculer_variable_imposee_hybrid();
-        }
+        calculer_variable_imposee_hybrid();
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl")
-        {
-          calculer_vitesse_imposee_power_law_tbl();
-        }
+        calculer_vitesse_imposee_power_law_tbl();
       else if (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star")
-        {
-          calculer_vitesse_imposee_power_law_tbl_u_star();
-        }
+        calculer_vitesse_imposee_power_law_tbl_u_star();
     }
 }
 
@@ -340,9 +308,8 @@ void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int fl
     }
   // Sinon on l'ouvre
   else
-    {
-      os.ouvrir(nomfichier,ios::app);
-    }
+    os.ouvrir(nomfichier,ios::app);
+
   os.precision(precision);
   os.setf(ios::scientific);
 }
@@ -350,13 +317,9 @@ void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int fl
 void Source_PDF_base::updateChampRho()
 {
   if (equation().probleme().que_suis_je() == "Pb_Melange")
-    {
-      champ_rho_->affecter(equation().probleme().get_champ("masse_volumique_melange"));
-    }
+    champ_rho_->affecter(equation().probleme().get_champ("masse_volumique_melange"));
   else
-    {
-      champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
-    }
+    champ_rho_->affecter(equation().probleme().get_champ("masse_volumique"));
 }
 
 void Source_PDF_base::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const

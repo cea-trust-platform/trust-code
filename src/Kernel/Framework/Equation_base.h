@@ -35,7 +35,6 @@
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
-#include <Equation_base_IBM_impl.h>
 
 class Schema_Temps_base;
 class Cond_lim_base;
@@ -72,7 +71,7 @@ enum Type_modele { TURBULENCE };
  *        Entree& lire(const Motcle&, Entree&) [protegee]
  *
  */
-class Equation_base : public Champs_compris_interface, public Objet_U, public Equation_base_IBM_impl
+class Equation_base : public Champs_compris_interface, public Objet_U
 {
   Declare_base(Equation_base);
 
@@ -298,6 +297,8 @@ protected :
 
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
+  virtual void derivee_en_temps_inco_sources(DoubleTrav& ) { /* Don nothing */ }
+  virtual void verify_scheme() { /* Don nothing */ }
 
   Ecrire_fichier_xyz_valeur xyz_field_values_file_;
 

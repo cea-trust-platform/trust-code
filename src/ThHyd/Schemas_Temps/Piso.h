@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,11 @@
 *
 *****************************************************************************/
 
-
 #ifndef Piso_included
 #define Piso_included
 
-#include <Simpler.h>
 #include <Navier_Stokes_std.h>
+#include <Simpler.h>
 
 //Description
 
@@ -79,27 +78,27 @@
 // La version codee ici poursuit les corrections (compt_max-1 maximum)
 // sauf si le residu augmente par rapport a la correction precedente.
 
-
 class Piso : public Simpler
 {
-
-  Declare_instanciable_sans_constructeur(Piso);
-
+  Declare_instanciable(Piso);
 public :
-
-  Piso();
   void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok) override;
   virtual void first_special_treatment(Equation_base&, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu);
   virtual void second_special_treatment(Equation_base& eqn, DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice);
 protected :
 
-  int nb_corrections_max_; //nombre de corrections maximum pour affinet la projection
-  int avancement_crank_;   // on ne fait pas vraiment du piso mais plutot du CN
+  int nb_corrections_max_ = 21; //nombre de corrections maximum pour affinet la projection
+  int avancement_crank_ = 0;   // on ne fait pas vraiment du piso mais plutot du CN
 
   Entree& lire(const Motcle&, Entree&) override;
 
 private:
   virtual void iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab& pression, double dt, Matrice_Morse& matrice, int& ok);
+  // IBM stuff
+  void add_penality_term(Navier_Stokes_std& , DoubleTrav& resu , DoubleTrav& gradP);
+  void correct_incr_pressure(Navier_Stokes_std& , DoubleTrav& secmem);
+  void correct_gradP(Navier_Stokes_std& , DoubleTrav& gradP);
+  void correct_pressure(Navier_Stokes_std& , DoubleTab& , DoubleTab& );
 };
 
 //Description
@@ -133,17 +132,12 @@ private:
 //         Un+1 = U* -dt*BtP'                                -> Un+1
 //
 // Rq : La matrice de masse est constante par consequent le systeme (BM-1Bt) n est assemble qu une seule fois.
-
-
 class Implicite : public Piso
 {
   Declare_instanciable(Implicite);
 public :
   void first_special_treatment(Equation_base&, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu) override;
   void second_special_treatment(Equation_base& eqn, DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice) override;
-
 };
 
-
-#endif
-
+#endif /* Piso_included */
