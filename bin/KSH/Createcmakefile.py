@@ -19,7 +19,7 @@ cmake_minimum_required(VERSION 3.22)
 # Definitions of the various TRUST modules
 #
 SPATIAL_DISCRET = ['src/EF', 'src/IJK', 'src/PolyMAC', 'src/VDF', 'src/VEF']
-PHYSICAL_MODULES = ['src/ThHyd', 'src/ThSol', 'src/Optimisation_IBM']
+PHYSICAL_MODULES = ['src/ThHyd', 'src/ThSol']
 
 def add_library_for_dir(libnam):
     """ Produce the the library part of the CMakeLists.txt for a sub_directory """
@@ -261,7 +261,7 @@ list(APPEND listdir_standard
     src/Kernel/Framework 
     src/Kernel/Geometrie 
     src/Kernel/Geometrie/Elem 
-    src/Kernel/Geometrie/Prepro_IBM
+    src/Kernel/Geometrie/IBM/Prepro_IBM
     src/Kernel/Geometrie/Decoupeur 
     src/Kernel/ICoCo 
     src/Kernel/MEDimpl 
