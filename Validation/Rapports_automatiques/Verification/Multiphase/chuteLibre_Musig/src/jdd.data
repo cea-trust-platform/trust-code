@@ -1,0 +1,219 @@
+# PARALLEL OK 2 #
+# NB_PAS_DT_MAX 40 #
+
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+        Pave rectangle
+        {
+        Origine 0.0 0.0
+        Nombre_de_Noeuds 451 501
+        Longueurs 4.5 5.0
+        facteurs 1.0 1.0
+        }
+        {
+        Bord haut     Y = 5.0         0.0 <= X <= 4.5
+        Bord bas      Y = 0.0         0.0 <= X <= 4.5
+        Bord gauche   X = 0.0         0.0 <= Y <= 5.0
+        Bord droite   X = 4.5         0.0 <= Y <= 5.0
+        }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis option_vdf {  traitement_coins oui traitement_gradients oui P_imposee_aux_faces oui } 
+
+Schema_euler_implicite sch
+Read sch
+{
+        # Time step #
+          # Initial time [s] #
+	tinit .0
+          # Min time step #
+	dt_min 1.e-8
+          # Max time step #
+	dt_max 5.e-1  # dt_min=dt_max so dt imposed #
+
+        dt_start dt_fixe 1.e-6
+
+	# CLF #
+        facsec 0.6
+        facsec_max 0.6
+
+        # Output criteria #
+          # .out files printing period #
+        dt_impr 5.e-5 # Note: small value to print at each time step #
+          # .sauv files printing period #
+	dt_sauv 100
+        periode_sauvegarde_securite_en_heures 23
+
+        # Stop if one of the following criteria is checked: #
+          # End time [s] #
+	tmax 0.8
+	
+        # Convergence threshold (see .dt_ev file) #
+	seuil_statio 1.e-4
+
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-6 } 
+        solveur petsc cholesky { quiet }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Pb_multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+
+    Milieu_MUSIG
+    {
+
+	gaz_continu_air StiffenedGas { gamma 1.4 pinf 0.0 cv 717.1 mu 1e-6 }
+	
+        liquide_dispersee_eau FLUIDE_MUSIG
+        {
+            fluide StiffenedGas { gamma 2.8 pinf 8.5e8 cv 1462.0 mu 1e-3 }
+            nbPhases 3
+            diametres { dmin 5.e-5 dmax 5.e-2 log }
+        }
+	
+    }
+
+    Correlations
+    {
+        diametre_bulles musig { diametre 0.0 }
+	frottement_interfacial bulles_constant { coeff_derive $Coeff }
+    }
+
+    QDM_Multiphase
+    {
+	evanescence { homogene { alpha_res 1e-5 alpha_res_min 5e-6 } }
+	solveur_pression petsc cholesky { quiet }
+        convection { amont }
+        diffusion  { negligeable }
+        sources
+        {
+	    frottement_interfacial { a_res 1.e-16 } ,
+	    source_qdm Champ_MUSIG
+            {
+                nbPhases 4 Champ_Fonc_xyz dom 2 0.0 -10.0
+            }
+	}
+        initial_conditions
+        {
+            vitesse  Champ_MUSIG
+            {
+                nbPhases 4 Champ_Fonc_xyz dom 2 0.0 0.0
+            }
+
+            pression Champ_Fonc_xyz dom 1 1.e5
+        }
+        boundary_conditions  
+        {
+            droite paroi_fixe
+	    gauche paroi_fixe
+	    haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 1.e5
+            bas paroi_fixe 
+        }
+    }
+ 
+    Masse_Multiphase
+    {
+        initial_conditions
+	{
+
+	    alpha Champ_MUSIG 
+            {
+		nbPhases 1 Champ_Fonc_xyz dom 1 0.9997-0.1*(x]0.7)*(x[0.8)*(y]4.0)*(y[4.1)-0.1*(x]2.2)*(x[2.3)*(y]4.0)*(y[4.1)-0.1*(x]3.7)*(x[3.8)*(y]4.0)*(y[4.1)
+		nbPhases 1 Champ_Fonc_xyz dom 1 0.0001+0.1*(x]0.7)*(x[0.8)*(y]4.0)*(y[4.1)
+		nbPhases 1 Champ_Fonc_xyz dom 1 0.0001+0.1*(x]2.2)*(x[2.3)*(y]4.0)*(y[4.1)
+		nbPhases 1 Champ_Fonc_xyz dom 1 0.0001+0.1*(x]3.7)*(x[3.8)*(y]4.0)*(y[4.1)
+            }
+
+	}
+
+        convection { amont }
+        boundary_conditions
+        {
+            droite paroi
+	    gauche paroi
+	    haut frontiere_ouverte a_ext Champ_Front_Uniforme 4 0.9997 0.0001 0.0001 0.0001
+	    bas paroi 
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+	{
+	    temperature Champ_MUSIG
+            {
+                nbPhases 4 Champ_Fonc_xyz dom 1 20.0
+            }
+	}
+        boundary_conditions
+        {
+	    droite paroi_adiabatique
+	    gauche paroi_adiabatique
+            haut frontiere_ouverte_temperature_imposee Champ_Front_MUSIG {
+                nbPhases 4 Champ_Front_uniforme 1 20.0
+            }
+            bas paroi_adiabatique
+        }
+    }
+    
+    Post_processing
+    {
+
+		# Probes #
+		Probes
+		{
+		        sonde_alpha_gaz alpha_gaz_continu_air periode 0.05 segment 111 0.15 0.0 0.15 5.0
+			sonde_alpha_liquide alpha_liquide_dispersee_eau_0 periode 0.05 segment 111 0.15 0.0 0.15 5.0
+			sonde_vitesse_gaz grav vitesse_gaz_continu_air periode 0.05 segment 111 0.15 0.0 0.15 5.0
+			sonde_vitesse_liquide grav vitesse_liquide_dispersee_eau_0 periode 0.05 segment 111 0.15 0.0 0.15 5.0
+		}
+		
+        Format lata 
+        fields dt_post 0.05
+        {
+            vitesse_gaz_continu_air elem
+	    vitesse_liquide_dispersee_eau_0 elem
+	    vitesse_liquide_dispersee_eau_1 elem
+            vitesse_liquide_dispersee_eau_2 elem
+            alpha_gaz_continu_air elem
+            alpha_liquide_dispersee_eau_0 elem
+	    alpha_liquide_dispersee_eau_1 elem
+	    alpha_liquide_dispersee_eau_2 elem
+            pression elem
+            temperature elem
+            masse_volumique elem
+            energie_interne elem
+        }
+    }
+}
+Solve pb
+End

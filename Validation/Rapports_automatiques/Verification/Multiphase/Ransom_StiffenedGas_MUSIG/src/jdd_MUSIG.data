@@ -93,7 +93,7 @@ Read pb
         {
             fluide StiffenedGas { gamma 1.4 pinf 0.0 }
             nbPhases 4
-            diametres { rmin 0.01 rmax 0.1 lin }
+            diametres { dmin 0.01 dmax 0.1 lin }
         }
         liquide_sodium FLUIDE_MUSIG
         {
