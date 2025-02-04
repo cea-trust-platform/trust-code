@@ -179,6 +179,9 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
     }
 #ifdef MPI_
   Comm_Group_MPI::set_must_mpi_initialize(must_mpi_initialize);
+#else
+  // avoid variable 'must_mpi_initialize' set but not used error when MPI disabled
+  if (must_mpi_initialize) abort();
 #endif
   // ***************** Initialisation du parallele *************************
   Comm_Group::set_check_enabled(check_enabled);
