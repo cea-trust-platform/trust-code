@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,45 +36,45 @@ public:
   void modifie_pour_cl_gen(const DoubleTab&, DoubleTab&, DoubleTab&) const;
 
   // methodes pour l'explicite
-  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::VECTORIEL, void>
-  ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
+  template <Type_Champ _TYPE_,  bool _IS_RANS_ = false> std::enable_if_t<_TYPE_ ==  Type_Champ::VECTORIEL, void>
+  ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab&) const;
 
-  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::VECTORIEL, void>
-  ajouter_interne_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
+  template <Type_Champ _TYPE_,  bool _IS_RANS_ = false> std::enable_if_t<_TYPE_ ==  Type_Champ::VECTORIEL, void>
+  ajouter_interne_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab&) const;
 
-  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::SCALAIRE, void>
-  ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
+  template <Type_Champ _TYPE_, bool _IS_RANS_ = false> std::enable_if_t<_TYPE_ ==  Type_Champ::SCALAIRE, void>
+  ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab&) const;
 
-  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::SCALAIRE, void>
+  template <Type_Champ _TYPE_, bool _IS_RANS_ = false> std::enable_if_t<_TYPE_ ==  Type_Champ::SCALAIRE, void>
   ajouter_interne_gen(const DoubleTab& inco, DoubleTab& resu, DoubleTab& , const DoubleTab& nu, const DoubleTab& nu_turb) const
   {
-    ajouter_interne_gen__<_TYPE_, Type_Schema::EXPLICITE>(inco, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
+    ajouter_interne_gen__<_TYPE_, Type_Schema::EXPLICITE, false, _IS_RANS_ >(inco, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
   }
 
   // methodes pour l'implicite
-  template <Type_Champ _TYPE_, bool _IS_STAB_ = false>
+  template <Type_Champ _TYPE_, bool _IS_STAB_ = false, bool _IS_RANS_ = false>
   void ajouter_contribution_bord_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 
-  template <Type_Champ _TYPE_, bool _IS_STAB_ = false>
+  template <Type_Champ _TYPE_, bool _IS_STAB_ = false, bool _IS_RANS_ = false>
   void ajouter_contribution_interne_gen(const DoubleTab& inco, Matrice_Morse& mat, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
   {
-    ajouter_interne_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(inco, nullptr, &mat, nu, nu_turb, porosite_eventuelle);
+    ajouter_interne_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_, _IS_RANS_>(inco, nullptr, &mat, nu, nu_turb, porosite_eventuelle);
   }
 
 protected:
   mutable DoubleTab grad_, Re_;
 
 private:
-  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
+  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false, bool _IS_RANS_ = false >
   void ajouter_bord_perio_gen__(const int , const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect& , DoubleTab* flux_bord = nullptr /* flux_bords */) const;
 
   template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
   void ajouter_bord_scalaire_impose_gen__(const int , const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect& , DoubleTab* flux_bord = nullptr /* flux_bords */ ) const;
 
-  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
+  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false, bool _IS_RANS_ = false >
   void ajouter_bord_gen__(const int , const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect& , DoubleTab* flux_bord = nullptr /* flux_bords */ ) const;
 
-  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
+  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false, bool _IS_RANS_ = false >
   void ajouter_interne_gen__(const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 };
 

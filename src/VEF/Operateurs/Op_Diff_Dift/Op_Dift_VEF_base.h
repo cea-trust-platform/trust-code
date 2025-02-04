@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,8 +20,6 @@
 #include <Modele_turbulence_hyd_base.h>
 #include <Op_Diff_VEF_base.h>
 #include <TRUST_Ref.h>
-
-class Modele_turbulence_scal_base;
 
 class Op_Dift_VEF_base : public Op_Diff_VEF_base, public Op_Diff_Turbulent_base
 {
