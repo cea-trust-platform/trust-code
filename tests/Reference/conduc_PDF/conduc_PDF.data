@@ -2,7 +2,7 @@
 # PARALLEL OK 4 #
 dimension 3
 
-Pb_conduction pb
+Pb_conduction_IBM pb
 Domaine Mesh_dom
 # BEGIN MESH #
 READ_MED
@@ -84,7 +84,7 @@ Read pb
         Cp Champ_Uniforme 1 0.5
     }
 
-    Conduction
+    Conduction_IBM
     {
         diffusion { }
         initial_conditions {

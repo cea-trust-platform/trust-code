@@ -10,7 +10,7 @@
   mu = 1.0 */
 # PARALLEL NOT #
 dimension 3
-Pb_Hydraulique pb
+Pb_Hydraulique_ibm pb
 Domaine dom
 system "mkdir -p results"
 
@@ -96,7 +96,7 @@ Lire pb
     }
 
 
-    Navier_Stokes_standard
+    Navier_Stokes_ibm
     {
         correction_matrice_projection_initiale 0
         correction_calcul_pression_initiale 0

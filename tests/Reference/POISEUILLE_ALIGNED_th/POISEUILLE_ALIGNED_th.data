@@ -10,7 +10,7 @@ Re = (rho*U_max*L)/mu
       mu = 1.0 #
 
 dimension 3
-Pb_Thermohydraulique pb
+Pb_Thermohydraulique_IBM pb
 Domaine dom
 system "mkdir -p results"
 
@@ -83,7 +83,7 @@ Read pb
         beta_th Champ_Uniforme 1 3.e-3
     }
 
-    Navier_Stokes_standard
+    Navier_Stokes_IBM
     {
         postraiter_gradient_pression_sans_masse
 	
@@ -160,7 +160,7 @@ Read pb
         }
     }
 
-    Convection_Diffusion_Temperature
+    Convection_Diffusion_Temperature_IBM
     {
         diffusion {  }
         convection { btd { btd 2. facteur 1. } }
