@@ -47,7 +47,7 @@ Sortie& Navier_Stokes_IBM::printOn(Sortie& is) const
 Entree& Navier_Stokes_IBM::readOn(Entree& is)
 {
   Navier_Stokes_std::readOn(is);
-  readOn_IBM(is, *this);
+  readOn_ibm_proto(is, *this);
   return is;
 }
 
@@ -63,24 +63,20 @@ void Navier_Stokes_IBM::set_param(Param& param)
   param.ajouter("correction_pression_modifie", &correction_pression_modifie_, Param::OPTIONAL);
   param.ajouter("gradient_pression_qdm_modifie", &gradient_pression_qdm_modifie_, Param::OPTIONAL);
   Navier_Stokes_std::set_param(param);
-  set_param_IBM(param);
+  set_param_ibm_proto(param);
 }
 
 void Navier_Stokes_IBM::modify_initial_variable()
 {
-  if (is_IBM()) // si pas pdf donc NS standard ...
-    {
-      correction_variable_initiale_ = correction_vitesse_projection_initiale_;
-      modify_initial_variable_IBM(la_vitesse->valeurs());
-    }
+  correction_variable_initiale_ = correction_vitesse_projection_initiale_;
+  modify_initial_variable_ibm_proto(la_vitesse->valeurs());
 }
 
 void Navier_Stokes_IBM::modify_initial_gradP(DoubleTrav& gradP)
 {
-  if (is_IBM() && correction_vitesse_projection_initiale_ == 1)
+  if (correction_vitesse_projection_initiale_ == 1)
     {
       Cerr << "(IBM) Immersed Interface: modified velocity corrector for initial projection." << finl;
-      const DoubleTab& champ_coeff_pdf_som_ = get_champ_coeff_pdf_som();
       gradP /= champ_coeff_pdf_som_;
     }
 }
@@ -92,49 +88,33 @@ int Navier_Stokes_IBM::preparer_calcul()
   sources().mettre_a_jour(temps);
   Equation_base::preparer_calcul();
 
-  if ( is_IBM() )
-    preparer_calcul_IBM();
+  preparer_calcul_ibm_proto();
 
   bool is_dilatable = probleme().is_dilatable();
-  if (is_IBM())
+  Cerr << "(IBM) Immersed Interface: compute pressure matrix coefficients." << finl;
+  Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+  // if (src.getInterpolationBool())
+  //   {
+  //     src.calculer_variable_imposee();
+  //   }
+  if (correction_matrice_projection_initiale_ == 1)
     {
-      const int i_source_pdf_ = get_i_source_pdf();
-      Cerr << "(IBM) Immersed Interface: compute pressure matrix coefficients." << finl;
-      Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
-      // if (src.getInterpolationBool())
-      //   {
-      //     src.calculer_variable_imposee();
-      //   }
-      if (correction_matrice_projection_initiale_ == 1)
-        {
-          Cerr << "(IBM) Immersed Interface: modified pressure matrix for initial projection." << finl;
-          const DoubleTab& champ_coeff_pdf_som_ = get_champ_coeff_pdf_som();
-          DoubleTab inv_coeff(champ_coeff_pdf_som_);
-          inv_coeff = 1.;
-          inv_coeff *= champ_coeff_pdf_som_;
-          src.multiply_coeff_volume(inv_coeff);
-          inv_coeff.echange_espace_virtuel();
-          assembleur_pression()->assembler_mat(matrice_pression_, inv_coeff, 1, 1);
-        }
-      else
-        {
-          if (!is_dilatable)
-            assembleur_pression()->assembler(matrice_pression_);
-          else
-            {
-              Cerr << "Assembling for quasi-compressible" << finl;
-              assembleur_pression()->assembler_QC(fluide().masse_volumique().valeurs(), matrice_pression_);
-            }
-        }
+      Cerr << "(IBM) Immersed Interface: modified pressure matrix for initial projection." << finl;
+      DoubleTab inv_coeff(champ_coeff_pdf_som_);
+      inv_coeff = 1.;
+      inv_coeff *= champ_coeff_pdf_som_;
+      src.multiply_coeff_volume(inv_coeff);
+      inv_coeff.echange_espace_virtuel();
+      assembleur_pression()->assembler_mat(matrice_pression_, inv_coeff, 1, 1);
     }
   else
     {
       if (!is_dilatable)
-        assembleur_pression_->assembler(matrice_pression_);
+        assembleur_pression()->assembler(matrice_pression_);
       else
         {
           Cerr << "Assembling for quasi-compressible" << finl;
-          assembleur_pression_->assembler_QC(fluide().masse_volumique().valeurs(), matrice_pression_);
+          assembleur_pression()->assembler_QC(fluide().masse_volumique().valeurs(), matrice_pression_);
         }
     }
 
@@ -160,14 +140,10 @@ int Navier_Stokes_IBM::preparer_calcul()
       DoubleTrav vpoint(gradient_P->valeurs());
       gradient.calculer(la_pression->valeurs(), gradient_P->valeurs());
       vpoint -= gradient_P->valeurs();
-      if (is_IBM())
+      if ((correction_matrice_projection_initiale_ == 1) || (matrice_pression_penalisee_H1_ == 1))
         {
-          if ((correction_matrice_projection_initiale_ == 1) || (matrice_pression_penalisee_H1_ == 1))
-            {
-              Cerr << "(IBM) Immersed Interface: modified pressure gradient for initial pressure computation." << finl;
-              const DoubleTab& champ_coeff_pdf_som_ = get_champ_coeff_pdf_som();
-              vpoint /= champ_coeff_pdf_som_;
-            }
+          Cerr << "(IBM) Immersed Interface: modified pressure gradient for initial pressure computation." << finl;
+          vpoint /= champ_coeff_pdf_som_;
         }
       if (methode_calcul_pression_initiale_ >= 2)
         for (int op = 0; op < nombre_d_operateurs(); op++)
@@ -182,24 +158,17 @@ int Navier_Stokes_IBM::preparer_calcul()
               le_schema_en_temps->set_dt() = (dt);
               mod = 1;
             }
-          if (!is_IBM())
-            sources().ajouter(vpoint);
-          else
+          for (int i = 0; i < sources().size(); i++)
             {
-              for (int i = 0; i < sources().size(); i++)
+              if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
                 {
-                  if (sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                    {
-                      sources()(i).ajouter(vpoint);
-                    }
+                  sources()(i).ajouter(vpoint);
                 }
             }
-          if (is_IBM() && projection_initiale == 0)
+          if (projection_initiale == 0)
             {
               if ((correction_matrice_projection_initiale_ == 1) || (matrice_pression_penalisee_H1_ == 1))
                 {
-                  const int i_source_pdf_ = get_i_source_pdf();
-                  const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
                   Cerr << "(IBM) Immersed Interface: Dirichlet velocity in initial pressure computation for PDF (if any)." << finl;
                   DoubleTrav secmem_pdf(vpoint);
                   src.calculer_pdf(secmem_pdf);
@@ -228,17 +197,11 @@ int Navier_Stokes_IBM::preparer_calcul()
       solveur_pression_.resoudre_systeme(matrice_pression_.valeur(), secmem, inc_pre);
       Cerr << "Pressure increment computed successfully" << finl;
 
-      if (is_IBM())
+      if (correction_calcul_pression_initiale_ == 1)
         {
-          if (correction_calcul_pression_initiale_ == 1)
-            {
-              const int i_source_pdf_ = get_i_source_pdf();
-              const DoubleTab& champ_coeff_pdf_som_ = get_champ_coeff_pdf_som();
-              Cerr << "(IBM) Immersed Interface: correction of initial pressure." << finl;
-              const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
-              src.correct_incr_pressure(champ_coeff_pdf_som_, inc_pre);
-              inc_pre.echange_espace_virtuel();
-            }
+          Cerr << "(IBM) Immersed Interface: correction of initial pressure." << finl;
+          src.correct_incr_pressure(champ_coeff_pdf_som_, inc_pre);
+          inc_pre.echange_espace_virtuel();
         }
 
       // On veut que l'espace virtuel soit a jour, donc all_items
@@ -264,28 +227,22 @@ int Navier_Stokes_IBM::preparer_calcul()
   Debog::verifier("Navier_Stokes_std::preparer_calcul, vitesse", inconnue());
   Debog::verifier("Navier_Stokes_std::preparer_calcul, pression", la_pression);
 
-  if (is_IBM())
+  DoubleTab coeff(champ_coeff_pdf_som_);
+  coeff = 1.;
+  if (matrice_pression_penalisee_H1_ == 1)
     {
-      const DoubleTab& champ_coeff_pdf_som_ = get_champ_coeff_pdf_som();
-      DoubleTab coeff(champ_coeff_pdf_som_);
-      coeff = 1.;
-      if (matrice_pression_penalisee_H1_ == 1)
-        {
-          Cerr << "(IBM) Immersed Interface: H1 penalty of pressure matrix." << finl;
-          coeff /= champ_coeff_pdf_som_;
-        }
-      else if (correction_matrice_pression_ == 1)
-        {
-          Cerr << "(IBM) Immersed Interface: modification of pressure matrix." << finl;
-          coeff *= champ_coeff_pdf_som_;
-          //Cerr<<"Min/max of coefficients: "<< mp_min_vect(champ_coeff_pdf_som_) << " " << mp_max_vect(champ_coeff_pdf_som_) <<finl;
-        }
-      const int i_source_pdf_ = get_i_source_pdf();
-      const Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
-      src.multiply_coeff_volume(coeff);
-      coeff.echange_espace_virtuel();
-      assembleur_pression()->assembler_mat(matrice_pression(), coeff, 1, 1);
+      Cerr << "(IBM) Immersed Interface: H1 penalty of pressure matrix." << finl;
+      coeff /= champ_coeff_pdf_som_;
     }
+  else if (correction_matrice_pression_ == 1)
+    {
+      Cerr << "(IBM) Immersed Interface: modification of pressure matrix." << finl;
+      coeff *= champ_coeff_pdf_som_;
+      //Cerr<<"Min/max of coefficients: "<< mp_min_vect(champ_coeff_pdf_som_) << " " << mp_max_vect(champ_coeff_pdf_som_) <<finl;
+    }
+  src.multiply_coeff_volume(coeff);
+  coeff.echange_espace_virtuel();
+  assembleur_pression()->assembler_mat(matrice_pression(), coeff, 1, 1);
 
   return 1;
 }
@@ -300,32 +257,29 @@ bool Navier_Stokes_IBM::initTimeStep(double dt)
 {
   bool ddt = Navier_Stokes_std::initTimeStep(dt);
 
-  if (is_IBM())
-    {
-      initTimeStep_IBM(dt);
-      const int i_source_pdf_ = get_i_source_pdf();
-      Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
-      src.updateChampRho();
-      bool mat_var = src.get_matrice_pression_variable_bool_();
-      if (mat_var == false)
-        return ddt;
-      Cerr << "(IBM) Immersed Interface: update of pressure matrix coefficents." << finl;
-      DoubleTab coeff;
-      coeff = src.compute_coeff_matrice();
-      coeff.echange_espace_virtuel();
-      set_champ_coeff_pdf_som(coeff);
-      //Cerr<<"Min/max of coefficients: "<< mp_min_vect(coeff) << " " << mp_max_vect(coeff) <<finl;
+  initTimeStep_ibm_proto(dt);
 
-      if ((correction_matrice_pression_ == 1) || (matrice_pression_penalisee_H1_ == 1))
-        {
-          Cerr << "(IBM) Immersed Interface: update of pressure matrix." << finl;
-          DoubleTrav inv_coeff(get_champ_coeff_pdf_som());
-          inv_coeff = 1.;
-          inv_coeff *= get_champ_coeff_pdf_som();
-          src.multiply_coeff_volume(inv_coeff);
-          inv_coeff.echange_espace_virtuel();
-          assembleur_pression()->assembler_mat(matrice_pression(), inv_coeff, 1, 1);
-        }
+  Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((sources())[i_source_pdf_].valeur());
+  src.updateChampRho();
+  bool mat_var = src.get_matrice_pression_variable_bool_();
+  if (mat_var == false)
+    return ddt;
+  Cerr << "(IBM) Immersed Interface: update of pressure matrix coefficents." << finl;
+  DoubleTab coeff;
+  coeff = src.compute_coeff_matrice();
+  coeff.echange_espace_virtuel();
+  set_champ_coeff_pdf_som(coeff);
+  //Cerr<<"Min/max of coefficients: "<< mp_min_vect(coeff) << " " << mp_max_vect(coeff) <<finl;
+
+  if ((correction_matrice_pression_ == 1) || (matrice_pression_penalisee_H1_ == 1))
+    {
+      Cerr << "(IBM) Immersed Interface: update of pressure matrix." << finl;
+      DoubleTrav inv_coeff(champ_coeff_pdf_som_);
+      inv_coeff = 1.;
+      inv_coeff *= champ_coeff_pdf_som_;
+      src.multiply_coeff_volume(inv_coeff);
+      inv_coeff.echange_espace_virtuel();
+      assembleur_pression()->assembler_mat(matrice_pression(), inv_coeff, 1, 1);
     }
 
   return ddt;
@@ -334,19 +288,19 @@ bool Navier_Stokes_IBM::initTimeStep(double dt)
 // ajoute les contributions des operateurs et des sources
 void Navier_Stokes_IBM::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  assembler_proto(matrice, inco, resu);
+  assembler_ibm_proto(matrice, inco, resu);
 }
 
 // for IBM methods; on ajoute source PDF au RHS
 void Navier_Stokes_IBM::derivee_en_temps_inco_sources(DoubleTrav& secmem)
 {
-  if ( is_IBM() ) derivee_en_temps_inco_IBM(secmem);
+  derivee_en_temps_inco_ibm_proto(secmem);
 }
 
 void Navier_Stokes_IBM::verify_scheme()
 {
   // for IBM methods
-  if ( is_IBM() && equation_non_resolue() == 0)
+  if ( equation_non_resolue() == 0)
     {
       Cerr<<"*******(IBM) Use an explicit time scheme (at least Euler explicit + diffusion) with Source_PDF_base.*******"<<finl;
       abort();

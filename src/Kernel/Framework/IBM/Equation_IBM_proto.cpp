@@ -24,12 +24,12 @@
 #include <Param.h>
 #include <Nom.h>
 
-void Equation_IBM_proto::set_param_IBM(Param& param)
+void Equation_IBM_proto::set_param_ibm_proto(Param& param)
 {
   param.ajouter("correction_variable_initiale",&correction_variable_initiale_,Param::OPTIONAL);
 }
 
-Entree& Equation_IBM_proto::readOn_IBM(Entree& is, Equation_base& eq)
+Entree& Equation_IBM_proto::readOn_ibm_proto(Entree& is, Equation_base& eq)
 {
   eq_IBM_ = eq;
 
@@ -62,10 +62,17 @@ Entree& Equation_IBM_proto::readOn_IBM(Entree& is, Equation_base& eq)
       eq.sources()[i_source_pdf_]->set_fichier((Nom)the_suffix+"_Bilan_term_induced_by_obstacle");
     }
 
+  if (i_source_pdf_ == -1)
+    {
+      Cerr << "No PDF source term read in your equation " << eq_IBM_->que_suis_je() << " !!!"<< finl;
+      Cerr << "Either add this source term or use a non_IBM problem !!!"<< finl;
+      Process::exit();
+    }
+
   return is;
 }
 
-bool Equation_IBM_proto::initTimeStep_IBM(double ddt)
+bool Equation_IBM_proto::initTimeStep_ibm_proto(double ddt)
 {
   if (i_source_pdf_ == -1) return false;
   Cerr<<"(IBM) initTimeStep_IBM: update of immersed values for equation : "<< eq_IBM_->le_nom() <<finl;
@@ -74,7 +81,7 @@ bool Equation_IBM_proto::initTimeStep_IBM(double ddt)
   return true;
 }
 
-DoubleTab& Equation_IBM_proto::derivee_en_temps_inco_IBM(DoubleTab& derivee)
+DoubleTab& Equation_IBM_proto::derivee_en_temps_inco_ibm_proto(DoubleTab& derivee)
 {
   if (i_source_pdf_ == -1) return derivee;
   Cerr<<"(IBM) Immersed Interface: Dirichlet value in Equation for PDF (if any)."<<finl;
@@ -130,7 +137,7 @@ DoubleTab& Equation_IBM_proto::derivee_en_temps_inco_IBM(DoubleTab& derivee)
   return derivee;
 }
 
-void Equation_IBM_proto::preparer_calcul_IBM()
+void Equation_IBM_proto::preparer_calcul_ibm_proto()
 {
   if (i_source_pdf_ == -1) return;
 
@@ -141,10 +148,10 @@ void Equation_IBM_proto::preparer_calcul_IBM()
   coeff.echange_espace_virtuel();
   Cerr<<"(IBM) preparer_calcul_IBM: Min/max coeff : "<< mp_min_vect(coeff) << " " << mp_max_vect(coeff) <<finl;
   champ_coeff_pdf_som_ = coeff;
-  modify_initial_variable_IBM(eq_IBM_->inconnue().valeurs());
+  modify_initial_variable_ibm_proto(eq_IBM_->inconnue().valeurs());
 }
 
-void Equation_IBM_proto::modify_initial_variable_IBM(DoubleTab& variable)
+void Equation_IBM_proto::modify_initial_variable_ibm_proto(DoubleTab& variable)
 {
   if (correction_variable_initiale_==1)
     {
@@ -156,7 +163,7 @@ void Equation_IBM_proto::modify_initial_variable_IBM(DoubleTab& variable)
 }
 
 // ajoute les contributions des operateurs et des sources
-void Equation_IBM_proto::assembler_proto(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
+void Equation_IBM_proto::assembler_ibm_proto(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
   const double rhoCp = eq_IBM_->get_time_factor();
   int size_s = eq_IBM_->sources().size();
@@ -177,30 +184,20 @@ void Equation_IBM_proto::assembler_proto(Matrice_Morse& matrice, const DoubleTab
         {
           // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
           // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
-          if (! is_IBM() )
-            eq_IBM_->sources().contribuer_a_avec(inco,matrice);
-          else
+          for (int i = 0; i < size_s; i++)
             {
-              for (int i = 0; i < size_s; i++)
+              if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
                 {
-                  if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                    {
-                      const Source_base& src_base = eq_IBM_->sources()(i).valeur();
-                      src_base.contribuer_a_avec(inco,matrice);
-                    }
+                  const Source_base& src_base = eq_IBM_->sources()(i).valeur();
+                  src_base.contribuer_a_avec(inco,matrice);
                 }
             }
           statistiques().end_count(assemblage_sys_counter_,0,0);
-          if (! is_IBM() )
-            eq_IBM_->sources().ajouter(resu);
-          else
+          for (int i = 0; i < size_s; i++)
             {
-              for (int i = 0; i < size_s; i++)
+              if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
                 {
-                  if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                    {
-                      eq_IBM_->sources()(i).ajouter(resu);
-                    }
+                  eq_IBM_->sources()(i).ajouter(resu);
                 }
             }
           statistiques().begin_count(assemblage_sys_counter_);
@@ -252,30 +249,20 @@ void Equation_IBM_proto::assembler_proto(Matrice_Morse& matrice, const DoubleTab
           }
           statistiques().begin_count(assemblage_sys_counter_);
         }
-      if (! is_IBM() )
-        eq_IBM_->sources().contribuer_a_avec(inco,matrice);
-      else
+      for (int i = 0; i < size_s; i++)
         {
-          for (int i = 0; i < size_s; i++)
+          if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
             {
-              if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                {
-                  const Source_base& src_base = eq_IBM_->sources()(i).valeur();
-                  src_base.contribuer_a_avec(inco,matrice);
-                }
+              const Source_base& src_base = eq_IBM_->sources()(i).valeur();
+              src_base.contribuer_a_avec(inco,matrice);
             }
         }
       statistiques().end_count(assemblage_sys_counter_,0,0);
-      if (! is_IBM() )
-        eq_IBM_->sources().ajouter(resu);
-      else
+      for (int i = 0; i < size_s; i++)
         {
-          for (int i = 0; i < size_s; i++)
+          if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
             {
-              if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                {
-                  eq_IBM_->sources()(i).ajouter(resu);
-                }
+              eq_IBM_->sources()(i).ajouter(resu);
             }
         }
       statistiques().begin_count(assemblage_sys_counter_);
@@ -290,19 +277,15 @@ void Equation_IBM_proto::assembler_proto(Matrice_Morse& matrice, const DoubleTab
       Process::exit();
     }
 
-  // for IBM methods
-  if ( is_IBM() )
+  // pour ne pas avoir des termes PDF infinis lors de l'ajout de A*Inco(n)
+  for (int i = 0; i < size_s; i++)
     {
-      // pour ne pas avoir des termes PDF infinis lors de l'ajout de A*Inco(n)
-      for (int i = 0; i < size_s; i++)
+      if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") > -1)
         {
-          if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") > -1)
-            {
-              const Source_base& src_base = eq_IBM_->sources()(i).valeur();
-              src_base.contribuer_a_avec(inco,matrice);
-            }
+          const Source_base& src_base = eq_IBM_->sources()(i).valeur();
+          src_base.contribuer_a_avec(inco,matrice);
         }
-      // ajouter source PDF avec le bon signe
-      derivee_en_temps_inco_IBM(resu);
     }
+  // ajouter source PDF avec le bon signe
+  derivee_en_temps_inco_ibm_proto(resu);
 }

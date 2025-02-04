@@ -26,53 +26,45 @@ Sortie& Conduction_IBM::printOn(Sortie& s) const
 Entree& Conduction_IBM::readOn(Entree& is)
 {
   Conduction::readOn(is);
-  readOn_IBM(is, *this);
+  readOn_ibm_proto(is, *this);
   return is;
 }
 
 void Conduction_IBM::set_param(Param& param)
 {
   Conduction::set_param(param);
-  set_param_IBM(param);
+  set_param_ibm_proto(param);
 }
 
 int Conduction_IBM::preparer_calcul()
 {
   Equation_base::preparer_calcul();
-
-  if (is_IBM())
-    preparer_calcul_IBM();
-
+  preparer_calcul_ibm_proto();
   return 1;
 }
 
 bool Conduction_IBM::initTimeStep(double dt)
 {
   Conduction::initTimeStep(dt);
-
-  if (is_IBM())
-    initTimeStep_IBM(dt);
-
+  initTimeStep_ibm_proto(dt);
   return true;
 }
 
 // ajoute les contributions des operateurs et des sources
 void Conduction_IBM::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  assembler_proto(matrice, inco, resu);
+  assembler_ibm_proto(matrice, inco, resu);
 }
 
 // for IBM methods; on ajoute source PDF au RHS
 void Conduction_IBM::derivee_en_temps_inco_sources(DoubleTrav& secmem)
 {
-  if (is_IBM())
-    derivee_en_temps_inco_IBM(secmem);
+  derivee_en_temps_inco_ibm_proto(secmem);
 }
 
 void Conduction_IBM::verify_scheme()
 {
-  // for IBM methods
-  if (is_IBM() && equation_non_resolue() == 0)
+  if (equation_non_resolue() == 0)
     {
       Cerr << "*******(IBM) Use an implicit time scheme (at least Euler explicit + diffusion) with Source_PDF_base.*******" << finl;
       abort();
