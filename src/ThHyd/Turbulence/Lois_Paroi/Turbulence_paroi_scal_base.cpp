@@ -277,6 +277,7 @@ void Turbulence_paroi_scal_base::imprimer_premiere_ligne_nusselt(int boundaries_
  */
 void Turbulence_paroi_scal_base::imprimer_nusselt_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
+  compute_nusselt();
   const Probleme_base& pb = mon_modele_turb_scal->equation().probleme();
   const Schema_Temps_base& sch = pb.schema_temps();
   int ndeb, nfin, size0, num_bord;

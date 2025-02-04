@@ -157,8 +157,103 @@ int Paroi_scal_hyd_base_VEF::init_lois_paroi()
   return 1;
 }
 
+void Paroi_scal_hyd_base_VEF::compute_nusselt() const
+{
+  for (int n_bord = 0; n_bord < le_dom_dis_->nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
+      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())) || (sub_type(Paroi_decalee_Robin, la_cl.valeur())))
+        {
+          const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
+          const Domaine_Cl_VEF& domaine_Cl_VEF_th = ref_cast(Domaine_Cl_VEF, eqn.probleme().equation(1).domaine_Cl_dis());
+          const Cond_lim& la_cl_th = domaine_Cl_VEF_th.les_conditions_limites(n_bord);
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          int nb_faces_elem = le_dom_dis_->domaine().nb_faces_elem();
+          int dim = dimension;
+          DoubleTrav lambda(nfin-ndeb);
+          DoubleTrav lambda_t(nfin-ndeb);
+          DoubleTrav tfluide(nfin-ndeb);
+          const Equation_base& eqn_hydr = eqn.probleme().equation(0);
+          const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
+          const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
+          bool unif = sub_type(Champ_Uniforme, le_fluide.conductivite());
+          CDoubleArrView conductivite = static_cast<const DoubleVect&>(le_fluide.conductivite().valeurs()).view_ro();
+          CDoubleArrView conductivite_turbulente = static_cast<const DoubleVect&>(mon_modele_turb_scal->conductivite_turbulente().valeurs()).view_ro();
+          CDoubleArrView face_surfaces = le_dom_dis_->face_surfaces().view_ro();
+          CDoubleTabView face_normales = le_dom_dis_->face_normales().view_ro();
+          CIntTabView face_voisins = le_dom_dis_->face_voisins().view_ro();
+          CIntTabView elem_faces = le_dom_dis_->elem_faces().view_ro();
+          CDoubleArrView temperature_v = static_cast<const DoubleVect&>(temperature).view_ro();
+          DoubleArrView lambda_v = static_cast<DoubleVect&>(lambda).view_wo();
+          DoubleArrView lambda_t_v = static_cast<DoubleVect&>(lambda_t).view_wo();
+          DoubleArrView tfluide_v = static_cast<DoubleVect&>(tfluide).view_rw();
+          Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::RangePolicy<>(ndeb, nfin),
+                               KOKKOS_LAMBDA(const int num_face)
+          {
+            int ind_face = num_face - ndeb;
+            int elem = face_voisins(num_face, 0);
+            if (elem == -1)
+              elem = face_voisins(num_face, 1);
+
+            lambda_v(ind_face) = conductivite(unif ? 0 : elem);
+            lambda_t_v(ind_face) = conductivite_turbulente(elem);
+
+            // on doit calculer Tfluide premiere maille sans prendre en compte Tparoi
+            double surface_face = face_surfaces(num_face);
+            for (int i = 0; i < nb_faces_elem; i++)
+              {
+                int j = elem_faces(elem, i);
+                if (j != num_face)
+                  {
+                    double surface_pond = 0.;
+                    for (int kk = 0; kk < dim; kk++)
+                      surface_pond -=
+                        (face_normales(j, kk) * oriente_normale(j, elem, face_voisins) *
+                         face_normales(num_face, kk) * oriente_normale(num_face, elem, face_voisins))
+                        / (surface_face * surface_face);
+                    tfluide_v(ind_face) += temperature_v(j) * surface_pond;
+                  }
+              }
+          });
+          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
+          // Ecriture
+          for (int num_face = ndeb; num_face < nfin; num_face++)
+            {
+              int ind_face = num_face - ndeb;
+              double d_equiv = equivalent_distance_[n_bord](num_face - ndeb);
+              tab_(num_face, 0) = d_equiv;
+              tab_(num_face, 1) = (lambda(ind_face) + lambda_t(ind_face)) / lambda(ind_face) * tab_d_reel_[num_face] / d_equiv;
+              tab_(num_face, 2) = (lambda(ind_face) + lambda_t(ind_face)) / d_equiv;
+              tab_(num_face, 3) = tfluide(ind_face);
+              int nb_fields = nb_fields_;
+              if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
+                {
+                  // Et on ajoute Tface et on Tparoi recalcule avec d_equiv
+                  const Neumann_paroi& la_cl_neum = ref_cast(Neumann_paroi, la_cl_th.valeur());
+                  double tparoi = temperature(num_face);
+                  double flux = la_cl_neum.flux_impose(num_face - ndeb);
+                  double tparoi_equiv = tfluide(ind_face) + flux / (lambda(ind_face) + lambda_t(ind_face)) * d_equiv;
+                  tab_(num_face, 4) = tparoi;
+                  tab_(num_face, 5) = tparoi_equiv;
+                }
+              else
+                {
+                  tab_(num_face, 4) = 0.;
+                  tab_(num_face, 5) = 0.;
+                  nb_fields -= 2;
+                }
+            }
+        }
+    }
+}
+
 void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
 {
+  compute_nusselt();
+
   EcrFicPartage Nusselt;
   ouvrir_fichier_partage(Nusselt, "Nusselt");
 
@@ -234,83 +329,21 @@ void Paroi_scal_hyd_base_VEF::imprimer_nusselt(Sortie& os) const
             }
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
-          int nb_faces_elem = le_dom_dis_->domaine().nb_faces_elem();
-          int dim = dimension;
-          DoubleTrav lambda(nfin-ndeb);
-          DoubleTrav lambda_t(nfin-ndeb);
-          DoubleTrav tfluide(nfin-ndeb);
-          const Equation_base& eqn_hydr = eqn.probleme().equation(0);
-          const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
-          const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
-          bool unif = sub_type(Champ_Uniforme, le_fluide.conductivite());
-          CDoubleArrView conductivite = static_cast<const DoubleVect&>(le_fluide.conductivite().valeurs()).view_ro();
-          CDoubleArrView conductivite_turbulente = static_cast<const DoubleVect&>(mon_modele_turb_scal->conductivite_turbulente().valeurs()).view_ro();
-          CDoubleArrView face_surfaces = le_dom_dis_->face_surfaces().view_ro();
-          CDoubleTabView face_normales = le_dom_dis_->face_normales().view_ro();
-          CIntTabView face_voisins = le_dom_dis_->face_voisins().view_ro();
-          CIntTabView elem_faces = le_dom_dis_->elem_faces().view_ro();
-          CDoubleArrView temperature_v = static_cast<const DoubleVect&>(temperature).view_ro();
-          DoubleArrView lambda_v = static_cast<DoubleVect&>(lambda).view_wo();
-          DoubleArrView lambda_t_v = static_cast<DoubleVect&>(lambda_t).view_wo();
-          DoubleArrView tfluide_v = static_cast<DoubleVect&>(tfluide).view_rw();
-          Kokkos::parallel_for(__KERNEL_NAME__, Kokkos::RangePolicy<>(ndeb, nfin),
-                               KOKKOS_LAMBDA(const int num_face)
-          {
-            int ind_face = num_face - ndeb;
-            int elem = face_voisins(num_face, 0);
-            if (elem == -1)
-              elem = face_voisins(num_face, 1);
-
-            lambda_v(ind_face) = conductivite(unif ? 0 : elem);
-            lambda_t_v(ind_face) = conductivite_turbulente(elem);
-
-            // on doit calculer Tfluide premiere maille sans prendre en compte Tparoi
-            double surface_face = face_surfaces(num_face);
-            for (int i = 0; i < nb_faces_elem; i++)
-              {
-                int j = elem_faces(elem, i);
-                if (j != num_face)
-                  {
-                    double surface_pond = 0.;
-                    for (int kk = 0; kk < dim; kk++)
-                      surface_pond -=
-                        (face_normales(j, kk) * oriente_normale(j, elem, face_voisins) *
-                         face_normales(num_face, kk) * oriente_normale(num_face, elem, face_voisins))
-                        / (surface_face * surface_face);
-                    tfluide_v(ind_face) += temperature_v(j) * surface_pond;
-                  }
-              }
-          });
-          end_gpu_timer(Objet_U::computeOnDevice, __KERNEL_NAME__);
           // Ecriture
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              int ind_face = num_face - ndeb;
-              double d_equiv = equivalent_distance_[n_bord](num_face - ndeb);
-              // On imprime Tfluide (moyenne premiere maille) car Tface=Tparoi est connu
-              for (int i=0; i<dimension; i++)
-                Nusselt <<  le_dom_dis_->xv(num_face, i);
-              tab_(num_face, 0) = d_equiv;
-              tab_(num_face, 1) = (lambda(ind_face) + lambda_t(ind_face)) / lambda(ind_face) * tab_d_reel_[num_face] / d_equiv;
-              tab_(num_face, 2) = (lambda(ind_face) + lambda_t(ind_face)) / d_equiv;
-              tab_(num_face, 3) = tfluide(ind_face);
+              double x = le_dom_dis_->xv(num_face, 0);
+              double y = le_dom_dis_->xv(num_face, 1);
+              if (dimension == 2)
+                Nusselt << x << "\t| " << y;
+              if (dimension == 3)
+                {
+                  double z = le_dom_dis_->xv(num_face, 2);
+                  Nusselt << x << "\t| " << y << "\t| " << z;
+                }
               int nb_fields = nb_fields_;
-              if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
-                {
-                  // Et on ajoute Tface et on Tparoi recalcule avec d_equiv
-                  const Neumann_paroi& la_cl_neum = ref_cast(Neumann_paroi, la_cl_th.valeur());
-                  double tparoi = temperature(num_face);
-                  double flux = la_cl_neum.flux_impose(num_face - ndeb);
-                  double tparoi_equiv = tfluide(ind_face) + flux / (lambda(ind_face) + lambda_t(ind_face)) * d_equiv;
-                  tab_(num_face, 4) = tparoi;
-                  tab_(num_face, 5) = tparoi_equiv;
-                }
-              else
-                {
-                  tab_(num_face, 4) = 0.;
-                  tab_(num_face, 5) = 0.;
-                  nb_fields -= 2;
-                }
+              if (!sub_type(Neumann_paroi, la_cl_th.valeur()))
+                nb_fields -= 2;
               for (int i=0; i<nb_fields; i++)
                 Nusselt << "\t| " << tab_(num_face, i);
               Nusselt << finl;

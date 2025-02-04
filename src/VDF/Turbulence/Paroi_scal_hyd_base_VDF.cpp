@@ -73,7 +73,7 @@ int Paroi_scal_hyd_base_VDF::init_lois_paroi()
   return 1;
 }
 
-void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
+void Paroi_scal_hyd_base_VDF::compute_nusselt() const
 {
   const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_dis_.valeur());
   const IntTab& face_voisins = domaine_VDF.face_voisins();
@@ -83,9 +83,6 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don_base& conductivite = le_fluide.conductivite();
   const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
-
-  EcrFicPartage Nusselt;
-  ouvrir_fichier_partage(Nusselt, "Nusselt");
 
   for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
     {
@@ -106,6 +103,109 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
           if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
             {
               const Neumann_paroi& la_cl_neum = ref_cast(Neumann_paroi, la_cl_th.valeur());
+
+              ndeb = le_bord.num_premiere_face();
+              nfin = ndeb + le_bord.nb_faces();
+              for (int num_face = ndeb; num_face < nfin; num_face++)
+                {
+                  double dist, lambda;
+
+                  if (axi)
+                    dist = domaine_VDF.dist_norm_bord_axi(num_face);
+                  else
+                    dist = domaine_VDF.dist_norm_bord(num_face);
+                  elem = face_voisins(num_face, 0);
+                  if (elem == -1)
+                    elem = face_voisins(num_face, 1);
+                  if (sub_type(Champ_Uniforme, conductivite))
+                    lambda = conductivite.valeurs()(0, 0);
+                  else
+                    {
+                      if (conductivite.nb_comp() == 1)
+                        lambda = conductivite.valeurs()(elem);
+                      else
+                        lambda = conductivite.valeurs()(elem, 0);
+                    }
+
+                  double flux = la_cl_neum.flux_impose(num_face - ndeb);
+                  int global_face = num_face;
+                  int local_face = domaine_VDF.front_VF(boundary_index).num_local_face(global_face);
+                  double tparoi = temperature(elem) + flux / lambda * equivalent_distance_[boundary_index](local_face);
+
+                  tab_(num_face, 0) = equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 3) = temperature(elem);
+                  tab_(num_face, 4) = tparoi;
+                  tab_(num_face, 5) = 0.;
+                }
+            }
+          else
+            {
+              ndeb = le_bord.num_premiere_face();
+              nfin = ndeb + le_bord.nb_faces();
+              for (int num_face = ndeb; num_face < nfin; num_face++)
+                {
+                  double dist, lambda;
+                  if (axi)
+                    dist = domaine_VDF.dist_norm_bord_axi(num_face);
+                  else
+                    dist = domaine_VDF.dist_norm_bord(num_face);
+                  elem = face_voisins(num_face, 0);
+                  if (elem == -1)
+                    elem = face_voisins(num_face, 1);
+                  if (sub_type(Champ_Uniforme, conductivite))
+                    lambda = conductivite.valeurs()(0, 0);
+                  else
+                    {
+                      if (conductivite.nb_comp() == 1)
+                        lambda = conductivite.valeurs()(elem);
+                      else
+                        lambda = conductivite.valeurs()(elem, 0);
+                    }
+
+                  int global_face = num_face;
+                  int local_face = domaine_VDF.front_VF(boundary_index).num_local_face(global_face);
+
+                  tab_(num_face, 0) = equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
+                  tab_(num_face, 3) = temperature(elem);
+                  tab_(num_face, 4) = 0;
+                  tab_(num_face, 5) = 0.;
+                }
+            }
+        }
+    }
+}
+
+void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
+{
+  compute_nusselt();
+
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF, le_dom_dis_.valeur());
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  int ndeb, nfin, elem;
+  const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
+
+  EcrFicPartage Nusselt;
+  ouvrir_fichier_partage(Nusselt, "Nusselt");
+
+  for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = le_dom_Cl_dis_->les_conditions_limites(n_bord);
+
+      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
+        {
+          const Domaine_Cl_VDF& domaine_Cl_VDF_th = ref_cast(Domaine_Cl_VDF, eqn.probleme().equation(1).domaine_Cl_dis());
+          const Cond_lim& la_cl_th = domaine_Cl_VDF_th.les_conditions_limites(n_bord);
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+
+          //find the associated boundary
+          assert(boundary_index >= 0);
+
+          if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
+            {
 
               if (je_suis_maitre())
                 {
@@ -143,24 +243,10 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                 {
                   double x = domaine_VDF.xv(num_face, 0);
                   double y = domaine_VDF.xv(num_face, 1);
-                  double dist, lambda;
 
-                  if (axi)
-                    dist = domaine_VDF.dist_norm_bord_axi(num_face);
-                  else
-                    dist = domaine_VDF.dist_norm_bord(num_face);
                   elem = face_voisins(num_face, 0);
                   if (elem == -1)
                     elem = face_voisins(num_face, 1);
-                  if (sub_type(Champ_Uniforme, conductivite))
-                    lambda = conductivite.valeurs()(0, 0);
-                  else
-                    {
-                      if (conductivite.nb_comp() == 1)
-                        lambda = conductivite.valeurs()(elem);
-                      else
-                        lambda = conductivite.valeurs()(elem, 0);
-                    }
 
                   if (dimension == 2)
                     Nusselt << x << "\t| " << y;
@@ -170,17 +256,7 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                       Nusselt << x << "\t| " << y << "\t| " << z;
                     }
 
-                  double flux = la_cl_neum.flux_impose(num_face - ndeb);
-                  int global_face = num_face;
-                  int local_face = domaine_VDF.front_VF(boundary_index).num_local_face(global_face);
-                  double tparoi = temperature(elem) + flux / lambda * equivalent_distance_[boundary_index](local_face);
 
-                  tab_(num_face, 0) = equivalent_distance_[boundary_index](local_face);
-                  tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
-                  tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
-                  tab_(num_face, 3) = temperature(elem);
-                  tab_(num_face, 4) = tparoi;
-                  tab_(num_face, 5) = 0.;
                   for (int i=0; i<nb_fields_-1; i++)
                     Nusselt << "\t| " << tab_(num_face, i);
                   Nusselt << finl;
@@ -219,23 +295,9 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                 {
                   double x = domaine_VDF.xv(num_face, 0);
                   double y = domaine_VDF.xv(num_face, 1);
-                  double dist, lambda;
-                  if (axi)
-                    dist = domaine_VDF.dist_norm_bord_axi(num_face);
-                  else
-                    dist = domaine_VDF.dist_norm_bord(num_face);
                   elem = face_voisins(num_face, 0);
                   if (elem == -1)
                     elem = face_voisins(num_face, 1);
-                  if (sub_type(Champ_Uniforme, conductivite))
-                    lambda = conductivite.valeurs()(0, 0);
-                  else
-                    {
-                      if (conductivite.nb_comp() == 1)
-                        lambda = conductivite.valeurs()(elem);
-                      else
-                        lambda = conductivite.valeurs()(elem, 0);
-                    }
 
                   if (dimension == 2)
                     Nusselt << x << "\t| " << y;
@@ -245,15 +307,6 @@ void Paroi_scal_hyd_base_VDF::imprimer_nusselt(Sortie& os) const
                       Nusselt << x << "\t| " << y << "\t| " << z;
                     }
 
-                  int global_face = num_face;
-                  int local_face = domaine_VDF.front_VF(boundary_index).num_local_face(global_face);
-
-                  tab_(num_face, 0) = equivalent_distance_[boundary_index](local_face);
-                  tab_(num_face, 1) = dist / equivalent_distance_[boundary_index](local_face);
-                  tab_(num_face, 2) = lambda / equivalent_distance_[boundary_index](local_face);
-                  tab_(num_face, 3) = temperature(elem);
-                  tab_(num_face, 4) = 0;
-                  tab_(num_face, 5) = 0.;
                   for (int i=0; i<nb_fields_-2; i++)
                     Nusselt << "\t| " << tab_(num_face, i);
                   Nusselt << finl;

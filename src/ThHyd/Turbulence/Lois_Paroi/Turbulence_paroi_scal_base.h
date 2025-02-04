@@ -55,6 +55,7 @@ public:
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
   virtual int calculer_scal(Champ_Fonc_base&) =0;
+  virtual void compute_nusselt() const =0;
   virtual void imprimer_nusselt(Sortie&) const
   {
     Cerr << "imprimer_nusselt non code pour " << que_suis_je() << finl;
