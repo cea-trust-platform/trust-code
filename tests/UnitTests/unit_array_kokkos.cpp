@@ -29,15 +29,32 @@
 #pragma diag_suppress 177
 #endif
 
+
+//Reads a single value from a device view to compare it on the host
+double read_device_value(DoubleArrView& view, const int i){
+    double value;
+    Kokkos::deep_copy(value, Kokkos::subview(view, i));
+    return value;
+}
+
+//Const version
+double read_device_value(CDoubleArrView& view, const int i){
+    double value;
+    Kokkos::deep_copy(value, Kokkos::subview(view, i));
+    return value;
+}
+
 TEST(TRUSTArrayKokkos, KokkosAccessorRO) {
     {
         int N=100;
         ArrOfDouble array(100);
         for (int i = 0; i < N; ++i) {array[i]=i;}
 
+        //This does the H2D sync !
         auto view_ro = array.view_ro();
-        //Can I access ?
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], view_ro(i));}
+
+        //Can I access ? Is the value right ?
+        for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], read_device_value(view_ro, i));}
     }
 }
 
@@ -49,7 +66,10 @@ TEST(TRUSTArrayKokkos, KokkosAccessorWO) {
         auto view_wo = array.view_wo();
 
         //Can I write ?
-        for (int i = 0; i < N; ++i) {view_wo(i)=2*i;}
+        Kokkos::parallel_for(N, KOKKOS_LAMBDA(const int i) {
+        view_wo(i) = 2*i;
+        });        
+        
         //Is the array correctly modified ?
         for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], 2*i);}
 
@@ -61,12 +81,16 @@ TEST(TRUSTArrayKokkos, KokkosAccessorRW) {
         int N=100;
         ArrOfDouble array(100);
         for (int i = 0; i < N; ++i) {array[i]=i;}
-
+        
+        //This does H2D
         auto view_rw = array.view_rw();
 
         //Can I read / write ?
-        for (int i = 0; i < N; ++i) {view_rw(i)=2*array[i];}
-        //Is the array correctly modified ?
+        Kokkos::parallel_for("DoubleElements", N, KOKKOS_LAMBDA(const int i) {
+        view_rw(i) = 2 * view_rw(i);
+        });        
+
+        //Is the array correctly modified and transferred back to the host ?
         for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], 2*i);}
 
     }
@@ -84,7 +108,7 @@ TEST(TRUSTArrayKokkos, KokkosAccessorSync) {
         Kokkos::fence();
         Kokkos::parallel_for("Kernel 2", N, KOKKOS_LAMBDA(int i) {view_rw(i) += 1; });
 
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(view_rw[i], 2);}
+        for (int i = 0; i < N; ++i) {EXPECT_EQ(read_device_value(view_rw, i), 2);}
     }
 }
 
@@ -113,16 +137,16 @@ TEST(TRUSTArrayKokkos, KokkosAccessorSyncError) {
         Kokkos::parallel_for("Kernel 2", N, KOKKOS_LAMBDA(int i) {view_rw(i) += 1; });
         // CPU: 2, GPU: 2
 
-#ifdef OPENMP //sur GPU ?
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(view_rw[i], 2);}
+#ifdef TRUST_USE_GPU //sur GPU ?
+        for (int i = 0; i < N; ++i) {EXPECT_EQ(read_device_value(view_rw, i), 2);}
         for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], 2);}
 #else
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(view_rw[i], 3);}
+        for (int i = 0; i < N; ++i) {EXPECT_EQ(read_device_value(view_rw, i), 3);}
 #endif
     }
 }
 
-//A view_ro should do the trick
+//A view_rw should do the trick
 TEST(TRUSTArrayKokkos, KokkosAccessorSyncErrorFixed) {
     {
         int N=100;
@@ -141,18 +165,18 @@ TEST(TRUSTArrayKokkos, KokkosAccessorSyncErrorFixed) {
         for (int i = 0; i < N; ++i) {array[i] += 1;}
         //CPU: 2, GPU: 1
 
-        auto view_ro = array.view_ro(); //re-sync the memory H2D
+        view_rw = array.view_rw(); //mark device as modified
         //CPU: 2, GPU: 2
 
         Kokkos::parallel_for("Kernel 2", N, KOKKOS_LAMBDA(int i) {view_rw(i) += 1; });
         //CPU: 2, GPU: 3
 
-#ifdef OPENMP //sur GPU ?
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(view_rw[i], 3);}
+#ifdef TRUST_USE_GPU //sur GPU ?
+        for (int i = 0; i < N; ++i) {EXPECT_EQ(read_device_value(view_rw, i), 3);}
         for (int i = 0; i < N; ++i) {EXPECT_EQ(array[i], 3);}
-        //CPU: 3, GPU: 3 the accessor made a copy !
+        //CPU: 3, GPU: 3 the accessor made a copy because device was marked as modified!
 #else
-        for (int i = 0; i < N; ++i) {EXPECT_EQ(view_rw[i], 3);}
+        for (int i = 0; i < N; ++i) {EXPECT_EQ(read_device_value(view_rw, i), 3);}
 #endif
     }
 }
@@ -175,12 +199,12 @@ TEST(TRUSTArrayKokkos, KokkosAccessorSyncErrorFixed) {
 //         EXPECT_EQ(tab_array.size_array(), n0*n1*n2);
 //         EXPECT_EQ(tab.size_array(), n0*n1*n2);
 
-//         //You cannot use the wrong SHAPE on a tab 4!=3
-//         EXPECT_DEATH( {tab.check_flattened<4>(); }, ".*" );
+        //You cannot use the wrong SHAPE on a tab 4!=3
+        //EXPECT_DEATH( {tab.check_flattened<4>(); }, ".*" );
 
-//         //You cannot use a SHAPE>1 on an array;
-//         EXPECT_DEATH( {array.check_flattened<4>(); }, ".*" );
-//         EXPECT_DEATH( {tab_array.check_flattened<4>(); }, ".*" );
+        //You cannot use a SHAPE>1 on an array;
+        //EXPECT_DEATH( {array.check_flattened<4>(); }, ".*" );
+        //EXPECT_DEATH( {tab_array.check_flattened<4>(); }, ".*" );
 
 //         //Creation of a flattened view on tab
 //         auto view_tab_1 = tab.view_rw<1, Kokkos::DefaultExecutionSpace>();
