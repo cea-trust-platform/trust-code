@@ -40,7 +40,7 @@ else
 fi
 
 # Run CMake to configure the project
-cmake "$src_dir" $OPTIONS -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_BUILD_TYPE=Release || exit 1
+cmake "$src_dir" $OPTIONS -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib || exit 1
 
 # Compile and install
 $TRUST_MAKE || exit 1
