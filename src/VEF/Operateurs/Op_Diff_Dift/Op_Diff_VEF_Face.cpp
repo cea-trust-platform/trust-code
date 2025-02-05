@@ -171,34 +171,31 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
     }
 
   // Faces internes :
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(premiere_face_int, nb_faces), KOKKOS_LAMBDA (const int num_face)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({premiere_face_int,0}, {nb_faces,2}), KOKKOS_LAMBDA (const int num_face, const int k)
   {
-    for (int k = 0; k < 2; k++)
+    int elem = face_voisins(num_face,k);
+    for (int i = 0; i < nb_faces_elem; i++)
       {
-        int elem = face_voisins(num_face,k);
-        for (int i = 0; i < nb_faces_elem; i++)
+        int j = elem_faces(elem,i);
+        if (j > num_face)
           {
-            int j = elem_faces(elem,i);
-            if (j > num_face)
+            int contrib = 1;
+
+            if(j >= nb_faces) // C'est une face virtuelle
               {
-                int contrib = 1;
+                int el1 = face_voisins(j,0);
+                int el2 = face_voisins(j,1);
+                if((el1 == -1) || (el2 == -1))
+                  contrib = 0;
+              }
 
-                if(j >= nb_faces) // C'est une face virtuelle
-                  {
-                    int el1 = face_voisins(j,0);
-                    int el2 = face_voisins(j,1);
-                    if((el1 == -1) || (el2 == -1))
-                      contrib = 0;
-                  }
-
-                if(contrib)
-                  {
-                    double valA = viscA(num_face,j,elem,nu(elem,0),face_voisins,face_normale,inverse_volumes);
-                    double flux = valA * (inconnue(j,0) - inconnue(num_face,0));
-                    Kokkos::atomic_add(&resu(num_face,0), flux);
-                    if(j < nb_faces) // On traite les faces reelles
-                      Kokkos::atomic_add(&resu(j,0), -flux);
-                  }
+            if(contrib)
+              {
+                double valA = viscA(num_face,j,elem,nu(elem,0),face_voisins,face_normale,inverse_volumes);
+                double flux = valA * (inconnue(j,0) - inconnue(num_face,0));
+                Kokkos::atomic_add(&resu(num_face,0), flux);
+                if(j < nb_faces) // On traite les faces reelles
+                  Kokkos::atomic_add(&resu(j,0), -flux);
               }
           }
       }
@@ -328,35 +325,31 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   DoubleTabView tab_flux_bords_v = tab_flux_bords.view_rw();
 
   auto kern_ajouter = KOKKOS_LAMBDA(int
-                                    num_face)
+                                    num_face, int k)
   {
-    for (int k = 0; k < 2; k++)
+    int elem = face_voisins_v(num_face, k);
+    if (elem >= 0)
       {
-        int elem = face_voisins_v(num_face, k);
-        if (elem >= 0)
-          {
-            int ori = 1 - 2 * k;
-            double nu_elem = nu_v(elem, 0);
-            for (int i = 0; i < nb_comp; i++)
-              for (int j = 0; j < nb_comp; j++)
-                {
-                  double grad_ij = grad_v(elem, i, j);
-                  double grad_ji = grad_v(elem, j, i);
-                  double fn = face_normales_v(num_face, j);
-                  double flux = ori * fn * (nu_elem * grad_ij  /* + Re(elem, i, j) */ );
-                  Kokkos::atomic_sub(&resu_v(num_face, i), flux);
+        int ori = 1 - 2 * k;
+        double nu_elem = nu_v(elem, 0);
+        for (int i = 0; i < nb_comp; i++)
+          for (int j = 0; j < nb_comp; j++)
+            {
+              double grad_ij = grad_v(elem, i, j);
+              double grad_ji = grad_v(elem, j, i);
+              double fn = face_normales_v(num_face, j);
+              double flux = ori * fn * (nu_elem * grad_ij  /* + Re(elem, i, j) */ );
+              Kokkos::atomic_sub(&resu_v(num_face, i), flux);
 
-                  if (num_face < nb_faces_bord)
-                    {
-                      double flux_bord = ori * fn * (nu_elem * (grad_ij + grad_ji));
-                      Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux_bord);
-                    }
+              if (num_face < nb_faces_bord)
+                {
+                  double flux_bord = ori * fn * (nu_elem * (grad_ij + grad_ji));
+                  Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux_bord);
                 }
-          }
+            }
       }
   };
-
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces, kern_ajouter);
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_faces,2}) , kern_ajouter);
   end_gpu_timer(__KERNEL_NAME__);
 
   // Update flux_bords on symmetry:
