@@ -994,7 +994,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
               {
                 for (int nc = 0; nc < nb_comp; nc++)
                   {
-                    double val = 0.5 * viscA(fac, j, elem1, nu(elem1, nc), face_voisins, face_normales, inverse_volumes);
+                    double val = viscA(fac, j, elem1, nu(elem1, nc), face_voisins, face_normales, inverse_volumes);
 
                     int n0 = fac * nb_comp + nc;
                     int j0 = j * nb_comp + nc;
@@ -1012,7 +1012,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tab_
                   {
                     for (int nc = 0; nc < nb_comp; nc++)
                       {
-                        double val = 0.5 * viscA(fac, j, elem2, nu(elem1, nc), face_voisins, face_normales, inverse_volumes);
+                        double val = viscA(fac, j, elem2, nu(elem1, nc), face_voisins, face_normales, inverse_volumes);
 
                         int n0 = fac * nb_comp + nc;
                         int j0 = j * nb_comp + nc;

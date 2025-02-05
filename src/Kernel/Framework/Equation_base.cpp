@@ -1217,7 +1217,7 @@ double Equation_base::calculer_pas_de_temps() const
       else
         dt_op = DMAXFLOAT;
 
-      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 0 ",dt_op);
+//      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 0 ",dt_op);
 
       Debog::verifier("Equation_base::calculer_pas_de_temps dt ",dt);
       const Operateur_base& op=operateur(i).l_op_base();
@@ -1239,7 +1239,7 @@ double Equation_base::calculer_pas_de_temps() const
             dt = (dt_op < dt ? dt_op : dt);
         }
 
-      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 1 ",dt_op);
+//      Debog::verifier("Equation_base::calculer_pas_de_temps dt_op 1 ",dt_op);
       if (le_schema_en_temps->limpr())
         {
           if (i == 0)
