@@ -1917,7 +1917,7 @@ case $TRUST_ARCH_CC in
 	[ ${TRUST_F77_BASE%flang} != $TRUST_F77_BASE ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lpgmath -lomp"
 	F77Flags_32b="-O3 -std=legacy -fPIC $ArmFlags $AoccFlags"
 	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags_32b=$F77Flags_32b" -fallow-argument-mismatch"
-	F77Flags=$F77Flags_32b
+	F77Flags="$F77Flags_32b" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags_32b" -fdefault-integer-8"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
