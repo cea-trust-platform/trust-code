@@ -55,21 +55,18 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
-                         int check_divergence,
                          Multigrille_Adrien& poisson_solver);
 
 void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
-                                  int check_divergence,
                                   Multigrille_Adrien& poisson_solver);
 
 void pressure_projection_with_inv_rho(const IJK_Field_double& rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
-                                      int check_divergence,
                                       Multigrille_Adrien& poisson_solver);
 
 void forward_euler_update(const IJK_Field_double& dv, IJK_Field_double& v,

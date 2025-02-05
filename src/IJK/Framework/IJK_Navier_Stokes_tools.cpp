@@ -20,6 +20,7 @@
 #include <SChaine.h>
 #include <Interprete_bloc.h>
 #include <stat_counters.h>
+#include <Option_IJK.h>
 
 double compute_fractionnal_timestep_rk3(const double dt_tot, int step)
 {
@@ -567,7 +568,6 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
-                         int check_divergence,
                          Multigrille_Adrien& poisson_solver)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
@@ -583,15 +583,14 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
     }
   double divergence_before = 0.;
-  if (check_divergence)
-    {
-      divergence_before = norme_ijk(pressure_rhs);
-    }
+  if (Option_IJK::CHECK_DIVERGENCE)
+    divergence_before = norme_ijk(pressure_rhs);
+
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
   add_gradient_times_constant(pressure, -dt, vx, vy, vz);
-  if (check_divergence)
+  if (Option_IJK::CHECK_DIVERGENCE)
     {
       IJK_Field rhs_after(pressure_rhs);
 
@@ -619,7 +618,6 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
-                                  int check_divergence,
                                   Multigrille_Adrien& poisson_solver)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
@@ -635,16 +633,15 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
     }
   double divergence_before = 0.;
-  if (check_divergence)
-    {
-      divergence_before = norme_ijk(pressure_rhs);
-    }
+  if (Option_IJK::CHECK_DIVERGENCE)
+    divergence_before = norme_ijk(pressure_rhs);
+
   poisson_solver.set_rho(rho);
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
   add_gradient_times_constant_over_rho(pressure, rho, -dt, vx, vy, vz);
-  if (check_divergence)
+  if (Option_IJK::CHECK_DIVERGENCE)
     {
       IJK_Field rhs_after(pressure_rhs);
 
@@ -665,7 +662,6 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
-                                      int check_divergence,
                                       Multigrille_Adrien& poisson_solver)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
@@ -676,10 +672,9 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
   double divergence_before = 0.;
-  if (check_divergence)
-    {
-      divergence_before = norme_ijk(pressure_rhs);
-    }
+  if (Option_IJK::CHECK_DIVERGENCE)
+    divergence_before = norme_ijk(pressure_rhs);
+
   poisson_solver.set_inv_rho(inv_rho); // Attention, on met l'inverse de rho.
 
   // Fait aussi : compute_faces_coefficients_from_inv_rho
@@ -687,7 +682,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   // pressure gradient requires the "left" value in all directions:
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
   add_gradient_times_constant_times_inv_rho(pressure, inv_rho, -dt, vx, vy, vz);
-  if (check_divergence)
+  if (Option_IJK::CHECK_DIVERGENCE)
     {
       IJK_Field rhs_after(pressure_rhs);
 
