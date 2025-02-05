@@ -466,7 +466,6 @@ printf "\t@ exit 1 \n" >> $project_makefile
 printf "\n" >> $project_makefile
 
 list_cible=`list_type`
-echo "list_cible = " $list_cible
 for type in $list_cible
 do
 printf "# help check_$type \t: Running baltik test suite in `human_name_from_name $type` mode \n" >>$project_makefile

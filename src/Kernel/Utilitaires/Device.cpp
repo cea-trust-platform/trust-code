@@ -568,12 +568,14 @@ template float* computeOnTheDevice(TRUSTArray<float,trustIdType>& tab, std::stri
 template double* computeOnTheDevice(TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
 
 template void copyFromDevice<int, trustIdType>(TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<trustIdType, int>(TRUSTArray<trustIdType,int>& tab, std::string arrayName);
 template void copyFromDevice<trustIdType, trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
 template void copyFromDevice<float, trustIdType>(TRUSTArray<float,trustIdType>& tab, std::string arrayName);
 template void copyFromDevice<double, trustIdType>(TRUSTArray<double,trustIdType>& tab, std::string arrayName);
 
 // With const:
 template void copyFromDevice<int, trustIdType>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<trustIdType, int>(const TRUSTArray<trustIdType,int>& tab, std::string arrayName);
 template void copyFromDevice<trustIdType, trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
 template void copyFromDevice<float, trustIdType>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName);
 template void copyFromDevice<double, trustIdType>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName);
