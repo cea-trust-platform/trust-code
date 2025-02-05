@@ -356,7 +356,7 @@ template void array_calculer_intersection(TRUSTArray<int,int>& liste1, const TRU
 template void array_trier_retirer_doublons(TRUSTArray<int,int>& array);
 
 #if INT_is_64_ == 2
-template static const IntVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
+template const IntVect_T<trustIdType> *fct_qsort_tab_ptr<trustIdType>;
 template int tri_lexicographique_tableau_indirect(const IntTab_T<trustIdType>& tab, ArrOfInt_T<trustIdType>& index);
 template int tri_lexicographique_tableau(IntTab_T<trustIdType>& tab);
 template void tableau_trier_retirer_doublons(IntTab_T<trustIdType>& tab);

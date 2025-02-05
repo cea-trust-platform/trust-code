@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -183,7 +183,7 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
   const ArrOfDouble& coeff = mat_morse.get_coeff();
-  const ArrOfInt& renum_array = renum_;
+  const ArrOfTID& renum_array = renum_;
   int new_stencil = 0, RowLocal = 0;
   Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
   for (int i = 0; i < tab1.size_array() - 1; i++)
@@ -206,7 +206,7 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
                   if (coeff(k) != 0)
                     {
                       bool found = false;
-                      int col = renum_array[tab2(k) - 1];
+                      trustIdType col = renum_array[tab2(k) - 1];
                       // Boucle pour voir si le coeff est sur le GPU:
                       int RowGlobal = decalage_local_global_+RowLocal;
                       for (int kk = rowOffsets[RowLocal]; kk < rowOffsets[RowLocal + 1]; kk++)

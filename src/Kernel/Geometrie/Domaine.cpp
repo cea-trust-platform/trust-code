@@ -1696,7 +1696,6 @@ int Domaine_32_64<_SIZE_>::identifie_item_unique(IntList& item_possible, DoubleT
 {
   assert(false);
   throw;
-  return -123;
 }
 
 /*! @brief Methode appelee par Domaine_VF::discretiser().

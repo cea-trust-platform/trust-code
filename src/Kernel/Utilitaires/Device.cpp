@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -566,6 +566,18 @@ template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,trustIdType>& ta
 template trustIdType* computeOnTheDevice(TRUSTArray<trustIdType,int>& tab, std::string arrayName, bool enabled);
 template float* computeOnTheDevice(TRUSTArray<float,trustIdType>& tab, std::string arrayName, bool enabled);
 template double* computeOnTheDevice(TRUSTArray<double,trustIdType>& tab, std::string arrayName, bool enabled);
+
+template void copyFromDevice<int, trustIdType>(TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<trustIdType, trustIdType>(TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<float, trustIdType>(TRUSTArray<float,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<double, trustIdType>(TRUSTArray<double,trustIdType>& tab, std::string arrayName);
+
+// With const:
+template void copyFromDevice<int, trustIdType>(const TRUSTArray<int,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<trustIdType, trustIdType>(const TRUSTArray<trustIdType,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<float, trustIdType>(const TRUSTArray<float,trustIdType>& tab, std::string arrayName);
+template void copyFromDevice<double, trustIdType>(const TRUSTArray<double,trustIdType>& tab, std::string arrayName);
+
 
 #endif
 
