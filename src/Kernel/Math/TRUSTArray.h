@@ -268,12 +268,12 @@ public:
   inline bool check_flattened() const;
 
   //Clean the internal view of the Trust Array in case it is needed, if the Array is static to avoid it's destruction after Kokkos::finalize
-  inline void CleanMyDualView()
+  inline void CleanMyView()
   {
-    dual_view_1_=DualView<_TYPE_,1>();
-    dual_view_2_=DualView<_TYPE_,2>();
-    dual_view_3_=DualView<_TYPE_,3>();
-    dual_view_4_=DualView<_TYPE_,4>();
+    device_view_1_=DeviceView<_TYPE_,1>();
+    device_view_2_=DeviceView<_TYPE_,2>();
+    device_view_3_=DeviceView<_TYPE_,3>();
+    device_view_4_=DeviceView<_TYPE_,4>();
   }
 
   // Kokkos accessors (brace yourself!)
@@ -329,12 +329,12 @@ protected:
 
 #ifdef KOKKOS
   // Kokkos members
-  template<int _SHAPE_> inline void init_view() const;
+  template<int _SHAPE_> inline void init_device_view() const;
 
-  mutable DualView<_TYPE_, 1> dual_view_1_;
-  mutable DualView<_TYPE_, 2> dual_view_2_;
-  mutable DualView<_TYPE_, 3> dual_view_3_;
-  mutable DualView<_TYPE_, 4> dual_view_4_;
+  mutable DeviceView<_TYPE_, 1> device_view_1_;
+  mutable DeviceView<_TYPE_, 2> device_view_2_;
+  mutable DeviceView<_TYPE_, 3> device_view_3_;
+  mutable DeviceView<_TYPE_, 4> device_view_4_;
 
 #endif
 
@@ -364,30 +364,25 @@ private:
 
 private:
   /*! Debug */
-  inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const;
   template<typename _TAB_> void ref_conv_helper_(_TAB_& out) const;
 
 #ifdef KOKKOS
 
-  // get_dual_view for _SHAPE_ == 1
+  // get_device_view for _SHAPE_ == 1
   template<int _SHAPE_>
-  typename std::enable_if<_SHAPE_ == 1, DualView<_TYPE_, 1>>::type&
-                                                          get_dual_view() const;
+  typename std::enable_if<_SHAPE_ == 1, DeviceView<_TYPE_, 1>>::type& get_device_view() const { return device_view_1_; }
 
-  // get_dual_view for _SHAPE_ == 2
+  // get_device_view for _SHAPE_ == 2
   template<int _SHAPE_>
-  typename std::enable_if<_SHAPE_ == 2, DualView<_TYPE_, 2>>::type&
-                                                          get_dual_view() const;
+  typename std::enable_if<_SHAPE_ == 2, DeviceView<_TYPE_, 2>>::type& get_device_view() const { return device_view_2_; }
 
-  // get_dual_view for _SHAPE_ == 3
+  // get_device_view for _SHAPE_ == 3
   template<int _SHAPE_>
-  typename std::enable_if<_SHAPE_ == 3, DualView<_TYPE_, 3>>::type&
-                                                          get_dual_view() const;
+  typename std::enable_if<_SHAPE_ == 3, DeviceView<_TYPE_, 3>>::type& get_device_view() const { return device_view_3_; }
 
-  // get_dual_view for _SHAPE_ == 4
+  // get_device_view for _SHAPE_ == 4
   template<int _SHAPE_>
-  typename std::enable_if<_SHAPE_ == 4, DualView<_TYPE_, 4>>::type&
-                                                          get_dual_view() const;
+  typename std::enable_if<_SHAPE_ == 4, DeviceView<_TYPE_, 4>>::type& get_device_view() const { return device_view_4_; }
 
 #endif
 };

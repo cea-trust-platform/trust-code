@@ -19,9 +19,6 @@
 #include <kokkos++.h>
 
 #ifdef KOKKOS
-// The DualView type allowing semi-automatic sync between host and device.
-// By default, host is 'LayoutRight' and device is 'LayoutLeft' -> very important
-// We keep Kokkos::LayoutRight for OpenMP now
 
 template<typename T, int _SHAPE_> struct InnerType { using TYPE = void;  };
 template<typename T> struct InnerType<T,1> { using TYPE = T*;  };
@@ -37,10 +34,13 @@ template<typename T> struct ConstInnerType<T,3> { using TYPE = const T***;  };
 template<typename T> struct ConstInnerType<T,4> { using TYPE = const T****;  };
 
 template<typename T, int _SHAPE_>
-using DualView = Kokkos::DualView<typename InnerType<T, _SHAPE_>::TYPE, Kokkos::LayoutRight>;
+using DeviceView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, Kokkos::LayoutRight>;
+
+// Whatever the compilation type, the host memory space:
+using host_mirror_space = Kokkos::HostSpace;
 
 // The execution space (=where code is run): on the device if compiled for GPU, else CPU.
-using execution_space = DualView<double, 1>::execution_space;
+using execution_space = DeviceView<double, 1>::execution_space;
 
 // Typedefs for range policies in kernels
 using range_1D = Kokkos::RangePolicy<execution_space>;
@@ -50,11 +50,8 @@ using range_3D = Kokkos::MDRangePolicy<execution_space, Kokkos::Rank<3>>;
 // The memory space (=where data is stored): on the device if compiled for GPU, or on CPU otherwise:
 typedef std::conditional< \
 std::is_same<execution_space, Kokkos::DefaultExecutionSpace>::value , \
-DualView<double,1>::memory_space, DualView<double,1>::host_mirror_space>::type \
+DeviceView<double,1>::memory_space, host_mirror_space>::type \
 memory_space;
-
-// Whatever the compilation type, the host memory space:
-using host_mirror_space = DualView<double, 1>::host_mirror_space;
 
 //for host views:
 //"You do not need to explicitly specify host_execution_space because host_mirror_space already implies that you are using the host execution space."
@@ -64,27 +61,27 @@ using random_unmanaged_memory = Kokkos::MemoryTraits<Kokkos::RandomAccess | Kokk
 
 // The actual view type that will be manipulated everywhere in the kernels (a *device* view)
 template<typename T, int _SHAPE_>
-using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
 // Views on the host that allow conditional execution of loop that are not fully ported to device. They are unmanaged to avoid new allocation
 template<typename T, int _SHAPE_>
-using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
 // Its const version (const disabled for GPU: slower than non-const for Op_Conv VEF!)
 #ifdef TRUST_USE_GPU
 template<typename T, int _SHAPE_>
-using ConstView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
-//using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+using ConstView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+//using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 // Host views
 template<typename T, int _SHAPE_>
-using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 
 #else
 
 template<typename T, int _SHAPE_>
-using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 template<typename T, int _SHAPE_>
-using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DualView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
+using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space,  random_unmanaged_memory>;
 #endif
 
 // Handy aliases

@@ -162,9 +162,9 @@ inline void Schema_Comm_Vecteurs::add(int pe, int size, ArrOfInt& procs, ArrOfIn
 inline void Schema_Comm_Vecteurs::CleanMyStaticViews()
 {
 #ifdef KOKKOS //If Kokkos is defined, we can clear the views
-  tmp_area_double_.CleanMyDualView();
-  tmp_area_float_.CleanMyDualView();
-  tmp_area_int_.CleanMyDualView();
+  tmp_area_double_.CleanMyView();
+  tmp_area_float_.CleanMyView();
+  tmp_area_int_.CleanMyView();
 #endif
   return;
 }
