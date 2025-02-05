@@ -466,6 +466,7 @@ printf "\t@ exit 1 \n" >> $project_makefile
 printf "\n" >> $project_makefile
 
 list_cible=`list_type`
+echo "list_cible = " $list_cible
 for type in $list_cible
 do
 printf "# help check_$type \t: Running baltik test suite in `human_name_from_name $type` mode \n" >>$project_makefile
@@ -489,7 +490,7 @@ printf "ctest_rerun_failed_$type : $type\n"                                  >> 
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running failed test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest_rerun_failed $type\n"               >> $project_makefile
+printf "\t@env CTEST_OPTS=\"--rerun-failed\" TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help check_deps_$type : Running dependencies test suite in `human_name_from_name $type` mode \n" >>$project_makefile
@@ -513,7 +514,7 @@ printf "ctest_deps_rerun_failed_$type : $type\n"                                
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running failded dependencies test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest_rerun_failed $type deps\n"               >> $project_makefile
+printf "\t@env CTEST_OPTS=\"--rerun-failed\" TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type deps\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help check_all_$type : Running all test suite in `human_name_from_name $type` mode (all test of project = baltik test + dependencies test)\n" >>$project_makefile
@@ -537,7 +538,7 @@ printf "ctest_all_rerun_failed_$type : $type\n"                                 
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running all failed test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest_rerun_failed $type all\n"               >> $project_makefile
+printf "\t@env CTEST_OPTS=\"--rerun-failed\" TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type all\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help check_trust_$type : Running TRUST test suite in `human_name_from_name $type` mode (only test of TRUST platform)\n" >>$project_makefile
@@ -547,14 +548,6 @@ printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mod
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
 printf "\n" >> $project_makefile
-
-printf "# help ctest_trust_$type \t: Running TRUST test suite in `human_name_from_name $type` mode (all test of TRUST platform) with ctest\n" >>$project_makefile
-printf "ctest_trust_$type : $type\n"                                  >> $project_makefile
-printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
-printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type trust\n"               >> $project_makefile
-printf "\n"                                                     >> $project_makefile
 
 printf "# help ctest_trust_$type \t: Running TRUST test suite in `human_name_from_name $type` mode (all test of TRUST platform) with ctest\n" >>$project_makefile
 printf "ctest_trust_$type : $type\n"                                  >> $project_makefile
@@ -577,7 +570,7 @@ printf "ctest_full_rerun_failed_$type : $type\n"                                
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running failed full test suite in `human_name_from_name $type` mode with ctest #\"\n"     >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest_rerun_failed $type full\n"               >> $project_makefile
+printf "\t@env CTEST_OPTS=\"--rerun-failed\" TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type full\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help check_last_pb_$type : Running last pb test suite in `human_name_from_name $type` mode (see test in liste_pb.all file)\n" >>$project_makefile

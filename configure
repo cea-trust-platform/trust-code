@@ -1128,9 +1128,9 @@ then
    echo $ECHO_OPTS "ctest_optim:\n\t(source ./env_TRUST.sh && lance_test -ctest \${exec_opt})" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_semi_opt:\n\t(source ./env_TRUST.sh && lance_test -ctest \${exec_semi_opt})" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_semi_optim:\t ctest_semi_opt" 	>> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "ctest_rerun_failed_debug:\n\t(source ./env_TRUST.sh && lance_test -ctest_rerun_failed \${exec_debug})" >> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "ctest_rerun_failed_optim:\n\t(source ./env_TRUST.sh && lance_test -ctest_rerun_failed \${exec_opt})" >> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "ctest_rerun_failed_semi_opt:\n\t(source ./env_TRUST.sh && lance_test -ctest_rerun_failed \${exec_semi_opt})" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "ctest_rerun_failed_debug:\n\t(source ./env_TRUST.sh && env CTEST_OPTS=\"--rerun-failed\" lance_test -ctest \${exec_debug})" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "ctest_rerun_failed_optim:\n\t(source ./env_TRUST.sh && env CTEST_OPTS=\"--rerun-failed\" lance_test -ctest \${exec_opt})" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "ctest_rerun_failed_semi_opt:\n\t(source ./env_TRUST.sh && env CTEST_OPTS=\"--rerun-failed\" lance_test -ctest \${exec_semi_opt})" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_rerun_failed_semi_optim:\t ctest_rerun_failed_semi_opt"  >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "gui:\n\t(source ./env_TRUST.sh && cd Outils/TRIOXDATA && ./Install_all)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check_gui:\n\t(source ./env_TRUST.sh && cd Outils/TRIOXDATA && ./check_jdd)" >> $TRUST_ROOT/Makefile

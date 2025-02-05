@@ -567,7 +567,7 @@ add_test_case_from_validation()
 LANG=C
 PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!"
 export LANG
-echo "Usage: `basename $0` [-print] [-distant] [-nomail] [-efface] [-no_timeout] [-ctest] [-ctest_rerun_failed] [\$exec] [\$directory] "
+echo "Usage: `basename $0` [-print] [-distant] [-nomail] [-efface] [-no_timeout] [-ctest] [\$exec] [\$directory] "
 # Premier parametre : executable utilise (par defaut $exec)
 # Deuxieme parametre : dossier d'execution (par defaut $TRUST_TMP/tests)
 # Les fichiers .tests_$exec et .tests_$exec.html seront dans ce repertoire
@@ -611,14 +611,6 @@ using_ctest=0
 if [ "$1" = -ctest ]
 then
    using_ctest=1
-   export TRUST_USE_CTEST=1
-   shift
-fi
-only_rerun_failed=0
-if [ "$1" = -ctest_rerun_failed ]
-then
-   using_ctest=1
-   only_rerun_failed=1
    export TRUST_USE_CTEST=1
    shift
 fi
@@ -691,12 +683,7 @@ then
       rep_tests=build/src/exec$OPT
    fi
    cmake .
-   if [ $only_rerun_failed = 1 ]
-   then
-      ctest -j$TRUST_NB_PHYSICAL_CORES --rerun-failed --output-on-failure
-   else
-      ctest -j$TRUST_NB_PHYSICAL_CORES --output-on-failure
-   fi
+   ctest -j$TRUST_NB_PHYSICAL_CORES --output-on-failure $CTEST_OPTS
    err_ctest=$?
    if [ "$err_ctest" -ne 0 ]
    then
@@ -717,7 +704,7 @@ then
       echo "  $msg trust -check $rep_tests/liste"
       echo
       echo "or:"
-      echo "   make -ctest_rerun_failed"
+      echo "   make ctest_rerun_failed_MODE"
       echo "or:"
       echo "   cd $rep_tests"
       echo "   ctest --rerun-failed --output-on-failure"
