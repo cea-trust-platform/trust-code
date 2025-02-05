@@ -116,7 +116,7 @@ then
    cp -f $source_file_from .
    chmod +w $source_file
    echo "Calcul $cas mene sur 2 pas de temps."   
-   echo $ECHO_OPTS "1,$ s?is >> nb_pas_dt_max_;?trustIdType toto;is >> toto;if (toto<nb_pas_dt_max_) nb_pas_dt_max_=toto;?g\nw" | ed $source_file 2>/dev/null
+   echo $ECHO_OPTS "1,$ s?is >> nb_pas_dt_max_;?int toto;is >> toto;if (toto<nb_pas_dt_max_) nb_pas_dt_max_=toto;?g\nw" | ed $source_file 2>/dev/null
    echo $ECHO_OPTS "1,$ s?seuil_statio_ =?nb_pas_dt_max_ = 2;seuil_statio_ =?g\nw" | ed $source_file 2>/dev/null
    Makeatelier.sccs -2
 fi
