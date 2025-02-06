@@ -276,8 +276,7 @@ echo "   -fflags=<flags>                   Add Fortran compiler options."
 echo " "
 echo "   -linker=<prog>                    Force the use of a specified linker (if -linker=default, standard linking will be used)."
 echo " "
-echo "   -with-64-bit-indices              Build with 64 bits integer indices."
-echo "   -64-bit-new                       Cleaner way to build with 64 bits integer indices (EXPERIMENTAL)"
+echo "   -with-32-bit-indices              Build with 32 bits integer indices (default is 64b)."
 echo " "
 echo "   -add_search=<dir>                 Add a directory to the defaults path to search a tool."
 echo "   -native                           Add compiler optimizations relative to native architecture. Warning: binary is not portable and segfault are possible..."
@@ -404,8 +403,13 @@ export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CGNS=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
-export TRUST_INT64=0
-export TRUST_INT64_NEW=0
+
+####
+# 64 bit, new mode, is now 'on' by default!
+###
+export TRUST_INT64=1
+export TRUST_INT64_NEW=1
+
 export TRUST_USE_AMGX=0
 export TRUST_USE_CUDA=0
 export TRUST_USE_ROCM=0
@@ -623,16 +627,11 @@ do
    then
       export TRUST_ROCALUTION=${1#-rocalution=}
 
-   elif [ "${1#-with-64-bit-indices}" != "$1" ]
+   elif [ "${1#-with-32-bit-indices}" != "$1" ]
    then
-      export TRUST_INT64=1
-      # PL: We NEED int64 support !
-      #echo "Disabling rocALUTION library (no integer 64 bits support yet)..."
-      #export TRUST_ROCALUTION=0
-   elif [ "${1#-64-bit-new}" != "$1" ]
-   then
-      export TRUST_INT64=1
-      export TRUST_INT64_NEW=1
+      export TRUST_INT64=0
+      export TRUST_INT64_NEW=0
+
    elif [ "${1#-disable-mpi4py}" != "$1" ]
    then
       export TRUST_DISABLE_MPI4PY=1
