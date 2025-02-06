@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,23 @@ class Operateur_Div_base  : public Operateur_base
 public :
   DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
   virtual void volumique(DoubleTab& ) const=0;
+
+  /* version etendue de ajouter_blocs pour pouvoir donner en argument le champ dont on prend la divergence -> utile pour implementer ajouter() */
+  virtual void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const
+  {
+    Process::exit(que_suis_je() + " : ajouter_blocs_ext() not coded!");
+  }
+
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override
+  {
+    return ajouter_blocs_ext(equation().inconnue().valeurs(), matrices, secmem, semi_impl);
+  }
+  DoubleTab& ajouter(const DoubleTab& vit, DoubleTab& div) const override
+  {
+    ajouter_blocs_ext(vit, { }, div);
+    return div;
+  }
+
 protected:
   mutable SFichier Flux_div;
 };
