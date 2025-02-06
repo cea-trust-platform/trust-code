@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,46 @@ inline void mp_max_abs_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>
 {
   local_max_abs_tab(tableau, max_colonne);
   mp_max_for_each_item(max_colonne);
+}
+
+/**
+ * @brief Compares two `TRUSTTab<double, _SZ_>` objects for equality.
+ *
+ * Performs an element-wise comparison of the two arrays, using Kokkos for GPU data
+ * and a sequential approach for host data. Returns `true` if all elements match, `false` otherwise.
+ *
+ * @tparam _SZ_ The size type of the `TRUSTTab` object.
+ * @param a First array to compare.
+ * @param b Second array to compare.
+ * @return `true` if the arrays are equal, `false` otherwise.
+ */
+template <typename _SIZE_>
+bool sameDoubleTab(const TRUSTTab<double, _SIZE_>& a, const TRUSTTab<double, _SIZE_>& b)
+{
+  _SIZE_ size_a = a.size_array();
+  _SIZE_ size_b = b.size_array();
+  if (size_a != size_b)
+    return false;
+  bool kernelOnDevice = a.checkDataOnDevice() && b.checkDataOnDevice();
+  if (kernelOnDevice)
+    {
+      auto a_v = static_cast<const ArrOfDouble&>(a).view_ro();
+      auto b_v = static_cast<const ArrOfDouble&>(b).view_ro();
+      bool same = true;
+      Kokkos::parallel_reduce(start_gpu_timer(), size_a, KOKKOS_LAMBDA(const int i, bool& local_same)
+      {
+        if (a_v(i) != b_v(i)) local_same = false;
+      }, Kokkos::LAnd<bool>(same));
+      end_gpu_timer(__KERNEL_NAME__);
+      return same;
+    }
+  else
+    {
+      for (_SIZE_ i = 0; i < size_a; i++)
+        if (a.addr()[i] != b.addr()[i])
+          return false;
+      return true;
+    }
 }
 
 template <>

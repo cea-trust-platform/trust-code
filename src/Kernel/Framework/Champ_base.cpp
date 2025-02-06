@@ -132,8 +132,9 @@ double Champ_base::valeur_a_elem_compo(const DoubleVect&, int ,int ) const
   return 0;
 }
 
-// Cette methode, generique mais lente (calcul des centres de gravite, remplissage les_poly, utilisation des fonctions de forme dans le Champ discretise)
-// peut etre surchargee par le champ dicretise pour une implementation beaucoup plus rapide
+/*! @brief Cette methode, generique mais lente (calcul des centres de gravite, remplissage les_poly, utilisation des fonctions de forme dans le Champ discretise)
+ * peut etre surchargee par le champ dicretise pour une implementation beaucoup plus rapide
+ */
 DoubleTab& Champ_base::valeur_aux_centres_de_gravite(const Domaine& dom, DoubleTab& les_valeurs) const
 {
   //Cerr << que_suis_je() << finl;

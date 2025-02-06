@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,25 +71,25 @@ Parser::Parser(std::string& s, int n)
 void Parser::init_parser()
 {
   srand48(1);
-  map_function_["SIN"] = FUNCTION::SIN;
-  map_function_["ASIN"] = FUNCTION::ASIN;
-  map_function_["COS"] = FUNCTION::COS;
-  map_function_["ACOS"] = FUNCTION::ACOS;
-  map_function_["TAN"] = FUNCTION::TAN;
-  map_function_["ATAN"] = FUNCTION::ATAN;
-  map_function_["LN"] = FUNCTION::LN;
-  map_function_["EXP"] = FUNCTION::EXP;
-  map_function_["SQRT"] = FUNCTION::SQRT;
-  map_function_["INT"] = FUNCTION::ENT;
-  map_function_["ERF"] = FUNCTION::ERF;
-  map_function_["RND"] = FUNCTION::RND;
-  map_function_["COSH"] = FUNCTION::COSH;
-  map_function_["SINH"] = FUNCTION::SINH;
-  map_function_["TANH"] = FUNCTION::TANH;
-  map_function_["NOT"] = FUNCTION::NOT;
-  map_function_["ABS"] = FUNCTION::ABS;
-  map_function_["SGN"] = FUNCTION::SGN;
-  map_function_["ATANH"] = FUNCTION::ATANH;
+  map_function_["SIN"] = static_cast<int>(FUNCTION::SIN);
+  map_function_["ASIN"] = static_cast<int>(FUNCTION::ASIN);
+  map_function_["COS"] = static_cast<int>(FUNCTION::COS);
+  map_function_["ACOS"] = static_cast<int>(FUNCTION::ACOS);
+  map_function_["TAN"] = static_cast<int>(FUNCTION::TAN);
+  map_function_["ATAN"] = static_cast<int>(FUNCTION::ATAN);
+  map_function_["LN"] = static_cast<int>(FUNCTION::LN);
+  map_function_["EXP"] = static_cast<int>(FUNCTION::EXP);
+  map_function_["SQRT"] = static_cast<int>(FUNCTION::SQRT);
+  map_function_["INT"] = static_cast<int>(FUNCTION::ENT);
+  map_function_["ERF"] = static_cast<int>(FUNCTION::ERF);
+  map_function_["RND"] = static_cast<int>(FUNCTION::RND);
+  map_function_["COSH"] = static_cast<int>(FUNCTION::COSH);
+  map_function_["SINH"] = static_cast<int>(FUNCTION::SINH);
+  map_function_["TANH"] = static_cast<int>(FUNCTION::TANH);
+  map_function_["NOT"] = static_cast<int>(FUNCTION::NOT);
+  map_function_["ABS"] = static_cast<int>(FUNCTION::ABS);
+  map_function_["SGN"] = static_cast<int>(FUNCTION::SGN);
+  map_function_["ATANH"] = static_cast<int>(FUNCTION::ATANH);
   c_pi.nommer(Nom("PI"));
   c_pi.setValue(2*asin(1.));
   addCst(c_pi);

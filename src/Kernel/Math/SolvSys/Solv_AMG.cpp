@@ -23,6 +23,9 @@
 #endif
 
 Implemente_instanciable(Solv_AMG,"Solv_AMG",SolveurSys_base);
+// XD amg solveur_sys_base amg 0 Wrapper for AMG preconditioner-based solver which switch for the best one on CPU/GPU Nvidia/GPU AMD
+// XD attr solveur chaine solveur 0 not_set
+// XD attr option_solveur bloc_lecture option_solveur 0 not_set
 
 // printOn
 Sortie& Solv_AMG::printOn(Sortie& s ) const
@@ -31,6 +34,23 @@ Sortie& Solv_AMG::printOn(Sortie& s ) const
   return s;
 }
 
+/**
+ * @brief Reads the configuration for the AMG solver from the input stream.
+ *
+ * This function parses the input stream to configure the AMG solver parameters,
+ * including the relative tolerance (RTOL), absolute tolerance (ATOL), and whether
+ * to print additional information (IMPR). It supports different solver libraries
+ * based on the available hardware (CPU or GPU).
+ *
+ * The expected input format is:
+ *   amg solver { rtol value [impr] }
+ *
+ * @param is The input stream from which to read the solver configuration.
+ * @return The input stream after reading the configuration.
+ *
+ * @throws Process::exit if the input syntax is incorrect or if an unsupported
+ * library is specified.
+ */
 Entree& Solv_AMG::readOn(Entree& is)
 {
   // amg solver { rtol value [impr] }

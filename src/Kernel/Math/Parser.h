@@ -29,7 +29,7 @@
 
 class StringTokenizer;
 // FUNCTION start at 1, cause 0 is needed
-enum FUNCTION { SIN=1, ASIN, COS, ACOS, TAN, ATAN, LN, EXP, SQRT, ENT, ERF, RND, COSH,  SINH, TANH, ATANH, NOT, ABS, SGN };
+enum class FUNCTION { SIN=1, ASIN, COS, ACOS, TAN, ATAN, LN, EXP, SQRT, ENT, ERF, RND, COSH,  SINH, TANH, ATANH, NOT, ABS, SGN };
 /*! @brief Representation des donnees de la classe Parser
  *
  * @sa =
@@ -185,38 +185,38 @@ KOKKOS_INLINE_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
       // De plus, on rajoute +1 car le zero ne doit pas etre utiliser pour les fonctions
       switch (unary_function)
         {
-        case SIN:
+        case static_cast<int>(FUNCTION::SIN):
           return sin(x);
-        case ASIN:
+        case static_cast<int>(FUNCTION::ASIN):
           return asin(x);
-        case COS:
+        case static_cast<int>(FUNCTION::COS):
           return cos(x);
-        case ACOS:
+        case static_cast<int>(FUNCTION::ACOS):
           return acos(x);
-        case TAN:
+        case static_cast<int>(FUNCTION::TAN):
           return tan(x);
-        case ATAN:
+        case static_cast<int>(FUNCTION::ATAN):
           return atan(x);
-        case LN:
+        case static_cast<int>(FUNCTION::LN):
           if (x <= 0)
             Process::Kokkos_exit("Negative value x for LN(x) function used.\nCheck your data file.");
           return log(x);
-        case EXP:
+        case static_cast<int>(FUNCTION::EXP):
           return exp(x);
-        case SQRT:
+        case static_cast<int>(FUNCTION::SQRT):
           if (x < 0)
             Process::Kokkos_exit("Negative value x for SQRT(x) function used.\nCheck your data file.");
           return sqrt(x);
-        case ENT:
+        case static_cast<int>(FUNCTION::ENT):
           return (int) x;
-        case ERF:
+        case static_cast<int>(FUNCTION::ERF):
 #ifndef MICROSOFT
           return erf(x);
 #else
           Process::exit("erf(x) fonction not implemented on Windows version.");
           return eval(x);
 #endif
-        case RND:
+        case static_cast<int>(FUNCTION::RND):
 #ifdef TRUST_USE_GPU
           // ToDo Kokkos: cuRAND and hipRAND
           Process::Kokkos_exit("Rnd function is not available yet for TRUST GPU version.");
@@ -224,20 +224,20 @@ KOKKOS_INLINE_FUNCTION double Parser::evalFunc(const PNodePod& node, double x)
 #else
           return x*drand48();
 #endif
-        case COSH:
+        case static_cast<int>(FUNCTION::COSH):
           return cosh(x);
-        case SINH:
+        case static_cast<int>(FUNCTION::SINH):
           return sinh(x);
-        case TANH:
+        case static_cast<int>(FUNCTION::TANH):
           return tanh(x);
-        case ATANH:
+        case static_cast<int>(FUNCTION::ATANH):
           return atanh(x);
-        case NOT:
+        case static_cast<int>(FUNCTION::NOT):
           if (x == 0) return 1;
           else return 0;
-        case ABS:
+        case static_cast<int>(FUNCTION::ABS):
           return std::fabs(x);
-        case SGN:
+        case static_cast<int>(FUNCTION::SGN):
           return (x > 0) - (x < 0);
         default:
           Process::Kokkos_exit("method evalFunc : Unknown function for this node !!!");

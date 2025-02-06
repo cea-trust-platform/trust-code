@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,7 @@ class ParserView : public Parser
 public:
   /**
   * Constructors (generally by copy of a ParserU)
+   * See an example here: Champ_Generique_Transformation::get_champ()
   */
   ParserView(Parser_U& p) : Parser(p.getParser()) {}
   ParserView(std::string& expr, int nvar) : Parser(expr,nvar) {}

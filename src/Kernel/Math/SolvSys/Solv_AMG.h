@@ -18,6 +18,9 @@
 
 #include <SolveurSys.h>
 
+/*! @brief AMD solver wrapper to switch to the more robust/performant AMG preconditioner on CPU/GPU Nvidia/GPU AMD
+ *  and have datafile unicity, as changing solver/preconditioner for different architecture is painful
+ */
 class Solv_AMG : public SolveurSys_base
 {
   Declare_instanciable(Solv_AMG);
