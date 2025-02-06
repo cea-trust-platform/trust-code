@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#pragma GCC diagnostic push
 #if __GNUC__ < 9
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif

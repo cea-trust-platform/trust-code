@@ -12,10 +12,15 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
+#pragma GCC diagnostic push
+
 #if __GNUC__ < 9
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+
 #include <gtest/gtest.h>
+
 #pragma GCC diagnostic pop
 
 #include <TRUSTArray.h>

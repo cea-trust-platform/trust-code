@@ -13,11 +13,16 @@
 *
 *****************************************************************************/
 
+#pragma GCC diagnostic push
+
 #if __GNUC__ < 9
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+
 #include <gtest/gtest.h>
+
 #pragma GCC diagnostic pop
+
 #include <TRUSTTrav.h>
 #include <TRUSTTab_parts.h>
 #include <Device.h>

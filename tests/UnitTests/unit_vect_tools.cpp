@@ -13,10 +13,14 @@
 *
 *****************************************************************************/
 
+#pragma GCC diagnostic push
+
 #if __GNUC__ < 9
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+
 #include <gtest/gtest.h>
+
 #pragma GCC diagnostic pop
 
 #include <TRUSTTab_parts.h>
@@ -448,17 +452,17 @@ void TestLocalExtremaVectGeneric(Mp_vect_options opt) {
 
     // Determine expected result
     _TYPE_RETURN_ expected_value;
-    if constexpr (_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_) {
+    if (_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_) {
         expected_value = 5;  // Index of maximum (vx[5] = 6)
-    } else if constexpr (_TYPE_OP_ == TYPE_OPERATION_VECT::IMIN_) {
+    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::IMIN_) {
         expected_value = 1;  // Index of minimum (vx[1] = -7)
-    } else if constexpr (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_) {
+    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_) {
         expected_value = 6;  // Maximum value
-    } else if constexpr (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_) {
+    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_) {
         expected_value = -7; // Minimum value
-    } else if constexpr (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_ABS_) {
+    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_ABS_) {
         expected_value = 7;  // Maximum absolute value (|vx[1]| = 7)
-    } else if constexpr (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_ABS_) {
+    } else if (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_ABS_) {
         expected_value = 1;  // Minimum absolute value (|vx[3]| = 1)
     }
 
