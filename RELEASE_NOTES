@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+06/02/25 (TRUST) Bug fix      : In PolyMAC and PolyMAC_P0P1NC, bug fix regarding nonzero Neumann conditions in the diffusive terms. See poissonSolver_PolyMAC validation form.
+06/02/25 (TRUST) Bug fix      : Fix uninitialized buffer during communications in IJK FT (for TrioCFD)
 03/02/25 (TRUST) New feature  : A new postprocessing field "wall_temperature" is now available for both VDF and VEF discretizations. It can be used to visualize the temperature at the wall for a thermal problem.
 03/02/25 (TRUST) New feature  : A new boundary-condition "Echange_externe_radiatif" is now available for both VDF and VEF discretizations. It can be used to evacuate heat from a conduction problem via radiation.
 03/02/25 (TRUST) New feature  : Multi-Sacalar Matricial Diffusion is now available for VDF discretization. See diffusion_multi_scalaire validation notebook.

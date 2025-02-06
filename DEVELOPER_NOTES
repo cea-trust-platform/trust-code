@@ -1,7 +1,6 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
-06/02/25 (TRUST) Fix          : Fix uninitialized buffer during communications in IJK FT (for TrioCFD)
 28/01/25 (TRUST) New feature  : Process::check_int_overflow() can now be used to safely downcast a trustIdType down to an int, raising a proper runtime exception in case of overflow. Similarly Process::mp_sum_as_double() can be used when gathering statistics to compute progress rates or percentages. 
 28/01/25 (TRUST) New feature  : Configure flag '-64-bit-new' can be used to compile TRUST with 64b support. Many Interprete_geometrique templatized to have both a 32 and 64b version.
 28/01/25 (TRUST) Refactor     : Clearer class structure for MD_Vector, and introduction of the MD_Vector_seq class used as a dummy MD structure for sequential parts.
