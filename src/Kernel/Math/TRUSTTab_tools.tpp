@@ -63,6 +63,7 @@ inline void mp_max_abs_tab(const TRUSTTab<_T_,int>& tableau, TRUSTArray<_T_,int>
   mp_max_for_each_item(max_colonne);
 }
 
+#ifndef LATATOOLS
 /**
  * @brief Compares two `TRUSTTab<double, _SZ_>` objects for equality.
  *
@@ -102,6 +103,7 @@ bool sameDoubleTab(const TRUSTTab<double, _SIZE_>& a, const TRUSTTab<double, _SI
       return true;
     }
 }
+#endif
 
 template <>
 inline void mp_max_abs_tab(const TRUSTTab<int,int>& , TRUSTArray<int,int>& ) = delete;

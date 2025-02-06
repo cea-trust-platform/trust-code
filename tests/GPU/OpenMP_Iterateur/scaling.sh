@@ -2,7 +2,7 @@
 # Scaling a mesh on several GPU
 [ "$TRUST_ROOT" = "" ] && echo "TRUST_ROOT empty." && exit
 mkdir -p scaling && cd scaling
-echo "Config     Ax=B B"
+echo -e "Config \t\tDOF[M] \t\tAx=B[s] \tB[s] \t\tHRAM[GB] \tDRAM[GB] \tKernel[MDOF/s]"
 for version in gpu cpu
 do
    gpus="1"
@@ -34,9 +34,13 @@ do
             # Calcul
             [ $run = 1 ] && (trust $jdd $mpi -journal=0 1>$jdd.out_err 2>&1 || (rm -f *.TU;echo "Error:See "`pwd`/$jdd.out_err))
             # Analyse
-            awk '/RAM taken/ {if ($1>RAM) RAM=$1} END {print "RAM= "RAM}' $jdd.out_err >> $jdd.TU
-            dof=`awk '/Total number of elements/ {print $NF;exit}' $jdd.out_err`
-            awk -v mpi=$mpi -v gpu=$gpu -v dof=$dof '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} /RAM=/ {RAM=$2} END {print mpi"MPI"(gpu==0?"":"+"gpu"GPU")" "dof" "s" "b" "RAM}' $jdd.TU
+            awk '/RAM taken/ {if ($1>RAM) RAM=$1} END {print "HRAM= "0.1*int(0.01*RAM)}' $jdd.out_err >> $jdd.TU
+            awk '/RAM allocated on a GPU/ {if ($1>RAM) RAM=$1} END {print "DRAM= "RAM}' $jdd.out_err >> $jdd.TU
+            #dof=`awk '/Total number of elements/ {print $NF;exit}' $jdd.out_err`
+            dof=`awk '/Order of the matrix/ {print $NF;exit}' $jdd.out_err`
+            ks=`awk -v dof=$dof '/Kernels / {print 0.001*0.001*dof/$3;exit}' $jdd.TU`
+            ks=`awk -v dof=$dof '/solveurs / {print 0.001*0.001*dof/$4;exit}' $jdd.TU`
+            awk -v mpi=$mpi -v gpu=$gpu -v dof=$dof -v ks=$ks '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} /HRAM=/ {RAM=$2} /DRAM=/ {DRAM=$2} END {print mpi"MPI"(gpu==0?"":"+"gpu"GPU")" \t"dof"   \t"s" \t"b" \t"RAM" \t\t"DRAM" \t\t"ks}' $jdd.TU
             cd - 1>/dev/null 2>&1
          done
       done

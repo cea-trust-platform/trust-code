@@ -315,7 +315,7 @@ calculer_flux_operateur_centre(DoubleTab& tab_Fij,const DoubleTab& tab_Kij,const
   CDoubleTabView coord_sommets = tab_coord_sommets.view_ro();
   CDoubleTabView xv = tab_xv.view_ro();
   DoubleTabView4 Fij = tab_Fij.view_wo<4>();
-  CDoubleTabView3 gradient_elem = gradient_elem_.view3_ro(); //Gradient elem declare plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissee ici
+  CDoubleTabView3 gradient_elem = gradient_elem_.view_ro<3>(); //Gradient elem declare plus haut, je le renome pas _tab dans tout le fichier, donc convection un peu froissee ici
   CIntTabView sommet_elem = domaine.les_elems().view_ro();//On n'utilise plus la fonction sommet_elem(.,.) de domaine.h
 
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),

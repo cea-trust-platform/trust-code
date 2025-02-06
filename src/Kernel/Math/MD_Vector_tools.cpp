@@ -28,7 +28,7 @@
 
 Schema_Comm_Vecteurs MD_Vector_tools::comm;
 MD_Vector MD_Vector_tools::last_md;
-std::type_index MD_Vector_tools::last_type_idx(typeid(void *));  // love this one ;-)
+static std::type_index last_type_idx(typeid(void *));  // love this one ;-)
 int MD_Vector_tools::last_linesize = 0;
 Echange_EV_Options MD_Vector_tools::last_opt;
 

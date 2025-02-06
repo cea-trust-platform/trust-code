@@ -66,15 +66,15 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
   for (; nblocs_left; nblocs_left--)
     {
       const int begin_bloc = (*(bloc_itr++)), end_bloc = (*(bloc_itr++));
-      // Define a Kokkos range policy based on the execution space
-      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
-      // Parallel loop for any value of lsize, using atomic_max for thread safety
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
-      {
-        for (int j = 0; j < lsize; j++)
-          {
-            _TYPE_ local_max=0;
-            for (int i = begin_bloc; i < end_bloc ; i++)
+      if (begin_bloc<end_bloc) // very important: empty bloc at the end would erase max_colonne
+        {
+          Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
+
+          for (int j=0; j<lsize; j++) //Outer loop
+            {
+              Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), //Inner loop (keep parallelism here for perfs)
+                                      policy,
+                                      KOKKOS_LAMBDA(const int i, _TYPE_& local_max)
               {
                 const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
                 local_max = Kokkos::fmax(local_max, x);

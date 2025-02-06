@@ -40,17 +40,17 @@ TEST(TRUSTArray, CantCopyRefData) {
 }
 #endif
 
-//Constructors
+//Constructors 
 TEST(TRUSTArray, ConstructorDefault) {
     ArrOfInt a;
     EXPECT_EQ(a.get_mem_storage(), STORAGE::STANDARD); //Not a temp array
-    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything
+    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything  
     EXPECT_TRUE(a.get_span().empty()); //Span is empty
     EXPECT_EQ(a.get_data_location(), DataLocation::HostOnly);
 }
 TEST(TRUSTArray, ConstructorSizeZero) {
     ArrOfInt a(0);
-    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything
+    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything  
     EXPECT_TRUE(a.get_span().empty()); //Span is empty
     EXPECT_EQ(a.get_data_location(), DataLocation::HostOnly);
 }
@@ -62,15 +62,15 @@ TEST(TRUSTArray, ConstructorSize) {
 }
 TEST(TRUSTArray, ConstructorCopyWithEmptyArray) {
     ArrOfInt a0;
-    ArrOfInt a(a0);
-    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything
+    ArrOfInt a(a0); 
+    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything  
     EXPECT_TRUE(a.get_span().empty()); //Span is empty
     EXPECT_EQ(a.get_data_location(), DataLocation::HostOnly);
 }
 TEST(TRUSTArray, ConstructorCopyData) {
     ArrOfInt a0(10);
     a0 = 42;
-    ArrOfInt a(a0);
+    ArrOfInt a(a0); 
 
     EXPECT_NE(a.get_mem(), nullptr); //Point to something
     EXPECT_EQ(a.get_span().data(), a.get_mem()->data()); //Mem and span describe the same memory
@@ -83,7 +83,7 @@ TEST(TRUSTArray, ConstructorCopyData) {
 TEST(TRUSTArray, ResizeDefaultToZero) {
   ArrOfInt a;
   a.resize(0); //Do nothing!
-  EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything
+  EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything  
   EXPECT_TRUE(a.get_span().empty()); //Span is empty
   EXPECT_EQ(a.get_data_location(), DataLocation::HostOnly);
 }
@@ -137,7 +137,7 @@ TEST(TRUSTArray, Ref_arrOfref_array) {
   ArrOfInt ref1, ref2;
   ref1.ref_array(a, 2);
   ref2.ref_array(ref1, 2);
-  EXPECT_EQ(ref2[0], 4);
+  EXPECT_EQ(ref2[0], 4);  
 }
 
 //ref_data
@@ -183,7 +183,7 @@ TEST(TRUSTArray, RefAsBig) {
   }
   // big should outlive small:
   EXPECT_EQ(big[2], 12);
-  EXPECT_EQ(big.size_array(), 10);
+  EXPECT_EQ(big.size_array(), 10);  
 }
 TEST(TRUSTArray, FromTidToInt) {
   ArrOfInt b;
@@ -212,7 +212,7 @@ TEST(TRUSTArray, FromTidToIntPreservesLineSize) {
 TEST(TRUSTTrav, ConstructorDefault) {
     IntTrav a;
     EXPECT_EQ(a.get_mem_storage(), STORAGE::TEMP_STORAGE); //Is temp
-    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything
+    EXPECT_EQ(a.get_mem(), nullptr); //Doesn't point to anything  
     EXPECT_TRUE(a.get_span().empty()); //Span is empty
     EXPECT_EQ(a.get_data_location(), DataLocation::HostOnly);
 }
@@ -229,19 +229,6 @@ TEST(TRUSTTrav, ConstructorCopyFromTab){
     EXPECT_EQ(a.nb_dim(), 2);
     EXPECT_EQ(b.nb_dim(), 2);
 }
-TEST(TRUSTTrav, ConstructorCopyFromTab){
-    IntTab a(1,1);
-    IntTrav b(a);  // from Tab
-    EXPECT_EQ(a.nb_dim(), 2);
-    EXPECT_EQ(b.nb_dim(), 2);
-}
-
-//TEST(TRUSTTrav, UnproperUse){
-    // NOT A PROPER USAGE OF TRAV!! Should exit in Debug with strategy 2 - to be activated
-    // once PolyMAC has been cleaned.
-    //IntTrav a;
-    //for (int i=0; i < 3000; i++){a.append_array(1);}
-//}
 
 //TEST(TRUSTTrav, UnproperUse){
     // NOT A PROPER USAGE OF TRAV!! Should exit in Debug with strategy 2 - to be activated
