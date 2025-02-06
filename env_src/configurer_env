@@ -659,9 +659,9 @@ case $arch in
 	TRUST_EDITOR="gedit nedit kate kedit xemacs xedit emacs"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" FCC icpx icpc  armclang++ "$cuda"g++      g++"  # icpx is the CXX compiler in inteloneAPI 2023
-	TRUST_F77_BASE="frt ifx ifort armflang   "$cuda"gfortran gfortran"
-	TRUST_cc_BASE=" fc  icx icc   armclang   "$cuda"gcc      gcc"
+	TRUST_CC_BASE=" FCC icpc  icpx armclang++ "$cuda"g++      g++"  # icpx is the CXX compiler in inteloneAPI 2023
+	TRUST_F77_BASE="frt ifort ifx  armflang   "$cuda"gfortran gfortran"
+	TRUST_cc_BASE=" fc  icc   icx  armclang   "$cuda"gcc      gcc"
 	# Support compilateur NVidia:
 	if [ "$TRUST_USE_CUDA" = 1 ]
 	then
@@ -1048,6 +1048,7 @@ m="# Path to C++ compiler";e="`cherche_file TRUST_CC_BASE $TRUST_CC_BASE`";confi
 m="# Path to C compiler";e="`cherche_file TRUST_cc_BASE $TRUST_cc_BASE`";configure_compilateur_ccache;ecrit $m"|"$e"|"$env;eval $e
 TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
 m="# Machine-compiler architecture";e="TRUST_ARCH_CC=$TRUST_ARCH_CC && export TRUST_ARCH_CC";ecrit $m"|"$e"|"$env
+[ "${TRUST_ARCH_CC%icpx}" != "$TRUST_ARCH_CC" ] && TRUST_F77_BASE="ifx "$TRUST_F77_BASE
 m="# Path to Fortran compiler";e="`cherche_file TRUST_F77_BASE $TRUST_F77_BASE`";ecrit $m"|"$e"|"$env;eval $e
 TRUST_VERSION_GNU=`print_GNU_VERSION`
 m="# C++ standard to use to build TRUST (c++17 by default)";e="TRUST_STDCPP=$TRUST_STDCPP && export TRUST_STDCPP";ecrit $m"|"$e"|"$env;eval $e
@@ -1984,7 +1985,8 @@ case $TRUST_ARCH_CC in
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
 	flag_optim="-O3 -fp-model=strict" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
-	CppFlags="$flag_optim -std=$TRUST_STDCPP -fPIC -funroll-loops -Wno-unknown-pragmas -Wno-undefined-var-template "
+	CppFlags="$flag_optim -std=$TRUST_STDCPP -fPIC -funroll-loops -Wno-unknown-pragmas"
+	[ "${TRUST_ARCH_CC%icpx}" != "$TRUST_ARCH_CC" ] && CppFlags=$CppFlags" -Wno-undefined-var-template "
 	LIB_INTEL=`dirname $TRUST_F77_BASE`
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib
