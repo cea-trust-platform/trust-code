@@ -43,6 +43,8 @@ const DoubleTab& get_ref_coordinates_items(const Domaine_VF& zvf, const MD_Vecto
   // j'aurais pris xv mais il n'a pas de structure parallele !!!
   if (md == zvf.face_sommets().get_md_vector())
     return zvf.xv(); // Descripteur des face
+  else if (md == zvf.md_vector_faces_bord())
+    return zvf.xv_bord();
   // j'aurais pris xp mais il n'a pas de structure parallele !!!!!!$&
   else if (md == zvf.domaine().les_elems().get_md_vector())
     return zvf.xp(); // Descripteur des elements
