@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,13 +45,13 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
 {
   Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis());
   DoubleTab& u_t = valeurs_loi_paroi_["u_tau"], &y_p = valeurs_loi_paroi_["y_plus"], &y_loc = valeurs_loi_paroi_["y"];
-  const DoubleTab& n_f = domaine.face_normales();
-  const DoubleVect& fs = domaine.face_surfaces();
-  const IntTab& f_e = domaine.face_voisins();
+  const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
 
-  const bool is_VDF = pb_->discretisation().is_vdf();
+  const bool is_polyVEF = pb_->discretisation().is_polyvef_p0(), is_VDF = pb_->discretisation().is_vdf();
 
-  int nf_tot = domaine.nb_faces_tot(), D = dimension, N = vit.line_size();
+  int nf_tot = domaine.nb_faces_tot(), D = dimension, N = vit.line_size() / (is_polyVEF ? D : 1);
 
   DoubleTab pvit_elem(0, N * D);
   if (is_VDF)
@@ -82,6 +82,14 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
               u_parallel(d) = pvit_elem(e, N * d + n) - u_orth * (-n_f(f, d)) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
             yloc = y_loc(f, n);
           }
+        else if (is_polyVEF) // PolyVEF_P0 case : vitesse chelou sur la face de bord
+          {
+            for (int d = 0; d < D; d++)
+              u_orth -= vit(f, N * d + n) * n_f(f, d) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
+            for (int d = 0; d < D; d++)
+              u_parallel(d) = vit(f, N * d + n) - u_orth * (-n_f(f, d)) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
+            yloc = y_loc(f, n) / coef_dist_polyVEF_;
+          }
         else // PolyMAC case
           {
             for (int d = 0; d < D; d++)
@@ -92,6 +100,23 @@ void Loi_paroi_log::calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)
           }
 
         double norm_u_parallel = std::sqrt(domaine.dot(&u_parallel(0), &u_parallel(0)));
+        if ((is_polyVEF) && (norm_u_parallel < 1.e-8)) // Cas PolyMAC_P0 paroi fixe
+          {
+            DoubleTrav u_loc(D);
+            int floc;
+            for (int cloc = 0; cloc < e_f.dimension(1) && (floc = e_f(e, cloc)) >= 0; cloc++)
+              for (int dloc = 0; dloc < D; dloc++)
+                u_loc(dloc) += vf_dir(floc, e == f_e(f, 0) ? 0 : 1) / ve(e) * vit(floc, N * dloc + n);
+
+            u_orth = 0;
+            u_parallel = 0;
+            for (int d = 0; d < D; d++)
+              u_orth -= u_loc(d) * n_f(f, d) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
+            for (int d = 0; d < D; d++)
+              u_parallel(d) = u_loc(d) - u_orth * (-n_f(f, d)) / fs(f); // ! n_f pointe vers la face 1 donc vers l'exterieur de l'element, d'ou le -
+            yloc = f_e(f, 0) >= 0 ? domaine.dist_face_elem0(f, e) : domaine.dist_face_elem1(f, e);
+            norm_u_parallel = std::sqrt(domaine.dot(&u_parallel(0), &u_parallel(0)));
+          }
 
         // double residu = 0 ;
         // for (int d = 0; d <D ; d++) residu += u_parallel(d)*n_f(f,d)/fs(f);

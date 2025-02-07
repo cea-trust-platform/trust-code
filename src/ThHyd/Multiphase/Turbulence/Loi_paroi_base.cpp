@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,15 +68,18 @@ void Loi_paroi_base::completer()
     for (int n = 0; n < tab_y_p.dimension_tot(1); n++)
       tab_y_p(i, n) = ((i < nf_tot) && (Faces_a_calculer_(i, 0))) ? 1 : -1.;
 
+  const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   const IntTab& f_e = domaine.face_voisins();
 
-  const bool is_polymacp0 = pb_->discretisation().is_polymac_p0(), is_vdf = pb_->discretisation().is_vdf();
+  const bool is_polymacp0 = pb_->discretisation().is_polymac_p0(), is_vdf = pb_->discretisation().is_vdf(), is_polyVEF = pb_->discretisation().is_polyvef_p0();
   DoubleTab& tab_y = valeurs_loi_paroi_["y"];
   for (int f = 0; f < tab_y.dimension_tot(0); f++)
     for (int n = 0; n < tab_y.dimension_tot(1); n++)
       {
         if ((is_vdf) || (is_polymacp0))
           tab_y(f, n) = (Faces_a_calculer_(f, 0)) ? (f_e(f, 0) >= 0 ? domaine.dist_face_elem0(f, f_e(f, 0)) : domaine.dist_face_elem1(f, f_e(f, 1))) : -1;
+        else if (is_polyVEF)
+          tab_y(f, n) = (Faces_a_calculer_(f, 0)) ? vf(f) / fs(f) : -1.;
         else
           Process::exit(que_suis_je() + " : you cannot have a wall law with this discretization yet ! But you are welcome to add it in the code if you so choose");
       }

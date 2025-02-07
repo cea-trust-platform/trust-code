@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -169,11 +169,11 @@ void QDM_Multiphase::mettre_a_jour(double temps)
   if (la_vorticite.non_nul()) la_vorticite->mettre_a_jour(temps);
   if (Taux_cisaillement.non_nul()) Taux_cisaillement->mettre_a_jour(temps);
 
-  const bool is_vdf = discretisation().is_vdf();
+  const bool is_vdf = discretisation().is_vdf(), is_polyvef = discretisation().is_polyvef_p0();
   for (n = 0; n < N; n++)
     if (grad_vit_phases_[n].non_nul())
       {
-        if (is_vdf)
+        if (is_vdf || is_polyvef) // oui ... pour le vdf de corentin
           {
             for (int e = 0; e < domaine_dis().nb_elem(); e++)
               for (i = 0; i < D; i++)
