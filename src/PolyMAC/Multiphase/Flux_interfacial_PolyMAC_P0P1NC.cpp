@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,8 +14,10 @@
 *****************************************************************************/
 
 #include <Flux_interfacial_PolyMAC_P0P1NC.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC_P0P1NC,"Flux_interfacial_Elem_PolyMAC_P0P1NC|Flux_interfacial_Elem_PolyMAC_P0", Source_Flux_interfacial_base);
+Add_synonym(Flux_interfacial_PolyMAC_P0P1NC, "Flux_interfacial_Elem_PolyVEF_P0");
 
 Sortie& Flux_interfacial_PolyMAC_P0P1NC::printOn(Sortie& os) const { return os; }
 Entree& Flux_interfacial_PolyMAC_P0P1NC::readOn(Entree& is) { return Source_Flux_interfacial_base::readOn(is); }

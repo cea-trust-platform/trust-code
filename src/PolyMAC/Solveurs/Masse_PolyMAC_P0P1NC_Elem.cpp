@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,11 +14,14 @@
 *****************************************************************************/
 
 #include <Masse_PolyMAC_P0P1NC_Elem.h>
+#include <Domaine_PolyMAC_P0P1NC.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Synonyme_info.h>
 #include <Equation_base.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 
 Implemente_instanciable(Masse_PolyMAC_P0P1NC_Elem, "Masse_PolyMAC_P0P1NC_Elem|Masse_PolyMAC_P0_Elem", Masse_PolyMAC_P0P1NC_base);
+Add_synonym(Masse_PolyMAC_P0P1NC_Elem, "Masse_PolyVEF_P0_Elem");
 
 Sortie& Masse_PolyMAC_P0P1NC_Elem::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
