@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,10 @@
  * @sa Op_Div_PolyMAC_P0P1NC
  *
  */
-class Op_Div_PolyMAC_P0 : public Op_Div_PolyMAC_P0P1NC
+class Op_Div_PolyMAC_P0 : public Op_Div_PolyMAC
 {
   Declare_instanciable(Op_Div_PolyMAC_P0);
 public:
-  int has_interface_blocs() const override { return 0; }
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   void dimensionner(Matrice_Morse& matrice) const override;
   void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const override;
