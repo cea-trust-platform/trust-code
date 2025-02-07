@@ -53,7 +53,9 @@ void Ecrire_YAML::write_checkpoint_restart_file_(int save, std::string yaml_fnam
 
   // declare plugins
   begin_bloc_("plugins:", text);
+#ifndef NDEBUG
   add_line_("trace:", text);
+#endif
   if(Process::is_parallel())
     add_line_("mpi:", text);
   add_line_("decl_hdf5:", text);
@@ -289,7 +291,7 @@ void Ecrire_YAML::declare_metadata_(int save, std::string& text)
   if(Process::is_parallel())
     {
       add_line_("# MPI communicator for my group", text);
-      add_line_("node : int", text);
+      add_line_("node : MPI_Comm", text);
       add_line_("# number of processors inside my group", text);
       add_line_("nodeSize : int", text);
       add_line_("# my rank inside my group", text);
@@ -297,7 +299,7 @@ void Ecrire_YAML::declare_metadata_(int save, std::string& text)
       add_line_("# rank of my group among all the other groups", text);
       add_line_("nodeId : int", text);
       add_line_("# MPI communicator for masters of each group", text);
-      add_line_("master : int", text);
+      add_line_("master : MPI_Comm", text);
     }
   end_bloc_();
 }
