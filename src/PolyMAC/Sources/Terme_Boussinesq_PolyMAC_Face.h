@@ -43,4 +43,11 @@ protected:
   void associer_domaines(const Domaine_dis_base& ,const Domaine_Cl_dis_base& ) override;
 };
 
+class Terme_Boussinesq_PolyVEF_P0_Face : public Terme_Boussinesq_PolyMAC_Face
+{
+  Declare_instanciable(Terme_Boussinesq_PolyVEF_P0_Face);
+public:
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+};
+
 #endif /* Terme_Boussinesq_PolyMAC_Face_included */

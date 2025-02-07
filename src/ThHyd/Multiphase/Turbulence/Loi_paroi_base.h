@@ -45,6 +45,7 @@ protected:
 
   double eps_y_p_ = 1.e-4; // Convergence of the y_p determination method
   double y_p_min_ = 1.e-2; // minimal y_p
+  double coef_dist_polyVEF_ = 1.8;
 
   IntTab Faces_a_calculer_;
   std::map<std::string, DoubleTab> valeurs_loi_paroi_; // contient "y_plus", "u_tau" pour toutes les faces
