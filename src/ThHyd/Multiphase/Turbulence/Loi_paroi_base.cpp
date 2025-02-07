@@ -32,6 +32,7 @@ Entree& Loi_paroi_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("eps_y_p", &eps_y_p_);
+  param.ajouter("coef_dist_polyVEF", &coef_dist_polyVEF_);
   param.lire_avec_accolades_depuis(is);
   return is;
 }
