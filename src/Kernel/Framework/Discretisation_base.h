@@ -104,6 +104,7 @@ public :
   virtual bool is_polymac() const { return false; }
   virtual bool is_polymac_p0() const { return false; }
   virtual bool is_polymac_p0p1nc() const { return false; }
+  virtual bool is_polyvef_p0() const { return false; }
   virtual bool is_polymac_family() const { return false; }
 
 protected:
