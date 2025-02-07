@@ -41,7 +41,7 @@ protected:
   double a_res_ = -1., dv_min = 0.01, beta_ = 1.;
   int exp_res = 2 ;
 
-  virtual void dimensionner_blocs_aux(IntTab&) const = 0;
+  virtual void dimensionner_blocs_aux(IntTrav&) const { /* Do nothing */ }
 };
 
 #endif /* Source_Frottement_interfacial_base_included */

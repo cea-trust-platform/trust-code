@@ -23,7 +23,6 @@ class Frottement_interfacial_VDF: public Source_Frottement_interfacial_base
   Declare_instanciable(Frottement_interfacial_VDF);
 protected:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void dimensionner_blocs_aux(IntTab&) const override { /* Do nothing */ }
 };
 
 #endif /* Frottement_interfacial_VDF_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,9 +37,9 @@ public:
   void mettre_a_jour(double temps) override;
   virtual void calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)=0 ;
 
-  double get_y_plus(int f) const {return valeurs_loi_paroi_.at("y_plus")(f,0);};
-  double get_utau(int f) const { return valeurs_loi_paroi_.at("u_tau")(f,0);};
-  DoubleTab& get_tab(std::string str) {return valeurs_loi_paroi_[str];};
+  double get_y_plus(int f) const {return valeurs_loi_paroi_.at("y_plus")(f,0);}
+  double get_utau(int f) const { return valeurs_loi_paroi_.at("u_tau")(f,0);}
+  DoubleTab& get_tab(std::string str) {return valeurs_loi_paroi_[str];}
 
 protected:
 

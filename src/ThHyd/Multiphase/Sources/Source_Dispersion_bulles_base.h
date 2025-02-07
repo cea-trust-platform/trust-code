@@ -34,7 +34,7 @@ class Source_Dispersion_bulles_base: public Sources_Multiphase_base
 {
   Declare_base(Source_Dispersion_bulles_base);
 public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override = 0;
   const Correlation_base& correlation() const { return correlation_.valeur(); }
 
