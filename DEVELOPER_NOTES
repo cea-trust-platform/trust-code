@@ -1,4 +1,5 @@
-XX/XX/25 (TRUST) Minor change : configure option -force_provided_openmpi use OpenMPI 4.1.6 and -force_latest_openmpi use OpenMPI 5.0.5
+XX/XX/25 (TRUST) GPU          : Performance regression can be checked with: cd tests/GPU && ./check_perf.sh
+XX/XX/25 (TRUST) GPU          : Refactor/factorize the Kokkos implementation in TRUSTArray: DualView suppressed and accessors view_ro/view_rw/view_ro rewritten
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
