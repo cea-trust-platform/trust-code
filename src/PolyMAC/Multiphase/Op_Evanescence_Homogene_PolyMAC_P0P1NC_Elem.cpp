@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,10 @@
 *****************************************************************************/
 
 #include <Op_Evanescence_Homogene_PolyMAC_P0P1NC_Elem.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Elem, "Op_Evanescence_Homogene_PolyMAC_P0P1NC_Elem|Op_Evanescence_Homogene_PolyMAC_P0_Elem", Op_Evanescence_Homogene_Elem_base);
+Add_synonym(Op_Evanescence_Homogene_PolyMAC_P0P1NC_Elem, "Op_Evanescence_Homogene_PolyVEF_P0_Elem");
+
 Sortie& Op_Evanescence_Homogene_PolyMAC_P0P1NC_Elem::printOn(Sortie& os) const { return os; }
 Entree& Op_Evanescence_Homogene_PolyMAC_P0P1NC_Elem::readOn(Entree& is) { return Op_Evanescence_Homogene_Elem_base::readOn(is); }
