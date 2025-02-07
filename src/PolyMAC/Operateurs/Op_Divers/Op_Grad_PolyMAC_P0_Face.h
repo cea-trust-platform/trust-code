@@ -42,7 +42,7 @@ public:
   mutable IntTab fgrad_d, fgrad_e;
   mutable DoubleTab fgrad_c;
 
-private:
+protected:
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
   mutable std::map<int, std::map<int, double>> dgp_gb_;
   mutable std::map<int, std::map<int, double>> dgb_v_;

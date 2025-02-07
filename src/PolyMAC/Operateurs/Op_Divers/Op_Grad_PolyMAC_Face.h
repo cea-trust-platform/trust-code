@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ public:
 
 protected:
   OBS_PTR(Domaine_PolyMAC) ref_domaine;
-  OBS_PTR(Domaine_Cl_PolyMAC) ref_zcl;
+  OBS_PTR(Domaine_Cl_PolyMAC) ref_dcl;
   IntTab face_voisins;
   DoubleVect porosite_surf;
 };

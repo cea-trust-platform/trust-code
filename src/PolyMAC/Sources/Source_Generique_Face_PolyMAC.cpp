@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,8 +66,7 @@ DoubleTab& Source_Generique_Face_PolyMAC::ajouter(DoubleTab& resu) const
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = la_zcl_PolyMAC.valeur();
-  const DoubleVect& pf = equation().milieu().porosite_face();
-  const DoubleVect& fs = domaine.face_surfaces();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces();
   const IntTab& f_e = domaine.face_voisins();
   const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
   /* 1. faces de bord -> on ne contribue qu'aux faces de Neumann */

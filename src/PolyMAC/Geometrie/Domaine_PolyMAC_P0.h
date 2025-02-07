@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ public :
   //MD_Vectors pour Champ_Face_PolyMAC_P0 (faces + d x elems)
   MD_Vector mdv_ch_face;
 
-private:
+protected:
   mutable int first_fgrad_ = 1; //pour n'afficher le message "MPFA-O MPFA-O(h) VFSYM" qu'une seule fois par calcul
 };
 

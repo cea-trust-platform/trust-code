@@ -35,12 +35,12 @@ Entree& Op_Div_PolyMAC::readOn(Entree& s) { return s; }
 void Op_Div_PolyMAC::associer(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis, const Champ_Inc_base&)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
+  le_dcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
 }
 
 DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
-  if (has_interface_blocs()) return Operateur_base::ajouter(vit, div);
+  if (has_interface_blocs()) return Operateur_Div_base::ajouter(vit, div);
 
   Debog::verifier("div in", div);
   const Domaine_PolyMAC& domaine_PolyMAC = le_dom_PolyMAC.valeur();
@@ -180,8 +180,8 @@ int Op_Div_PolyMAC::impr(Sortie& os) const
 
   for (int num_cl = 0; num_cl < le_dom_PolyMAC->nb_front_Cl(); num_cl++)
     {
-      flux_bord = 0.;
-      const Cond_lim& la_cl = la_zcl_PolyMAC->les_conditions_limites(num_cl);
+      flux_bord = 0;
+      const Cond_lim& la_cl = le_dcl_PolyMAC->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       const int ndeb = frontiere_dis.num_premiere_face();
       const int nfin = ndeb + frontiere_dis.nb_faces();
@@ -213,8 +213,8 @@ int Op_Div_PolyMAC::impr(Sortie& os) const
 
   for (int num_cl = 0; num_cl < le_dom_PolyMAC->nb_front_Cl(); num_cl++)
     {
-      const Frontiere_dis_base& la_fr = la_zcl_PolyMAC->les_conditions_limites(num_cl)->frontiere_dis();
-      const Cond_lim& la_cl = la_zcl_PolyMAC->les_conditions_limites(num_cl);
+      const Frontiere_dis_base& la_fr = le_dcl_PolyMAC->les_conditions_limites(num_cl)->frontiere_dis();
+      const Cond_lim& la_cl = le_dcl_PolyMAC->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl->frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();

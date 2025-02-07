@@ -69,7 +69,7 @@ void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
     return; //deja calcule a ce temps -> rien a faire
 
   /* gradient */
-  domaine.fgrad(M, 1, ref_zcl->les_conditions_limites(), ch.fcl(), nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
+  domaine.fgrad(M, 1, ref_dcl->les_conditions_limites(), ch.fcl(), nullptr, nullptr, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
   last_gradp_ = t_past;
 }
 
@@ -220,7 +220,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   statistiques().begin_count(gradient_counter_);
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, ref_domaine.valeur());
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue());
-  const Conds_lim& cls = ref_zcl->les_conditions_limites();
+  const Conds_lim& cls = ref_dcl->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales(), &xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),

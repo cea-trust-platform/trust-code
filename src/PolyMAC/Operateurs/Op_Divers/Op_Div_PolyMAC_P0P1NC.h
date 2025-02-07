@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,11 +33,7 @@ public:
   /* interface ajouter_blocs */
   int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
-
-  /* contrairement au cas usuel, cette methode ne peuvent pas etre reimplementee a partir d'ajouter_blocs(),
-   car elle est souvent appelees avec un tableau inco arbitraire */
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  void ajouter_blocs_ext(const DoubleTab& vit, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
 };
 
 #endif /* Op_Div_PolyMAC_P0P1NC_included */
