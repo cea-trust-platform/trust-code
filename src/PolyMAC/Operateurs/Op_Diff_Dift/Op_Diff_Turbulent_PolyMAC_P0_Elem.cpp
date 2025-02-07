@@ -16,8 +16,11 @@
 #include <Op_Diff_Turbulent_PolyMAC_P0_Elem.h>
 #include <Op_Diff_Turbulent_PolyMAC_P0_Face.h>
 #include <Probleme_base.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulent_PolyMAC_P0_Elem|Op_Diff_Turbulente_PolyMAC_P0_Elem", Op_Diff_PolyMAC_P0_Elem );
+Add_synonym(Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulent_PolyVEF_P0_Elem");
+Add_synonym(Op_Diff_Turbulent_PolyMAC_P0_Elem, "Op_Diff_Turbulente_PolyVEF_P0_Elem");
 
 Sortie& Op_Diff_Turbulent_PolyMAC_P0_Elem::printOn(Sortie& os) const { return Op_Diff_PolyMAC_P0_base::printOn(os); }
 
