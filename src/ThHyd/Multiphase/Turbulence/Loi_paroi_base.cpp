@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,29 +13,26 @@
 *
 *****************************************************************************/
 
+#include <Echange_global_impose_turbulent.h>
+#include <Frottement_impose_base.h>
+#include <Dirichlet_loi_paroi.h>
+#include <Discretisation_base.h>
 #include <Loi_paroi_base.h>
+#include <Cond_lim_base.h>
 #include <Pb_Multiphase.h>
 #include <Domaine_VF.h>
 #include <TRUSTTrav.h>
-#include <Cond_lim_base.h>
 #include <math.h>
-#include <Dirichlet_loi_paroi.h>
-#include <Frottement_global_impose.h>
-#include <Echange_impose_base.h>
 
 Implemente_base(Loi_paroi_base, "Loi_paroi_base", Correlation_base);
 
-Sortie& Loi_paroi_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Loi_paroi_base::printOn(Sortie& os) const { return os; }
 
 Entree& Loi_paroi_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("eps_y_p", &eps_y_p_);
   param.lire_avec_accolades_depuis(is);
-
   return is;
 }
 
@@ -48,27 +45,40 @@ void Loi_paroi_base::completer()
   Faces_a_calculer_.resize(nf_tot, 1);
   domaine.creer_tableau_faces(Faces_a_calculer_);
 
-  for (int i = 0 ; i <pb_->nombre_d_equations() ; i++)
-    for (int j = 0 ; j<pb_->equation(i).domaine_Cl_dis().nb_cond_lim(); j++)
+  for (int i = 0; i < pb_->nombre_d_equations(); i++)
+    for (int j = 0; j < pb_->equation(i).domaine_Cl_dis().nb_cond_lim(); j++)
       {
         Cond_lim& cond_lim_loc = pb_->equation(i).domaine_Cl_dis().les_conditions_limites(j);
-        if sub_type(Dirichlet_loi_paroi, cond_lim_loc.valeur())
+        if (sub_type(Dirichlet_loi_paroi, cond_lim_loc.valeur()))
           ref_cast(Dirichlet_loi_paroi, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
-        else if sub_type(Frottement_global_impose, cond_lim_loc.valeur())
-          ref_cast(Frottement_global_impose, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
-        else if sub_type(Echange_impose_base, cond_lim_loc.valeur())
-          ref_cast(Echange_impose_base, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
+        else if (sub_type(Frottement_impose_base, cond_lim_loc.valeur()))
+          ref_cast(Frottement_impose_base, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
+        else if (sub_type(Echange_global_impose_turbulent, cond_lim_loc.valeur()))
+          ref_cast(Echange_global_impose_turbulent, cond_lim_loc.valeur()).liste_faces_loi_paroi(Faces_a_calculer_);  // met des 1 si doit remplir la table
       }
   Faces_a_calculer_.echange_espace_virtuel();
 
-  valeurs_loi_paroi_["y_plus"] = DoubleTab(nf_tot,1); // pour l'instant, turbulence dans seulement une phase
-  valeurs_loi_paroi_["u_tau"] = DoubleTab(nf_tot,1);
+  valeurs_loi_paroi_["y_plus"] = DoubleTab(nf_tot, 1); // pour l'instant, turbulence dans seulement une phase
+  valeurs_loi_paroi_["u_tau"] = DoubleTab(nf_tot, 1);
+  valeurs_loi_paroi_["y"] = DoubleTab(nf_tot, 1); // Attention : pour un meme maillage, depuis PolyMAC_P0_vec le y n'est pas le meme en vdf et en polymac pour le meme maillage a cause de l'histoire de la vitesse non nulle a la face de bord.
 
   DoubleTab& tab_y_p = valeurs_loi_paroi_["y_plus"];
-  for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i ++)
-    for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = ( (i<nf_tot) && (Faces_a_calculer_(i,0)) ) ? 1 : -1.;
+  for (int i = 0; i < tab_y_p.dimension_tot(0); i++)
+    for (int n = 0; n < tab_y_p.dimension_tot(1); n++)
+      tab_y_p(i, n) = ((i < nf_tot) && (Faces_a_calculer_(i, 0))) ? 1 : -1.;
 
-  if (sub_type(Navier_Stokes_std, pb_->equation(0)) && pb_->has_champ("y_plus")) valeurs_loi_paroi_["y_plus_elem"] = DoubleTab(nf_tot,1);
+  const IntTab& f_e = domaine.face_voisins();
+
+  const bool is_polymacp0 = pb_->discretisation().is_polymac_p0(), is_vdf = pb_->discretisation().is_vdf();
+  DoubleTab& tab_y = valeurs_loi_paroi_["y"];
+  for (int f = 0; f < tab_y.dimension_tot(0); f++)
+    for (int n = 0; n < tab_y.dimension_tot(1); n++)
+      {
+        if ((is_vdf) || (is_polymacp0))
+          tab_y(f, n) = (Faces_a_calculer_(f, 0)) ? (f_e(f, 0) >= 0 ? domaine.dist_face_elem0(f, f_e(f, 0)) : domaine.dist_face_elem1(f, f_e(f, 1))) : -1;
+        else
+          Process::exit(que_suis_je() + " : you cannot have a wall law with this discretization yet ! But you are welcome to add it in the code if you so choose");
+      }
 }
 
 void Loi_paroi_base::mettre_a_jour(double temps)
@@ -83,15 +93,17 @@ void Loi_paroi_base::mettre_a_jour(double temps)
         {
           Domaine_VF& domaine = ref_cast(Domaine_VF, pb_->domaine_dis());
           const IntTab& f_e = domaine.face_voisins();
-          int nf_tot = domaine.nb_faces_tot();
-          DoubleTab& y_p = valeurs_loi_paroi_["y_plus"], &y_p_e = valeurs_loi_paroi_["y_plus_elem"];
-          for (int f = 0 ; f < nf_tot ; f ++)
-            if (Faces_a_calculer_(f,0)==1)
+          int nf_tot = domaine.nb_faces_tot(), ne_tot = domaine.nb_elem_tot();
+          DoubleTab& y_p = valeurs_loi_paroi_["y_plus"];
+          DoubleTrav y_p_e(ne_tot, 1);
+          for (int f = 0; f < nf_tot; f++)
+            if (Faces_a_calculer_(f, 0) == 1)
               {
-                int c = (f_e(f,0)>=0) ? 0 : 1 ;
-                if (f_e(f, (c==0) ? 1 : 0 ) >= 0) Process::exit("Error in the definition of the boundary conditions for wall laws");
-                int e = f_e(f,c);
-                y_p_e(e,0) = y_p(f,0);
+                int c = (f_e(f, 0) >= 0) ? 0 : 1;
+                if (f_e(f, (c == 0) ? 1 : 0) >= 0)
+                  Process::exit("Error in the definition of the boundary conditions for wall laws");
+                int e = f_e(f, c);
+                y_p_e(e, 0) = y_p(f, 0);
               }
           ref_cast(Navier_Stokes_std, pb_->equation(0)).update_y_plus(y_p_e);
         }
