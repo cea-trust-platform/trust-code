@@ -30,14 +30,14 @@ public:
   void set_vx_kmax(double value) { vxkmax_ = value; }
   void set_dU_perio(double value) { dU_perio_ = value; }
 
-  double get_vx_kmin() { return vxkmin_; }
-  double get_vx_kmax() { return vxkmax_; }
-  double get_dU_perio(int fluctuations=0) { if (!fluctuations) {return dU_perio_;} else {return 0.;}}
-  double get_t0_shear() { return t0_shear_; }
-  int get_defilement() { return defilement_; }
-  int get_correction_interp_monofluide() { return interp_monofluide_; }
-  int get_correction_conserv_qdm() { return conserv_qdm_; }
-  int get_resolution_u_prime_() { return resolution_u_prime_; }
+  double get_vx_kmin() const { return vxkmin_; }
+  double get_vx_kmax() const { return vxkmax_; }
+  double get_dU_perio(int fluctuations=0) const { return !fluctuations ? dU_perio_ :  0.; }
+  double get_t0_shear() const { return t0_shear_; }
+  int get_defilement() const { return defilement_; }
+  int get_correction_interp_monofluide() const { return interp_monofluide_; }
+  int get_correction_conserv_qdm() const { return conserv_qdm_; }
+  int get_resolution_u_prime_() const { return resolution_u_prime_; }
 
 protected:
   int bctype_kmin_, bctype_kmax_;
