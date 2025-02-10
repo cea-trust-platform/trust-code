@@ -22,15 +22,9 @@
 extern Stat_Counter_Id IO_EcrireFicPartageBin_counter_;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(EcrFicPartage,"EcrFicPartage",SFichier);
-Entree& EcrFicPartage::readOn(Entree& s)
-{
-  throw;
-}
+Entree& EcrFicPartage::readOn(Entree& s) { throw; }
+Sortie& EcrFicPartage::printOn(Sortie& s) const { throw; }
 
-Sortie& EcrFicPartage::printOn(Sortie& s) const
-{
-  throw;
-}
 EcrFicPartage::EcrFicPartage() : SFichier()
 {
   obuffer_ptr_ = new OBuffer;
@@ -44,6 +38,7 @@ EcrFicPartage::EcrFicPartage(const char* name,IOS_OPEN_MODE mode)
 {
   obuffer_ptr_ = new OBuffer;
   set_bin(false);
+  obuffer_ptr_->set_64b(this->is_64b());
 
   ouvrir(name, mode);
 }
@@ -308,8 +303,14 @@ int EcrFicPartage::put(const double* ob, std::streamsize n, std::streamsize pas)
 
 void EcrFicPartage::set_bin(bool bin)
 {
-  bin_ = bin;
+  SFichier::set_bin(bin);
   get_obuffer().set_bin(bin_);
+}
+
+void EcrFicPartage::set_64b(bool is64)
+{
+  SFichier::set_64b(is64);
+  get_obuffer().set_64b(is64);
 }
 
 Sortie& EcrFicPartage::flush() { return (*this); }

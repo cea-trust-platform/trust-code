@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ class AbstractIO
 {
 public:
   bool is_64b() const                   { return is_64b_; }
-  void set_64b(bool is_64b)             { is_64b_ = is_64b;  }
+  virtual void set_64b(bool is_64b)     { is_64b_ = is_64b;  }
   virtual void set_bin(bool bin)        { bin_ = bin; }
   bool is_bin()                         { return bin_; }
   void set_avoid_conversion(bool avoid) { avoid_conversion_ = avoid; }

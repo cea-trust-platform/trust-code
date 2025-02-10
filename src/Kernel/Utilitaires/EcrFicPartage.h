@@ -50,6 +50,7 @@ public:
 
   Sortie& flush() override;
   void set_bin(bool bin) override;
+  void set_64b(bool is64) override;
 
   Sortie& operator <<(const char* ob) override;
   Sortie& operator <<(const Objet_U& ob) override;

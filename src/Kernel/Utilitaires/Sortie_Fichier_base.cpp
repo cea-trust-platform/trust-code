@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,15 +24,8 @@
 
 Implemente_base_sans_constructeur_ni_destructeur(Sortie_Fichier_base,"Sortie_Fichier_base",Objet_U);
 
-Entree& Sortie_Fichier_base::readOn(Entree& s)
-{
-  throw;
-}
-
-Sortie& Sortie_Fichier_base::printOn(Sortie& s) const
-{
-  throw;
-}
+Entree& Sortie_Fichier_base::readOn(Entree& s) { throw; }
+Sortie& Sortie_Fichier_base::printOn(Sortie& s) const { throw; }
 
 Sortie_Fichier_base::Sortie_Fichier_base() : Sortie()
 {
