@@ -101,7 +101,7 @@ install_arch()
     [ ! -f $1 ] && echo $1 doesnt exist && exit 1
     gunzip -c $1 > prov$3.tar
     tar xf prov$3.tar
-    cd  $3
+    cd $3
     DIR=`pwd`
     # On prend les compilos de TRUST
     CXX=$TRUST_CC_BASE  #&& [ "$TRUST_CC_BASE_EXTP" != "" ]  && CXX=$TRUST_CC_BASE_EXTP  && MPICH_CXX=$CXX && OMPI_CXX=$CXX
@@ -112,6 +112,10 @@ install_arch()
     make install
     status=$?
     cd ../..
+    # New: script in archive to fix an install:
+    post_install=`dirname $1`/post_install.sh
+    [ -f $post_install ] && $post_install $dir
+    
     [ $status -eq 0 ] && [ "$DEBUG_COMPIL" = "" ] && rm -rf prov
     echo "To keep the prov dir, set DEBUG_COMPIL to 1"
     status_tot=$status
