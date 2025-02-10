@@ -43,6 +43,9 @@ void dumplata_header(const char *filename)
     }
 }
 
+/*! When dumping the IJK coordinates, we do not need 64b, since only the x, y and z steps will be written.
+ *  This never exceeds 32b.
+ */
 void dumplata_add_geometry(const char *filename, const IJK_Splitting& splitting)
 {
   if (Process::je_suis_maitre())
@@ -51,6 +54,7 @@ void dumplata_add_geometry(const char *filename, const IJK_Splitting& splitting)
       Nom prefix = Nom(filename) + Nom(".");
       SFichier binary_file;
       binary_file.set_bin(1);
+      binary_file.set_64b(false);
       ArrOfFloat tmp;
       int n;
 
@@ -94,6 +98,7 @@ void dumplata_ft_field(const char *filename, const char *meshname,
   const int nval = field.size_array();
   const trustIdType nvaltot = Process::mp_sum(nval);
   EcrFicPartageBin file;
+  file.set_64b(false); // for interfaces, 64b never needed.
   file.ouvrir(fdfield);
   file.put(field.addr(), field.size_array(), 1);
   file.syncfile();
@@ -122,6 +127,7 @@ void dumplata_ft_field(const char *filename, const char *meshname,
   const int nval = field.size_array();
   const trustIdType nvaltot = Process::mp_sum(nval);
   EcrFicPartageBin file;
+  file.set_64b(false);  // for interfaces, 64b never needed.
   file.ouvrir(fdfield);
   const int n = field.size_array();
   ArrOfFloat tmp(n);

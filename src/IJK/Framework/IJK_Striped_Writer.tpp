@@ -49,7 +49,6 @@ Size_t IJK_Striped_Writer::write_data_template(const char * filename, const IJK_
     {
       SFichier binary_file;
       binary_file.set_bin(true);
-      binary_file.set_64b(false);  // In IJK, nothing needs to be written in 64b:
       binary_file.ouvrir(filename);
       binary_file.put(tmp.addr(), tmp.size_array(), 1);
       binary_file.close();
@@ -98,7 +97,6 @@ Size_t IJK_Striped_Writer::write_data_template(const char * filename, const IJK_
     {
       SFichier binary_file;
       binary_file.set_bin(true);
-      binary_file.set_64b(false);  // In IJK, nothing needs to be written in 64b:
       binary_file.ouvrir(filename);
       binary_file.put(tmp.addr(), tmp.size_array(), 1);
       binary_file.close();
@@ -134,7 +132,6 @@ Size_t IJK_Striped_Writer::write_data_parallele_plan_template(const char * filen
 
   SFichier binary_file;
   binary_file.set_bin(true);
-  binary_file.set_64b(false); // In IJK, nothing needs to be written in 64b:
   binary_file.ouvrir(filename);
   binary_file.put(tmp.addr(), tmp.size_array(), 1);
   binary_file.close();
@@ -198,7 +195,6 @@ Size_t IJK_Striped_Writer::write_data_parallele_plan_template(const char * filen
 
   SFichier binary_file;
   binary_file.set_bin(true);
-  binary_file.set_64b(false); // In IJK, nothing needs to be written in 64b:
   binary_file.ouvrir(filename);
   binary_file.put(tmp.addr(), tmp.size_array(), 1);
   binary_file.close();
@@ -455,6 +451,11 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
 {
   const IJK_Splitting& splitting = vx.get_splitting();
   const int nb_components = ((&vy == &vx) && (&vz == &vx)) ? 1 : 3;
+#ifdef INT_is_64_
+  constexpr Size_t INT64_OFFSET = 6;  // Size of "INT64" string (with term \0 char) in bytes ...
+#else
+  constexpr Size_t INT64_OFFSET = 0;
+#endif
 
   // Number of processes that write to the file:
   // Each process will write a portion of the total bloc of data, aligned on the bloc size.
@@ -495,10 +496,14 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
           Cerr << "Error opening file " << filename << ": fopen(filename,w) failed" << finl;
           Process::exit();
         }
+#ifdef INT_is_64_
+      const char i64[] = "INT64";
+      fwrite(i64, sizeof(char), INT64_OFFSET, file_pointer);
+#endif
       // Seek at the end of file and write something to set the file size and check if filessystem
       // accepts the final file size:
       // On 64 bit platform, the prototype for the fseek library function takes a 64 bit integer, so this is ok:
-      fseek(file_pointer, total_data_bytes - sizeof(Size_t), SEEK_SET);
+      fseek(file_pointer, total_data_bytes + INT64_OFFSET - sizeof(Size_t), SEEK_SET);
       if (errno != 0)
         {
           Cerr << "Error seeking at file offset " << (int)(total_data_bytes>>32) << "GB in file " << filename << finl;
@@ -680,7 +685,7 @@ void IJK_Striped_Writer::write_data_parallel2_template(const char * filename,
           // Each process writes the data chunk
           // On 64 bit platform, the prototype for the fseek library function takes a 64 bit integer.
           errno = 0;
-          fseek(file_pointer, offset, SEEK_SET);
+          fseek(file_pointer, offset + INT64_OFFSET, SEEK_SET);
           if (errno != 0)
             {
               Cerr << "Error seeking at file offset " << (int)(offset>>32) << "GB in file " << filename << finl;

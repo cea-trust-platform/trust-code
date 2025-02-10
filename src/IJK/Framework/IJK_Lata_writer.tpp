@@ -22,6 +22,9 @@
 #include <IJK_Striped_Writer.h>
 #include <Parallel_io_parameters.h>
 
+/*! When dumping the IJK coordinates, we do not need 64b, since only the x, y and z steps will be written.
+ *  This never exceeds 32b.
+ */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f)
 {
@@ -32,6 +35,7 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
       Nom prefix = Nom(filename) + Nom(".");
       SFichier binary_file;
       binary_file.set_bin(1);
+      binary_file.set_64b(false);
       ArrOfFloat tmp;
       int n;
 
@@ -59,19 +63,10 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
         }
       master_file << "Geom " << geomname << " type_elem=HEXAEDRE" << finl;
       master_file << "Champ SOMMETS_IJK_I " << basename(fname[0]) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << splitting.get_grid_geometry().get_nb_elem_tot(0)+1 << " composantes=1" << finl;
       master_file << "Champ SOMMETS_IJK_J " << basename(fname[1]) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << splitting.get_grid_geometry().get_nb_elem_tot(1)+1 << " composantes=1" << finl;
       master_file << "Champ SOMMETS_IJK_K " << basename(fname[2]) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << splitting.get_grid_geometry().get_nb_elem_tot(2)+1 << " composantes=1" << finl;
       master_file.close();
     }
@@ -102,7 +97,7 @@ void dumplata_vector(const char *filename, const char *fieldname,
 
       master_file << "Champ " << fieldname << " " << basename(fd) << " geometrie=" << geomname;
 #ifdef INT_is_64_
-      //master_file << " file_offset=6";
+      master_file << " file_offset=6";
 #endif
       master_file << " size=" << n << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
     }

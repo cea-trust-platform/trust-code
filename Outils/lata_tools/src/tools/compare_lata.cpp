@@ -282,7 +282,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
   trustIdType nb_maille = connect.dimension(0);
   const BigTIDTab& connect2 = dom2.elements_;
   trustIdType nb_maille2 = connect2.dimension(0);
-  int dimension = (int)coord1.dimension(1);
+  int dimension = coord1.dimension_int(1);
 
   for (trustIdType j = 0; j < nb_nodes; j++)
     {
@@ -297,7 +297,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
   // cherche_element
 
   xp.resize(nb_maille, 3);
-  int connect_max = (int)connect.dimension(1);
+  int connect_max = connect.dimension_int(1);
   BigArrOfTID index_sort(nb_maille);
   // calcul du centre de gravite de la grille seq
   for (trustIdType k = 0; k < nb_maille; k++)
@@ -497,7 +497,7 @@ void construit_corres(const DomainUnstructured& dom, const DomainUnstructured& d
           /*printf("j i equiv[i2].ielem[j] isto= %d %d %d %d\n", j, i, equiv[i2].ielem[j], isto);*/
           if (ielem[j] == -1)
             {
-              cerr << "Element not found : index #" << j + 1 << endl;
+              cerr << "In domain '" << dom.id_.name_.getString() << "', element not found : index #" << j + 1 << endl;
               for (int ii = 0; ii < connect_max; ii++)
                 cerr << connect2(j, ii) << " ";
               cerr << endl;
@@ -547,7 +547,7 @@ void compare_fields(const FieldFloat& field, const FieldFloat& field2, Ecarts& e
   trustIdType nv = tab.dimension(0);
   const BigFloatTab& tab2 = field2.data_;
   trustIdType nv2 = tab2.dimension(0);
-  int nc = (int)tab.dimension(1);
+  int nc = tab.dimension_int(1);
   ecarts.dimensionne(nc);
   for (int c = 0; c < nc; c++)
     {
