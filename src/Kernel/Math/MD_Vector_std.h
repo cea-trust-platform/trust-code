@@ -41,6 +41,7 @@ class MD_Vector_std : public MD_Vector_mono
   Declare_instanciable(MD_Vector_std);
 
 public:
+  MD_Vector_std(int n);  // Simple ctor for SIDES
   MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfInt& pe_voisins,
                 const ArrsOfInt& items_to_send, const ArrsOfInt& items_to_recv, const ArrsOfInt& blocs_to_recv);
 

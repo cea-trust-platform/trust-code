@@ -20,6 +20,24 @@
 Implemente_instanciable(MD_Vector_std,"MD_Vector_std",MD_Vector_mono);
 
 
+/*! @brief Stupid ctor.
+ *
+ * Everything set to n.
+ */
+MD_Vector_std::MD_Vector_std(int n)
+{
+  nb_items_tot_ = n;
+  nb_items_reels_ = n;
+  nb_items_seq_tot_ = n;
+  nb_items_seq_local_ = n;
+  blocs_items_to_sum_.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  blocs_items_to_sum_[0] = 0;
+  blocs_items_to_sum_[1] = n;
+  blocs_items_to_compute_.resize_array(2, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  blocs_items_to_compute_[0] = 0;
+  blocs_items_to_compute_[1] = n;
+}
+
 /*! @brief Constructeur.
  *
  * Si nb_items_reels >= 0, items_to_compute contiendra un bloc avec les items reels,
