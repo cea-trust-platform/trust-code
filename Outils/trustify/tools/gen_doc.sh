@@ -20,7 +20,6 @@ echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 echo "@@@ Generating doc"
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 mod=$install_dir/generated/trustify_gen.py
-#mod=/export/home/adrien/Projets/TRUST/TRUST_LOCAL_fourth/Outils/trustify/test/generated/TRAD_2_adr_simple_pars.py
 doc_dir=$install_dir/doc
 
 rm -rf $doc_dir

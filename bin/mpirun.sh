@@ -105,7 +105,7 @@ case $Mpirun in
 			  echo "On rajoute les breakpoints inclus dans le fichier break_points"
 			  cat break_points >> $gdb_options
 		      fi		
-                      echo gdb -q $exec -x $gdb_options > $gdb
+                      echo gdb.sh -q $exec -x $gdb_options > $gdb
                       chmod +x $gdb
                       [ "x$Xterm" = "x" ] && echo "Warning: gdb will not work in parallel unless you install xterm and export Xterm=xterm"
 		      # Attention xterm -e sur Mandriva 2008 n'accepte plus qu'une seule commande derriere -e
