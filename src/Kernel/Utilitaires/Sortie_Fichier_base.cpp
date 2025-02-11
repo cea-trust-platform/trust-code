@@ -133,7 +133,11 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   std::string pathname = root;
   if (!pathname.empty()) pathname+="/";
   pathname += name;
-  if (++counters[pathname]%100==0) Cerr << "Warning, file " << pathname << " has been opened/closed " << counters[pathname] << " times..." << finl;
+  Nom p(pathname);
+  if (++counters[pathname]%100==0 && !p.finit_par(".lata") && !p.finit_par(".lml") && !p.finit_par(".lata_single") && !p.finit_par(".med.index"))
+    {
+      Cerr << "Warning, file " << pathname << " has been opened/closed " << counters[pathname] << " times..." << finl;
+    }
   IOS_OPEN_MODE ios_mod=mode;
   int new_bin=0;
   if (bin_)
