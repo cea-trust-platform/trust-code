@@ -267,6 +267,41 @@ Sortie& EcrFicPartageMPIIO::operator <<(const Objet_U& ob)
   return *this;
 }
 
+int EcrFicPartageMPIIO::put(const unsigned* ob, std::streamsize n, std::streamsize pas)
+{
+  assert(n < std::numeric_limits<True_int>::max());
+  if (is_64b_)
+    Process::exit("EcrFicPartageMPIIO::put() not implemented for cross bitness (writing 'int' in a 64b file for example!");
+  return put(MPI_UNSIGNED, ob, (True_int)n);
+}
+
+int EcrFicPartageMPIIO::put(const True_int* ob, std::streamsize n, std::streamsize pas)
+{
+  assert(n < std::numeric_limits<True_int>::max());
+  if (is_64b_)
+    Process::exit("EcrFicPartageMPIIO::put() not implemented for cross bitness (writing 'int' in a 64b file for example!");
+  return put(MPI_INT, ob, (True_int)n);
+}
+
+int EcrFicPartageMPIIO::put(const long* ob, std::streamsize n, std::streamsize pas)
+{
+  assert(n < std::numeric_limits<True_int>::max());
+  return put(MPI_LONG, ob, (True_int)n);
+}
+
+int EcrFicPartageMPIIO::put(const float* ob, std::streamsize n, std::streamsize pas)
+{
+  assert(n < std::numeric_limits<True_int>::max());
+  return put(MPI_FLOAT, ob, (True_int)n);
+}
+
+int EcrFicPartageMPIIO::put(const double* ob, std::streamsize n, std::streamsize pas)
+{
+  assert(n < std::numeric_limits<True_int>::max());
+  return put(MPI_DOUBLE, ob, (True_int)n);
+}
+
+
 // Function used for different MPI_Type
 // Good info/examples on MPI-IO:
 // See page 213: http://www.idris.fr/data/cours/parallel/mpi/IDRIS_MPI_cours_couleurs.pdf

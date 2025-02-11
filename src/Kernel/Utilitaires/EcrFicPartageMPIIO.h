@@ -55,31 +55,12 @@ public:
   Sortie& operator <<(const Objet_U& ob) override;
   Sortie& operator <<(const char* ob) override;
   Sortie& operator <<(const std::string& str) override;
-  int put(const unsigned* ob, std::streamsize n, std::streamsize pas) override
-  {
-    assert(n < std::numeric_limits<True_int>::max());
-    return put(MPI_UNSIGNED, ob, (True_int)n);
-  }
-  int put(const True_int* ob, std::streamsize n, std::streamsize pas) override
-  {
-    assert(n < std::numeric_limits<True_int>::max());
-    return put(MPI_INT, ob, (True_int)n);
-  }
-  int put(const long* ob, std::streamsize n, std::streamsize pas) override
-  {
-    assert(n < std::numeric_limits<True_int>::max());
-    return put(MPI_LONG, ob, (True_int)n);
-  }
-  int put(const float* ob, std::streamsize n, std::streamsize pas) override
-  {
-    assert(n < std::numeric_limits<True_int>::max());
-    return put(MPI_FLOAT, ob, (True_int)n);
-  }
-  int put(const double* ob, std::streamsize n, std::streamsize pas) override
-  {
-    assert(n < std::numeric_limits<True_int>::max());
-    return put(MPI_DOUBLE, ob, (True_int)n);
-  }
+
+  int put(const unsigned* ob, std::streamsize n, std::streamsize pas) override;
+  int put(const True_int* ob, std::streamsize n, std::streamsize pas) override;
+  int put(const long* ob, std::streamsize n, std::streamsize pas) override;
+  int put(const float* ob, std::streamsize n, std::streamsize pas) override;
+  int put(const double* ob, std::streamsize n, std::streamsize pas) override;
 
 private:
   void write(MPI_Datatype, const void*);
