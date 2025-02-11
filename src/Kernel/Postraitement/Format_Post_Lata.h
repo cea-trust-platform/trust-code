@@ -20,6 +20,7 @@
 #include <Format_Post_base.h>
 
 class Fichier_Lata;
+class SFichier;
 
 /*! @brief : Classe de postraitement des champs euleriens au format lata
  *
@@ -131,6 +132,7 @@ private:
   template<typename TYP>
   int ecrire_item_integral_T(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation,
                              const Nom& reference, const TRUSTVect<TYP, int>& val, const int reference_size);
+  void ecrire_offset(SFichier& sfichier, long int offset);
 };
 
 #endif /* Format_Post_Lata_included */

@@ -470,6 +470,22 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
   return 1;
 }
 
+/*! Write the "fileoffset=..." when needed in master lata file
+ */
+void Format_Post_Lata::ecrire_offset(SFichier& sfichier, long int offset_single_lata)
+{
+  if (un_seul_fichier_lata_)
+    sfichier << " file_offset=" << offset_single_lata;
+  else
+    {
+#ifdef INT_is_64_
+      // 64b binary file start with the tag "INT64" which is 6 bytes long with the \0 terminating char.
+      // In ASCII this is not needed.
+      if(format_ == BINAIRE)
+        sfichier << " file_offset=6";
+#endif
+    }
+}
 
 // E Saikali : on ajoute cette liste qui est utile pour un probleme couple dans le cas ou on ecrit dans meme fichier
 static Noms liste_single_lata_ecrit;
@@ -582,19 +598,8 @@ void Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Dou
         sfichier << " geometrie=" << id_domaine;
         sfichier << " size=" << nb_som_tot;
         sfichier << " composantes=" << dim;
-
-        if (un_seul_fichier_lata_)
-          sfichier << " file_offset=" << (int)offset_som_ << finl;
-        else
-          {
-#ifdef INT_is_64_
-            // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
-            // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
-            sfichier << " file_offset=6" << finl;
-#else
-            sfichier << finl;
-#endif
-          }
+        ecrire_offset(sfichier, offset_som_);
+        sfichier << finl;
 
         // ELEMENTS support
         sfichier << "CHAMP ELEMENTS " << remove_path(nom_fichier_geom);
@@ -602,14 +607,7 @@ void Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Dou
         sfichier << " geometrie=" << id_domaine;
         sfichier << " size=" << nb_elem_tot << " composantes=" << elements.dimension(1);
 
-        if (un_seul_fichier_lata_)
-          sfichier << " file_offset=" << (int)offset_elem_;
-        else
-          {
-#ifdef INT_is_64_
-            sfichier << " file_offset=6";
-#endif
-          }
+        ecrire_offset(sfichier, offset_elem_);
 
 
         switch(sizeof(_LATA_INT_TYPE_))
@@ -779,18 +777,9 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 
       sfichier << " composantes=" << nb_compo;
 
-      if (un_seul_fichier_lata_)
-        sfichier << " file_offset=" << (int)offset_elem_ << finl;
-      else
-        {
-#ifdef INT_is_64_
-          // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
-          // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
-          sfichier << " file_offset=6" << finl;
-#else
-          sfichier << finl;
-#endif
-        }
+      ecrire_offset(sfichier, offset_elem_);
+
+      sfichier << finl;
     }
   fichier.syncfile();
 
@@ -878,16 +867,7 @@ int Format_Post_Lata::ecrire_item_integral_T(const Nom& id_item, const Nom& id_d
         sfichier << " composantes=" << nb_compo;
         if (reference != "") sfichier << " reference=" << reference;
 
-        if (un_seul_fichier_lata_)
-          sfichier << " file_offset=" << (int)offset_elem_;
-        else
-          {
-#ifdef INT_is_64_
-            // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
-            // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
-            sfichier << " file_offset=6";
-#endif
-          }
+        ecrire_offset(sfichier, offset_elem_);
 
         const int sz = (int) sizeof(_LATA_INT_TYPE_);
         switch(sz)
