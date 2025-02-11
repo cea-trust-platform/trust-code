@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, Nom log_directory, bool apply_verification, int disable_stop)
+mon_main::mon_main(int verbose_level, bool journal_master, bool journal_shared, Nom log_directory, bool apply_verification, bool disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
@@ -51,7 +51,7 @@ mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, No
   apply_verification_ = apply_verification;
   // Creation d'un journal temporaire qui ecrit dans Cerr
   init_journal_file(verbose_level, 0, 0 /* filename = 0 => Cerr */, 0 /* append */);
-  trio_began_mpi_=0;
+  trio_began_mpi_=false;
   disable_stop_=disable_stop;
   change_disable_stop(disable_stop);
 }
@@ -62,7 +62,7 @@ bool error_handlers = true;
 #else
 bool error_handlers = false;
 #endif
-static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_mpi_)
+static int init_petsc(True_int argc, char **argv, bool with_mpi,bool& trio_began_mpi_)
 {
 #ifdef PETSCKSP_H
   static char help[] = "TRUST may solve linear systems with Petsc library.\n\n" ;
@@ -117,7 +117,7 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   if (!flag)
     {
       MPI_Init(&argc,&argv);
-      trio_began_mpi_=1;
+      trio_began_mpi_=true;
     }
 #endif
 #endif
@@ -142,7 +142,7 @@ static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 // sont dans un seul fichier: mon_main
 // On ne doit pas en voir ailleurs !
 //////////////////////////////////////////////////////////
-void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
+void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool check_enabled, bool with_petsc)
 {
   bool init_kokkos_before_mpi = true; // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
   if (init_kokkos_before_mpi)
@@ -161,12 +161,12 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
   Objet_U::computeOnDevice = getenv("TRUST_DISABLE_DEVICE") == nullptr ? true : false;
 
-  int must_mpi_initialize = 1;
-  if (with_petsc != 0)
+  bool must_mpi_initialize = true;
+  if (with_petsc)
     {
       if (init_petsc(argc, argv, with_mpi,trio_began_mpi_))
         {
-          must_mpi_initialize = 0; // Deja fait par Petsc
+          must_mpi_initialize = false; // Deja fait par Petsc
           arguments_info += "Petsc initialization succeeded.\n";
         }
       else
@@ -181,8 +181,8 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 #ifdef MPI_
   Comm_Group_MPI::set_must_mpi_initialize(must_mpi_initialize);
 #else
-  // GF pour eviter warning
-  if (must_mpi_initialize>10) abort();
+  // avoid variable 'must_mpi_initialize' set but not used error when MPI disabled
+  if (must_mpi_initialize) abort();
 #endif
   // ***************** Initialisation du parallele *************************
   Comm_Group::set_check_enabled(check_enabled);
