@@ -1,7 +1,7 @@
 #!/bin/bash
 
 [ "$TRUST_ROOT" = "" ] && echo "TRUST not sourced!" && exit 1
-[ "$TRUST_WITHOUT_CONDA" != 0 ] && echo "It seems that TRUST is installed without conda, no need to install libxml2" && exit 1
+
 model=`uname -m`
 system=`uname -s`
 if [ "$system" != "Linux" ] || [ $model != "x86_64" ]
@@ -10,8 +10,17 @@ then
    exit 1
 fi
 
-
-export LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
+# install path depends on whether miniforge installed or not
+# xml2 could be a dependency for some baltiks
+if [ "$TRUST_WITHOUT_CONDA" = 0 ]
+then
+   export LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
+   cmake=$TRUST_ROOT/exec/python/bin/cmake
+   XML_INSTALL_DIR=$TRUST_ROOT/exec/utils/libxml2
+else
+   cmake=cmake
+   XML_INSTALL_DIR=$TRUST_ROOT/exec/python
+fi
 
 # Compile libxml2 from sources in a minimal fashion
 
@@ -40,11 +49,14 @@ src_dir=${archive%.tar.gz}
 cd $src_dir
 mkdir -p BUILD
 cd BUILD
-XML_INSTALL_DIR=$TRUST_ROOT/exec/utils/libxml2
-$TRUST_ROOT/exec/python/bin/cmake .. $options -DCMAKE_INSTALL_PREFIX=$XML_INSTALL_DIR -DCMAKE_C_COMPILER=$TRUST_cc_BASE
+$cmake .. $options -DCMAKE_INSTALL_PREFIX=$XML_INSTALL_DIR -DCMAKE_C_COMPILER=$TRUST_cc_BASE || exit -1
 make install || exit -1
-cd $TRUST_ROOT/exec/python/lib
-ln -nsf ../../utils/libxml2/lib*/libxml2* .
-ls -l $TRUST_ROOT/exec/python/lib/libxml2*
+
+if [ "$TRUST_WITHOUT_CONDA" = 0 ]
+then
+   cd $TRUST_ROOT/exec/python/lib
+   ln -nsf ../../utils/libxml2/lib*/libxml2* .
+   ls -l $TRUST_ROOT/exec/python/lib/libxml2*
+fi
 cd $TRUST_ROOT
 rm -rf $TRUST_ROOT/build/utils/

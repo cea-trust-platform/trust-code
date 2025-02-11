@@ -1098,7 +1098,7 @@ fi
 # keep here to be able to use $TRUST_cc_BASE (seen on adastra)
 if [ "$system" = "Linux" ] && [ $model = "x86_64" ]
 then
-   if [ "$TRUST_WITHOUT_CONDA" != "1" ] && [ "$INSTALL_CONDA" = 1 ]
+   if [ "$TRUST_WITHOUT_CONDA" = "1" ] || [ "$INSTALL_CONDA" = 1 ]
    then
       make_ $TRUST_ROOT/Outils/libxml2 libxml2 $TRUST_ROOT/exec/libxml2.log
    fi
