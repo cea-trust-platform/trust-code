@@ -66,18 +66,10 @@ using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceV
 // Views on the host that allow conditional execution of loop that are not fully ported to device. They are unmanaged to avoid new allocation
 template<typename T, int _SHAPE_>
 using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
-
-#ifdef TRUST_USE_GPU
 template<typename T, int _SHAPE_>
 using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
 template<typename T, int _SHAPE_>
 using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
-#else
-template<typename T, int _SHAPE_>
-using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
-template<typename T, int _SHAPE_>
-using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
-#endif
 
 // Handy aliases
 using IntArrView = View<int, 1>;
@@ -121,6 +113,27 @@ using CDoubleTabHostView = ConstHostView<double, 2>;
 using CDoubleTabHostView3 = ConstHostView<double, 3>;
 using CDoubleTabHostView4 = ConstHostView<double, 4>;
 
+//Wrapper functions to build a unmanaged view from a pointer and a set of dimensions
+template <typename ViewType, typename _TYPE_, int _SHAPE_, typename _SIZE_>
+inline ViewType createView(_TYPE_* ptr, const std::array<_SIZE_, 4>& dims)
+{
+  return ViewType(
+           (_TYPE_*)(ptr),dims[0],
+           1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+           2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+           3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG
+         );
+}
+template <typename ViewType, typename _TYPE_, int _SHAPE_, typename _SIZE_>
+inline ViewType createView(const _TYPE_* ptr, const std::array<_SIZE_, 4>& dims)
+{
+  return ViewType(
+           (_TYPE_*)(ptr),dims[0],
+           1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+           2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+           3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG
+         );
+}
 extern void kokkos_self_test();
 
 #else // Kokkos not defined

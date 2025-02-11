@@ -20,18 +20,37 @@
 
 #ifdef KOKKOS
 
+//Deduce dimensions from shape and internal values
+//To be later used in View_Types.h's createView.
+template<typename _TYPE_, typename _SIZE_>
+template <int _SHAPE_>
+std::array<_SIZE_, 4> TRUSTArray<_TYPE_, _SIZE_>::getDims() const
+{
+  // The accessors should never be called with the wrong _SHAPE_
+  bool flattened = check_flattened<_SHAPE_>();
+
+  // If flattened, use size_array() for the first dimension,
+  // otherwise use dimension_tot(0)
+  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+
+//Useful when casting a 1D Tab into a multi-D View !
+  return { dimension_tot_0,
+           nb_dim_ > 1 ? this->dimension_tot(1) : 0,
+           nb_dim_ > 2 ? this->dimension_tot(2) : 0,
+           nb_dim_ > 3 ? this->dimension_tot(3) : 0
+         };
+
+}
+
 // Create internal DeviceView member
 template<typename _TYPE_, typename _SIZE_>
 template<int _SHAPE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::init_device_view() const
 {
-  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
-  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
   const auto& device_view = get_device_view<_SHAPE_>();
 
-  //Useful when casting a 1D Tab into a multi-D View !
-  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+  auto dims = this->getDims<_SHAPE_>();
 
   // change of alloc or resize triggers re-init (for now - resize could be done better)
   if(device_view.data() == addrOnDevice(*this) &&
@@ -43,10 +62,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::init_device_view() const
 
   mapToDevice(*this); // Device memory is allocated
   auto& mutable_device_view = const_cast<DeviceView<_TYPE_, _SHAPE_>&>(device_view);
-  mutable_device_view = DeviceView<_TYPE_,_SHAPE_>(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims[0],
-                                                   1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  mutable_device_view = createView<DeviceView<_TYPE_, _SHAPE_>, _TYPE_, _SHAPE_, _SIZE_>(const_cast<_TYPE_ *>(addrOnDevice(*this)), dims);
 }
 
 //Check if the internal value of nb_dim_ (that can be >1 if the Array is a Tab) is compatible with the _SHAPE_
@@ -90,17 +106,8 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, ConstHostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
-  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
-
-  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
-
-  //Useful when casting a 1D Tab into a multi-D View !
-  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
-
-  return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
-                                       1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                       2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                       3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  auto dims = this->getDims<_SHAPE_>();
+  return createView<ConstHostView<_TYPE_, _SHAPE_>, _TYPE_, _SHAPE_, _SIZE_>(this->addr(), dims);
 }
 
 
@@ -122,17 +129,8 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
-  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
-
-  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
-
-  //Useful when casting a 1D Tab into a multi-D View !
-  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
-
-  return HostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
-                                  1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  auto dims = this->getDims<_SHAPE_>();
+  return createView<HostView<_TYPE_, _SHAPE_>, _TYPE_, _SHAPE_, _SIZE_>(this->addr(), dims);
 }
 
 //////////// Read-Write ////////////////////////////
@@ -152,17 +150,8 @@ template<int _SHAPE_, typename EXEC_SPACE>
 inline std::enable_if_t<gpu_enabled_is_host_exec_space<EXEC_SPACE>, HostView<_TYPE_,_SHAPE_> >
 TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
-  bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
-
-  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
-
-  //Useful when casting a 1D Tab into a multi-D View !
-  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
-
-  return HostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
-                                  1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  2 < _SHAPE_ ? dims[2] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                  3 < _SHAPE_ ? dims[3] : KOKKOS_IMPL_CTOR_DEFAULT_ARG);
+  auto dims = this->getDims<_SHAPE_>();
+  return createView<HostView<_TYPE_, _SHAPE_>, _TYPE_, _SHAPE_, _SIZE_>(this->addr(), dims);
 }
 
 #endif

@@ -267,6 +267,9 @@ public:
   template<int _SHAPE_>
   inline bool check_flattened() const;
 
+  template<int _SHAPE_>
+  std::array<_SIZE_, 4> getDims() const;
+
   //Clean the internal view of the Trust Array in case it is needed, if the Array is static to avoid it's destruction after Kokkos::finalize
   inline void CleanMyView()
   {
