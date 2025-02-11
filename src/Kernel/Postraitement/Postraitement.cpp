@@ -1785,10 +1785,19 @@ Nom Postraitement::set_expression_champ(const Motcle& motlu1,const Motcle& motlu
                                         const int trouve)
 {
   Nom ajout("");
-  if (((motlu2!="natif") && (motlu2!="faces") && (motlu3==""))
-      || ((motlu2!="natif") && (motlu3!="")) )
+  if (motlu2 == "natif" || (motlu2 == "faces" && motlu3 == ""))
     {
-
+      if (!trouve)
+        {
+          ajout += " refChamp { Pb_champ ";
+          ajout += probleme().le_nom();
+          ajout += " ";
+          ajout += motlu1;
+          ajout += " }";
+        }
+    }
+  else
+    {
       ajout = "Interpolation { localisation ";
       ajout += motlu2;
 
@@ -1835,19 +1844,6 @@ Nom Postraitement::set_expression_champ(const Motcle& motlu1,const Motcle& motlu
         }
 
     }
-  else
-    {
-
-      if(!trouve)
-        {
-          ajout += " refChamp { Pb_champ ";
-          ajout += probleme().le_nom();
-          ajout += " ";
-          ajout += motlu1;
-          ajout += " }";
-        }
-    }
-
   return ajout;
 }
 
@@ -1897,49 +1893,18 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
 
   ajout = set_expression_champ(motlu1,motlu2,"","",trouve);
 
-  //A decommenter si choix fait de desactiver les champs discrets correspondants
-  //Meme procedure a faire pour creer_champ_post_stat()
-  //En fait seul gradient_temperature n est cree que pour le postraitement
-  /*
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  if ((motlu1=="divergence_U") || (motlu1=="gradient_pression") || (motlu1=="gradient_temperature"))
-  {
-  Motcle motlu1_corrige;
-  if (motlu1=="gradient_pression") motlu1_corrige="pression";
-  if (motlu1=="gradient_temperature") motlu1_corrige="temperature";
-  if (motlu1=="divergence_U") motlu1_corrige="vitesse";
-
-  if ((motlu1=="gradient_pression") || (motlu1=="gradient_temperature")) {
-
-  ajout = "Interpolation { localisation ";
-  ajout +=   motlu2;
-  ajout += " source Gradient { source refChamp { Pb_champ ";
-  ajout += mon_probleme->le_nom();
-  ajout += " ";
-  ajout += motlu1_corrige;
-  ajout += " } } }";
-  }
-
-  if (motlu1=="divergence_U") {
-  ajout = "Interpolation { localisation ";
-  ajout +=   motlu2;
-  ajout += " source Divergence { source refChamp { Pb_champ ";
-  ajout += mon_probleme->le_nom();
-  ajout += " ";
-  ajout += motlu1_corrige;
-  ajout += " } } }";
-  }
-  }
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  */
-
   Entree_complete s_complete(ajout,s);
   s_complete>>champ;
 
+  if (le_domaine->le_nom()!=mon_probleme->domaine().le_nom() && motlu2=="faces")
+    {
+      Cerr << "Post-processing a field on faces on a different domain (" << le_domaine->le_nom() << ") than compute domain (" << mon_probleme->domaine().le_nom() << ") is not supported yet !" << finl;
+      Cerr << "Switch to som or elem post-processing or post-process on the compute domain." << finl;
+      Process::exit();
+    }
   //if ((le_domaine->le_nom()!=mon_probleme->domaine().le_nom()) && ((motlu2!="natif"))) {
   {
-
-    if ((motlu2!="natif")&&(motlu2!="faces"))
+    if (sub_type(Champ_Generique_Interpolation,champ.valeur()))
       {
         Champ_Generique_Interpolation& champ_interp = ref_cast(Champ_Generique_Interpolation,champ.valeur());
         champ_interp.set_domaine(le_domaine->le_nom());
@@ -1948,14 +1913,6 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   }
 
   Nom nom_champ_ref;
-  //A decommenter si suppression champs discrets correspondants
-  /*
-    if ((motlu1=="divergence_U") || (motlu1=="gradient_pression") || (motlu1=="gradient_temperature"))
-    {
-    nom_champ_ref=motlu1;
-    }
-    else {
-  */
   Noms composantes;
   Noms source_compos,source_syno;
   if (trouve==0)
@@ -1989,30 +1946,11 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   champ->nommer(nom_champ);
 
   //On nomme la source d un Champ_Generique_Interpolation cree par macro
-  if ((motlu2!="natif") && (motlu2!="faces"))
+  if (sub_type(Champ_Generique_Interpolation,champ.valeur()))
     {
 
       Champ_Generique_Interpolation& champ_post = ref_cast(Champ_Generique_Interpolation,champ.valeur());
       champ_post.nommer_sources(*this);
-
-      //On fixe l attribut compo_ pour le Champ_Generique_Interpolation cree par cette macro
-
-      //A decommenter si suppression des champs discrets
-      /*
-        if ((motlu1=="divergence_U") || (motlu1=="gradient_pression") || (motlu1=="gradient_temperature"))
-        ////Noms source_compos = champ_ref->noms_compo();
-        {
-        if ((motlu1=="gradient_pression") || (motlu1=="gradient_temperature"))
-        {
-        source_compos.dimensionner(dimension);
-        source_compos[0]=nom_champ_ref+"X";
-        source_compos[1]=nom_champ_ref+"Y";
-        if (dimension>2)
-        source_compos[2]=nom_champ_ref+"Z";
-        }
-        }
-        else
-      */
 
       const Nom& nom_dom = champ_post.get_ref_domain().le_nom();
       int nb_comp = source_compos.size();
