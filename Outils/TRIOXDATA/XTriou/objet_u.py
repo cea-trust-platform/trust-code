@@ -1452,7 +1452,7 @@ def read_file_data(name):
             cmd=namea+"="+get_class_name(mot)+"()"
             # print "cmd",cmd
             try:
-                exec(cmd)
+                exec(cmd,globals())
                 pass
             except:
                 print(cmd, " impossible")
