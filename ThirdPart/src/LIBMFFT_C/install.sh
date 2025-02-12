@@ -16,7 +16,7 @@ cp -a $src $build/
 
 cd $build/src
 
-if [ "$TRUST_INT64" = "1" ]; then
+if [ "$TRUST_INT64" = "1" ] && [ "$TRUST_INT64_NEW" = "0" ]; then
     echo "Patching for 64b ..."
     cp $org/patch/* $build/src
 fi
