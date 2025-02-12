@@ -530,21 +530,19 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
   return div;
 }
 
-DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, DoubleTab& tab_div) const
+DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& tab_vitesse_face_absolue, DoubleTab& tab_div) const
 {
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   // Quelques verifications:
   // L'espace virtuel de vitesse_face_absolue doit etre a jour (Le test est fait si check_enabled==1)
-  assert_espace_virtuel_vect(vitesse_face_absolue);
+  assert_espace_virtuel_vect(tab_vitesse_face_absolue);
   // On s'en fiche de l'espace virtuel de div a l'entree, mais on fait += dessus.
   assert_invalide_items_non_calcules(tab_div, 0.);
 
 #ifndef NDEBUG
   // On s'assure que la periodicite est respectee sur vitesse_face_absolue (Voir FA814)
-  int nb_comp = vitesse_face_absolue.dimension(1);
-  int premiere_face_int = domaine_VEF.premiere_face_int();
-  copyPartialFromDevice(vitesse_face_absolue, 0, premiere_face_int * nb_comp, "vitesse_face_absolue on boundary");
+  int nb_comp = tab_vitesse_face_absolue.dimension(1);
   for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -553,31 +551,35 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
           int nb_faces_bord = le_bord.nb_faces();
-          for (int ind_face = 0; ind_face < nb_faces_bord; ind_face++)
-            {
-              int ind_face_associee = la_cl_perio.face_associee(ind_face);
-              int face = le_bord.num_face(ind_face);
-              int face_associee = le_bord.num_face(ind_face_associee);
-              // PL : test a 1.e-4 car certains cas ne respectent pas strictement (lente derive?)
-              for (int comp = 0; comp < nb_comp; comp++)
-                if (!est_egal(vitesse_face_absolue(face, comp), vitesse_face_absolue(face_associee, comp), 1.e-4))
-                  {
-                    Cerr << "vit1(" << face << "," << comp << ")=" << vitesse_face_absolue(face, comp) << finl;
-                    Cerr << "vit2(" << face_associee << "," << comp << ")=" << vitesse_face_absolue(face_associee, comp) << finl;
-                    Cerr << "Delta=" << vitesse_face_absolue(face, comp) - vitesse_face_absolue(face_associee, comp) << finl;
-                    Cerr << "Periodic boundary condition is not correct in Op_Div_VEFP1B_Elem::ajouter" << finl;
-                    Cerr << "Contact TRUST support." << finl;
-                    exit();
-                  }
-
-            }  // for face
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          CIntArrView num_face = le_bord.num_face().view_ro();
+          CDoubleTabView vitesse_face_absolue = tab_vitesse_face_absolue.view_ro();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, nb_faces_bord), KOKKOS_LAMBDA(const int ind_face)
+          {
+            int ind_face_associee = face_associee(ind_face);
+            int face = num_face(ind_face);
+            int face_ass = num_face(ind_face_associee);
+            // PL : test a 1.e-4 car certains cas ne respectent pas strictement (lente derive?)
+            for (int comp = 0; comp < nb_comp; comp++)
+              if (!est_egal(vitesse_face_absolue(face, comp), vitesse_face_absolue(face_ass, comp), 1.e-4))
+                {
+#ifndef TRUST_USE_GPU
+                  Cerr << "vit1(" << face << "," << comp << ")=" << vitesse_face_absolue(face, comp) << finl;
+                  Cerr << "vit2(" << face_ass << "," << comp << ")=" << vitesse_face_absolue(face_ass, comp) << finl;
+                  Cerr << "Delta=" << vitesse_face_absolue(face, comp) - vitesse_face_absolue(face_ass, comp) << finl;
+                  Cerr << "Periodic boundary condition is not correct in Op_Div_VEFP1B_Elem::ajouter" << finl;
+                  Cerr << "Contact TRUST support." << finl;
+#endif
+                  Process::Kokkos_exit("Error in Op_Div_VEFP1B_Elem::ajouter.");
+                }
+          });  // for face
+          end_gpu_timer(__KERNEL_NAME__);
         }  // sub_type Perio
     }
-  copyPartialToDevice(vitesse_face_absolue, 0, premiere_face_int * nb_comp, "vitesse_face_absolue on boundary");
 #endif
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   DoubleTab phi_vitesse_face_;
-  const DoubleTab& vit = modif_par_porosite_si_flag(vitesse_face_absolue, phi_vitesse_face_, 1, porosite_face);
+  const DoubleTab& vit = modif_par_porosite_si_flag(tab_vitesse_face_absolue, phi_vitesse_face_, 1, porosite_face);
 
   DoubleTab& flux_b = flux_bords_;
   flux_b.resize(domaine_VEF.nb_faces_bord(), 1);

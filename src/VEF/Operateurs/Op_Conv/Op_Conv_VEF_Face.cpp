@@ -178,7 +178,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const DoubleTab& vitesse_face    = modif_par_porosite_si_flag(la_vitesse.valeurs(),vitesse_face_,marq,porosite_face);
 
   const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const DoubleTab& facenormales = domaine_VEF.face_normales();
   const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const Domaine& domaine = domaine_VEF.domaine();
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
@@ -295,7 +294,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   int ncomp_ch_transporte=(transporte_face.nb_dim() == 1?1:transporte_face.dimension(1));
 
   // Traitement particulier pour les faces de periodicite
-  DoubleTab resu_perio;
+  DoubleTrav resu_perio;
   int nb_faces_perio = 0;
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
@@ -308,13 +307,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
     }
   if (nb_faces_perio>0)
     {
-      if (ncomp_ch_transporte == 1)
-        resu_perio.resize(nb_faces_perio);
-      else
-        resu_perio.resize(nb_faces_perio,ncomp_ch_transporte);
+      resu_perio.resize(nb_faces_perio,ncomp_ch_transporte);
       nb_faces_perio=0;
-      // Partial copy to avoid resu back on host with periodic BC !
-      copyPartialFromDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -323,18 +317,18 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
-              for (int num_face=num1; num_face<num2; num_face++)
-                {
-                  if (ncomp_ch_transporte == 1)
-                    resu_perio(nb_faces_perio) = resu(num_face);
-                  else
-                    for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                      resu_perio(nb_faces_perio,comp) = resu(num_face,comp);
-                  nb_faces_perio++;
-                }
+              CDoubleTabView resu_v = resu.view_ro();
+              DoubleTabView resu_perio_v = resu_perio.view_wo();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(const int num_face)
+              {
+                int ind_face = nb_faces_perio + num_face - num1;
+                for (int comp = 0; comp < ncomp_ch_transporte; comp++)
+                  resu_perio_v(ind_face, comp) = resu_v(num_face, comp);
+              });
+              end_gpu_timer(__KERNEL_NAME__);
+              nb_faces_perio+=num2-num1;
             }
         }
-      copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
     }
 
   DoubleTab tab_gradient; // Peut pointer vers gradient_elem ou gradient_face selon schema
@@ -439,7 +433,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   // Dimensionnement du tableau des flux convectifs au bord du domaine de calcul
   DoubleTab& flux_b = flux_bords_;
   int nb_faces_bord=domaine_VEF.nb_faces_bord();
-  flux_b.resize(nb_faces_bord,ncomp_ch_transporte);
+  if (flux_b.dimension(0)!=nb_faces_bord) flux_b.resize(nb_faces_bord,ncomp_ch_transporte);
   flux_b = 0.;
 
   const IntTab& KEL=type_elemvef.KEL();
@@ -929,18 +923,10 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       alpha = 1 - alpha;
     } // fin de la boucle
 
-  int voisine;
   nb_faces_perio = 0;
-  double diff1,diff2;
-
-  copyPartialFromDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
-  copyPartialFromDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
-  copyPartialFromDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
-  copyPartialFromDevice(vitesse_face, 0, premiere_face_int * dimension, "vitesse_face on boundary");
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
-  //start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -951,38 +937,26 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
-          for (int num_face=num1; num_face<num2; num_face++)
-            {
-              double psc =0;
-              for (int i=0; i<dimension; i++)
-                psc += vitesse_face(num_face,i)*facenormales(num_face,i);
-              if (psc>0)
-                if (ncomp_ch_transporte == 1)
-                  {
-                    resu(num_face) -= psc*transporte_face(num_face);
-                    flux_b(num_face,0) = -psc*transporte_face(num_face);
-                  }
-                else
-                  for (int i=0; i<ncomp_ch_transporte; i++)
-                    {
-                      resu(num_face,i) -= psc*transporte_face(num_face,i);
-                      flux_b(num_face,i) = -psc*transporte_face(num_face,i);
-                    }
-              else
-                {
-                  if (ncomp_ch_transporte == 1)
-                    {
-                      resu(num_face) -= psc*la_sortie_libre.val_ext(num_face-num1);
-                      flux_b(num_face,0) = -psc*la_sortie_libre.val_ext(num_face-num1);
-                    }
-                  else
-                    for (int i=0; i<ncomp_ch_transporte; i++)
-                      {
-                        resu(num_face,i) -= psc*la_sortie_libre.val_ext(num_face-num1,i);
-                        flux_b(num_face,i) = -psc*la_sortie_libre.val_ext(num_face-num1,i);
-                      }
-                }
-            }
+          int dim = Objet_U::dimension;
+          CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+          CDoubleTabView val_ext = la_sortie_libre.val_ext().view_ro();
+          CDoubleTabView transporte_face_v = transporte_face.view_ro();
+          CDoubleTabView vitesse_face_v = vitesse_face.view_ro();
+          DoubleTabView flux_b_v = flux_b.view_wo();
+          DoubleTabView resu_v = resu.view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(const int num_face)
+          {
+            double psc =0;
+            for (int i=0; i<dim; i++)
+              psc += vitesse_face_v(num_face,i)*face_normale(num_face,i);
+            for (int i=0; i<ncomp_ch_transporte; i++)
+              {
+                double val = psc > 0 ? transporte_face_v(num_face,i) : val_ext(num_face-num1,i);
+                resu_v(num_face,i) -= psc*val;
+                flux_b_v(num_face,i) = -psc*val;
+              }
+          });
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else if (sub_type(Periodique,la_cl.valeur()))
         {
@@ -990,48 +964,28 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
-          ArrOfInt fait(le_bord.nb_faces());
-          fait = 0;
-          for (int num_face=num1; num_face<num2; num_face++)
-            {
-              if (fait[num_face-num1] == 0)
-                {
-                  voisine = la_cl_perio.face_associee(num_face-num1) + num1;
-
-                  if (ncomp_ch_transporte == 1)
-                    {
-                      diff1 = resu(num_face)-resu_perio(nb_faces_perio);
-                      diff2 = resu(voisine)-resu_perio(nb_faces_perio+voisine-num_face);
-                      resu(voisine)  += diff1;
-                      resu(num_face) += diff2;
-                      /* On ne doit pas ajouter a flux_b, c'est deja calcule au dessus
-                         flux_b(voisine,0) += diff1;
-                         flux_b(num_face,0) += diff2;*/
-                    }
-                  else
-                    for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                      {
-                        diff1 = resu(num_face,comp)-resu_perio(nb_faces_perio,comp);
-                        diff2 = resu(voisine,comp)-resu_perio(nb_faces_perio+voisine-num_face,comp);
-                        resu(voisine,comp)  += diff1;
-                        resu(num_face,comp) += diff2;
-                        /* On ne doit pas ajouter a flux_b, c'est deja calcule au dessus
-                           flux_b(voisine,comp) += diff1;
-                           flux_b(num_face,comp) += diff2; */
-                      }
-
-                  fait[num_face-num1]= 1;
-                  fait[voisine-num1] = 1;
-                }
-              nb_faces_perio++;
-            }
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          CDoubleTabView resu_perio_v = resu_perio.view_ro();
+          DoubleTabView resu_v = resu.view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num1+le_bord.nb_faces()/2), KOKKOS_LAMBDA(const int num_face)
+          {
+            int ind_face = num_face - num1;
+            int voisine = face_associee(ind_face) + num1;
+            for (int comp=0; comp<ncomp_ch_transporte; comp++)
+              {
+                double diff1 = resu_v(num_face,comp) - resu_perio_v(nb_faces_perio+ind_face,comp);
+                double diff2 = resu_v(voisine,comp)  - resu_perio_v(nb_faces_perio+ind_face+voisine-num_face,comp);
+                resu_v(voisine,comp)  += diff1;
+                resu_v(num_face,comp) += diff2;
+                /* On ne doit pas ajouter a flux_b, c'est deja calcule au dessus
+                   flux_b(voisine,comp) += diff1;
+                   flux_b(num_face,comp) += diff2; */
+              }
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+          nb_faces_perio+=num2-num1;
         }
     }
-  //end_gpu_timer(__KERNEL_NAME__, 0);
-  copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
-  copyPartialToDevice(flux_b, 0, premiere_face_int * ncomp_ch_transporte, "flux_b on boundary");
-  copyPartialToDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
-  copyPartialToDevice(vitesse_face, 0, premiere_face_int * dimension, "vitesse_face on boundary");
   modifier_flux(*this);
   return resu;
 }

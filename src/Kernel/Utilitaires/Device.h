@@ -192,22 +192,6 @@ extern void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName
 template <typename _TYPE_, typename _SIZE_=int>
 extern void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
-// Partial copies are only used on the 32bits side:
-template <typename _TYPE_>
-extern void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
-
-template <typename _TYPE_>
-void copyPartialFromDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
-{
-  copyPartialFromDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), deb, fin, arrayName);
-}
-
-template <typename _TYPE_>
-extern void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
-
-template <typename _TYPE_>
-extern void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
-
 // ToDo OpenMP implemente methods for pointer (used only for the moment in Schema_Comm_Vecteurs for buffer communication with _TYPE_=char):
 template <typename _TYPE_, typename _SIZE_=int>
 extern _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");

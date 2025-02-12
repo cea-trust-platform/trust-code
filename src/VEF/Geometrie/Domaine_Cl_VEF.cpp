@@ -363,9 +363,6 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
   DoubleTab& ch_tab = ch.valeurs(temps);
   int nb_comp = ch.nb_comp();
-  copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "OWN_PTR(Champ_Inc_base) on boundary");
-  //ToDo_Kokkos("copyPartial"); Really not costly
-  start_gpu_timer();
   if (sub_type(Champ_P0_VEF, ch)) { /* Do nothing */ }
   else if (sub_type(Champ_P1NC,ch) || sub_type(Champ_Q1NC, ch))
     {
@@ -380,110 +377,161 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
               // On fait en sorte que le champ ait la meme valeur
               // sur deux faces de periodicite qui sont en face l'une de l'autre
               const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
-              for (int num_face = ndeb; num_face < nfin; num_face++)
+              CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+              if (nb_comp==1)
                 {
-                  int voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
-                  if (nb_comp == 1)
-                    {
-                      if (ch_tab[num_face] != ch_tab[voisine])
-                        {
-                          double moy = 0.5 * (ch_tab[num_face] + ch_tab[voisine]);
-                          ch_tab[num_face] = moy;
-                          ch_tab[voisine] = moy;
-                        }
-                    }
-                  else
-                    {
-                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                        if (ch_tab(num_face, ncomp) != ch_tab(voisine, ncomp))
-                          {
-                            double moy = 0.5 * (ch_tab(num_face, ncomp) + ch_tab(voisine, ncomp));
-                            ch_tab(num_face, ncomp) = moy;
-                            ch_tab(voisine, ncomp) = moy;
-                          }
-                    }
+                  DoubleArrView tab = static_cast<ArrOfDouble&>(ch_tab).view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    int voisine = face_associee(num_face - ndeb) + ndeb;
+                    if (tab(num_face) != tab(voisine))
+                      {
+                        double moy = 0.5 * (tab(num_face) + tab(voisine));
+                        tab(num_face) = moy;
+                        tab(voisine) = moy;
+                      }
+                  });
                 }
+              else
+                {
+                  DoubleTabView tab = ch_tab.view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    int voisine = face_associee(num_face - ndeb) + ndeb;
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      if (tab(num_face, ncomp) != tab(voisine, ncomp))
+                        {
+                          double moy = 0.5 * (tab(num_face, ncomp) + tab(voisine, ncomp));
+                          tab(num_face, ncomp) = moy;
+                          tab(voisine, ncomp) = moy;
+                        }
+                  });
+                }
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else if ((sub_type(Symetrie, la_cl)) && (ch.nature_du_champ() == vectoriel))
             {
-              const Domaine_VEF& zvef = domaine_vef();
-              const DoubleTab& face_normales = zvef.face_normales();
               if (nb_comp == dimension)
                 {
-                  for (int num_face = ndeb; num_face < nfin; num_face++)
-                    {
-                      double surf = 0, flux = 0;
-                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                        {
-                          double face_n = face_normales(num_face, ncomp);
-                          flux += ch_tab(num_face, ncomp) * face_n;
-                          surf += face_n * face_n;
-                        }
-                      // flux /= surf; // Fixed bug: Arithmetic exception
-                      if (std::fabs(surf) >= DMINFLOAT)
-                        flux /= surf;
-                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                        ch_tab(num_face, ncomp) -= flux * face_normales(num_face, ncomp);
-                    }
+                  CDoubleTabView face_normales = domaine_vef().face_normales().view_ro();
+                  DoubleTabView tab = ch_tab.view_rw();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    double surf = 0, flux = 0;
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      {
+                        double face_n = face_normales(num_face, ncomp);
+                        flux += tab(num_face, ncomp) * face_n;
+                        surf += face_n * face_n;
+                      }
+                    // flux /= surf; // Fixed bug: Arithmetic exception
+                    if (std::fabs(surf) >= DMINFLOAT)
+                      flux /= surf;
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      tab(num_face, ncomp) -= flux * face_normales(num_face, ncomp);
+                  });
+                  end_gpu_timer(__KERNEL_NAME__);
                 }
             }
           else if (sub_type(Dirichlet_entree_fluide, la_cl))
             {
               const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide, la_cl);
+              CDoubleTabView val_imp = la_cl_diri.val_imp(temps).view_ro();
               if (nb_comp == 1)
-                for (int num_face = ndeb; num_face < nfin; num_face++)
-                  ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
+                {
+                  DoubleArrView tab = static_cast<ArrOfDouble&>(ch_tab).view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin),
+                                       KOKKOS_LAMBDA(const int num_face)
+                  {
+                    tab(num_face) = val_imp(num_face - ndeb, 0);
+                  });
+                }
               else
                 {
-                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                    for (int num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
+                  DoubleTabView tab = ch_tab.view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      tab(num_face, ncomp) = val_imp(num_face - ndeb, ncomp);
+                  });
                 }
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else if (sub_type(Scalaire_impose_paroi, la_cl))
             {
               const Scalaire_impose_paroi& la_cl_diri = ref_cast(Scalaire_impose_paroi, la_cl);
+              CDoubleTabView val_imp = la_cl_diri.val_imp(temps).view_ro();
               if (nb_comp == 1)
-                for (int num_face = ndeb; num_face < nfin; num_face++)
-                  ch_tab[num_face] = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb);
+                {
+                  DoubleArrView tab = static_cast<ArrOfDouble&>(ch_tab).view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin),
+                                       KOKKOS_LAMBDA(const int num_face)
+                  {
+                    tab(num_face) = val_imp(num_face - ndeb, 0);
+                  });
+                }
               else
                 {
-                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                    for (int num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp);
+                  DoubleTabView tab = ch_tab.view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      tab(num_face, ncomp) = val_imp(num_face - ndeb, ncomp);
+                  });
                 }
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else if ((sub_type(Dirichlet_paroi_fixe, la_cl)) && (ch.nature_du_champ() == multi_scalaire))
             {
               if (nb_comp == 1)
-                for (int num_face = ndeb; num_face < nfin; num_face++)
-                  ch_tab[num_face] = 0;
+                {
+                  DoubleArrView tab = static_cast<ArrOfDouble&>(ch_tab).view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin),
+                                       KOKKOS_LAMBDA(const int num_face)
+                  {
+                    tab(num_face) = 0;
+                  });
+                }
               else
                 {
-                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                    for (int num_face = ndeb; num_face < nfin; num_face++)
+                  DoubleTabView tab = ch_tab.view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
                       {
-                        ch_tab(num_face, 0) = 0;
-                        ch_tab(num_face, 1) = 0;
+                        tab(num_face, 0) = 0;
+                        tab(num_face, 1) = 0;
                       }
+                  });
                 }
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else if (sub_type(Dirichlet_paroi_fixe, la_cl))
             {
               if (nb_comp == 1)
-                for (int num_face = ndeb; num_face < nfin; num_face++)
-                  ch_tab[num_face] = 0;
+                {
+                  DoubleArrView tab = static_cast<ArrOfDouble&>(ch_tab).view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin),
+                                       KOKKOS_LAMBDA(const int num_face)
+                  {
+                    tab(num_face) = 0;
+                  });
+                }
               else
                 {
-                  for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                    for (int num_face = ndeb; num_face < nfin; num_face++)
-                      ch_tab(num_face, ncomp) = 0;
+                  DoubleTabView tab = ch_tab.view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      tab(num_face, ncomp) = 0;
+                  });
                 }
+              end_gpu_timer(__KERNEL_NAME__);
             }
           else if (sub_type(Dirichlet_paroi_defilante, la_cl))
             {
               const Dirichlet_paroi_defilante& la_cl_diri = ref_cast(Dirichlet_paroi_defilante, la_cl);
-              const DoubleTab& face_normales = domaine_vef().face_normales();
+              CDoubleTabView face_normales = domaine_vef().face_normales().view_ro();
               if (nb_comp != dimension)
                 {
                   Cerr << "Cas non prevu dans Domaine_Cl_VEF::imposer_cond_lim." << finl;
@@ -491,22 +539,25 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
                 }
               else
                 {
-                  for (int num_face = ndeb; num_face < nfin; num_face++)
-                    {
-                      double surf = 0, flux = 0;
-                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                        {
-                          double face_n = face_normales(num_face, ncomp);
-                          flux += la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp) * face_n;
-                          surf += face_n * face_n;
-                        }
-                      // flux /= surf; // Fixed bug: Arithmetic exception
-                      if (std::fabs(surf) >= DMINFLOAT)
-                        flux /= surf;
-                      for (int ncomp = 0; ncomp < nb_comp; ncomp++)
-                        ch_tab(num_face, ncomp) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, ncomp) -
-                                                  flux * face_normales(num_face, ncomp);
-                    }
+                  CDoubleTabView val_imp = la_cl_diri.val_imp(temps).view_ro();
+                  DoubleTabView tab = ch_tab.view_wo();
+                  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int num_face)
+                  {
+                    double surf = 0, flux = 0;
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      {
+                        double face_n = face_normales(num_face, ncomp);
+                        flux += val_imp(num_face - ndeb, ncomp) * face_n;
+                        surf += face_n * face_n;
+                      }
+                    // flux /= surf; // Fixed bug: Arithmetic exception
+                    if (std::fabs(surf) >= DMINFLOAT)
+                      flux /= surf;
+                    for (int ncomp = 0; ncomp < nb_comp; ncomp++)
+                      tab(num_face, ncomp) = val_imp(num_face - ndeb, ncomp) -
+                                             flux * face_normales(num_face, ncomp);
+                  });
+                  end_gpu_timer(__KERNEL_NAME__);
                 }
             }
         }
@@ -516,8 +567,6 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
       Cerr << "Le type de OWN_PTR(Champ_Inc_base) " << ch.que_suis_je() << " n'est pas prevu en VEF\n" << finl;
       exit();
     }
-  end_gpu_timer(__KERNEL_NAME__, 0);
-  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * nb_comp, "Champ_Inc on boundary");
   ch_tab.echange_espace_virtuel();
 
   // PARTIE PRESSION

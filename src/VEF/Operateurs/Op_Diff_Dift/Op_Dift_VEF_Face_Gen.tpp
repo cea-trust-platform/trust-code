@@ -248,7 +248,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
 }
 
 template <typename DERIVED_T> template <bool _IS_STAB_>
-void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords) const
+void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& tab_inconnue, DoubleTab& tab_resu, DoubleTab& tab_flux_bords) const
 {
   // On traite les faces bord
   const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
@@ -256,14 +256,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
-  const int nb_front = domaine_VEF.nb_front_Cl(), nb_comp = resu.line_size();
+  const int nb_front = domaine_VEF.nb_front_Cl(), nb_comp = tab_resu.line_size();
 
-  // ToDo Kokkos: we prefer to compute on the host (with copyPartialFromDevice cause some functions flux_impose(), T_ext(), h_imp() can't be fastly be KOKKOS_INLINE_FUNCTION
-  int size = domaine_VEF.premiere_face_int() * nb_comp;
-  copyPartialFromDevice(resu, 0, size, "resu on boundary");
-  copyPartialFromDevice(inconnue, 0, size, "inconnue on boundary");
-  copyPartialFromDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
-  start_gpu_timer(__KERNEL_NAME__);
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -273,54 +267,71 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
       if (is_STAB && sub_type(Periodique, la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-
-          for (int ind_face = 0; ind_face < le_bord.nb_faces(); ind_face++)
-            {
-              const int face = le_bord.num_face(ind_face), face_associee = le_bord.num_face(la_cl_perio.face_associee(ind_face));
-              if (face < face_associee)
-                for (int nc = 0; nc < nb_comp; nc++)
-                  {
-                    resu(face, nc) += resu(face_associee, nc);
-                    resu(face_associee, nc) = resu(face, nc);
-                  }
-            }
+          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+          CIntArrView num_face = le_bord.num_face().view_ro();
+          DoubleTabView resu = tab_resu.view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, le_bord.nb_faces()/2), KOKKOS_LAMBDA(const int ind_face)
+          {
+            const int face = num_face(ind_face);
+            const int voisine = num_face(face_associee(ind_face));
+            for (int nc = 0; nc < nb_comp; nc++)
+              {
+                resu(face, nc) += resu(voisine, nc);
+                resu(voisine, nc) = resu(face, nc);
+              }
+          });
+          end_gpu_timer(__KERNEL_NAME__);
         }
 
       if (sub_type(Neumann_paroi, la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-          for (int face = ndeb; face < nfin; face++)
+          CDoubleTabView flux_impose = la_cl_paroi.flux_impose().view_ro();
+          CDoubleArrView face_surfaces = domaine_VEF.face_surfaces().view_ro();
+          DoubleTabView flux_bords = tab_flux_bords.view_wo();
+          DoubleTabView resu = tab_resu.view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int face)
+          {
             for (int nc = 0; nc < nb_comp; nc++)
               {
-                const double flux = la_cl_paroi.flux_impose(face - ndeb, nc) * domaine_VEF.face_surfaces(face);
+                const double flux = flux_impose(face - ndeb, nc) * face_surfaces(face);
                 if (is_STAB) resu(face, nc) -= flux; // XXX -= car regarde dans Op_Dift_Stab_VEF_Face::ajouter
                 else resu(face, nc) += flux;
-                tab_flux_bords(face, nc) = flux;
+                flux_bords(face, nc) = flux;
               }
+          });
+          end_gpu_timer(__KERNEL_NAME__);
         }
 
       if (sub_type(Echange_externe_impose, la_cl.valeur()))
         {
+          ToDo_Kokkos("critical"); // Implement la_cl_paroi.T_ext() and la_cl_paroi.h_imp() !
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
+          const ArrOfDouble& face_surfaces = domaine_VEF.face_surfaces();
+          //const DoubleTab& T_ext = la_cl_paroi.T_ext();
+          //const DoubleTab& h_imp = la_cl_paroi.h_imp();
           for (int face = ndeb; face < nfin; face++)
             for (int nc = 0; nc < nb_comp; nc++)
               {
-                const double flux = la_cl_paroi.h_imp(face - ndeb, nc) * (la_cl_paroi.T_ext(face - ndeb, nc) - inconnue(face, nc)) * domaine_VEF.face_surfaces(face);
-                if (is_STAB) resu(face, nc) -= flux;
-                else resu(face, nc) += flux;
+                const double flux = la_cl_paroi.h_imp(face - ndeb, nc) *
+                                    (la_cl_paroi.T_ext(face - ndeb, nc) - tab_inconnue(face, nc)) * face_surfaces(face);
+                if (is_STAB) tab_resu(face, nc) -= flux;
+                else tab_resu(face, nc) += flux;
                 tab_flux_bords(face, nc) = flux;
               }
         }
 
-      if (sub_type(Neumann_homogene,la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
-        for (int face = ndeb; face < nfin; face++)
-          for (int nc = 0; nc < nb_comp; nc++)
-            tab_flux_bords(face, nc) = 0.;
+      if (sub_type(Neumann_homogene, la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
+        {
+          DoubleTabView flux_bords = tab_flux_bords.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int face)
+          {
+            for (int nc = 0; nc < nb_comp; nc++)
+              flux_bords(face, nc) = 0.;
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+        }
     }
-  end_gpu_timer(__KERNEL_NAME__, 0);
-  copyPartialToDevice(tab_flux_bords, 0, size,"tab_flux_bords on boundary");
-  copyPartialToDevice(resu, 0, size, "resu on boundary");
-  copyPartialToDevice(inconnue, 0, size, "inconnue on boundary");
 }
 
 /*

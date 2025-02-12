@@ -168,15 +168,13 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op, int& init, const Domaine_VE
   r.ecrit(Cerr);
 }
 
-DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
+DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& tab_grad) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_bords = les_cl.size();
-  copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-  start_gpu_timer(__KERNEL_NAME__);
+  int dim = Objet_U::dimension;
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -186,76 +184,75 @@ DoubleTab& Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl(DoubleTab& grad) const
         int num2 = num1 + le_bord.nb_faces();
         if (sub_type(Periodique, la_cl.valeur()))
           {
-            //periodicite
             const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-            ArrOfInt fait(le_bord.nb_faces());
-            for (int face = num1; face < num2; face++)
-              {
-                if (!fait[face - num1])
-                  {
-                    int face_associee = num1 + la_cl_perio.face_associee(face - num1);
-                    fait[face - num1] = (fait[face_associee - num1] = 1);
-                    for (int comp = 0; comp < dimension; comp++)
-                      grad(face_associee, comp) = (grad(face, comp) += grad(face_associee, comp));
-                  }
-              }
+            CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+            DoubleTabView grad = tab_grad.view_rw();
+            Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num1+le_bord.nb_faces()/2), KOKKOS_LAMBDA(const int face)
+            {
+              int face_ass = num1 + face_associee(face - num1);
+              for (int comp = 0; comp < dim; comp++)
+                {
+                  grad(face, comp) += grad(face_ass, comp);
+                  grad(face_ass, comp) = grad(face, comp);
+                }
+            });
+            end_gpu_timer(__KERNEL_NAME__);
           }
         else
           {
             if (sub_type(Symetrie, la_cl.valeur()))
               {
-                for (int face = num1; face < num2; face++)
-                  {
-                    double psc = 0;
-                    double norm = 0;
-                    int comp;
-                    for (comp = 0; comp < dimension; comp++)
-                      {
-                        psc += grad(face, comp) * face_normales(face, comp);
-                        norm += face_normales(face, comp) * face_normales(face, comp);
-                      }
-                    // psc/=norm; // Fixed bug: Arithmetic exception
-                    if (std::fabs(norm) >= DMINFLOAT)
-                      psc /= norm;
-                    for (comp = 0; comp < dimension; comp++)
-                      grad(face, comp) -= psc * face_normales(face, comp);
-                  }
+                CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
+                DoubleTabView grad = tab_grad.view_rw();
+                Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(const int face)
+                {
+                  double psc = 0;
+                  double norm = 0;
+                  for (int comp = 0; comp < dim; comp++)
+                    {
+                      psc += grad(face, comp) * face_normales(face, comp);
+                      norm += face_normales(face, comp) * face_normales(face, comp);
+                    }
+                  // psc/=norm; // Fixed bug: Arithmetic exception
+                  if (std::fabs(norm) >= DMINFLOAT)
+                    psc /= norm;
+                  for (int comp = 0; comp < dim; comp++)
+                    grad(face, comp) -= psc * face_normales(face, comp);
+                });
+                end_gpu_timer(__KERNEL_NAME__);
               }
             else if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene, la_cl.valeur()))
               {
-                for (int face = num1; face < num2; face++)
-                  {
-                    for (int comp = 0; comp < dimension; comp++)
-                      grad(face, comp) = 0;
-                  }
+                DoubleTabView grad = tab_grad.view_wo();
+                Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({num1,0}, {num2,dim}), KOKKOS_LAMBDA(const int face, const int comp)
+                {
+                  grad(face, comp) = 0;
+                });
+                end_gpu_timer(__KERNEL_NAME__);
               }
           }
       }
     }
-  end_gpu_timer(__KERNEL_NAME__, 0);
-  copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-  return grad;
+  return tab_grad;
 }
 
-DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
+DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& tab_grad) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
   assert(domaine_VEF.get_alphaE());
   const Domaine& domaine = domaine_VEF.domaine();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nfe = domaine.nb_faces_elem();
   int nb_elem_tot = domaine.nb_elem_tot();
+  CDoubleArrView porosite_face = equation().milieu().porosite_face().view_ro();
+  CDoubleTabView face_normales = domaine_VEF.face_normales().view_ro();
   // Si pas de support P1, on impose Neumann sur P0
   if (domaine_VEF.get_alphaS() == 0)
     {
       const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
       const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
       int nb_bords = les_cl.size();
-      copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-      start_gpu_timer(__KERNEL_NAME__);
+      int dim = Objet_U::dimension;
       for (int n_bord = 0; n_bord < nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -265,25 +262,24 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
-              for (int face = num1; face < num2; face++)
-                {
-                  double P_imp = la_sortie_libre.flux_impose(face - num1);
-                  double diff = P_imp;
-                  for (int comp = 0; comp < dimension; comp++)
-                    grad(face, comp) += diff * face_normales(face, comp) * porosite_face(face);
-                }
+              CDoubleTabView flux_impose = la_sortie_libre.flux_impose().view_ro();
+              DoubleTabView grad = tab_grad.view_rw();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(const int face)
+              {
+                double P_imp = flux_impose(face - num1, 0);
+                double diff = P_imp;
+                for (int comp = 0; comp < dim; comp++)
+                  grad(face, comp) += diff * face_normales(face, comp) * porosite_face(face);
+              });
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
-      end_gpu_timer(__KERNEL_NAME__, 0);
-      copyPartialToDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
     }
 
-  CIntTabView face_voisins_v = face_voisins.view_ro();
-  CDoubleArrView porosite_face_v = porosite_face.view_ro();
-  CDoubleTabView face_normales_v = face_normales.view_ro();
+  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CIntTabView elem_faces_v = elem_faces.view_ro();
   CDoubleTabView pre_v = pre.view_ro();
-  DoubleTabView grad_v = grad.view_rw();
+  DoubleTabView grad = tab_grad.view_rw();
   int dim = Objet_U::dimension;
 
   auto kern_elem = KOKKOS_LAMBDA(int
@@ -294,11 +290,11 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
         double pe = pre_v(elem, 0);
         int face = elem_faces_v(elem, indice);
         double signe = 1;
-        if (elem != face_voisins_v(face, 0)) signe = -1;
+        if (elem != face_voisins(face, 0)) signe = -1;
         for (int comp = 0; comp < dim; comp++)
           {
-            double val = pe * signe * face_normales_v(face, comp) * porosite_face_v(face);
-            Kokkos::atomic_sub(&grad_v(face, comp), val);
+            double val = pe * signe * face_normales(face, comp) * porosite_face(face);
+            Kokkos::atomic_sub(&grad(face, comp), val);
           }
       }
   };
@@ -306,7 +302,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, kern_elem);
   end_gpu_timer(__KERNEL_NAME__);
 
-  return grad;
+  return tab_grad;
 }
 
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab& tab_grad) const
@@ -346,7 +342,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
   CDoubleArrView porosite_face = tab_porosite_face.view_ro();
   CDoubleArrView coeff_som = coeff_som_.view_ro();
   CIntTabView som_v = som_.view_ro();
-  CDoubleTabView pre = tab_pre.view_ro();
+  CDoubleArrView pre = static_cast<const ArrOfDouble&>(tab_pre).view_ro();
   DoubleTabView grad = tab_grad.view_rw();
   int dim = Objet_U::dimension;
 
@@ -369,7 +365,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
         int face2 = elem_faces(elem,indice2);
         for (int comp = 0; comp < dim; comp++)
           {
-            Kokkos::atomic_add(&grad(face2,comp), -(coeff_som(elem) * pre(som_v(elem,indice),0) * sigma[comp] * porosite_face(face2)));
+            Kokkos::atomic_add(&grad(face2,comp), -(coeff_som(elem) * pre(som_v(elem,indice)) * sigma[comp] * porosite_face(face2)));
           }
       }
   });
@@ -386,10 +382,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
 
   if (has_sortie_libre)
     {
-      int premiere_face_int = domaine_VEF.premiere_face_int();
-      copyPartialFromDevice(tab_grad, 0, premiere_face_int * dim, "grad on boundary");
-      copyPartialFromDevice(tab_pre, nps, nps + dom.nb_som_tot(), "pressure on som");
-      const IntTab& face_sommets = domaine_VEF.face_sommets();
       for (int n_bord = 0; n_bord < nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -399,21 +391,23 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& tab_pre, DoubleTab
               const Neumann_sortie_libre& sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
-              for (int face = num1; face < num2; face++)
-                {
-                  const double P_imp = sortie_libre.flux_impose(face - num1);
-                  for (int indice = 0; indice < (nfe - 1); indice++)
-                    {
-                      int som = nps + dom.get_renum_som_perio(face_sommets(face, indice));
-                      for (int comp = 0; comp < dim; comp++)
-                        tab_grad(face, comp) -= 1. / dim * tab_face_normales(face, comp) * (tab_pre(som) - P_imp) *
-                                                tab_porosite_face(face);
-                    }
-                } //fin du if sur "Neumann_sortie_libre"
+              CDoubleTabView flux_impose = sortie_libre.flux_impose().view_ro();
+              CIntTabView face_sommets = domaine_VEF.face_sommets().view_ro();
+              CIntArrView renum_som_perio = dom.get_renum_som_perio().view_ro();
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(const int face)
+              {
+                const double P_imp = flux_impose(face - num1, 0);
+                for (int indice = 0; indice < (nfe - 1); indice++)
+                  {
+                    int som = nps + renum_som_perio(face_sommets(face, indice));
+                    for (int comp = 0; comp < dim; comp++)
+                      grad(face, comp) -= 1. / dim * face_normales(face, comp) * (pre(som) - P_imp) *
+                                          porosite_face(face);
+                  }
+              });
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
-      copyPartialToDevice(tab_pre, nps, nps + dom.nb_som_tot(), "pressure on som");
-      copyPartialToDevice(tab_grad, 0, premiere_face_int * dim, "grad on boundary");
     }
 
   return tab_grad;

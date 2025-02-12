@@ -225,30 +225,6 @@ void self_test()
     assert(const_b[0] == 3);
   }
 
-  // Test de copyPartialFromDevice/copyPartialToDevice
-  {
-    ArrOfDouble a(4);
-    const ArrOfDouble& const_a = a;
-    a=0;
-    mapToDevice(a, "a");
-    a+=1; // Done on device
-    copyPartialFromDevice(a, 1, 3, "a");
-    assert(a.get_data_location() == DataLocation::PartialHostDevice);
-    assert(const_a[0]==0);
-    assert(const_a[1]==1);
-    assert(const_a[2]==1);
-    assert(const_a[3]==0);
-    a[1]=2; // Done on host
-    a[2]=2; // Done on host
-    copyPartialToDevice(a, 1, 3, "a");
-    assert(a.get_data_location() == DataLocation::Device);
-    copyFromDevice(a, "a");
-    assert(const_a[0]==1);
-    assert(const_a[1]==2);
-    assert(const_a[2]==2);
-    assert(const_a[3]==1);
-  }
-
   // Constructeurs sur device:
   {
     DoubleTab a(10);

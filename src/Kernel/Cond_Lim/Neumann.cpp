@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,22 +56,36 @@ double Neumann::flux_impose(int i, int j) const
     return le_champ_front->valeurs()(i, j);
 }
 
-/*! @brief Retourne le tableau flux_impose_ mis a jour
+/*! @brief Updates and returns the imposed flux array.
  *
+ * This function checks the total number of faces in the boundary and resizes the
+ * `flux_impose_` array if necessary. It updates the values based on the imposed
+ * flux from the front field if the field is unsteady or if the dimensions have changed.
+ *
+ * @return const DoubleTab& Reference to the updated imposed flux array.
  */
 const DoubleTab& Neumann::flux_impose() const
 {
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
-  int nb_faces_tot = le_bord.nb_faces_tot();
-  if (nb_faces_tot>0)
+  // ToDo factorize in Champ_front_base::valeurs_face()
+  int size = le_champ_front->valeurs().dimension(0) == 1 ? le_bord.nb_faces_tot() : le_champ_front->valeurs().dimension_tot(0);
+  if (size>0)
     {
-      if (flux_impose_.dimension(0) != nb_faces_tot)
-        flux_impose_.resize(nb_faces_tot, le_champ_front->valeurs().dimension(1));
-      int size = flux_impose_.dimension(0);
-      int nb_comp = flux_impose_.dimension(1);
-      for (int i = 0; i < size; i++)
-        for (int j = 0; j < nb_comp; j++)
-          flux_impose_(i, j) = flux_impose(i, j);
+      bool update = le_champ_front->instationnaire();
+      if (flux_impose_.dimension(0) != size)
+        {
+          int nb_comp = le_champ_front->valeurs().size() == 1 ? 1 : le_champ_front->valeurs().dimension(1);
+          flux_impose_.resize(size, nb_comp);
+          update = true;
+        }
+      update = true; // Provisoire (ecarts sur Quasi_Comp_Obst_GP_VEF_Pmoy ???)
+      if (update)
+        {
+          int nb_comp = flux_impose_.dimension(1);
+          for (int i = 0; i < size; i++)
+            for (int j = 0; j < nb_comp; j++)
+              flux_impose_(i, j) = flux_impose(i, j);
+        }
     }
   return flux_impose_;
 }

@@ -367,66 +367,6 @@ void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName)
   copyFromDevice(const_cast<TRUSTArray<_TYPE_,_SIZE_>&>(tab), arrayName);
 }
 
-// Partial copy of an array (from deb to fin element) from host to device
-// Typical example: Deal with boundary condition (small loop) on the host
-// copyPartialFromDevice(resu, 0, premiere_face_int);   // Faces de bord
-// copyPartialFromDevice(resu, nb_faces, nb_faces_tot); // Pour ajouter les faces de bord virtuelles si necessaire
-template <typename _TYPE_>
-void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
-{
-#ifdef TRUST_USE_GPU
-  if (tab.get_data_location()==DataLocation::Device || tab.get_data_location()==DataLocation::PartialHostDevice)
-    {
-      int bytes = sizeof(_TYPE_) * (fin-deb);
-      _TYPE_ *tab_addr = tab.data();
-      start_gpu_timer("copyPartialFromDevice",bytes);
-      if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
-      Kokkos::View<_TYPE_*> host_view(tab_addr+deb, fin-deb);
-      Kokkos::View<_TYPE_*> device_view(addrOnDevice(tab_addr)+deb, fin-deb);
-      Kokkos::deep_copy(host_view, device_view);
-      if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
-      std::string message;
-      message = "Partial update from device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
-      end_gpu_timer(message, bytes);
-      tab.set_data_location(DataLocation::PartialHostDevice);
-    }
-#endif
-}
-
-// Partial copy of an array (from deb to fin element) from host to device
-template <typename _TYPE_>
-void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
-{
-#ifdef TRUST_USE_GPU
-  if (tab.get_data_location()==DataLocation::PartialHostDevice)
-    {
-      int bytes = sizeof(_TYPE_) * (fin-deb);
-      _TYPE_ *tab_addr = tab.data();
-      start_gpu_timer("copyPartialToDevice",bytes);
-      if (timer_on) statistiques().begin_count(gpu_copytodevice_counter_);
-      Kokkos::View<_TYPE_*> host_view(tab_addr+deb, fin-deb);
-      Kokkos::View<_TYPE_*> device_view(addrOnDevice(tab_addr)+deb, fin-deb);
-      Kokkos::deep_copy(device_view, host_view);
-      if (timer_on) statistiques().end_count(gpu_copytodevice_counter_, bytes);
-      std::string message;
-      message = "Partial update to device of array "+arrayName+" ["+ptrToString(tab_addr)+"]";
-      end_gpu_timer(message, bytes);
-      tab.set_data_location(DataLocation::Device);
-    }
-#endif
-}
-
-template <typename _TYPE_>
-void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
-{
-#ifdef TRUST_USE_GPU
-  if (tab.get_data_location()==DataLocation::PartialHostDevice)
-    {
-      // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host
-      const_cast<TRUSTArray<_TYPE_>&>(tab).set_data_location(DataLocation::Device);
-    }
-#endif
-}
 
 //
 //  Explicit template instanciations
@@ -481,18 +421,6 @@ template void copyFromDevice<char>(char* ptr, int size, std::string arrayName);
 template void copyFromDevice<double>(const TRUSTArray<double>& tab, std::string arrayName);
 template void copyFromDevice<int>(const TRUSTArray<int>& tab, std::string arrayName);
 template void copyFromDevice<float>(const TRUSTArray<float>& tab, std::string arrayName);
-
-template void copyPartialFromDevice<double>(TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
-template void copyPartialFromDevice<int>(TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
-template void copyPartialFromDevice<float>(TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
-
-template void copyPartialToDevice<double>(TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
-template void copyPartialToDevice<int>(TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
-template void copyPartialToDevice<float>(TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
-
-template void copyPartialToDevice<double>(const TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
-template void copyPartialToDevice<int>(const TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
-template void copyPartialToDevice<float>(const TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
 
 #if INT_is_64_ == 2
 

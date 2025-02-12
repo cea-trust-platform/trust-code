@@ -440,16 +440,16 @@ void Navier_Stokes_Fluide_Dilatable_Proto::prepare_and_solve_u_star(Navier_Stoke
 
 void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Navier_Stokes_std& eqn,
                                                                        const Fluide_Dilatable_base& fluide_dil,
-                                                                       DoubleTab& vpoint)
+                                                                       DoubleTab& tab_vpoint)
 {
   // on ajoute durho/dt au bord Dirichlet car les solveur masse a mis a zero
   // NOTE : en incompressible le terme est rajoute par modifier_secmem
   const double dt_ = eqn.schema_temps().pas_de_temps();
   const DoubleTab& tab_rho_face_n = fluide_dil.rho_face_n(), &tab_rho_face_np1=fluide_dil.rho_face_np1();
-  const DoubleTab& vit = eqn.vitesse().valeurs();
+  const DoubleTab& tab_vit = eqn.vitesse().valeurs();
   const Conds_lim& lescl = eqn.domaine_Cl_dis().les_conditions_limites();
   const IntTab& face_voisins = eqn.domaine_dis().face_voisins();
-  const int taille = vpoint.line_size();
+  const int taille = tab_vpoint.line_size();
 
   if (taille==1)
     if (orientation_VDF_.size() == 0)
@@ -472,29 +472,26 @@ void Navier_Stokes_Fluide_Dilatable_Proto::update_vpoint_on_boundaries(const Nav
                   if (n0 == -1) n0 = face_voisins(num_face, 1);
 
                   // GF en cas de diffsion implicite vpoint!=0 on ignrore l'ancienne valeur
-                  vpoint(num_face)=(diri.val_imp(num_face-ndeb,orientation_VDF_(num_face))*tab_rho_face_np1(num_face)-
-                                    vit(num_face)*tab_rho_face_n(num_face))/dt_;
+                  tab_vpoint(num_face)=(diri.val_imp(num_face-ndeb,orientation_VDF_(num_face))*tab_rho_face_np1(num_face)-
+                                        tab_vit(num_face)*tab_rho_face_n(num_face))/dt_;
                 }
             }
           else // VEF //
             {
               int dim = Objet_U::dimension;
-              int premiere_face_int = ref_cast(Domaine_VF, eqn.domaine_dis()).premiere_face_int();
-              copyPartialFromDevice(tab_rho_face_np1, 0, premiere_face_int, "tab_rho_face_np1 on boundary");
-              copyPartialFromDevice(tab_rho_face_n, 0, premiere_face_int, "tab_rho_face_n on boundary");
-              copyPartialFromDevice(vit, 0, premiere_face_int * dim, "vit on boundary");
-              copyPartialFromDevice(vpoint, 0, premiere_face_int * dim, "vpoint on boundary");
-              for (int num_face=ndeb; num_face<nfin; num_face++)
-                for (int jj=0; jj<dim; jj++)
-                  {
-                    // GF en cas de diffusion implicite vpoint!=0 on ignrore l'ancienne valeur
-                    vpoint(num_face,jj)=(tab_rho_face_np1(num_face)*diri.val_imp(num_face-ndeb,jj)
-                                         -tab_rho_face_n(num_face)*vit(num_face,jj))/dt_;
-                  }
-              copyPartialToDevice(tab_rho_face_np1, 0, premiere_face_int, "tab_rho_face_np1 on boundary");
-              copyPartialToDevice(tab_rho_face_n, 0, premiere_face_int, "tab_rho_face_n on boundary");
-              copyPartialToDevice(vit, 0, premiere_face_int * dim, "vit on boundary");
-              copyPartialToDevice(vpoint, 0, premiere_face_int * dim, "vpoint on boundary");
+              CDoubleTabView val_imp = diri.val_imp().view_ro();
+              CDoubleArrView rho_face_np1 = static_cast<const ArrOfDouble&>(tab_rho_face_np1).view_ro();
+              CDoubleArrView rho_face_n = static_cast<const ArrOfDouble&>(tab_rho_face_n).view_ro();
+              CDoubleTabView vit = tab_vit.view_ro();
+              DoubleTabView vpoint = tab_vpoint.view_wo();
+              Kokkos::MDRangePolicy<Kokkos::Rank<2>> policy({ndeb, 0}, {nfin, dim});
+              Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int num_face, const int jj)
+              {
+                // GF en cas de diffusion implicite vpoint!=0 on ignrore l'ancienne valeur
+                vpoint(num_face,jj)=(rho_face_np1(num_face)*val_imp(num_face-ndeb,jj)
+                                     -rho_face_n(num_face)*vit(num_face,jj))/dt_;
+              });
+              end_gpu_timer(__KERNEL_NAME__);
             }
         }
     }

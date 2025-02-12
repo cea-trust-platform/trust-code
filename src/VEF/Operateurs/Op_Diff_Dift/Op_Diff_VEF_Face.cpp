@@ -87,125 +87,129 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
   if (tab_flux_bords.size_array()==0) tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
   tab_flux_bords=0.;
 
-  CIntTabView  elem_faces = domaine_VEF.elem_faces().view_ro();
-  CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
-  CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
-  CDoubleArrView inverse_volumes = domaine_VEF.inverse_volumes().view_ro();
-  CDoubleTabView nu = tab_nu.view_ro();
-  CDoubleTabView inconnue = tab_inconnue.view_ro();
-  DoubleTabView flux_bords = tab_flux_bords.view_rw();
-  DoubleTabView resu = tab_resu.view_rw();
-  // On traite les faces bord
-  for (int n_bord=0; n_bord<nb_bords; n_bord++)
-    {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
-      int num1=0;
-      int num2=le_bord.nb_faces_tot();
-      int nb_faces_bord_reel = le_bord.nb_faces();
-      CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
-      if (sub_type(Periodique,la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                               Kokkos::RangePolicy<>(num1, nb_faces_bord_reel), KOKKOS_LAMBDA(
-                                 const int ind_face)
-          {
-            int num_face = le_bord_num_face(ind_face);
-            int fac_asso = face_associee(ind_face);
-            fac_asso = le_bord_num_face(fac_asso);
-            for (int kk=0; kk<2; kk++)
-              {
-                int elem = face_voisins(num_face,kk);
-                for (int i=0; i<nb_faces_elem; i++)
-                  {
-                    int j = elem_faces(elem,i);
-                    if ( j > num_face  && j != fac_asso )
-                      {
-                        double valA = viscA(num_face,j,elem, nu(elem,0), face_voisins, face_normale, inverse_volumes);
-                        double flux = valA*(inconnue(j,0)-inconnue(num_face,0));
-                        Kokkos::atomic_add(&resu(num_face,0), +flux);
-                        if(j<nb_faces) // face reelle
-                          Kokkos::atomic_add(&resu(j,0), -0.5*flux);
-                      }
-                  }
-              }
-          });
-          end_gpu_timer(__KERNEL_NAME__);
-        }
-      else   // Il n'y a qu'une seule composante, donc on traite
-        // une equation scalaire (pas la vitesse) on a pas a utiliser
-        // le tau tangentiel (les lois de paroi thermiques ne calculent pas
-        // d'echange turbulent a la paroi pour l'instant
-        {
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                               Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
-                                 const int ind_face)
-          {
-            int num_face = le_bord_num_face(ind_face);
-            int elem = face_voisins(num_face,0);
-            for (int i=0; i<nb_faces_elem; i++)
-              {
-                int j = elem_faces(elem,i);
-                if (j > num_face || num_face>=nb_faces)
-                  {
-                    double valA = viscA(num_face,j,elem,nu(elem,0), face_voisins, face_normale, inverse_volumes);
-                    double flux=valA*(inconnue(j,0)-inconnue(num_face,0));
-                    if (num_face<nb_faces) // face reelle
-                      {
-                        Kokkos::atomic_add(&resu(num_face,0), +flux);
-                        Kokkos::atomic_add(&flux_bords(num_face,0), -flux);
-                      }
-                    if(j<nb_faces) // face reelle
-                      {
-                        Kokkos::atomic_add(&resu(j,0), -flux);
-                        if (j<premiere_face_int)
-                          Kokkos::atomic_add(&flux_bords(j,0), +flux);
-                      }
-                  }
-              }
-          });
-          end_gpu_timer(__KERNEL_NAME__);
-        }
-    }
-
-  // Faces internes :
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({premiere_face_int,0}, {nb_faces,2}), KOKKOS_LAMBDA (const int num_face, const int k)
   {
-    int elem = face_voisins(num_face,k);
-    for (int i = 0; i < nb_faces_elem; i++)
+    CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
+    CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
+    CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
+    CDoubleArrView inverse_volumes = domaine_VEF.inverse_volumes().view_ro();
+    CDoubleTabView nu = tab_nu.view_ro();
+    CDoubleTabView inconnue = tab_inconnue.view_ro();
+    DoubleArrView flux_bords = static_cast<ArrOfDouble&>(tab_flux_bords).view_rw();
+    DoubleArrView resu = static_cast<ArrOfDouble&>(tab_resu).view_rw();
+    // On traite les faces bord
+    for (int n_bord = 0; n_bord < nb_bords; n_bord++)
       {
-        int j = elem_faces(elem,i);
-        if (j > num_face)
+        const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+        const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+        int num1 = 0;
+        int num2 = le_bord.nb_faces_tot();
+        int nb_faces_bord_reel = le_bord.nb_faces();
+        CIntArrView le_bord_num_face = le_bord.num_face().view_ro();
+        if (sub_type(Periodique, la_cl.valeur()))
           {
-            int contrib = 1;
-
-            if(j >= nb_faces) // C'est une face virtuelle
-              {
-                int el1 = face_voisins(j,0);
-                int el2 = face_voisins(j,1);
-                if((el1 == -1) || (el2 == -1))
-                  contrib = 0;
-              }
-
-            if(contrib)
-              {
-                double valA = viscA(num_face,j,elem,nu(elem,0),face_voisins,face_normale,inverse_volumes);
-                double flux = valA * (inconnue(j,0) - inconnue(num_face,0));
-                Kokkos::atomic_add(&resu(num_face,0), flux);
-                if(j < nb_faces) // On traite les faces reelles
-                  Kokkos::atomic_add(&resu(j,0), -flux);
-              }
+            const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
+            CIntArrView face_associee = la_cl_perio.face_associee().view_ro();
+            Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                                 Kokkos::RangePolicy<>(num1, nb_faces_bord_reel), KOKKOS_LAMBDA(
+                                   const int ind_face)
+            {
+              int num_face = le_bord_num_face(ind_face);
+              int fac_asso = face_associee(ind_face);
+              fac_asso = le_bord_num_face(fac_asso);
+              for (int kk = 0; kk < 2; kk++)
+                {
+                  int elem = face_voisins(num_face, kk);
+                  for (int i = 0; i < nb_faces_elem; i++)
+                    {
+                      int j = elem_faces(elem, i);
+                      if (j > num_face && j != fac_asso)
+                        {
+                          double valA = viscA(num_face, j, elem, nu(elem, 0), face_voisins, face_normale,
+                                              inverse_volumes);
+                          double flux = valA * (inconnue(j, 0) - inconnue(num_face, 0));
+                          Kokkos::atomic_add(&resu(num_face), +flux);
+                          if (j < nb_faces) // face reelle
+                            Kokkos::atomic_add(&resu(j), -0.5 * flux);
+                        }
+                    }
+                }
+            });
+            end_gpu_timer(__KERNEL_NAME__);
+          }
+        else     // Il n'y a qu'une seule composante, donc on traite
+          // une equation scalaire (pas la vitesse) on a pas a utiliser
+          // le tau tangentiel (les lois de paroi thermiques ne calculent pas
+          // d'echange turbulent a la paroi pour l'instant
+          {
+            Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                                 Kokkos::RangePolicy<>(num1, num2), KOKKOS_LAMBDA(
+                                   const int ind_face)
+            {
+              int num_face = le_bord_num_face(ind_face);
+              int elem = face_voisins(num_face, 0);
+              for (int i = 0; i < nb_faces_elem; i++)
+                {
+                  int j = elem_faces(elem, i);
+                  if (j > num_face || num_face >= nb_faces)
+                    {
+                      double valA = viscA(num_face, j, elem, nu(elem, 0), face_voisins, face_normale,
+                                          inverse_volumes);
+                      double flux = valA * (inconnue(j, 0) - inconnue(num_face, 0));
+                      if (num_face < nb_faces) // face reelle
+                        {
+                          Kokkos::atomic_add(&resu(num_face), +flux);
+                          Kokkos::atomic_add(&flux_bords(num_face), -flux);
+                        }
+                      if (j < nb_faces) // face reelle
+                        {
+                          Kokkos::atomic_add(&resu(j), -flux);
+                          if (j < premiere_face_int)
+                            Kokkos::atomic_add(&flux_bords(j), +flux);
+                        }
+                    }
+                }
+            });
+            end_gpu_timer(__KERNEL_NAME__);
           }
       }
-  });
-  end_gpu_timer(__KERNEL_NAME__);
+
+    // Faces internes :
+    Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
+                         Kokkos::MDRangePolicy<Kokkos::Rank<2>>({premiere_face_int, 0}, {nb_faces, 2}),
+                         KOKKOS_LAMBDA(const int num_face, const int k)
+    {
+      int elem = face_voisins(num_face, k);
+      for (int i = 0; i < nb_faces_elem; i++)
+        {
+          int j = elem_faces(elem, i);
+          if (j > num_face)
+            {
+              int contrib = 1;
+
+              if (j >= nb_faces) // C'est une face virtuelle
+                {
+                  int el1 = face_voisins(j, 0);
+                  int el2 = face_voisins(j, 1);
+                  if ((el1 == -1) || (el2 == -1))
+                    contrib = 0;
+                }
+
+              if (contrib)
+                {
+                  double valA = viscA(num_face, j, elem, nu(elem, 0), face_voisins,
+                                      face_normale, inverse_volumes);
+                  double flux = valA * (inconnue(j, 0) - inconnue(num_face, 0));
+                  Kokkos::atomic_add(&resu(num_face), flux);
+                  if (j < nb_faces) // On traite les faces reelles
+                    Kokkos::atomic_add(&resu(j), -flux);
+                }
+            }
+        }
+    });
+    end_gpu_timer(__KERNEL_NAME__);
+  }
 
   // Neumann :
-  copyPartialFromDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
-  copyPartialFromDevice(tab_inconnue, 0, premiere_face_int, "inconnue on boundary");
-  start_gpu_timer();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -215,55 +219,65 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-          for (int face=ndeb; face<nfin; face++)
-            {
-              double flux=la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.surface(face);
-              tab_resu[face] += flux;
-              tab_flux_bords(face,0) = flux;
-            }
+          CDoubleArrView surface = domaine_VEF.face_surfaces().view_ro();
+          CDoubleTabView flux_impose = la_cl_paroi.flux_impose().view_ro();
+          DoubleArrView flux_bords = static_cast<ArrOfDouble&>(tab_flux_bords).view_rw();
+          DoubleArrView resu = static_cast<ArrOfDouble&>(tab_resu).view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int face)
+          {
+            double flux = flux_impose(face-ndeb, 0) * surface(face);
+            resu(face) += flux;
+            flux_bords(face) = flux;
+          });
+          end_gpu_timer(__KERNEL_NAME__);
         }
       else if (sub_type(Echange_externe_impose,la_cl.valeur()))
         {
+          ToDo_Kokkos("critical");
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
+          const DoubleVect& surface = domaine_VEF.face_surfaces();
           for (int face=ndeb; face<nfin; face++)
             {
-              double flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-tab_inconnue(face))*domaine_VEF.surface(face);
+              double flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-tab_inconnue(face))*surface(face);
               tab_resu[face] += flux;
-              tab_flux_bords(face,0) = flux;
+              tab_flux_bords(face) = flux;
 
               if (la_cl_paroi.has_emissivite())
                 {
                   const double text = la_cl_paroi.T_ext(face - ndeb), T = tab_inconnue(face);
-                  flux = COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * domaine_VEF.surface(face);
+                  flux = COEFF_STEFAN_BOLTZMANN * la_cl_paroi.emissivite(face - ndeb) * (text * text * text * text - T * T * T * T) * surface(face);
                   tab_resu[face] += flux;
-                  tab_flux_bords(face, 0) += flux;
+                  tab_flux_bords(face) += flux;
                 }
             }
         }
       else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
         {
+          ToDo_Kokkos("critical");
           const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
+          const DoubleVect& surface = domaine_VEF.face_surfaces();
           for (int face=ndeb; face<nfin; face++)
             {
               double h=la_cl_paroi.h_imp(face-ndeb);
               double Text=la_cl_paroi.T_ext(face-ndeb);
               double phiext=la_cl_paroi.flux_exterieur_impose(face-ndeb);
-              double flux=(phiext+h*(Text-tab_inconnue(face)))*domaine_VEF.surface(face);
+              double flux=(phiext+h*(Text-tab_inconnue(face)))*surface(face);
               tab_resu[face] += flux;
-              tab_flux_bords(face,0) = flux;
+              tab_flux_bords(face) = flux;
             }
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
                || sub_type(Symetrie,la_cl.valeur())
                || sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
-          for (int face=ndeb; face<nfin; face++)
-            tab_flux_bords(face,0) = 0.;
+          DoubleArrView flux_bords = static_cast<ArrOfDouble&>(tab_flux_bords).view_rw();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int face)
+          {
+            flux_bords(face) = 0.;
+          });
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
-  end_gpu_timer(__KERNEL_NAME__, 0);
-  copyPartialToDevice(tab_resu, 0, premiere_face_int, "resu on boundary");
-  copyPartialToDevice(tab_inconnue, 0, premiere_face_int, "inconnue on boundary");
 }
 
 void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
@@ -375,6 +389,7 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                                                   const Domaine_VEF& domaine_VEF,
                                                   int nb_comp) const
 {
+  ToDo_Kokkos("critical");
   const IntTab& elemfaces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int i0,j,num_face;
