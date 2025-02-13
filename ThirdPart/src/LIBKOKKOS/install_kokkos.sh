@@ -47,8 +47,10 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=hipcc" # $TRUST_CC_BASE pour profiter de ccache ?
         else # Serial
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_ATOMICS_BYPASS=ON" # Serial build (skips mutexes to remediate performance regression)
         fi
         CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_FLAGS=-fPIC"
+        # ARCH:
         if [ "$TRUST_USE_CUDA" = 1 ]
         then
            # Kokkos use CUDA_ROOT pour trouver nvcc !!!!
