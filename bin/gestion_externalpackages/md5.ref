@@ -262,12 +262,12 @@ bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 2cf02a542c1933de95bdbe3f42188ffa  doxygen-1.7.4.linux.bin.tar.gz
 065cef54eb09cdb54614e1ed353ddbd1  doxygen-1.9.3.src.tar.gz
 27c5022f697e2522c0dbab439b9573b9  gnuplot/gnuplot-5.2.7.tar.gz
+ea0931758fc180e3b1950931b9869921  gnuplot/gnuplot-6.0.2.tar.gz
 4fa24da17c99b122a56cb8808b6eb78b  hwloc-2.7.1.tar.gz
 36abe803480d07db87f9ba03cd5a842c  kokkos/kokkos-3.7.02.tgz
 fa15c31a146dd1487d619c7679393e78  kokkos/kokkos-4.2.00.tgz
-ffb6120e2309a2280471716301824805  lapack/OpenBLAS-0.3.21.tar.gz
-115634b39007de71eb7e75cf7591dfb2  lapack/OpenBLAS-0.3.23.tar.gz
 48384e324cd1cdcfbdb0d2e16ca55327  lapack/OpenBLAS-0.3.25.tar.gz
+853a0c5c0747c5943e7ef4bbb793162d  lapack/OpenBLAS-0.3.29.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 9be6e048224797bf531f94b7a8aaa99d  osqp-0.6.0.tar.gz

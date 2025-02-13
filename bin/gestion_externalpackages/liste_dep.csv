@@ -44,9 +44,8 @@ VisIt,glu-9.0.0.tar.gz,,PL,MIT,,https://archive.mesa3d.org/glu/glu-9.0.0.tar.gz,
 VisIt,Pillow-7.1.2.tar.gz,,ND,PIL,https://python-pillow.org/,https://files.pythonhosted.org/packages/ce/ef/e793f6ffe245c960c42492d0bb50f8d14e2ba223f1922a5c3c81569cec44/Pillow-7.1.2.tar.gz,
 VisIt,cfe-6.0.1.src.tar.xz,,ND,"Open Source License?",,http://llvm.org/releases/6.0.1/cfe-6.0.1.src.tar.xz,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
-lapack,OpenBLAS-0.3.21.tar.gz,,PL,BSD,https://www.openblas.net/,http://github.com/xianyi/OpenBLAS/archive/v0.3.21.tar.gz,
-lapack,OpenBLAS-0.3.23.tar.gz,,PL,BSD,https://www.openblas.net/,https://github.com/xianyi/OpenBLAS/releases/download/v0.3.23/OpenBLAS-0.3.23.tar.gz,
 lapack,OpenBLAS-0.3.25.tar.gz,,PL,BSD,https://www.openblas.net/,https://github.com/xianyi/OpenBLAS/releases/download/v0.3.25/OpenBLAS-0.3.25.tar.gz,
+lapack,OpenBLAS-0.3.29.tar.gz,,PL,BSD,https://www.openblas.net/,https://github.com/xianyi/OpenBLAS/releases/download/v0.3.29/OpenBLAS-0.3.29.tar.gz,
 petsc,SuiteSparse-5.13.0.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/v5.13.0.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
 petsc,viennacl-dc552a8.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,https://github.com/viennacl/viennacl-dev/archive/dc552a8.tar.gz,"Hum option utilisee ????"
 petsc,scotch-7.0.3.tar.gz,,PL," CeCILL-C license",http://scotch.gforge.inria.fr/,https://gitlab.inria.fr/scotch/scotch/-/archive/v7.0.3/scotch-v7.0.3.tar.gz,
@@ -70,6 +69,7 @@ AmgX,AmgX_69e625e99b.tar.gz,,PL,,,https://github.com/NVIDIA/AMGX/archive/69e625e
 kokkos,kokkos-3.7.02.tgz,,PL,"Apache License v2.0 with LLVM Exceptions",https://github.com/kokkos,https://github.com/kokkos/kokkos/archive/refs/tags/3.7.02.tar.gz,
 kokkos,kokkos-4.2.00.tgz,,PL,"Apache License v2.0 with LLVM Exceptions",https://github.com/kokkos,https://github.com/kokkos/kokkos/archive/refs/tags/4.2.00.tar.gz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
+gnuplot,gnuplot-6.0.2.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,https://sourceforge.net/projects/gnuplot/files/gnuplot/6.0.2/gnuplot-6.0.2.tar.gz/download,
 SALOME,medcoupling-9.13.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,,
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
 utils,gawk-4.1.4.tar.gz,outil,GF,GPL,http://www.gnu.org/software/gawk,http://ftp.gnu.org/gnu/gawk/gawk-4.1.4.tar.gz,

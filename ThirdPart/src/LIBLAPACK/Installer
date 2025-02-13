@@ -38,7 +38,7 @@ install_OpenBlas()
       # Warning, faire en 2 passes car parallel build peut echouer sinon (ex: Fedora38)
       for target in $targets
       do
-         $TRUST_MAKE $target $options || exit -1
+         $TRUST_MAKE $target $options || return 1
       done
    fi
    lib=`ls libopenblas_*$version_openblas.a 2>/dev/null`
@@ -51,10 +51,10 @@ install_OpenBlas()
       cd benchmark
       if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
       then
-         CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP NO_AVX512=1 || exit -1
+         CFLAGS=-fopenmp make dgemm.goto CC=$CC FC=$FC USE_THREAD=$OPENBLAS_USE_OPENMP USE_OPENMP=$OPENBLAS_USE_OPENMP NO_AVX512=1 || return 1
          OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
       else
-         make dgemm.goto CC=$CC FC=$FC NO_AVX512=1 || exit -1
+         make dgemm.goto CC=$CC FC=$FC NO_AVX512=1 || return 1
          ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
       fi
       cd - 1>/dev/null 2>&1
@@ -127,33 +127,39 @@ do
 done
 # Nom des versions a upgrader: Attention on garde encore 0.3.21 ailleurs car plantage possible sur haswell (PC Elie) avec seg fault dans MUMPS lors appel dgemmt_ (ToDo: semble corrige dans 0.3.24)
 # version_openblas=0.3.21 && [ $HOST = adastra ] && version_openblas=0.3.23 # Necessaire pour adastra (-O noomp inconnue plante lapack)
-version_openblas=0.3.25 # Prendre version plus ancienne si probleme
+#version_openblas=0.3.25 # Prendre version plus ancienne si probleme
 # On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
 version_lapack=3.4.1 && [ "$TRUST_INT64" != "1" ] && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 
 # [HPC][!Portabilite] Utilisation OpenBlas par defaut (valide sur TRUST/F5/TrioCFD/G3) -> Decomposition LU plus rapide
 if [ "$TRUST_USE_OPENBLAS" = 1 ]
 then
-   install_OpenBlas
-   lib=`ls libopenblas_*$version_openblas.a 2>/dev/null | head -1`
-   # On copie la librairie si elle existe sinon on sort
-   if [ "`ls $lib 2>/dev/null`" != "" ]
-   then
-      cp $lib ..
-      cd ..
-      # On fait des liens
-      ln -sf $lib libblas.a
-      ln -sf $lib liblapack.a
-      echo "OpenBLAS installed."
-      # On efface les sources
-      rm -r -f OpenBLAS*
-   else
-      cd ..
-      echo "Contact trust@cea.fr if you have issues with OpenBlas build."
-      exit -1 # Comment if issue
-      echo "Error during OpenBLAS install, so switching to Netlib non optimized blas..."
-      install_NetLib
-   fi  
+   for tag in 0.3.25 0.3.29
+   do 
+     version_openblas=$tag
+     echo "version_openblas = $tag"
+     install_OpenBlas
+     lib=`ls libopenblas_*$version_openblas.a 2>/dev/null | head -1`
+     # On copie la librairie si elle existe sinon on sort
+     if [ "`ls $lib 2>/dev/null`" != "" ]
+     then
+        cp $lib ..
+        cd ..
+        # On fait des liens
+        ln -sf $lib libblas.a
+        ln -sf $lib liblapack.a
+        echo "OpenBLAS installed."
+        # On efface les sources
+        rm -r -f OpenBLAS*
+        break
+     else
+        cd ..
+        echo "Contact trust@cea.fr if you have issues with OpenBlas build."
+        #exit -1 # Comment if issue
+        echo "Error during OpenBLAS install, so switching to Netlib non optimized blas..."
+        install_NetLib
+     fi
+   done
 else
    install_NetLib
 fi
