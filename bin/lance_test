@@ -668,6 +668,7 @@ CHECKOUT $SORTIE 2>/dev/null
 
 if [ $using_ctest = 1 ]
 then
+   [ "$VALGRIND" = "1" ] && CTEST_OPTS="$CTEST_OPTS --test-load $TRUST_NB_PHYSICAL_CORES"
    add_test_case_from_validation || exit -1
    if [ "$project_directory" = "" ] || [ "${PWD%$TRUST_ROOT}" = "" ]
    then # TRUST
