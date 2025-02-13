@@ -135,7 +135,7 @@ def showField(filename, plottype, name, mesh="dom", plotmesh=True, title="", ite
     size : int
         Size of the image.
     max : float
-        Maximun value ploted.
+        Maximum value ploted.
     min : float
         Minimum value ploted.
          
@@ -182,7 +182,7 @@ class Show(object):
         subtitle : str 
             title of the first subplot. 
         max : float
-            Maximun value ploted.  
+            Maximum value ploted.  
         min : float
             Minimum value ploted.  
         show : bool
@@ -366,7 +366,7 @@ class Show(object):
         min : float
             Minimum value ploted.  
         max : float
-            Maximun value ploted.  
+            Maximum value ploted.  
 
         Returns
         -------
@@ -599,7 +599,7 @@ class Show(object):
         size : int
             Size of the image.
         max : float
-            Maximun value ploted.
+            Maximum value ploted.
         min : float
             Minimum value ploted.
 
@@ -1322,7 +1322,7 @@ class export_lata_base:
                 f.write("SetActiveWindow(2) \n")
             f.close()
 
-    def maximun(self, name="Max", iteration=-1):
+    def maximum(self, name="Max", iteration=-1):
         """
 
         Extract Max of data from a .lata file
@@ -1349,7 +1349,7 @@ class export_lata_base:
             f.write("""sys.exit()""")
         self.run()
 
-    def minimun(self, name="Min", iteration=-1):
+    def minimum(self, name="Min", iteration=-1):
         """
 
         Extract Max of data from a .lata file

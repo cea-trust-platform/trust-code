@@ -538,8 +538,10 @@ class TRUSTSuite(object):
         baseName = os.path.join(case.dir_, case.name_)
 
         saveFileAccumulator(f"{baseName}.dt_ev")
+        saveFileAccumulator(f"{baseName}.newton_evol")
         saveFileAccumulator(f"{baseName}.data")
         saveFileAccumulator(f"{baseName}.out")
+        saveFileAccumulator(f"{baseName}_*.out")
         saveFileAccumulator(f"{baseName}.err")
         saveFileAccumulator(f"{baseName}_*.son")
         saveFileAccumulator(f"{baseName}.TU")
