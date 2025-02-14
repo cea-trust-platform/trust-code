@@ -93,7 +93,7 @@ public :
   virtual void second_special_treatment(Equation_base& eqn, DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice);
 protected :
 
-  int nb_corrections_max_; //nombre de corrections maximun pour affinet la projection
+  int nb_corrections_max_; //nombre de corrections maximum pour affinet la projection
   int avancement_crank_;   // on ne fait pas vraiment du piso mais plutot du CN
 
   Entree& lire(const Motcle&, Entree&) override;

@@ -455,11 +455,11 @@ class Graph:
         xmin : float
             Minimun of the ploted interval of x.
         xmax : float
-            Maximun of the ploted interval of x.
+            Maximum of the ploted interval of x.
         ymin : float
             Minimun of the ploted interval of y.
         ymax : float
-            Maximun of the ploted interval of y.
+            Maximum of the ploted interval of y.
         coordonee : 
             coordinates in the subplotlist.  
             

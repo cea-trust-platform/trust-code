@@ -202,7 +202,7 @@ int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     }
   else if (mot=="Erreur_max_DivU")
     {
-      Cerr << "Reading DivU maximun" << finl;
+      Cerr << "Reading DivU maximum" << finl;
       is >> max_div_U;
       is >> seuil_projection;
       return 1;

@@ -224,7 +224,7 @@ void Tetraedriser_homogene::trianguler(Domaine& domaine) const
       // Construction de l'Octree sur la grille "VDF" de base
       domaine.construit_octree();
 
-      //On dimensionne une premiere fois le tableau des sommets avec la dimension maximun
+      //On dimensionne une premiere fois le tableau des sommets avec la dimension maximum
       //puis on redimensionnera seulement a la fin par la dimension exacte
 
       DoubleTab& sommets_dom = domaine.les_sommets();
