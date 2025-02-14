@@ -398,8 +398,15 @@ void Solv_Petsc::create_solver(Entree& entree)
             option+="pc_type";
             if (!has_option(option, current_pc))
               {
-                add_option("pc_type", "bjacobi");
-                add_option("sub_pc_type", "ilu");
+                if (Process::nproc()>1)
+                  {
+                    add_option("pc_type", "bjacobi");
+                    add_option("sub_pc_type", "ilu");
+                  }
+                else
+                  {
+                    add_option("pc_type", "ilu");
+                  }
               }
           }
         break;
