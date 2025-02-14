@@ -66,7 +66,8 @@ double Champ_implementation_P0::valeur_a_elem_compo(const DoubleVect& position, 
  */
 DoubleTab& Champ_implementation_P0::valeur_aux_centres_de_gravite(const Domaine& dom, DoubleTab& tab_result) const
 {
-  if (get_domaine_geom() != dom) Process::exit("Error, you must use valeur_aux_centres_de_gravite() on the whole discretized mesh.");
+  if (get_domaine_geom() != dom)
+    Process::exit("Error, you must use valeur_aux_centres_de_gravite() on the whole discretized mesh.");
   int nb_polys = tab_result.dimension(0);
   if (nb_polys == 0)
     return tab_result;
@@ -80,12 +81,24 @@ DoubleTab& Champ_implementation_P0::valeur_aux_centres_de_gravite(const Domaine&
   int line_size = tab_result.line_size();
   assert(tab_values.line_size() == nb_components);
   assert(tab_values.line_size() == nb_components || nb_components == 1);
-  CDoubleTabView values = tab_values.view_ro();
   DoubleTabView result = tab_result.view_wo();
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {nb_polys, line_size}), KOKKOS_LAMBDA(const int i, const int j)
-  {
-    result(i, j) = nb_dim == 1 ? values(i, 0) : values(i, (line_size == nb_components) * j); // Some post-processed fields can have nb_dim() == 1
-  });
+  if (nb_dim == 1)
+    {
+      CDoubleArrView values = static_cast<const ArrOfDouble&>(tab_values).view_ro();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {nb_polys, line_size}), KOKKOS_LAMBDA(const int i, const int j)
+      {
+        result(i, j) = values(i);
+      });
+    }
+  else
+    {
+      CDoubleTabView values = tab_values.view_ro();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0, 0}, {nb_polys, line_size}),
+                           KOKKOS_LAMBDA(const int i, const int j)
+      {
+        result(i, j) = values(i, (line_size == nb_components) * j);
+      });
+    }
   end_gpu_timer(__KERNEL_NAME__);
   return tab_result;
 }
@@ -97,16 +110,30 @@ void valeur_aux_elems_kernel(const DoubleTab& tab_values, const IntVect& tab_pol
   int line_size = tab_result.line_size();
   int nb_dim = tab_values.nb_dim();
   auto polys = tab_polys.template view_ro<1, ExecSpace>();
-  auto values = tab_values.template view_ro<2, ExecSpace>();
   auto result = tab_result.template view_wo<2, ExecSpace>();
   Kokkos::RangePolicy<ExecSpace> policy(0, nb_polys);
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
-  {
-    int cell = polys(i);
-    if (cell>=0)
-      for (int j = 0; j < line_size; j++)
-        result(i, j) = nb_dim == 1 ? values(cell, 0) : values(cell, (line_size == nb_components) * j); // Some post-processed fields can have nb_dim() == 1
-  });
+  if (nb_dim==1)
+    {
+      auto values = tab_values.template view_ro<1, ExecSpace>();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      {
+        int cell = polys(i);
+        if (cell>=0)
+          for (int j = 0; j < line_size; j++)
+            result(i, j) = values(cell);
+      });
+    }
+  else
+    {
+      auto values = tab_values.template view_ro<2, ExecSpace>();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      {
+        int cell = polys(i);
+        if (cell>=0)
+          for (int j = 0; j < line_size; j++)
+            result(i, j) = values(cell, (line_size == nb_components) * j);
+      });
+    }
   static constexpr bool kernelOnDevice = !std::is_same<ExecSpace, Kokkos::DefaultHostExecutionSpace>::value;
   end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
