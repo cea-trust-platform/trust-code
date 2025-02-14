@@ -36,11 +36,18 @@ Sortie& Domaine_Cl_DG::printOn(Sortie& os) const { return os; }
 
 Entree& Domaine_Cl_DG::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(is); }
 
+/*! @brief Need to investigate
+ *
+ */
 void Domaine_Cl_DG::completer(const Domaine_dis_base& )
 {
   modif_perio_fait_ = 0;
 }
 
+
+/*! @brief Need to investigate: a priori, nothing to do for DG
+ *
+ */
 void Domaine_Cl_DG::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 {
 //  DoubleTab& ch_tab = ch.valeurs(temps);
@@ -57,7 +64,7 @@ void Domaine_Cl_DG::imposer_cond_lim(Champ_Inc_base& ch, double temps)
 
 int Domaine_Cl_DG::nb_faces_sortie_libre() const
 {
-  Process::exit();
+  Process::exit("Function Domaine_Cl_DG::nb_faces_sortie_libre should not be used for DG");
   return -1000000;
 }
 
@@ -77,10 +84,7 @@ int Domaine_Cl_DG::initialiser(double temps)
   Domaine_Cl_dis_base::initialiser(temps);
 
   if (nb_bord_periodicite() > 0)
-    {
-      Cerr << " La periodicite n'est pas code !!!" << finl;
-      Process::exit();
-    }
+      Process::exit("Periodic conditions are not coded yet for DG");
   return 1;
 }
 

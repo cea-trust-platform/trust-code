@@ -67,7 +67,7 @@ protected:
 // DoubleVect h_, sigma;
 
   void compute_mesh_param(); // Compute the stabilization parameters
-  bool rempli_type_elem();
+  bool type_elems();
 };
 
 void Domaine_DG::set_quadrature(int order, const Quadrature_base* quad)

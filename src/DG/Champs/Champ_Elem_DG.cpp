@@ -31,7 +31,9 @@ Entree& Champ_Elem_DG::readOn(Entree& s)
   lire_donnees(s);
   return s;
 }
-
+/*! @brief Compute size of mass matrix and allocate the associated array
+ *
+ */
 void Champ_Elem_DG::allocate_mass_matrix()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
@@ -59,12 +61,13 @@ void Champ_Elem_DG::allocate_mass_matrix()
   Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, inv_mass_matrix_);
 }
 
+/*! @brief Fill up the mass matrix after computing its coefficients
+ *
+ */
 void Champ_Elem_DG::build_mass_matrix()
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
   const DoubleVect& ve = domaine.volumes();
-
-
 
   const Elem_geom_base& elem_geom = domaine.domaine().type_elem().valeur();
 
@@ -105,11 +108,14 @@ void Champ_Elem_DG::build_mass_matrix()
 
       current_indice+=nb_bfunc_;
     }
-
 }
 
-
-
+/*! @brief Compute the mass matrix of cell nelem
+ *
+ * @param quad quadature used to compute mass matrix
+ * @param nelem index of the cell
+ *
+ */
 const Matrice_Dense  Champ_Elem_DG::build_local_mass_matrix(const Quadrature_base& quad, const int nelem) const
 {
   int nb_pts_integ_max = quad.nb_pts_integ_max();
@@ -133,6 +139,9 @@ const Matrice_Dense  Champ_Elem_DG::build_local_mass_matrix(const Quadrature_bas
   return loc_mass_mat;
 }
 
+/*! @brief construct inverse of global mass matrix, Unused now, cleaning used
+ *
+ */
 void Champ_Elem_DG::build_inv_mass_matrix()
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
@@ -200,12 +209,9 @@ int Champ_Elem_DG::imprime(Sortie& os, int ncomp) const
 
 int Champ_Elem_DG::fixer_nb_valeurs_nodales(int n)
 {
-
   creer_tableau_distribue(domaine_dis_base().domaine().md_vector_elements()); // TODO 26/08/2024 nb_ddl a
-
   return n;
 }
-
 
 
 void Champ_Elem_DG::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
@@ -219,7 +225,6 @@ void Champ_Elem_DG::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 
   allocate_mass_matrix();
   build_mass_matrix();
-
   build_inv_mass_matrix();
 
 }
@@ -339,7 +344,6 @@ void Champ_Elem_DG::eval_grad_bfunc(const Quadrature_base& quad, const int& nele
     throw; //TODO
   else
     Process::exit();
-
 }
 
 
@@ -384,8 +388,6 @@ void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const
 
   const DoubleTab& integ_points_on_facets = quad.get_integ_points_facets();
   int nb_pts_integ_on_facets = quad.nb_pts_integ_facets();
-
-
   assert(grad_fbasis.dimension(0) == nb_bfunc_ && grad_fbasis.dimension(1) == nb_pts_integ_on_facets && grad_fbasis.dimension(2) == Objet_U::dimension );
 
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());

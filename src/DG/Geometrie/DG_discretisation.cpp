@@ -37,7 +37,9 @@ Entree& DG_discretisation::readOn(Entree& s) { return s; }
 
 Sortie& DG_discretisation::printOn(Sortie& s) const { return s; }
 
-/*! @brief Discretisation d'un champ pour le DG en fonction d'une directive de discretisation.
+/*! @brief Discretisation of a field for DG formulation
+ *
+ * TODO, refactor this after stokes. And decide if we want to put this on Option_DG or not
  *
  * La directive est un Motcle comme "vitesse", "pression",
  *  "temperature", "champ_elem" (cree un champ de type P0), ...
@@ -52,8 +54,6 @@ Sortie& DG_discretisation::printOn(Sortie& s) const { return s; }
 void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& dom_dis, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
                                           double temps, OWN_PTR(Champ_Inc_base)& champ, const Nom& sous_type) const
 {
-//  const Domaine_DG& domaine_DG = ref_cast(Domaine_DG, dom_dis);
-
   Motcles motcles(7);
   motcles[0] = "vitesse";     // Choix standard pour la vitesse
   motcles[1] = "pression";    // Choix standard pour la pression
@@ -62,7 +62,6 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
   motcles[4] = "gradient_pression";  // Le type de champ obtenu en calculant grad P
   motcles[5] = "champ_elem";    // Creer un champ aux elements (de type P0)
   motcles[6] = "champ_sommets"; // Creer un champ aux sommets (type P1)
-
   // Le type de champ de vitesse depend du type d'element :
 //  Nom type_champ_vitesse("Champ_Face_DG");
   Nom type_elem("Champ_Elem_DG");
@@ -316,7 +315,9 @@ void DG_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_po
 //  // ch_tab_lambda_dis.fixer_unite(unite);
 //  ch_tab_lambda_dis.changer_temps(champs_param[0]->temps());
 }
-
+/*! @brief Old copy paste, give the name to fields. Name used to allocate size of matrixes in discretiser
+ *
+ */
 Nom DG_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const OBS_PTR(Champ_base) &champ_sup) const
 {
   Nom type;

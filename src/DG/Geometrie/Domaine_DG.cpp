@@ -17,7 +17,6 @@
 #include <Domaine_DG.h>
 #include <Option_DG.h>
 #include <Poly_geom_base.h>
-#include <Statistiques.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <TRUSTList.h>
@@ -44,15 +43,15 @@ Sortie& Domaine_DG::printOn(Sortie& os) const { return Domaine_Poly_base::printO
 
 Entree& Domaine_DG::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 
+
+/*! @brief Compute mesh parameters, allocate quadratures and link them to the domain
+ *
+ * The function use Domaine_Poly_base::discretiser() that builds every geometric connectivities that are not in the mesh file
+ */
 void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
-
-
-  // if triangle elem
-
-  // const Nom& type_elem_geom = domaine().type_elem()->que_suis_je();
-  bool tri_or_quad_only = rempli_type_elem(); // bool_only_triangle_and_quadrangle + fullfield the tab type_elem
+  bool tri_or_quad_only = type_elems();
   if (tri_or_quad_only==false)
     Process::exit("General meshes not implemented yet"); // TODO : Change this if general meshes implemented
   compute_mesh_param();
@@ -63,21 +62,30 @@ void Domaine_DG::discretiser()
   set_quadrature(1, quad1);
   set_quadrature(2, quad2);
   set_quadrature(5, quad5);
-
-
 }
-
+/*! @brief Set the global default order
+ *
+ * @param order : order to specify
+ */
 void Domaine_DG::set_default_order(int order)
 {
   order_quad_=order;
 }
 
-
+/*! @brief New feature in Trust, not yet available in DG, ask Elie
+ *
+ */
 void Domaine_DG::init_equiv() const
 {
   //TODO DG
 }
 
+/*! @brief Compute positions of the quadrature points
+ *
+ * For now it uses the default quadrature order and compute positions for every cells
+ *
+ * @param positions coordinates of the quadrature points
+ */
 void Domaine_DG::get_position(DoubleTab& positions) const
 {
   //TODO Kokkos DG
@@ -85,6 +93,11 @@ void Domaine_DG::get_position(DoubleTab& positions) const
   positions = quad.get_integ_points();
 }
 
+/*! @brief Give an IntTab that contains the number of integration points for each cell
+ *
+ * @param nb_integ_points : nb_integ_points[i] give the number of integration points for cell i
+ *
+ */
 void Domaine_DG::get_nb_integ_points(IntTab& nb_integ_points) const
 {
   const Quadrature_base& quad = get_quadrature();
@@ -92,6 +105,10 @@ void Domaine_DG::get_nb_integ_points(IntTab& nb_integ_points) const
 //  nb_integ_points.ref(tab_pts_integ);
 }
 
+/*! @brief Create the indirection that give for each cell, the index number of the first integration point
+ *
+ * @param ind_integ_points : ind_integ_points[i] give the index of the first integration point associated with cell i
+ */
 void Domaine_DG::get_ind_integ_points(IntTab& ind_integ_points) const
 {
   const Quadrature_base& quad = get_quadrature();
@@ -99,7 +116,9 @@ void Domaine_DG::get_ind_integ_points(IntTab& ind_integ_points) const
 //  ind_integ_points.ref(ind_pts_integ);
 }
 
-
+/*! @brief Compute L_1 norm
+ *
+ */
 double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 {
   const Quadrature_base& quad = get_quadrature();
@@ -120,7 +139,9 @@ double Domaine_DG::compute_L1_norm(const DoubleVect& val_source) const
 
   return sum;
 }
-
+/*! @brief Compute L_2 norm
+ *
+ */
 double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
 {
   const Quadrature_base& quad = get_quadrature();
@@ -141,7 +162,9 @@ double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
 
   return sum;
 }
-
+/*! @brief Compute geometric quantities used for the computation
+ *  TODO :: Put this in the Domain_Poly_base and delete h_carre
+ */
 void Domaine_DG::compute_mesh_param()
 {
   int nb_elem = this->nb_elem();
@@ -149,12 +172,11 @@ void Domaine_DG::compute_mesh_param()
   const IntTab& vert_elems = domaine().les_elems();
   const IntTab& elem_faces=this->elem_faces();
   const IntTab& face_som=this->face_sommets();
-  dia_.resize(nb_elem);
-  invdia_.resize(nb_elem);
-  per_.resize(nb_elem);
-  rho_.resize(nb_elem);
-  sig_.resize(nb_elem);
-  surf_.resize(nb_elem);
+  dia_.resize(nb_elem); ///< Array of the diameter for each cell
+  per_.resize(nb_elem); ///< Perimeter of each cell
+  rho_.resize(nb_elem); ///< Diameter of the largest incircle for each cell
+  sig_.resize(nb_elem); ///< Aspect ratio of each cell
+  surf_.resize(nb_elem); ///< Surface of each cell
 
   for (int e = 0; e < nb_elem; e++)
     {
@@ -170,7 +192,6 @@ void Domaine_DG::compute_mesh_param()
               dia_(e) *= sur_f;
               per_(e) += sur_f; //
             }
-          invdia_(e) = 1. / dia_(e);
           rho_(e) = 4. * volumes(e) / per_(e);
           sig_(e) = dia_(e) / rho_(e);
         }
@@ -200,13 +221,14 @@ void Domaine_DG::compute_mesh_param()
           surf_(e)=std::abs(surf_(e)); // can be negative otherwise
           rho_(e)=(surf_(e)/per_(e));
           dia_(e)=h_e;
-          invdia_(e)=1/h_e;
           sig_(e)=h_e/rho_(e);
         }
     }
 }
 
-//TODO DG h_carre with diameter
+/*! @brief Should disappear, as well as h_carre, as we have dia_, this come with a refactoring of Domaine_Poly_base
+ *
+ */
 void Domaine_DG::calculer_h_carre()
 {
   h_carre=0;
@@ -223,8 +245,11 @@ void Domaine_DG::calculer_h_carre()
 //  h_carre = 1.;
 }
 
-
-bool Domaine_DG::rempli_type_elem()
+/*! @brief Create an array that store the number of faces per element
+ *
+ * If the mesh is only composed with the same type of element, return yes.
+ */
+bool Domaine_DG::type_elems()
 {
   type_elem_.resize(nb_elem_tot());
   bool only_tri_quad=true;
@@ -233,44 +258,44 @@ bool Domaine_DG::rempli_type_elem()
 
   if (Objet_U::dimension == 2)
     {
-      if (nb_f_elem_max == 3) // que des triangles
+      if (nb_f_elem_max == 3) // only triangles
         {
           for (int e = 0; e < nb_elem_tot(); e++)
             {
-              type_elem_(e) = 3; // triangle
+              type_elem_(e) = 3; // triangles
             }
         }
-      else if (nb_f_elem_max == 4) // que des quadrangle ou m��lange triangle et quadrangle
+      else if (nb_f_elem_max == 4) // mix of triangles and quads
         {
           for (int e = 0; e < nb_elem_tot(); e++)
             {
               if (elem_face(e, 3) == -1)
                 {
-                  type_elem_(e) = 3; // triangle
+                  type_elem_(e) = 3; // triangles
                   continue;
                 }
-              type_elem_(e) = 4; // quadrangle
+              type_elem_(e) = 4; // quads
             }
         }
-      else // melange polygone
+      else // Mix of polys
         {
           only_tri_quad = false;
           for (int e = 0; e < nb_elem_tot(); e++)
             {
               if (elem_face(e, 3) == -1)
                 {
-                  type_elem_(e) = 3; // triangle
+                  type_elem_(e) = 3; // triangles
                   continue;
                 }
               if (elem_face(e, 4) == -1)
                 {
-                  type_elem_(e) = 4; // quadrangle
+                  type_elem_(e) = 4; // quads
                   continue;
                 }
               for (int i_f = 5; i_f < nb_f_elem_max; i_f++)
                 {
                   if (elem_face(e, i_f) == -1 || i_f == nb_f_elem_max)
-                    type_elem_(e) = i_f+1; // polygone
+                    type_elem_(e) = i_f+1; // polys
                   continue;
                 }
             }
