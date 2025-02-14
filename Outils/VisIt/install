@@ -298,20 +298,22 @@ then
    ########################################################################
    # Customize customlauncher for several tasks (called by internalauncher)
    ########################################################################
-   if [ "$version" != 3_2_1 ]
-   then
-      # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
-      sed "s?TRUST_ROOT?$TRUST_ROOT?g" customlauncher > customlauncher.tmp
-      sed -i "s?MPI_ROOT?$MPI_ROOT?g" customlauncher.tmp
-      if [ "`diff customlauncher customlauncher.tmp`" != "" ]
-      then
-         echo "current/bin/customlauncher updated."
-         mv -f customlauncher.tmp $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
-         chmod +x $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
-      else
-         rm -f customlauncher.tmp
-      fi
-   fi
+   # ND: 14/02/2025: I comment this part since it may cause issues if TRUST install relocated.
+   # eg: copy TGCC install from cont00A to cont00B will always try to access to cont00A 
+   #if [ "$version" != 3_2_1 ]
+   #then
+   #   # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
+   #   sed "s?TRUST_ROOT?$TRUST_ROOT?g" customlauncher > customlauncher.tmp
+   #   sed -i "s?MPI_ROOT?$MPI_ROOT?g" customlauncher.tmp
+   #   if [ "`diff customlauncher customlauncher.tmp`" != "" ]
+   #   then
+   #      echo "current/bin/customlauncher updated."
+   #      mv -f customlauncher.tmp $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
+   #      chmod +x $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
+   #   else
+   #      rm -f customlauncher.tmp
+   #   fi
+   #fi
    #############################################################################
    # Hack for med plugins in visit 3.3.* (VisIt's HDF5 older than that in TRUST)
    #############################################################################
