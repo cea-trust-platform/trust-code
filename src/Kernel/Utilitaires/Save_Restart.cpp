@@ -458,7 +458,52 @@ void Save_Restart::lire_sauvegarde(Entree& is, Motcle& motlu)
       restart_format_ = "binaire";
     }
   else
-    is >> restart_file_name_;
+    {
+      Nom nom;
+      is >> nom;
+      motlu = nom;
+      if(motlu==Motcle("{"))
+        {
+          if( (Motcle(restart_format_) != "pdi") )
+            {
+              Cerr << "[Save_restart] lire_sauvegarde : Wrong syntax..." << finl;
+              Process::exit();
+            }
+          Motcles compris(3);
+          compris[0]="}";
+          compris[1]="checkpoint_fname";
+          compris[2]="yaml_fname";
+          int ind = -1;
+          while (ind!=0)
+            {
+              is >> motlu;
+              ind = compris.rang(motlu);
+              if (ind==1)
+                is >> restart_file_name_;
+              else if (ind==2)
+                {
+                  Cerr << "[Save_Restart] lire_sauvegarde :: You have provided your own yaml file to initialize PDI ! " << finl;
+                  is >> yaml_fname_;
+
+                  // Check to see if the file exists
+                  LecFicDiffuse test;
+                  if (!test.ouvrir(yaml_fname_))
+                    {
+                      Cerr << "[Save_Restart] lire_sauvegarde :: Error! The provided file " << yaml_fname_ << " does not exist " << finl;
+                      Process::exit();
+                    }
+                }
+              else if (ind==-1)
+                {
+                  Cerr << "[Save_Restart] lire_sauvegarde :: " << motlu << " is not understood. Keywords are:" << finl;
+                  Cerr << compris << finl;
+                  Process::exit();
+                }
+            }
+        }
+      else
+        restart_file_name_ = nom;
+    }
 }
 
 void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
@@ -534,10 +579,14 @@ int Save_Restart::sauver() const
     {
       if(!TRUST_2_PDI::PDI_initialized_)
         {
-          Ecrire_YAML yaml_file;
-          yaml_file.add_pb_base(pb_base_, restart_file_name_);
-          std::string yaml_fname = "save_" + pb_base_->le_nom().getString() + ".yml";
-          yaml_file.write_checkpoint_file(yaml_fname);
+          std::string yaml_fname = yaml_fname_.getString();
+          if(yaml_fname == "??")
+            {
+              Ecrire_YAML yaml_file;
+              yaml_fname = "save_" + pb_base_->le_nom().getString() + ".yml";
+              yaml_file.add_pb_base(pb_base_, restart_file_name_);
+              yaml_file.write_checkpoint_file(yaml_fname);
+            }
           TRUST_2_PDI::init(yaml_fname);
         }
 

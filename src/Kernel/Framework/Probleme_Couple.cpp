@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -371,12 +371,19 @@ void Probleme_Couple::sauver() const
 {
   Ecrire_YAML yaml_file;
   bool pdi_format = false;
+  Nom yaml_fname;
   for (int i=0; i<nb_problemes(); i++)
     {
       const Probleme_base& pb=ref_cast(Probleme_base,probleme(i));
       Nom format = pb.restart_format();
-      if((Motcle(format) == "pdi"))
+      if(Motcle(format) == "pdi")
         {
+          if(i>0 && pb.yaml_filename() != yaml_fname)
+            {
+              Cerr << "Probleme_Couple::sauver() Error! You have provided different yaml files for each of your problems to initialize PDI. It has to be the same. " << finl;
+              Process::exit();
+            }
+          yaml_fname = pb.yaml_filename();
           Nom fname = pb.restart_filename();
           yaml_file.add_pb_base(pb, fname);
           pdi_format = true;
@@ -386,9 +393,12 @@ void Probleme_Couple::sauver() const
   // (allows to initialize PDI once for all checkpoints and not multiple times)
   if(pdi_format && !TRUST_2_PDI::PDI_initialized_)
     {
-      std::string yaml_fname = "save_" + le_nom().getString() + ".yml";
-      yaml_file.write_checkpoint_file(yaml_fname);
-      TRUST_2_PDI::init(yaml_fname);
+      if(yaml_fname == "??")
+        {
+          yaml_fname = Nom("save_") + le_nom() + Nom(".yml");
+          yaml_file.write_checkpoint_file(yaml_fname.getString());
+        }
+      TRUST_2_PDI::init(yaml_fname.getString());
     }
 
   for(int i=0; i<nb_problemes(); i++)

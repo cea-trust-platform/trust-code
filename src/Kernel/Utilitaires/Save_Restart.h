@@ -45,6 +45,7 @@ public:
   int is_sauvegarde_simple() const { return simple_restart_; }
   const Nom& restart_filename() const { return restart_file_name_; }
   const Nom& restart_format() const { return restart_format_; }
+  const Nom& yaml_filename() const { return yaml_fname_; }
 
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
   int sauver() const;
@@ -65,6 +66,7 @@ private:
 
   Nom restart_file_name_;  // Name of the file for save/restart
   Nom restart_format_;     // Format for the save restart
+  Nom yaml_fname_;         // The name of the yaml file that will be used to initialize PDI (can be provided by the (advanced)user, or is automatically generated)
   bool restart_done_ = false;         // Has a restart been done?
   int simple_restart_ = 0;       // Do we only save the last time step (simple restart) or do we save them all ?
   int restart_version_ = 155;         // Version number, for example 155 (1.5.5) -> used to manage old restart files
