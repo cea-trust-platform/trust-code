@@ -10,7 +10,7 @@ Mailler dom
         Pave rectangle
         {
         Origine 0.0 0.0
-        Nombre_de_Noeuds 451 501
+        Nombre_de_Noeuds 227 251
         Longueurs 4.5 5.0
         facteurs 1.0 1.0
         }
@@ -51,11 +51,11 @@ Read sch
           # Max time step #
 	dt_max 5.e-1  # dt_min=dt_max so dt imposed #
 
-        dt_start dt_fixe 1.e-6
+        dt_start dt_fixe 1.e-5
 
 	# CLF #
-        facsec 0.6
-        facsec_max 0.6
+        facsec 0.9
+        facsec_max 0.9
 
         # Output criteria #
           # .out files printing period #
