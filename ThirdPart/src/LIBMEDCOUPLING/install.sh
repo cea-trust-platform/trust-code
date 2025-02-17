@@ -67,6 +67,9 @@ build_and_test_mc()
     fi
     echo "Applying patch for iterators ..."
     (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/iterator.patch )
+    echo "Applying patch for Apple ..."
+    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/apple.patch )
+
 
     # Better detection of SWIG on Ubuntu 16
     SWIG_EXECUTABLE=`type -p swig`

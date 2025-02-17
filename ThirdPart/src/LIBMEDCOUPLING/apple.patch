@@ -1,0 +1,98 @@
+diff --git a/src/INTERP_KERNEL/MCIdType.hxx b/src/INTERP_KERNEL/MCIdType.hxx
+index 4d87d60..46968f5 100644
+--- a/src/INTERP_KERNEL/MCIdType.hxx
++++ b/src/INTERP_KERNEL/MCIdType.hxx
+@@ -36,7 +36,7 @@ typedef std::int64_t mcIdType;
+ 
+ #endif
+ 
+-#ifdef WIN32
++#if defined(WIN32) || defined (__APPLE__)
+ typedef long long mcPyPtrType;
+ #else
+ typedef long mcPyPtrType;
+diff --git a/src/MEDCoupling_Swig/CMakeLists.txt b/src/MEDCoupling_Swig/CMakeLists.txt
+index 1a99b2a..324284e 100644
+--- a/src/MEDCoupling_Swig/CMakeLists.txt
++++ b/src/MEDCoupling_Swig/CMakeLists.txt
+@@ -102,7 +102,7 @@ IF(MEDCOUPLING_BUILD_DOC)
+         swig_ready)
+ ENDIF()
+ 
+-IF(WIN32)
++IF(WIN32 OR APPLE)
+   # Under Windows MEDCoupling conflicts wiht medcoupling from PyWrapping
+   SET(MEDCouling_target_name MEDCouplingCompat)
+   SET_PROPERTY(SOURCE MEDCoupling.i PROPERTY SWIG_MODULE_NAME MEDCouplingCompat)
+@@ -130,7 +130,7 @@ ENDIF(WIN32)
+ # ${PYTHON_LIBRARIES} not needed
+ SWIG_CHECK_GENERATION(${MEDCouling_target_name})
+ SET_SOURCE_FILES_PROPERTIES(MEDCouplingRemapper.i PROPERTIES CPLUSPLUS ON)
+-IF(WIN32)
++IF(WIN32 OR APPLE)
+   SET_PROPERTY(SOURCE MEDCouplingRemapper.i PROPERTY COMPILE_DEFINITIONS WIN32)
+ ENDIF()
+ IF ("${PYTHON_VERSION_MAJOR}" STREQUAL "3")
+@@ -169,7 +169,7 @@ ENDIF(WIN32)
+ INSTALL(TARGETS ${SWIG_MODULE_${MEDCouling_target_name}_REAL_NAME} ${SWIG_MODULE_MEDCouplingRemapper_REAL_NAME} DESTINATION ${MEDCOUPLING_INSTALL_PYTHON})
+ 
+ SET(PYFILES_TO_INSTALL ${CMAKE_CURRENT_BINARY_DIR}/MEDCouplingRemapper.py)
+-IF(WIN32)
++IF(WIN32 OR APPLE)
+   SET(PYFILES_TO_INSTALL ${PYFILES_TO_INSTALL} ${CMAKE_CURRENT_BINARY_DIR}/MEDCouplingCompat.py)
+ ELSE()
+   SET(PYFILES_TO_INSTALL ${PYFILES_TO_INSTALL} ${CMAKE_CURRENT_BINARY_DIR}/MEDCoupling.py)
+diff --git a/src/MEDLoader/Swig/CMakeLists.txt b/src/MEDLoader/Swig/CMakeLists.txt
+index 479afcf..71b3c4d 100644
+--- a/src/MEDLoader/Swig/CMakeLists.txt
++++ b/src/MEDLoader/Swig/CMakeLists.txt
+@@ -73,7 +73,7 @@ IF(MEDCOUPLING_BUILD_DOC)
+         swig_ready)
+ ENDIF()
+ 
+-IF(WIN32)
++IF(WIN32 OR APPLE)
+   SET_PROPERTY(SOURCE MEDLoader.i PROPERTY COMPILE_DEFINITIONS WIN32)
+ ENDIF()
+ 
+diff --git a/src/ParaMEDMEM_Swig/CMakeLists.txt b/src/ParaMEDMEM_Swig/CMakeLists.txt
+index 4e7f502..2ef2b33 100644
+--- a/src/ParaMEDMEM_Swig/CMakeLists.txt
++++ b/src/ParaMEDMEM_Swig/CMakeLists.txt
+@@ -58,6 +58,10 @@ SET (SWIG_MODULE_ParaMEDMEM_EXTRA_DEPS
+     ${medcoupling_HEADERS_HXX} ${medcoupling_HEADERS_TXX}
+     ${interpkernel_HEADERS_HXX} ${interpkernel_HEADERS_TXX})
+ 
++IF(APPLE)
++  SET_PROPERTY(SOURCE ParaMEDMEM.i PROPERTY COMPILE_DEFINITIONS WIN32)
++ENDIF()
++
+ IF(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+   SWIG_ADD_MODULE(ParaMEDMEM python ParaMEDMEM.i)
+ ELSE()
+diff --git a/src/PyWrapping/CMakeLists.txt b/src/PyWrapping/CMakeLists.txt
+index 65710dc..0b21636 100644
+--- a/src/PyWrapping/CMakeLists.txt
++++ b/src/PyWrapping/CMakeLists.txt
+@@ -24,7 +24,7 @@ INCLUDE(${SWIG_USE_FILE})
+ ADD_DEFINITIONS(${PYTHON_DEFINITIONS} ${NUMPY_DEFINITIONS} ${SCIPY_DEFINITIONS} -DMEDCOUPLING_GIT_SHA1=\"${MEDCOUPLING_GIT_SHA1}\" -DMEDCOUPLING_CONFIG_DT=\"${MEDCOUPLING_CONFIG_TIME}\")
+ 
+ SET_SOURCE_FILES_PROPERTIES(medcoupling.i PROPERTIES CPLUSPLUS ON)
+-IF(WIN32)
++IF(WIN32 OR APPLE)
+   SET_PROPERTY(SOURCE medcoupling.i PROPERTY COMPILE_DEFINITIONS WIN32)
+ ENDIF()
+ IF ("${PYTHON_VERSION_MAJOR}" STREQUAL "3")
+diff --git a/src/RENUMBER_Swig/CMakeLists.txt b/src/RENUMBER_Swig/CMakeLists.txt
+index 462bcb3..7d9d0aa 100644
+--- a/src/RENUMBER_Swig/CMakeLists.txt
++++ b/src/RENUMBER_Swig/CMakeLists.txt
+@@ -56,7 +56,7 @@ INCLUDE_DIRECTORIES(
+   ${CMAKE_CURRENT_SOURCE_DIR}/../INTERP_KERNEL/GaussPoints
+   )
+ 
+-IF(WIN32)
++IF(WIN32 OR APPLE)
+   SET_PROPERTY(SOURCE MEDRenumber.i PROPERTY COMPILE_DEFINITIONS WIN32)
+ ENDIF()
+ IF(${CMAKE_VERSION} VERSION_LESS "3.8.0")     

@@ -95,9 +95,17 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
   echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
   env CC=$CC CXX=$CXX F77=$FC FC=$FC cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
-      -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_HDF5_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
+      -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_HDF5_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE="$MED_INT" \
       -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS \
       -DCMAKE_C_FLAGS="-DH5_USE_110_API"
+
+  # HACK Darwin TRUST_INT64
+  if [ "$TRUST_INT64" = "1" ] && [ `uname -s` = Darwin ]
+  then
+    echo " HACK Darwin TRUST_INT64"
+    sed -i 's/typedef long  med_int/typedef int64_t  med_int/g' include/med.h
+    sed -i 's/typedef long  med_int/typedef int64_t  med_int/g' include/2.3.6/med.h
+  fi
 
   $TRUST_MAKE  || exit -1
   make install || exit -1
