@@ -52,7 +52,13 @@ build_and_test_mc()
        MPICH_CC=$OMPI_CC
     fi
     # -Wno-sign-conversion for intel oneAPI 2023, otherwise medcoupling build fails
-    export CXXFLAGS="-Wno-narrowing -Wno-sign-conversion"
+    if [ `uname -s` = Darwin ]
+    then
+        export CXXFLAGS="-w -Wno-narrowing -Wno-sign-conversion" # deactivate warnings
+    else
+        export CXXFLAGS="-Wno-narrowing -Wno-sign-conversion"
+    fi
+
     if [[ $use_python == ON && $(uname -s) == "Darwin" ]]
     then
        #PYTHON_VERSION=`python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
