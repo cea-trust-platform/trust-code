@@ -6,18 +6,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-    pave bloc
-    {
-        origine 0 0
-        longueurs 10 5
-        nombre_de_noeuds 11 6
-    }
-    {
-        bord ouvert	X = 0	0 <= Y <= 5
-        bord ouvert	X = 10	0 <= Y <= 5
-        bord paroi	Y = 0	0 <= X <= 10
-        bord ouvert	Y = 5	0 <= X <= 10
-    }
+  pave bloc
+  {
+    origine 0 0
+    longueurs 10 5
+    nombre_de_noeuds 11 6
+  }
+  {
+    bord ouvert X = 0   0 <= Y <= 5
+    bord ouvert X = 10  0 <= Y <= 5
+    bord paroi  Y = 0   0 <= X <= 10
+    bord ouvert Y = 5   0 <= X <= 10
+  }
 }
 
 trianguler dom
@@ -26,10 +26,10 @@ trianguler dom
 # BEGIN PARTITION
 Partition dom
 {
-    /* Choose Nb_parts so to have ~ 25000 cells per processor */
-    Partition_tool metis { nb_parts 4 }
-    Larg_joint 2
-    zones_name DOM
+  /* Choose Nb_parts so to have ~ 25000 cells per processor */
+  Partition_tool metis { nb_parts 4 }
+  Larg_joint 2
+  zones_name DOM
 }
 Fin
 END PARTITION #
@@ -38,21 +38,19 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-
-
-PolyMAC_P0  dis
+PolyMAC_P0 dis
 Option_PolyMAC {  }
 
 Schema_euler_implicite sch
 Read sch
 {
-    tinit 0
-    dt_start dt_fixe 1e-3
-    nb_pas_dt_max 1
-    solveur implicite
-    {
-        solveur petsc cli { }
-    }
+  tinit 0
+  dt_start dt_fixe 1e-3
+  nb_pas_dt_max 1
+  solveur implicite
+  {
+    solveur petsc cli { }
+  }
 }
 
 Pb_hydraulique pb
@@ -62,39 +60,36 @@ Discretize pb dis
 
 Read pb
 {
-    fluide_incompressible {
-        mu  Champ_Uniforme 1 3.7e-05
-        rho Champ_Uniforme 1 2
-    }
+  fluide_incompressible {
+    mu  Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
+  }
 
-    Navier_Stokes_standard
+  Navier_Stokes_standard
+  {
+    solveur_pression petsc cholesky { }
+    convection { negligeable }
+    diffusion  { negligeable }
+    sources    { }
+    initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+    boundary_conditions
     {
-        solveur_pression petsc cholesky { }
-        convection { negligeable }
-        diffusion  { negligeable }
-        sources    { }
-        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
-        boundary_conditions
-        {
-            paroi     paroi_fixe
-            ouvert    frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
-        }
+      paroi     paroi_fixe
+      ouvert    frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
     }
+  }
 
-
-    Post_processing
+  Post_processing
+  {
+    sondes {
+      dist distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5
+    }
+    format lata
+    champs binaire dt_post 1e6
     {
-
-        sondes			{
-            dist	distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5
-        }
-        format lata
-        champs binaire dt_post 1e6
-        {
-            distance_paroi_globale elem
-        }
+      distance_paroi_globale elem
     }
+  }
 }
-
 Resoudre pb
 Fin
