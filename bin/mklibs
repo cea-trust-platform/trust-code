@@ -234,41 +234,48 @@ ALL_L=$ALL_L" medloader medcouplingremapper medcoupling medicoco $LISTP interpke
 #####
 # MED
 #####
+ALL_P=$ALL_P" \$ENV{TRUST_MED_ROOT}/lib"
+ALL_L=$ALL_L" med medimport medC"
+
+#######
+# HDF5
+#######
 # Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
 lz_L=""
 lz_P=""
-if [ -f $TRUST_MED_ROOT/bin/h5cc ]
+if [ -f $TRUST_HDF5_ROOT/bin/h5cc ]
 then
-   # Meilleur moyen: si MED est compile on regarde dans h5cc
-   [ "`grep lz $TRUST_MED_ROOT/bin/h5cc`" != "" ] && lz_L="z "
+   # Meilleur moyen: si HDF5 est compile on regarde dans h5cc
+   [ "`grep lz $TRUST_HDF5_ROOT/bin/h5cc`" != "" ] && lz_L="z "
 else
    # Sinon, on regarde si la librairie existe... Mais attention on ne verifie pas si elle est 32 ou 64 bits...
    [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz_L="z "
 fi
 
 # Ajout des flags -lsvml et -lintlc necessaires avec certains compilateurs intel... vu sur jean-zay et plafrim
-if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ]
+if [ -f  $TRUST_HDF5_ROOT/lib/libhdf5.so ]
 then
    svmlpath=""
-   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so`" != "" ]
+   if [ "`ldd $TRUST_HDF5_ROOT/lib/libhdf5.so | grep libsvml.so`" != "" ]
    then
       lz_L=$lz_L" svml "
-      svmlso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libsvml.so | cut -d' ' -f 3`
+      svmlso=`ldd $TRUST_HDF5_ROOT/lib/libhdf5.so | grep libsvml.so | cut -d' ' -f 3`
       svmlpath=`dirname $svmlso`
       lz_P=$lz_P" $svmlpath "
    fi
 
    intlcpath=""
-   if [ "`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so`" != "" ]
+   if [ "`ldd $TRUST_HDF5_ROOT/lib/libhdf5.so | grep libintlc.so`" != "" ]
    then
       lz_L=$lz_L" intlc "
-      intlcso=`ldd $TRUST_MED_ROOT/lib/libhdf5.so | grep libintlc.so | cut -d' ' -f 3`
+      intlcso=`ldd $TRUST_HDF5_ROOT/lib/libhdf5.so | grep libintlc.so | cut -d' ' -f 3`
       intlcpath=`dirname $intlcso`
       [ "$svmlpath" != "$intlcpath" ] && lz_P=" $intlcpath "
    fi
 fi
-ALL_P=$ALL_P" \$ENV{TRUST_MED_ROOT}/lib"
-ALL_L=$ALL_L" med medimport medC hdf5 hdf5_hl"
+ALL_P=$ALL_P" \$ENV{TRUST_HDF5_ROOT}/lib"
+ALL_L=$ALL_L" hdf5 hdf5_hl"
+
 
 #####
 # EOS

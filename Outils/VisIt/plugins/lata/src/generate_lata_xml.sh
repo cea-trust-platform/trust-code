@@ -8,7 +8,7 @@ if [ "$2" = "-with_med" ]; then
     med_extension="*.med"
     medc_root="${TRUST_MEDCOUPLING_ROOT}/${TRUST_ARCH}_opt"
     med_cxx_flags="-DNDEBUG -DWITH_MEDLOADER -I${medc_root}/include/ -I${TRUST_MED_ROOT}/include"
-    med_libs="${medc_root}/lib/libmedloader.a  ${medc_root}/lib/libmedcouplingremapper.a ${medc_root}/lib/libmedcoupling.a ${medc_root}/lib/libinterpkernel.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_MED_ROOT}/lib/libhdf5.a -lz -lm  "  
+    med_libs="${medc_root}/lib/libmedloader.a  ${medc_root}/lib/libmedcouplingremapper.a ${medc_root}/lib/libmedcoupling.a ${medc_root}/lib/libinterpkernel.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_HDF5_ROOT}/lib/libhdf5.a -lz -lm  "  
 fi
 
 extra_incl=" -I${TRUST_ROOT}/src/Kernel/Utilitaires -I${TRUST_ROOT}/src/Kernel/Math -I${TRUST_ROOT}/src/Kernel/Geometrie "

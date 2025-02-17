@@ -323,8 +323,8 @@ then
       version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
       cd $TRUST_ROOT/exec/VisIt/$version_visit/linux-x86_64/lib/
       rm -f libhdf5.so.9.0.0 libhdf5_hl.so.9.0.0
-      ln -s ../../../../../lib/src/LIBMED/hdf5_install/lib/libhdf5.so libhdf5.so.9.0.0
-      ln -s ../../../../../lib/src/LIBMED/hdf5_install/lib/libhdf5_hl.so libhdf5_hl.so.9.0.0
+      ln -s ../../../../../lib/src/LIBHDF5/hdf5_install/lib/libhdf5.so libhdf5.so.9.0.0
+      ln -s ../../../../../lib/src/LIBHDF5/hdf5_install/lib/libhdf5_hl.so libhdf5_hl.so.9.0.0
       cd -
    fi
    #############

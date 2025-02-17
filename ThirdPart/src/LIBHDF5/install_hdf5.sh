@@ -9,7 +9,7 @@ if [ "x$TRUST_ROOT" = "x" ]; then
 fi
 
 archive=$1
-install_dir=$TRUST_MED_ROOT
+install_dir=$TRUST_HDF5_ROOT
 
 ###############################
 # Compilation and installation
