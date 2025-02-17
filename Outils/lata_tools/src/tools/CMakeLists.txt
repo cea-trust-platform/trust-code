@@ -49,6 +49,10 @@ if (loadercpp)
 
     set_source_files_properties(LataLoader.i PROPERTIES CPLUSPLUS ON)
     set_source_files_properties(LataLoader.i PROPERTIES SWIG_FLAGS "-shadow")
+   
+   IF(APPLE)
+     SET_PROPERTY(SOURCE LataLoader.i PROPERTY COMPILE_DEFINITIONS WIN32)
+   ENDIF()
 
     if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
         swig_add_module(LataLoader python LataLoader.i)
