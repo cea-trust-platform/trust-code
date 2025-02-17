@@ -297,6 +297,7 @@ Sortie& EcrFicPartage::operator <<(const unsigned long ob) { return operator_tem
 int EcrFicPartage::put(const unsigned* ob, std::streamsize n, std::streamsize pas) { return put_template<unsigned>(ob,n,pas); }
 int EcrFicPartage::put(const True_int* ob, std::streamsize n, std::streamsize pas) { return put_template<True_int>(ob,n,pas); }
 int EcrFicPartage::put(const long* ob, std::streamsize n, std::streamsize pas) { return put_template<long>(ob,n,pas); }
+int EcrFicPartage::put(const long long* ob, std::streamsize n, std::streamsize pas) { return put_template<long long>(ob,n,pas); }
 int EcrFicPartage::put(const float* ob, std::streamsize n, std::streamsize pas) { return put_template<float>(ob,n,pas); }
 int EcrFicPartage::put(const double* ob, std::streamsize n, std::streamsize pas) { return put_template<double>(ob,n,pas); }
 

@@ -103,6 +103,7 @@ public:
   virtual int put(const float * ob, std::streamsize n, std::streamsize nb_colonnes=1);
   virtual int put(const double* ob, std::streamsize n, std::streamsize nb_colonnes=1);
   virtual int put(const long  * ob, std::streamsize n, std::streamsize nb_colonnes=1);
+  virtual int put(const long long * ob, std::streamsize n, std::streamsize nb_colonnes=1);
 
   inline bool has_ostream() const { return ostream_ != nullptr; }
 

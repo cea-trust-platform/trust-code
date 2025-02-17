@@ -101,6 +101,7 @@ int Sortie::add_col(const char * ob)
 int Sortie::put(const unsigned * ob, std::streamsize n, std::streamsize nb_col) { return put_template<unsigned>(ob,n,nb_col); }
 int Sortie::put(const True_int * ob, std::streamsize n, std::streamsize nb_col) { return put_template<True_int>(ob,n,nb_col); }
 int Sortie::put(const long * ob, std::streamsize n, std::streamsize nb_col) { return put_template<long>(ob,n,nb_col); }
+int Sortie::put(const long long * ob, std::streamsize n, std::streamsize nb_col) { return put_template<long long>(ob,n,nb_col); }
 int Sortie::put(const float * ob, std::streamsize n, std::streamsize nb_col) { return put_template<float>(ob,n,nb_col); }
 int Sortie::put(const double * ob, std::streamsize n, std::streamsize nb_col) { return put_template<double>(ob,n,nb_col); }
 
@@ -314,6 +315,7 @@ int Sortie::put_template(const _TYPE_ *ob, std::streamsize n, std::streamsize nb
 template int Sortie::put_template(const unsigned *ob, std::streamsize n, std::streamsize nb_col);
 template int Sortie::put_template(const True_int *ob, std::streamsize n, std::streamsize nb_col);
 template int Sortie::put_template(const long *ob, std::streamsize n, std::streamsize nb_col);
+template int Sortie::put_template(const long long *ob, std::streamsize n, std::streamsize nb_col);
 template int Sortie::put_template(const float *ob, std::streamsize n, std::streamsize nb_col);
 template int Sortie::put_template(const double *ob, std::streamsize n, std::streamsize nb_col);
 
