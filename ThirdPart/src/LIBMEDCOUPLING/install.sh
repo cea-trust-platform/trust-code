@@ -59,8 +59,6 @@ build_and_test_mc()
        #export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python$PYTHON_VERSION"
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
-    echo "Applying patch for const pointer in IKDEC ..."
-    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/const_ptr.patch )
     echo "Applying patch for iterators ..."
     (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/iterator.patch )
 

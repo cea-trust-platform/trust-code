@@ -233,8 +233,8 @@ f372c576b8774922da83cda2b12f9d29  Miniforge/local_channel/noarch/websocket-clien
 6372cd99502721bd7499f8d16b56268d  Miniforge/local_channel/noarch/widgetsnbextension-4.0.13-pyhd8ed1ab_0.conda
 4daaed111c05672ae669f7036ee5bba3  Miniforge/local_channel/noarch/zipp-3.20.2-pyhd8ed1ab_0.conda
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
-ef6907f6b30ec24caa5a164b506aa4f9  SALOME/configuration-9.13.0.tar.gz
-f1358776a56f8a8a498bb7686244291e  SALOME/medcoupling-9.13.0.tar.gz
+cd2d81a8ea3a83d2721b88c0c3916ddd  SALOME/configuration-9.14.0.tar.gz
+07e3c56f7c8c78d53efbeb881d34f9f4  SALOME/medcoupling-9.14.0.tar.gz
 6ac5b971e7ce41052e5c39bc2142c425  SALOME/packagespy.tar.gz
 dae2b952c7ef8591e8322284ea244e73  SALOME/xdata-9.6.0.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
