@@ -59,6 +59,7 @@ public:
   int put(const unsigned* ob, std::streamsize n, std::streamsize pas) override;
   int put(const True_int* ob, std::streamsize n, std::streamsize pas) override;
   int put(const long* ob, std::streamsize n, std::streamsize pas) override;
+  int put(const long long* ob, std::streamsize n, std::streamsize pas) override;
   int put(const float* ob, std::streamsize n, std::streamsize pas) override;
   int put(const double* ob, std::streamsize n, std::streamsize pas) override;
 

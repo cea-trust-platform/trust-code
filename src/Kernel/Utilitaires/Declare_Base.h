@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,7 +130,7 @@
 #if INT_is_64_ == 2
 # define info_obj_def_macro_base(_NOM_, _TYPE_) \
   template <> const Type_info _TYPE_<int>::info_obj(_NOM_, 1, name2(_TYPE_,bases)<int> );  \
-  template <> const Type_info _TYPE_<long>::info_obj(_NOM_ "_64", 1, name2(_TYPE_, bases)<long> );
+  template <> const Type_info _TYPE_<trustIdType>::info_obj(_NOM_ "_64", 1, name2(_TYPE_, bases)<trustIdType> );
 #else
 # define info_obj_def_macro_base(_NOM_, _TYPE_) \
   template <> const Type_info _TYPE_<int>::info_obj(_NOM_, 1, name2(_TYPE_,bases)<int> );

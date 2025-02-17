@@ -62,7 +62,7 @@ then
    if [ "`cat $tmp/declare_instanciable_32_64`" != "" ]; then
        echo '{' >> $tmp/$name.cpp
        int_or_long="int"
-       [ "$TRUST_INT64" = "1" ] && int_or_long="long"
+       [ "$TRUST_INT64" = "1" ] && [ "$TRUST_INT64_NEW" = "0" ] && int_or_long="long"
        $TRUST_Awk '{print ($2"<'$int_or_long'>","inst"FNR";  verifie_pere(inst"FNR");")}' $tmp/declare_instanciable_32_64 >> $tmp/$name.cpp
        echo '}' >> $tmp/$name.cpp
        echo "#if INT_is_64_ == 2" >> $tmp/$name.cpp

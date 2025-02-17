@@ -289,6 +289,12 @@ int EcrFicPartageMPIIO::put(const long* ob, std::streamsize n, std::streamsize p
   return put(MPI_LONG, ob, (True_int)n);
 }
 
+int EcrFicPartageMPIIO::put(const long long* ob, std::streamsize n, std::streamsize pas)
+{
+  // Should never be used in MPIIO context
+  throw;
+}
+
 int EcrFicPartageMPIIO::put(const float* ob, std::streamsize n, std::streamsize pas)
 {
   assert(n < std::numeric_limits<True_int>::max());
