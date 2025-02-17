@@ -19,7 +19,8 @@ if [ "$TRUST_USE_OPENMP" = 0 ]
 then
    # Si support GPU active pour Hypre, pas possible de switcher entre versions CPU et GPU: 
    let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type bcgs -pc_type hypre -pc_hypre_type pilut -pc_hypre_pilut_factorrowsize 20 -pc_hypre_pilut_tol 0.01 -ksp_atol $seuil }"	;
-   let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"	
+   # SPAI+BICGSTAB ne marche pas en int64 (sur plusieurs machines), je desactive cela comme vu avec PL
+   #let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"	
    # SPAI+GC ne marche pas en int64, bug dans Hypre mais SPAI plus supporte ce qui explique cela.
    #let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"		;sym[$i]=1	
 fi
