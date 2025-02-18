@@ -1203,9 +1203,9 @@ void Domaine_IJK::update_volume_elem()
     if(is_uniform(dir))
       nb_uniform_axis++;
 
-  const double size_x = get_constant_delta(0);
-  const double size_y = get_constant_delta(1);
-  const double size_z = get_constant_delta(2);
+  const double size_x = is_uniform(0) ? get_constant_delta(0) : throw;
+  const double size_y = is_uniform(1) ? get_constant_delta(1): throw;
+  const double size_z = is_uniform(2) ? get_constant_delta(2) : -123.;
   const ArrOfDouble& sizes_x = get_delta(0);
   const ArrOfDouble& sizes_y = get_delta(1);
   const ArrOfDouble& sizes_z = get_delta(2);
