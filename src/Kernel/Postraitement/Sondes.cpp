@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,10 +63,15 @@ Entree& Sondes::readOn(Entree& s )
       exit();
     }
   set_noms_champs_postraitables();
+
+  const bool is_ijk = mon_post->que_suis_je() == "Postprocessing_IJK";
   while (motlu != accolade_fermee)
     {
       OWN_PTR(Sonde) une_sonde;
-      une_sonde.typer("Sonde");
+      if(is_ijk)
+        une_sonde.typer("Sonde_IJK");
+      else
+        une_sonde.typer("Sonde");
       une_sonde->nommer(motlu);
       une_sonde->associer_post(mon_post.valeur());
       s >> une_sonde.valeur();

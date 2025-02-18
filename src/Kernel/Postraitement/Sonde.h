@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,9 +46,9 @@ public :
   Sonde();
   Sonde(const Nom& );
   void associer_post(const Postraitement& );
-  void initialiser();
+  virtual void initialiser();
   virtual void mettre_a_jour(double temps, double tinit);
-  void postraiter();
+  virtual void postraiter();
   void ouvrir_fichier();
   virtual void completer();
   inline void fermer_fichier();
