@@ -65,10 +65,14 @@ build_and_test_mc()
        #export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python$PYTHON_VERSION"
        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
     fi
+
+    echo "Applying patch for configuration to use static HDF5 ..."
+    (cd ../../configuration* ; sed -i "s/FIND_PACKAGE(HDF5)/set(HDF5_USE_STATIC_LIBRARIES ON)\nFIND_PACKAGE(HDF5)/g" cmake/FindSalomeHDF5.cmake ) || exit -1
+
     echo "Applying patch for iterators ..."
-    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/iterator.patch )
+    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/iterator.patch ) || exit -1
     echo "Applying patch for Apple ..."
-    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/apple.patch )
+    (cd $src_dir; patch -p1 -f < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/apple.patch ) || exit -1
 
 
     # Better detection of SWIG on Ubuntu 16
