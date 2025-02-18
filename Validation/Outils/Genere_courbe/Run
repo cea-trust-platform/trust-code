@@ -129,10 +129,12 @@ if [ $run -ne -2 ]
     $DIR/prepare_gen $orig || exit -1
     if $is_jupyter; then
        # Execute Python cells of the Jupyter notebook up to the runCases() invocation - this is now part of the 'prepare' process
+			 IS_EXTRACTING_NR=1
        if ! python $DIR/get_nr_cases_jup.py "$orig/$prm" 1>/dev/null 2>&1; then
          echo "Failed runing begining of Jupyter Notebook."
          exit -1 
        fi
+			 IS_EXTRACTING_NR=0
     fi
     if [ "$NBPASMAX" != "" ] 
     then

@@ -114,7 +114,7 @@ class TRUSTCase(object):
 
     _UNIQ_ID_START = -1
 
-    def __init__(self, directory, datasetName, nbProcs=1, execOptions="", record=False):
+    def __init__(self, directory, datasetName, nbProcs=1, execOptions="", excluNR=False):
         """ 
         Initialisation of the class
 
@@ -127,10 +127,10 @@ class TRUSTCase(object):
             Path of the case we want to run, relatively to the 'src' folder.
         nbProcs : int
             Number of processors to use to run the case.
-        record : bool 
-            whether to add the case to the global list of cases to run
         execOptions : str
             TRUST Options to add at the execution of the test case 
+        excluNR : bool 
+            to remove of the non regression test cases
 
         Returns
         ------
@@ -145,8 +145,7 @@ class TRUSTCase(object):
         self.last_run_ok_ = -255  # exit status of the last run of the case
         self.last_run_err_ = ""  # error message returned when last running the case
         self.execOptions = execOptions
-        if record:
-            self._ListCases.append(self)
+        self.excluNR = excluNR
 
     def _fullDir(self):
         """
@@ -198,7 +197,7 @@ class TRUSTCase(object):
         result = filedata.substitute(subs_dict)
         with open(path, "w") as file: file.write(result)
 
-    def copy(self, targetName, targetDirectory=None, nbProcs=1, execOptions=""):
+    def copy(self, targetName, targetDirectory=None, nbProcs=1, execOptions="", excluNR=False):
         """ 
             Copy a TRUST Case
 
@@ -207,8 +206,14 @@ class TRUSTCase(object):
 
         targetName: str
             New name
+        targetDirectory: str
+            New directory
         nbProcs: int
             number of procs
+        execOptions : str
+            TRUST Options to add at the execution of the test case 
+        excluNR : bool 
+            to remove of the non regression test cases
 
         """
         if targetDirectory is None:
@@ -223,7 +228,7 @@ class TRUSTCase(object):
 
         copyfile(self._fullPath(), pthTgt)
 
-        return TRUSTCase(targetDirectory, targetName, nbProcs=nbProcs, execOptions=execOptions, record=False)
+        return TRUSTCase(targetDirectory, targetName, nbProcs=nbProcs, execOptions=execOptions, excluNR=False)
 
     def dumpDataset(self, user_keywords=[]):
         """ 
@@ -697,6 +702,7 @@ class TRUSTSuite(object):
             list_exclu_nr = list(map(lambda a: os.path.normpath(a), list_cases))
 
         for c in self.getCases():
+            if c.excluNR: continue
             if c.dir_ != ".":
                 t = os.path.join(c.dir_, c.name_ + ".data")
                 # t = c.dir_ + "/" + c.name_ + ".data"
@@ -853,7 +859,7 @@ def dumpText(fiche, list_keywords=[]):
 
     print("".join(test))
 
-def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetData=None, execOptions=""):
+def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetData=None, execOptions="",excluNR=False):
     """ Add a case to run to the list of globally recorded cases.
     
     Parameters
@@ -868,6 +874,8 @@ def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetDat
         if provided, templateData will be copied as targetData + dictionary applied + added to TRUSTSuite()
     nbProcs : int 
         Number of processors
+    excluNR : bool 
+        to remove of the non regression test cases
 
     Returns
     -------
@@ -893,12 +901,12 @@ def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetDat
     from shutil import copyfile
 
     copyfile(fullDir, pthTgt)
-    tc = addCase(targetDirectory, targetData, nbProcs, execOptions)
+    tc = addCase(targetDirectory, targetData, nbProcs, execOptions, excluNR)
     tc.substitute_template(dic)
     return tc
 
 
-def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1, execOptions=""):
+def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1, execOptions="", excluNR=False):
     """ 
     Add a case to run to the list of globally recorded cases.
 
@@ -913,6 +921,8 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1, execOptions=""):
         Number of processors
     execOptions : str
         TRUST Options to add at the execution of the test case 
+    excluNR : bool 
+        to remove of the non regression test cases
 
     Returns
     -------
@@ -929,7 +939,7 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1, execOptions=""):
     elif isinstance(directoryOrTRUSTCase, str):
         if datasetName == "":
             raise ValueError("addCase() method can either be called with a single argument (a TRUSTCase object) or with at least 2 arguments (directory and case name)")
-        tc = TRUSTCase(directoryOrTRUSTCase, datasetName, nbProcs,execOptions=execOptions)
+        tc = TRUSTCase(directoryOrTRUSTCase, datasetName, nbProcs,execOptions=execOptions,excluNR=excluNR)
         initCaseSuite()
         defaultSuite_.addCase(tc)
         return tc
