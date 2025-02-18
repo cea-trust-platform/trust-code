@@ -228,7 +228,6 @@ void Paroi_scal_hyd_base_VEF::compute_nusselt() const
               tab_(num_face, 1) = (lambda(ind_face) + lambda_t(ind_face)) / lambda(ind_face) * tab_d_reel_[num_face] / d_equiv;
               tab_(num_face, 2) = (lambda(ind_face) + lambda_t(ind_face)) / d_equiv;
               tab_(num_face, 3) = tfluide(ind_face);
-              int nb_fields = nb_fields_;
               if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
                 {
                   // Et on ajoute Tface et on Tparoi recalcule avec d_equiv
@@ -243,7 +242,6 @@ void Paroi_scal_hyd_base_VEF::compute_nusselt() const
                 {
                   tab_(num_face, 4) = 0.;
                   tab_(num_face, 5) = 0.;
-                  nb_fields -= 2;
                 }
             }
         }

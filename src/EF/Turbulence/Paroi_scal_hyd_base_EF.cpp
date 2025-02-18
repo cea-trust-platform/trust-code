@@ -221,13 +221,6 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
   const IntTab& face_voisins = le_dom_dis_->face_voisins();
   int ndeb, nfin, elem;
   const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
-  const DoubleTab& temperature = eqn.probleme().equation(1).inconnue().valeurs();
-
-  const IntTab& elems = le_dom_dis_->domaine().les_elems();
-  int nsom = le_dom_dis_->nb_som_face();
-  int nsom_elem = le_dom_dis_->domaine().nb_som_elem();
-  ArrOfInt nodes_face(nsom);
-  int nb_nodes_free = nsom_elem - nsom;
 
   EcrFicPartage Nusselt;
   ouvrir_fichier_partage(Nusselt, "Nusselt");
@@ -317,30 +310,6 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
                 {
                   double z = le_dom_dis_->xv(num_face, 2);
                   Nusselt << x << "\t| " << y << "\t| " << z;
-                }
-
-              // temperature tparoi face CL
-              double tparoi = 0.;
-              nodes_face = 0;
-              for (int jsom = 0; jsom < nsom; jsom++)
-                {
-                  int num_som = le_dom_dis_->face_sommets(num_face, jsom);
-                  nodes_face[jsom] = num_som;
-                  tparoi += temperature(num_som) / nsom;
-                }
-
-              // on doit calculer Tfluide premiere maille sans prendre en compte Tparoi
-              double tfluide = 0.;
-              for (int i = 0; i < nsom_elem; i++)
-                {
-                  int node = elems(elem, i);
-                  int IOK = 1;
-                  for (int jsom = 0; jsom < nsom; jsom++)
-                    if (nodes_face[jsom] == node)
-                      IOK = 0;
-                  // Le noeud contribue
-                  if (IOK)
-                    tfluide += temperature(node) / nb_nodes_free;
                 }
 
               if (sub_type(Neumann_paroi, la_cl_th.valeur()))
