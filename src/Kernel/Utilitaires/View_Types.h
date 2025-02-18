@@ -67,17 +67,12 @@ using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceV
 template<typename T, int _SHAPE_>
 using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
 
-// Its const version (const disabled for GPU: slower than non-const for Op_Conv VEF!)
 #ifdef TRUST_USE_GPU
 template<typename T, int _SHAPE_>
-using ConstView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
-//using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
-// Host views
+using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
 template<typename T, int _SHAPE_>
 using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
-
 #else
-
 template<typename T, int _SHAPE_>
 using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
 template<typename T, int _SHAPE_>
