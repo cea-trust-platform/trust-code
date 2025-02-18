@@ -1,8 +1,8 @@
-XX/01/25 (TRUST) Change       : dt_impr_ustar_mean_only prints now surface-averaged values instead of mean values on boundaries
-XX/01/25 (TRUST) New keyword  : dt_impr_nusselt_mean_only prints into a .out file the surface-averaged Nusselt related values on all or some specified boundaries (VDF/VEF/EF discretizations)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+18/02/25 (TRUST) Change       : dt_impr_ustar_mean_only prints now surface-averaged values instead of mean values on boundaries
+18/02/25 (TRUST) New keyword  : dt_impr_nusselt_mean_only prints into a .out file the surface-averaged Nusselt related values on all or some specified boundaries (VDF/VEF/EF discretizations)
 14/02/25 (TRUST) Major change : TRUST (and its baltiks) is now built with 64b support by default! Old 32b mode can still be built with '-with-32-bit-indices'
 07/02/25 (TRUST) New Keyword  : [CMFD] semantics: add "models" keywords in addition to "correlations" to better fit with the Euler-Euler RANS two-phase flow framework.
 06/02/25 (TRUST) Bug fix      : In PolyMAC and PolyMAC_P0P1NC, bug fix regarding nonzero Neumann conditions in the diffusive terms. See poissonSolver_PolyMAC validation form.
