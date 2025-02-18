@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ int EcritureLectureSpecial::is_lecture_special()
 int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
 {
   // with PDI, no one is writing, the library handles the IO
-  if(TRUST_2_PDI::PDI_checkpoint_)
+  if(TRUST_2_PDI::is_PDI_checkpoint())
     {
       a_faire = 0;
       special = 0;

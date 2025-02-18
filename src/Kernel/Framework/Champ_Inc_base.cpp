@@ -362,7 +362,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
   int bytes = 0;
   if (special)
     bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
-  else if (TRUST_2_PDI::PDI_checkpoint_)
+  else if (TRUST_2_PDI::is_PDI_checkpoint())
     {
       bytes = 8 * valeurs().size_array();
 
@@ -413,7 +413,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
       Cerr << "Resume of the field " << nom_;
-      if(TRUST_2_PDI::PDI_restart_)
+      if(TRUST_2_PDI::is_PDI_restart())
         {
           TRUST_2_PDI pdi_interface;
           // Sometimes (with Champ_fonc_reprise), the equation has not been associated yet so we just share the raw name of the field
@@ -449,7 +449,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
     }
   else // lecture pour sauter le bloc
     {
-      if(TRUST_2_PDI::PDI_restart_)
+      if(TRUST_2_PDI::is_PDI_restart())
         {
           Cerr << finl << "Problem in the resumption " << finl;
           Cerr << "PDI format does not require to navigate through file..." << finl;

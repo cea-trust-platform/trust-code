@@ -1,11 +1,13 @@
-pkg=pdi-1.7.1
-lib=$(TRUST_ROOT)/lib/src/LIBPDI/lib64/libpdi.so
+ext_pkg=$(TRUST_ROOT)/externalpackages/PDI
+PDI_ARCHIVE=$(ext_pkg)/pdi-1.7.1.tar.gz
+PDI=$(TRUST_ROOT)/lib/src/LIBPDI/lib64/libpdi.so
+HDF5=$(TRUST_MED_ROOT)/lib/libhdf5.a
 
-all : $(lib)
+all : $(PDI)
 
-$(lib) : makefile install
+$(PDI) : $(HDF5) $(PDI_ARCHIVE) makefile install
 	make clean
-	@./install $(pkg)
+	@./install $(PDI_ARCHIVE)
 
 clean:
 	rm -rf $(TRUST_ROOT)/lib/src/LIBPDI 

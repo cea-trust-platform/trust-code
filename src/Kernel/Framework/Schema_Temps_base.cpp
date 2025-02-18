@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -729,7 +729,7 @@ void Schema_Temps_base::imprimer(Sortie& os, const Probleme_base& pb) const
 int Schema_Temps_base::sauvegarder(Sortie& os) const
 {
   int bytes = 0;
-  if(TRUST_2_PDI::PDI_checkpoint_)
+  if(TRUST_2_PDI::is_PDI_checkpoint())
     {
       int simple_checkpoint = ref_cast_non_const(Probleme_base, mon_probleme.valeur()).is_sauvegarde_simple();
       int i = 0;

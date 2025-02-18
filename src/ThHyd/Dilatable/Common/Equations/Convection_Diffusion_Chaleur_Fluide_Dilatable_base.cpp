@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,7 +125,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
       os << flush ;
       Cerr << "Saving thermodynamic pressure at time : " <<  Nom(temps,"%e") << finl;
     }
-  else if(TRUST_2_PDI::PDI_checkpoint_)
+  else if(TRUST_2_PDI::is_PDI_checkpoint())
     {
       bytes += 8;
       TRUST_2_PDI pdi_interface;
@@ -152,7 +152,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::reprendre(Entree& is)
   Nom ident_Pth("pression_thermo");
   ident_Pth += probleme().domaine().le_nom();
   double pth;
-  if(TRUST_2_PDI::PDI_restart_)
+  if(TRUST_2_PDI::is_PDI_restart())
     {
       TRUST_2_PDI pdi_interface;
       pdi_interface.read(ident_Pth.getString(), &pth);

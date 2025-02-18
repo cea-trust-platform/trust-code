@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -367,7 +367,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
 
 void Champ_Fonc_reprise::init_pdi(const Probleme_base& pb, Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen)
 {
-  TRUST_2_PDI::PDI_restart_ = 1;
+  TRUST_2_PDI::set_PDI_restart(1);
 
   Ecrire_YAML yaml_file;
   yaml_file.add_pb_base(pb, nom_fic);

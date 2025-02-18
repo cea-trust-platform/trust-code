@@ -205,7 +205,7 @@ void Save_Restart::checkVersion(Nom nomfic)
 
 void Save_Restart::prepare_PDI_restart(int resume_last_time)
 {
-  TRUST_2_PDI::PDI_restart_ = 1;
+  TRUST_2_PDI::set_PDI_restart(1);
   TRUST_2_PDI pdi_interface;
 
   int last_iteration = -1;
@@ -577,7 +577,7 @@ int Save_Restart::sauver() const
   int pdi_format = Motcle(restart_format_) == "pdi";
   if(pdi_format)
     {
-      if(!TRUST_2_PDI::PDI_initialized_)
+      if(!TRUST_2_PDI::is_PDI_initialized())
         {
           std::string yaml_fname = yaml_fname_.getString();
           if(yaml_fname == "??")
@@ -658,7 +658,7 @@ int Save_Restart::sauver() const
   // On realise l'ecriture de la sauvegarde
   int bytes;
   EcritureLectureSpecial::mode_ecr = (Motcle(restart_format_) == "xyz");
-  TRUST_2_PDI::PDI_checkpoint_ = pdi_format;
+  TRUST_2_PDI::set_PDI_checkpoint(pdi_format) ;
   if(pdi_format)
     {
       Sortie_Nulle useless;
@@ -677,7 +677,7 @@ int Save_Restart::sauver() const
   else
     bytes = pb_base_->sauvegarder(ficsauv_.valeur());
   EcritureLectureSpecial::mode_ecr = -1;
-  TRUST_2_PDI::PDI_checkpoint_ = 0;
+  TRUST_2_PDI::set_PDI_checkpoint(0);
 
   // Si c'est une sauvegarde simple, on referme immediatement et proprement le fichier
   if (simple_restart_ && !pdi_format)
@@ -703,7 +703,7 @@ void Save_Restart::finir()
 {
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
-  if(Motcle(restart_format_) == "pdi" && TRUST_2_PDI::PDI_initialized_)
+  if(Motcle(restart_format_) == "pdi" && TRUST_2_PDI::is_PDI_initialized())
     TRUST_2_PDI::finalize();
   else  if (!simple_restart_ && ficsauv_.non_nul())
     {

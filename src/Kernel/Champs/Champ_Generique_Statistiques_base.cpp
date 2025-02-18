@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -100,7 +100,7 @@ int Champ_Generique_Statistiques_base::sauvegarder(Sortie& os) const
 int Champ_Generique_Statistiques_base::reprendre(Entree& is)
 {
   Champ_Gen_de_Champs_Gen::reprendre(is);
-  if(!TRUST_2_PDI::PDI_restart_)
+  if(!TRUST_2_PDI::is_PDI_restart())
     {
       Nom bidon;
       is >> bidon >> bidon; // On saute l'identificateur et le type des champs

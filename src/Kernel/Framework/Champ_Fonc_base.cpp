@@ -107,7 +107,7 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
   int bytes = 0;
   if (special)
     bytes = EcritureLectureSpecial::ecriture_special(*this, fich);
-  else if (TRUST_2_PDI::PDI_checkpoint_)
+  else if (TRUST_2_PDI::is_PDI_checkpoint())
     {
       bytes = 8 * valeurs().size_array();
 
@@ -146,7 +146,7 @@ int Champ_Fonc_base::reprendre(Entree& fich)
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
       Cerr << "Resume of the field " << nom_;
-      if(TRUST_2_PDI::PDI_restart_)
+      if(TRUST_2_PDI::is_PDI_restart())
         {
           TRUST_2_PDI pdi_interface;
           pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 0 /*read mode*/);
@@ -164,7 +164,7 @@ int Champ_Fonc_base::reprendre(Entree& fich)
     }
   else // lecture pour sauter le bloc
     {
-      if(TRUST_2_PDI::PDI_restart_)
+      if(TRUST_2_PDI::is_PDI_restart())
         {
           Cerr << finl << "Problem in the resumption " << finl;
           Cerr << "PDI format does not require to navigate through file..." << finl;

@@ -32,9 +32,12 @@ class TRUST_2_PDI
 {
 public:
 
-  static int PDI_checkpoint_;
-  static int PDI_restart_;
-  static int PDI_initialized_;
+  static void set_PDI_checkpoint(int c) { PDI_checkpoint_ = c; }
+  static void set_PDI_restart(int r) { PDI_restart_ = r; }
+
+  static int is_PDI_initialized() { return PDI_initialized_; }
+  static int is_PDI_checkpoint() { return PDI_checkpoint_; }
+  static int is_PDI_restart() { return PDI_restart_; }
 
   static void init(std::string IO_config)
   {
@@ -150,6 +153,11 @@ private:
 
   // data that are currently shared with PDI
   static std::vector<std::string> shared_data_;
+
+  static int PDI_checkpoint_;
+  static int PDI_restart_;
+  static int PDI_initialized_;
+
 
 };
 

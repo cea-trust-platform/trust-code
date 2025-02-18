@@ -391,7 +391,7 @@ void Probleme_Couple::sauver() const
     }
   // we need to initialize PDI with a yaml file that contains the information of all the problems with a PDI checkpoint format
   // (allows to initialize PDI once for all checkpoints and not multiple times)
-  if(pdi_format && !TRUST_2_PDI::PDI_initialized_)
+  if(pdi_format && !TRUST_2_PDI::is_PDI_initialized())
     {
       if(yaml_fname == "??")
         {

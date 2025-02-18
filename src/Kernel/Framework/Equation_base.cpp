@@ -456,7 +456,7 @@ void Equation_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::str
  */
 int Equation_base::reprendre(Entree& fich)
 {
-  if(!TRUST_2_PDI::PDI_restart_)
+  if(!TRUST_2_PDI::is_PDI_restart())
     {
       double temps = schema_temps().temps_courant();
       Nom field_tag(inconnue().le_nom());

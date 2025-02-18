@@ -423,7 +423,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
   bytes += eq.sauvegarder_base(os); // XXX : voir Convection_Diffusion_std
   EcritureLectureSpecial::is_ecriture_special(special,a_faire);
 
-  if (a_faire || TRUST_2_PDI::PDI_checkpoint_)
+  if (a_faire || TRUST_2_PDI::is_PDI_checkpoint())
     {
       Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
       OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
@@ -464,7 +464,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
     }
   else
     {
-      if(!TRUST_2_PDI::PDI_restart_)
+      if(!TRUST_2_PDI::is_PDI_restart())
         {
           Nom field_tag(p_tab->le_nom());
           field_tag += p_tab->que_suis_je();

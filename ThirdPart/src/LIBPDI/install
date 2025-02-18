@@ -1,7 +1,6 @@
 #!/bin/bash
-package=$1
-path_package=$TRUST_ROOT/externalpackages/PDI/$package.tar.gz
-[ ! -f $path_package ] && echo "$path_package not found! Update your makefile." && exit -1
+ARCHIVE=$1
+[ ! -f $ARCHIVE ] && echo "$ARCHIVE not found! Update your makefile." && exit -1
 
 # Path to library build
 build_dir=$TRUST_ROOT/build/lib/LIBPDI
@@ -16,8 +15,10 @@ mkdir -p $install_dir
 
 # Building library
 cd $build_dir
-tar -xzvf $path_package
-cd $package
+tar -xzvf $ARCHIVE
+pdi=`basename $ARCHIVE`
+pdi_src=${pdi%.tar.gz}
+cd $pdi_src
 mkdir -p build
 cd build
 

@@ -407,7 +407,7 @@ int Modele_turbulence_hyd_base::sauvegarder(Sortie& os) const
     {
       loipar_->sauvegarder(os);
     }
-  else if(!TRUST_2_PDI::PDI_checkpoint_)  // OC: pour le bas Re, on ecrit negligeable => pas de pb a faire ceci ?
+  else if(!TRUST_2_PDI::is_PDI_checkpoint())  // OC: pour le bas Re, on ecrit negligeable => pas de pb a faire ceci ?
     {
       const Discretisation_base& discr = mon_equation_->discretisation();
       Nom nom_discr = discr.que_suis_je();

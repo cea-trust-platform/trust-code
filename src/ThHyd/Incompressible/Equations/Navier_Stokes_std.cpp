@@ -1231,7 +1231,7 @@ int Navier_Stokes_std::sauvegarder(Sortie& os) const
 int Navier_Stokes_std::reprendre(Entree& is)
 {
   Equation_base::reprendre(is);
-  if(!TRUST_2_PDI::PDI_restart_)
+  if(!TRUST_2_PDI::is_PDI_restart())
     {
       double temps = schema_temps().temps_courant();
       Nom ident_pression(la_pression.le_nom());

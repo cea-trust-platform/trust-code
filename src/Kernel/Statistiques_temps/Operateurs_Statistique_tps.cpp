@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
       os << Nom(this->dernier()->tstat_deb(), "%e") << finl;
       os << Nom(this->dernier()->tstat_dernier_calcul(), "%e") << finl;
     }
-  else if(TRUST_2_PDI::PDI_checkpoint_)
+  else if(TRUST_2_PDI::is_PDI_checkpoint())
     Cerr << "WARNING! Backup for Operateurs_Statistique_tps not handled with PDI..." << finl;
 
   int bytes = 0;
@@ -73,7 +73,7 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
   //Cerr << "Operateurs_Statistique_tps::reprendre" << finl;
   if (mon_post_.non_nul())
     {
-      if(TRUST_2_PDI::PDI_restart_)
+      if(TRUST_2_PDI::is_PDI_restart())
         {
           Cerr << "WARNING! Restart for Operateurs_Statistique_tps not handled with PDI..." << finl;
           Process::exit();

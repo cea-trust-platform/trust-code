@@ -904,7 +904,7 @@ int Postraitement::sauvegarder(Sortie& os) const
               os << tstat_deb_ << finl;
               os << tstat_dernier_calcul_ << finl ;
             }
-          else if (TRUST_2_PDI::PDI_checkpoint_)
+          else if (TRUST_2_PDI::is_PDI_checkpoint())
             {
               TRUST_2_PDI pdi_interface;
               std::string pb_name = probleme().le_nom().getString();
@@ -946,7 +946,7 @@ int Postraitement::reprendre(Entree& is)
             {
               int n;
               double tstat_deb_sauv,temps_derniere_mise_a_jour_stats;
-              if (TRUST_2_PDI::PDI_restart_)
+              if (TRUST_2_PDI::is_PDI_restart())
                 {
                   TRUST_2_PDI pdi_interface;
                   std::string pb_name = probleme().le_nom().getString();
@@ -1022,7 +1022,7 @@ int Postraitement::reprendre(Entree& is)
             }
           else  // lecture pour sauter le bloc
             {
-              if(TRUST_2_PDI::PDI_restart_)
+              if(TRUST_2_PDI::is_PDI_restart())
                 {
                   Cerr << finl << "Problem in the resumption " << finl;
                   Cerr << "PDI format does not require to navigate through file..." << finl;
