@@ -29,9 +29,13 @@
 
 bool init_device_ = false;
 bool clock_on = false;
-bool timer_on = true;
 double clock_start;
 int timer_counter=0;
+#ifdef TRUST_USE_GPU
+bool timer = true;
+#else
+bool timer = false;
+#endif
 
 std::string ptrToString(const void* adr)
 {
@@ -65,7 +69,6 @@ void init_device()
   if (init_device_) return;
   init_device_ = true;
   if (getenv("TRUST_CLOCK_ON")!= nullptr) clock_on = true;
-  if (getenv("TRUST_DISABLE_TIMER")!= nullptr) timer_on = false;
   Process::imprimer_ram_totale(); // Impression avant copie des donnees sur GPU
 }
 #endif
@@ -184,7 +187,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
 #ifdef TRUST_USE_GPU
   assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
   clock_start = Statistiques::get_time_now();
-  if (timer_on) statistiques().begin_count(gpu_mallocfree_counter_);
+  statistiques().begin_count(gpu_mallocfree_counter_);
   size_t bytes = sizeof(_TYPE_) * size;
   size_t free_bytes  = DeviceMemory::deviceMemGetInfo(0);
   size_t total_bytes = DeviceMemory::deviceMemGetInfo(1);
@@ -205,7 +208,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
   });
   end_gpu_timer(__KERNEL_NAME__);
 #endif
-  if (timer_on) statistiques().end_count(gpu_mallocfree_counter_);
+  statistiques().end_count(gpu_mallocfree_counter_);
   if (clock_on)
     {
       std::string clock(Process::is_parallel() ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
@@ -234,7 +237,7 @@ template <typename _TYPE_, typename _SIZE_>
 void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
 {
 #ifdef TRUST_USE_GPU
-  if (timer_on && statistiques_enabled()) statistiques().begin_count(gpu_mallocfree_counter_);
+  if (statistiques_enabled()) statistiques().begin_count(gpu_mallocfree_counter_);
   std::string clock;
   if (PE_Groups::get_nb_groups()>0 && Process::is_parallel()) clock = "[clock]#"+std::to_string(Process::me());
   else
@@ -244,7 +247,7 @@ void deleteOnDevice(_TYPE_* ptr, _SIZE_ size)
     cout << clock << "            [Data]   Delete on device array [" << ptrToString(ptr).c_str() << "] of " << bytes << " Bytes. It remains " << DeviceMemory::getMemoryMap().size()-1 << " arrays." << endl << flush;
   Kokkos::kokkos_free(addrOnDevice(ptr));
   DeviceMemory::del(ptr);
-  if (timer_on && statistiques_enabled()) statistiques().end_count(gpu_mallocfree_counter_);
+  if (statistiques_enabled()) statistiques().end_count(gpu_mallocfree_counter_);
 #endif
 }
 
@@ -302,11 +305,11 @@ void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       assert(isAllocatedOnDevice(ptr));
       _SIZE_ bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyToDevice",bytes);
-      if (timer_on) statistiques().begin_count(gpu_copytodevice_counter_);
+      statistiques().begin_count(gpu_copytodevice_counter_);
       Kokkos::View<_TYPE_*> host_view(ptr, size);
       Kokkos::View<_TYPE_*> device_view(addrOnDevice(ptr), size);
       Kokkos::deep_copy(device_view, host_view);
-      if (timer_on) statistiques().end_count(gpu_copytodevice_counter_, bytes);
+      statistiques().end_count(gpu_copytodevice_counter_, bytes);
       std::stringstream message;
       message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "]";
       end_gpu_timer(message.str(), bytes);
@@ -345,11 +348,11 @@ void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       assert(isAllocatedOnDevice(ptr));
       _SIZE_ bytes = sizeof(_TYPE_) * size;
       start_gpu_timer("copyFromDevice",bytes);
-      if (timer_on) statistiques().begin_count(gpu_copyfromdevice_counter_);
+      statistiques().begin_count(gpu_copyfromdevice_counter_);
       Kokkos::View<_TYPE_*> host_view(ptr, size);
       Kokkos::View<_TYPE_*> device_view(addrOnDevice(ptr), size);
       Kokkos::deep_copy(host_view, device_view);
-      if (timer_on) statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
+      statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
       std::stringstream message;
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
       end_gpu_timer(message.str(), bytes);

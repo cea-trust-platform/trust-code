@@ -72,8 +72,8 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
 
           for (int j=0; j<lsize; j++) //Outer loop
             {
-              Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__), //Inner loop (keep parallelism here for perfs)
-                                      policy,
+              if (timer) start_gpu_timer(__KERNEL_NAME__);
+              Kokkos::parallel_reduce(policy,
                                       KOKKOS_LAMBDA(const int i, _TYPE_& local_max)
               {
                 const _TYPE_ x = Kokkos::fabs(tableau_view(i,j));
@@ -83,7 +83,7 @@ void local_max_abs_tab_kernel(const TRUSTTab<_TYPE_>& tableau, TRUSTArray<_TYPE_
               Kokkos::Max<_TYPE_, ExecSpace>(Kokkos::subview(max_colonne_view,j)));
 
               bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-              end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+              if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
             }
         }
     }

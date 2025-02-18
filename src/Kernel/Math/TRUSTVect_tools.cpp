@@ -19,12 +19,11 @@
 #include <View_Types.h>
 #include <MD_Vector_seq.h>
 
-// Ajout d'un flag par appel a end_timer peut etre couteux (creation d'une string)
-#ifdef TRUST_USE_GPU
-static bool timer=true;
-#else
-static bool timer=false;
-#endif
+/**************************************************************************************/
+/* Warning ! This kernels are critical for performance into several TRUST applications !
+ * Do not change implementation without using performance regression testing !
+ * You are warned.
+ */
 
 /*! Determine which blocks of indices should be used to perform an operation.
  */
@@ -138,39 +137,37 @@ template<typename ExecSpace, typename _TYPE_, typename _SIZE_, bool IS_MUL>
 void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
                                             Block_Iter<_SIZE_>& bloc_itr, const int line_size_vx, const int vect_size_tot, const int delta_line_size)
 {
-  auto vx_view= vx.template view_ro<1, ExecSpace>();
-  auto resu_view= resu.template view_rw<1, ExecSpace>();
+  auto vx_view= vx.template view_ro<1, ExecSpace>().data();
+  auto resu_view= resu.template view_rw<1, ExecSpace>().data();
 
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const int begin_bloc = (*(bloc_itr++)) * line_size_vx;
       const int end_bloc = (*(bloc_itr++)) * line_size_vx;
-      const int count = end_bloc - begin_bloc;
 
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
 
       // Adjust pointers to indices
       const int resu_start_idx = begin_bloc * delta_line_size;
-      const int x_start_idx = begin_bloc;
 
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(const int i)
       {
-        const _TYPE_ x = vx_view(x_start_idx + i);
+        const _TYPE_ x = vx_view[i];
 
         //The // for could be also placed there
         for (int j = 0; j < delta_line_size; ++j)
           {
             const int resu_idx = resu_start_idx + i * delta_line_size + j;
             if (IS_MUL)
-              resu_view(resu_idx) *= x;
+              resu_view[resu_idx] *= x;
             else //If it's not MUL, it's DIV
-              resu_view(resu_idx) *= ((_TYPE_)1 / x);
+              resu_view[resu_idx] *= ((_TYPE_)1 / x);
           }
       });
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
     }
 }
 }
@@ -232,31 +229,29 @@ template<typename ExecSpace, typename _TYPE_, typename _SIZE_, bool IS_ADD>
 void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, _TYPE_ alpha, int nblocs_left,
                                        Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size)
 {
-  auto vx_view= vx.template view_ro<1, ExecSpace>();
-  auto resu_view= resu.template view_rw<1, ExecSpace>();
+  auto vx_view= vx.template view_ro<1, ExecSpace>().data();
+  auto resu_view= resu.template view_rw<1, ExecSpace>().data();
 
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
-      const int count = end_bloc - begin_bloc;
 
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
 
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(const int i)
       {
-        const _TYPE_ x = vx_view(begin_bloc + i);
+        const _TYPE_ x = vx_view[i];
 
-        const int resu_idx = begin_bloc + i ;
         if (IS_ADD) //done at compile time
-          resu_view(resu_idx) += alpha * x;
+          resu_view[i] += alpha * x;
         else //If it's not ADD, it's SQUARE
-          resu_view(resu_idx) += alpha * x * x;
+          resu_view[i] += alpha * x * x;
       });
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
     }
 }
 }
@@ -315,34 +310,53 @@ void operator_vect_vect_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRU
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_VECT::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_VECT::DIV_),
                         IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_VECT::EGAL_);
 
-  auto vx_view= vx.template view_ro<1, ExecSpace>();
-  auto resu_view= resu.template view_rw<1, ExecSpace>();
+#ifdef TRUST_USE_GPU
+  auto vx_view= vx.template view_ro<1, ExecSpace>().data();
+  auto resu_view= resu.template view_rw<1, ExecSpace>().data();
 
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
-      const int count = end_bloc - begin_bloc;
 
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(const _SIZE_ i)
       {
-        const _TYPE_ x = vx_view(begin_bloc + i);
-
-        const int resu_idx = begin_bloc + i ;
-
-        if (IS_ADD) resu_view(resu_idx) += x;
-        if (IS_SUB) resu_view(resu_idx) -= x;
-        if (IS_MULT) resu_view(resu_idx) *= x;
-        if (IS_DIV) resu_view(resu_idx) /= x;
-        if (IS_EGAL) resu_view(resu_idx) = x;
+        const _TYPE_ x = vx_view[i];
+        if (IS_ADD) resu_view[i] += x;
+        if (IS_SUB) resu_view[i] -= x;
+        if (IS_MULT) resu_view[i] *= x;
+        if (IS_DIV) resu_view[i] /= x;
+        if (IS_EGAL) resu_view[i] = x;
       });
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
     }
+#else
+  // Need to keep C++ optimized (pointer) implementation for PolyMAC in Flica5
+  _TYPE_ *resu_base = resu.data();
+  const _TYPE_ *x_base = vx.data();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size, end_bloc = (*(bloc_itr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      _TYPE_ *resu_ptr = resu_base + begin_bloc;
+      const _TYPE_ *x_ptr = x_base + begin_bloc;
+      for (_SIZE_ count = 0; count < end_bloc - begin_bloc ; count++)
+        {
+          const _TYPE_& x = x_ptr[count];
+          _TYPE_ &p_resu = resu_ptr[count];
+          if (IS_ADD) p_resu += x;
+          if (IS_SUB) p_resu -= x;
+          if (IS_MULT) p_resu *= x;
+          if (IS_EGAL) p_resu = x;
+          if (IS_DIV) p_resu /= x;
+        }
+    }
+#endif
 }
 }
 #endif
@@ -408,35 +422,30 @@ void operator_vect_single_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const _
                         IS_NEGATE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::NEGATE_), IS_INV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::INV_), IS_ABS = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ABS_),
                         IS_SQRT = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SQRT_), IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SQUARE_);
 
-  auto resu_view= resu.template view_rw<1, ExecSpace>();
-
+  auto resu_view= resu.template view_rw<1, ExecSpace>().data();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
-      const int count = end_bloc - begin_bloc;
 
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
-
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int i)
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(const _SIZE_ i)
       {
-        const int resu_idx = begin_bloc + i ;
-
-        if (IS_SUB) resu_view(resu_idx) -= x;
-        if (IS_ADD) resu_view(resu_idx) += x;
-        if (IS_MULT) resu_view(resu_idx) *= x;
-        if (IS_EGAL) resu_view(resu_idx) = x;
-        if (IS_NEGATE) resu_view(resu_idx) = -resu_view(resu_idx);
-        if (IS_ABS) resu_view(resu_idx) = (_TYPE_) Kokkos::abs(resu_view(resu_idx));
-        if (IS_SQRT) resu_view(resu_idx) = (_TYPE_) Kokkos::sqrt(resu_view(resu_idx));
-        if (IS_SQUARE) resu_view(resu_idx)=resu_view(resu_idx)*resu_view(resu_idx);
-        if (IS_DIV) resu_view(resu_idx) /= x;
-        if (IS_INV) resu_view(resu_idx) = (_TYPE_) ((_TYPE_)1 /resu_view(resu_idx));
+        if (IS_SUB) resu_view[i] -= x;
+        if (IS_ADD) resu_view[i] += x;
+        if (IS_MULT) resu_view[i] *= x;
+        if (IS_EGAL) resu_view[i] = x;
+        if (IS_NEGATE) resu_view[i] = -resu_view[i];
+        if (IS_ABS) resu_view[i] = (_TYPE_) Kokkos::abs(resu_view[i]);
+        if (IS_SQRT) resu_view[i] = (_TYPE_) Kokkos::sqrt(resu_view[i]);
+        if (IS_SQUARE) resu_view[i] = resu_view[i]*resu_view[i];
+        if (IS_DIV) resu_view[i] /= x;
+        if (IS_INV) resu_view[i] = (_TYPE_) ((_TYPE_)1 /resu_view[i]);
       });
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
     }
 }
 }
@@ -546,32 +555,29 @@ void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int n
 
   if (not(IS_MAXS || IS_MINS)) {Process::exit("Wrong operation type in local_extrema_vect_generic_kernel");}
 
-  auto vx_view= vx.template view_ro<1, ExecSpace>();
+  auto vx_view= vx.template view_ro<1, ExecSpace>().data();
 
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
-      const int count = end_bloc - begin_bloc;
 
       //Asserts
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
 
       //Define Policy
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
 
       // Define the object in which the reduction is saved
       reducer_value_type bloc_min_max;
 
       //Reduction
-      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
-                              policy,
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_reduce(policy,
                               KOKKOS_LAMBDA(const int i, reducer_value_type& local_min_max)
       {
-        const int resu_idx = begin_bloc + i ;
-
-        _TYPE_ val = (IS_ABS) ? Kokkos::abs(vx_view(resu_idx)) : vx_view(resu_idx);
+        const _TYPE_ val = (IS_ABS) ? Kokkos::abs(vx_view[i]) : vx_view[i];
 
         if ( (IS_MAXS && val>local_min_max.val) || (IS_MINS && val<local_min_max.val) )
           {
@@ -580,13 +586,7 @@ void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int n
           }
       }
       ,reducer(bloc_min_max)); //Reduce in bloc_min_max
-
-      //timer
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
-
-      //Fence (necessary for now)
-      Kokkos::fence();
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
 
       //Bloc-level reduction
       if ( (IS_MAXS && bloc_min_max.val > min_max_val) || (IS_MINS && bloc_min_max.val < min_max_val) )
@@ -675,48 +675,34 @@ void local_operations_vect_bis_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx
                                               Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size, _TYPE_& sum)
 {
   static constexpr bool IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SQUARE_), IS_SUM = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
-
-  auto vx_view= vx.template view_ro<1, ExecSpace>();
-
+  // Performance important point for TRUSTArray dynamic kernel to have serial mode performance:
+  // Use pointer access into Kokkos loop with [] and getting raw pointer to view with .data() !
+  auto vx_view= vx.template view_ro<1, ExecSpace>().data();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
-      const int count = end_bloc - begin_bloc;
 
       //Asserts
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
 
       //Define Policy
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
 
       // Define the bloc sum
       _TYPE_ bloc_sum=0;
 
       //Reduction
-      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
-                              policy,
-                              KOKKOS_LAMBDA(const int i, _TYPE_& local_sum)
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_reduce(policy, KOKKOS_LAMBDA(const _SIZE_ i, _TYPE_& local_sum)
       {
-        const int resu_idx = begin_bloc + i ;
-        if (IS_SUM)
-          {
-            local_sum += vx_view(resu_idx);
-          }
-        else if (IS_SQUARE)
-          {
-            local_sum += vx_view(resu_idx)*vx_view(resu_idx);
-          }
+        const _TYPE_ x = vx_view[i];
+        if (IS_SQUARE) local_sum += x * x;
+        if (IS_SUM) local_sum += x;
       }
       ,bloc_sum); //Reduce in bloc_sum
-
-      //timer
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
-
-      //Fence (necessary for now)
-      Kokkos::fence();
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
 
       //Bloc-level reduction
       sum += bloc_sum;
@@ -783,8 +769,7 @@ void invalidate_data_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu,
                             const ArrOfInt& items_blocs, const int line_size, const int blocs_size)
 {
   _TYPE_ invalid = (_TYPE_)-987654321;
-  auto resu_view= resu.template view_rw<1, ExecSpace>();
-  bool kernelOnDevice = is_default_exec_space<ExecSpace>;
+  auto resu_view= resu.template view_rw<1, ExecSpace>().data();
 
   int i = 0;
   for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
@@ -793,19 +778,24 @@ void invalidate_data_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu,
       //Define Policy
       Kokkos::RangePolicy<ExecSpace> policy(i, bloc_end);
       //Loop
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,KOKKOS_LAMBDA(const int count)
-      {resu_view(count)=invalid;});
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy,KOKKOS_LAMBDA(const int count)
+      {
+        resu_view[count]=invalid;
+      });
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
       i = items_blocs[blocs_idx+1] * line_size;
     }
   const _SIZE_ bloc_end = resu.size_array(); // Process until end of vector
   //Define Policy
   Kokkos::RangePolicy<ExecSpace> policy(i, bloc_end);
   //Loop
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,KOKKOS_LAMBDA(const int count)
-  {resu_view(count)=invalid;});
-  //timer
-  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+  if (timer) start_gpu_timer(__KERNEL_NAME__);
+  Kokkos::parallel_for(policy,KOKKOS_LAMBDA(const int count)
+  {
+    resu_view[count]=invalid;
+  });
+  if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
 }
 }
 #endif
@@ -846,41 +836,34 @@ template<typename ExecSpace, typename _TYPE_, typename _SIZE_>
 void local_prodscal_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_,_SIZE_>& vy, int nblocs_left,
                            Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size, _TYPE_& sum)
 {
-  auto vx_view= vx.template view_ro<1, ExecSpace>();
-  auto vy_view= vy.template view_ro<1, ExecSpace>();
+  auto vx_view= vx.template view_ro<1, ExecSpace>().data();
+  auto vy_view= vy.template view_ro<1, ExecSpace>().data();
 
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const _SIZE_ begin_bloc = (*(bloc_itr++)) * line_size;
       const _SIZE_ end_bloc = (*(bloc_itr++)) * line_size;
-      const int count = end_bloc - begin_bloc;
 
       //Asserts
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
 
       //Define Policy
-      Kokkos::RangePolicy<ExecSpace> policy(0, count);
+      Kokkos::RangePolicy<ExecSpace> policy(begin_bloc, end_bloc);
 
       // Define the bloc sum
       _TYPE_ bloc_sum=0;
 
       //Reduction
-      Kokkos::parallel_reduce(start_gpu_timer(__KERNEL_NAME__),
-                              policy,
-                              KOKKOS_LAMBDA(const int i, _TYPE_& local_sum)
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_reduce(policy, KOKKOS_LAMBDA(const _SIZE_ i, _TYPE_& local_sum)
       {
-        const int resu_idx = begin_bloc + i ;
-        local_sum += vx_view(resu_idx)*vy_view(resu_idx);
+        local_sum += vx_view[i]*vy_view[i];
       }
       , Kokkos::Sum<_TYPE_>(bloc_sum)); //Reduce in bloc_sum
 
       //timer
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
-
-      //Fence (necessary for now)
-      Kokkos::fence();
+      if (timer) end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
 
       //Bloc-level reduction
       sum += bloc_sum;

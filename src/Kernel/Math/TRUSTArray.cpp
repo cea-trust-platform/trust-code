@@ -18,13 +18,6 @@
 #include <string.h>
 #include <DeviceMemory.h>
 
-// Ajout d'un flag par appel a end_gpu_timer peut etre couteux (creation d'une string)
-#ifdef TRUST_USE_GPU
-static bool timer=true;
-#else
-static bool timer=false;
-#endif
-
 // TRUSTArray kernels for device moved in .cpp file to avoid multiple definition during link
 template <typename _TYPE_, typename _SIZE_>
 Sortie& TRUSTArray<_TYPE_, _SIZE_>::printOn(Sortie& os) const

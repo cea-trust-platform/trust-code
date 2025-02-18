@@ -36,7 +36,7 @@
 #endif
 
 // TODO - scope all this, global vars are bad.
-extern bool init_device_, clock_on, timer_on;
+extern bool init_device_, clock_on, timer;
 extern double clock_start;
 extern int timer_counter;
 
@@ -76,11 +76,11 @@ inline const std::string methodName(const std::string& prettyFunction, const int
 #define __KERNEL_NAME__ ""
 #endif
 
-// Timers GPU avec OpenMP (renommer?)
+// Timers GPU (avec possibilite de desactiver avec if (timer) dans certains Kernels critiques sur CPU):
 inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 {
 #ifdef TRUST_USE_GPU
-  if (init_device_ && timer_on)
+  if (init_device_)
     {
       timer_counter++;
 #ifndef NDEBUG
@@ -101,7 +101,7 @@ inline std::string start_gpu_timer(std::string str="kernel", int bytes=-1)
 inline void end_gpu_timer(const std::string& str, int onDevice=1, int bytes=-1) // Return in [ms]
 {
 #ifdef TRUST_USE_GPU
-  if (init_device_ && timer_on)
+  if (init_device_)
     {
       timer_counter--;
 #ifndef NDEBUG
@@ -192,7 +192,6 @@ extern void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName
 template <typename _TYPE_, typename _SIZE_=int>
 extern void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
 
-// ToDo OpenMP implemente methods for pointer (used only for the moment in Schema_Comm_Vecteurs for buffer communication with _TYPE_=char):
 template <typename _TYPE_, typename _SIZE_=int>
 extern _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
 

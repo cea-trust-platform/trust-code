@@ -18,6 +18,12 @@
 #include <Device.h>
 #include <sstream>
 
+/**************************************************************************************/
+/* Warning ! This kernels are critical for performance into several TRUST applications !
+ * Do not change implementation without using performance regression testing !
+ * You are warned.
+ **************************************************************************************/
+
 #ifndef LATATOOLS
 template<typename ExecSpace, typename _TYPE_, VECT_ITEMS_TYPE _ITEM_TYPE_>
 void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, const Static_Int_Lists& list, TRUSTArray<_TYPE_>& vect, TRUSTArray<_TYPE_>& buffer)
@@ -29,12 +35,13 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
   const int bloc_size = 1;
   const int n = line_size * bloc_size;
   Kokkos::RangePolicy<ExecSpace> policy(idx, idx_end_of_list);
-  auto items_to_process_view = list.get_data().template view_ro<1, ExecSpace>();
+  auto items_to_process_view = list.get_data().template view_ro<1, ExecSpace>().data();
   if (IS_READ)
     {
-      auto buffer_view = buffer.template view_wo<1, ExecSpace>();
-      auto vect_view = vect.template view_ro<1, ExecSpace>();
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+      auto buffer_view = buffer.template view_wo<1, ExecSpace>().data();
+      auto vect_view = vect.template view_ro<1, ExecSpace>().data();
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(
                              const int item)
       {
         // Indice de l'item geometrique a copier (ou du premier item du bloc)
@@ -50,9 +57,10 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
     }
   else
     {
-      auto buffer_view = buffer.template view_ro<1, ExecSpace>();
-      auto vect_view = vect.template view_rw<1, ExecSpace>();
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+      auto buffer_view = buffer.template view_ro<1, ExecSpace>().data();
+      auto vect_view = vect.template view_rw<1, ExecSpace>().data();
+      if (timer) start_gpu_timer(__KERNEL_NAME__);
+      Kokkos::parallel_for(policy, KOKKOS_LAMBDA(
                              const int item)
       {
         // Indice de l'item geometrique a copier (ou du premier item du bloc)
@@ -73,7 +81,7 @@ void vect_items_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
           }
       });
     }
-  end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+  if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
 }
 #endif
 
@@ -93,7 +101,6 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
       if (nb_elems>0)
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
-
           assert(nb_elems == buffer.size_array());
           assert(idx_end_of_list <= list.get_data().size_array());
           bool kernelOnDevice = vect.checkDataOnDevice();
@@ -147,12 +154,12 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
 #endif
       const int n = line_size * bloc_size;
       Kokkos::RangePolicy<ExecSpace> policy(0, n);
-      auto items_to_process_view = items_to_process.template view_ro<1, ExecSpace>();
       if (IS_READ)
         {
-          auto buffer_view = buffer.template view_wo<1, ExecSpace>();
-          auto vect_view = vect.template view_ro<1, ExecSpace>();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+          auto buffer_view = buffer.template view_wo<1, ExecSpace>().data();
+          auto vect_view = vect.template view_ro<1, ExecSpace>().data();
+          if (timer) start_gpu_timer(__KERNEL_NAME__);
+          Kokkos::parallel_for(policy, KOKKOS_LAMBDA(
                                  const int j)
           {
             int ii = ii_base * line_size + j;
@@ -162,9 +169,10 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
         }
       else
         {
-          auto buffer_view = buffer.template view_ro<1, ExecSpace>();
-          auto vect_view = vect.template view_rw<1, ExecSpace>();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
+          auto buffer_view = buffer.template view_ro<1, ExecSpace>().data();
+          auto vect_view = vect.template view_rw<1, ExecSpace>().data();
+          if (timer) start_gpu_timer(__KERNEL_NAME__);
+          Kokkos::parallel_for(policy, KOKKOS_LAMBDA(
                                  const int j)
           {
             int ii = ii_base * line_size + j;
@@ -173,7 +181,7 @@ void vect_blocs_generic_kernel(int line_size, int idx, int idx_end_of_list, cons
             else if (IS_ADD) vect_view[jj] += buffer_view[ii];
           });
         }
-      end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      if (timer) end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
       ii_base += bloc_size;
     }
 }
@@ -197,7 +205,6 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
           assert(nb_elems == buffer.size_array());
           assert(idx_end_of_list <= list.get_data().size_array());
-
           bool kernelOnDevice = vect.checkDataOnDevice();
           if (kernelOnDevice)
             vect_blocs_generic_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _ITEM_TYPE_>(line_size, idx, idx_end_of_list, list, vect, buffer);

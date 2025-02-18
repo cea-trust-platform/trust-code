@@ -97,8 +97,7 @@ void remplir_items_non_calcules_kernel_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur, con
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),policy,
       KOKKOS_LAMBDA(const int k) {v_view[k]=valeur;});
 
-      bool kernelOnDevice = is_default_exec_space<ExecSpace>;
-      end_gpu_timer(__KERNEL_NAME__, kernelOnDevice);
+      end_gpu_timer(__KERNEL_NAME__, is_default_exec_space<ExecSpace>);
 
       // Sauter a la fin du bloc
       if (i<sz) j = blocs[i*2+1] * line_size;
