@@ -13,10 +13,10 @@ Mailler dom
         nombre_de_noeuds 11 6
     }
     {
-        bord ouvert	X = 0	0 <= Y <= 5
-        bord ouvert	X = 10	0 <= Y <= 5
-        bord paroi	Y = 0	0 <= X <= 10
-        bord ouvert	Y = 5	0 <= X <= 10
+        bord ouvert X = 0   0 <= Y <= 5
+        bord ouvert X = 10  0 <= Y <= 5
+        bord paroi  Y = 0   0 <= X <= 10
+        bord ouvert Y = 5   0 <= X <= 10
     }
 }
 
@@ -38,9 +38,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-
-
-PolyMAC_P0  dis
+PolyMAC_P0 dis
 Option_PolyMAC {  }
 
 Schema_euler_implicite sch
@@ -81,12 +79,10 @@ Read pb
         }
     }
 
-
     Post_processing
     {
-
-        sondes			{
-            dist	distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5
+        sondes {
+            dist distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5
         }
         format lml
         champs binaire dt_post 1e6
@@ -95,6 +91,5 @@ Read pb
         }
     }
 }
-
 Resoudre pb
 Fin

@@ -13,10 +13,9 @@ mailler dom
         Longueurs 3 3
     }
     {
-        Bord Est               Y = 2      2  <= X <= 5
-        Bord Est		X = 2      -1  <= Y <= 2
-        Bord Est_ext           X = 5      -1  <= Y <= 2
-
+        Bord Est      Y = 2   2 <= X <= 5
+        Bord Est      X = 2  -1 <= Y <= 2
+        Bord Est_ext  X = 5  -1 <= Y <= 2
     } ,
     pave Cavite_Sud
     {
@@ -25,21 +24,21 @@ mailler dom
         Longueurs 6 1
     }
     {
-        Bord Sud_ext           Y = -2      -1  <= X <= 5
-        Bord Sud		Y = -1      -1  <= X <= 2
-        Bord Sud               X = 5      -2  <= Y <= -1
+        Bord Sud_ext  Y = -2  -1 <= X <= 5
+        Bord Sud      Y = -1  -1 <= X <= 2
+        Bord Sud      X =  5  -2  <= Y <= -1
     } ,
     pave Cavite_Ouest
     {
-        Origine -2  -2
+        Origine -2 -2
         Nombre_de_Noeuds 6 21
         Longueurs 1 4
     }
     {
-        Bord Ouest              X = -2  -2  <= Y <= 2
-        Bord Ouest              Y = 2   -2  <= X <= -1
-        Bord Ouest              Y = -2  -2  <= X <= -1
-        Bord Ouest		 X = -1  -1  <= Y <= 1
+        Bord Ouest  X = -2  -2 <= Y <=  2
+        Bord Ouest  Y =  2  -2 <= X <= -1
+        Bord Ouest  Y = -2  -2 <= X <= -1
+        Bord Ouest  X = -1  -1 <= Y <=  1
     } ,
     pave Cavite_Nord
     {
@@ -48,15 +47,13 @@ mailler dom
         Longueurs 2 1
     }
     {
-        Bord Nord                     Y = 2   -1  <= X <= 1
-        Bord Nord   			Y = 1   -1  <= X <= 1
-        Bord Nord_sym 		X = 1   1  <= Y <= 2
+        Bord Nord      Y = 2  -1 <= X <= 1
+        Bord Nord      Y = 1  -1 <= X <= 1
+        Bord Nord_sym  X = 1   1 <= Y <= 2
     }
 }
  trianguler_h dom 
 # END MESH #
-
-
 
 # BEGIN PARTITION
 Partition dom
@@ -104,7 +101,7 @@ Read pb
         solveur_pression petsc cholesky { }
         convection { negligeable }
         diffusion  { negligeable }
-        sources    { }
+        sources { }
         initial_conditions { vitesse Champ_Uniforme 2 0 0 }
         boundary_conditions
         {
@@ -122,11 +119,11 @@ Read pb
     {
         probes
         {
-            Nord        distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  	.975   1.5
-            Ouest       distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.
-            Sud1	 distance_paroi_globale   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1
-            Sud2	 distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9
-            Est	 distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
+            Nord  distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5   .975   1.5
+            Ouest distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.   -1.1   0.
+            Sud1  distance_paroi_globale  periode 1.e8 segment 5      0. -1.9    0.   -1.1
+            Sud2  distance_paroi_globale  periode 1.e8 segment 100  .025  -1.9 4.975 -1.9
+            Est  distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975 4.975 -.975
         }
         format lml
         fields dt_post 1.

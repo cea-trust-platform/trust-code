@@ -14,12 +14,11 @@ mailler dom
         Longueurs 3 3 10
     }
     {
-        Bord Est               Y = 2      2  <= X <= 5   0 <= Z <= 10
-        Bord Est               Z = 0       2  <= X <= 5  -1  <= Y <= 2
-        Bord Est               Z = 10      2  <= X <= 5  -1  <= Y <= 2
-        Bord Est		X = 2      -1  <= Y <= 2  0 <= Z <= 10
-        Bord Est_ext           X = 5      -1  <= Y <= 2  0 <= Z <= 10
-
+        Bord Est      Y = 2    2 <= X <= 5   0 <= Z <= 10
+        Bord Est      Z = 0    2 <= X <= 5  -1 <= Y <= 2
+        Bord Est      Z = 10   2 <= X <= 5  -1 <= Y <= 2
+        Bord Est      X = 2   -1 <= Y <= 2   0 <= Z <= 10
+        Bord Est_ext  X = 5   -1 <= Y <= 2   0 <= Z <= 10
     } ,
     pave Cavite_Sud
     {
@@ -28,11 +27,11 @@ mailler dom
         Longueurs 6 1 10
     }
     {
-        Bord Sud_ext           Y = -2      -1  <= X <= 5   0 <= Z <= 10
-        Bord Sud               Z = 0      -1  <= X <= 5  -2  <= Y <= -1
-        Bord Sud               Z = 10      -1  <= X <= 5  -2  <= Y <= -1
-        Bord Sud		Y = -1      -1  <= X <= 2   0 <= Z <= 10
-        Bord Sud               X = 5      -2  <= Y <= -1  0 <= Z <= 10
+        Bord Sud_ext  Y = -2  -1  <= X <=  5   0 <= Z <= 10
+        Bord Sud      Z =  0  -1  <= X <=  5  -2 <= Y <= -1
+        Bord Sud      Z = 10  -1  <= X <=  5  -2 <= Y <= -1
+        Bord Sud      Y = -1  -1  <= X <=  2   0 <= Z <= 10
+        Bord Sud      X =  5  -2  <= Y <= -1   0 <= Z <= 10
     } ,
     pave Cavite_Ouest
     {
@@ -41,12 +40,12 @@ mailler dom
         Longueurs 1 4 10
     }
     {
-        Bord Ouest              X = -2  -2  <= Y <= 2   0 <= Z <= 10
-        Bord Ouest              Y = 2   -2  <= X <= -1  0 <= Z <= 10
-        Bord Ouest              Y = -2  -2  <= X <= -1  0 <= Z <= 10
-        Bord Ouest              Z = 0   -2  <= X <= -1  -2  <= Y <= 2
-        Bord Ouest              Z = 10  -2  <= X <= -1  -2  <= Y <= 2
-        Bord Ouest		 X = -1  -1  <= Y <= 1   0 <= Z <= 10
+        Bord Ouest   X = -2  -2 <= Y <=  2   0 <= Z <= 10
+        Bord Ouest   Y =  2  -2 <= X <= -1   0 <= Z <= 10
+        Bord Ouest   Y = -2  -2 <= X <= -1   0 <= Z <= 10
+        Bord Ouest   Z =  0  -2 <= X <= -1  -2 <= Y <= 2
+        Bord Ouest   Z = 10  -2 <= X <= -1  -2 <= Y <= 2
+        Bord Ouest   X = -1  -1 <= Y <=  1   0 <= Z <= 10
     } ,
     pave Cavite_Nord
     {
@@ -55,14 +54,13 @@ mailler dom
         Longueurs 2 1 10
     }
     {
-        Bord Nord                     Y = 2   -1  <= X <= 1   0 <= Z <= 10
-        Bord Nord   			Y = 1   -1  <= X <= 1  0 <= Z <= 10
-        Bord Nord   			Z = 0   -1  <= X <= 1  1  <= Y <= 2
-        Bord Nord   			Z = 10  -1  <= X <= 1  1  <= Y <= 2
-        Bord Nord_sym 		X = 1   1  <= Y <= 2  0 <= Z <= 10
+        Bord Nord      Y = 2   -1 <= X <= 1  0 <= Z <= 10
+        Bord Nord      Y = 1   -1 <= X <= 1  0 <= Z <= 10
+        Bord Nord      Z = 0   -1 <= X <= 1  1 <= Y <= 2
+        Bord Nord      Z = 10  -1 <= X <= 1  1 <= Y <= 2
+        Bord Nord_sym  X = 1    1 <= Y <= 2  0 <= Z <= 10
     }
 }
-
  tetraedriser_homogene dom 
 # END MESH #
 
@@ -111,7 +109,7 @@ Read pb
         solveur_pression petsc cholesky { }
         convection { negligeable }
         diffusion  { negligeable }
-        sources    { }
+        sources { }
         initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
         boundary_conditions
         {
@@ -128,11 +126,11 @@ Read pb
     {
         probes
         {
-            Nord        distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  5. 	.975   1.5  5.
-            Ouest       distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  5. 	-1.1   0.   5.
-            Sud1	 distance_paroi_globale   periode 1.e8 segment 5      0. -1.9  5. 	 0.   -1.1  5.
-            Sud2	 distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9 5.	4.975 -1.9  5.
-            Est	 distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975 5.	4.975 -.975 5.
+            Nord  distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  5.  .975   1.5  5.
+            Ouest distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  5.  -1.1   0.   5.
+            Sud1  distance_paroi_globale   periode 1.e8 segment 5    0. -1.9  5.   0.   -1.1  5.
+            Sud2  distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9 5. 4.975 -1.9  5.
+            Est  distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975 5. 4.975 -.975 5.
         }
         format lml
         fields dt_post 1.
