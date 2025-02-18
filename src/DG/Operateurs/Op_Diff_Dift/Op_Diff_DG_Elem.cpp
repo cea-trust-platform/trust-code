@@ -62,13 +62,9 @@ void Op_Diff_DG_Elem::completer()
 }
 
 
-void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const //TODO a remonter dans Op_DG_Elem
+void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& la_matrice) const //TODO a remonter dans Op_DG_Elem
 {
   const Domaine_DG& domaine = le_dom_dg_.valeur();
-
-  IntTab indice(0, 2);
-
-  const IntTab& face_voisins = domaine.face_voisins();
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   int nordre = ch.get_order();
@@ -76,42 +72,92 @@ void Op_Diff_DG_Elem::dimensionner(Matrice_Morse& mat) const //TODO a remonter d
 
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
 
-  int premiere_face_int = domaine.premiere_face_int();
-
-  int elem0, elem1;
-  for (int f = premiere_face_int; f < domaine.nb_faces(); f++)
-    {
-      elem0 = face_voisins(f,0);
-      elem1 = face_voisins(f,1);
-
-      int ind_elem0 = indices_glob_elem(elem0);
-      int ind_elem1 = indices_glob_elem(elem1);
-
-      for( int i_elem = 0; i_elem<2; i_elem++)
-        {
-          int elem=face_voisins(f,i_elem);
-          int ind_elem=indices_glob_elem(elem);
-
-          for (int i = 0; i < nddl; i++ )
-            for (int j = 0; j < nddl; j++ )
-              indice.append_line( ind_elem+i, ind_elem+j);
-        }
-
-      for (int i = 0; i < nddl; i++ )
-        for (int j = 0; j < nddl; j++ )
-          {
-            indice.append_line( ind_elem0+i, ind_elem1+j);
-            indice.append_line( ind_elem1+i, ind_elem0+j);
-          }
-    }
-
-  tableau_trier_retirer_doublons(indice);
-
   int nb_elem_tot = le_dom_dg_->nb_elem_tot();
-
   int size_inc = indices_glob_elem(nb_elem_tot);
 
-  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, mat);
+  const IntTab& stencil_sorted = domaine.get_stencil_sorted();
+  const int nb_stencil_max = stencil_sorted.dimension(1);
+
+  la_matrice.dimensionner(size_inc, size_inc, 0);
+
+  IntVect& tab1 = la_matrice.get_set_tab1();
+  IntVect& tab2 = la_matrice.get_set_tab2();
+  DoubleVect& coeff = la_matrice.get_set_coeff();
+  coeff = 0;
+
+  int nb_indices_line;
+  int row, col, indice;
+
+  tab1(0) = 1;
+  for (int nelem = 0 ; nelem < nb_elem_tot ; nelem++)
+    {
+      nb_indices_line = 0;
+      for (int k = 0 ; k < nb_stencil_max; k++)
+        {
+          if ( stencil_sorted(nelem,k) < 0 ) break;
+          nb_indices_line += nddl;
+        }
+      for (int k=0; k<nddl; k++)
+        tab1(indices_glob_elem(nelem) + k + 1) = nb_indices_line + tab1(indices_glob_elem(nelem) + k);
+    }
+
+  la_matrice.dimensionner(size_inc, tab1(size_inc) - 1);
+
+  for (int nelem = 0 ; nelem < nb_elem_tot ; nelem++)
+    {
+      row = tab1[indices_glob_elem(nelem)]-1 ;
+      nb_indices_line = tab1[indices_glob_elem(nelem)+1] - tab1[indices_glob_elem(nelem)];
+      indice = 0;
+      for (int k = 0 ; k < nb_stencil_max; k++)
+        {
+          if ( stencil_sorted(nelem,k) < 0 ) break;
+          col = indices_glob_elem(stencil_sorted(nelem,k))+1;
+          for (int j=0; j<nddl; j++)
+            for (int i=0; i<nddl; i++)
+              tab2[row+indice+j+nb_indices_line*i] = col+j;
+          indice += nddl;
+        }
+    }
+
+//
+//  int premiere_face_int = domaine.premiere_face_int();
+//
+//  int elem0, elem1;
+//  for (int f = premiere_face_int; f < domaine.nb_faces(); f++)
+//    {
+//      elem0 = face_voisins(f,0);
+//      elem1 = face_voisins(f,1);
+//
+//      int ind_elem0 = indices_glob_elem(elem0);
+//      int ind_elem1 = indices_glob_elem(elem1);
+//
+//      for( int i_elem = 0; i_elem<2; i_elem++)
+//        {
+//          int elem=face_voisins(f,i_elem);
+//          int ind_elem=indices_glob_elem(elem);
+//
+//          for (int i = 0; i < nddl; i++ )
+//            for (int j = 0; j < nddl; j++ )
+//              indice.append_line( ind_elem+i, ind_elem+j);
+//        }
+//
+//      for (int i = 0; i < nddl; i++ )
+//        for (int j = 0; j < nddl; j++ )
+//          {
+//            indice.append_line( ind_elem0+i, ind_elem1+j);
+//            indice.append_line( ind_elem1+i, ind_elem0+j);
+//          }
+//    }
+//
+//  tableau_trier_retirer_doublons(indice);
+//
+//  int nb_elem_tot = le_dom_dg_->nb_elem_tot();
+//
+//  int size_inc = indices_glob_elem(nb_elem_tot);
+//
+//  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, mat);
+
+
 }
 
 void Op_Diff_DG_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const

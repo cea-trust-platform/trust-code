@@ -42,6 +42,8 @@ public :
   inline const Quadrature_base& get_quadrature(int order) const;
   inline const Quadrature_base& get_quadrature() const;
 
+  inline const IntTab& get_stencil_sorted() const { return stencil_sorted_;}
+
 
   void set_default_order(int order);
   void get_position(DoubleTab& positions) const override;
@@ -65,6 +67,8 @@ protected:
   IntTab type_elem_;
   int order_quad_=-1;
 // DoubleVect h_, sigma;
+
+  IntTab stencil_sorted_; //table of stencil sorted for each elements
 
   void compute_mesh_param(); // Compute the stabilization parameters
   bool type_elems();

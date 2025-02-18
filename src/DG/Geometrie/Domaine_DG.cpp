@@ -62,6 +62,42 @@ void Domaine_DG::discretiser()
   set_quadrature(1, quad1);
   set_quadrature(2, quad2);
   set_quadrature(5, quad5);
+
+
+  int nelem_tot = nb_elem_tot();
+  const int nb_faces_max = elem_faces_.dimension(1);
+
+  stencil_sorted_.resize(nelem_tot, nb_faces_max+1);
+  stencil_sorted_ = -1;
+
+  int elem1, elem2, size_stencil, face;
+
+  std::vector<int> elem_stencil;
+
+  for (int nelem = 0 ; nelem < nelem_tot ; nelem++)
+    {
+      elem_stencil.clear();
+      elem_stencil.push_back(nelem);
+      for (int num_face = 0 ; num_face < nb_faces_max; num_face++)
+        {
+          if ( elem_faces(nelem,num_face) < 0 ) break;
+
+          face = elem_faces(nelem,num_face);
+          elem1 = face_voisins(face, 0);
+          elem2 = face_voisins(face, 1);
+
+          if (elem1 != nelem)
+            elem_stencil.push_back(elem1);
+          else if (elem2 != -1)
+            elem_stencil.push_back(elem2);
+        }
+      std::sort(elem_stencil.begin(), elem_stencil.end());
+
+      size_stencil = (int)elem_stencil.size();
+      for (int k = 0; k < size_stencil; k++)
+        stencil_sorted_(nelem,k) = elem_stencil[k];
+    }
+
 }
 /*! @brief Set the global default order
  *
