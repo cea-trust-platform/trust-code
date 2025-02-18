@@ -3,15 +3,13 @@ gnuplot=$1
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 
-
-# recuperation des packages
-for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
-do
-  ln -sf $file .
-done
-
-for package in $gnuplot
-do
+install_gnuplot()
+{
+   # recuperation des packages
+   for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
+   do
+      ln -sf $file .
+   done
    echo "***************************************"
    echo "Trying to install ${package%.tar.gz}..."
    echo "***************************************"
@@ -26,24 +24,31 @@ do
    # je teste le .so.3.0.11 car sur rhel 8 (.so.3.0.5) sur rocky 9 (.so.3.0.10)
    [ -f /usr/lib64/libgd.so.3.0.11 ] && libgd=""
    # Hack configure (libgd from conda was found but not correctly linked to gnuplot):
-   sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib -liconv ?g" ./configure || exit -1
+   sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib -liconv ?g" ./configure || return 1
 
    # Vu sur fedora 40 et avec gcc>=14, erreur -Wimplicit-function-declaration au build de gnuplot 5.2.7 (qui n'arrive pas avec gnuplot 6.0.1)
    [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=14)}'`" = 1 ] && export CFLAGS="-Wno-implicit-function-declaration"
    # configure:
-   ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --disable-wxwidgets --without-lua --without-tutorial --with-readline=builtin --with-gd=$libgd 2>&1 || exit -1
+   ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --disable-wxwidgets --without-lua --without-tutorial --with-readline=builtin --with-gd=$libgd 2>&1 || return 1 
 
    # 17-05-2019: if you update gnuplot to a new version using cmake, use cmake from conda as is the case for gmsh
-   $TRUST_MAKE || exit -1
+   $TRUST_MAKE || return 1
    make install || echo error on installation, but we hope that is ok
    source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 # LD_LIBRARY_PATH
    # https://stackoverflow.com/questions/20657816/how-do-i-check-if-a-terminal-is-available-through-my-gnuplot-script
    # echo "set terminal png" | $TRUST_ROOT/exec/gnuplot/bin/gnuplot
-   for exec in $TRUST_ROOT/exec/gnuplot/bin/gnuplot /usr/bin/gnuplot
-   do
-      [ ! -f $exec ] && echo "$exec not found! Install gnuplot." && exit -1
-      echo -e "Testing PNG for $exec ...\c"
-      echo "if (strstrt(GPVAL_TERMINALS, 'pngcairo') > 0) {
+   exec=$TRUST_ROOT/exec/gnuplot/bin/gnuplot #/usr/bin/gnuplot
+   [ ! -f $exec ] && echo "$exec not found! Install gnuplot." && return 1
+
+}
+
+for package in $gnuplot gnuplot-6.0.2.tar.gz
+do
+   gnuplot=$package
+   install_gnuplot
+   exec=$TRUST_ROOT/exec/gnuplot/bin/gnuplot 
+   echo -e "Testing PNG for $exec ...\c"
+   echo "if (strstrt(GPVAL_TERMINALS, 'pngcairo') > 0) {
     set terminal pngcairo size 800,600
 } else {
     set terminal png large
@@ -51,10 +56,10 @@ do
       [ $? -eq 0 ] && echo "OK" && break
       echo "KO" 
       (cd $TRUST_ROOT/Outils/gnuplot && make clean)
-   done
-   cd $TRUST_ROOT/Outils/gnuplot
-   rm -r -f ${package%.tar.gz}
+
 done
+   cd $TRUST_ROOT/Outils/gnuplot
+   rm -r -f ${gnuplot%.tar.gz}
 # on retire les liens 
 for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
 do
