@@ -89,3 +89,4 @@ void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
 
 // Explicit instanciantion
 template class Champs_compris_T<Champ_base>;
+

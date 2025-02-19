@@ -47,7 +47,5 @@ protected :
 };
 
 using Champs_compris = Champs_compris_T<Champ_base>;
-// using Champ_compris_IJK = Champ_compris_T<IJK_Field_double>;
 
 #endif /* Champs_compris_included */
-
