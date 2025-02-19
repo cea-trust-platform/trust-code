@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,9 +13,37 @@
 *
 *****************************************************************************/
 
-#include <IJK_Field_forward.h>
+#ifndef LecFicDistribue_sansnum_included
+#define LecFicDistribue_sansnum_included
 
-void dumplata_scalar(const char *filename, const char *fieldname, const IJK_Field_float& f, int step);
-void dumplata_vector(const char *filename, const char *fieldname, const IJK_Field_float& vx, const IJK_Field_float& vy, const IJK_Field_float& vz, int step);
-void dumplata_scalar(const char *filename, const char *fieldname, const IJK_Field_double& f, int step);
-void dumplata_vector(const char *filename, const char *fieldname, const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz, int step);
+#include <Separateur.h>
+#include <EFichier.h>
+
+class Objet_U;
+
+/*! @brief Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante : Il y a autant de fichiers que de processus, physiquement localises sur le disque de la machine hebergeant la tache maitre de l'applicatin Trio-U (le processus de rang 0 dans le groupe "tous").
+ *
+ *     Le processus maitre lit tour a tour un item dans chacun des fichiers et l'envoie au processus correspondant.
+ *     Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
+ *
+ */
+class LecFicDistribue_sansnum : public EFichier
+{
+  // le maitre lit le fichier et propage l'information
+private :
+  LecFicDistribue_sansnum(int);
+public:
+  LecFicDistribue_sansnum();
+  LecFicDistribue_sansnum(const char* name,IOS_OPEN_MODE mode=ios::in);
+
+  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::in) override;
+
+  ~LecFicDistribue_sansnum() override;
+
+protected:
+
+private:
+
+};
+
+#endif

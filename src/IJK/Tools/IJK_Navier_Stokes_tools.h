@@ -16,27 +16,12 @@
 #ifndef IJK_Navier_Stokes_tools_included
 #define IJK_Navier_Stokes_tools_included
 
-#include <IJK_Field.h>
-#include <IJK_Field_vector.h>
-#include <TRUSTTab.h>
-#include <Multigrille_Adrien.h>
-#include <Probleme_base.h>
-#include <Boundary_Conditions_Thermique.h>
+#include <IJK_tools.h>
 
-#define select_dir(a,x,y,z) ((a==0)?(x):((a==1)?(y):(z)))
+class Multigrille_Adrien;
+class Boundary_Conditions_Thermique;
 
 double compute_fractionnal_timestep_rk3(const double dt_tot, int step);
-
-
-void build_extended_splitting(const Domaine_IJK& split, Domaine_IJK& split_ext, int n_cells);
-
-Probleme_base& creer_domaine_vdf(const Domaine_IJK& splitting, const Nom& nom_domaine);
-
-void ijk_interpolate(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result);
-void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result, const double value_for_bad_points);
-
-double ijk_interpolate(const IJK_Field_double& field, const Vecteur3& coordinates);
-double ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const Vecteur3& coordinates, const double value_for_bad_points);
 
 void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz,
                                        const double constant, IJK_Field_double& resu);
@@ -107,21 +92,6 @@ void allocate_cell_vector(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int g
     }
 }
 
-// GAB
-void compose_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z);
-//
-
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z);
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t, const double current_time);
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t,
-                    const IJK_Field_double& input_f, const double current_time);
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t,
-                    const IJK_Field_double& input_f1,const IJK_Field_double& input_f2, const double current_time);
-
-void set_field_data(IJK_Field_double& f, double func(double, double, double));
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t,
-                    const IJK_Field_double& input_f1,const IJK_Field_double& input_f2, const double current_time);
-
 void calculer_rho_v(const IJK_Field_double& rho,
                     const IJK_Field_vector3_double& v,
                     IJK_Field_vector3_double& rho_v);
@@ -138,13 +108,6 @@ void mass_solver_with_inv_rho(IJK_Field_double& velocity, const IJK_Field_double
 void mass_solver_scalar(IJK_Field_double& dv, const ArrOfDouble_with_ghost& delta_z_local, int k_index);
 
 void density_solver_with_rho(IJK_Field_double& velocity, const IJK_Field_double& rho, const ArrOfDouble_with_ghost& delta_z_local, const int k);
-void build_local_coords(const IJK_Field_double& f, ArrOfDouble& coord_i, ArrOfDouble& coord_j, ArrOfDouble& coord_k);
-
-
-void complex_to_trig(const double re, const double im, double& modul, double& arg);
-void squared_3x3(double& a11, double& a12, double& a13,
-                 double& a21, double& a22, double& a23,
-                 double& a31, double& a32, double& a33);
 
 // fonction moyenne en temps du champs de vitesse utilise dans le cas de bulles fixes
 void update_integral_velocity(const IJK_Field_vector3_double& v_instant,  IJK_Field_vector3_double& v_tmp,
@@ -164,7 +127,6 @@ void supprimer_chevauchement(IJK_Field_double& ind);
 
 void update_integral_pressure(const IJK_Field_double& p_instant,  IJK_Field_double& p_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp);
 void update_integral_indicatrice(const IJK_Field_double& indic, const double deltat, IJK_Field_double& out);
-double maxValue(IJK_Field_double& indic);
 
 double calculer_v_moyen(const IJK_Field_double& vx);
 double calculer_vl_moyen(const IJK_Field_double& vx, const IJK_Field_double& indic);
@@ -193,5 +155,9 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
                               IJK_Field_double& vy, IJK_Field_double& vz, const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda);
 
 void force_entry_velocity(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, double v_imposed, const int& dir, const int& compo, const int& stencil);
+
+double calculer_v_moyen(const IJK_Field_double& vx);
+double calculer_vl_moyen(const IJK_Field_double& vx, const IJK_Field_double& indic);
+double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_double& cp_rhocp, const IJK_Field_double& rho_field, const double& rho_cp, const int rho_cp_case);
 
 #endif /* IJK_Navier_Stokes_tools_included */

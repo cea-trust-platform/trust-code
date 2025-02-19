@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,27 +13,40 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_Lata_Swap_JK_included
-#define IJK_Lata_Swap_JK_included
+#ifndef DebogIJK_included
+#define DebogIJK_included
 
 #include <Interprete.h>
+#include <EFichier.h>
+#include <SFichier.h>
+#include <IJK_Field_forward.h>
+#include <TRUSTTabs_forward.h>
 
-/*! @brief : class IJK_Lata_Swap_JK
+/*! @brief : class DebogIJK
  *
- *  <Description of class IJK_Lata_Swap_JK>
+ *  <Description of class DebogIJK>
  *
  *
  *
  */
-class IJK_Lata_Swap_JK : public Interprete
+class DebogIJK : public Interprete
 {
-
-  Declare_instanciable(IJK_Lata_Swap_JK) ;
+  Declare_instanciable(DebogIJK) ;
 
 public :
   Entree& interpreter(Entree&) override;
+  enum DebogMode { DISABLED=0, WRITE_PASS=1, CHECK_PASS=2 };
+  static void verifier(const char *msg, const IJK_Field_float&);
+  static void verifier(const char *msg, const IJK_Field_double&);
+  static void verifier(const double);
 protected :
-
+  static double seuil_absolu_, seuil_relatif_, seuil_minimum_relatif_;
+  static int debog_mode_;
+  static Nom filename_;
+  static EFichier infile_;
+  static SFichier outfile_;
+  static void compute_signature(const IJK_Field_float&, ArrOfDouble& signature);
+  static void compute_signature(const IJK_Field_double&, ArrOfDouble& signature);
 };
 
-#endif /* IJK_Lata_Swap_JK_included */
+#endif /* DebogIJK_included */

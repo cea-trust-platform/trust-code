@@ -16,8 +16,8 @@
 #ifndef IJK_VDF_converter_included
 #define IJK_VDF_converter_included
 #include <Domaine_IJK.h>
-#include <VDF_to_IJK.h>
 #include <Objet_U.h>
+#include <VDF_to_IJK.h>
 
 // This class holds an IJK split mesh converted from a vdf source mesh and splitting
 class IJK_VDF_converter : public Objet_U

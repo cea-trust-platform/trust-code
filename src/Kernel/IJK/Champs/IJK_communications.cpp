@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,39 +13,23 @@
 *
 *****************************************************************************/
 
-#ifndef IJK_ptr_included
-#define IJK_ptr_included
+#include <Comm_Group_MPI.h>
+#include <Comm_Group.h>
+#include <IJK_communications.h>
+#include <PE_Groups.h>
 
-#include <ConstIJK_ptr.h>
-
-// We can automaticaly cast an IJK_ptr to a constIJK_ptr but not reversed.
-template <typename _TYPE_, typename _TYPE_ARRAY_ >
-class IJK_ptr : public ConstIJK_ptr<_TYPE_, _TYPE_ARRAY_>
+void envoyer_recevoir(const void *send_buf, int send_buf_size, int send_proc, void *recv_buf, int recv_buf_size, int recv_proc)
 {
-public:
-  IJK_ptr(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& field, int i, int j, int k): ConstIJK_ptr<_TYPE_, _TYPE_ARRAY_>(field, i, j, k)
-  {
-  }
-  /*! @brief Performs the assignment: field(i+i_offset,j,k) = val
-   *
-   */
-  void put_val(int i_offset, const _TYPE_ & val)
-  {
-    assert(this->i_ + i_offset >= this->i_min_ && this->i_ + i_offset < this->i_max_);
-    // cast en non const ok car on avait un IJK_Field non const au depart
-    const _TYPE_ *ptr = this->ptr_;
-    ((_TYPE_*)ptr)[i_offset] = val;
-  }
-  void put_val(int i_offset, const Simd_template<_TYPE_>& val)
-  {
-    assert(this->i_ + i_offset >= this->i_min_ && this->i_ + i_offset < this->i_max_);
-    const _TYPE_ *ptr = this->ptr_;
-    SimdPut((_TYPE_*)ptr + i_offset, val);
-  }
-};
-
-using IJK_float_ptr = IJK_ptr<float, ArrOfFloat>;
-using IJK_double_ptr = IJK_ptr<double, ArrOfDouble>;
-
-
+#ifdef MPI_
+  const Comm_Group& grp = PE_Groups::current_group();
+  if (!sub_type(Comm_Group_MPI, grp))
+    {
+      if (send_proc == -1 && recv_proc == -1) return;
+      Cerr << "Error in envoyer_recevoir: non empty message and not Comm_Group_MPI" << finl;
+      Process::exit();
+    }
+  const Comm_Group_MPI& grpmpi = ref_cast(Comm_Group_MPI, grp);
+  grpmpi.ptop_send_recv(send_buf, send_buf_size, send_proc, recv_buf, recv_buf_size, recv_proc);
 #endif
+}
+

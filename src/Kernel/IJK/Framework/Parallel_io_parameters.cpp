@@ -18,7 +18,7 @@
 #include <IJK_Lata_writer.h>
 #include <Interprete_bloc.h>
 #include <Statistiques.h>
-#include <IJK_Navier_Stokes_tools.h>
+#include <IJK_tools.h>
 
 Implemente_instanciable(Parallel_io_parameters, "Parallel_io_parameters", Interprete);
 

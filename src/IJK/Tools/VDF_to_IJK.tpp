@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 *****************************************************************************/
 #ifndef VDF_to_IJK_H_TPP
 #define VDF_to_IJK_H_TPP
+
 #include <VDF_to_IJK.h>
 #include <Schema_Comm_Vecteurs.h>
 #include <Schema_Comm.h>

@@ -16,6 +16,8 @@
 #include <IJK_Test_Multigrille.h>
 #include <Statistiques.h>
 #include <Interprete_bloc.h>
+#include <IJK_tools.h>
+
 
 Implemente_instanciable(IJK_Test_Multigrille, "IJK_Test_Multigrille", Interprete);
 

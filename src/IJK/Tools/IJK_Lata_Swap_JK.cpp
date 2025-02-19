@@ -21,6 +21,7 @@
 #include <IJK_Field.h>
 #include <IJK_Field_vector.h>
 #include <Domaine_IJK.h>
+#include <IJK_tools.h>
 #include <IJK_Navier_Stokes_tools.h>
 
 Implemente_instanciable(IJK_Lata_Swap_JK,"IJK_Lata_Swap_JK",Interprete) ;

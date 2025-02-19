@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,37 +13,39 @@
 *
 *****************************************************************************/
 
-#ifndef LecFicDistribue_sansnum_included
-#define LecFicDistribue_sansnum_included
+#ifndef IJK_ptr_included
+#define IJK_ptr_included
 
-#include <Separateur.h>
-#include <EFichier.h>
+#include <ConstIJK_ptr.h>
 
-class Objet_U;
-
-/*! @brief Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante : Il y a autant de fichiers que de processus, physiquement localises sur le disque de la machine hebergeant la tache maitre de l'applicatin Trio-U (le processus de rang 0 dans le groupe "tous").
- *
- *     Le processus maitre lit tour a tour un item dans chacun des fichiers et l'envoie au processus correspondant.
- *     Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
- *
- */
-class LecFicDistribue_sansnum : public EFichier
+// We can automaticaly cast an IJK_ptr to a constIJK_ptr but not reversed.
+template <typename _TYPE_, typename _TYPE_ARRAY_ >
+class IJK_ptr : public ConstIJK_ptr<_TYPE_, _TYPE_ARRAY_>
 {
-  // le maitre lit le fichier et propage l'information
-private :
-  LecFicDistribue_sansnum(int);
 public:
-  LecFicDistribue_sansnum();
-  LecFicDistribue_sansnum(const char* name,IOS_OPEN_MODE mode=ios::in);
-
-  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::in) override;
-
-  ~LecFicDistribue_sansnum() override;
-
-protected:
-
-private:
-
+  IJK_ptr(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& field, int i, int j, int k): ConstIJK_ptr<_TYPE_, _TYPE_ARRAY_>(field, i, j, k)
+  {
+  }
+  /*! @brief Performs the assignment: field(i+i_offset,j,k) = val
+   *
+   */
+  void put_val(int i_offset, const _TYPE_ & val)
+  {
+    assert(this->i_ + i_offset >= this->i_min_ && this->i_ + i_offset < this->i_max_);
+    // cast en non const ok car on avait un IJK_Field non const au depart
+    const _TYPE_ *ptr = this->ptr_;
+    ((_TYPE_*)ptr)[i_offset] = val;
+  }
+  void put_val(int i_offset, const Simd_template<_TYPE_>& val)
+  {
+    assert(this->i_ + i_offset >= this->i_min_ && this->i_ + i_offset < this->i_max_);
+    const _TYPE_ *ptr = this->ptr_;
+    SimdPut((_TYPE_*)ptr + i_offset, val);
+  }
 };
+
+using IJK_float_ptr = IJK_ptr<float, ArrOfFloat>;
+using IJK_double_ptr = IJK_ptr<double, ArrOfDouble>;
+
 
 #endif
