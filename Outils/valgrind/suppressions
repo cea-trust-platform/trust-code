@@ -5,6 +5,22 @@
 #     - the OS of the machine involved (and the hostname if you want)
 
 ######
+###### All test case since PETSc 3.22 (possibly hwloc too old?)
+######
+{
+   <PETSc 3.22>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:XNVCTRLQueryTargetStringAttribute
+   fun:hwloc_gl_discover
+   ...
+   fun:PetscInitialize.part.0
+   ...
+   fun:main
+}
+
+######
 ###### tous les cas sur ubuntu 24 is246427
 ######
 {
