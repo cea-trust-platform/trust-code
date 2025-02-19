@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,8 @@
 #include <Champs_compris.h>
 #include <Champ_base.h>
 
-Implemente_instanciable(Champs_compris, "Champs_compris", Objet_U);
-
-Sortie& Champs_compris::printOn(Sortie& os) const { return os; }
-
-Entree& Champs_compris::readOn(Entree& is) { return is; }
-
-const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
+template<typename FIELD_TYPE>
+const FIELD_TYPE& Champs_compris_T<FIELD_TYPE>::get_champ(const Motcle& motcle) const
 {
   assert(motcle!="??");
   auto item = liste_champs_.find(motcle.getString());
@@ -30,7 +25,8 @@ const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
   throw std::runtime_error(std::string("Field ") + motcle.getString() + std::string(" not found !"));
 }
 
-bool Champs_compris::has_champ(const Motcle& motcle, OBS_PTR(Champ_base)& ref_champ) const
+template<typename FIELD_TYPE>
+bool Champs_compris_T<FIELD_TYPE>::has_champ(const Motcle& motcle, OBS_PTR(FIELD_TYPE)& ref_champ) const
 {
   assert(motcle!="??");
   auto item = liste_champs_.find(motcle.getString());
@@ -42,14 +38,16 @@ bool Champs_compris::has_champ(const Motcle& motcle, OBS_PTR(Champ_base)& ref_ch
   return false;
 }
 
-bool Champs_compris::has_champ(const Motcle& motcle) const
+template<typename FIELD_TYPE>
+bool Champs_compris_T<FIELD_TYPE>::has_champ(const Motcle& motcle) const
 {
   assert(motcle!="??");
   auto item = liste_champs_.find(motcle.getString());
   return item != liste_champs_.end();
 }
 
-const Noms Champs_compris::liste_noms_compris() const
+template<typename FIELD_TYPE>
+const Noms Champs_compris_T<FIELD_TYPE>::liste_noms_compris() const
 {
   Noms nom_compris;
   for (auto const& champ : liste_champs_)
@@ -57,7 +55,8 @@ const Noms Champs_compris::liste_noms_compris() const
   return nom_compris;
 }
 
-void Champs_compris::ajoute_champ(const Champ_base& champ)
+template<typename FIELD_TYPE>
+void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
 {
   // Adding a field name referring to champ inside liste_champs_ dictionnary
   auto add_key = [&](const Nom& n)
@@ -85,6 +84,8 @@ void Champs_compris::ajoute_champ(const Champ_base& champ)
     if(champ.nom_compo(i) != "??")
       add_key(champ.nom_compo(i));
 
-  Cerr<<"Champs_compris::ajoute_champ " << champ.le_nom() <<finl;
+  Cerr<<"Champs_compris_T<FIELD_TYPE>::ajoute_champ " << champ.le_nom() <<finl;
 }
 
+// Explicit instanciantion
+template class Champs_compris_T<Champ_base>;

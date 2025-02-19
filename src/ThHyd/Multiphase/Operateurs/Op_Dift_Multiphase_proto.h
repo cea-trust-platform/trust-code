@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,12 +19,12 @@
 #include <Viscosite_turbulente_base.h>
 #include <Transport_turbulent_base.h>
 #include <Correlation_base.h>
+#include <Champs_compris.h>
 #include <TRUST_Ref.h>
 #include <vector>
 
 class Operateur_Diff_base;
 class Champ_Fonc_base;
-class Champs_compris;
 class Probleme_base;
 class Equation_base;
 

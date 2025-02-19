@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,24 +27,27 @@ class Champ_base;
  *
  *      Operateur, Source, Traitement_particulier.
  *
+ * Parametrized by the type of field: typically Champ_base or IJK_Field_double
  */
-
-class Champs_compris : public Objet_U
+template<typename FIELD_TYPE>
+class Champs_compris_T
 {
-  Declare_instanciable(Champs_compris);
 public :
   // Return the field if found, otherwise raises.
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  const FIELD_TYPE& get_champ(const Motcle& nom) const;
   // Same thing, but without raising:
-  virtual bool has_champ(const Motcle& nom, OBS_PTR(Champ_base)& ref_champ) const;
-  virtual bool has_champ(const Motcle& nom) const;
-  virtual void ajoute_champ(const Champ_base& champ);
-  virtual const Noms liste_noms_compris() const;
+  bool has_champ(const Motcle& nom, OBS_PTR(FIELD_TYPE)& ref_champ) const;
+  bool has_champ(const Motcle& nom) const;
+  void ajoute_champ(const FIELD_TYPE& champ);
+  const Noms liste_noms_compris() const;
   void clear_champs_compris() { liste_champs_.clear(); }
 
 protected :
-  std::unordered_map<std::string, OBS_PTR(Champ_base)> liste_champs_;
+  std::unordered_map<std::string, OBS_PTR(FIELD_TYPE)> liste_champs_;
 };
+
+using Champs_compris = Champs_compris_T<Champ_base>;
+// using Champ_compris_IJK = Champ_compris_T<IJK_Field_double>;
 
 #endif /* Champs_compris_included */
 
