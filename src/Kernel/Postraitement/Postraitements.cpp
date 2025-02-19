@@ -123,7 +123,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
         post.typer("Postraitement_STT");
       else if (mon_pb.que_suis_je().debute_par("Probleme_FT_Disc_gen"))
         post.typer("Postraitement_ft_lata");
-      else if (mon_pb.que_suis_je().debute_par("Probleme_FTD_IJK"))
+      else if (mon_pb.que_suis_je().contient("_IJK"))
         post.typer("Postprocessing_IJK");
       else if (mon_pb.que_suis_je().debute_par("Probleme_FT_Disc_gen"))
         post.typer("Postraitement_ft_lata");

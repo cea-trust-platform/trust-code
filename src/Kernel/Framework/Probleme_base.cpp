@@ -1077,8 +1077,9 @@ int Probleme_base::postraiter(int force)
   statistiques().end_count(postraitement_counter_);
 
   //Start specific postraitements for mobile domain (like ALE)
-  if(!save_restart_.is_restart_in_progress())  //no projection during the iteration of resumption of computation
+  if(!save_restart_.is_restart_in_progress() && le_domaine_dis_.non_nul())
     {
+      //no projection during the iteration of resumption of computation
       double temps = le_schema_en_temps_->temps_courant();
       le_domaine_dis_->domaine().update_after_post(temps);
     }

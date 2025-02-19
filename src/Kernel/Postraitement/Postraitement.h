@@ -93,7 +93,7 @@ public:
   virtual void postprocess_field_values();
 
   int traiter_champs();
-  int lire_champs_a_postraiter(Entree& is, bool expect_acco);                //Lance eventuellement la creation de champs generiques par macro
+  virtual int lire_champs_a_postraiter(Entree& is, bool expect_acco);                //Lance eventuellement la creation de champs generiques par macro
   //et construit la liste noms_champs_a_post_ des champs post-traites
   int lire_champs_stat_a_postraiter(Entree&);        //idem pour statistiques
   int lire_champs_operateurs(Entree& is);                //Lecture d un champ generique, nomme et complete
@@ -104,7 +104,8 @@ public:
   inline int lpost(double, double) const;
   inline int lpost_champ(double) const;
   inline int lpost_stat(double) const;
-  inline int ind_post(int nb_pas_dt) { return (nb_pas_dt%nb_pas_dt_post_==0) ? 1 : 0; }
+  inline int ind_post(int nb_pas_dt) const { return (nb_pas_dt%nb_pas_dt_post_==0) ? 1 : 0; }
+  int nb_pas_dt_post() const { return nb_pas_dt_post_; }
 
   inline double dt_post() const { return dt_post_; }
   inline Nom nom_fich() const { return nom_fich_; }
