@@ -40,6 +40,7 @@ if (loadercpp)
    set(lib_paths 
       ${med_dir}/lib 
       $ENV{TRUST_MED_ROOT}/lib  
+      $ENV{TRUST_HDF5_ROOT}/lib  
       ${MED_ROOT_DIR}/lib
    )
  
@@ -63,6 +64,7 @@ if (loadercpp)
    set (ajout  ${ajout}  ${libz} ${libdl})
    include_directories(${med_dir}/include ${med_dir}/include/salome )
    include_directories($ENV{TRUST_MED_ROOT}/include  
+        $ENV{TRUST_HDF5_ROOT}/include  
         ${MED_ROOT_DIR}/include
    )
 endif(loadercpp)

@@ -116,7 +116,7 @@ cmake $options $plugins  \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
 -DCMAKE_PREFIX_PATH="$TRUST_MED_ROOT;$FLTK_ROOT" \
 -DCMAKE_BUILD_TYPE=Release \
--DHDF5_ROOT="$TRUST_MED_ROOT" ../$GMSH_SRC 2>&1 || exit -1
+-DHDF5_ROOT="$TRUST_HDF5_ROOT" ../$GMSH_SRC 2>&1 || exit -1
 
 # Si OpenGL non detecte sur Fedora: sudo dnf install mesa-libGLU-devel
 

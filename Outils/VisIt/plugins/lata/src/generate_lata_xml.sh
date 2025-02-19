@@ -7,7 +7,7 @@ if [ "$2" = "-with_med" ]; then
     echo "  -> with MED support"
     med_extension="*.med"
     medc_root="${TRUST_MEDCOUPLING_ROOT}/${TRUST_ARCH}_opt"
-    med_cxx_flags="-DNDEBUG -DWITH_MEDLOADER -I${medc_root}/include/ -I${TRUST_MED_ROOT}/include"
+    med_cxx_flags="-DNDEBUG -DWITH_MEDLOADER -I${medc_root}/include/ -I${TRUST_MED_ROOT}/include  -I${TRUST_HDF5_ROOT}/include"
     med_libs="${medc_root}/lib/libmedloader.a  ${medc_root}/lib/libmedcouplingremapper.a ${medc_root}/lib/libmedcoupling.a ${medc_root}/lib/libinterpkernel.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_HDF5_ROOT}/lib/libhdf5.a -lz -lm  "  
 fi
 
