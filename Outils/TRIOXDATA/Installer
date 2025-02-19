@@ -20,8 +20,8 @@ else
       cd XDATA
       tar zxvf $TRUST_ROOT/externalpackages/SALOME/xdata-9.6.0.tar.gz
       mv xdata-9.6.0  XDATA_SRC
-      tar zxvf $TRUST_ROOT/externalpackages/SALOME/configuration-9.13.0.tar.gz
-      mv configuration-9.13.0  CONFIGURATION_SRC
+      tar zxvf $TRUST_ROOT/externalpackages/SALOME/configuration-9.14.0.tar.gz
+      mv configuration-9.14.0  CONFIGURATION_SRC
 
       cd XDATA_SRC
       ## Patching

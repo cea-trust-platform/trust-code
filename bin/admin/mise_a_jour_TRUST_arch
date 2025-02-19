@@ -325,7 +325,7 @@ date
 ################################################
 #option_configure=""
 export TRUST_BUILD_IN_TMP=1
-option_configure=" -disable-ccache"
+option_configure=" -disable-ccache "
 # Cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda=download" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -cuda=download"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda11_6" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -cuda=/usr/local/cuda-11.6/bin/nvcc"
@@ -356,8 +356,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -disable-mpi -without-visit -without-doc -disable-plot2d"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi " | grep ^$HOST"\."`" != "" ]                   && option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py " | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-mpi4py"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ]              && option_configure=" -disable-optionals"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-for-c3d" | grep ^$HOST"\."`" != "" ]                        && option_configure=" -disable-ccache -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-openblas -disable-hwloc -disable-trustify -disable-cgns -without-conda -std=c++14"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ]              && option_configure="-disable-optionals "$option_configure
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-for-c3d" | grep ^$HOST"\."`" != "" ]                        && option_configure=$option_configure" -disable-ccache -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-openblas -disable-hwloc -disable-trustify -disable-cgns -without-conda -std=c++14"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ]          && option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -disable-mpiio"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-valgrind"
@@ -380,20 +380,19 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -disable-gnuplot -disable-tcl_tk -disable-gmsh -disable-plot2d -without-doc -without-visit"
 # Compilateur clang/intel/gcc
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang" | grep ^$HOST"\."`" != "" ]                          && option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang38" | grep ^$HOST"\."`" != "" ]                        && option_configure=$option_configure" -c++=/usr/lib/llvm-3.8/bin/clang++ -cc=/usr/lib/llvm-3.8/bin/clang"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang39" | grep ^$HOST"\."`" != "" ]                        && option_configure=$option_configure" -c++=/usr/lib/llvm-3.9/bin/clang++ -cc=/usr/lib/llvm-3.9/bin/clang"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]                        && option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel19" | grep ^$HOST"\."`" != "" ]                        && modules_to_load="gcc/6.5.0 iccifort/2019.5.281 impi/icc_2019.5.281/2019.5.281"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel21" | grep ^$HOST"\."`" != "" ]                        && modules_to_load="impi/intel-compilers_2021.4.0/2021.4.0 imkl/2021.4.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel22" | grep ^$HOST"\."`" != "" ]                        && modules_to_load="impi/intel-compilers_2022.1.0/2021.6.0 imkl/2022.2.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel23" | grep ^$HOST"\."`" != "" ]                        && modules_to_load="impi/intel-compilers_2023.2.1/2021.9.0 imkl/intel-compilers_2023.2.1_impi_2021.9.0/2023.2.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcc8" | grep ^$HOST"\."`" != "" ]                           && modules_to_load="gcccore/.8.3.0 gcc/8.3.0 texlive/20220321"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]         && option_configure=$option_configure" -force_even_unsupported"
-# Compilation en INT64
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ] || [ "`echo $HOST | grep build64 2>/dev/null`" != "" ]        && option_configure=$option_configure" -with-64-bit-indices"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-64_bit_new" | grep ^$HOST"\."`" != "" ]        && option_configure=$option_configure" -64-bit-new"
+# Compilation en INT64/32
+#[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ] || [ "`echo $HOST | grep build64 2>/dev/null`" != "" ]        && option_configure=$option_configure" -with-64-bit-indices"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_32_bit" | grep ^$HOST"\."`" != "" ]        && option_configure=$option_configure" -with-32-bit-indices"
 # mpi4py
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py" | grep ^$HOST"\."`" != "" ]                 && option_configure=$option_configure" -disable-mpi4py"
+# gtest
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gtest" | grep ^$HOST"\."`" != "" ]                 && option_configure=$option_configure" -disable-gtest"
 # system mpi, for cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_system_mpi" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -force_system_mpi"
 # coolprop

@@ -388,7 +388,7 @@ check_components()
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.5
                            [ "$Composant" == "module3D" ] && trustversion=1.9.5
-                           [ "$Composant" == "triomc" ] && trustversion=1.9.4
+                           [ "$Composant" == "triomc" ] && trustversion=1.9.5
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
                               WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -557,7 +557,7 @@ export ComposantsBeta="flica5 module3D triomc"
 #ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 #ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 # ND : I comment the 2 prev lines to check triocfd first
-ComposantsGit="triocfd flica5 genepi3 mpcube TRUST_NK module3D sides scorpio sympy_to_TRUST pemfc triomc"
+ComposantsGit="triocfd flica5 genepi3 mpcube TRUST_NK module3D sides scorpio sympy_to_TRUST pemfc triomc mathys"
 export Composants=$ComposantsLns" "$ComposantsGit
 
 # Initialize environment TRUST:
@@ -849,7 +849,7 @@ echo " "
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" && "$Composant" != "triomc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" && "$Composant" != "triomc" && "$Composant" != "mathys" ]]
       then
          git push --tags origin Livraison:next 1>tmp.log 2>&1
          cat tmp.log
@@ -919,7 +919,6 @@ echo " "
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
          git checkout .
-         #git checkout master
          git checkout advance
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
@@ -946,7 +945,7 @@ echo " "
       else
          git remote update
          git checkout .
-         #git checkout next 1>tmp.log 2>&1
+         git checkout next 1>tmp.log 2>&1
          [ $? != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git checkout next KO\" $TRUST_MAIL
          rm tmp.log 1>/dev/null 2>&1
          git pull 1>tmp.log 2>&1
