@@ -1,0 +1,60 @@
+Statistiques d'initialisation du calcul
+
+Temps total                       0.416454
+
+Statistiques de resolution du probleme
+
+Temps total                       0.599677
+
+
+Timesteps                         3
+Secondes / pas de temps           0.19989
+Dont solveurs Ax=B                0.137154 68% (1 appel/pas de temps)
+Dont mettre_a_jour                0.001535  0% (1 appel/pas de temps)
+Dont operateurs convection        0.033339 16% (2 appels/pas de temps)
+Dont operateurs diffusion         0.013680  6% (2 appels/pas de temps)
+Dont operateurs gradient          0.002993  1% (2 appels/pas de temps)
+Dont operateurs divergence        0.002109  1% (2 appels/pas de temps)
+Dont operateurs source            0.001201  0% (1 appel/pas de temps)
+Dont operations postraitement     0.001045  0% (1 appel/pas de temps)
+Dont calcul dt                    0.002424  1% (4 appels/pas de temps)
+Dont calcul divers                0.004937  2% (0 appels/pas de temps)
+Nb echange_espace_virtuel / pas de temps 398.333
+Nb MPI_allreduce / pas de temps 283
+-----------------------------------------------------------------------------------------------------------------------------------------
+Warning: The number of MPI_allreduce calls per time step is high. Contact TRUST support if you plan to run massive parallel calculation.
+-----------------------------------------------------------------------------------------------------------------------------------------
+Nb solveur / pas de temps         1
+Secondes / solveur                0.137154
+Iterations / solveur              126.667
+I/O:
+Debit write seq [Mo/s] : 2890
+Communications avg        1.4 % of total time
+Communications max        1.6 % of total time
+Communications min        1.2 % of total time
+Network latency benchmark 5.10216e-07 s
+Network bandwidth max     15913.9 MB/s
+Total network traffic     65.8421 MB / timestep
+Average message size      40.5681 kB
+Min waiting time          0.1 % of total time
+Max waiting time          0.5 % of total time
+Avg waiting time          0.3 % of total time
+
+Timesteps = number of time steps
+Nb solveur = number of linear system resolutions
+Nb assemblage implicite = number of matrix assemblies for the implicit scheme
+Iterations = average number of iterations of the solver
+Communications = fraction of the time spent
+                 in communications between processors (excluding io files)
+Network latency = time of one mpsum measured by an internal bench over 0.1s
+Network bandwidth = maximum on all processors
+                    of the average bandwidth of send_recv operations
+Waiting time = estimation of the waiting time of the different processors
+
+Max_waiting_time big    => probably due to a bad partitioning
+Communications > 30%    => too many processors or network too slow
+
+Statistiques de post resolution
+
+Temps total                       0.001182
+
