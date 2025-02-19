@@ -88,7 +88,7 @@ public:
 
   int postraiter_sondes();
   int traiter_sondes();
-  int postraiter_champs();
+  virtual int postraiter_champs();
   // Called by postraiter_champs - only deal with the writing of the field values, not the geometrical parts:
   virtual void postprocess_field_values();
 

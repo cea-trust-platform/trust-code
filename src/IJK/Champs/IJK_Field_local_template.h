@@ -16,6 +16,7 @@
 #ifndef IJK_Field_local_template_included
 #define IJK_Field_local_template_included
 
+#include <Field_base.h>
 #include <communications.h>
 #include <stat_counters.h>
 #include <Statistiques.h>
@@ -28,9 +29,10 @@
  *   - field(i,j,k) with "-ghost() <= i < ni() + ghost()", same for j and k
  *   - field.data()[linear_index(i,j,k)]
  *
+ * Inherits from Field_base to have access to all the naming logic.
  */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-class IJK_Field_local_template : public Objet_U
+class IJK_Field_local_template : public Field_base
 {
 protected:
   unsigned taille_memoire() const override { throw; }
