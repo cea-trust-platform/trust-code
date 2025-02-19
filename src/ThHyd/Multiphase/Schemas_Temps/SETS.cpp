@@ -228,10 +228,6 @@ PetscErrorCode destroy_cvctx(void *mctx)
 PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConvergedReason *reason,void *mctx)
 {
   SETS::cv_test_t *ctx = (SETS::cv_test_t *)mctx;
-  PetscErrorCode ret = KSPConvergedDefault(ksp, it, rnorm, reason, &ctx->defctx); //on appelle le test par defaut
-  if (ret || *reason <= 0) return ret; //pas encore converge -> rien a faire
-  /* sinon -> on verfie que sum alpha = 1 est aussi OK */
-  Vec resi;
   if (ctx->t == nullptr) /* ctx->t, ctx-v non initialises -> on les cree */
     {
       Mat m;
@@ -239,7 +235,18 @@ PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConver
       MatCreateVecs(m, &ctx->v, &ctx->t);
       VecSetOption(ctx->v, VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
     }
+  // PETSc 3.20 -> 3.22 change bug ? KSPBuildResidual corrupted after KSPConvergedDefault call
+  // So we switch order, annoying cause KSPBuildResidual is expensive...
+  Vec resi;
   KSPBuildResidual(ksp, ctx->t, ctx->v, &resi);//residu
+  //Cerr << "Residual before:" << finl;
+  //VecView(resi,PETSC_VIEWER_STDOUT_WORLD);
+  PetscErrorCode ret = KSPConvergedDefault(ksp, it, rnorm, reason, &ctx->defctx); //on appelle le test par defaut
+  if (ret || *reason <= 0) return ret; //pas encore converge -> rien a faire
+  /* sinon -> on verfie que sum alpha = 1 est aussi OK */
+  //KSPBuildResidual(ksp, ctx->t, ctx->v, &resi);//residu
+  //Cerr << "Residual after:" << finl;
+  //VecView(resi,PETSC_VIEWER_STDOUT_WORLD);
   VecGetValues(resi, ctx->obj->ix.size_array(), ctx->obj->ix.addr(), ctx->obj->residu.addr());
   bool ok = true;
   for (int i = 0; ok && i < ctx->obj->norm.size(); i++)

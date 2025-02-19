@@ -330,7 +330,7 @@ fi
 ########################################################
 if [ $TRUST_ENABLE_PETSC_DEBUG = 1 ] # || [ $HOST = $TRUST_HOST_ADMIN ] # ND : petsc debug pose souci sur PETSC_VDF/PETSC_VEF/Champ_front_debit_QC_VDF/et un dernier cas, plus de debug par defaut
 then
-   liste_debug="0 1"	# Version optimisee et debug construite
+   liste_debug="1 0"	# Version optimisee et debug construite
    # cette variable construit seulement petsc_debug si on fait make debug. Elle est declaree dans bin/compile
    # [ "$only_make_debug_with_petsc_debug" = 1 ] && liste_debug="1"
 else
@@ -648,11 +648,10 @@ do
    cp ../configure.help $PETSC_ROOT/
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages
    # en etudiant ce qu'il y'a dans ./$CONFIG
-   # On prend with-errorchecking=1 meme en optimise (ne degrade pas les performances)
    # PETSc 3.4: default is now shared library libpetsc.so so we add --with-shared-libraries=0 to keep building static library libpetsc.a:
    ./configure --prefix=$PETSC_ROOT/$PETSC_ARCH \
    --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
-   --with-debugging=$debug --with-errorchecking=1 \
+   --with-debugging=$debug \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
    --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++14 \
    "$LIBS" \

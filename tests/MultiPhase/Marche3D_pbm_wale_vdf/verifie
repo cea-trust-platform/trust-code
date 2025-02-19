@@ -1,0 +1,6 @@
+#!/bin/bash
+# Check the convergence of solver (PETSc 3.22 regression?)
+# See SETS.cpp change and explanation
+# PETSc 3.20 (nits~6)
+# PETSc 3.22 (nits~18)
+exit `awk '/Iterations/ && /solveur/ {exit (int($4)<=6?0:1)}' $1.TU`
