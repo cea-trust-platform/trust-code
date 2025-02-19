@@ -15,6 +15,7 @@
 
 #include <Champs_compris.h>
 #include <Champ_base.h>
+#include <IJK_Field.h>
 
 template<typename FIELD_TYPE>
 const FIELD_TYPE& Champs_compris_T<FIELD_TYPE>::get_champ(const Motcle& motcle) const
@@ -89,4 +90,5 @@ void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
 
 // Explicit instanciantion
 template class Champs_compris_T<Champ_base>;
+template class Champs_compris_T<IJK_Field_double>;
 

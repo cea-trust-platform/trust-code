@@ -19,6 +19,7 @@
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
 #include <Noms.h>
+#include <IJK_Field_forward.h>
 #include <unordered_map>
 
 class Champ_base;
@@ -47,5 +48,6 @@ protected :
 };
 
 using Champs_compris = Champs_compris_T<Champ_base>;
+using Champs_compris_IJK = Champs_compris_T<IJK_Field_double>;
 
 #endif /* Champs_compris_included */
