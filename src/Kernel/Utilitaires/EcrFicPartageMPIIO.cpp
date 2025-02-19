@@ -231,8 +231,11 @@ Sortie& EcrFicPartageMPIIO::operator <<(const long ob)
 
 Sortie& EcrFicPartageMPIIO::operator <<(const long long ob)
 {
-  // Should never be used in MPIIO context
-  throw;
+  if (bin_)
+    write(MPI_LONG_LONG, &ob);
+  else
+    (*this)<<std::to_string(ob).c_str();
+  return *this;
 }
 
 Sortie& EcrFicPartageMPIIO::operator <<(const unsigned long ob)
@@ -291,8 +294,8 @@ int EcrFicPartageMPIIO::put(const long* ob, std::streamsize n, std::streamsize p
 
 int EcrFicPartageMPIIO::put(const long long* ob, std::streamsize n, std::streamsize pas)
 {
-  // Should never be used in MPIIO context
-  throw;
+  assert(n < std::numeric_limits<True_int>::max());
+  return put(MPI_LONG_LONG, ob, (True_int)n);
 }
 
 int EcrFicPartageMPIIO::put(const float* ob, std::streamsize n, std::streamsize pas)
