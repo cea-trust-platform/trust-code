@@ -16,11 +16,7 @@
 #ifndef Convection_Diffusion_Temperature_included
 #define Convection_Diffusion_Temperature_included
 
-#include <Convection_Diffusion_std.h>
-#include <TRUST_Vector.h>
-#include <Fluide_base.h>
-#include <TRUSTTabs.h>
-#include <TRUST_Ref.h>
+#include <Convection_Diffusion_Temperature_base.h>
 
 /*! @brief classe Convection_Diffusion_Temperature Cas particulier de Convection_Diffusion_std
  *
@@ -28,25 +24,18 @@
  *
  * @sa Conv_Diffusion_std
  */
-class Convection_Diffusion_Temperature : public Convection_Diffusion_std
+class Convection_Diffusion_Temperature : public Convection_Diffusion_Temperature_base
 {
   Declare_instanciable(Convection_Diffusion_Temperature);
 public:
 
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline void associer_fluide(const Fluide_base& un_fluide) { le_fluide = un_fluide; }
   inline const Champ_Inc_base& inconnue() const override { return la_temperature; }
   inline Champ_Inc_base& inconnue() override { return la_temperature; }
   void discretiser() override;
   int preparer_calcul() override;
-  const Fluide_base& fluide() const;
-  Fluide_base& fluide();
-  const Milieu_base& milieu() const override { return fluide(); }
-  Milieu_base& milieu() override { return fluide(); }
   void associer_milieu_base(const Milieu_base& ) override;
-  const Champ_Don_base& diffusivite_pour_transport() const override { return milieu().conductivite(); }
-  const Champ_base& diffusivite_pour_pas_de_temps() const override { return milieu().diffusivite(); }
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
@@ -67,8 +56,7 @@ public:
 
 protected :
   OWN_PTR(Champ_Inc_base) la_temperature;
-  OBS_PTR(Fluide_base) le_fluide;
-  OWN_PTR(Champ_Fonc_base) gradient_temperature, h_echange, temperature_paroi_;
+  OWN_PTR(Champ_Fonc_base) gradient_temperature, h_echange;
 
   // Parametres penalisation IBC
   int is_penalized = 0;
