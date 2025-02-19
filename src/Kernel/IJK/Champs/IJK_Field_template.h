@@ -66,10 +66,16 @@ public:
   inline IJK_Shear_Periodic_helpler& get_shear_BC_helpler() { return shear_BC_helpler_; }
   inline const IJK_Shear_Periodic_helpler& get_shear_BC_helpler() const { return shear_BC_helpler_; }
 
+  // TODO : we should overload '=' operator and copy ctor to increase counter in those cases too...
+  static inline void increase_alloc_counter(int i=1) { alloc_counter_ += i; }
+  static inline int alloc_counter() { return alloc_counter_; }
+
 protected:
   OBS_PTR(Domaine_IJK) domaine_ref_;
   Domaine_IJK::Localisation localisation_;
   IJK_Shear_Periodic_helpler shear_BC_helpler_;
+
+  static int alloc_counter_;  ///< To monitor how many field allocations we perform.
 
   void exchange_data(int pe_imin_, /* processor to send to */
                      int is, int js, int ks, /* ijk coordinates of first data to send */

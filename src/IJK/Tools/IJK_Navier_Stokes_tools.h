@@ -89,6 +89,7 @@ void allocate_cell_vector(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int g
     {
       v.get_ptr(i) = std::make_shared<IJK_Field_template<T,TRUSTArray<T>>>();
       v[i].allocate(s, Domaine_IJK::ELEM, ghost);
+      IJK_Field_template<T,TRUSTArray<T>>::increase_alloc_counter();
     }
 }
 
