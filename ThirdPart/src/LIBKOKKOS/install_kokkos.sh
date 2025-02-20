@@ -47,7 +47,11 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=hipcc" # $TRUST_CC_BASE pour profiter de ccache ?
         else # Serial
            CMAKE_OPT="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE"
+           # Optimisations pour Serial (important pour F5,C3D)
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_ATOMICS_BYPASS=ON" # Serial build (skips mutexes to remediate performance regression)
+           CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_LIBDL=OFF" # Disable Kokkos tools (profiling and fence) so 2 hacks useless:
+           #sed -i '/bool profileLibraryLoaded() {/,/}/c\bool profileLibraryLoaded() \/* Disabled \*/ { return false; }' $src_dir/core/src/impl/Kokkos_Profiling.cpp || exit -1 # Disable profiling
+           #sed -i '/Kokkos::Tools::Experimental::Impl::profile_fence_event<Kokkos::Serial>(/,/Kokkos::memory_fence();/d' $src_dir/core/src/Serial/Kokkos_Serial.hpp || exit -1 # Disable fence for serial without thread
         fi
         CMAKE_OPT="$CMAKE_OPT -DCMAKE_CXX_FLAGS=-fPIC"
         # ARCH:
