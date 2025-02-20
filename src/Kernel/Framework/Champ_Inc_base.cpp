@@ -366,15 +366,19 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
     {
       bytes = 8 * valeurs().size_array();
 
+      // Sharing the dimensions of the unknown field with PDI
       TRUST_2_PDI pdi_interface;
       Nom name = equation().probleme().le_nom() + "_" + nom_;
       pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
 
-      DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
+      // Sharing the unknown field with PDI
+      // (const_cast as PDI doesn't deal with const variable)
+      DoubleTab& unknown = const_cast<DoubleTab&>(valeurs());
       if( valeurs().dimension_tot(0) )
-        pdi_interface.TRUST_start_sharing(name.getString(), unknwon.addr());
+        pdi_interface.TRUST_start_sharing(name.getString(), unknown.addr());
       else
         {
+          // if the dimension is null in a direction - might happen in parallel - sharing an empty array
           ArrOfDouble garbage( valeurs().nb_dim() );
           pdi_interface.TRUST_start_sharing(name.getString(), garbage.addr());
         }

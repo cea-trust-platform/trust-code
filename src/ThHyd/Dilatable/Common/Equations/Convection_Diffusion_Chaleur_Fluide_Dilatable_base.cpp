@@ -130,6 +130,10 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) 
       bytes += 8;
       TRUST_2_PDI pdi_interface;
 
+      // 2 things:
+      // 1 - we need to share a non const variable with PDI (hence the ref_cast_non_const)
+      // 2 - we can't share a copy of the variable, as the writing is triggered later on when out of scope, ie the local copy would no longer exist
+      //  => we need to retrieve a reference to the thermo pressure and then const_cast it
       double& pth = ref_cast_non_const(Fluide_Dilatable_base, le_fluide.valeur()).pression_th();
       pdi_interface.TRUST_start_sharing(ident_Pth.getString(), &pth);
     }

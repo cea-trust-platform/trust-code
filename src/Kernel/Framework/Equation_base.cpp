@@ -434,8 +434,10 @@ int Equation_base::sauvegarder(Sortie& os) const
   return inconnue().sauvegarder(os);
 }
 
-/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
- *
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.
+ * This has to be overrode for all the equations that either:
+ * - have extra fields (ie in addition to the unknown) to save/restore.
+ * - want to save the unknown but with a different name
  */
 void Equation_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
 {

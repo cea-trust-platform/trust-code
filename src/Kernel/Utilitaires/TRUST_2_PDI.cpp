@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@ std::vector<std::string> TRUST_2_PDI::shared_data_;
 
 void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)
 {
+  // we start by sharing all the variables
   for(auto& d: data)
     {
       if(write)
@@ -30,6 +31,7 @@ void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::str
         PDI_share(d.first.c_str(), d.second, PDI_INOUT);
     }
 
+  // we trigger the event to start writing/reading the datas previously shared
   trigger(event);
 
   // stop sharing data, starting from the last shared object
@@ -37,6 +39,12 @@ void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::str
     PDI_reclaim(it->first.c_str());
 }
 
+/*! @brief Generic method to share the dimensions of a TRUST DoubleTab with PDI
+ *
+ * @param (const DoubleTab& tab) the array we want to share with PDI
+ * @param (Nom name) the name of the array
+ * @param (int write) flag to specify if we want to write the dimensions or read into it
+ */
 void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write)
 {
   int nb_dim = tab.nb_dim();
@@ -44,6 +52,8 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int 
   for(int i=0; i< nb_dim; i++)
     dimensions[i] = tab.dimension_tot(i) ? tab.dimension_tot(i) : 1; // can't share null data
 
+  // the first dimension can vary from one process of the node to the other
+  // so we take the larger one to fix it in the corresponding dataset of the DoubleTab
   int glob_dim_0;
   PE_Groups::get_node_group().mp_collective_op(&dimensions[0], &glob_dim_0, 1, Comm_Group::COLL_MAX);
 
@@ -57,10 +67,16 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int 
   multiple_IO_("dimensions", data_dims, write);
 }
 
+/*! @brief Generic method to prepare the restart of a computation
+ *
+ * @param (int& last_iteration) the index of the backup iteration we want to recover from
+ * @param (double& tinit) the time from which we want to resume the calculation
+ * @param (int resume_last_time) flag to specify if we want to resume from the last time or we want to recover from a specific time
+ */
 void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_last_time)
 {
   // Check that we have the same number of procs used for checkpoint
-  if(Process::node_master())
+  if(Process::node_master()) // if I'm the master of my node (no need for everyone to read)
     {
       int nb_proc = -1;
       PDI_expose("nb_proc", &nb_proc, PDI_INOUT);
