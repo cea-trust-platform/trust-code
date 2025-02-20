@@ -95,6 +95,13 @@ if(("$ENV{TRUST_INT64}" STREQUAL "0") OR ("$ENV{TRUST_INT64_NEW}" STREQUAL "1"))
   add_definitions("-DINT_is_64_=2")
   add_definitions("-Wconversion -Wno-sign-conversion  -Werror")
 
+  # ND: TRUST est passe en TRUST_INT64_NEW, je retire le -Wconversion si -with-32-bit-indices
+  # car sinon pb de conversion dans MC 9.14
+  if(("$ENV{TRUST_INT64}" STREQUAL "0") AND ("$ENV{TRUST_INT64_NEW}" STREQUAL "0"))
+    remove_definitions("-Wconversion")
+  endif()
+
+
   # ND: sur intel, beaucoup de soucis avec ces flags, je les retire pour que lata_tools compile
   if ((CMAKE_CXX_COMPILER_ID STREQUAL "Intel") OR (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM"))
      remove_definitions("-Wconversion -Wno-sign-conversion  -Werror")
