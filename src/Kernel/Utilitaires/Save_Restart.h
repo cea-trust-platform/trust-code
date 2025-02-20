@@ -55,6 +55,7 @@ private:
 
   void lire_reprise(Entree& is, Motcle& motlu) ;
   void lire_sauvegarde(Entree& is, Motcle& motlu) ;
+  void lire_pdi_sauvegarde_reprise(Entree& is, Motcle& motlu, Nom& restart_file_name, Nom& yaml_fname);
 
   void setTinitFromLastTime(double last_time);
   void prepare_PDI_restart(int resume_last_time);

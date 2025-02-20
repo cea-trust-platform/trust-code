@@ -277,6 +277,51 @@ void Save_Restart::sauver_xyz(int verbose) const
   statistiques().end_count(sauvegarde_counter_, bytes);
 }
 
+
+void Save_Restart::lire_pdi_sauvegarde_reprise(Entree& is, Motcle& motlu, Nom& restart_file_name, Nom& yaml_fname)
+{
+  Nom nom;
+  is >> nom;
+  motlu = nom;
+  if(motlu==Motcle("{"))
+    {
+      Motcles compris(3);
+      compris[0]="}";
+      compris[1]="checkpoint_fname";
+      compris[2]="yaml_fname";
+      int ind = -1;
+      while (ind!=0)
+        {
+          is >> motlu;
+          ind = compris.rang(motlu);
+          if (ind==1)
+            is >> restart_file_name;
+          else if (ind==2)
+            {
+              Cerr << "[Save_Restart] lire_pdi_sauvegarde_reprise :: You have provided your own yaml file to initialize PDI ! " << finl;
+              is >> yaml_fname;
+
+              // Check to see if the file exists
+              LecFicDiffuse test;
+              if (!test.ouvrir(yaml_fname))
+                {
+                  Cerr << "[Save_Restart] lire_pdi_sauvegarde_reprise :: Error! The provided file " << yaml_fname << " does not exist " << finl;
+                  Process::exit();
+                }
+            }
+          else if (ind==-1)
+            {
+              Cerr << "[Save_Restart] lire_pdi_sauvegarde_reprise :: " << motlu << " is not understood. Keywords are:" << finl;
+              Cerr << compris << finl;
+              Process::exit();
+            }
+        }
+    }
+  else
+    restart_file_name = nom;
+}
+
+
 /////////////////////////////////////////////
 // Lecture des options de reprise d'un calcul
 /////////////////////////////////////////////
@@ -304,17 +349,25 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
 
   // Read the filename:
   Nom nomfic;
-  is >> nomfic;
+  Nom nom_yaml;
+  if( format_rep == "pdi" )
+    lire_pdi_sauvegarde_reprise(is, motlu, nomfic, nom_yaml);
+  else
+    is >> nomfic;
   // Force reprise hdf au dela d'un certain nombre de rangs MPI:
   if (format_rep != "xyz" && Process::force_single_file(Process::nproc(), nomfic))
     format_rep = "pdi";
 
   if(format_rep == "pdi")
     {
-      Ecrire_YAML yaml_file;
-      yaml_file.add_pb_base(pb_base_, nomfic);
-      std::string yaml_fname = "restart_" + pb_base_->le_nom().getString() + ".yml";
-      yaml_file.write_restart_file(yaml_fname);
+      std::string yaml_fname = nom_yaml.getString();
+      if(yaml_fname == "??")
+        {
+          Ecrire_YAML yaml_file;
+          yaml_file.add_pb_base(pb_base_, nomfic);
+          yaml_fname = "restart_" + pb_base_->le_nom().getString() + ".yml";
+          yaml_file.write_restart_file(yaml_fname);
+        }
       TRUST_2_PDI::init(yaml_fname);
 
       // Prepare restart
@@ -459,50 +512,10 @@ void Save_Restart::lire_sauvegarde(Entree& is, Motcle& motlu)
     }
   else
     {
-      Nom nom;
-      is >> nom;
-      motlu = nom;
-      if(motlu==Motcle("{"))
-        {
-          if( (Motcle(restart_format_) != "pdi") )
-            {
-              Cerr << "[Save_restart] lire_sauvegarde : Wrong syntax..." << finl;
-              Process::exit();
-            }
-          Motcles compris(3);
-          compris[0]="}";
-          compris[1]="checkpoint_fname";
-          compris[2]="yaml_fname";
-          int ind = -1;
-          while (ind!=0)
-            {
-              is >> motlu;
-              ind = compris.rang(motlu);
-              if (ind==1)
-                is >> restart_file_name_;
-              else if (ind==2)
-                {
-                  Cerr << "[Save_Restart] lire_sauvegarde :: You have provided your own yaml file to initialize PDI ! " << finl;
-                  is >> yaml_fname_;
-
-                  // Check to see if the file exists
-                  LecFicDiffuse test;
-                  if (!test.ouvrir(yaml_fname_))
-                    {
-                      Cerr << "[Save_Restart] lire_sauvegarde :: Error! The provided file " << yaml_fname_ << " does not exist " << finl;
-                      Process::exit();
-                    }
-                }
-              else if (ind==-1)
-                {
-                  Cerr << "[Save_Restart] lire_sauvegarde :: " << motlu << " is not understood. Keywords are:" << finl;
-                  Cerr << compris << finl;
-                  Process::exit();
-                }
-            }
-        }
+      if( Motcle(restart_format_) == "pdi" )
+        lire_pdi_sauvegarde_reprise(is, motlu, restart_file_name_, yaml_fname_);
       else
-        restart_file_name_ = nom;
+        is >> restart_file_name_;
     }
 }
 
