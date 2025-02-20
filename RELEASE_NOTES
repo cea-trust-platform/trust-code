@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) GPU          : Parallel run with number of MPI processes greater than GPU works again though less efficient. Useful for non regression on multi-GPU node
 XX/XX/24 (TRUST) Keyword      : Algebric Multigrid preconditioned solver keyword which select a good choice for CPU/GPU/MPI: solver AMG GCP { rtol|atol value [impr] }
 XX/XX/24 (TRUST) GPU          : Lot of performance improvements in VEF kernels and more VEF features available (y_plus field, source terms for dilatable fluid, time-dependent boundary conditions) 
 XX/XX/24 (TRUST) GPU          : PETSc updated from 3.20 to 3.22 to benefit from GPU solver improvements (Hypre, STRUMPACK)
