@@ -433,7 +433,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   // Dimensionnement du tableau des flux convectifs au bord du domaine de calcul
   DoubleTab& flux_b = flux_bords_;
   int nb_faces_bord=domaine_VEF.nb_faces_bord();
-  if (flux_b.dimension(0)!=nb_faces_bord) flux_b.resize(nb_faces_bord,ncomp_ch_transporte);
+  flux_b.resize(nb_faces_bord,ncomp_ch_transporte);
+  // No, lock with DomainFlow test case:
+  //if (flux_b.dimension(0)!=nb_faces_bord) flux_b.resize(nb_faces_bord,ncomp_ch_transporte);
   flux_b = 0.;
 
   const IntTab& KEL=type_elemvef.KEL();
