@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ public:
   inline void associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ, double t1, double t2) override;
   inline void fixer_tstat_deb(double, double) override;
   inline void fixer_tstat_fin(double tps) override;
-  inline void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
+  inline std::vector<YAML_data> data_a_sauvegarder() const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
   void completer(const Probleme_base&) override;
@@ -93,11 +93,15 @@ inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_G
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
  *
  */
-inline void Op_Moyenne::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+inline std::vector<YAML_data> Op_Moyenne::data_a_sauvegarder() const
 {
   std::string name = integrale_champ_.le_champ_calcule().le_nom().getString();
   int nb_dim = integrale_champ_.le_champ_calcule().valeurs().nb_dim();
-  ch[name] = std::make_pair("double",nb_dim);
+  YAML_data d(name, "double", nb_dim);
+
+  std::vector<YAML_data> data;
+  data.push_back(d);
+  return data;
 }
 
 inline int Op_Moyenne::sauvegarder(Sortie& os) const

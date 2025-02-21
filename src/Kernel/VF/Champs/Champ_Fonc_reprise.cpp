@@ -377,9 +377,9 @@ void Champ_Fonc_reprise::init_pdi(const Probleme_base& pb, Nom nom_fic, int last
   if(reprend_champ_moyen)
     {
       Nom pbname = pb.le_nom();
-      yaml_file.add_scalar(pbname, pbname + "_stat_nb_champs", "int");
-      yaml_file.add_scalar(pbname, pbname + "_stat_tdeb", "double");
-      yaml_file.add_scalar(pbname, pbname + "_stat_tend", "double");
+      yaml_file.add_scalar(pbname, pbname + "_stat_nb_champs", "int", false /* same data for every proc */ );
+      yaml_file.add_scalar(pbname, pbname + "_stat_tdeb", "double", false /* same data for every proc */);
+      yaml_file.add_scalar(pbname, pbname + "_stat_tend", "double", false /* same data for every proc */);
     }
   yaml_file.write_champ_fonc_restart_file("restart.yml");
   TRUST_2_PDI::init("restart.yml");

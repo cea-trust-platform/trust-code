@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ public:
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
   void completer(const Probleme_base&) override;
   DoubleTab calculer_valeurs() const override;
-  inline void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
+  inline std::vector<YAML_data> data_a_sauvegarder() const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
 
@@ -98,11 +98,15 @@ inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis, const Cham
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
  *
  */
-inline void Op_Ecart_type::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+inline std::vector<YAML_data> Op_Ecart_type::data_a_sauvegarder() const
 {
   std::string name = integrale_carre_champ_.le_champ_calcule().le_nom().getString();
   int nb_dim = integrale_carre_champ_.le_champ_calcule().valeurs().nb_dim();
-  ch[name] = std::make_pair("double",nb_dim);
+  YAML_data d(name, "double", nb_dim);
+
+  std::vector<YAML_data> data;
+  data.push_back(d);
+  return data;
 }
 
 inline int Op_Ecart_type::sauvegarder(Sortie& os) const

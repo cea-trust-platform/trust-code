@@ -838,43 +838,44 @@ Postraitement::Postraitement():
 {
 }
 
-/*! @brief for PDI IO: retrieve name and type and dimensions of the scalars to save/restore
- *
- */
-void Postraitement::scal_a_sauvegarder(std::map<std::string, std::string>& scal, std::map<std::string, std::string>& cond) const
-{
-  if(stat_demande_ || stat_demande_definition_champs_)
-    {
-      std::string pb_name = probleme().le_nom().getString();
-      std::string post_cond = "$temps>" + std::to_string(tstat_deb_);
-
-      scal[pb_name + "_stat_nb_champs"] = "int";
-      cond[pb_name + "_stat_nb_champs"] = post_cond;
-
-      scal[pb_name + "_stat_tdeb"] = "double";
-      cond[pb_name + "_stat_tdeb"] = post_cond;
-
-      scal[pb_name + "_stat_tend"] = "double";
-      cond[pb_name + "_stat_tend"] = post_cond;
-    }
-}
-
 /*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
  *
  */
-void Postraitement::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch, std::map<std::string, std::string>& cond) const
+std::vector<YAML_data> Postraitement::data_a_sauvegarder() const
 {
-  std::map<std::string, std::pair<std::string, int>> post;
+  std::vector<YAML_data> data;
   if(stat_demande_ || stat_demande_definition_champs_)
     {
+      std::string cond = "$temps>" + std::to_string(tstat_deb_);
       for (const auto& ch_post : champs_post_complet_)
-        ch_post->champ_a_sauvegarder(post);
+        {
+          std::vector<YAML_data> post_data = ch_post->data_a_sauvegarder();
+          // adding a condition on every field we just retrieved:
+          // we don't want to save stat fields if we haven't started filling it
+          for (auto& post : post_data)
+            post.set_conditions(cond);
+          data.insert(data.end(), post_data.begin(), post_data.end());
+        }
+
+      auto add_stat = [&](const std::string& n, const std::string& type)
+      {
+        YAML_data d(n, type);
+        d.set_local(false);
+        d.set_conditions(cond);
+        data.push_back(d);
+      };
+
+      const std::string& pb_name = probleme().le_nom().getString();
+      std::string stat_name = pb_name + "_stat_nb_champs";
+      add_stat(stat_name, "int");
+
+      stat_name = pb_name + "_stat_tdeb";
+      add_stat(stat_name, "double");
+
+      stat_name = pb_name + "_stat_tend";
+      add_stat(stat_name, "double");
     }
-
-  for (auto const& p : post)
-    cond[p.first] = "$temps>" + std::to_string(tstat_deb_);
-
-  ch.insert(post.begin(), post.end());
+  return data;
 }
 
 int Postraitement::sauvegarder(Sortie& os) const
@@ -907,7 +908,7 @@ int Postraitement::sauvegarder(Sortie& os) const
           else if (TRUST_2_PDI::is_PDI_checkpoint())
             {
               TRUST_2_PDI pdi_interface;
-              std::string pb_name = probleme().le_nom().getString();
+              const std::string& pb_name = probleme().le_nom().getString();
               int nb_champs = nb_champs_stat_;
               double tdeb = tstat_deb_, tend =  tstat_dernier_calcul_;
               std::string name = pb_name + "_stat_nb_champs";
@@ -949,7 +950,7 @@ int Postraitement::reprendre(Entree& is)
               if (TRUST_2_PDI::is_PDI_restart())
                 {
                   TRUST_2_PDI pdi_interface;
-                  std::string pb_name = probleme().le_nom().getString();
+                  const std::string& pb_name = probleme().le_nom().getString();
                   pdi_interface.read(pb_name + "_stat_nb_champs", &n);
                   pdi_interface.read(pb_name + "_stat_tdeb", &tstat_deb_sauv);
                   pdi_interface.read(pb_name + "_stat_tend", &temps_derniere_mise_a_jour_stats);

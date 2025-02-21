@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ public:
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void   reset() override;
-  void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
+  std::vector<YAML_data> data_a_sauvegarder() const override;
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   void completer(const Postraitement_base& post) override;

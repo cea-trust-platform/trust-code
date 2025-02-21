@@ -28,6 +28,7 @@
 #include <TRUSTTab_parts.h>
 #include <Champ_Inc_base.h>
 #include <Matrice_Morse.h>
+#include <Ecrire_YAML.h>
 #include <Champs_Fonc.h>
 #include <TRUST_Ref.h>
 #include <TRUSTList.h>
@@ -95,10 +96,13 @@ public :
   virtual const Milieu_base& milieu() const =0;
   virtual Milieu_base& milieu() =0;
 
-  virtual void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const;
-  virtual void scal_a_sauvegarder(std::map<std::string, std::string>& scal) const { }
+  virtual std::vector<YAML_data> data_a_sauvegarder() const;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
+  // if some equations need to save some parts of their data in a different backup file, we need to override these 2 methods below
+  // (useful if some backup formats are not available for every equations)
+  virtual void init_save_file() { }
+  virtual void close_save_file() { }
 
   int limpr() const;
   virtual void imprimer(Sortie& os) const;

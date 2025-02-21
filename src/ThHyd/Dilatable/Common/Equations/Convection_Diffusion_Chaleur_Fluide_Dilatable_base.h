@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Convection_Diffusion_Chaleur_Fluide_Dilatable_base_included
 
 #include <Convection_Diffusion_Fluide_Dilatable_base.h>
+#include <Ecrire_YAML.h>
 
 /*! @brief classe Convection_Diffusion_Chaleur_Fluide_Dilatable_base Cas particulier de Convection_Diffusion_std pour un fluide quasi dilatable
  *
@@ -38,7 +39,7 @@ public :
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& resu) override;
   void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) override;
-  void scal_a_sauvegarder(std::map<std::string, std::string>& terms) const override;
+  std::vector<YAML_data> data_a_sauvegarder() const override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   const Champ_base& vitesse_pour_transport() const override;

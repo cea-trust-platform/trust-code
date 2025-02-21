@@ -1193,13 +1193,14 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
  *
  */
-void Navier_Stokes_std::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+std::vector<YAML_data> Navier_Stokes_std::data_a_sauvegarder() const
 {
-  Equation_base::champ_a_sauvegarder(ch);
+  std::vector<YAML_data> data = Equation_base::data_a_sauvegarder();
   std::string name = probleme().le_nom().getString() + "_" + la_pression->le_nom().getString();
-
   int nb_dim = la_pression->valeurs().nb_dim();
-  ch[name] = std::make_pair("double",nb_dim);
+  YAML_data d(name, "double", nb_dim);
+  data.push_back(d);
+  return data;
 }
 
 /*! @brief Appelle Equation_base::sauvegarder(Sortie&) et sauvegarde la pression sur un flot de sortie.

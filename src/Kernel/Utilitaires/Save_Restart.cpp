@@ -167,6 +167,9 @@ void Save_Restart::preparer_calcul()
       Nb_pb_total_ += 1; // Permet de connaitre le nombre de probleme total a la fin du preparer_calcul
     }
 #endif
+
+  for(int i=0; i<pb_base_->nombre_d_equations(); i++)
+    pb_base_->equation(i).init_save_file();
 }
 
 void Save_Restart::setTinitFromLastTime(double last_time)
@@ -671,18 +674,20 @@ int Save_Restart::sauver() const
   // On realise l'ecriture de la sauvegarde
   int bytes;
   EcritureLectureSpecial::mode_ecr = (Motcle(restart_format_) == "xyz");
-  TRUST_2_PDI::set_PDI_checkpoint(pdi_format) ;
+  TRUST_2_PDI::set_PDI_checkpoint(pdi_format);
   if(pdi_format)
     {
       Sortie_Nulle useless;
       bytes = pb_base_->sauvegarder(useless);
 
+      // backup of the unknown fields (which are local to each processor so it will involve a parallel writing)
       TRUST_2_PDI pdi_interface;
-      std::string f_event = "fields_backup_" + pb_base_->le_nom().getString();
+      std::string f_event = "local_backup_" + pb_base_->le_nom().getString();
       pdi_interface.trigger(f_event);
       if(Process::node_master())
         {
-          std::string s_event = "scalars_backup_" + pb_base_->le_nom().getString();
+          // backup of the data that are global to everyone so we just need one proc (the master of the node) to write it
+          std::string s_event = "global_backup_" + pb_base_->le_nom().getString();
           pdi_interface.trigger(s_event);
         }
       pdi_interface.stop_sharing();
@@ -739,4 +744,7 @@ void Save_Restart::finir()
   // alors on effectue la sauvegarde finale xyz
   if (Motcle(restart_format_) != "xyz" && (EcritureLectureSpecial::Active))
     sauver_xyz(1);
+
+  for(int i=0; i<pb_base_->nombre_d_equations(); i++)
+    pb_base_->equation(i).close_save_file();
 }

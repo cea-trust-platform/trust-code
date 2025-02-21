@@ -434,16 +434,22 @@ int Equation_base::sauvegarder(Sortie& os) const
   return inconnue().sauvegarder(os);
 }
 
-/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.
+/*! @brief for PDI IO: retrieve name, type and dimensions of the data to save/restore.
  * This has to be overrode for all the equations that either:
- * - have extra fields (ie in addition to the unknown) to save/restore.
+ * - have extra fields (ie in addition to the unknown) or extra scalars to save/restore.
  * - want to save the unknown but with a different name
+ * These data will then be written in a YAML file, to initialize PDI.
+ * They have to be shared with PDI afterwards, when they need to be read/written (via TRUST_2_PDI)
+ *
  */
-void Equation_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+std::vector<YAML_data> Equation_base::data_a_sauvegarder() const
 {
   std::string name = probleme().le_nom().getString() + "_" + inconnue().le_nom().getString() ;
   int nb_dim = inconnue().valeurs().nb_dim();
-  ch[name] = std::make_pair("double",nb_dim);
+  YAML_data d(name, "double", nb_dim);
+  std::vector<YAML_data> data;
+  data.push_back(d);
+  return data;
 }
 
 /*! @brief On reprend l'inconnue a partir d'un flot d'entree.

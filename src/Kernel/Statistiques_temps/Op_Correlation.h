@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ public:
   inline void fixer_tstat_deb(double, double) override;
   inline void fixer_tstat_fin(double) override;
   int completer_post_statistiques(const Domaine& dom, const int is_axi, Format_Post_base& format) override;
-  inline void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const override;
+  inline std::vector<YAML_data> data_a_sauvegarder() const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
@@ -123,11 +123,14 @@ inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Cha
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
  *
  */
-inline void Op_Correlation::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+inline std::vector<YAML_data> Op_Correlation::data_a_sauvegarder() const
 {
   std::string name = integrale_tps_ab_.le_champ_calcule().le_nom().getString();
   int nb_dim = integrale_tps_ab_.le_champ_calcule().valeurs().nb_dim();
-  ch[name] = std::make_pair("double",nb_dim);
+  YAML_data d(name, "double", nb_dim);
+  std::vector<YAML_data> data;
+  data.push_back(d);
+  return data;
 }
 
 inline int Op_Correlation::sauvegarder(Sortie& os) const

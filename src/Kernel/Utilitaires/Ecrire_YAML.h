@@ -16,9 +16,21 @@
 #ifndef Ecrire_YAML_included
 #define Ecrire_YAML_included
 
-#include <Probleme_base.h>
+#include <TRUST_Ref.h>
+#include <YAML_data.h>
+#include <Nom.h>
+#include <string>
+#include <vector>
+#include <map>
+
+class Probleme_base;
 
 /*! @brief classe Ecrire_YAML Use this to generate a yaml file that will then be read by the PDI library (for checkpoint/restart or for domain partitioning)
+ *
+ * The data that will be written are the ones that have been set in Equation_base::data_a_sauvegarder() (+overloads)
+ * and Postraitement_base::data_a_sauvegarder() (+ overloads)
+ *
+ * These data must then be shared with PDI (during the simulation) in order to trigger the wanted IO operations, see also the class TRUST_2_PDI
  *
  * The structure of the file is as follows (indentation matters!):
  *
@@ -53,15 +65,15 @@ class Ecrire_YAML
 public:
   Ecrire_YAML() : indent_(2) { }
 
-  void write_checkpoint_file(std::string yaml_fname);
-  void write_restart_file(std::string yaml_fname);
-  void write_champ_fonc_restart_file(std::string filename);
+  void write_checkpoint_file(const std::string& yaml_fname);
+  void write_restart_file(const std::string& yaml_fname);
+  void write_champ_fonc_restart_file(const std::string& filename);
 
   // Adds a problem to write into the YAML file
   // (with the name of the corresponding checkpoint filename)
   // (we can have independent checkpoint files for each problem or a common one)
   // This has to be called before generating the YAML file for checkpoint/restart!
-  void add_pb_base(const Probleme_base& pb_base, Nom file_name)
+  void add_pb_base(const Probleme_base& pb_base, const Nom& file_name)
   {
     Pb2Save new_pb;
     new_pb.pb = pb_base;
@@ -81,11 +93,11 @@ public:
   }
 
   void add_field(Nom pb, Nom nom, int nb_dim);
-  void add_scalar(Nom pb, Nom nom, Nom type);
+  void add_scalar(Nom pb, Nom nom, Nom type, bool is_local);
 
 private:
   // Begins a new bloc in the YAML file
-  void begin_bloc(const std::string line, std::string& text)
+  void begin_bloc(const std::string& line, std::string& text)
   {
     add_line(line, text);
     indent_ += 2;
@@ -93,7 +105,7 @@ private:
   // End the current bloc in the YAML file
   void end_bloc() { indent_ -= 2; }
   // Adds a line with the correct indentation in the YAML file
-  void add_line(const std::string line, std::string& text)
+  void add_line(const std::string& line, std::string& text)
   {
     text = text + "\n";
     for(int i=0; i<indent_; i++)
@@ -107,17 +119,16 @@ private:
   // Private methods to generate the YAML file that are common
   //                for checkpoint and restart
   // ==============================================================
-  void write_checkpoint_restart_file(int save, std::string yaml_fname);
+  void write_checkpoint_restart_file(int save, const std::string& yaml_fname);
   void declare_metadata(int save, std::string& text);
   void declare_data(int save, std::string& text);
-  void write_format(int save, std::string fname, std::string& text);
-  void write_time_scheme(int save, std::string fname, std::string& text);
+  void write_format(int save, const std::string& fname, std::string& text);
+  void write_time_scheme(int save, const std::string& fname, std::string& text);
 
   // ==============================================================
   // Private methods to generate the YAML file for checkpoint only
   // ==============================================================
-  void write_fields_for_checkpoint(int pb_i, std::string& text);
-  void write_scalars_for_checkpoint(int pb_i, std::string& text);
+  void write_data_for_checkpoint(int pb_i, bool is_parallel, std::string& text);
   void write_file_initialization(int pb_i, std::string& text);
 
   // ==============================================================
@@ -128,40 +139,30 @@ private:
   // ==============================================================
   // Private methods useful to write generic structures
   // ==============================================================
-  void declare_array(std::string name, std::string type, std::string size, std::string& text);
-  void declare_dtab(std::string name, std::string type, int nb_dim, std::string& text);
-  void declare_dataset(std::string name, std::string type, int nb_dim, std::string& text);
-  void write_generic_scalar(std::string dname, std::string fname, std::string& text);
-  void write_TRUST_scalar(std::string dname, std::string fname, std::string cond, std::string& text);
-  void write_scalar_selection(std::string& text);
-  void write_dtab(std::string fname, int nb_dim, std::string cond, std::string& text);
-  void write_dtab_selection(std::string name, int nb_dim, std::string& text);
+  void declare_scalar(const std::string& name, const std::string& type, std::string& text);
+  void declare_array(const std::string& name, const std::string& type, const std::string& size, std::string& text);
+  void declare_dtab(const std::string& dname, const std::string& name, const std::string& type, int nb_dim, std::string& text);
+  void declare_TRUST_dataset(const std::string& dname, const std::string& name, const std::string& type, int nb_dim, bool is_parallel, std::string& text);
+  void write_impl_dataset(const std::string& dname, const std::string& fname, std::string& text);
+  void write_TRUST_dataset(const std::string& dname, const std::string& name, int nb_dim, const std::string& cond, bool is_parallel, const std::vector<std::string>& attribute, std::string& text);
+  void write_TRUST_dataset_selection(const std::string& name, int nb_dim, bool is_parallel, std::string& text);
+  void write_attributes(const std::vector<std::string>& attributes, std::string& text);
 
   // indicates the number of spaces to add at the beginning of the next line to write in the file (so that the YAML file correctly indented)
   int indent_;
 
-  // Map containing all needed information for fields to save/restore:
-  // fields["name_of_field"] = (type_of_the_field, dimensions_of_field)
-  using Field2Type = std::map<std::string, std::pair<std::string, int>>;
-  // Map containing all needed information for additional scalars to save/restore:
-  // scalars["name_of_scalar"] = type of the scalar
-  using Scalar2Type = std::map<std::string, std::string>;
   typedef struct
   {
     OBS_PTR(Probleme_base) pb;
-    Scalar2Type scalars;
-    Field2Type fields;
-    std::map<std::string, std::string> conditions; //for each field/scalar, is it a condition to respect in order to write it?
+    std::vector<YAML_data> data;
     std::string filename;
   } Pb2Save;
   // List of all the problems we want to save/restore
   // Each of the problems contain:
-  // - the list of the fields to be saved/restored
-  // - the list of the scalars to be saved/restored
+  // - a reference to the problem
+  // - the list of the fields and the scalars to be saved/restored, with all the corresponding information
   // - the name of the corresponding checkpoint file
-  // - the conditions to respect to save/restore some of the data
   std::vector<Pb2Save> pbs_;
-
 };
 
 #endif

@@ -193,11 +193,16 @@ int Champ_Gen_de_Champs_Gen::get_nb_sources() const
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
  *
  */
-void Champ_Gen_de_Champs_Gen::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+std::vector<YAML_data> Champ_Gen_de_Champs_Gen::data_a_sauvegarder() const
 {
+  std::vector<YAML_data> data;
   const int n = sources_.size();
   for (int i = 0; i < n; i++)
-    sources_[i]->champ_a_sauvegarder(ch);
+    {
+      std::vector<YAML_data> source_data = sources_[i]->data_a_sauvegarder();
+      data.insert(data.end(), source_data.begin(), source_data.end());
+    }
+  return data;
 }
 
 /*! @brief sauvegarde des differentes sources

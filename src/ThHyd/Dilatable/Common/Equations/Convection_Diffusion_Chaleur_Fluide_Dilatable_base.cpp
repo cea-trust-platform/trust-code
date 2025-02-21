@@ -98,11 +98,16 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler_blocs_avec_in
 /*! @brief for PDI IO: retrieve name and type and dimensions of the thermo pressure
  *
  */
-void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::scal_a_sauvegarder(std::map<std::string, std::string>& terms) const
+std::vector<YAML_data> Convection_Diffusion_Chaleur_Fluide_Dilatable_base::data_a_sauvegarder() const
 {
+  std::vector<YAML_data> data = Equation_base::data_a_sauvegarder();
   Nom pth("pression_thermo");
   pth += probleme().domaine().le_nom();
-  terms[pth.getString()] = "double";
+  std::string name = pth.getString();
+  YAML_data d(name, "double");
+  d.set_local(false /*same value for everyone*/);
+  data.push_back(d);
+  return data;
 }
 
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 #include <TRUST_Ref.h>
 #include <Domaine.h>
 #include <ArrOfBit.h>
+#include <YAML_data.h>
 
 class Postraitement_base;
 class Discretisation_base;
@@ -45,7 +46,7 @@ class Champ_Generique_base : public Objet_U
 public:
 
   /* XXX Elie Saikali : re-mets ici et pas dans Objet_U */
-  virtual void champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const { };
+  virtual std::vector<YAML_data> data_a_sauvegarder() const { return std::vector<YAML_data>(); };
   int sauvegarder(Sortie& os) const override { return 0; }
   int reprendre(Entree& is) override { return 1; }
 

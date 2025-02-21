@@ -26,7 +26,31 @@
 #include <Comm_Group_MPI.h>
 #include <PE_Groups.h>
 
-/*! @brief classe TRUST_2_PDI Encapsulation of PDI methods (library used for IO operations)
+/*! @brief classe TRUST_2_PDI Encapsulation of PDI methods (library used for IO operations). See the website pdi.dev for more info
+ *
+ * PDI needs to be initialized with a YAML file, containing all the data that we want to exchange with the outside world (see the class Ecrire_YAML for details).
+ * Note that every data that will be handled via PDI first needs to be declared in the YAML file that has been used to initialize it!
+ *
+ * Here is how PDI works:
+ * 1) TRUST makes it known to PDI that some of our data is accessible (ie we start sharing a pointer to the data, no copy here!)
+ * 2) PDI notifies the selected plugin that the data is ready
+ * 3) The plugin works with the data and behaves just as we described it in the YAML file
+ * 4) Once the work is done, TRUST can reclaim the data (which means PDI will no longer be able to reach it) and pursue the simulation
+ *
+ * These steps can be completed at once in a single operation or asynchronously
+ * (ie we share the data, we busy ourselves with some other stuff, then we trigger the IO operations and reclaim the data).
+ *
+ * An example on how to use it:
+ * """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+ *     int var = 5;
+ *     TRUST_2_PDI::init(yaml_filename);
+ *     TRUST_2_PDI pdi_interface;
+ *     pdi_interface.start_sharing("pb_var", &var);   // the YAML file must contain a data named pb_var
+ *     pdi_interface.trigger("event");                // there has to be an event in the YAML that tells us what to do with the data
+ *     pdi_interface.stop_sharing_last_variable();    // data is no more available
+ *     // the last 3 instructions can be squeezed in one with the methods TRUST_2_PDI::read()/TRUST_2_PDI::write()
+ *     TRUST_2_PDI::finalize();
+ * """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
  */
 class TRUST_2_PDI
 {

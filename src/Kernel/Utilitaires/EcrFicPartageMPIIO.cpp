@@ -335,7 +335,7 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
 
   // Before collecting operations, update disp_ on all processes:
   envoyer_broadcast(disp_, 0);
-  MPI_Offset disp_me = disp_ + mppartial_sum(n) * sizeof_etype;
+  MPI_Offset disp_me = disp_ + Process::mppartial_sum(n) * sizeof_etype;
   // ROMIO hints:
   if (Process::nproc()>1024)
     {

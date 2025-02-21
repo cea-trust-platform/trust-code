@@ -83,10 +83,14 @@ void Champ_Generique_Statistiques_base::fixer_tdeb_tfin(const double t_deb,const
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
  *
  */
-void Champ_Generique_Statistiques_base::champ_a_sauvegarder(std::map<std::string, std::pair<std::string, int>>& ch) const
+std::vector<YAML_data> Champ_Generique_Statistiques_base::data_a_sauvegarder() const
 {
-  Champ_Gen_de_Champs_Gen::champ_a_sauvegarder(ch);
-  Operateur_Statistique().champ_a_sauvegarder(ch);
+  std::vector<YAML_data> data;
+  std::vector<YAML_data> ch = Champ_Gen_de_Champs_Gen::data_a_sauvegarder();
+  std::vector<YAML_data> stat = Operateur_Statistique().data_a_sauvegarder();
+  data.insert(data.end(), ch.begin(), ch.end());
+  data.insert(data.end(), stat.begin(), stat.end());
+  return data;
 }
 
 int Champ_Generique_Statistiques_base::sauvegarder(Sortie& os) const
