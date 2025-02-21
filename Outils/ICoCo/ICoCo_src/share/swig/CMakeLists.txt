@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.18)
 
 set(ATELIER  ON)
-include(../../build/src/CMakeLists.txt.trust)      # Needs to be put before "project()" (it tweaks compiler)
+include(../../build/src/CMakeLists.txt.trust)  # Needs to be put before "project()" (it tweaks compiler)
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BUILD_DIR})   # Make sure we don't pollute TRUST/lib directory
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)   # Added when we had a dependency on libpython*.so
 
 project(ICoCo_SWIG CXX)
 
@@ -81,7 +81,7 @@ else()
   swig_add_library(trusticoco LANGUAGE python SOURCES ${swig_file})
 endif()
 
-swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
+swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib})   # ${PYTHON_LIBRARIES} removed as in MC
 #swig_link_libraries(trusticoco ${libdeps} ${libBaltik} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
 
 ##

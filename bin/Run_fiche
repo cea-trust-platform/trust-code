@@ -73,6 +73,8 @@ then
   echo "WARNING! You have disabled the build of jupyter when you configured TRUST. contact TRUST support team." | tee Run.log
 fi
 
+[ "`python3 --version | grep 'Python 3.6' 2>/dev/null`" != "" ] && echo "We unset LC_ALL since python 3.6, otherwise problem with French accents" && export LC_ALL=""
+
 options=""
 pdf=build/rapport.pdf
 save=""

@@ -177,7 +177,7 @@ echo "@@@@@@@@@@@@ Creating env file ..."
 MC_ENV_FILE_tmp=$install_dir/env_tmp.sh  # install_dir is the Release path
 MC_ENV_FILE=$install_dir/../env.sh
 #echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
-echo "export LD_LIBRARY_PATH=\$TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}_opt/lib:\$TRUST_MED_ROOT/lib:\$TRUST_ROOT/exec/python/lib:\$LD_LIBRARY_PATH" > $MC_ENV_FILE_tmp
+echo "export LD_LIBRARY_PATH=\$TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}_opt/lib:\$LD_LIBRARY_PATH" > $MC_ENV_FILE_tmp
 site_pkg=`cd $TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}\${OPT}/lib;find * -name site-packages`
 echo "export PYTHONPATH=\$TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}_opt/bin:\$TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}_opt/lib/${site_pkg}:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
 echo "export PATH=\$TRUST_HDF5_ROOT/hdf5_install/bin:\$TRUST_MED_ROOT/med_install/bin:\$PATH" >> $MC_ENV_FILE_tmp
