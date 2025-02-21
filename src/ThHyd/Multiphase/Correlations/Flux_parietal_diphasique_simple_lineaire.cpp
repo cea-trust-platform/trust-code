@@ -96,7 +96,7 @@ void Flux_parietal_diphasique_simple_lineaire::qp(const input_t& in, output_t& o
           if (in.Tp < Ts)
             {
               if (out.qpk)
-                (*out.qpk) = P_mono;
+                (*out.qpk)(n_l) = P_mono;
               if (out.dTp_qpk)
                 (*out.dTp_qpk)(n_l) = h_mono_;
               if (out.dTf_qpk)

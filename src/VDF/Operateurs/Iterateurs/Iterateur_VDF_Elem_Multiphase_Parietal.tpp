@@ -26,7 +26,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
                                                                     const DoubleTab& donnee, DoubleTab& resu, Matrice_Morse *mat, VectorDeriv& d_cc, const tabs_t& semi_impl) const
 {
   assert (is_pb_multi);
-  Type_Double flux(N), aii(N), ajj(N);
+  Type_Double flux(N);
 
   constexpr bool is_Temp_impose_flux_parietal = std::is_same<BC, Scalaire_impose_paroi>::value,
                  is_Neumann_flux_parietal = std::is_same<BC, Neumann_paroi>::value,
@@ -48,8 +48,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
   Flux_parietal_base::input_t in;
   Flux_parietal_base::output_t out;
 
-  DoubleTrav Ts_tab, Sigma_tab, Lvap_tab;
-  DoubleTrav Tf(N), qpk(N), dTp_qpk(N), dTf_qpk(N, N), qpi(N, N), dTp_qpi(N, N), dTf_qpi(N, N, N), nv(N), d_nuc(N);
+  DoubleTrav qpk(N), dTp_qpk(N), dTf_qpk(N, N), qpi(N, N), dTp_qpi(N, N), dTf_qpi(N, N, N), d_nuc(N);
 
   out.qpk = &qpk;
   out.dTf_qpk = &dTf_qpk;
@@ -82,6 +81,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
   if (pdTf_qpi)
     *pdTf_qpi = 0.;
 
+  DoubleTrav Ts_tab, Sigma_tab, Lvap_tab;
   if (corr.needs_saturation())
     {
       const Milieu_composite& milc = ref_cast(Milieu_composite, op_base->equation().milieu());
@@ -111,25 +111,54 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
             }
     }
 
+  DoubleTrav Tf(N), nv(N);
   for (int face = ndeb; face < nfin; face++)
     {
-      Tf = 0., qpk = 0., dTf_qpk = 0., qpi = 0., dTf_qpi = 0., nv = 0., d_nuc = 0.;
+      Tf = 0.;
+      qpk = 0.;
+      dTf_qpk = 0.;
+      qpi = 0.;
+      dTf_qpi = 0.;
+      nv = 0.;
+      d_nuc = 0.;
+
       const int e = elem(face, 0) > -1 ? elem(face, 0) : elem(face, 1);
+
       const double y = elem(face, 0) > -1 ? le_dom->dist_face_elem0(face, e) : le_dom->dist_face_elem1(face, e);
 
       // fill in struct
-      in.N = N, in.f = face, in.y = y, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.p = press(e),
-         in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0), in.T = &donnee(e, 0), in.v = nv.addr();
+      in.N = N;
+      in.f = face;
+      in.y = y;
+      in.D_h = dh(e);
+      in.D_ch = dh(e);
+      in.alpha = &alpha(e, 0);
+      in.p = press(e);
+      in.lambda = &lambda(e, 0);
+      in.mu = &mu(e, 0);
+      in.rho = &rho(e, 0);
+      in.Cp = &Cp(e, 0);
+      in.T = &donnee(e, 0);
+      in.v = nv.addr();
 
       if (corr.needs_saturation())
-        in.Lvap = &Lvap_tab(e, 0), in.Sigma = &Sigma_tab(e, 0), in.Tsat = &Ts_tab(e, 0);
+        {
+          in.Lvap = &Lvap_tab(e, 0);
+          in.Sigma = &Sigma_tab(e, 0);
+          in.Tsat = &Ts_tab(e, 0);
+        }
       else
-        in.Lvap = nullptr, in.Sigma = nullptr, in.Tsat = nullptr;
+        {
+          in.Lvap = nullptr;
+          in.Sigma = nullptr;
+          in.Tsat = nullptr;
+        }
 
       // velocity norm
       for (int d = 0; d < Objet_U::dimension; d++)
         for (int n = 0; n < N; n++)
           nv(n) += std::pow(pvit_elem(e, N * d + n), 2);
+
       for (int n = 0; n < N; n++)
         nv(n) = std::sqrt(nv(n));
 
@@ -153,12 +182,14 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
 
           for (int k = 0; k < N; k++)
             flux[k] = (elem(face, 0) != -1) ? qpk(k) * fs(face) * pf(face) : -qpk(k) * fs(face) * pf(face);
+
           fill_flux_tables_(face, N, 1.0, flux, resu);
 
           if (mat)
             for (int k = 0; k < N; k++)
               for (int l = 0; l < N; l++)
                 (*mat)(e * N + k, e * N + l) += dTf_qpk(k, l) * fs(face) * pf(face);
+
         }
       if (is_paroi_contact_flux_parietal) // Echange contact
         {
@@ -176,15 +207,31 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
 
           for (it = 0; !cv && it < 100; it++)
             {
-              flux_cor = 0, dTp_flux_cor = 0, Tf = 0., qpk = 0., dTp_qpk = 0., dTf_qpk = 0., qpi = 0., dTp_qpi = 0., dTf_qpi = 0.;
+              flux_cor = 0;
+              dTp_flux_cor = 0;
+
+              Tf = 0.;
+              qpk = 0.;
+              dTp_qpk = 0.;
+              dTf_qpk = 0.;
+              qpi = 0.;
+              dTp_qpi = 0.;
+              dTf_qpi = 0.;
 
               corr.qp(in, out);
 
               for (int k = 0; k < N; k++)
-                flux_cor += qpk(k), dTp_flux_cor += dTp_qpk(k);
+                {
+                  flux_cor += qpk(k);
+                  dTp_flux_cor += dTp_qpk(k);
+                }
+
               for (int k = 0; k < N; k++)
                 for (int l = 0; l < N; l++)
-                  flux_cor += qpi(k, l), dTp_flux_cor += dTp_qpi(k, l);
+                  {
+                    flux_cor += qpi(k, l);
+                    dTp_flux_cor += dTp_qpi(k, l);
+                  }
 
               in.Tp = in.Tp - (flux_cor - flux_imp) / dTp_flux_cor;
               cv = (std::abs(flux_cor - flux_imp) < 1.e-5);
@@ -197,9 +244,14 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
               message_erreur.append(std::to_string( donnee(e, 0)));
               message_erreur.append("\n T fluide = ");
               for (int k = 0; k < N; k++)
-                message_erreur.append(std::to_string(donnee(e, k)));
+                {
+                  message_erreur.append(std::to_string(donnee(e, k)));
+                  message_erreur.append(" ");
+                }
               message_erreur.append("\n Phi cible = ");
               message_erreur.append(std::to_string(flux_imp));
+              message_erreur.append("\n Phi cor = ");
+              message_erreur.append(std::to_string(flux_cor));
               Process::exit(message_erreur);
             }
 
@@ -218,6 +270,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
             flux[k] = (elem(face, 0) != -1) ? qpk(k) * fs(face) : -qpk(k) * fs(face);
 
           fill_flux_tables_(face, N, 1.0, flux, resu);
+
           if (mat)
             for (int k = 0; k < N; k++)
               for (int l = 0; l < N; l++)
