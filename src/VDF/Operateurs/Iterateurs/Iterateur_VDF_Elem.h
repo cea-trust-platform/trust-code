@@ -73,7 +73,7 @@ private:
 
   using VectorDeriv = std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>>;
   template<typename Type_Double, typename BC>
-  void ajouter_blocs_bords_flux_parietal_(const BC& , const int , const int , const int , const DoubleTab& , DoubleTab& ,  Matrice_Morse *, VectorDeriv& , const tabs_t& ) const { /* TODO FIXME */ }
+  void ajouter_blocs_bords_flux_parietal_(const BC& , const int , const int , const int , const DoubleTab& , DoubleTab& ,  Matrice_Morse *, VectorDeriv& , const tabs_t& ) const;
 
   void modifier_flux() const;
   template <typename Type_Double> inline void fill_flux_tables_(const int, const int , const double , const Type_Double& , DoubleTab& ) const;
