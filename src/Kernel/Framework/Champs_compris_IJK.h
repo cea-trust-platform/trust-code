@@ -13,41 +13,34 @@
 *
 *****************************************************************************/
 
-#ifndef Champs_compris_included
-#define Champs_compris_included
+#ifndef Champs_compris_IJK_included
+#define Champs_compris_IJK_included
 
-#include <TRUST_List.h>
-#include <TRUST_Ref.h>
-#include <Noms.h>
-#include <IJK_Field_forward.h>
-#include <unordered_map>
+#include <Champs_compris.h>
+#include <IJK_Field_vector.h>
 
 class Champ_base;
 
-/*! @brief classe Champs_compris Represente un champ compris par un objet de type Equation, Milieu,
+/*! @brief Same as Champs_compris, but specialised for IJK fields and also supports quering for vectorial fields
+ * (aka IJK_Field_vector3_double).
  *
- *      Operateur, Source, Traitement_particulier.
- *
- * Parametrized by the type of field: typically Champ_base or IJK_Field_double
+ * Note that this class has no member of type "Champs_compris_IJK". This member is kept separate and inserted
+ * in Navier_Stokes_FTD_IJK, IJK_Interfaces, etc., because in some cases (typically at the probleme level Probleme_FTD_IJK_base)
+ * we do not need the member, just the abstract interface below.
  */
-template<typename FIELD_TYPE>
-class Champs_compris_T
+class Champs_compris_IJK: public Champs_compris_IJK_base
 {
 public :
-  // Return the field if found, otherwise raises.
-  const FIELD_TYPE& get_champ(const Motcle& nom) const;
-  // Same thing, but without raising:
-  bool has_champ(const Motcle& nom, OBS_PTR(FIELD_TYPE)& ref_champ) const;
-  bool has_champ(const Motcle& nom) const;
-  void ajoute_champ(const FIELD_TYPE& champ);
-  const Noms liste_noms_compris() const;
-  void clear_champs_compris() { liste_champs_.clear(); }
+  void ajoute_champ_vectoriel(const IJK_Field_vector3_double& champ);
+  bool has_champ_vectoriel(const Motcle& nom) const;
+  const IJK_Field_vector3_double& get_champ_vectoriel(const Motcle& nom) const;
+  const Noms liste_noms_compris_vectoriel() const;
 
-protected :
-  std::unordered_map<std::string, OBS_PTR(FIELD_TYPE)> liste_champs_;
+private:
+  static constexpr std::array COMPOS = {"_X", "_Y", "_Z"};
+
+  std::unordered_map<std::string, OBS_PTR(IJK_Field_vector3_double)> liste_champs_vecto_;
 };
 
-using Champs_compris = Champs_compris_T<Champ_base>;
-using Champs_compris_IJK_base = Champs_compris_T<IJK_Field_double>;
 
-#endif /* Champs_compris_included */
+#endif /* Champs_compris_IJK_included */

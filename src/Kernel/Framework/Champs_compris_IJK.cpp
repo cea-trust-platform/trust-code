@@ -13,51 +13,28 @@
 *
 *****************************************************************************/
 
-#include <Champs_compris.h>
-#include <Champ_base.h>
-#include <IJK_Field.h>
 
-template<typename FIELD_TYPE>
-const FIELD_TYPE& Champs_compris_T<FIELD_TYPE>::get_champ(const Motcle& motcle) const
+#include <Champs_compris_IJK.h>
+
+
+/** A vectorial field is considered present in the structure if all its three components are there
+ */
+bool Champs_compris_IJK::has_champ_vectoriel(const Motcle& nom) const
 {
-  assert(motcle!="??");
-  auto item = liste_champs_.find(motcle.getString());
-  if (item != liste_champs_.end()) return item->second;
-  throw std::runtime_error(std::string("Field ") + motcle.getString() + std::string(" not found !"));
+  assert(nom!="??");
+  auto item = liste_champs_vecto_.find(nom.getString());
+  return item != liste_champs_vecto_.end();
 }
 
-template<typename FIELD_TYPE>
-bool Champs_compris_T<FIELD_TYPE>::has_champ(const Motcle& motcle, OBS_PTR(FIELD_TYPE)& ref_champ) const
+const IJK_Field_vector3_double& Champs_compris_IJK::get_champ_vectoriel(const Motcle& nom) const
 {
-  assert(motcle!="??");
-  auto item = liste_champs_.find(motcle.getString());
-  if (item != liste_champs_.end())
-    {
-      ref_champ = item->second;
-      return true;
-    }
-  return false;
+  assert(nom != "??");
+  auto item = liste_champs_vecto_.find(nom.getString());
+  if (item != liste_champs_vecto_.end()) return item->second;
+  throw std::runtime_error(std::string("Vectoriel field ") + nom.getString() + std::string(" not found !"));
 }
 
-template<typename FIELD_TYPE>
-bool Champs_compris_T<FIELD_TYPE>::has_champ(const Motcle& motcle) const
-{
-  assert(motcle!="??");
-  auto item = liste_champs_.find(motcle.getString());
-  return item != liste_champs_.end();
-}
-
-template<typename FIELD_TYPE>
-const Noms Champs_compris_T<FIELD_TYPE>::liste_noms_compris() const
-{
-  Noms nom_compris;
-  for (auto const& champ : liste_champs_)
-    nom_compris.add(champ.first);
-  return nom_compris;
-}
-
-template<typename FIELD_TYPE>
-void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
+void Champs_compris_IJK::ajoute_champ_vectoriel(const IJK_Field_vector3_double& champ)
 {
   // Adding a field name referring to champ inside liste_champs_ dictionnary
   auto add_key = [&](const Nom& n)
@@ -66,18 +43,8 @@ void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
     std::string upperCase = nom_champ, lowerCase = nom_champ;
     std::transform(nom_champ.begin(), nom_champ.end(), upperCase.begin(), ::toupper);
     std::transform(nom_champ.begin(), nom_champ.end(), lowerCase.begin(), ::tolower);
-
-// [ABN] I agree with the below, but this breaks too many TRUST cases for now.
-// To be reviewed at some point.
-
-//   if (has_champ(upperCase) || has_champ(lowerCase))
-//      {
-//        //TODO(teo.boutin) maybe check pointers equality before giving an error.
-//        Cerr << "Champs_compris_T<FIELD_TYPE>::ajoute_champ : trying to add a field twice : " << upperCase << finl;
-//        Process::exit();
-//      }
-    liste_champs_[upperCase] = champ;
-    liste_champs_[lowerCase] = champ;
+    liste_champs_vecto_[upperCase] = champ;
+    liste_champs_vecto_[lowerCase] = champ;
   };
 
   // Adding field with its name...
@@ -92,13 +59,14 @@ void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
   // ...and its components
   int nb_composantes = champ.nb_comp();
   for (int i = 0; i < nb_composantes; i++)
-    if(champ.nom_compo(i) != "??")
-      add_key(champ.nom_compo(i));
-
-  Cerr<<"Champs_compris_T<FIELD_TYPE>::ajoute_champ " << champ.le_nom() <<finl;
+    ajoute_champ(champ[i]);
 }
 
-// Explicit instanciantion
-template class Champs_compris_T<Champ_base>;
-template class Champs_compris_T<IJK_Field_double>;
 
+const Noms Champs_compris_IJK::liste_noms_compris_vectoriel() const
+{
+  Noms nom_compris;
+  for (auto const& champ : liste_champs_vecto_)
+    nom_compris.add(champ.first);
+  return nom_compris;
+}
