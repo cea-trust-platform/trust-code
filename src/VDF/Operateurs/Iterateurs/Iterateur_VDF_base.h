@@ -17,13 +17,12 @@
 #define Iterateur_VDF_base_included
 
 #include <CL_Types_include.h>
+#include <Domaine_Cl_VDF.h>
 #include <Operateur_base.h>
 #include <Evaluateur_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Domaine_Cl_VDF.h>
-
 #include <Domaine_VDF.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
@@ -106,6 +105,18 @@ public:
   {
     DoubleTrav secmem(inco); //on va le jeter
     ajouter_blocs({{ op_base->equation().inconnue().le_nom().getString(), &m }}, secmem, {});
+  }
+
+  virtual void associer_correlation_flux_parietal(const Correlation_base& corr)
+  {
+    Cerr << "Iterateur_VDF_base::" << __func__ << " should not be called !" << finl;
+    Process::exit();
+  }
+
+  virtual void creer_champ_T_paroi_pour_flux_parietal()
+  {
+    Cerr << "Iterateur_VDF_base::" << __func__ << " should not be called !" << finl;
+    Process::exit();
   }
 
 protected:
