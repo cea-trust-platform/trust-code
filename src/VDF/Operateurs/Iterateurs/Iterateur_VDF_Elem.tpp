@@ -16,6 +16,7 @@
 #ifndef Iterateur_VDF_Elem_TPP_included
 #define Iterateur_VDF_Elem_TPP_included
 
+#include <Convection_Diffusion_Temperature_base.h>
 #include <Operateur_Diff_base.h>
 #include <Champ_Uniforme.h>
 #include <communications.h>
@@ -184,48 +185,73 @@ template<class _TYPE_> template<bool should_calc_flux, typename Type_Double, typ
 void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int ndeb, const int nfin, const int N, matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC, Neumann_paroi_adiabatique>::value;
+
+  constexpr bool is_scal_imp = std::is_same<BC, Scalaire_impose_paroi>::value;
+  constexpr bool is_neum_paroi = std::is_same<BC, Neumann_paroi>::value;
+  constexpr bool is_paroi_contact = std::is_same<BC, Echange_global_impose>::value;
+
+  const bool is_Temp_impose_flux_parietal = is_scal_imp && corr_flux_parietal_.non_nul() && !is_conv_op_;
+  const bool is_Neumann_flux_parietal = is_neum_paroi && corr_flux_parietal_.non_nul() && !is_conv_op_;
+  const bool is_paroi_contact_flux_parietal = is_paroi_contact && corr_flux_parietal_.non_nul() && !is_conv_op_;
+
   if (should_calc_flux)
     {
       if (is_Neum_paroi_adiab)
         Process::exit(); // On bloque ici :-)
 
       const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs(),
-                       val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : (use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords()); // si le champ associe est un champ_face, alors on est dans un operateur de div
+                       val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() :
+                               (use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords()); // si le champ associe est un champ_face, alors on est dans un operateur de div
 
-      int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
-      Type_Double flux(N), aii(N * (multiscalar_diff_ ? N : 1)), ajj(N * (multiscalar_diff_ ? N : 1)), aef(N);
-      for (int face = ndeb; face < nfin; face++)
-        {
-          flux_evaluateur.flux_face(donnee, val_b, face, cl, ndeb, flux); // Generic code
-          fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
-        }
-
-      Matrice_Morse *m_vit = (mats.count("vitesse") && is_convective_op()) ? mats.at("vitesse") : nullptr, *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
+      Matrice_Morse *mat = (!is_pb_multiphase() && mats.count(nom_ch_inco_)) ? mats.at(nom_ch_inco_) : nullptr;
       VectorDeriv d_cc;
-      fill_derivee_cc(mats, semi_impl, d_cc);
 
-      //derivees : vitesse
-      if (m_vit)
+      // XXX Corentin , Novembre 2023 : pour le cas avec flux_parietal
+      // TODO FIXME : ceci ne marche qu'avec une CL scalaire_impose_paroi, faire le bon truc pour paroi_temperature_imposee ?
+      if (is_Temp_impose_flux_parietal || is_Neumann_flux_parietal || is_paroi_contact_flux_parietal)
         {
-          const IntTab* fcl_v = le_ch_v.non_nul() ? &ref_cast(Champ_Face_base, le_ch_v.valeur()).fcl() : nullptr;
-          for (int f = ndeb; f < nfin; f++)
-            if ((*fcl_v)(f, 0) < 2)
+          fill_derivee_cc(mats, semi_impl, d_cc);
+          const DoubleTab& donnee2 = is_pb_multiphase() ? le_champ_convecte_ou_inc->valeurs() : donnee ; // On tente de toujours impliciter le flux parietal en pb multi lol
+          mat = mats.count(nom_ch_inco_) ? mats.at(nom_ch_inco_) : nullptr; // On tente de toujours impliciter le flux parietal en pb multi lol
+          ajouter_blocs_bords_flux_parietal_<Type_Double, BC>(cl, ndeb, nfin, N, donnee2, resu, mat, d_cc, semi_impl);
+        }
+      else
+        {
+          int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
+          Type_Double flux(N), aii(N * (multiscalar_diff_ ? N : 1)), ajj(N * (multiscalar_diff_ ? N : 1)), aef(N);
+          for (int face = ndeb; face < nfin; face++)
+            {
+              flux_evaluateur.flux_face(donnee, val_b, face, cl, ndeb, flux); // Generic code
+              fill_flux_tables_(face, N, 1.0 /* coeff */, flux, resu);
+            }
+
+          Matrice_Morse *m_vit = (mats.count("vitesse") && is_convective_op()) ? mats.at("vitesse") : nullptr;
+
+          fill_derivee_cc(mats, semi_impl, d_cc);
+
+          //derivees : vitesse
+          if (m_vit)
+            {
+              const IntTab *fcl_v = le_ch_v.non_nul() ? &ref_cast(Champ_Face_base, le_ch_v.valeur()).fcl() : nullptr;
+              for (int f = ndeb; f < nfin; f++)
+                if ((*fcl_v)(f, 0) < 2)
+                  {
+                    flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, f, cl, ndeb, aef);
+                    for (int i = 0; i < 2; i++)
+                      if ((e = elem(f, i)) >= 0)
+                        for (int n = 0, m = 0; n < N; n++, m += (Mv > 1))
+                          (*m_vit)(N * e + n, Mv * f + m) += (i ? -1.0 : 1.0) * aef(n);
+                  }
+            }
+
+          //derivees : champ convecte
+          if (mat || d_cc.size() > 0)
+            for (int face = ndeb; face < nfin; face++)
               {
-                flux_evaluateur.coeffs_face_bloc_vitesse(donnee, val_b, f, cl, ndeb, aef);
-                for (int i = 0; i < 2; i++)
-                  if ((e = elem(f, i)) >= 0)
-                    for (int n = 0, m = 0; n < N; n++, m += (Mv > 1))
-                      (*m_vit)(N * e + n, Mv * f + m) += (i ? -1.0 : 1.0) * aef(n);
+                flux_evaluateur.coeffs_face(face, ndeb, cl, aii, ajj); // Generic code
+                fill_coeffs_matrices(face, aii, ajj, mat, d_cc);
               }
         }
-
-      //derivees : champ convecte
-      if (mat || d_cc.size() > 0)
-        for (int face = ndeb; face < nfin; face++)
-          {
-            flux_evaluateur.coeffs_face(face, ndeb, cl, aii, ajj); // Generic code
-            fill_coeffs_matrices(face, aii, ajj, mat, d_cc);
-          }
     }
 }
 
@@ -423,5 +449,6 @@ inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int face, Typ
 
 #include <Iterateur_VDF_Elem_bis.tpp>
 #include <Iterateur_VDF_Elem_FT_TCL.tpp> // pour FT ...
+#include <Iterateur_VDF_Elem_Multiphase_Parietal.tpp> // pour partie Multiphase si vap paroi ...
 
 #endif /* Iterateur_VDF_Elem_TPP_included */
