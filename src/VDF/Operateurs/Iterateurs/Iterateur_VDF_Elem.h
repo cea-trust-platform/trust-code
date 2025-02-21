@@ -45,37 +45,63 @@ public:
 
   // INTERFACE  BLOCS
   void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  void associer_correlation_flux_parietal(const Correlation_base& corr) override { corr_flux_parietal_ = corr ; }
+  void creer_champ_T_paroi_pour_flux_parietal() override { /* TODO FIXME */ }
 
 protected:
   _TYPE_ flux_evaluateur;
   IntTab elem;
   mutable SFichier Flux, Flux_moment, Flux_sum;
   inline const Milieu_base& milieu() const { return (la_zcl->equation()).milieu(); }
+  OBS_PTR(Correlation_base) corr_flux_parietal_;
 
 private:
-  template <typename Type_Double> void ajouter_blocs_bords(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
-  template <typename Type_Double> void ajouter_blocs_interne(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
+  template <typename Type_Double>
+  void ajouter_blocs_bords(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
 
-  template <bool should_calc_flux, typename Type_Double, typename BC> void ajouter_blocs_bords_(const BC& , const int , const int , const int , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
-  template <typename Type_Double> void ajouter_blocs_bords_(const Periodique& , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
-  template <typename Type_Double> void ajouter_blocs_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
+  template <typename Type_Double>
+  void ajouter_blocs_interne(const int , matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const;
+
+  template <bool should_calc_flux, typename Type_Double, typename BC>
+  void ajouter_blocs_bords_(const BC& , const int , const int , const int , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
+
+  template <typename Type_Double>
+  void ajouter_blocs_bords_(const Periodique& , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
+
+  template <typename Type_Double>
+  void ajouter_blocs_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
+
+  using VectorDeriv = std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>>;
+  template<typename Type_Double, typename BC>
+  void ajouter_blocs_bords_flux_parietal_(const BC& , const int , const int , const int , const DoubleTab& , DoubleTab& ,  Matrice_Morse *, VectorDeriv& , const tabs_t& ) const { /* TODO FIXME */ }
 
   void modifier_flux() const;
   template <typename Type_Double> inline void fill_flux_tables_(const int, const int , const double , const Type_Double& , DoubleTab& ) const;
 
-  using VectorDeriv = std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>>;
   void fill_derivee_cc(matrices_t mats, const tabs_t& semi_impl, VectorDeriv& d_cc) const;
-  template<typename Type_Double> void fill_coeffs_matrices(const int, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
-  template<typename Type_Double> void fill_coeffs_matrices(const int, const double, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
+
+  template<typename Type_Double>
+  void fill_coeffs_matrices(const int, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
+
+  template<typename Type_Double>
+  void fill_coeffs_matrices(const int, const double, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
 
   // method implementee dans FT (trio) pour TCL model. Dans TRUST, la methode return false ...
-  template <typename Type_Double> bool ajouter_blocs_bords_echange_ext_FT_TCL(const Echange_externe_impose& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
+  template <typename Type_Double>
+  bool ajouter_blocs_bords_echange_ext_FT_TCL(const Echange_externe_impose& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
 
   // A virer un jour .. voir avec le baltik Rayonnement
-  template <typename Type_Double> void contribuer_au_second_membre_bords(const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_interne(const int , DoubleTab& ) const;
-  template <bool should_calc_flux, typename Type_Double, typename BC> void contribuer_au_second_membre_bords_(const BC& , const int , const int , const int , DoubleTab& ) const;
-  template <typename Type_Double> void contribuer_au_second_membre_bords_(const Echange_externe_impose& , const int , const int , const int, const int , const Front_VF& , DoubleTab& ) const;
+  template <typename Type_Double>
+  void contribuer_au_second_membre_bords(const int , DoubleTab& ) const;
+
+  template <typename Type_Double>
+  void contribuer_au_second_membre_interne(const int , DoubleTab& ) const;
+
+  template <bool should_calc_flux, typename Type_Double, typename BC>
+  void contribuer_au_second_membre_bords_(const BC& , const int , const int , const int , DoubleTab& ) const;
+
+  template <typename Type_Double>
+  void contribuer_au_second_membre_bords_(const Echange_externe_impose& , const int , const int , const int, const int , const Front_VF& , DoubleTab& ) const;
 };
 
 #include <Iterateur_VDF_Elem.tpp> // templates specializations ici ;)

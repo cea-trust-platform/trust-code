@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
+#include <Convection_Diffusion_Temperature_base.h>
 #include <Echange_contact_VDF.h>
 #include <Op_Diff_VDF_base.h>
 #include <Champ_front_calc.h>
 #include <Eval_Diff_VDF.h>
 #include <Pb_Multiphase.h>
 #include <TRUSTTrav.h>
-
 #include <Operateur.h>
 #include <Motcle.h>
 
@@ -34,12 +34,23 @@ void Op_Diff_VDF_base::completer()
   // Certains operateurs (Axi) n'ont pas d'iterateurs en VDF... Encore une anomalie dans la conception a corriger un jour !
   if (iter_.non_nul())
     {
+      const bool is_pb_multi = sub_type(Pb_Multiphase, equation().probleme());
+
       iter_->completer_();
       const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue();
       iter_->associer_champ_convecte_ou_inc(cc, nullptr);
       iter_->set_name_champ_inco(le_champ_inco.non_nul() ? nom_inconnue() : cc.le_nom().getString());
-      iter_->set_convective_op_pb_type(false /* diff op */, sub_type(Pb_Multiphase, equation().probleme()));
+      iter_->set_convective_op_pb_type(false /* diff op */, is_pb_multi);
       iter_->set_multiscalar_diff(equation().diffusion_multi_scalaire());
+      if (is_pb_multi && sub_type(Convection_Diffusion_Temperature_base, equation()))
+        {
+          const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+          if (pbm.has_correlation("Flux_parietal"))
+            {
+              iter_->associer_correlation_flux_parietal(pbm.get_correlation("Flux_parietal"));
+              iter_->creer_champ_T_paroi_pour_flux_parietal();
+            }
+        }
     }
 }
 
