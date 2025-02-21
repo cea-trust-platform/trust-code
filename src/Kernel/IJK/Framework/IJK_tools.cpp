@@ -614,3 +614,20 @@ void squared_3x3(double& a11, double& a12, double& a13, double& a21, double& a22
   a33 = aa33;
 
 }
+
+void interpolate_to_center(IJK_Field_vector3_double& cell_center_field, const IJK_Field_vector3_double& face_field)
+{
+  /* Interpole le champ face_field aux centres des elements et le stocke dans cell_center_field */
+  const int kmax = cell_center_field[0].nk();
+  const int jmax = cell_center_field[0].nj();
+  const int imax = cell_center_field[0].ni();
+  for (int k = 0; k < kmax; k++)
+    for (int j = 0; j < jmax; j++)
+      for (int i = 0; i < imax; i++)
+        {
+          cell_center_field[0](i,j,k) = (face_field[0](i,j,k) + face_field[0](i+1, j, k)) * 0.5;
+          cell_center_field[1](i,j,k) = (face_field[1](i,j,k) + face_field[1](i, j+1, k)) * 0.5;
+          cell_center_field[2](i,j,k) = (face_field[2](i,j,k) + face_field[2](i, j, k+1)) * 0.5;
+        }
+}
+
