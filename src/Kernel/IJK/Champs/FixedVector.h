@@ -14,8 +14,11 @@
 *****************************************************************************/
 #ifndef FixedVector_included
 #define FixedVector_included
+
 #include <assert.h>
+
 class Domaine_IJK;
+
 // Generic vector of fixed size
 template<class T, int N>
 class FixedVector
@@ -38,7 +41,6 @@ public:
     assert(i>=0 && i<N);
     return data_[i];
   }
-#if 1
   void echange_espace_virtuel()
   {
     for (int i = 0; i < N; i++)
@@ -48,7 +50,6 @@ public:
   {
     return data_[0].get_domaine();
   }
-#endif
 protected:
   T data_[N];
 };

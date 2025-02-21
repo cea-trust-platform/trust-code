@@ -14,9 +14,11 @@
 *****************************************************************************/
 #ifndef IJK_Field_vector_included
 #define IJK_Field_vector_included
+
 #include <assert.h>
 #include <FixedVector.h>
 #include <IJK_Field.h>
+#include <Field_base.h>
 
 /*! @brief The class IJK_Field_vector is a fixed array of polymorphic IJK fields.
  *
@@ -36,50 +38,82 @@
  *       v[0].allocate(s, Domaine_IJK::FACES_I, ghost);
  *       v[1].allocate(s, Domaine_IJK::FACES_J, ghost);
  *       v[2].allocate(s, Domaine_IJK::FACES_K, ghost);
+ *
+ *  The class inherits from Field_base and a IJK_Field_vector can thus be named.
+ *  It has a default Nature of 'vectoriel'.
  */
-
 template<class T, int N>
-class IJK_Field_vector : FixedVector<std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>, N>
+class IJK_Field_vector : public FixedVector<std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>, N>, public Field_base
 {
 public:
-  IJK_Field_vector() { }
-
-  static int size()
+  // The mess of Objet_U .....
+  inline unsigned taille_memoire() const override { throw; }
+  inline int duplique() const override
   {
-    return N;
+    IJK_Field_vector* xxx = new  IJK_Field_vector(*this);
+    if(!xxx) Process::exit("Not enough memory ");
+    return xxx->numero();
   }
+  Sortie& printOn(Sortie& os) const override { return os; }
+  Entree& readOn(Entree& is) override { return is; }
+  //
+
+  IJK_Field_vector()
+  {
+    nature_ = Nature_du_champ::vectoriel;
+    nb_compo_ = N;
+  }
+
+  void nommer(const Nom& nam) override
+  {
+    Field_base::nommer(nam);
+    const char *compos[] = {"_X", "_Y", "_Z"};
+    for (int i=0; i<N; i++)
+      this->data_[i]->nommer(nam + Nom(compos[i]));
+  }
+
+  void add_synonymous(const Nom& nam) override
+  {
+    Field_base::add_synonymous(nam);
+    const char *compos[] = {"_X", "_Y", "_Z"};
+    for (int i=0; i<N; i++)
+      this->data_[i]->add_synonymous(nam + Nom(compos[i]));
+  }
+
   IJK_Field_template<T,TRUSTArray<T>>& operator[](int i)
   {
     assert(i>=0 && i<N);
     return *this->data_[i];
   }
+
   const IJK_Field_template<T,TRUSTArray<T>>& operator[](int i) const
   {
     assert(i>=0 && i<N);
     return *this->data_[i];
   }
+
   std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>& get_ptr(int i)
   {
     assert(i>=0 && i<N);
     return this->data_[i];
   }
+
   const std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>& get_ptr(int i) const
   {
     assert(i>=0 && i<N);
     return this->data_[i];
   }
-#if 1
+
   void echange_espace_virtuel()
   {
     for (int i = 0; i < N; i++)
       this->data_[i]->echange_espace_virtuel(this->data_[i]->ghost());
   }
+
   const Domaine_IJK& get_domaine() const
   {
     return this->data_[0]->get_domaine();
   }
-#endif
-protected:
 };
 
 template<class T, int N>

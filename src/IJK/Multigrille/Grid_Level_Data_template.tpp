@@ -37,7 +37,8 @@ void Grid_Level_Data_template<_TYPE_>::initialize(const Domaine_IJK& dom, int gh
   ghost_size_ = ghost;
   if (IJK_Shear_Periodic_helpler::defilement_==1)
     {
-      ijk_rho_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost, 0 ,1, false, 2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
+      ijk_rho_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost, 0 ,1);
+      ijk_rho_.allocate_shear_BC(2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
     }
   else
     {

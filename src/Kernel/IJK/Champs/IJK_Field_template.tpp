@@ -553,16 +553,25 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
 //   Also, components are not grouped by node but stored by layers in k. nb_compo>1 is essentially used
 //   in the multigrid solver to optimize memory accesses to the components of the matrix.
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const Domaine_IJK& geom, Domaine_IJK::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, bool external_storage, int type, double phy_ppty_v, double phy_ppty_l, int use_inv_rho_in_pressure_solver)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const Domaine_IJK& geom, Domaine_IJK::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, const Nom& name)
 {
+  this->nommer(name);
   const int ni_local = geom.get_nb_items_local(loc, 0);
   const int nj_local = geom.get_nb_items_local(loc, 1);
   const int nk_local = geom.get_nb_items_local(loc, 2);
   IJK_Field_local_template<_TYPE_, _TYPE_ARRAY_>::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
-  shear_BC_helpler_.allocate(ni_local,  nj_local, nk_local,  ghost_size,  ncompo,  type,  phy_ppty_v,  phy_ppty_l,  use_inv_rho_in_pressure_solver);
   domaine_ref_ = geom;
   localisation_ = loc;
   alloc_counter_++;
+}
+
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate_shear_BC(int type, double phy_ppty_v, double phy_ppty_l, int use_inv_rho_in_pressure_solver)
+{
+  const int ni_local = this->domaine_ref_->get_nb_items_local(localisation_, 0);
+  const int nj_local = this->domaine_ref_->get_nb_items_local(localisation_, 1);
+  const int nk_local = this->domaine_ref_->get_nb_items_local(localisation_, 2);
+  shear_BC_helpler_.allocate(ni_local,  nj_local, nk_local,  this->ghost_size_,  this->nb_compo_,  type,  phy_ppty_v,  phy_ppty_l,  use_inv_rho_in_pressure_solver);
 }
 
 

@@ -66,7 +66,7 @@ void runge_kutta3_update_surfacic_fluxes(IJK_Field_double& dv, IJK_Field_double&
 void force_zero_on_walls(IJK_Field_double& vz);
 
 template<class T, int N>
-void allocate_velocity(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int ghost, double DU=0.)
+void allocate_velocity(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int ghost, const Nom& nam=Nom())
 {
   assert(static_cast<int>(N) == 3);
 
@@ -77,13 +77,14 @@ void allocate_velocity(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int ghos
   v[0].allocate(s, Domaine_IJK::FACES_I, ghost);
   v[1].allocate(s, Domaine_IJK::FACES_J, ghost);
   v[2].allocate(s, Domaine_IJK::FACES_K, ghost);
-  v[0].get_shear_BC_helpler().set_dU_(DU);
-  v[1].get_shear_BC_helpler().set_dU_(0.);
-  v[2].get_shear_BC_helpler().set_dU_(0.);
+
+  v[0].nommer(nam + Nom("_X"));
+  v[1].nommer(nam + Nom("_Y"));
+  v[2].nommer(nam + Nom("_Z"));
 }
 
 template<class T, int N>
-void allocate_cell_vector(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int ghost)
+void allocate_cell_vector(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int ghost, const Nom& nam=Nom())
 {
   for (int i=0; i<N ; i++)
     {
@@ -91,6 +92,7 @@ void allocate_cell_vector(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int g
       v[i].allocate(s, Domaine_IJK::ELEM, ghost);
       IJK_Field_template<T,TRUSTArray<T>>::increase_alloc_counter();
     }
+  v.nommer(nam);
 }
 
 void calculer_rho_v(const IJK_Field_double& rho,
