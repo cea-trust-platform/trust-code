@@ -21,18 +21,10 @@
 #include <stat_counters.h>
 #include <kokkos++.h>
 
-// Use our own macro TRUST_USE_GPU has there is no KOKKOS_ENABLE_GPU
-#if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
-#ifndef LATATOOLS
-#define TRUST_USE_GPU
-#endif
-#endif
-#ifdef TRUST_USE_GPU
 #ifdef TRUST_USE_CUDA
 // See https://nvidia.github.io/NVTX/
 // See https://stackoverflow.com/questions/23230003/something-between-func-and-pretty-function/29856690#29856690
 #include <nvtx3/nvToolsExt.h>
-#endif
 #endif
 
 // TODO - scope all this, global vars are bad.

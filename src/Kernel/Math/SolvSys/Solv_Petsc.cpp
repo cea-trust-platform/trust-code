@@ -275,6 +275,10 @@ void Solv_Petsc::create_solver(Entree& entree)
       Nom petsc_TU(":");
       petsc_TU+=nom_du_cas();
       petsc_TU+="_petsc.TU";
+#ifdef TRUST_USE_GPU
+      if (instance==1) PetscLogGpuTime(); // May slow down calculation
+      //add_option("log_view_gpu_time",""); 	// Pas pris en compte...
+#endif
       add_option("log_view",petsc_TU); 	// Monitor performances at the end of the calculation
       PetscLogDefaultBegin(); 		// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
