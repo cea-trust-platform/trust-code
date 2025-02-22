@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,65 +29,11 @@
 #include <Sous_Domaine.h>
 #include <Param.h>
 
-Implemente_base(Perte_Charge_PolyMAC, "Perte_Charge_PolyMAC", Source_base);
+Implemente_base(Perte_Charge_PolyMAC, "Perte_Charge_PolyMAC", Perte_Charge_Gen);
 
 Sortie& Perte_Charge_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << endl; }
 
-Entree& Perte_Charge_PolyMAC::readOn(Entree& is)
-{
-  Param param(que_suis_je());
-  Cerr << que_suis_je() << "::readOn " << finl;
-  lambda.setNbVar(4 + dimension);
-  set_param(param);
-  param.lire_avec_accolades_depuis(is);
-  Cerr << "Interpretation de la fonction " << lambda.getString() << " ... ";
-  lambda.parseString();
-  Cerr << " Ok" << finl;
-  if (diam_hydr->nb_comp() != 1)
-    {
-      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
-      exit();
-    }
-  return is;
-}
-
-void Perte_Charge_PolyMAC::set_param(Param& param)
-{
-  param.ajouter_non_std("lambda", (this), Param::REQUIRED);
-  param.ajouter("diam_hydr", &diam_hydr, Param::REQUIRED);
-  param.ajouter_non_std("sous_domaine|sous_zone", (this));
-  param.ajouter("implicite", &implicite_);
-}
-
-int Perte_Charge_PolyMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  if (mot == "lambda")
-    {
-      Nom tmp;
-      is >> tmp;
-      lambda.setString(tmp);
-      lambda.addVar("Re");
-      lambda.addVar("t");
-      lambda.addVar("x");
-      if (dimension > 1)
-        lambda.addVar("y");
-      if (dimension > 2)
-        lambda.addVar("z");
-      return 1;
-    }
-  else if (mot == "sous_domaine")
-    {
-      is >> nom_sous_domaine;
-      sous_domaine = true;
-      return 1;
-    }
-  else // non compris
-    {
-      Cerr << "Mot cle \"" << mot << "\" non compris lors de la lecture d'un " << que_suis_je() << finl;
-      Process::exit();
-    }
-  return -1;
-}
+Entree& Perte_Charge_PolyMAC::readOn(Entree& is) { return Perte_Charge_Gen::readOn(is); }
 
 void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
@@ -196,6 +142,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           for (n = 0; n < N; n++)
             {
               double fac = pf(f) * vfd(f, e != f_e(f, 0)) * 0.5 / dh_e, fac_n = fac * mult(n, 0) * Cf(n) * nv(n), fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
+
               for (m = 0; m < N; m++)
                 secmem(f, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(f, m);
               if (mat)
@@ -221,7 +168,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
 {
   if (has_interface_blocs()) return Source_base::ajouter(resu);
 
-  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
+  const Domaine_PolyMAC& domaine = le_dom_poly();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const Champ_Don_base& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = la_vitesse->valeurs();
@@ -271,7 +218,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
       return;
     }
 
-  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
+  const Domaine_PolyMAC& domaine = le_dom_poly();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
   const Champ_Don_base& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = inco;
@@ -324,27 +271,3 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
     }
 }
 
-DoubleTab& Perte_Charge_PolyMAC::calculer(DoubleTab& resu) const
-{
-  resu = 0.;
-  return ajouter(resu);
-}
-
-void Perte_Charge_PolyMAC::completer()
-{
-  Source_base::completer();
-  if (sous_domaine)
-    le_sous_domaine = equation().probleme().domaine().ss_domaine(nom_sous_domaine);
-}
-
-void Perte_Charge_PolyMAC::associer_pb(const Probleme_base& pb)
-{
-  la_vitesse = ref_cast(Champ_Face_PolyMAC, equation().inconnue());
-  le_fluide = ref_cast(Fluide_base, equation().milieu());
-}
-
-void Perte_Charge_PolyMAC::associer_domaines(const Domaine_dis_base& domaine_dis, const Domaine_Cl_dis_base& domaine_Cl_dis)
-{
-  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis);
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis);
-}

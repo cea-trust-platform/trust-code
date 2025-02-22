@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,5 +13,30 @@
 *
 *****************************************************************************/
 
-// Les methodes sont toutes en ligne!
+#include <Perte_Charge_Isotrope_VDF_Face.h>
 
+Implemente_instanciable(Perte_Charge_Isotrope_VDF_Face, "Perte_Charge_Isotrope_VDF_Face", Perte_Charge_VDF_base);
+
+Sortie& Perte_Charge_Isotrope_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Entree& Perte_Charge_Isotrope_VDF_Face::readOn(Entree& s) { return Perte_Charge_VDF_base::readOn(s); }
+
+void Perte_Charge_Isotrope_VDF_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho,
+                                                         double& coeff_long, double& u_l, DoubleVect& v_valeur) const
+{
+  // Calcul de lambda
+  lambda.setVar(0, reynolds);
+  lambda.setVar(1, t);
+  lambda.setVar(2, pos[0]);
+  if (dimension > 1)
+    lambda.setVar(3, pos[1]);
+  if (dimension > 2)
+    lambda.setVar(4, pos[2]);
+
+  // Calcul du resultat
+  coeff_ortho = lambda.eval() * norme_u / 2. / dh;
+  coeff_long = coeff_ortho;
+  // v ne sert pas, car coeff_ortho=coeff_long
+  //  for (int dim=0;dim<dimension;dim++)
+  //  p_charge[dim] = -lambda.eval()*norme_u/2./dh*u[dim];
+  u_l = 0;
+}
