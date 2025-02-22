@@ -13,34 +13,27 @@
 *
 *****************************************************************************/
 
-#ifndef Perte_Charge_PolyMAC_included
-#define Perte_Charge_PolyMAC_included
+#ifndef Perte_Charge_VDF_base_included
+#define Perte_Charge_VDF_base_included
 
 #include <Perte_Charge_Gen.h>
-#include <Domaine_PolyMAC.h>
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
 /**
    Perte_Charge_Isotrope, Perte_Charge_Directionnelle et
-   Perte_Charge_Anisotrope heritent de Perte_Charge_PolyMAC. Elles
+   Perte_Charge_Anisotrope heritent de Perte_Charge_VDF_base. Elles
    doivent surcharger essentiellement readOn() et perte_charge().
    readOn() est suppose lire au moins diam_hydr et sous_domaine.
-
-   Ces classes sont censees remplacer Perte_Charge_PolyMAC_Face
-   et Perte_Charge_PolyMAC_P1NC.
 */
 
-class Perte_Charge_PolyMAC : public Perte_Charge_Gen
+class Perte_Charge_VDF_base : public Perte_Charge_Gen
 {
-  Declare_base(Perte_Charge_PolyMAC);
+  Declare_base(Perte_Charge_VDF_base);
 public:
-  DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-  const Domaine_PolyMAC& le_dom_poly()  const  { return ref_cast(Domaine_PolyMAC, le_dom_vf_.valeur()); }
-
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { }
 };
 
-#endif /* Perte_Charge_PolyMAC_included */
+#endif /* Perte_Charge_VDF_base_included */

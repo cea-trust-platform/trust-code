@@ -13,34 +13,35 @@
 *
 *****************************************************************************/
 
-#ifndef Perte_Charge_PolyMAC_included
-#define Perte_Charge_PolyMAC_included
+#ifndef Perte_Charge_Isotrope_VDF_Face_included
+#define Perte_Charge_Isotrope_VDF_Face_included
 
-#include <Perte_Charge_Gen.h>
-#include <Domaine_PolyMAC.h>
+#include <Perte_Charge_VDF_base.h>
 
-//! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
+//!  Perte de charge isotrope (proportionnelle a -u )
 /**
-   Perte_Charge_Isotrope, Perte_Charge_Directionnelle et
-   Perte_Charge_Anisotrope heritent de Perte_Charge_PolyMAC. Elles
-   doivent surcharger essentiellement readOn() et perte_charge().
-   readOn() est suppose lire au moins diam_hydr et sous_domaine.
+ du/dt = - lambda(Re,x,y,z,t) * u * ||u|| / 2 Dh
 
-   Ces classes sont censees remplacer Perte_Charge_PolyMAC_Face
-   et Perte_Charge_PolyMAC_P1NC.
-*/
+ Lecture des arguments :
 
-class Perte_Charge_PolyMAC : public Perte_Charge_Gen
+ Perte_Charge_Isotrope_VDF_Face diametre_hydraulique {
+ lambda expression(Re,x,y,z,t)
+ diam_hydr champ_don
+ [sous_domaine nom]
+ }
+ */
+
+class Perte_Charge_Isotrope_VDF_Face: public Perte_Charge_VDF_base
 {
-  Declare_base(Perte_Charge_PolyMAC);
+  Declare_instanciable(Perte_Charge_Isotrope_VDF_Face);
 public:
-  DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
 
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+protected:
 
-  const Domaine_PolyMAC& le_dom_poly()  const  { return ref_cast(Domaine_PolyMAC, le_dom_vf_.valeur()); }
-
+  //! Implemente le calcul effectif de la perte de charge pour un lieu donne
+  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
+                           DoubleVect& v_valeur) const override;
 };
 
-#endif /* Perte_Charge_PolyMAC_included */
+#endif /* Perte_Charge_Isotrope_VDF_Face_included */
