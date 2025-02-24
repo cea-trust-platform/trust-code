@@ -406,7 +406,7 @@ if(NOT ATELIER) # Not a Baltik, TRUST itself
     # Unit tests - only compiled with micro kernel, and in Debug, but test added for all Kernel configuration
     #
     if("${OPT}" STREQUAL "" AND "$ENV{TRUST_DISABLE_GTEST}" STREQUAL "0" )
-        if(${kernel} STREQUAL "micro")
+        if(${kernel} STREQUAL "numeric")
             add_subdirectory(${CMAKE_SOURCE_DIR}/../tests/UnitTests ${CMAKE_BINARY_DIR}/UnitTests) # Must specify binary dir cause out of tree source
         endif()
         add_test(NAME Unit_GTest COMMAND "$ENV{TRUST_ROOT}/exec/unit_gtest")

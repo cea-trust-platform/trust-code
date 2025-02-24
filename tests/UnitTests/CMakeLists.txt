@@ -4,6 +4,7 @@
 include_directories(
   ${CMAKE_SOURCE_DIR}/Kernel/Utilitaires
   ${CMAKE_SOURCE_DIR}/Kernel/Math
+  ${CMAKE_SOURCE_DIR}/Kernel/Math/Matrices
   ${CMAKE_SOURCE_DIR}/MAIN
   $ENV{TRUST_GTEST_ROOT}/include  # For GTest
 )
@@ -23,6 +24,7 @@ set(src_unit
      unit_vect_tools.cpp
      unit_device.cpp
      unit_array_kokkos.cpp
+     unit_matrix.cpp
      unit_kokkos.cpp
 #     ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTArray.cpp
 #     ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTVect_tools.cpp
