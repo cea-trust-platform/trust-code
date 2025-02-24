@@ -63,6 +63,8 @@ if (loadercpp)
     include_directories(${PYTHON_INCLUDE_DIRS})
     if (CYGWIN)
       swig_link_libraries(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll}.st  ${lib}  ${ajout})
+    elseif(APPLE)
+      swig_link_libraries(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll})
     else()
       swig_link_libraries(LataLoader ${tgt_ll})  # Do not add PYTHON_LIBRARIES as in MC
     endif()

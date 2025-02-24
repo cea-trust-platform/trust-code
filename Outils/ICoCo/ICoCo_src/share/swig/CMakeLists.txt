@@ -81,8 +81,12 @@ else()
   swig_add_library(trusticoco LANGUAGE python SOURCES ${swig_file})
 endif()
 
-swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib})   # ${PYTHON_LIBRARIES} removed as in MC
-#swig_link_libraries(trusticoco ${libdeps} ${libBaltik} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
+if (APPLE)
+ swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
+else()
+  swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib})   # ${PYTHON_LIBRARIES} removed as in MC
+  #swig_link_libraries(trusticoco ${libdeps} ${libBaltik} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
+endif()
 
 ##
 ## Tests
