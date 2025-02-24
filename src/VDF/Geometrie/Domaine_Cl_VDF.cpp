@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -196,7 +196,7 @@ void Domaine_Cl_VDF::completer(const Domaine_dis_base& un_domaine_dis)
       ndeb = le_dom_VDF.premiere_arete_coin();
       nfin = ndeb + le_dom_VDF.nb_aretes_coin();
       int fac1, fac2, fac3, fac4;
-
+      ArrOfInt f(2);
       for (int num_arete = ndeb; num_arete < nfin; num_arete++)
         {
           num_arete_ = num_arete - ndeb;
@@ -207,7 +207,6 @@ void Domaine_Cl_VDF::completer(const Domaine_dis_base& un_domaine_dis)
           fac3 = le_dom_VDF.Qdm(num_arete_, 2);
           fac4 = le_dom_VDF.Qdm(num_arete_, 3);
 
-          IntVect f(2);
           f = -2;
           int i = 0;
           if (fac1 != -1)
