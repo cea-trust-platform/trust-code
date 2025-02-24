@@ -772,7 +772,7 @@ int Domaine_Cl_EF::initialiser(double temps)
 
   if (nb_bord_periodicite()>0)
     {
-      Cerr<<" La periodicite n'est pas code !!!"<<finl;
+      Cerr<<" La periodicite n'est pas codee !!!"<<finl;
       abort();
     }
   return 1;

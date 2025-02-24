@@ -168,7 +168,7 @@ int Domaine_Cl_PolyMAC::initialiser(double temps)
 
   if (nb_bord_periodicite() > 0)
     {
-      Cerr << " La periodicite n'est pas code !!!" << finl;
+      Cerr << " La periodicite n'est pas codee !!!" << finl;
       Process::exit();
     }
   return 1;
