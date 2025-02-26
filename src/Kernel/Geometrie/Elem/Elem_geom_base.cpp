@@ -103,7 +103,9 @@ void Elem_geom_base_32_64<_SIZE_>::calculer_centres_gravite(DoubleTab_t& tab_xp)
 
   int nb_som_elem = nb_som();
   int dim = Objet_U::dimension;
-  CIntTabView les_Polys = mon_dom->les_elems().view_ro();
+  // ToDo create a type in View_Types.h ?
+  ConstView<_SIZE_,2> les_Polys = mon_dom->les_elems().view_ro();
+  //CIntTabView les_Polys = mon_dom->les_elems().view_ro();
   CDoubleTabView coord = mon_dom->coord_sommets().view_ro();
   DoubleTabView xp = tab_xp.view_wo();
   Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(const int_t num_elem)
