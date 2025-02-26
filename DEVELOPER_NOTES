@@ -1,8 +1,9 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
-19/021/25 (TRUST) Tools       : env_for_python.sh, env.sh for MEDCOUPLING and for LataLoader do not add exec/python to LD_LIBRARY_PATH.
-19/021/25 (TRUST) Tools       : HDF5 is now installed as a library outside MED, not within MED. Environment variable $TRUST_HDF5_ROOT created. 
+26/02/25 (TRUST) Baltiks      : make distrib_git generates dependencies archives as specified in project.cfg without impact. For example, MEDICoCo: ./ICoCo_src will generate ICoCo_src.tar.gz instead of MEDICoCo.tar.gz
+19/21/25 (TRUST) Tools        : env_for_python.sh, env.sh for MEDCOUPLING and for LataLoader do not add exec/python to LD_LIBRARY_PATH.
+19/21/25 (TRUST) Tools        : HDF5 is now installed as a library outside MED, not within MED. Environment variable $TRUST_HDF5_ROOT created. 
 28/01/25 (TRUST) New feature  : Configure flag '-64-bit-new' can be used to compile TRUST with 64b support. Many Interprete_geometrique templatized to have both a 32 and 64b version.
 28/01/25 (TRUST) Refactor     : Clearer class structure for MD_Vector, and introduction of the MD_Vector_seq class used as a dummy MD structure for sequential parts.
 14/01/25 (TRUST) Minor change : Creation of a type for IJK vector fields

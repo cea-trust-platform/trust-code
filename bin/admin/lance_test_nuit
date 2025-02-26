@@ -78,7 +78,7 @@ check_components()
             if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
             then
                # Test debug tous les jours sur Template, Tuto, ICoCo, TrioMC, MPCube, Genepi3 et Flica5
-               if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ] &&  [ "$Composant" = sympy_to_TRUST ]
+               if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ] &&  [ "$Composant" = sympy_to_TRUST ]
                then
                   make_option="make check_all_optim check_all_debug"
                elif [ "$Composant" = flica5 ]
@@ -125,7 +125,7 @@ check_components()
                [ "`grep "Error" $Gui_log`" != "" ] && DOC_PDF_OK=0 && echo DOC_PDF_OK=0
                if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
                then
-                  if [ "$Composant" != Test_Baltik ] && [ "$Composant" != "flica5" ] && [ "$Composant" != "mpcube" ] && [ "$Composant" != "TRUST_NK" ] && [ "$Composant" != "sides" ] && [ "$Composant" != "scorpio" ] && [ "$Composant" != "sympy_to_TRUST" ] && [ "$Composant" != "pemfc" ]
+                  if [ "$Composant" != Test_Baltik ] && [ "$Composant" != "flica5" ] && [ "$Composant" != "mpcube" ] && [ "$Composant" != "TRUST_NK" ] && [ "$Composant" != "sides" ] && [ "$Composant" != "scorpio" ] && [ "$Composant" != "sympy_to_TRUST" ] && [ "$Composant" != "pemfc" ] && [ "$Composant" != "triomc" ] [ "$Composant" != "mathys" ]
                   then
                      ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
                   fi

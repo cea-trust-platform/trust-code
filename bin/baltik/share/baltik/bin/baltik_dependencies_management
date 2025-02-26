@@ -29,6 +29,12 @@ add_dependencies() {
            if [ ! -f $tar ]
            then
               echo $tar not found
+              tar=$project_directory/archives_dependencies/`basename  ${dependency_tmp_path}`.tar.gz
+              echo we try with $tar
+           fi
+           if [ ! -f $tar ]
+           then
+              echo $tar not found
               tar=$project_directory/archives/`basename  ${dependency_tmp_path}`.tar.gz
               echo we try with $tar
            fi

@@ -128,7 +128,7 @@ do
          has_subproject=1
          mkdir -p $project_directory/archives_dependencies
          echo creation of archive $sub_project using git
-         git archive --prefix=`basename $p_sub_project`/ --format=tar.gz HEAD > $project_directory/archives_dependencies/$p_sub_project.tar.gz
+         git archive --prefix=`basename $sub_project`/ --format=tar.gz HEAD > $project_directory/archives_dependencies/`basename $sub_project`.tar.gz
       elif [ $Gestion_conf = 0 ] || [ "`git config --get remote.origin.url 2>/dev/null`" != "$repo" ] || [ "`git ls-files --error-unmatch $sub_project/project.cfg 1>/dev/null 2>&1;echo $?`" != 0 ]
       then
          has_subproject=1

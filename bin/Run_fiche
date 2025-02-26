@@ -208,7 +208,7 @@ do
       adr="`echo $1 | awk -F":" '{print $1}'`"
       rep="`echo $1 | awk -F":" '{print $2}'`"
       shift
-      env=$1 && [ "$env" = "" ] && echo "You need to specify the env: eg: /home/triou/trust/env_TRUST.sh" && exit -1
+      env=$1 && [ "$env" = "" ] && echo "You need to specify the env: eg: /home/trust/env_TRUST.sh" && exit -1
       shift
    elif [ "$1" = -rsync ]
    then
