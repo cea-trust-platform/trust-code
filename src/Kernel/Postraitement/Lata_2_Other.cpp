@@ -30,8 +30,12 @@ Implemente_instanciable(Lata_2_Other, "lata_to_other|lata_2_other", Interprete);
 // XD attr mot chaine(into=["format_post_sup"]) mot 0 not_set
 // XD attr format chaine(into=["lml","lata","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
 
-// XD lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to MED or LML format. Warning: Fields located at faces are not supported yet.
-// XD attr format chaine(into=["lml","lata","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
+// XD format_lata_to_CGNS objet_lecture nul 0 not_set
+// XD attr mot chaine(into=["format_post_sup"]) mot 0 not_set
+// XD attr format chaine(into=["lml","lata","lata_v2","med","cgns"]) format 1 generated file post_CGNS.data use format (CGNS or LATA or LML keyword).
+
+// XD lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to CGNS, MED or LML format. Warning: Fields located at faces are not supported yet.
+// XD attr format chaine(into=["lml","lata","lata_v2","med","cgns"]) format 1 Results format (CGNS, MED or LATA or LML keyword).
 // XD attr file chaine file 0 LATA file to convert to the new format.
 // XD attr file_post chaine file_post 0 Name of file post.
 
@@ -293,7 +297,7 @@ Entree& Lata_2_Other::interpreter(Entree& is)
   Nom format_post_supp;
   is >> format_post_supp >> nom_lata >> nom_fic;
 
-  std::set<std::string> formats( { "LML", "LATA", "LATA_V2", "MED" });
+  std::set<std::string> formats( { "LML", "LATA", "LATA_V2", "MED", "CGNS" });
   Nom tmp = format_post_supp;
   if (formats.count(tmp.majuscule().getString()) == 0)
     {
@@ -363,7 +367,10 @@ Entree& Lata_2_Other::interpreter(Entree& is)
       Nom suffix(".");
       suffix += format_post_bis;
       nom_2.prefix(suffix);
-      //      int est_le_premie_post=0;
+
+      if (Motcle(format_post_supp) == "CGNS" && nom_2.finit_par(".cgns"))
+        nom_2.prefix(".cgns");
+
       int format_binaire_ = 0;
       if (format_post_bis != "lata")
         post.initialize_by_default(nom_2);
@@ -384,7 +391,10 @@ Entree& Lata_2_Other::interpreter(Entree& is)
             dom_trio.nommer(geoms[i]);
             convert_domain_to_Domaine(dom, dom_trio);
             int est_le_premier_post = (i == 0);
-            post.ecrire_entete(0., 0, est_le_premier_post);
+
+            if (Motcle(format_post_supp) != "CGNS" || (Motcle(format_post_supp) == "CGNS" && i == 0))
+              post.ecrire_entete(0., 0, est_le_premier_post);
+
             int reprise = 0;
             double t_init = 0.;
             post.preparer_post(dom_trio.le_nom(), est_le_premier_post, reprise, t_init);
