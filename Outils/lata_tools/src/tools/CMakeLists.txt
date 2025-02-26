@@ -7,7 +7,10 @@ set(exec lata_analyzer)
 add_executable (${exec} lata_analyzer.cpp)
 target_link_libraries(${exec} ${lib} ${ajout} )
 install(TARGETS ${exec} DESTINATION bin)
-set_target_properties(${exec} PROPERTIES INSTALL_RPATH "$ENV{TRUST_ROOT}/exec/python/lib")
+
+IF(APPLE)
+  set_target_properties(${exec} PROPERTIES INSTALL_RPATH "$ENV{TRUST_ROOT}/exec/python/lib")
+ENDIF()
 
 #
 # Build compare_lata executable
@@ -16,7 +19,10 @@ set(exec compare_lata)
 add_executable (${exec} compare_lata.cpp )
 target_link_libraries(${exec} ${lib} ${ajout})
 install(TARGETS ${exec} DESTINATION bin)
-set_target_properties(${exec} PROPERTIES INSTALL_RPATH "$ENV{TRUST_ROOT}/exec/python/lib")
+
+IF(APPLE)
+  set_target_properties(${exec} PROPERTIES INSTALL_RPATH "$ENV{TRUST_ROOT}/exec/python/lib")
+ENDIF()
 
 #
 # Build lataloader if requested

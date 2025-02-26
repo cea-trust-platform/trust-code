@@ -38,11 +38,11 @@ fi
 [ "`basename $TRUST_CC_BASE`" != crayCC ] && export CXXFLAGS="-Wno-inconsistent-missing-override -Wno-deprecated-declarations" # to suppress warnings from medcoupling
 
 if [[ $(uname -s) == "Darwin" ]]
-     then
-       PYTHON_VERSION=`python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
-       export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python${PYTHON_VERSION}"
-       export LDFLAGS="$LDFLAGS -Wl,-undefined,error -Wl,-flat_namespace -L${TRUST_ROOT}/exec/python/lib -lpython${PYTHON_VERSION}"
-     fi
+then
+   PYTHON_VERSION=`python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
+   export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python${PYTHON_VERSION}"
+   export LDFLAGS="$LDFLAGS -Wl,-flat_namespace -Wl,-w -L${TRUST_ROOT}/exec/python/lib -lpython${PYTHON_VERSION}"
+fi
 
 # CMake option + implicit use of TRUST_DEFINES and EXTRA_SRCS env var:
 cmake_opt="-DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc "
