@@ -23,10 +23,10 @@ SWIG_EXECUTABLE=`type -p swig`
 # PL inutile de specifier swig (dans PATH normalement):
 build_mode="Release"
 if [ "x$exec" == "x$exec_debug" ]; then
-   echo "*****************************************" 
+   echo "*****************************************"
    echo "lata_tools will be built in DEBUG mode!!"
    echo "*****************************************"
-   build_mode="Debug" 
+   build_mode="Debug"
 fi
 if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "`basename $TRUST_CC_BASE`" != crayCC ] # Sur adastra GNU ici ne marche pas... tout comme medcoupling
 then
@@ -37,8 +37,15 @@ then
 fi
 [ "`basename $TRUST_CC_BASE`" != crayCC ] && export CXXFLAGS="-Wno-inconsistent-missing-override -Wno-deprecated-declarations" # to suppress warnings from medcoupling
 
+if [[ $(uname -s) == "Darwin" ]]
+     then
+       PYTHON_VERSION=`python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
+       export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python${PYTHON_VERSION}"
+       export LDFLAGS="$LDFLAGS -Wl,-undefined,error -Wl,-flat_namespace -L${TRUST_ROOT}/exec/python/lib -lpython${PYTHON_VERSION}"
+     fi
+
 # CMake option + implicit use of TRUST_DEFINES and EXTRA_SRCS env var:
-cmake_opt="-DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc " 
+cmake_opt="-DCMAKE_BUILD_TYPE=$build_mode -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata_tools -DCMAKE_C_COMPILER=$TRUST_cc "
 cmake_opt="$cmake_opt -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE "
 cmake $ORG $cmake_opt || exit -1
 
