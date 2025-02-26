@@ -16,9 +16,11 @@
 #include <LataLoader.h>
 #include <LataJournal.h>
 #include <LmlReader.h>
+#include <TRUSTList.h>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <numeric>
 
 #include <MEDCouplingRefCountObject.hxx>
 #include <MEDCouplingFieldDouble.hxx>
@@ -316,18 +318,234 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
             {
               throw;
             }
+          /*
+           * XXX : Elie Saikali cas generique
+           */
+          else if (type_cell == INTERP_KERNEL::NORM_POLYHED)
+            {
+              cerr << "type_cell == INTERP_KERNEL::NORM_POLYHED  !!!! " << endl;
+
+              const BigTIDTab &elems = geom.elements_;
+              const BigTIDTab &faces = geom.faces_; // elem -> nodes
+              const BigTIDTab &ef = geom.elem_faces_; // elem -> nodes
+
+              const trustIdType nb_elems = elems.dimension(0);
+              ugrid->allocateCells(nb_elems);
+
+              std::vector<trustIdType> conn, connIndex;
+              trustIdType idx = 0;
+              connIndex.push_back(idx);
+              for (int i = 0; i < nb_elems; i++)
+                {
+                  conn.push_back(31); /* MC.normPolyhedre dans MC */
+                  idx++;
+
+                  for (int j = 0; j < ef.dimension(1); j++)
+                    {
+                      trustIdType fac = ef(i, j);
+
+                      if (fac < 0)
+                        continue;
+
+                      bool is_not_last = true;
+
+                      if (j + 1 < ef.dimension(1) && ef(i, j + 1) < 0)
+                        is_not_last = false;
+
+                      for (int jj = 0; jj < faces.dimension(1); jj++)
+                        {
+                          const trustIdType ff = faces(fac, jj);
+
+                          if (ff < 0)
+                            continue;
+
+                          conn.push_back(faces(fac, jj));
+                          idx++;
+                        }
+
+                      if (j < ef.dimension(1) - 1 && is_not_last)
+                        {
+                          conn.push_back(-1);
+                          idx++;
+                        }
+                    }
+                  connIndex.push_back(idx);
+                }
+
+              trustIdType marker = 0;
+              trustIdType conn_size = static_cast<trustIdType>(conn.size());
+
+              for (trustIdType i = 0; i < conn_size; i++)
+                if (conn[i] < 0)
+                  marker++;
+
+              trustIdType num_nodes = conn_size - nb_elems - marker;
+              trustIdType nfaces = nb_elems + marker;
+
+              ArrOfInt_T<trustIdType> nodes(num_nodes), facesIndex(nfaces + 1), polyhedronIndex(nb_elems + 1);
+
+              trustIdType face = 0, node = 0;
+
+              for (trustIdType i = 0; i < nb_elems; i++)
+                {
+                  polyhedronIndex[i] = face; // Index des polyedres
+
+                  trustIdType index = connIndex[i] + 1;
+                  int nb_som = static_cast<int>(connIndex[i + 1] - index);
+                  for (trustIdType j = 0; j < nb_som; j++)
+                    {
+                      if (j == 0 || conn[index + j] < 0)
+                        facesIndex[face++] = node; // Index des faces:
+                      if (conn[index + j] >= 0)
+                        nodes[node++] = conn[index + j]; // Index local des sommets de la face
+                    }
+                }
+              facesIndex[nfaces] = node;
+              polyhedronIndex[nb_elems] = face;
+
+              /*
+               * Partie Polyedre
+               */
+
+              int nb_som_elem_max_ = 0;
+              // detremination de nbsom_max
+              TRUSTList<trustIdType> prov;
+              int nb_face_elem_max_ = 0;
+              int nb_som_face_max_ = 0;
+              trustIdType nelem = polyhedronIndex.size_array() - 1;
+              for (trustIdType ele = 0; ele < nelem; ele++)
+                {
+                  prov.vide();
+                  int nbf = (int) (polyhedronIndex[ele + 1] - polyhedronIndex[ele]); // num of faces always int
+                  if (nbf > nb_face_elem_max_)
+                    nb_face_elem_max_ = nbf;
+                  for (trustIdType f = polyhedronIndex[ele]; f < polyhedronIndex[ele + 1]; f++)
+                    {
+                      //Cerr<<" ici "<<ele << " " <<f <<" "<<FacesIndex(f+1)-FacesIndex(f)<<finl;
+                      int nbs = (int) (facesIndex[f + 1] - facesIndex[f]);
+                      if (nbs > nb_som_face_max_)
+                        nb_som_face_max_ = nbs;
+                      for (trustIdType s = facesIndex[f]; s < facesIndex[f + 1]; s++)
+                        prov.add_if_not(nodes[s]);
+                    }
+                  int nbsom = prov.size();
+                  if (nbsom > nb_som_elem_max_)
+                    nb_som_elem_max_ = nbsom;
+                }
+              Cerr << " Polyhedron information nb_som_elem_max " << nb_som_elem_max_ << " nb_som_face_max " << nb_som_face_max_ << " nb_face_elem_max " << nb_face_elem_max_ << finl;
+              IntTab_T<trustIdType> les_elems;
+              les_elems.resize(nelem, nb_som_elem_max_);
+              les_elems = -1;
+
+              // on refait un tour pour determiiner les elems
+              for (trustIdType ele = 0; ele < nelem; ele++)
+                {
+                  prov.vide();
+                  for (trustIdType f = polyhedronIndex[ele]; f < polyhedronIndex[ele + 1]; f++)
+                    for (trustIdType s = facesIndex[f]; s < facesIndex[f + 1]; s++)
+                      prov.add_if_not(nodes[s]);
+                  int nbsom = prov.size();
+                  // on trie prov dans l'ordre croissant
+                  // pas strictement necessaire mais permet de garder le meme tableau elem meme si on a effectue des permutation pour les faces
+                  bool perm = 1;
+                  while (perm)
+                    {
+                      perm = false;
+                      for (int i = 0; i < nbsom - 1; i++)
+                        if (prov[i] > prov[i + 1])
+                          {
+                            perm = true;
+                            trustIdType sa = prov[i];
+                            prov[i] = prov[i + 1];
+                            prov[i + 1] = sa;
+                          }
+                    }
+                  for (int s = 0; s < nbsom; s++)
+                    les_elems(ele, s) = prov[s];
+                }
+
+              // Determination de Nodes_...
+              TRUSTArray<int, trustIdType> Nodes_;
+              Nodes_.resize_array(nodes.size_array());
+              Nodes_ = -2;
+              for (trustIdType ele = 0; ele < nelem; ele++)
+                for (trustIdType f = polyhedronIndex[ele]; f < polyhedronIndex[ele + 1]; f++)
+                  for (trustIdType s = facesIndex[f]; s < facesIndex[f + 1]; s++)
+                    {
+                      trustIdType somm_glob = nodes[s];
+                      for (int sl = 0; sl < nb_som_elem_max_; sl++)
+                        if (les_elems(ele, sl) == somm_glob)
+                          {
+                            Nodes_[s] = sl;
+                            break;
+                          }
+                    }
+              assert(min_array(Nodes_) > -1);
+
+              // Connectivite TRUST -> MED
+              IntTab_T<trustIdType> les_elems2(les_elems);
+
+              trustIdType nele = les_elems.dimension(0);
+              // cas face_bord vide
+              IntTab_T<trustIdType> les_elemsn(les_elems2);
+              ArrOfInt filter;
+
+              int nb_som_max = les_elems2.dimension_int(1);
+              filter.resize_array(nb_som_max);
+              std::iota(filter.addr(), filter.addr() + nb_som_max, 0);
+
+              int ns = filter.size_array();
+              for (trustIdType el = 0; el < nele; el++)
+                for (int n = 0; n < ns; n++)
+                  les_elems2(el, n) = les_elemsn(el, filter[n]);
+
+              ArrOfInt_T<trustIdType> nodes_glob;
+
+              nodes_glob.resize_array(Nodes_.size_array());
+              trustIdType nelemzzz = les_elems2.dimension_tot(0);
+              for (trustIdType ele = 0; ele < nelemzzz; ele++)
+                for (trustIdType f = polyhedronIndex[ele]; f < polyhedronIndex[ele + 1]; f++)
+                  for (trustIdType s = facesIndex[f]; s < facesIndex[f + 1]; s++)
+                    {
+                      int somm_loc = Nodes_[s];
+                      nodes_glob[s] = les_elems2(ele, somm_loc);
+                    }
+
+              // Polyedron is special, see page 10:
+              // http://trac.lecad.si/vaje/chrome/site/doc8.3.0/extra/Normalisation_pour_le_couplage_de_codes.pdf
+              for (trustIdType i = 0; i < nb_elems; i++)
+                {
+//                              cerr << "Gauthier etait la  i " << i << endl;
+                  int size = 0;
+                  for (trustIdType face = polyhedronIndex[i]; face < polyhedronIndex[i + 1]; face++)
+                    size += (int) (facesIndex[face + 1] - facesIndex[face] + 1);
+
+                  size--; // No -1 at the end of the cell
+
+                  ArrOfTID cell_def(size);  // ArrOfTID whatever the template parameter, since TID == mcIdType.
+                  size = 0;
+                  for (trustIdType face = polyhedronIndex[i]; face < polyhedronIndex[i + 1]; face++)
+                    {
+                      for (trustIdType node = facesIndex[face]; node < facesIndex[face + 1]; node++)
+                        cell_def[size++] = nodes_glob[node];
+
+                      if (size < cell_def.size_array()) // Add -1 to mark the end of a face:
+                        cell_def[size++] = -1;
+                    }
+
+                  ugrid->insertNextCell(type_cell, cell_def.size_array(), cell_def.addr());
+                }
+            }
           else
             {
               ugrid->allocateCells(ncells);
+
               for (mcIdType i = 0; i < ncells; i++)
                 {
                   if ((1) && (type_cell == INTERP_KERNEL::NORM_TETRA4))
                     {
                       // Overflow was checked above:
-                      const mcIdType som_Z = (mcIdType)conn(i, 0),
-                                    som_A = (mcIdType)conn(i, 1),
-                                    som_B = (mcIdType)conn(i, 2),
-                                    som_C = (mcIdType)conn(i, 3);
+                      const mcIdType som_Z = (mcIdType) conn(i, 0), som_A = (mcIdType) conn(i, 1), som_B = (mcIdType) conn(i, 2), som_C = (mcIdType) conn(i, 3);
                       int test = 1;
                       if (1)
                         {
@@ -372,76 +590,30 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                   else if (type_cell == INTERP_KERNEL::NORM_QUAD4)
                     {
                       // Nodes order is different in visit than in trio_u
-                      verts[0] = (mcIdType)conn(i, 0);
-                      verts[1] = (mcIdType)conn(i, 1);
-                      verts[2] = (mcIdType)conn(i, 3);
-                      verts[3] = (mcIdType)conn(i, 2);
+                      verts[0] = (mcIdType) conn(i, 0);
+                      verts[1] = (mcIdType) conn(i, 1);
+                      verts[2] = (mcIdType) conn(i, 3);
+                      verts[3] = (mcIdType) conn(i, 2);
                     }
                   else if (type_cell == INTERP_KERNEL::NORM_HEXA8)
                     {
                       // Nodes order is different in visit than in trio_u
-                      verts[0] = (mcIdType)conn(i, 0);
-                      verts[1] = (mcIdType)conn(i, 1);
-                      verts[2] = (mcIdType)conn(i, 3);
-                      verts[3] = (mcIdType)conn(i, 2);
-                      verts[4] = (mcIdType)conn(i, 4);
-                      verts[5] = (mcIdType)conn(i, 5);
-                      verts[6] = (mcIdType)conn(i, 7);
-                      verts[7] = (mcIdType)conn(i, 6);
-                    }
-                  else if (type_cell == INTERP_KERNEL::NORM_POLYHED)
-                    {
-                      int nverts_loc = nverts;
-                      for (int j = 0; j < nverts; j++)
-                        {
-                          verts[j] = (mcIdType)conn(i, j);
-
-                          if (verts[j] <= -1)
-                            {
-                              nverts_loc = j;
-                              break;
-                            }
-                        }
-                      int nb_som_max_to_regularize = 0;
-                      if (filter_.get_options().regularize_polyedre != 0)
-                        {
-                          nb_som_max_to_regularize = 8;
-                          if (filter_.get_options().regularize_polyedre == -1)
-                            nb_som_max_to_regularize = 32000;
-                        }
-                      if ((nb_som_max_to_regularize >= 6) && (nverts_loc == 6))
-                        ugrid->insertNextCell(INTERP_KERNEL::NORM_PENTA6, nverts_loc, verts);
-                      else if ((nb_som_max_to_regularize >= 12) && (nverts_loc == 12))
-                        throw;
-                      //ugrid->insertNextCell(INTERP_KERNEL::NORM_OCTA12, nverts_loc, verts);
-                      else if ((nb_som_max_to_regularize >= 8) && (nverts_loc == 8))
-                        {
-                          // Nodes order is different in visit than in trio_u
-                          verts[0] = (mcIdType)conn(i, 0);
-                          verts[1] = (mcIdType)conn(i, 1);
-                          verts[2] = (mcIdType)conn(i, 3);
-                          verts[3] = (mcIdType)conn(i, 2);
-                          verts[4] = (mcIdType)conn(i, 4);
-                          verts[5] = (mcIdType)conn(i, 5);
-                          verts[6] = (mcIdType)conn(i, 7);
-                          verts[7] = (mcIdType)conn(i, 6);
-                          ugrid->insertNextCell(INTERP_KERNEL::NORM_HEXA8, nverts_loc, verts);
-
-                        }
-                      else
-                        {
-                          throw;
-                          ugrid->insertNextCell(type_cell, nverts_loc, verts);
-                        }
+                      verts[0] = (mcIdType) conn(i, 0);
+                      verts[1] = (mcIdType) conn(i, 1);
+                      verts[2] = (mcIdType) conn(i, 3);
+                      verts[3] = (mcIdType) conn(i, 2);
+                      verts[4] = (mcIdType) conn(i, 4);
+                      verts[5] = (mcIdType) conn(i, 5);
+                      verts[6] = (mcIdType) conn(i, 7);
+                      verts[7] = (mcIdType) conn(i, 6);
                     }
                   else
                     {
                       for (int j = 0; j < nverts; j++)
-                        verts[j] = (mcIdType)conn(i, j);
+                        verts[j] = (mcIdType) conn(i, j);
                     }
                   if (type_cell != INTERP_KERNEL::NORM_POLYHED)
                     ugrid->insertNextCell(type_cell, nverts, verts);
-
                 }
             }
           ugrid->finishInsertingCells();
