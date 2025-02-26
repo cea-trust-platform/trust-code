@@ -61,9 +61,13 @@ public :
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local, int_t elem) const override;
   void affecte_connectivite_numero_global(const ArrOfInt_t& Nodes, const ArrOfInt_t& FacesIndex,const ArrOfInt_t& PolyhedronIndex,IntTab_t& les_elems);
   inline int get_nb_som_face_max() const  { return nb_som_face_max_ ;  }
+  inline void set_nb_som_face_max(int s) {  nb_som_face_max_  = s;  }
   int_t get_somme_nb_faces_elem() const override;
 
+  inline const BigArrOfInt_t& getNodes() const { return Nodes_; }
+  inline  BigArrOfInt_t& getsetNodes() { return Nodes_; }
   inline const ArrOfInt_t& getPolyhedronIndex() const     { return PolyhedronIndex_; }
+  inline ArrOfInt_t& getsetPolyhedronIndex() { return PolyhedronIndex_; }
   inline const ArrOfInt_t& getElemIndex() const override  { return PolyhedronIndex_; }
   void remplir_Nodes_glob(ArrOfInt_t& Nodes_glob,const IntTab_t& les_elems ) const;
   void ajouter_elements(const Elem_geom_base_32_64<_SIZE_>& new_elem, const IntTab_t& new_elems, IntTab_t& les_elems);

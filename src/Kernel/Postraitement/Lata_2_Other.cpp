@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <LataFilter.h>
 #include <LmlReader.h>
 #include <PE_Groups.h>
+#include <Polyedre.h>
 #include <SFichier.h>
 #include <Domaine.h>
 #include <EChaine.h>
@@ -51,94 +52,224 @@ Sortie& Lata_2_Other::printOn(Sortie& is) const
  */
 void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
 {
-  //      dom_trio.les_sommets()=geom.nodes_;
-  // mais geom.nodes est un FloatTab
-  DoubleTab& som = dom_trio.les_sommets();
-  int nx = 1, ny = 1, nz = 1;
-  if (dom.get_domain_type() == Domain::UNSTRUCTURED)
-    {
-      const DomainUnstructured& geom = dom.cast_DomainUnstructured();
-      trustIdType dim1_tmp = geom.nodes_.dimension(0);
-      // Check that the Lata domain fits in 32b
-      if(dim1_tmp >= std::numeric_limits<int>::max())
-        Process::exit("LATA file is too big and does not fit into 32bits!!");
-      int dim1 = (int)dim1_tmp;
-      int dim2 = geom.nodes_.dimension_int(1);
-      som.resize(dim1, dim2);
-      for (int i1 = 0; i1 < dim1; i1++)
-        for (int i2 = 0; i2 < dim2; i2++)
-          som(i1, i2) = geom.nodes_(i1, i2);
-    }
-  else
-    {
-      assert(dom.get_domain_type() == Domain::IJK);
-      const DomainIJK& geom = dom.cast_DomainIJK();
-      const int dim = geom.coord_.size();
-
-      nx = geom.coord_[0].size_array();
-      ny = geom.coord_[1].size_array();
-      nz = 1;
-      if (dim > 2)
-        nz = geom.coord_[2].size_array();
-
-      som.resize(nx * ny * nz, dim);
-
-      for (int i = 0; i < nx; i++)
-        for (int j = 0; j < ny; j++)
-          for (int k = 0; k < nz; k++)
-            {
-              int nn = i * ny * nz + j * nz + k;
-              som(nn, 0) = geom.coord_[0][i];
-              som(nn, 1) = geom.coord_[1][j];
-              if (dim > 2)
-                som(nn, 2) = geom.coord_[2][k];
-            }
-    }
-
   Nom type_elem = dom.lata_element_name(dom.elt_type_);
   if (type_elem == "PRISM6")
     type_elem = "PRISME";
-  // domaine.type_elem()=type_ele;
-  dom_trio.typer(type_elem);
 
+  Cerr << "Reading from Lata_DB an ELEM of type " << type_elem << " ... Typing the TRUST Domaine !" << finl;
+  dom_trio.typer(type_elem);
   dom_trio.type_elem()->associer_domaine(dom_trio);
-  if (dom.get_domain_type() == Domain::UNSTRUCTURED)
+
+  /*
+   * XXX Elie Saikali => pour polyedre/polygon faut remplir plus de choses ;)
+   */
+  if (type_elem == "POLYEDRE")
     {
-      const DomainUnstructured& geom = dom.cast_DomainUnstructured();
-#if INT_is_64_ == 2
-      IntTab tmp;
-      geom.elements_.from_tid_to_int(tmp);
-      dom_trio.les_elems() = tmp;
-#else
-      dom_trio.les_elems() = geom.elements_;
-#endif
+      // dom_trio tjrs en 32 ... faut bricoler ...
+      Domaine_32_64<trustIdType> dom_trio_poubelle;
+      dom_trio_poubelle.typer(type_elem);
+
+      if (dom.get_domain_type() == Domain::UNSTRUCTURED)
+        {
+          const DomainUnstructured& geom = dom.cast_DomainUnstructured();
+          const auto& elems = geom.elements_; // elem -> nodes
+          const auto& faces = geom.faces_; // elem -> nodes
+          const auto& ef = geom.elem_faces_; // elem -> nodes
+          const auto& nod = geom.nodes_;
+
+          trustIdType dim1_tmp = nod.dimension(0);
+          // Check that the Lata domain fits in 32b
+          if (dim1_tmp >= std::numeric_limits<int>::max())
+            Process::exit("LATA file is too big and does not fit into 32bits!!");
+
+          const trustIdType nb_elems = elems.dimension(0);
+
+          std::vector<trustIdType> conn, connIndex;
+          trustIdType idx = 0;
+          connIndex.push_back(idx);
+          for (trustIdType i = 0; i < nb_elems; i++)
+            {
+              conn.push_back(31); /* MC.normPolyhedre dans MC */
+              idx++;
+
+              for (trustIdType j = 0; j < ef.dimension(1); j++)
+                {
+                  trustIdType fac = ef(i, j);
+
+                  if (fac < 0)
+                    continue;
+
+                  for (trustIdType jj = 0; jj < faces.dimension(1); jj++)
+                    {
+                      conn.push_back(faces(fac, jj));
+                      idx++;
+                    }
+
+                  if (j < ef.dimension(1) - 1)
+                    {
+                      conn.push_back(-1);
+                      idx++;
+                    }
+                }
+              connIndex.push_back(idx);
+            }
+
+          trustIdType marker = 0;
+          trustIdType conn_size = static_cast<trustIdType>(conn.size());
+
+          for (trustIdType i = 0; i < conn_size; i++)
+            if (conn[i] < 0)
+              marker++;
+
+          trustIdType num_nodes = conn_size - nb_elems - marker;
+          trustIdType nfaces = nb_elems + marker;
+
+          ArrOfInt_T<trustIdType> nodes(num_nodes), facesIndex(nfaces + 1), polyhedronIndex(nb_elems + 1);
+
+          IntTab_T<trustIdType> les_elems;
+          trustIdType face = 0, node = 0;
+
+          for (trustIdType i = 0; i < nb_elems; i++)
+            {
+              polyhedronIndex[i] = face; // Index des polyedres
+
+              trustIdType index = connIndex[i] + 1;
+              int nb_som = static_cast<int>(connIndex[i + 1] - index);
+              for (int j = 0; j < nb_som; j++)
+                {
+                  if (j == 0 || conn[index + j] < 0)
+                    facesIndex[face++] = node; // Index des faces:
+                  if (conn[index + j] >= 0)
+                    nodes[node++] = conn[index + j]; // Index local des sommets de la face
+                }
+            }
+          facesIndex[nfaces] = node;
+          polyhedronIndex[nb_elems] = face;
+
+          // welcome to Bricorama ....
+          auto& poly_poubelle = ref_cast(Polyedre_32_64<trustIdType>, dom_trio_poubelle.type_elem().valeur());
+          auto& poly = ref_cast(Polyedre, dom_trio.type_elem().valeur());
+
+          poly_poubelle.affecte_connectivite_numero_global(nodes, facesIndex, polyhedronIndex, les_elems);
+
+          // back to life ... faut tout caster car dom_trio est 32 bit
+          poly.set_nb_som_face_max(poly_poubelle.get_nb_som_elem_max());
+
+          // step 1 : polyhedronIndex
+          ArrOfInt tmp;
+          polyhedronIndex.from_tid_to_int(tmp);
+          poly.getsetPolyhedronIndex() = tmp;
+
+          // step 2 : les_elems
+          IntTab tmp1;
+          les_elems.from_tid_to_int(tmp1);
+          dom_trio.les_elems() = tmp1;
+
+          // step 3 : facesIndex
+          ArrOfInt tmp2;
+          facesIndex.from_tid_to_int(tmp2);
+          poly.getsetFacesIndex() = tmp2;
+
+          // step 4 : Nodes
+          ArrOfInt tmp3;
+          const auto& nd = poly_poubelle.getNodes(); // attention l'attribue pas nodes local
+          tmp3.resize((int) nd.size_array());
+          for (auto i = 0; i < nd.size_array(); i++)
+            tmp3[i] = static_cast<int>(nd[i]);
+          poly.getsetNodes() = tmp3;
+
+          // step  5 : enfin tab sommets
+          DoubleTab& som = dom_trio.les_sommets();
+          int dim1 = (int) dim1_tmp;
+          int dim2 = geom.nodes_.dimension_int(1);
+          som.resize(dim1, dim2);
+          for (int i1 = 0; i1 < dim1; i1++)
+            for (int i2 = 0; i2 < dim2; i2++)
+              som(i1, i2) = geom.nodes_(i1, i2);
+        }
+      else throw;
     }
   else
     {
-      dom_trio.les_elems().resize((nx - 1) * (ny - 1) * (nz - 1), dom_trio.nb_som_elem());
-      IntTab& elems = dom_trio.les_elems();
-      for (int i = 0; i < nx - 1; i++)
-        for (int j = 0; j < ny - 1; j++)
-          for (int k = 0; k < nz - 1; k++)
-            {
-              int nn = i * (ny - 1) * (nz - 1) + j * (nz - 1) + k;
-              nn = i + j * (nx - 1) + k * ((nx - 1) * (ny - 1));
-              elems(nn, 0) = i * ny * nz + j * nz + k;
-              elems(nn, 1) = (i + 1) * ny * nz + j * nz + k;
-              elems(nn, 2) = (i) * ny * nz + (j + 1) * nz + k;
-              elems(nn, 3) = (i + 1) * ny * nz + (j + 1) * nz + k;
-              if (elems.dimension(1) > 4)
-                for (int ii = 0; ii < 4; ii++)
-                  elems(nn, 4 + ii) = elems(nn, ii) + 1;
-            }
-      // a coder
-      //Process::exit();
+      //      dom_trio.les_sommets()=geom.nodes_;
+      // mais geom.nodes est un FloatTab
+      DoubleTab& som = dom_trio.les_sommets();
+      int nx = 1, ny = 1, nz = 1;
+      if (dom.get_domain_type() == Domain::UNSTRUCTURED)
+        {
+          const DomainUnstructured& geom = dom.cast_DomainUnstructured();
+          trustIdType dim1_tmp = geom.nodes_.dimension(0);
+          // Check that the Lata domain fits in 32b
+          if (dim1_tmp >= std::numeric_limits<int>::max())
+            Process::exit("LATA file is too big and does not fit into 32bits!!");
+          int dim1 = (int) dim1_tmp;
+          int dim2 = geom.nodes_.dimension_int(1);
+          som.resize(dim1, dim2);
+          for (int i1 = 0; i1 < dim1; i1++)
+            for (int i2 = 0; i2 < dim2; i2++)
+              som(i1, i2) = geom.nodes_(i1, i2);
+        }
+      else
+        {
+          assert(dom.get_domain_type() == Domain::IJK);
+          const DomainIJK& geom = dom.cast_DomainIJK();
+          const int dim = geom.coord_.size();
+
+          nx = geom.coord_[0].size_array();
+          ny = geom.coord_[1].size_array();
+          nz = 1;
+          if (dim > 2)
+            nz = geom.coord_[2].size_array();
+
+          som.resize(nx * ny * nz, dim);
+
+          for (int i = 0; i < nx; i++)
+            for (int j = 0; j < ny; j++)
+              for (int k = 0; k < nz; k++)
+                {
+                  int nn = i * ny * nz + j * nz + k;
+                  som(nn, 0) = geom.coord_[0][i];
+                  som(nn, 1) = geom.coord_[1][j];
+                  if (dim > 2)
+                    som(nn, 2) = geom.coord_[2][k];
+                }
+        }
+
+      if (dom.get_domain_type() == Domain::UNSTRUCTURED)
+        {
+          const DomainUnstructured& geom = dom.cast_DomainUnstructured();
+#if INT_is_64_ == 2
+          IntTab tmp;
+          geom.elements_.from_tid_to_int(tmp);
+          dom_trio.les_elems() = tmp;
+#else
+          dom_trio.les_elems() = geom.elements_;
+#endif
+        }
+      else
+        {
+          dom_trio.les_elems().resize((nx - 1) * (ny - 1) * (nz - 1), dom_trio.nb_som_elem());
+          IntTab& elems = dom_trio.les_elems();
+          for (int i = 0; i < nx - 1; i++)
+            for (int j = 0; j < ny - 1; j++)
+              for (int k = 0; k < nz - 1; k++)
+                {
+                  int nn = i * (ny - 1) * (nz - 1) + j * (nz - 1) + k;
+                  nn = i + j * (nx - 1) + k * ((nx - 1) * (ny - 1));
+                  elems(nn, 0) = i * ny * nz + j * nz + k;
+                  elems(nn, 1) = (i + 1) * ny * nz + j * nz + k;
+                  elems(nn, 2) = (i) * ny * nz + (j + 1) * nz + k;
+                  elems(nn, 3) = (i + 1) * ny * nz + (j + 1) * nz + k;
+                  if (elems.dimension(1) > 4)
+                    for (int ii = 0; ii < 4; ii++)
+                      elems(nn, 4 + ii) = elems(nn, ii) + 1;
+                }
+        }
     }
+
   dom_trio.faces_bord().associer_domaine(dom_trio);
   dom_trio.faces_raccord().associer_domaine(dom_trio);
   dom_trio.faces_joint().associer_domaine(dom_trio);
-
-  dom_trio.type_elem()->associer_domaine(dom_trio);
   dom_trio.fixer_premieres_faces_frontiere();
 
   if (dom.id_.timestep_ != 0)

@@ -47,6 +47,7 @@ public :
 
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override =0;
   const ArrOfInt_t& getFacesIndex() const { return FacesIndex_; }
+  ArrOfInt_t& getsetFacesIndex() { return FacesIndex_; }
 
   inline int get_nb_face_elem_max() const { return nb_face_elem_max_ ; }
   int get_nb_som_elem_max() const;
