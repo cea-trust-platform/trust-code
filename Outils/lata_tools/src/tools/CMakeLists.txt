@@ -7,6 +7,7 @@ set(exec lata_analyzer)
 add_executable (${exec} lata_analyzer.cpp)
 target_link_libraries(${exec} ${lib} ${ajout} )
 install(TARGETS ${exec} DESTINATION bin)
+set_target_properties(${exec} PROPERTIES INSTALL_RPATH "$ENV{TRUST_ROOT}/exec/python/lib")
 
 #
 # Build compare_lata executable
@@ -15,6 +16,7 @@ set(exec compare_lata)
 add_executable (${exec} compare_lata.cpp )
 target_link_libraries(${exec} ${lib} ${ajout})
 install(TARGETS ${exec} DESTINATION bin)
+set_target_properties(${exec} PROPERTIES INSTALL_RPATH "$ENV{TRUST_ROOT}/exec/python/lib")
 
 #
 # Build lataloader if requested
@@ -49,7 +51,7 @@ if (loadercpp)
 
     set_source_files_properties(LataLoader.i PROPERTIES CPLUSPLUS ON)
     set_source_files_properties(LataLoader.i PROPERTIES SWIG_FLAGS "-shadow")
-   
+
    IF(APPLE)
      SET_PROPERTY(SOURCE LataLoader.i PROPERTY COMPILE_DEFINITIONS WIN32)
    ENDIF()
@@ -65,6 +67,7 @@ if (loadercpp)
       swig_link_libraries(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll}.st  ${lib}  ${ajout})
     elseif(APPLE)
       swig_link_libraries(LataLoader ${PYTHON_LIBRARIES} ${tgt_ll})
+      set_target_properties(_LataLoader PROPERTIES INSTALL_RPATH "@loader_path")
     else()
       swig_link_libraries(LataLoader ${tgt_ll})  # Do not add PYTHON_LIBRARIES as in MC
     endif()
