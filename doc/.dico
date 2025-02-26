@@ -495,6 +495,7 @@
  Joints Joints_32_64 Joints.h
  Joint_32_64 Joint_32_64 Joint.h
  K_constant ModPerm_Cte Source_Permeabilite_VDF.h
+ Lata_To_CGNS|Lata_2_CGNS Lata_2_CGNS Lata_2_CGNS.h
  Lata_To_MED|Lata_2_MED Lata_2_MED Lata_2_MED.h
  lata_to_other|lata_2_other Lata_2_Other Lata_2_Other.h
  Leap_frog Leap_frog Leap_frog.h
