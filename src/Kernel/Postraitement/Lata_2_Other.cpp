@@ -92,20 +92,30 @@ void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
               conn.push_back(31); /* MC.normPolyhedre dans MC */
               idx++;
 
-              for (trustIdType j = 0; j < ef.dimension(1); j++)
+              for (int j = 0; j < ef.dimension(1); j++)
                 {
                   trustIdType fac = ef(i, j);
 
                   if (fac < 0)
                     continue;
 
-                  for (trustIdType jj = 0; jj < faces.dimension(1); jj++)
+                  bool is_not_last = true;
+
+                  if (j+1 < ef.dimension(1) && ef(i, j+1) < 0)
+                    is_not_last = false;
+
+                  for (int jj = 0; jj < faces.dimension(1); jj++)
                     {
+                      const trustIdType ff = faces(fac, jj);
+
+                      if (ff < 0)
+                        continue;
+
                       conn.push_back(faces(fac, jj));
                       idx++;
                     }
 
-                  if (j < ef.dimension(1) - 1)
+                  if (j < ef.dimension(1) - 1 && is_not_last)
                     {
                       conn.push_back(-1);
                       idx++;
