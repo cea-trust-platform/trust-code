@@ -62,7 +62,8 @@ let i=$i+1;solver[$i]="Petsc Cholesky_mumps_blr { dropping_parameter 1.e-6 impr 
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering metis impr }"							;sym[$i]=1 	;rank[$i]=4;
 # Exemple de changement fin du comportement via cli:
 let i=$i+1;solver[$i]="Petsc Cholesky { CLI { -mat_mumps_icntl_6 0 -mat_mumps_icntl_8 7 } }"			;sym[$i]=1 	;rank[$i]=4;
-if [ -f /usr/bin/bison ]
+# scotch crashes on U24 gcc 13.3.0 : we disable this metis alternative ordering
+if [ -f /usr/bin/bison ] && [ "`grep 24.04 /etc/os-release 2>/dev/null`" = "" ]
 then
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering scotch impr }"							;sym[$i]=1 	;rank[$i]=5;
 let i=$i+1;solver[$i]="Petsc Cholesky { ordering pt-scotch impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=7;
