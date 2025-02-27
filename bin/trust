@@ -71,6 +71,8 @@ ccc_msub_interactif()
 {
    # Submit the job and returns the id:
    err=1
+   # wait 5 min instead of 60 seconds for triou (nightly tests)
+   s=3 && [ "$TRUST_LOGIN" = triou ] && s=300
    while [ "$err" = 1 ]
    do
       id=`ccc_msub $sub_file 2>&1`
@@ -84,8 +86,7 @@ ccc_msub_interactif()
             #qstat -u $me $queue
             #ccc_mpstat -u $me $queue
             squeue -u $me -p $queue
-            # wait 5 min instead of 60 seconds
-            sleep 300
+            sleep $s
          else
             # Unknown error
             echo $id && exit -1
