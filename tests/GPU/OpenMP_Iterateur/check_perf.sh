@@ -65,7 +65,7 @@ else
    [ $HOST = is157091 ]     && run $HOST$GPU_ARCH 2
    [ "`hostname`" = petra ] && run $HOST$GPU_ARCH 2
    [ $HOST = topaze ]       && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 8 OpenMP_Iterateur_BENCH_AmgX_10
-   [ $HOST = adastra ]      && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 8 OpenMP_Iterateur_BENCH_PETSc_10
+   [ $HOST = adastra ]      && run $HOST$GPU_ARCH 4 && run $HOST$GPU_ARCH 16 OpenMP_Iterateur_BENCH_PETSc_10
    [ $HOST = jean-zay ]     && run $HOST$GPU_ARCH 4
    [ $HOST = is247056 ]     && run $HOST$GPU_ARCH 2
    [ $HOST = orcus-amd ]    && run $HOST$GPU_ARCH 2

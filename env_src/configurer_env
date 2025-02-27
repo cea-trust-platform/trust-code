@@ -1925,7 +1925,7 @@ case $TRUST_ARCH_CC in
         F77Flags_32b="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
         F77Flags=$F77Flags_32b
         TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
-        [ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+        [ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags_32b=$F77Flags_32b" -fallow-argument-mismatch"
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
         [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_hipcc" ] && F77Flags=$F77Flags" -fdefault-integer-8" # gfortran
