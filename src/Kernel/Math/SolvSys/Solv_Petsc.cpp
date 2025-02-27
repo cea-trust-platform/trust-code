@@ -1668,7 +1668,7 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
     {
       MatInfo Info;
       MatGetInfo(MatricePetsc_,MAT_GLOBAL_SUM,&Info);
-      int nnz = (int)Info.nz_allocated;
+      trustIdType nnz = (trustIdType)Info.nz_allocated;
 
       Nom filename("Matrix_");
       filename+=(Nom)nb_rows_tot_;
@@ -1676,20 +1676,32 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
       filename+=(Nom)nproc();
       filename+="_cpus.petsc";
 
-      PetscViewer viewer;
       Cerr << "Writing the global PETSc matrix (" << nb_rows_tot_<< " rows and " << nnz << " nnz) in the binary file " << filename << finl;
-      // To go faster with MPI IO ?
-      //PetscViewerCreate(PETSC_COMM_WORLD,&viewer);
-      //PetscViewerFileSetName(viewer,filename);
-      //PetscViewerBinarySetMPIIO(viewer);
-      // Save the matrix:
-      PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_WRITE,&viewer);
+      if (Process::nproc()>32) Cerr << "It may take some minutes..." << finl;
+      PetscViewer viewer;
+      PetscViewerCreate(PETSC_COMM_WORLD, &viewer);
+// HDF5 issue: the file is empty, don't know why
+// So trying to use MPIIO to speedup the write/load...
+//#ifdef PETSC_HAVE_HDF5
+//      PetscViewerSetType(viewer, PETSCVIEWERHDF5);
+//#else
+      PetscViewerSetType(viewer, PETSCVIEWERBINARY);
+      PetscViewerBinarySetUseMPIIO(viewer, PETSC_TRUE);
+//#endif
+      PetscViewerFileSetMode(viewer, FILE_MODE_WRITE);
+      PetscViewerFileSetName(viewer, filename);
+      statistiques().begin_count(sauvegarde_counter_);
+      trustIdType bytes = 8 * nnz + 4 * nnz + 4 * nb_rows_tot_;
       MatView(MatricePetsc_, viewer);
+      statistiques().end_count(sauvegarde_counter_, bytes);
+      Cerr << "[IO] " << statistiques().last_time(sauvegarde_counter_) << " s to write matrix file." << finl;
       // Save also the RHS if on the host:
       if (SecondMembrePetsc_!=nullptr)
         {
+#ifndef PETSC_HAVE_HDF5
           Cerr << "Writing also the RHS in the file " << filename << finl;
           VecView(SecondMembrePetsc_, viewer);
+#endif
         }
       else Process::exit("You can't export anymore matrix&RHS at PETSc format with AmgX solver. Switch to PETSc solver instead.");
       PetscViewerDestroy(&viewer);
@@ -1780,9 +1792,6 @@ void Solv_Petsc::RestoreMatrixFromFile()
   filename+="_cpus.petsc";
   add_option("viewer_binary_skip_info",""); // Skip reading .info file to avoid -vecload_block_size unused option
 
-  PetscViewer viewer;
-  Cerr << "Reading the global PETSc matrix in the binary file " << filename << finl;
-  PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_READ,&viewer);
   MatCreate(PETSC_COMM_WORLD,&MatricePetsc_);
   if (petsc_decide_)
     MatSetSizes(MatricePetsc_, PETSC_DECIDE, PETSC_DECIDE, nb_rows_tot_, nb_rows_tot_);
@@ -1794,7 +1803,28 @@ void Solv_Petsc::RestoreMatrixFromFile()
     }
   else
     MatSetSizes(MatricePetsc_, nb_rows_, nb_rows_, PETSC_DECIDE, PETSC_DECIDE);
+
+  Cerr << "Reading the global PETSc matrix in the binary file " << filename << finl;
+  if (Process::nproc()>32) Cerr << "It may take some minutes..." << finl;
+  PetscViewer viewer;
+  PetscViewerCreate(PETSC_COMM_WORLD, &viewer);
+//#ifdef PETSC_HAVE_HDF5
+//  PetscViewerSetType(viewer, PETSCVIEWERHDF5);
+//#else
+  PetscViewerSetType(viewer, PETSCVIEWERBINARY);
+  PetscViewerBinarySetUseMPIIO(viewer, PETSC_TRUE);
+//#endif
+  PetscViewerFileSetMode(viewer, FILE_MODE_READ);
+  PetscViewerFileSetName(viewer, filename);
+  statistiques().begin_count(sauvegarde_counter_);
   MatLoad(MatricePetsc_, viewer);
+  MatInfo Info;
+  MatGetInfo(MatricePetsc_,MAT_GLOBAL_SUM,&Info);
+  trustIdType nnz = (trustIdType)Info.nz_allocated;
+  trustIdType bytes = 8 * nnz + 4 * nnz + 4 * nb_rows_tot_;
+  statistiques().end_count(sauvegarde_counter_, bytes);
+  Cerr << "[IO] " << statistiques().last_time(sauvegarde_counter_) << " s to read matrix file." << finl;
+
   PetscViewerDestroy(&viewer);
   if (!matrice_symetrique_)
     {

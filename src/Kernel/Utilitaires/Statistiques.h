@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <string>
+#include <arch.h>
 class Stat_Counter_Id;
 class Stat_Results;
 class Stat_Internals;
@@ -69,7 +70,7 @@ public:
    * @count Parameter that count the number of time the counter has been used between begin_count and end_count. By default equal to 1.
    * @param track_comm Indicate if the user want to record the communication associated with the counter, set to true by default
    */
-  inline void end_count(const Stat_Counter_Id& counter_id, int quantity = 0, int count = 1, bool track_comm = true);
+  inline void end_count(const Stat_Counter_Id& counter_id, trustIdType quantity = 0, int count = 1, bool track_comm = true);
 
 
   /*! @brief Give the last interval of time the counter has been used
@@ -191,7 +192,7 @@ public:
 protected:
   // Les deux fonctions suivantes peuvent etre appelees sur un seul processeur
   void begin_count_(const int id_);
-  void end_count_(const int id_, int quantity, int count);
+  void end_count_(const int id_, trustIdType quantity, int count);
   int debug_level_;
   Stat_Internals * stat_internals;
   double total_time_;
@@ -288,7 +289,7 @@ inline void Statistiques::begin_count(const Stat_Counter_Id& counter_id, bool tr
  *
  */
 inline void Statistiques::end_count(const Stat_Counter_Id& counter_id,
-                                    int quantity,
+                                    trustIdType quantity,
                                     int count,
                                     bool track_comm)
 {

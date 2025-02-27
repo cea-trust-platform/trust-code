@@ -490,7 +490,7 @@ void Statistiques::begin_count_(const int id)
 
 }
 
-void Statistiques::end_count_(const int id, int quantity, int count)
+void Statistiques::end_count_(const int id, trustIdType quantity, int count)
 {
   Stat_Internals& si = *stat_internals;
   assert(id < si.nb_counters);

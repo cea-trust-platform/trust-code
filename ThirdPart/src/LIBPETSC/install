@@ -354,8 +354,6 @@ then
    options=""
    # Possibilite d'afficher la matrice sous forme graphique uniquement sur PC avec libX11 disponible (-mat_view draw https://petsc.org/main/docs/manualpages/Mat/MatView.html)
    [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
-   # Ajout de HDF
-   # options=$options" --with-hdf5-dir=$TRUST_HDF5_ROOT/hdf5_install"
 else
    options="--with-x=0"
 fi
@@ -596,8 +594,11 @@ fi
 #####
 # HDF
 #####
-# Attention: support HDF pour PETSc (actuellement non utilise) peut poser probleme a C3D (conflit avec autre HDF): on desactive
-# [ -d $TRUST_HDF5_ROOT/hdf5_install ] && with_packages=$with_packages" --with-hdf5-dir=$TRUST_HDF5_ROOT/hdf5_install"
+# Attention: support HDF pour PETSc (actuellement non utilise) peut poser probleme a C3D (conflit avec autre HDF): on desactive sauf si GPU build...
+if [ "$TRUST_USE_GPU" = 1 ]
+then
+   [ -d $TRUST_HDF5_ROOT/hdf5_install ] && with_packages=$with_packages" --with-hdf5-dir=$TRUST_HDF5_ROOT/hdf5_install"
+fi
 
 #############
 # TRUST_INT64
