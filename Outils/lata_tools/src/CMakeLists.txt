@@ -88,6 +88,8 @@ endforeach()
 #
 add_definitions("-DLATATOOLS")
 add_definitions("$ENV{TRUST_DEFINES}")
+# Undefine for GPU builds:
+add_definitions("-UTRUST_USE_GPU -UTRUST_USE_CUDA -UTRUST_USE_ROCM")
 #
 # 64b management - lata_tools (and ViSit plugin) are always compiled in 64b
 #
