@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) GPU          : Read_matrix option of PETSc GPU solvers fixed in order to reduce MPI communications onto VEF meshes. See AMG_L1 test case
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------

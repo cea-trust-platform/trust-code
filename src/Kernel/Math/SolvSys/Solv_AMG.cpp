@@ -58,6 +58,7 @@ Entree& Solv_AMG::readOn(Entree& is)
   double atol=0;
   bool impr = false;
   Nom library;
+  Nom options_petsc("");
   Motcle motcle;
   is >> motcle;
   while (motcle != "}")
@@ -67,11 +68,7 @@ Entree& Solv_AMG::readOn(Entree& is)
       else if (motcle=="RTOL") is >> rtol;
       else if (motcle=="ATOL") is >> atol;
       else if (motcle=="IMPR") impr = true;
-      else
-        {
-          Cerr << "Reading: " << motcle << finl;
-          Process::exit("Error! Waiting syntax: GCP|BICGSTAB|GMRES { rtol value [impr] }");
-        }
+      else options_petsc+=motcle;
       is >> motcle;
     }
   // We select the more efficient/robust one:
@@ -105,6 +102,11 @@ Entree& Solv_AMG::readOn(Entree& is)
       chaine_lue_ += Nom(atol, "%e");
     }
   if (impr) chaine_lue_ += " impr";
+  if (options_petsc!="")
+    {
+      chaine_lue_ += " ";
+      chaine_lue_ += options_petsc;
+    }
   chaine_lue_ += " }";
   Cerr << "====================================================================" << finl;
   Cerr << "Creating AMG solver: " << library << " " << chaine_lue_ << finl;
@@ -112,13 +114,13 @@ Entree& Solv_AMG::readOn(Entree& is)
   EChaine entree(chaine_lue_);
   Nom nom_solveur("Solv_");
   nom_solveur+=library;
-  solveur.typer(nom_solveur);
+  solveur_.typer(nom_solveur);
   if (library=="amgx")
-    ref_cast(Solv_AMGX, solveur.valeur()).create_solver(entree);
+    ref_cast(Solv_AMGX, solveur_.valeur()).create_solver(entree);
   else if (library=="petsc")
-    ref_cast(Solv_Petsc, solveur.valeur()).create_solver(entree);
+    ref_cast(Solv_Petsc, solveur_.valeur()).create_solver(entree);
   else if (library=="petsc_gpu")
-    ref_cast(Solv_Petsc_GPU, solveur.valeur()).create_solver(entree);
+    ref_cast(Solv_Petsc_GPU, solveur_.valeur()).create_solver(entree);
   else
     Process::exit("Unsupported case in Solv_AMG::readOn");
   return is;

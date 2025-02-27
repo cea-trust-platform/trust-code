@@ -30,6 +30,7 @@
 #include <SolveurPP1B.h>
 #include <Check_espace_virtuel.h>
 #include <Solv_Petsc.h>
+#include <Solv_AMG.h>
 #include <Matrice_Petsc.h>
 
 Implemente_instanciable(Assembleur_P_VEFPreP1B,"Assembleur_P_VEFPreP1B",Assembleur_P_VEF);
@@ -220,6 +221,8 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
   bool read_matrix = false;
   if (sub_type(Solv_Petsc, solveur_pression.valeur()))
     read_matrix = ref_cast(Solv_Petsc, solveur_pression.valeur()).read_matrix();
+  else if (sub_type(Solv_AMG, solveur_pression.valeur()))
+    read_matrix = ref_cast(Solv_AMG, solveur_pression.valeur()).read_matrix();
   if (read_matrix) // Lecture de la matrice dans un fichier
     {
       la_matrice.typer("Matrice_Petsc");

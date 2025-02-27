@@ -17,6 +17,7 @@
 #define Solv_AMG_included
 
 #include <SolveurSys.h>
+#include <Solv_Petsc.h>
 
 /*! @brief AMD solver wrapper to switch to the more robust/performant AMG preconditioner on CPU/GPU Nvidia/GPU AMD
  *  and have datafile unicity, as changing solver/preconditioner for different architecture is painful
@@ -26,14 +27,14 @@ class Solv_AMG : public SolveurSys_base
   Declare_instanciable(Solv_AMG);
 public :
   virtual int solveur_direct() const override { return 0; };
-  virtual int resoudre_systeme(const Matrice_Base& mat, const DoubleVect& b, DoubleVect& x) override { return solveur.resoudre_systeme(mat, b, x); }
+  virtual int resoudre_systeme(const Matrice_Base& mat, const DoubleVect& b, DoubleVect& x) override { return solveur_.resoudre_systeme(mat, b, x); }
   inline int resoudre_systeme(const Matrice_Base& mat, const DoubleVect& b, DoubleVect& x, int niter_max) override
   {
     return resoudre_systeme(mat, b, x);
   };
-
+  inline bool read_matrix() { return ref_cast(Solv_Petsc, solveur_.valeur()).read_matrix(); }
 private :
-  SolveurSys solveur;
+  SolveurSys solveur_;
 };
 
 #endif

@@ -1803,7 +1803,18 @@ void Solv_Petsc::RestoreMatrixFromFile()
     }
   // Conversion AIJ to SBAIJ:
   MatSetOption(MatricePetsc_, MAT_SYMMETRIC, PETSC_TRUE);
-  MatConvert(MatricePetsc_, MATSBAIJ, MAT_INPLACE_MATRIX, &MatricePetsc_);
+#ifdef PETSC_HAVE_CUDA
+  if (gpu_)
+    MatConvert(MatricePetsc_, MATAIJCUSPARSE, MAT_INPLACE_MATRIX, &MatricePetsc_);
+  else
+#endif
+#ifdef PETSC_HAVE_HIP
+    if (gpu_)
+      MatConvert(MatricePetsc_, MATAIJHIPSPARSE, MAT_INPLACE_MATRIX, &MatricePetsc_);
+    else
+#endif
+      MatConvert(MatricePetsc_, MATSBAIJ, MAT_INPLACE_MATRIX, &MatricePetsc_);
+
   PetscInt nb_rows_tot,nb_cols_tot;
   MatGetSize(MatricePetsc_,&nb_rows_tot,&nb_cols_tot);
   Cerr << "The matrix read has " << (int)nb_rows_tot << " rows." << finl;
@@ -2964,12 +2975,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
           MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
         else
 #endif
-#ifdef PETSC_HAVE_HIP
-          if (gpu_)
-            MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJHIPSPARSE : MATMPIAIJHIPSPARSE));
-          else
-#endif
-            MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
+          MatSetType(MatricePetsc, (Process::is_sequential() ? MATSEQAIJ : MATMPIAIJ));
     }
   // Surcharge eventuelle par ligne de commande avec -mat_type:
   // Example: now possible to change aijcusparse to aijviennacl via CLI
