@@ -135,7 +135,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_, bool IS_MUL>
 void operation_speciale_tres_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
-                                            Block_Iter<_SIZE_>& bloc_itr, const int line_size_vx, const int vect_size_tot, const int delta_line_size)
+                                            Block_Iter<_SIZE_>& bloc_itr, const int line_size_vx, const _SIZE_ vect_size_tot, const int delta_line_size)
 {
   auto vx_view= vx.template view_ro<1, ExecSpace>().data();
   auto resu_view= resu.template view_rw<1, ExecSpace>().data();
@@ -227,7 +227,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_, bool IS_ADD>
 void operation_speciale_generic_kernel(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, _TYPE_ alpha, int nblocs_left,
-                                       Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size)
+                                       Block_Iter<_SIZE_>& bloc_itr, const _SIZE_ vect_size_tot, const int line_size)
 {
   auto vx_view= vx.template view_ro<1, ExecSpace>().data();
   auto resu_view= resu.template view_rw<1, ExecSpace>().data();
@@ -304,7 +304,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_VECT _TYPE_OP_>
 void operator_vect_vect_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<_TYPE_, _SIZE_>& vx, int nblocs_left,
-                                       Block_Iter<_SIZE_>& bloc_itr,  const int vect_size_tot, const int line_size)
+                                       Block_Iter<_SIZE_>& bloc_itr,  const _SIZE_ vect_size_tot, const int line_size)
 {
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_VECT::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_VECT::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_VECT::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_VECT::DIV_),
@@ -415,7 +415,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_, TYPE_OPERATOR_SINGLE _TYPE_OP_>
 void operator_vect_single_generic_kernel(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x, int nblocs_left,
-                                         Block_Iter<_SIZE_>& bloc_itr,  const int vect_size_tot, const int line_size)
+                                         Block_Iter<_SIZE_>& bloc_itr,  const _SIZE_ vect_size_tot, const int line_size)
 {
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::DIV_), IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::EGAL_),
@@ -535,7 +535,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_,typename _TYPE_RETURN_,  TYPE_OPERATION_VECT _TYPE_OP_>
 void local_extrema_vect_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int nblocs_left, Block_Iter<_SIZE_>& bloc_itr,
-                                       const int vect_size_tot, const int line_size, _TYPE_& min_max_val, int& i_min_max)
+                                       const _SIZE_ vect_size_tot, const int line_size, _TYPE_& min_max_val, int& i_min_max)
 {
   // Shortcut for empty arrays (avoid case line_size == 0)
   if (bloc_itr.empty()) return ;
@@ -672,7 +672,7 @@ namespace
 {
 template<typename ExecSpace, typename _TYPE_, typename _SIZE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_>
 void local_operations_vect_bis_generic_kernel(const TRUSTVect<_TYPE_,_SIZE_>& vx, int nblocs_left,
-                                              Block_Iter<_SIZE_>& bloc_itr, const int vect_size_tot, const int line_size, _TYPE_& sum)
+                                              Block_Iter<_SIZE_>& bloc_itr, const _SIZE_ vect_size_tot, const int line_size, _TYPE_& sum)
 {
   static constexpr bool IS_SQUARE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SQUARE_), IS_SUM = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
   // Performance important point for TRUSTArray dynamic kernel to have serial mode performance:

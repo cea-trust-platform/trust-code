@@ -26,12 +26,12 @@ template<int _SHAPE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::init_device_view() const
 {
   bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
-  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
   const auto& device_view = get_device_view<_SHAPE_>();
 
   //Useful when casting a 1D Tab into a multi-D View !
-  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
 
   // change of alloc or resize triggers re-init (for now - resize could be done better)
   if(device_view.data() == addrOnDevice(*this) &&
@@ -92,10 +92,10 @@ TRUSTArray<_TYPE_,_SIZE_>::view_ro() const
 {
   bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
 
-  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
   //Useful when casting a 1D Tab into a multi-D View !
-  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
 
   return ConstHostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
                                        1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
@@ -124,10 +124,10 @@ TRUSTArray<_TYPE_,_SIZE_>::view_wo()
 {
   bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
 
-  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
   //Useful when casting a 1D Tab into a multi-D View !
-  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
 
   return HostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
                                   1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
@@ -154,10 +154,10 @@ TRUSTArray<_TYPE_,_SIZE_>::view_rw()
 {
   bool flattened = check_flattened<_SHAPE_>(); //The accessors should never be called with the wrong _SHAPE_
 
-  int dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
+  _SIZE_ dimension_tot_0 = flattened ? this->size_array() : this->dimension_tot(0);
 
   //Useful when casting a 1D Tab into a multi-D View !
-  long dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
+  _SIZE_ dims[4] = {dimension_tot_0, nb_dim_>1 ? this->dimension_tot(1) : 0, nb_dim_>2 ? this->dimension_tot(2) : 0, nb_dim_>3 ? this->dimension_tot(3) : 0};
 
   return HostView<_TYPE_,_SHAPE_>(this->addr(), dims[0],
                                   1 < _SHAPE_ ? dims[1] : KOKKOS_IMPL_CTOR_DEFAULT_ARG,
