@@ -604,7 +604,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& tab_Gpoint, Dou
             assert(elem!=-1);
 
             //Calcul de la vitesse au centre de l'element
-            for (int i_sigma = 0; i_sigma < dimension_; ++i_sigma)
+            for (int i_sigma = 0; i_sigma < 3; ++i_sigma)
               sigma[i_sigma] = 0;
 
             for (int face_loc=0; face_loc<nb_faces_elem; face_loc++)
