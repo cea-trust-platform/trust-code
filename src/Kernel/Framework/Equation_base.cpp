@@ -444,11 +444,7 @@ int Equation_base::sauvegarder(Sortie& os) const
  */
 std::vector<YAML_data> Equation_base::data_a_sauvegarder() const
 {
-  std::string name = probleme().le_nom().getString() + "_" + inconnue().le_nom().getString() ;
-  int nb_dim = inconnue().valeurs().nb_dim();
-  YAML_data d(name, "double", nb_dim);
-  std::vector<YAML_data> data;
-  data.push_back(d);
+  std::vector<YAML_data> data = inconnue().data_a_sauvegarder();
   return data;
 }
 

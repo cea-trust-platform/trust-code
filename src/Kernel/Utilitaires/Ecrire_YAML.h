@@ -130,11 +130,13 @@ private:
   // ==============================================================
   void write_data_for_checkpoint(int pb_i, bool is_parallel, std::string& text);
   void write_file_initialization(int pb_i, std::string& text);
+  void write_fields_types_for_checkpoint(int pb_i, std::string& text);
 
   // ==============================================================
   // Private methods to generate the YAML file for restart only
   // ==============================================================
   void write_data_for_restart(int pb_i, std::string& text);
+  void write_fields_types_for_restart(int pb_i, std::string& text);
 
   // ==============================================================
   // Private methods useful to write generic structures
@@ -144,6 +146,7 @@ private:
   void declare_dtab(const std::string& dname, const std::string& name, const std::string& type, int nb_dim, std::string& text);
   void declare_TRUST_dataset(const std::string& dname, const std::string& name, const std::string& type, int nb_dim, bool is_parallel, std::string& text);
   void write_impl_dataset(const std::string& dname, const std::string& fname, std::string& text);
+  void write_impl_dataset(const std::string& dname, const std::string& fname, const std::vector<std::string>& attribute, std::string& text);
   void write_TRUST_dataset(const std::string& dname, const std::string& name, int nb_dim, const std::string& cond, bool is_parallel, const std::vector<std::string>& attribute, std::string& text);
   void write_TRUST_dataset_selection(const std::string& name, int nb_dim, bool is_parallel, std::string& text);
   void write_attributes(const std::vector<std::string>& attributes, std::string& text);

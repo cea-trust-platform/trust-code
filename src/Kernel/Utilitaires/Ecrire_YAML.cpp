@@ -91,6 +91,8 @@ void Ecrire_YAML::write_checkpoint_restart_file(int save, const std::string& yam
           write_data_for_checkpoint(i_pb, 0 /* writing all global data */, text);
           // block to write the saved timesteps
           write_time_scheme(1, pbs_[i_pb].filename, text);
+          // writing the types of the fields we want to save
+          write_fields_types_for_checkpoint(i_pb, text);
         }
       else
         write_data_for_restart(i_pb, text);
@@ -214,7 +216,6 @@ void Ecrire_YAML::write_data_for_checkpoint(int pb_i, bool local_data, std::stri
         write_TRUST_dataset(dname, name, nb_dim, cond, is_parallel, attr, text);
       }
   };
-
   // declaring datasets
   begin_bloc("datasets:", text);
   for(const auto& d: pbs_[pb_i].data)
@@ -230,6 +231,80 @@ void Ecrire_YAML::write_data_for_checkpoint(int pb_i, bool local_data, std::stri
   end_bloc();
 }
 
+/*! @brief Writes the block in the YAML file that describes how to write the types of the fields of pb_i we want to save
+ */
+void Ecrire_YAML::write_fields_types_for_checkpoint(int pb_i, std::string& text)
+{
+  const std::string& fname = pbs_[pb_i].filename;
+  std::string checkpoint = "- file: " + fname;
+  begin_bloc(checkpoint, text);
+  const std::string& pb_name = pbs_[pb_i].pb->le_nom().getString();
+  std::string event = "on_event: " + pb_name + "_get_types";
+  add_line(event, text);
+  if(Process::is_parallel())
+    add_line("communicator: $master", text);
+
+  // parsing all data and see if if we have to save their types
+  std::vector<std::string> types;
+  for(const auto& d: pbs_[pb_i].data)
+    {
+      if(!d.save_field_type())
+        continue;
+
+      const std::string& name = d.get_name();
+      std::string type = "TYPE_" + name;
+      types.push_back(type);
+      // also saving the length of the string
+      std::string sz = "size_" + type;
+      types.push_back(sz);
+    }
+
+  begin_bloc("write:", text);
+  // writing all the found types as attributes
+  write_impl_dataset(pb_name + "_TYPES", "TYPES", types, text);
+  end_bloc();
+
+  end_bloc();
+}
+
+
+/*! @brief Writes the block in the YAML file that describes how to read the types of the fields of pb_i we want to save
+ */
+void Ecrire_YAML::write_fields_types_for_restart(int pb_i, std::string& text)
+{
+  const std::string& fname = pbs_[pb_i].filename;
+  const std::string& pb_name = pbs_[pb_i].pb->le_nom().getString();
+
+  auto add_block = [&](const std::string& name)
+  {
+    std::string restart = "- file: " + fname;
+    begin_bloc(restart, text);
+    std::string event = "on_event: get_" + name;
+    add_line(event, text);
+    if(Process::is_parallel())
+      add_line("communicator: $node", text);
+    begin_bloc("read:", text);
+    write_impl_dataset(pb_name + "_TYPES", "TYPES", std::vector<std::string> { name }, text);
+    end_bloc();
+    end_bloc();
+  };
+
+  for(const auto& d: pbs_[pb_i].data)
+    {
+      if(!d.save_field_type())
+        continue;
+
+      const std::string& name = d.get_name();
+      std::string type = "TYPE_" + name;
+      std::string sz = "size_" + type;
+      // adding 2 different blocks for the size of type and type as we first need to read the size of the string first to allocate
+      // the correct size for the string type
+      add_block(type);
+      add_block(sz);
+    }
+}
+
+
 /*! @brief Writes the block in the YAML file that describes how the data of the problem pb_i to be restored will be read from the checkpoint file
  */
 void Ecrire_YAML::write_data_for_restart(int pb_i, std::string& text)
@@ -242,8 +317,8 @@ void Ecrire_YAML::write_data_for_restart(int pb_i, std::string& text)
         continue;
 
       const std::string& name = d.get_name();
-      std::string checkpoint = "- file: " + fname;
-      begin_bloc(checkpoint, text);
+      std::string restart = "- file: " + fname;
+      begin_bloc(restart, text);
       if(Process::is_parallel())
         add_line("communicator: $node", text);
 
@@ -260,6 +335,9 @@ void Ecrire_YAML::write_data_for_restart(int pb_i, std::string& text)
 
   // writing time
   write_time_scheme(0, fname, text);
+
+  // writing the block for the types of the fields we want to restore
+  write_fields_types_for_restart(pb_i, text);
 }
 
 /*! @brief Declaring all metadata (ie data that will be kept in PDI memory) in the YAML file
@@ -291,6 +369,16 @@ void Ecrire_YAML::declare_metadata(int save, std::string& text)
       for(const auto& d: pbs_[i_pb].data)
         {
           const std::string& name = d.get_name();
+          // if we want to save the type of the data, which is a string, we need to declare its dimension
+          if(d.save_field_type())
+            {
+              std::string size = "size_TYPE_" + name;
+              declare_scalar(size, "int", text);
+              std::string tname = "TYPE_" + name;
+              std::string tsize = "$size_" + tname;
+              declare_array(tname, "char", tsize, text);
+            }
+
           int nb_dim = d.get_dims();
           // if the data is scalar, then no need to declare its dimension (only its type is necessary)
           if(nb_dim == 0)
@@ -346,7 +434,7 @@ void Ecrire_YAML::declare_data(int save, std::string& text)
             declare_dtab(name, name, type, nb_dim, text);
         }
     }
-
+  declare_scalar("TYPES", "int", text);
   // For restart: declaring the array that will contain the timesteps that have been saved
   if(!save)
     declare_array("temps_sauvegardes", "double", "[ \'$iter + 1' ]",text);
@@ -586,5 +674,24 @@ void Ecrire_YAML::write_impl_dataset(const std::string& dname, const std::string
   begin_bloc(header, text);
   std::string dataset_name = "dataset: " + dname;
   add_line(dataset_name, text);
+  end_bloc();
+}
+
+
+/*! @brief Writes the block in the YAML file to dump the data in an implicit dataset
+ *  ie a dataset that does not need to be declared as its dimension corresponds to those of the data
+ *  @param (std::string dname) name of the dataset where the data is stored
+ *  @param (std::string name)  name of the data
+ *  @param (const std::vector<std::string>& attributes) vector of the names of the attributes
+ *  @param (std::string& text) the string that will be completed by the method
+ */
+void Ecrire_YAML::write_impl_dataset(const std::string& dname, const std::string& name, const std::vector<std::string>& attributes, std::string& text)
+{
+  std::string header = name + ":";
+  begin_bloc(header, text);
+  std::string dataset_name = "dataset: " + dname;
+  add_line(dataset_name, text);
+  if(!attributes.empty())
+    write_attributes(attributes, text);
   end_bloc();
 }

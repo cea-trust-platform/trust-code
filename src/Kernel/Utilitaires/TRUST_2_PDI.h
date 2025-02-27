@@ -180,8 +180,10 @@ public:
     shared_data_.clear();
   }
 
-  // Higher level methods
-  void share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write);
+// Higher level methods
+  void share_type(const Nom& name, const Nom& type);
+  void get_type(const Nom& name, Nom& type);
+  void share_TRUSTTab_dimensions(const DoubleTab& tab, const Nom& name, int write);
   void prepareRestart(int& last_iteration, double& tinit, int resume_last_time);
 
 private:
@@ -194,8 +196,6 @@ private:
   static int PDI_checkpoint_;
   static int PDI_restart_;
   static int PDI_initialized_;
-
-
 };
 
 #endif

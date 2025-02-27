@@ -1190,16 +1190,14 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
   la_pression_en_pa->mettre_a_jour(pression().temps());
 }
 
-/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
  *
  */
 std::vector<YAML_data> Navier_Stokes_std::data_a_sauvegarder() const
 {
   std::vector<YAML_data> data = Equation_base::data_a_sauvegarder();
-  std::string name = probleme().le_nom().getString() + "_" + la_pression->le_nom().getString();
-  int nb_dim = la_pression->valeurs().nb_dim();
-  YAML_data d(name, "double", nb_dim);
-  data.push_back(d);
+  std::vector<YAML_data> pression = la_pression->data_a_sauvegarder();
+  data.insert(data.end(), pression.begin(), pression.end());
   return data;
 }
 

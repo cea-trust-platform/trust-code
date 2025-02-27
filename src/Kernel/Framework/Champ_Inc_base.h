@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 class Frontiere_dis_base;
 class Domaine_dis_base;
 class MD_Vector;
+class YAML_data;
 
 /*! @brief Classe Champ_Inc_base
  *
@@ -159,6 +160,9 @@ public:
   void set_via_ch_fonc_reprise() { via_ch_fonc_reprise_ = true; }
   bool via_ch_fonc_reprise() const { return via_ch_fonc_reprise_; }
 
+  void PDI_save_type(bool b) { PDI_save_type_ = b; }
+  virtual std::vector<YAML_data> data_a_sauvegarder() const;
+
 protected:
   // Par defaut on initialise les valeurs a zero
   virtual void creer_tableau_distribue(const MD_Vector&, RESIZE_OPTIONS = RESIZE_OPTIONS::COPY_INIT);
@@ -174,6 +178,9 @@ protected:
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
   bool bord_fluide_multiphase_ = false, via_ch_fonc_reprise_ = false;
+
+  bool PDI_save_type_ = false; // do we save the type of the unknown in pdi format?
+
 };
 
 #endif /* Champ_Inc_base_included */

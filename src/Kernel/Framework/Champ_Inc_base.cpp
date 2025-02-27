@@ -26,6 +26,7 @@
 #include <Probleme_base.h>
 #include <TRUST_2_PDI.h>
 #include <Domaine_VF.h>
+#include <YAML_data.h>
 #include <Dirichlet.h>
 #include <Domaine.h>
 
@@ -336,6 +337,19 @@ double Champ_Inc_base::recuperer_temps_passe(int i) const
   return la_roue.passe(i).temps();
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.
+ */
+std::vector<YAML_data> Champ_Inc_base::data_a_sauvegarder() const
+{
+  std::string name = equation().probleme().le_nom().getString() + "_" + le_nom().getString() ;
+  int nb_dim = valeurs().nb_dim();
+  YAML_data d(name, "double", nb_dim);
+  d.set_save_field_type(PDI_save_type_);
+  std::vector<YAML_data> data;
+  data.push_back(d);
+  return data;
+}
+
 /*! @brief Sauvegarde le champ inconnue sur un flot de sortie.
  *
  *  Ecrit un identifiant, les valeurs du champs, et la date (le temps au moment de la sauvegarde).
@@ -370,6 +384,9 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
       TRUST_2_PDI pdi_interface;
       Nom name = equation().probleme().le_nom() + "_" + nom_;
       pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
+
+      if(PDI_save_type_)
+        pdi_interface.share_type(name, que_suis_je());
 
       // Sharing the unknown field with PDI
       // (const_cast as PDI doesn't deal with const variable)

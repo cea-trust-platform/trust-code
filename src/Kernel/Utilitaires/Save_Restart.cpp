@@ -677,11 +677,14 @@ int Save_Restart::sauver() const
   TRUST_2_PDI::set_PDI_checkpoint(pdi_format);
   if(pdi_format)
     {
+      TRUST_2_PDI pdi_interface;
+      int tmp = 1;
+      pdi_interface.TRUST_start_sharing("TYPES", &tmp);
+
       Sortie_Nulle useless;
       bytes = pb_base_->sauvegarder(useless);
 
       // backup of the unknown fields (which are local to each processor so it will involve a parallel writing)
-      TRUST_2_PDI pdi_interface;
       std::string f_event = "local_backup_" + pb_base_->le_nom().getString();
       pdi_interface.trigger(f_event);
       if(Process::node_master())
@@ -689,6 +692,10 @@ int Save_Restart::sauver() const
           // backup of the data that are global to everyone so we just need one proc (the master of the node) to write it
           std::string s_event = "global_backup_" + pb_base_->le_nom().getString();
           pdi_interface.trigger(s_event);
+
+          // we save the types of fields we want to save (not all of them actually, only the ones that are necessary for restart)
+          std::string t_event = pb_base_->le_nom().getString() + "_get_types";
+          pdi_interface.trigger(t_event);
         }
       pdi_interface.stop_sharing();
     }

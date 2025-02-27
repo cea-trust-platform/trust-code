@@ -45,7 +45,7 @@ void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::str
  * @param (Nom name) the name of the array
  * @param (int write) flag to specify if we want to write the dimensions or read into it
  */
-void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int write)
+void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, const Nom& name, int write)
 {
   int nb_dim = tab.nb_dim();
   ArrOfInt dimensions(nb_dim);
@@ -65,6 +65,53 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, Nom name, int 
   data_dims[dim_str] = dimensions.addr();
   data_dims[glob_dim_str] = &glob_dim_0;
   multiple_IO_("dimensions", data_dims, write);
+}
+
+/*! @brief Generic method to share the type of a TRUST object
+ *
+ * @param (Nom name) the name of the object
+ * @param (Nom type) type of the object
+ */
+void TRUST_2_PDI::share_type(const Nom& name, const Nom& type)
+{
+  std::string tname = "TYPE_" + name.getString();
+  char* t = const_cast<char*>(type.getChar());
+
+  std::string size = "size_TYPE_" + name.getString();
+  int sz = type.longueur();
+
+  // here we expose the data, so that PDI can keep a copy of it without having to share it later
+  PDI_expose(size.c_str(), &sz, PDI_OUT);
+  PDI_expose(tname.c_str(), t, PDI_OUT);
+
+}
+
+/*! @brief Generic method to read the type of a TRUST object in the HDF5 file
+ *
+ * @param (Nom name) the name of the object
+ * @param (Nom type) type of the object
+ */
+void TRUST_2_PDI::get_type(const Nom& name, Nom& type)
+{
+  int tmp;
+  PDI_share("TYPES", &tmp, PDI_INOUT);
+
+  // getting size of string first
+  std::string size = "size_TYPE_" + name.getString();
+  int sz;
+  PDI_share(size.c_str(), &sz, PDI_INOUT);
+  trigger("get_" + size);
+  PDI_reclaim(size.c_str());
+  type.getString().resize(sz);
+
+  // getting string
+  std::string tname = "TYPE_" + name.getString();
+  char* t = const_cast<char*>(type.getChar());
+  PDI_share(tname.c_str(), t, PDI_INOUT);
+  trigger("get_" + tname);
+  PDI_reclaim(tname.c_str());
+
+  PDI_reclaim("TYPES");
 }
 
 /*! @brief Generic method to prepare the restart of a computation
@@ -122,6 +169,4 @@ void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_
   PDI_expose("iter", &last_iteration, PDI_OUT);
   PDI_expose("temps", &tinit, PDI_OUT);
 }
-
-
 
