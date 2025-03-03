@@ -1038,6 +1038,14 @@ def extractNRCases():
     global defaultSuite_
     return defaultSuite_.extractNRCases()
 
+def isExtractingNR():
+    """
+    Check environnement variable IS_EXTRACTING_NR to know if extracting_nr is active
+    """
+
+    if (os.getenv("IS_EXTRACTING_NR") == 1): return True
+    return False
+
 
 def runCases(verbose=False, preventConcurrent=False):
     """ Launch all TRUST cases for the current validation form.
