@@ -1144,13 +1144,13 @@ m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m
 #################################################################
 # Si on ne trouve pas la librairie graphique Tcl/Tk on l'installe
 #################################################################
-m="# Path to Tcl/Tk";e="`cherche_file TRUST_WISH /usr/bin/wish /bin/wish wish`";eval $e
-if [ "$TRUST_WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
-then
-   make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk $TRUST_ROOT/exec/tcl_tk.log
-   e="`cherche_file TRUST_WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
-fi
-ecrit $m"|"$e"|"$env
+#m="# Path to Tcl/Tk";e="`cherche_file TRUST_WISH /usr/bin/wish /bin/wish wish`";eval $e
+#if [ "$TRUST_WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
+#then
+#   make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk $TRUST_ROOT/exec/tcl_tk.log
+#   e="`cherche_file TRUST_WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
+#fi
+#ecrit $m"|"$e"|"$env
 
 #################################################################
 # Recherche de GNU make>=3.81 (3.80 ne marche pas avec Metis 5.0)
