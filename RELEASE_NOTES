@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+03/03/25 (TRUST) New feature  : Add Lata_2_CGNS interpret that can be used to convert lata files into CGNS ones
+03/03/25 (TRUST) New feature  : Lata_2_MED & LataLoader can be applied on polyhedral meshes
 03/03/25 (TRUST) GPU          : Parallel run with number of MPI processes greater than GPU works again though less efficient. Useful for non regression on multi-GPU node
 03/03/25 (TRUST) Keyword      : Algebric Multigrid preconditioned solver keyword which select a good choice for CPU/GPU/MPI: solver AMG GCP { rtol|atol value [impr] }
 03/03/25 (TRUST) GPU          : Lot of performance improvements in VEF kernels and more VEF features available (y_plus field, source terms for dilatable fluid, time-dependent boundary conditions)
