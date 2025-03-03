@@ -127,4 +127,5 @@ Read pb
 }
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+lata_to_other med NOM_DU_CAS NOM_DU_CAS
 End
