@@ -1,17 +1,21 @@
 #!/bin/bash
 jdd=PAR_GPU_Aware_MPI
-if [ -f $jdd.TU ]
+if [ -f $jdd.TU ] && [ "$TRUST_USE_GPU" = 1 ]
 then
    [ "$TRUST_MPI_GPU_AWARE" = 0 ] && echo "No GPU-Aware MPI version detected." && exit 0
-   echo "GPU-Aware MPI detected! Enable device-device communications in TRUST:"
-   jdd2=enable_$jdd
-   cp $jdd.data $jdd2.data
-   NP=`ls DOM*.Zones | wc -l`
-   TRUST_USE_MPI_GPU_AWARE=1 trust $jdd2 $NP 1>$jdd2.out_err 2>&1 || exit -1
+   echo "GPU-Aware MPI detected! Enabling device-device communications in TRUST on a bigger test case..."
+   sed "1,$ s?Nombre_de_Noeuds 6 6 3?Nombre_de_Noeuds 31 31 10?" GPU_Aware_MPI.data > enabled.data
+   rm -f *.Zones
+   make_PAR.data enabled
+   cp PAR_enabled.data enabled.data
+   cp enabled.data disabled.data
+   NP=`ls DOM*.Zones | wc -l`                             
+   trust disabled $NP 1>disabled.out_err 2>&1 || exit -1
+   TRUST_USE_MPI_GPU_AWARE=1 trust enabled $NP 1>enabled.out_err 2>&1  || exit -1
    echo "-----------------------------------------------------------------------------------------------------------------------"
    echo "TRUST use MPI communications:                                 | TRUST use device communications:"
-   sdiff $jdd.TU $jdd2.TU | grep -e "GPU:"
-   sdiff $jdd.TU $jdd2.TU | grep -e "Secondes / pas de temps"   
-   sdiff $jdd.TU $jdd2.TU | grep -e "Secondes / solveur"
-   grep "Creating AMG" $jdd2.out_err
+   sdiff disabled.TU enabled.TU | grep -e "GPU:"
+   sdiff disabled.TU enabled.TU | grep -e "Secondes / pas de temps"   
+   sdiff disabled.TU enabled.TU | grep -e "Secondes / solveur"
+   grep "Creating AMG" enabled.out_err
 fi
