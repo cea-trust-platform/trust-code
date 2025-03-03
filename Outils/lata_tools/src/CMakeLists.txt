@@ -94,6 +94,10 @@ add_definitions("-UTRUST_USE_GPU -UTRUST_USE_CUDA -UTRUST_USE_ROCM")
 # 64b management - lata_tools (and ViSit plugin) are always compiled in 64b
 #
 if(("$ENV{TRUST_INT64}" STREQUAL "0") OR ("$ENV{TRUST_INT64_NEW}" STREQUAL "1"))
+  if ("$ENV{TRUST_INT64}" STREQUAL "0")
+	add_definitions("-DLATATOOLS_is_32_")
+  endif()
+
   # TRUST was compiled in 32b, or in 64b new mode, force new 64b mode, and check for conversion error
   add_definitions("-DINT_is_64_=2")
   add_definitions("-Wconversion -Wno-sign-conversion  -Werror")

@@ -521,8 +521,11 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                     size += (int) (facesIndex[face + 1] - facesIndex[face] + 1);
 
                   size--; // No -1 at the end of the cell
-
+#ifndef LATATOOLS_is_32_
                   ArrOfTID cell_def(size);  // ArrOfTID whatever the template parameter, since TID == mcIdType.
+#else
+                  ArrOfInt cell_def(size);
+#endif
                   size = 0;
                   for (trustIdType face = polyhedronIndex[i]; face < polyhedronIndex[i + 1]; face++)
                     {
@@ -534,6 +537,7 @@ MEDCouplingMesh* LataLoader::GetMesh(const char *meshname, int timestate, int bl
                     }
 
                   ugrid->insertNextCell(type_cell, cell_def.size_array(), cell_def.addr());
+
                 }
             }
           else
