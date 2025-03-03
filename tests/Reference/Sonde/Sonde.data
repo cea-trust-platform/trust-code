@@ -107,8 +107,21 @@ Read pb
                 vitesse som
             }
         }
+        lata
+        {
+            format lata
+            fichier Sonde
+            fields dt_post 1
+            {
+                pression elem
+                pression som
+                vitesse elem
+                vitesse som
+            }
+        }
     }
     sauvegarde formatte sonde.sauv
 }
 Solve pb
+lata_to_cgns Sonde.lata Sonde_converted.cgns
 End
