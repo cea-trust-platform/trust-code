@@ -1,15 +1,12 @@
- Abs Abs StdFunction.h
  Acceleration_QC_VDF_Face Acceleration_QC_VDF_Face Source_QC_VDF_Face.h
  Acceleration_QC_VEF_P1NC Acceleration_QC_VEF_P1NC Source_QC_VEF_P1NC.h
  Acceleration_VDF_Face Terme_Source_Acceleration_VDF_Face Terme_Source_Acceleration_VDF_Face.h
  Acceleration_VEF_P1NC Terme_Source_Acceleration_VEF_Face Terme_Source_Acceleration_VEF_Face.h
- Acos Acos StdFunction.h
  Aire_interfaciale|Interfacial_area Aire_interfaciale Aire_interfaciale.h
  Analyse_Angle Analyse_Angle Analyse_Angle.h
  Aretes Aretes Aretes.h
  Array_base Array_base Array_base.h
  ArrOfBit ArrOfBit_32_64 ArrOfBit.h
- Asin Asin StdFunction.h
  Assembleur_base Assembleur_base Assembleur_base.h
  Assembleur_P_EF Assembleur_P_EF Assembleur_P_EF.h
  Assembleur_P_PolyMAC Assembleur_P_PolyMAC Assembleur_P_PolyMAC.h
@@ -20,8 +17,6 @@
  Assembleur_P_VEF Assembleur_P_VEF Assembleur_P_VEF.h
  Assembleur_P_VEFPreP1B Assembleur_P_VEFPreP1B Assembleur_P_VEFPreP1B.h
  Associer|Associate Associer Associer.h
- Atan Atan StdFunction.h
- Atanh Atanh StdFunction.h
  Axi Axi Axi.h
  BiCGStab SolvElem_BiCGStab SolvElem_BiCGStab.h
  Bidim_Axi Bidim_Axi Bidim_Axi.h
@@ -238,8 +233,6 @@
  Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF.h
  Correlation_Vec_Sca_VEF Correlation_Vec_Sca_VEF Correlation_Vec_Sca_VEF.h
  Corriger_frontiere_periodique Corriger_frontiere_periodique_32_64 Corriger_frontiere_periodique.h
- Cos Cos StdFunction.h
- Cosh Cosh StdFunction.h
  Couplage_U Couplage_U Couplage_U.h
  Courant_maille_Champ_Face Courant_maille_Champ_Face Courant_maille_Champ_Face.h
  Create_domain_from_sub_domain|Create_domain_from_sub_domains Create_domain_from_sub_domain Create_domain_from_sub_domain.h
@@ -348,14 +341,12 @@
  EOS_Tools_VEF EOS_Tools_VEF EOS_Tools_VEF.h
  Equations_Scalaires_Passifs|Equations_Especes List_Equations_Scalaires_Passifs_Especes List_Equations_Scalaires_Passifs_Especes.h
  Equation_base Equation_base Equation_base.h
- Erf Erf StdFunction.h
  ErgunDarcy ModPerm_ErgunPourDarcy Source_Permeabilite_VDF.h
  ErgunForchheimer ModPerm_ErgunPourForch Source_Permeabilite_VDF.h
  Espece Espece Espece.h
  Esp_Dist Esp_Dist Esp_Dist.h
  Esp_Virt Esp_Virt Esp_Virt.h
  Execute_parallel Execute_parallel Execute_parallel.h
- Exp Exp StdFunction.h
  Extraction Champ_Generique_Extraction Champ_Generique_Extraction.h
  Extract_2Daxi_from_3D TroisDto2Daxi TroisDto2Daxi.h
  Extract_2D_from_3D TroisDto2D_32_64 TroisDto2D.h
@@ -483,7 +474,6 @@
  inc_th_VDF_P0_VDF Terme_Source_inc_th_VDF_Face Terme_Source_inc_th_VDF_Face.h
  inc_VDF_Face Terme_Source_inc_VDF_Face Terme_Source_inc_VDF_Face.h
  Init_par_partie Init_par_partie Init_par_partie.h
- Int Int StdFunction.h
  Integrale_tps_Champ Integrale_tps_Champ Integrale_tps_Champ.h
  Integrale_tps_produit_champs Integrale_tps_produit_champs Integrale_tps_produit_champs.h
  Integrer_champ_med Integrer_champ_med Integrer_champ_med.h
@@ -526,7 +516,6 @@
  Liste_bloc Liste_bloc Liste_bloc.h
  Liste_Champ_Generique Liste_Champ_Generique Liste_Champ_Generique.h
  Lml_to_lata|Lml_2_Lata Lml_2_Lata Lml_2_Lata.h
- Ln Ln StdFunction.h
  Loi_Etat_base Loi_Etat_base Loi_Etat_base.h
  Loi_Etat_Binaire_Gaz_Parfait_base Loi_Etat_Binaire_GP_base Loi_Etat_Binaire_GP_base.h
  Loi_Etat_Binaire_Gaz_Parfait_QC Loi_Etat_Binaire_GP_QC Loi_Etat_Binaire_GP_QC.h
@@ -652,7 +641,6 @@
  Neumann_val_ext Neumann_val_ext Neumann_val_ext.h
  Nom Nom Nom.h
  Noms Noms Noms.h
- Not Not StdFunction.h
  Objet_a_lire Objet_a_lire Objet_a_lire.h
  objet_interne_ptrPram ptrParam ptrParam.h
  Objet_U_ptr Objet_U_ptr Objet_U_ptr.h
@@ -1027,7 +1015,6 @@
  Reorienter_triangles Reorienter_triangles_32_64 Reorienter_triangles.h
  Resoudre|Solve Resoudre Resoudre.h
  Reynolds_maille_Champ_Face Reynolds_maille_Champ_Face Reynolds_maille_Champ_Face.h
- Rnd Rnd StdFunction.h
  Rotation Rotation Rotation.h
  Rotationnel_Champ_Face Rotationnel_Champ_Face Rotationnel_Champ_Face.h
  Rotationnel_Champ_P1NC Rotationnel_Champ_P1NC Rotationnel_Champ_P1NC.h
@@ -1080,12 +1067,9 @@
  SETS SETS SETS.h
  SFichier SFichier SFichier.h
  SFichierBin SFichierBin SFichierBin.h
- Sgn Sgn StdFunction.h
  Simple Simple Simple.h
  Simpler Simpler Simpler.h
  Simpler_Base Simpler_Base Simpler_Base.h
- Sin Sin StdFunction.h
- Sinh Sinh StdFunction.h
  Solide Solide Solide.h
  Solide_SWIFT_VDF_P0_VDF Terme_Source_Solide_SWIFT_VDF Terme_Source_Solide_SWIFT_VDF.h
  SolvElem_base SolvElem_base SolvElem_base.h
@@ -1098,6 +1082,7 @@
  Solveur_Masse_base Solveur_Masse_base Solveur_Masse_base.h
  Solveur_non_lineaire Solveur_non_lineaire Solveur_non_lineaire.h
  Solveur_U_P Solveur_U_P Solveur_U_P.h
+ Solv_AMG Solv_AMG Solv_AMG.h
  Solv_AMGX Solv_AMGX Solv_AMGX.h
  Solv_Cholesky Solv_Cholesky Solv_Cholesky.h
  Solv_Externe Solv_Externe Solv_Externe.h
@@ -1176,19 +1161,15 @@
  Sous_Domaine Sous_Domaine_32_64 Sous_Domaine.h
  Sous_domaine_dis_base Sous_domaine_dis_base Sous_domaine_dis_base.h
  Sous_domaine_VF Sous_domaine_VF Sous_domaine_VF.h
- Sqrt Sqrt StdFunction.h
  SSOR SSOR SSOR.h
  ssor_bloc PrecondA PrecondA.h
  Stat_per_proc_perf_log Stat_per_proc_perf_log Stat_per_proc_perf_log.h
- StdFunction StdFunction StdFunction.h
  StiffenedGas Fluide_stiffened_gas Fluide_stiffened_gas.h
  Supprime_Bord SupprimeBord_32_64 SupprimeBord.h
  Sutherland Sutherland Champ_Fonc_Fonction.h
  Symetrie Symetrie Symetrie.h
  System System System.h
  Table Table Table.h
- Tan Tan StdFunction.h
- Tanh Tanh StdFunction.h
  Taux_cisaillement_P0_VDF Taux_cisaillement_P0_VDF Taux_cisaillement_P0_VDF.h
  Taux_cisaillement_P0_VEF Taux_cisaillement_P0_VEF Taux_cisaillement_P0_VEF.h
  Tayl_Green Tayl_Green Tayl_Green.h

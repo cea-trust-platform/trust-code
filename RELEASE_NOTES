@@ -1,18 +1,18 @@
-XX/XX/24 (TRUST) GPU          : Parallel run with number of MPI processes greater than GPU works again though less efficient. Useful for non regression on multi-GPU node
-XX/XX/24 (TRUST) Keyword      : Algebric Multigrid preconditioned solver keyword which select a good choice for CPU/GPU/MPI: solver AMG GCP { rtol|atol value [impr] }
-XX/XX/24 (TRUST) GPU          : Lot of performance improvements in VEF kernels and more VEF features available (y_plus field, source terms for dilatable fluid, time-dependent boundary conditions) 
-XX/XX/24 (TRUST) GPU          : PETSc updated from 3.20 to 3.22 to benefit from GPU solver improvements (Hypre, STRUMPACK)
-XX/XX/24 (TRUST) GPU          : Ada Nvidia architecture card with compute capability 89 (e.g. RTX 4070) and gfx1100 AMD cards supported
-XX/XX/24 (TRUST) GPU          : A100 partition is supported on JeanZay, A100 and H100 partitions on orcus
-XX/XX/24 (TRUST) GPU          : Performance regression on adastra -MI250 AMD) fixed by using HIP backend for Kokkos
-XX/XX/24 (TRUST) GPU          : Parser and several Champ_Generiques (Reduction_0D, Transformation, Interpolated) ported
-XX/XX/24 (TRUST) GPU          : Configure option -openmp to build GPU code is refused as OpenMP target instructions are removed from the code and as it rely only on Kokkos framework (updated from 4.2 to 4.5)
-XX/XX/25 (TRUST) MPI          : Configure option -force_provided_openmpi now use OpenMPI 4.1.6 and -force_latest_openmpi now use OpenMPI 5.0.5
-XX/XX/24 (TRUST) Change       : Parser rewrite can create different initialization for random fields (Champ_front_bruite, ...) or advanced fields using Rnd function
-XX/XX/24 (TRUST) Change       : y+ field were possibly wrong on tetraedra/triangle with more than one boundary face
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+03/03/25 (TRUST) GPU          : Parallel run with number of MPI processes greater than GPU works again though less efficient. Useful for non regression on multi-GPU node
+03/03/25 (TRUST) Keyword      : Algebric Multigrid preconditioned solver keyword which select a good choice for CPU/GPU/MPI: solver AMG GCP { rtol|atol value [impr] }
+03/03/25 (TRUST) GPU          : Lot of performance improvements in VEF kernels and more VEF features available (y_plus field, source terms for dilatable fluid, time-dependent boundary conditions)
+03/03/25 (TRUST) GPU          : PETSc updated from 3.20 to 3.22 to benefit from GPU solver improvements (Hypre, STRUMPACK)
+03/03/25 (TRUST) GPU          : Ada Nvidia architecture card with compute capability 89 (e.g. RTX 4070) and gfx1100 AMD cards supported
+03/03/25 (TRUST) GPU          : A100 partition is supported on JeanZay, A100 and H100 partitions on orcus
+03/03/25 (TRUST) GPU          : Performance regression on adastra -MI250 AMD) fixed by using HIP backend for Kokkos
+03/03/25 (TRUST) GPU          : Parser and several Champ_Generiques (Reduction_0D, Transformation, Interpolated) ported
+03/03/25 (TRUST) GPU          : Configure option -openmp to build GPU code is refused as OpenMP target instructions are removed from the code and as it rely only on Kokkos framework (updated from 4.2 to 4.5)
+03/03/25 (TRUST) MPI          : Configure option -force_provided_openmpi now use OpenMPI 4.1.6 and -force_latest_openmpi now use OpenMPI 5.0.5
+03/03/25 (TRUST) Change       : Parser rewrite can create different initialization for random fields (Champ_front_bruite, ...) or advanced fields using Rnd function
+03/03/25 (TRUST) Change       : y+ field were possibly wrong on tetraedra/triangle with more than one boundary face
 18/02/25 (TRUST) Change       : dt_impr_ustar_mean_only prints now surface-averaged values instead of mean values on boundaries
 18/02/25 (TRUST) New keyword  : dt_impr_nusselt_mean_only prints into a .out file the surface-averaged Nusselt related values on all or some specified boundaries (VDF/VEF/EF discretizations)
 14/02/25 (TRUST) Major change : TRUST (and its baltiks) is now built with 64b support by default! Old 32b mode can still be built with '-with-32-bit-indices'

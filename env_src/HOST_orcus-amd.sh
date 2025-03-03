@@ -20,7 +20,7 @@ define_modules_config()
       module="gcc/11.4.0 texlive/20240312" # On utilise le OpenMPI du SDK telecharge car le OpenMPI orcus n'est pas GPU-Aware...
       echo "export USE_NVHPC_MPI=1" >> $env
       CUDA_VERSION=12.1 # Kokkos prend par defaut 12.1 et au link nvlink prend 11.0 donc on met tout au meme niveau...
-      [ "$TRUST_CUDA_CC" = "" ] && echo TRUST_CUDA_CC=80 # A100
+      [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=80 # A100
    elif [ $gnu = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI

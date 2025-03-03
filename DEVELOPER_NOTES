@@ -1,8 +1,8 @@
-XX/XX/25 (TRUST) GPU          : Performance regression can be checked with: cd tests/GPU && ./check_perf.sh
-XX/XX/25 (TRUST) GPU          : Refactor/factorize the Kokkos implementation in TRUSTArray: DualView suppressed and accessors view_ro/view_rw/view_ro rewritten
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
+03/03/25 (TRUST) GPU          : Performance regression can be checked with: cd tests/GPU && ./check_perf.sh
+03/03/25 (TRUST) GPU          : Refactor/factorize the Kokkos implementation in TRUSTArray: DualView suppressed and accessors view_ro/view_rw/view_ro rewritten
 26/02/25 (TRUST) Baltiks      : make distrib_git generates dependencies archives as specified in project.cfg without impact. For example, MEDICoCo: ./ICoCo_src will generate ICoCo_src.tar.gz instead of MEDICoCo.tar.gz
 19/21/25 (TRUST) Tools        : env_for_python.sh, env.sh for MEDCOUPLING and for LataLoader do not add exec/python to LD_LIBRARY_PATH.
 19/21/25 (TRUST) Tools        : HDF5 is now installed as a library outside MED, not within MED. Environment variable $TRUST_HDF5_ROOT created. 
