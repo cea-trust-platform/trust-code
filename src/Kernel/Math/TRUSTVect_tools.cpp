@@ -188,9 +188,7 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
   assert(line_size > 0 && line_size_vx > 0 && line_size % line_size_vx == 0);
   const int delta_line_size = line_size / line_size_vx;
   assert(vx.size_totale() * delta_line_size == vect_size_tot); // this test is necessary if md is null
-#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
-#endif
 
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
@@ -212,6 +210,9 @@ void operation_speciale_tres_generic(TRUSTVect<_TYPE_, _SIZE_>& resu, const TRUS
   invalidate_data(resu, opt);
 #endif
   return;
+#else
+  Cerr << "Error! operation_speciale_tres_generic can't be called in your project!" << finl;
+  Process::exit();
 #endif
 }
 
@@ -269,9 +270,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
   const MD_Vector& md = resu.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
-#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
   Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
@@ -290,6 +289,9 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, _TYPE_ al
   invalidate_data(resu, opt);
 #endif
   return;
+#else
+  Cerr << "Error! ajoute_operation_speciale_generic can't be called in your project!" << finl;
+  Process::exit();
 #endif
 }
 
@@ -371,9 +373,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<
   const MD_Vector& md = resu.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
-#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
   Block_Iter<_SIZE_> bloc_itr = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
@@ -391,6 +391,9 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const TRUSTVect<
   invalidate_data(resu, opt);
 #endif
   return;
+#else
+  Cerr << "Error! operator_vect_vect_generic can't be called in your project!" << finl;
+  Process::exit();
 #endif
 }
 // Explicit instanciation for templates:
@@ -477,6 +480,9 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_,_SIZE_>& resu, const _TYPE_ x
   invalidate_data(resu, opt);
 #endif
   return;
+#else
+  Cerr << "Error! operator_vect_single_generic can't be called in your project!" << finl;
+  Process::exit();
 #endif
 }
 // Explicit instanciation for templates:
@@ -612,9 +618,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
   //Asserts
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
-#endif
 
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
@@ -639,6 +643,8 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx, Mp_
   return (IS_IMAX || IS_IMIN) ? (_TYPE_RETURN_)i_min_max : (_TYPE_RETURN_)min_max_val;
 
 #else
+  Cerr << "Error! local_extrema_vect_generic can't be called in your project!" << finl;
+  Process::exit();
   return (_TYPE_RETURN_)0; // For compil in latatools
 #endif
 }
@@ -723,9 +729,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
   const MD_Vector& md = master_vect.get_md_vector();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-#ifndef LATATOOLS
   assert(vx.get_md_vector() == md);
-#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
   Block_Iter<_SIZE_> bloc_itr  = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
@@ -741,6 +745,8 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_,_SIZE_>& vx,Mp_v
 
   return sum;
 #else
+  Cerr << "Error! local_operations_vect_bis_generic can't be called in your project!" << finl;
+  Process::exit();
   return (_TYPE_)0; // For compil in latatools
 #endif
 }
@@ -819,6 +825,9 @@ void invalidate_data(TRUSTVect<_TYPE_,_SIZE_>& resu, Mp_vect_options opt)
     invalidate_data_kernel<Kokkos::DefaultExecutionSpace, _TYPE_, _SIZE_>(resu, items_blocs, line_size, blocs_size);
   else
     invalidate_data_kernel<Kokkos::DefaultHostExecutionSpace, _TYPE_, _SIZE_>(resu, items_blocs, line_size, blocs_size);
+#else
+  Cerr << "Error! invalidate_data can't be called in your project!" << finl;
+  Process::exit();
 #endif
 }
 //END code for debug
@@ -884,9 +893,7 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
 
   assert(vx.line_size() == line_size && vy.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
-#ifndef LATATOOLS
   assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
-#endif
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left;
   Block_Iter<_SIZE_> bloc_itr  = ::determine_blocks(opt, md, vect_size_tot, line_size, nblocs_left);
@@ -903,6 +910,8 @@ _TYPE_ local_prodscal(const TRUSTVect<_TYPE_,_SIZE_>& vx, const TRUSTVect<_TYPE_
   return sum;
 
 #else
+  Cerr << "Error! local_prodscal can't be called in your project!" << finl;
+  Process::exit();
   return (_TYPE_)0; // For compil in latatools
 #endif
 }

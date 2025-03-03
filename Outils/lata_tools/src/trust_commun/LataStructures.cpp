@@ -370,18 +370,26 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
   if (decal_nodes > 0)
     {
       // Nodes are stored with global numbering in the lata file: transform to sub_block numbering :
-      elements_ -= decal_nodes;
+      // elements_ -= decal_nodes; // Do not use TRUSTArray generic (Kokkos needed)
+      for (int i=0; i<elements_.size();i++)
+          elements_(i) -= decal_nodes;
     }
   if (domain_has_faces)
     {
       //cerr << "Domain has faces..." << endl;
       set_lata_block_offset(LataField_base::FACES, decal_faces);
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "FACES", "*"), faces_, decal_faces, nbfaces);
-      if (decal_nodes > 0)
-        faces_ -= decal_nodes;
+      if (decal_nodes > 0) {
+          //faces_ -= decal_nodes; // Do not use TRUSTArray generic (Kokkos needed)
+          for (int i=0; i<faces_.size();i++)
+              faces_(i) -= decal_nodes;
+      }
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "ELEM_FACES", "*"), elem_faces_, decal_elements, nbelements);
-      if (decal_faces > 0)
-        elem_faces_ -= decal_faces;
+      if (decal_faces > 0) {
+          //elem_faces_ -= decal_faces; // Do not use TRUSTArray generic (Kokkos needed)
+          for (int i=0; i<elem_faces_.size();i++)
+              elem_faces_(i) -= decal_faces;
+      }
     }
 
   // *************************
