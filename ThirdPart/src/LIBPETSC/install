@@ -447,6 +447,10 @@ add_package metis
 #############
 # STRUMPACK #
 #############
+# Desactive le build de STRUMPACK car trop d'ennuis sur certains OS/GNU:
+# zfp sur RedHat 8.4
+# Strumpack sur F40
+TRUST_DISABLE_STRUMPACK=1
 if [ "$TRUST_DISABLE_STRUMPACK" != 1 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && [ "$TRUST_USE_ROCM" = 0 ]
 then
    add_package zfp
