@@ -39,7 +39,7 @@ linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD   			-cuda  								
 linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d -disable-hwloc  	 				# Redhat 8.5	CEA Cad
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD   		-ctest_mode_valgrind 		 		     -without-pdflatex			# Redhat 9 serveur rackable pour validation TrioCFD titania
 linux	ssh_pass	cible	rhodia8-4.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -FLICA5   	 		      -without-pdflatex  			# Redhat 8.4 serveur rackable titania
-linux	ssh_pass	tache	rhodia8-4-woconda.intra.cea.fr  		-FLICA5 -C3D    	 		     -without-conda -without-pdflatex  			# Redhat 8.4 serveur rackable titania
+linux	ssh_pass	tache	rhodia8-4-woconda.intra.cea.fr  		-FLICA5 -C3D    	 		     -without-conda -alternative-cmake -without-pdflatex  			# Redhat 8.4 serveur rackable titania
 linux	rsync_ssh	tache	unitas20-coolprop-eos.intra.cea.fr		-all 		-TrioCFD -FLICA5  						 -coolprop -eos   						# Ubuntu 20 pilote titania 
 linux	rsync_ssh	tache	is246145.intra.cea.fr		-all	 -TrioCFD  -GENEPI3 -FLICA5 -MPCube   						 -platform -without-pdflatex -force_provided_mpich -without-visit -gcc8    					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind -without-pdflatex								# UB 22 titania 	Bat 451	LGLS	salle de formation

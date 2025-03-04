@@ -52,7 +52,7 @@ change_droits()
      find . -type d | xargs chmod +x  1>/dev/null 2>&1
      # changer les droits sur les dossiers car c'est la qu'il y a probleme
      #find . -type d -exec chmod 755 {} \;
-     find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/module*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -not -path "./*/TRUST_NK*" -exec chmod 755 {} \;
+     find . -type d -not -path "./*/genepi3*" -not -path "./*/mathys*" -not -path "./*/flica5*" -not -path "./*/module*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -not -path "./*/TRUST_NK*" -exec chmod 755 {} \;
      ( [ "`id | grep triocfd_w 2>/dev/null`" != "" ]  && cd $TRUST_ROOT/ && chmod g+s . && find . -group den | xargs chgrp -R triocfd_w .)
   fi
 }
@@ -401,6 +401,7 @@ option_configure=" -disable-ccache "
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=$WORKDIR/ExternalLibs/EOS/v2.0.0/install"
 # no conda, I disable trustify too since no PyQt5 and not pydantic
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -without-conda -disable-trustify"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-alternative-cmake" | grep ^$HOST"\."`" != "" ]              && alternative_cmake=1
 # no trustify
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustify" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-trustify"
 # no openblas (add it for fedora 38)
@@ -414,6 +415,8 @@ option_configure=" -disable-ccache "
 # Lancement du configure
 ########################
 [ "x$modules_to_load" != "x" ] && source /etc/profile.d/modules.sh && module purge && module load $modules_to_load
+[ "x$alternative_cmake" != "x" ] && export PATH=$WORKDIR/cmake/bin:$PATH && echo PATH MODIFIED && which cmake
+
 echo "--------------------------------------------------------"
 echo "Configure on $HOST at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"

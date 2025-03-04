@@ -182,6 +182,15 @@ compare_pdf_batch()
     for file_ref in `\ls $ppm_dir_ref/${base_ref}_oo*ppm`
     do
       file_new=`echo $file_ref | sed "s?$ppm_dir_ref1?$ppm_dir_new1?; s?$base_ref?$base_new?g"`
+      if [ ! -f $file_new ]
+      then
+         if [ "`echo $file_new | grep oo-0`" != "" ]
+         then
+            file_new=`echo $file_new | sed "s/oo-0/oo-/"`
+         else
+            file_new=`echo $file_new | sed "s/oo-/oo-0/"`
+         fi
+      fi
       diff $file_ref $file_new 1> /dev/null 2>&1
       if [ $? == 0 ]
       then
