@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
+11/03/25 (TRUST) Baltiks      : New target "make swig" for baltiks (if $project_directory/share/swig/CMakeLists.txt exists) which will build icoco_python and run install_and_test.sh
 11/03/25 (TRUST) Minor change : Param::ajouter_deriv() removed, use Param::ajouter() instead
 03/03/25 (TRUST) GPU          : Performance regression can be checked with: cd tests/GPU && ./check_perf.sh
 03/03/25 (TRUST) GPU          : Refactor/factorize the Kokkos implementation in TRUSTArray: DualView suppressed and accessors view_ro/view_rw/view_ro rewritten

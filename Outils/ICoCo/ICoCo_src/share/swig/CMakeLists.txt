@@ -40,9 +40,7 @@ find_library(libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_
 #    message(FATAL_ERROR "Could not find BALTIK library: ${libbaltik_name}.so - did you run: make module_optim in your baltik (potentially in debug)??")
 #endif()
 
-find_package(PythonInterp 3 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
-find_package(PythonLibs 3 REQUIRED)    # ... so that TRUST Python libs are found too.
-
+find_package(Python3 COMPONENTS Interpreter Development.Module  REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
@@ -54,7 +52,7 @@ include_directories(
   ${TRUST_ROOT}/src/Kernel/ICoCo
   ${TRUST_ROOT}/lib/src/LIBICOCOAPI/include
   ${MEDCOUPLING_DIR}/include
-  ${PYTHON_INCLUDE_PATH})
+  ${Python3_INCLUDE_DIRS})
 
 # Configuring .i file to put TRUST version into it
 set(TRUST_VERSION $ENV{TRUST_VERSION})
@@ -98,7 +96,7 @@ file(COPY ${tst_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/test)
 add_test(NAME TRUST_swig
          COMMAND ${CMAKE_COMMAND} -E env
               PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
-           ${PYTHON_EXECUTABLE} test_trusticoco.py
+           ${Python3_EXECUTABLE} test_trusticoco.py
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 
 # If MPI, test setting communicator
@@ -106,7 +104,7 @@ if(NOT "$ENV{TRUST_DISABLE_MPI}" STREQUAL "1")
   add_test(NAME TRUST_swig_mpi
          COMMAND ${CMAKE_COMMAND} -E env
               PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
-           mpirun.sh -np 2 ${PYTHON_EXECUTABLE} test_icoco_comm.py
+           mpirun.sh -np 2 ${Python3_EXECUTABLE} test_icoco_comm.py
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 endif()
 

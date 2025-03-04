@@ -135,3 +135,6 @@ if [ $ALL -eq 1 ]
     #rm -f ${project_directory}/share/doc_src/Keywords.Vim ${project_directory}/share/doc_src/Keywords.txt.n
     #rm -rf ${project_directory}/archives_dependencies
 fi
+
+# Suppression du repertoire d'installation swig si disponible
+rm -rf ${project_directory}/share/swig/build ${project_directory}/share/swig/install

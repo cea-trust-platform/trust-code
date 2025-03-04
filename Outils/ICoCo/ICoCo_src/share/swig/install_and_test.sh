@@ -14,7 +14,8 @@ CXXFLAGS="-Wno-error" cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX
 
 #VERBOSE=1 make -j install || exit -1
 make -j install || exit -1
-ctest || exit -1
+ctest --output-on-failure || exit -1
 
 cd ..
+rm -rf build
 

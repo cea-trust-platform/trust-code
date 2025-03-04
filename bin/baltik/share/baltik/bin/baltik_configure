@@ -450,20 +450,23 @@ if [ -e $project_makefile ]
 then
     rm -f $project_makefile
 fi
+
+# If swig=1, we add target swig_optim to Makefile
+swig=0 && [ -f $project_directory/share/swig/CMakeLists.txt ] && swig=1
+
+
 printf "# helplist of target\n"  >> $project_makefile
 printf "\n" >> $project_makefile
 printf "# Parameter initialization\n" >> $project_makefile
 printf "TESTLIST ?= \"\"\n" >> $project_makefile
 printf "\n" >> $project_makefile
-printf "default: erreur\n" >> $project_makefile
+printf "default: help\n" >> $project_makefile
+printf "\t@exit 1 \n" >> $project_makefile
+printf "\n" >> $project_makefile
 printf "# help help \t\t: to show this message\n">> $project_makefile
 printf "help:\n">> $project_makefile
 printf "\t@grep \"# help\" Makefile | grep -v Makefile |  sed \"s/# help//\"\n" >> $project_makefile
 printf "# help \n" >> $project_makefile
-
-printf "erreur: help\n" >> $project_makefile
-printf "\t@ exit 1 \n" >> $project_makefile
-printf "\n" >> $project_makefile
 
 list_cible=`list_type`
 for type in $list_cible
@@ -726,6 +729,17 @@ printf "\n"                                                     >> $project_make
 #printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_project_modularity \n"                     >> $project_makefile
 #printf "\n"    
 
+if [ "$swig" = "1" ]
+then
+printf "# help swig \t\t: build icoco_python through swig \n"                           >> $project_makefile
+printf "swig :optim module_optim\n"                           >> $project_makefile
+printf "\t@echo \"###################\"\n"                 >> $project_makefile
+printf "\t@echo \"# SWIG generation #\"\n"                 >> $project_makefile
+printf "\t@echo \"###################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; cd ${project_directory}/share/swig; ./install_and_test.sh \n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+fi                                                  >> $project_makefile
+ 
 printf "install :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Install              #\"\n"                 >> $project_makefile
@@ -743,7 +757,7 @@ for type in $list_cible
 do
  phony="$phony check_$type $type"
 done
-printf ".PHONY : $phony validation clean distrib install gui terminal\n"   >> $project_makefile
+printf ".PHONY : $phony swig validation clean distrib install gui terminal\n"   >> $project_makefile
 
 echo "Done."
 echo ""
