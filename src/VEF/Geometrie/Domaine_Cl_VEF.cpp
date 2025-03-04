@@ -621,7 +621,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc_base& ch, double temps)
                   int num2 = le_bord.nb_faces_tot();
                   CIntArrView num_face = le_bord.num_face().view_ro();
                   CIntTabView faces = domaine_vef.face_sommets().view_ro();
-                  CDoubleArrView flux_impose = static_cast<const DoubleVect&>(la_sortie_libre.flux_impose()).view_ro();
+                  CDoubleArrView flux_impose = static_cast<const DoubleVect&>(la_sortie_libre.flux_impose(true)).view_ro();
                   CDoubleArrView face_surfaces = domaine_vef.face_surfaces().view_ro();
                   DoubleArrView surf_loc = static_cast<DoubleVect&>(tab_surf_loc).view_rw();
                   DoubleArrView pression = static_cast<DoubleVect&>(tab_pression).view_rw();

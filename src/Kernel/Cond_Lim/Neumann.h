@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Neumann: public Cond_lim_base
 public:
   virtual double flux_impose(int i) const;
   virtual double flux_impose(int i, int j) const;
-  const DoubleTab& flux_impose() const;
+  const DoubleTab& flux_impose(bool nb_faces_tot=false) const;
 
 protected:
   mutable DoubleTab flux_impose_; // Stocke toutes les valeurs du flux sur toutes les faces de la frontiere (pas d'hypothese sur un champ uniforme). Utile pour le GPU.

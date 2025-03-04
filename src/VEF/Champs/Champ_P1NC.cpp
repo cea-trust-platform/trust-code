@@ -118,7 +118,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
   CDoubleTabView face_normales = tab_face_normales.view_ro();
   CIntTabView face_voisins = tab_face_voisins.view_ro();
   CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
-  CDoubleTabView variable = tab_variable.view_ro();
+  CDoubleArrView variable = static_cast<const ArrOfDouble&>(tab_variable).view_ro();
   CIntArrView est_face_bord = tab_est_face_bord.view_ro();
   DoubleTabView gradient_elem = tab_gradient_elem.view_rw();
 
@@ -140,7 +140,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
 
         for (int i = 0; i < dimension; i++)
           {
-            double grad = 0.5 * face_normales(fac,i) * variable(fac, 0);
+            double grad = 0.5 * face_normales(fac,i) * variable(fac);
             Kokkos::atomic_add(&gradient_elem(elem1, i), +grad);
             Kokkos::atomic_add(&gradient_elem(elem2, i), -grad);
           }
@@ -152,7 +152,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
 
         for (int i = 0; i < dimension; i++)
           {
-            double grad = face_normales(fac,i) * variable(fac, 0);
+            double grad = face_normales(fac,i) * variable(fac);
             Kokkos::atomic_add(&gradient_elem(elem1, i), grad);
           }
       }
@@ -164,7 +164,7 @@ void calculer_gradientP1NC_2D(const DoubleTab& tab_variable, const Domaine_VEF& 
 
         for (int i = 0; i < dimension; i++)
           {
-            double grad = face_normales(fac,i) * variable(fac, 0);
+            double grad = face_normales(fac,i) * variable(fac);
             if (elem1 >= 0) Kokkos::atomic_add(&gradient_elem(elem1, i), +grad);
             if (elem2 >= 0) Kokkos::atomic_add(&gradient_elem(elem2, i), -grad);
           }
