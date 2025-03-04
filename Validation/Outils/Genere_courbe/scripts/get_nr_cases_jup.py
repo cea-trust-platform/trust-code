@@ -25,7 +25,7 @@ def extract_cases(book):
          if "source" in c:
            for loc in c["source"]:
              # for now, skip shell code lines:
-             if loc.strip().startswith("!"):
+             if loc.strip().startswith("!") or loc.strip().startswith("#"):
                continue
              # skip also display of plot: 
              if "plot(" in loc: 
