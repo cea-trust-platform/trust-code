@@ -386,7 +386,7 @@ class TRUSTCase(object):
         os.chmod(scriptFl, 0o755)
         return scriptFl, fullL
 
-    def partition(self, verbose=False):
+    def partition(self, verbose=False, overwritePartition=True):
         """ 
         Apply partitioning of specified test case with trust -partition if nbProcs>1 only
         This avoids to modify trust -partition to be able to call it with 1 cpu
@@ -394,6 +394,16 @@ class TRUSTCase(object):
         Parameters
         ---------
         verbose: bool
+        overwritePartition: bool
+            Whether to overwrite the partition from the dataset when running trust -partition
+            If True, uses 
+                trust -partition xxx.data nbProcs
+            which will overwrite (or create) the partition in the dataset, but will cut the domain in a single direction.
+            This is the old and default behavior.
+            If False, uses the partition from the dataset by using
+                trust -partition xxx.data
+            without specifying nbProcs
+            Warning: this will not crash if there is no commented partition block in the dataset
         
         """
         ok = True
@@ -410,7 +420,13 @@ class TRUSTCase(object):
 
         err_file = self.name_ + "_partition.err"
         out_file = self.name_ + "_partition.out"
-        cmd = "trust -partition %s %s 2>%s 1>%s" % (self.name_, str(self.nbProcs_), err_file, out_file)
+        if overwritePartition:
+            # old default behavior
+            cmd = "trust -partition %s %s 2>%s 1>%s" % (self.name_, str(self.nbProcs_), err_file, out_file)
+        else:
+            # possibility to keep user defined partition
+            # Warning: no error if there is no partition in the dataset
+            cmd = "trust -partition %s 2>%s 1>%s" % (self.name_, err_file, out_file)
         output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
         if verbose:
             print(cmd)
