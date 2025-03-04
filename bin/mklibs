@@ -285,8 +285,12 @@ ALL_L=$ALL_L" hdf5 hdf5_hl"
 if [ "$TRUST_USE_EOS" = 1 ] ; then
     ALL_P=$ALL_P" \$ENV{TRUST_EOS_HOME_DIR}/lib"
     tirpc=""
-    #[ "`ldd $TRUST_EOS_HOME_DIR/lib/libeos.so 2>/dev/null | grep libtirpc.so`" != "" ] && tirpc=" tirpc "
-    [ "`grep tirpc $TRUST_EOS_HOME_DIR/lib/pkgconfig/eos.pc 2>/dev/null`" != "" ] && tirpc=" tirpc "
+    if [ -f $TRUST_EOS_HOME_DIR/lib/pkgconfig/eos.pc ] ; then
+        [ "`grep tirpc $TRUST_EOS_HOME_DIR/lib/pkgconfig/eos.pc 2>/dev/null`" != "" ] && tirpc=" tirpc "
+    else
+        # old EOS versions seems to not have eos.pc
+        [ "`ldd $TRUST_EOS_HOME_DIR/lib/libeos.so 2>/dev/null | grep libtirpc.so`" != "" ] && tirpc=" tirpc "
+    fi
     ALL_L=$ALL_L" eos "$tirpc
 fi
 
