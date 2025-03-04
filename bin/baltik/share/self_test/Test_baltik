@@ -168,16 +168,6 @@ rm -rf basic_rapport/build/tests/all/Validation/*_jdd*
 
 #err=0 
 
-if [ "${TRUST_CC_BASE%clang++}" != "$TRUST_CC_BASE" ] || [ "${TRUST_CC_BASE%nvc++}" != "$TRUST_CC_BASE" ] || [ "$TRUST_INT64" = "1" ]
-then
-   echo "Test de cppunit_proj (skipped on clang, nvc and/or 64 bit integers)"
-else
-   status_cppunit=0
-   #test_cpp_unit 
-   test_basic cppunit_proj 0
-   status_cppunit=$status_tot
-fi
-
 # test dependance kernel
 voulu=1
 [ -f $TRUST_LIB/TRUST${COMM}_numeric_kernel${OPT}.a ]  && voulu=0

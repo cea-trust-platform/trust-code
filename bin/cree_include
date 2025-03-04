@@ -53,6 +53,8 @@ do
   echo "#error File $file.h deprecated in TRUST 1.9.5. You SHOULD change the include. use "$file"_base.h and see TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file.h
 done
 
+echo "#error File cppunit.h has been removed in TRUST 1.9.6" > backward/cppunit.h
+
 
 # EOS includes in EOS if 
 if [ "$TRUST_EOS_HOME_DIR" != "" ]
