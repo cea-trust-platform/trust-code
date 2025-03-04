@@ -25,9 +25,6 @@ AR = ar rc
 # Cray options
 F77 = $(TRUST_F77)
 F77_flags = $(F77Flags)
-ifeq ($(TRUST_INT64_NEW),1)
-F77_flags = $(F77Flags_32b)
-endif
 #AR = bld rv
 #OPT = -c -Wf"-dp" 
 

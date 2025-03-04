@@ -1869,10 +1869,10 @@ case $TRUST_ARCH_CC in
 	# flag -Wsuggest-override available on gcc version >= 5.1; on gcc 5.4.0 (ub 16) this flag suggests to fix mpich 3.2, so we do not add this flag
 	[ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>5||(a[1]==5&&(a[2]>4))?1:0)}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds -Wsuggest-override"
 	SYSLIBS=$SYSLIBS"-lgfortran"
-	F77Flags_32b="-O3 -std=legacy $FPIC"
+	F77Flags="-O3 -std=legacy $FPIC"
 	# -fallow-argument-mismatch pour gfortran>=10.0.0 (plusieurs librairies Fortran ne compilent pas sinon dont LIBSKIT la premiere):
-        [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=10)}'`" = 1 ] && F77Flags_32b=$F77Flags_32b" -fallow-argument-mismatch"
-	F77Flags="$F77Flags_32b" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags_32b" -fdefault-integer-8"
+        [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=10)}'`" = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+	F77Flags_64b="$F77Flags" && [ "$TRUST_INT64" = "1" ] && F77Flags_64b=$F77Flags" -fdefault-integer-8"
 	ccFLAGS="-O3 $FPIC $PTHREAD"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	if [ "$TRUST_USE_CUDA" = 1 ]
@@ -1899,10 +1899,10 @@ case $TRUST_ARCH_CC in
 	SYSLIBS=$SYSLIBS"-lgfortran -lgcc"
 	[ "$TRUST_F77_BASE" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
 	[ ${TRUST_F77_BASE%flang} != $TRUST_F77_BASE ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lpgmath -lomp"
-	F77Flags_32b="-O3 -std=legacy -fPIC $ArmFlags $AoccFlags"
+	F77Flags="-O3 -std=legacy -fPIC $ArmFlags $AoccFlags"
 	TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
-	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags_32b=$F77Flags_32b" -fallow-argument-mismatch"
-	F77Flags="$F77Flags_32b" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags_32b" -fdefault-integer-8"
+	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+	F77Flags_64b="$F77Flags" && [ "$TRUST_INT64" = "1" ] && F77Flags_64b=$F77Flags" -fdefault-integer-8"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	;;
@@ -1921,14 +1921,14 @@ case $TRUST_ARCH_CC in
         var1=PE_MPICH_GTL_DIR_amd_$ROCM_ARCH
         var2=PE_MPICH_GTL_LIBS_amd_$ROCM_ARCH
         SYSLIBS=$SYSLIBS" ${!var1} ${!var2}"
-        F77Flags_32b="-O3 -fPIC"
-        F77Flags_32b="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
-        F77Flags=$F77Flags_32b
+        F77Flags="-O3 -fPIC"
+        F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f ! en debug il faut -g -O0 sinon meme erreur !
         TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
-        [ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags_32b=$F77Flags_32b" -fallow-argument-mismatch"
-        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags=$F77Flags" -default64"          # crayftn
-        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags=$F77Flags" -fdefault-integer-8" # flang
-        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_hipcc" ] && F77Flags=$F77Flags" -fdefault-integer-8" # gfortran
+        [ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+        F77Flags_64b=$F77Flags
+        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_crayCC" ]     && F77Flags_64b=$F77Flags" -default64"          # crayftn
+        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_amdclang++" ] && F77Flags_64b=$F77Flags" -fdefault-integer-8" # flang
+        [ "$TRUST_INT64" = "1" ] && [ "$TRUST_ARCH_CC" = "linux_hipcc" ] && F77Flags_64b=$F77Flags" -fdefault-integer-8" # gfortran
         [ "$TRUST_F77_BASE_EXTP" = gfortran ] && SYSLIBS=$SYSLIBS" -lgfortran" && rep=/usr/lib/gcc/x86_64-linux-gnu/11 && [ -d $rep ] && SYSLIBS="-L$rep "$SYSLIBS # is247793.intra.cea.fr !
         ccFLAGS="-O3 -fPIC"
         ShLibFlag="\$(TRUST_CC) -shared"
@@ -1937,8 +1937,8 @@ case $TRUST_ARCH_CC in
         Defines="-D_COMPILE_AVEC_FCC" # Kfast: induces the standard options to exploit the full performance of the A64FX such as SIMDization, software pipelining
         CppFlags="-O3 -fPIC -Kfast" # -SSL2 (for Fujitsu Blas+Lapack) -Nnoclang (fugaku for Trad mode, default)
         SYSLIBS=""
-        F77Flags_32b="-O3 -fPIC -Kfast"
-        F77Flags="$F77Flags_32b"
+        F77Flags="-O3 -fPIC -Kfast"
+        F77Flags_64b="$F77Flags"
         ccFLAGS="-O3 -fPIC -Kfast"
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
@@ -1969,9 +1969,9 @@ case $TRUST_ARCH_CC in
         CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte tous les objets C++ non utilises
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
 	      # On passe en -O1 au lieu de -O3 car plantage dans routine_fft.f dans TrioCFD
-        F77Flags_32b="-O1 -fPIC -noswitcherror"
-        F77Flags=$F77Flags_32b
-        [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
+        F77Flags="-O1 -fPIC -noswitcherror"
+        F77Flags_64b=$F77Flags
+        [ "$TRUST_INT64" = "1" ] && F77Flags_64b=$F77Flags" -i8"
         ccFLAGS="-O3 -fPIC -noswitcherror"
         ShLibFlag="\$(TRUST_CC) -shared"
     ;;
@@ -1990,9 +1990,9 @@ case $TRUST_ARCH_CC in
         done
 	#SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -lstdc++ -liomp5"
 	SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -liomp5"
-	F77Flags_32b="$flag_optim -fPIC"
-	F77Flags=$F77Flags_32b
-	[ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
+	F77Flags="$flag_optim -fPIC"
+	F77Flags_64b=$F77Flags
+	[ "$TRUST_INT64" = "1" ] && F77Flags_64b=$F77Flags" -i8"
 	ccFLAGS="$flag_optim -fPIC -funroll-loops"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	;;
@@ -2120,10 +2120,10 @@ int main() {
       integer i
       call EXIT(storage_size(i))
       end' > test_integer.f
-   $TRUST_F77_BASE $F77Flags -o test_integer test_integer.f && ./test_integer
+   $TRUST_F77_BASE $F77Flags_64b -o test_integer test_integer.f && ./test_integer
    if [ $? != 64 ]
    then
-      echo "Error ! F77Flags=$F77Flags is not enough to convert Fortran integer type to 64 bits integer." 
+      echo "Error ! F77Flags_64b=$F77Flags_64b is not enough to convert Fortran integer type to 64 bits integer." 
       exit -1
    fi  
    rm -f test_integer.f test_integer
@@ -2420,7 +2420,7 @@ SYSINC_DEP = $SYSINC_DEP
 CppFlags = $TRUST_ADD_CXXFLAGS $OPT_FLAG $CppFlags $MPI_Flags \$(Includes) \$(SYSINC) \$(Defines)
 SYSLIBS = $MPI_LIB $COMLIBS $SYSLIBS
 F77Flags = $TRUST_ADD_FFLAGS $F77Flags
-F77Flags_32b = $TRUST_ADD_FFLAGS $F77Flags_32b
+F77Flags_64b = $TRUST_ADD_FFLAGS $F77Flags_64b
 ccFLAGS = $TRUST_ADD_CFLAGS $OPT_FLAG $ccFLAGS
 ShLibFlag = $ShLibFlag
 SL_EXTENSION = $SL_EXTENSION
@@ -2431,14 +2431,14 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    Defines=${Defines% -DNDEBUG}
    # On remplace -O? par -g
    F77Flags=`echo $F77Flags | sed "1,$ s?-O[0-9]?-g?g"`
-   F77Flags_32b=`echo $F77Flags_32b | sed "1,$ s?-O[0-9]?-g?g"`
+   F77Flags_64b=`echo $F77Flags_64b | sed "1,$ s?-O[0-9]?-g?g"`
    ccFLAGS=`echo $ccFLAGS | sed "1,$ s?-O[0-9]?-g?g"`
    CppFlags=`echo $CppFlags | sed "1,$ s?-O[0-9]?-g -O0?g"`
    ### Sur gcc >= 11, -g utilise dwarf5 qui empeche addr2line des versions < 2.35.2 de binutils de convertir les adresses des binaires en numero ligne du code source
    [[ $(echo $TRUST_VERSION_GNU | cut -d '.' -f 1) -ge 11 ]] && CppFlags=${CppFlags/-g /-gdwarf-4 }
    ### sur Adastra-gpu avec crayftn, il faut passer -O0 sinon make debug passe pas( _dger_ undefined reference dans dlsode.f)
    [ "$TRUST_ARCH_CC" = "linux_crayCC" ] && F77Flags=`echo $F77Flags | sed "1,$ s?-g?-g -O0?g"`
-   [ "$TRUST_ARCH_CC" = "linux_crayCC" ] && F77Flags_32b=`echo $F77Flags_32b | sed "1,$ s?-g?-g -O0?g"`
+   [ "$TRUST_ARCH_CC" = "linux_crayCC" ] && F77Flags_64b=`echo $F77Flags_64b | sed "1,$ s?-g?-g -O0?g"`
    #############################
    # Creation du fichier profile
    #############################
@@ -2478,7 +2478,7 @@ LINK_MALIB = $LINK_MALIB" > $tmp
       GCOV_FLAG="-fno-inline -ftest-coverage -fprofile-arcs"
       sed -i "s?CppFlags =?CppFlags = $GCOV_FLAG?g" $tmp
       sed -i "s?F77Flags =?F77Flags = $GCOV_FLAG?g" $tmp
-      sed -i "s?F77Flags_32b =?F77Flags_32b = $GCOV_FLAG?g" $tmp
+      sed -i "s?F77Flags_64b =?F77Flags_64b = $GCOV_FLAG?g" $tmp
       sed -i "s?ccFLAGS =?ccFLAGS = $GCOV_FLAG?g"  $tmp
       # O3 -> O0 pour cachegrind:
       sed -i "1,$ s?-O3?-g -O0?g" $tmp
@@ -2572,11 +2572,7 @@ do
       MODE=`echo $mode | awk '{print toupper($0)}'`
       ajout=`grep "Defines =" make.${TRUST_ARCH_CC}$suf | sed "s/$defines_base//;s/Defines =//"`
       find_flags CXX CppFlags  $ajout
-      if [ "$TRUST_INT64_NEW" = "1" ]; then
-        find_flags Fortran F77Flags_32b   # with the proper 64b version the Fortran part of TRUST only needs 32b compile
-      else
-        find_flags Fortran F77Flags
-      fi
+      find_flags Fortran F77Flags
       find_flags C ccFLAGS
       find_flags EXE_LINKER SYSLIBS
   fi

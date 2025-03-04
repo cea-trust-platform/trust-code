@@ -27,7 +27,7 @@ MALIB = TRUST$(COMM)$(OPT).$(LIB_EXTENSION)
 .c.o:
 	@echo $< $(Defines); $(TRUST_cc) -c $< $(ccFLAGS)
 .f.o:
-	@echo $< $(Defines); $(TRUST_F77) -c $< $(F77Flags_32b)
+	@echo $< $(Defines); $(TRUST_F77) -c $< $(F77Flags)
 
 all:            $(PROGRAM)
 lib:	$(Lib).$(SL_EXTENSION)
