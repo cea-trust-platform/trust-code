@@ -1043,7 +1043,7 @@ def isExtractingNR():
     Check environnement variable IS_EXTRACTING_NR to know if extracting_nr is active
     """
 
-    if (os.getenv("IS_EXTRACTING_NR") == 1): return True
+    if (os.getenv("IS_EXTRACTING_NR") == '1'): return True
     return False
 
 

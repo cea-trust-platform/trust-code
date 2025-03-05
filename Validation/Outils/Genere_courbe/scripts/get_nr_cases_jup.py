@@ -17,7 +17,7 @@ def extract_cases(book):
      root = json.loads(f.read())
      # Now parse tree to retrieve all Python up to the invocation of "runCases()":
      cells = root.get("cells", [])
-     done, s = False, ""
+     done, s = False, "os.environ['IS_EXTRACTING_NR'] = '1'"
      for c in cells:
        s += "\n"
        if done: break
