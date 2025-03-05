@@ -170,9 +170,10 @@ do
          cd - 1>/dev/null 2>&1
       else
          if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
-	 then
-	    echo "$adr not accessible..."
-	 else
+         then
+            echo "$adr not accessible..."
+            [ -f ~/$CR ] && cp ~/$CR $REP_NUIT/.
+         else
             # Connection sur machine interne par ssh
             $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:~/$CR $REP_NUIT/. 2>/dev/null
             $SSHP ssh_ $log@$adr -n "rm ~/$CR 2>/dev/null"
@@ -182,13 +183,13 @@ do
             $SSHP ssh_ $log@$adr -n "rm $ROOT/MAKE_* 2>/dev/null" 
             $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:$ROOT/PERF_* $REP_NUIT/. 2>/dev/null
             $SSHP ssh_ $log@$adr -n "rm $ROOT/PERF_* 2>/dev/null" 
-	    # New, mise_a_jour_TRUST_arch is killed except the Week-end:
-	    if [ "`date '+%u'`" -lt 6 ]
-	    then
-	       echo "ls_arch -kill $adr" >> $REP_NUIT/$CR
-	       ls_arch -kill $adr >> $REP_NUIT/$CR
-	    fi
-	 fi
+            # New, mise_a_jour_TRUST_arch is killed except the Week-end:
+	        if [ "`date '+%u'`" -lt 6 ]
+            then
+              echo "ls_arch -kill $adr" >> $REP_NUIT/$CR
+              ls_arch -kill $adr >> $REP_NUIT/$CR
+	        fi
+         fi
       fi    	
       sleep 10s
       PERF=`ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST" 2>/dev/null`

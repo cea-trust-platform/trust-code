@@ -340,7 +340,7 @@ option_configure=" -disable-ccache "
 # PETSc debug
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-enable-petsc-debug" | grep ^$HOST"\."`" != "" ]             && option_configure=$option_configure" -enable-petsc-debug"
 # MEDCoupling debug
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-enable-mc-debug" | grep ^$HOST"\."`" != "" ]             && option_configure=$option_configure" -enable-mc-debug"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-enable-mc-debug" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -enable-mc-debug"
 # without VC
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-vc" | grep ^$HOST"\."`" != "" ]                     && option_configure=$option_configure" -disable-vc"
 # OpenMPI
@@ -386,28 +386,28 @@ option_configure=" -disable-ccache "
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel23" | grep ^$HOST"\."`" != "" ]                        && modules_to_load="impi/intel-compilers_2023.2.1/2021.9.0 imkl/intel-compilers_2023.2.1_impi_2021.9.0/2023.2.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcc8" | grep ^$HOST"\."`" != "" ]                           && modules_to_load="gcccore/.8.3.0 gcc/8.3.0 texlive/20220321"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]         && option_configure=$option_configure" -force_even_unsupported"
-# Compilation en INT64/32
-#[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ] || [ "`echo $HOST | grep build64 2>/dev/null`" != "" ]        && option_configure=$option_configure" -with-64-bit-indices"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_32_bit" | grep ^$HOST"\."`" != "" ]        && option_configure=$option_configure" -with-32-bit-indices"
+# Compilation en INT32 (old default mode for pre v1.9.6)
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_32_bit" | grep ^$HOST"\."`" != "" ]                   && option_configure=$option_configure" -with-32-bit-indices"
 # mpi4py
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py" | grep ^$HOST"\."`" != "" ]                 && option_configure=$option_configure" -disable-mpi4py"
 # gtest
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gtest" | grep ^$HOST"\."`" != "" ]                 && option_configure=$option_configure" -disable-gtest"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gtest" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -disable-gtest"
 # system mpi, for cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_system_mpi" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -force_system_mpi"
 # coolprop
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -with-coolprop=$WORKDIR/ExternalLibs/CoolProp_6.6.0"
 # eos
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=$WORKDIR/ExternalLibs/EOS/v2.0.0/install"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos200" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=$WORKDIR/ExternalLibs/EOS/v2.0.0/install"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos210" | grep ^$HOST"\."`" != "" ]                            && option_configure=$option_configure" -with-eos=$WORKDIR/ExternalLibs/EOS/v2.1.0/install"
 # no conda, I disable trustify too since no PyQt5 and not pydantic
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ]                  && option_configure=$option_configure" -without-conda -disable-trustify"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-alternative-cmake" | grep ^$HOST"\."`" != "" ]              && alternative_cmake=1
 # no trustify
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustify" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-trustify"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-trustify" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-trustify"
 # no openblas (add it for fedora 38)
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-openblas" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-openblas"
 # disable gnuplot
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gnuplot" | grep ^$HOST"\."`" != "" ]               && option_configure=$option_configure" -disable-gnuplot"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gnuplot" | grep ^$HOST"\."`" != "" ]                && option_configure=$option_configure" -disable-gnuplot"
 # c++ standard
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-stdcpp14" | grep ^$HOST"\."`" != "" ]                       && option_configure=$option_configure" -std=c++14"
 
