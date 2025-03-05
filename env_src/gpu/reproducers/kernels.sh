@@ -1,4 +1,11 @@
 #!/bin/bash
+run()
+{
+   echo "Build OK"
+   rm -f *nsys-rep
+   touch dumb.data && exec=`pwd`/kernels trust dumb 1
+   [ "$1" = -nsys ] && nsys profile ./kernels && nsys-ui report1.nsys-rep
+}
 rm -f kernels 
 # -gpu=loadcache:L1|L2s
 # -gpu=ccnative
@@ -12,22 +19,21 @@ then
    cmd="$HIP -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB -ldl"
    echo $cmd
    time eval $cmd || exit -1
+   run
 else
+   # Using nvcc -ccbin=g++ (build time 5.7s)
+   COMPILER="nvcc -x cu -arch=sm_$TRUST_CUDA_CC --extended-lambda -ccbin=g++ -Xcompiler=\"-O3\" -L$CUDA_ROOT/lib64/stubs -lcuda"
+   cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
+   echo $cmd
+   time eval $cmd || exit -1
+   run
    # Use nvc++ -cuda (build time 7.2s)
    COMPILER="nvc++ -cuda -gpu=nordc,cc$TRUST_CUDA_CC -L$CUDA_ROOT/lib64/stubs -lcuda"
    cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
    echo $cmd
    time eval $cmd || exit -1
-   # Suing nvcc -ccbin=g++ (build time 5.7s)
-   COMPILER="nvcc -x cu -arch=sm_$TRUST_CUDA_CC --extended-lambda -ccbin=g++ -Xcompiler=\"-O3\" -L$CUDA_ROOT/lib64/stubs -lcuda"
-   cmd="$COMPILER -g -O3 -std=c++17 $KOKKOS_INC -o kernels kernels.cpp $KOKKOS_LIB"
-   echo $cmd
-   time eval $cmd || exit -1
+   run
 fi
-echo "Build OK"
-rm -f *nsys-rep
-touch dumb.data && exec=`pwd`/kernels trust dumb 1
-[ "$1" = -nsys ] && nsys profile ./kernels && nsys-ui report1.nsys-rep
 
 exit
 
