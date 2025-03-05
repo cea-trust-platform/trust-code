@@ -554,6 +554,12 @@ int operator !=(const char* const un_autre, const Nom& un_nom)
   return ! (un_autre == un_nom);
 }
 
+bool operator <(const Nom& n1, const Nom& n2)
+{
+  return n1.nom_.compare(n2.nom_) < 0;
+}
+
+
 /*! @brief Renvoie *this;
  *
  * @return (const Nom&) reference sur le Nom

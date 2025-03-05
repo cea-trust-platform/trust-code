@@ -80,6 +80,9 @@ public:
   friend int operator !=(const Nom& , const Nom& ) ;
   friend int operator ==(const char* const, const Nom&) ;
   friend int operator !=(const char* const, const Nom&) ;
+  // so that Nom (and Motcle) can be used as a key in std::map :
+  friend bool operator <(const Nom&, const Nom&) ;
+
   inline bool contient(const Nom& nom) const
   {
     std::size_t found = nom_.find(nom.nom_);

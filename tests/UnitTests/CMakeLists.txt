@@ -20,6 +20,7 @@ message(STATUS "Found GTest library at: ${gtestlib}")
 #
 set(src_unit 
      main_gtest.cpp
+     unit_misc.cpp
      unit_array.cpp
      unit_vect_tools.cpp
      unit_device.cpp
