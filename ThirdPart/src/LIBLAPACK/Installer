@@ -77,7 +77,7 @@ install_NetLib()
    #rm -f $package.tar
    cd $package 
 
-   option=`$TRUST_Awk '/F77Flags/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
+   option=`$TRUST_Awk '/F77Flags =/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
    # On garde Blas/Lapack en int32:
    #[ "$TRUST_INT64" = "1" ] && option=`echo $option | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
    # Creation du make.inc

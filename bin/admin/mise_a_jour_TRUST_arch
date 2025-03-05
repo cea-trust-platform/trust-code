@@ -425,7 +425,7 @@ echo "--------------------------------------------------------"
 
 [ "x$modules_to_load" != "x" ] && sed -i "1 i source /etc/profile.d/modules.sh && module purge 1>/dev/null" env/machine.env && sed -i "2 i module load $modules_to_load 2>/dev/null" env/machine.env
 [ "x$env_vars" != "x" ] && echo $env_vars >> env/machine.env
-
+[ "x$alternative_cmake" != "x" ] && echo "export PATH=\$WORKDIR/cmake/bin:\$PATH" >> env/machine.env
 HOST=$HOST_tmp
 
 ###############################
