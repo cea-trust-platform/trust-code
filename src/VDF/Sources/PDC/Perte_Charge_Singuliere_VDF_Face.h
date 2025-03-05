@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,9 @@ public:
   DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { }
+  void completer() override;
 
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps) override;
