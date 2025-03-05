@@ -85,7 +85,8 @@ then
    [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8 && version=3_1_1
    [ "`grep 'Rocky Linux 9' /etc/os-release 2>/dev/null`" != "" ]   		&& os=rocky9 && version=3_4_2
    [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
-   [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
+   [ "`grep 'Fedora release 3[0-2]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora27 && version=3_1_1
+   [ "`grep 'Fedora release 3[3-4]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora31 && version=3_4_1 && TRUST_DOWNLOAD_VISIT=1 # Binaire marche meme avec OpenMPI 4.1.6
    [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora31 && version=3_4_1
    [ "`grep 'Fedora release 4[0-1]' /etc/fedora-release 2>/dev/null`" != "" ]   && os=fedora40 && version=3_4_2
    [ `uname -s` = Darwin ]                                                      && os=arm64 && version=3_3_1
@@ -95,7 +96,6 @@ then
    then
       [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
    fi
-   
    if [ `uname -s` = Darwin ]
    then
       version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
