@@ -683,7 +683,7 @@ template<class _TYPE_> template<typename Type_Double>
 void Iterateur_VDF_Face<_TYPE_>::ajouter_pour_compressible(const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   // on a secmem calcule comme : div(alpha rho v x v)
-  const DoubleTab& vit = semi_impl.count("vitesse") ? semi_impl.at("vitesse") : le_champ_convecte_ou_inc->valeurs();
+  const DoubleTab& vit = le_champ_convecte_ou_inc->valeurs();
 
   // etape 1 : calcule de la terme div(alpha rho v)
   DoubleTrav unite(secmem), resu(secmem);
