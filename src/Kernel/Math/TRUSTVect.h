@@ -17,8 +17,6 @@
 #define TRUSTVect_included
 
 #include <type_traits>
-#include <MD_Vector_tools.h>
-#include <MD_Vector_base.h>
 #include <DescStructure.h>
 #include <TRUSTArray.h>
 #include <limits.h>
@@ -26,6 +24,8 @@
 
 #include <MD_Vector.h>
 #ifndef LATATOOLS   // Lata tools does not use parallelism
+#include <MD_Vector_tools.h>
+#include <MD_Vector_base.h>
 #include <communications.h>
 #endif
 

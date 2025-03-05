@@ -16,7 +16,6 @@
 #ifndef Process_included
 #define Process_included
 
-#include <TRUST_Version.h>  // so that it is accessible from everywhere in TRUST
 #include <arch.h>
 
 #ifdef LATATOOLS
@@ -24,6 +23,7 @@
 #include <stdlib.h>
 #else
 #include <kokkos++.h>
+#include <TRUST_Version.h>  // so that it is accessible from everywhere in TRUST
 #endif
 
 class Objet_U;

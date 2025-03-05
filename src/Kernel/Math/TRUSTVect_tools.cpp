@@ -17,7 +17,9 @@
 #include <TRUSTVect_tools.tpp>
 #include <TRUSTTabs.h>
 #include <View_Types.h>
+#ifndef LATATOOLS
 #include <MD_Vector_seq.h>
+#endif
 
 /**************************************************************************************/
 /* Warning ! This kernels are critical for performance into several TRUST applications !
