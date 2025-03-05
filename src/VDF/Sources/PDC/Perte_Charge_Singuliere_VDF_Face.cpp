@@ -14,28 +14,21 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Singuliere_VDF_Face.h>
-#include <Domaine_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Equation_base.h>
-#include <Probleme_base.h>
-#include <Motcle.h>
+#include <Pb_Multiphase.h>
 #include <Matrice_Morse.h>
-#include <Array_tools.h>
 #include <Matrix_tools.h>
+#include <Array_tools.h>
+#include <Domaine_VDF.h>
+#include <Motcle.h>
 
 Implemente_instanciable(Perte_Charge_Singuliere_VDF_Face,"Perte_Charge_Singuliere_VDF_Face",Perte_Charge_VDF_Face);
-
-//// printOn
-//
 
 Sortie& Perte_Charge_Singuliere_VDF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Perte_Charge_Singuliere_VDF_Face::readOn(Entree& s)
 {
@@ -50,14 +43,13 @@ Entree& Perte_Charge_Singuliere_VDF_Face::readOn(Entree& s)
   return s;
 }
 
-
-/////////////////////////////////////////////////////////////////////
-//
-//                    Implementation des fonctions
-//
-//               de la classe Perte_Charge_Singuliere_VDF_Face
-//
-////////////////////////////////////////////////////////////////////
+void Perte_Charge_Singuliere_VDF_Face::completer()
+{
+  Perte_Charge_VDF_Face::completer();
+  // eq_masse besoin de champ_conserve !
+  if (sub_type(Pb_Multiphase, mon_equation->probleme()))
+    ref_cast(Pb_Multiphase, mon_equation->probleme()).equation_masse().init_champ_conserve();
+}
 
 void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
 {
@@ -114,50 +106,86 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : nullptr;
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
 
   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
+  const DoubleTab& vit = la_vitesse->valeurs(),&vfd = domaine_VDF.volumes_entrelaces_dir(),
+                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr,
+                    *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr;;
   int ndeb_faces_int = domaine_VDF.premiere_face_int();
 
-  int nb_faces = num_faces.size();
-  int numfa;
-  double Ck,U;
-  double Ud; // vitesse debitante
+  const int nb_faces = num_faces.size(),  N = equation().inconnue().valeurs().line_size();
+  double Ck;
+  const IntTab& f_e = domaine_VDF.face_voisins();
+  DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
 
   if (axi)
     for (int i=0; i<nb_faces; i++)
       {
-        numfa = num_faces[i];
-        U = vit[numfa];
+        const int numfa = num_faces[i];
+
+        if (pbm)
+          {
+            aar_f = 0.;
+            for (int j = 0; j < 2; j++)
+              {
+                const int e = f_e(numfa, j);
+
+                if (e < 0 ) continue;
+
+                for (int n = 0; n < N; n++)
+                  aar_f(n) +=  vfd(numfa, j) / volumes_entrelaces(numfa) * (*a_r)(e, n) * (*alpha)(e, n);
+              }
+          }
+        else aar_f = 1.;
+
 
         if (numfa < ndeb_faces_int)
           Ck = -0.5*K()/le_dom_VDF->dist_norm_bord_axi(numfa);
         else
           Ck = -0.5*K()/le_dom_VDF->dist_norm_axi(numfa);
-        secmem[numfa] += Ck*U*std::fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        for (int n = 0; n < N; n++)
+          {
+            const double U = vit(numfa, n);
+            secmem(numfa, n) += aar_f(n) * Ck*U*std::fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+          }
       }
   else
     for (int i=0; i<nb_faces; i++)
       {
+        const int numfa = num_faces[i];
+        if (pbm)
+          {
+            aar_f = 0.;
+            for (int j = 0; j < 2; j++)
+              {
+                const int e = f_e(numfa, j);
 
-        numfa = num_faces[i];
-        // U = vit[numfa];
+                if (e < 0 ) continue;
 
-        Ud = vit[numfa]*porosite_surf[numfa];
-        U = inco[numfa]*porosite_surf[numfa];
+                for (int n = 0; n < N; n++)
+                  aar_f(n) +=  vfd(numfa, j) / volumes_entrelaces(numfa) * (*a_r)(e, n) * (*alpha)(e, n);
+              }
+          }
+        else aar_f = 1.;
 
         if (numfa < ndeb_faces_int)
-          Ck = -0.5*K()/le_dom_VDF->dist_norm_bord(numfa);
+          Ck = -0.5 * K() / le_dom_VDF->dist_norm_bord(numfa);
         else
-          Ck = -0.5*K()/le_dom_VDF->dist_norm(numfa);
+          Ck = -0.5 * K() / le_dom_VDF->dist_norm(numfa);
 
-        secmem[numfa] += Ck*U*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
-        if(mat) (*mat)(numfa,numfa)-=Ck*porosite_surf[numfa]*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        for (int n = 0; n < N; n++)
+          {
+            const double Ud = vit(numfa, n) * porosite_surf[numfa]; // vitesse debitante
+            const double U = inco(numfa, n) * porosite_surf[numfa];
 
+            secmem(numfa,n) += aar_f(n) * Ck * U * std::fabs(Ud) * volumes_entrelaces[numfa] * porosite_surf[numfa];
+            if (mat)
+              (*mat)(N * numfa + n, N * numfa + n) -= aar_f(n) * Ck * porosite_surf[numfa] * std::fabs(Ud) * volumes_entrelaces[numfa] * porosite_surf[numfa];
+          }
       }
-
 }
 
 DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco, DoubleTab& resu) const
@@ -172,6 +200,3 @@ void Perte_Charge_Singuliere_VDF_Face::mettre_a_jour(double temps)
   Perte_Charge_VDF_Face::mettre_a_jour(temps);
   update_K(equation(), calculate_Q(equation(), num_faces, sgn), bilan());
 }
-
-
-
