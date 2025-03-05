@@ -72,17 +72,22 @@ int main() {
     Kokkos::deep_copy(f_device, Kokkos::View<double*, Kokkos::HostSpace>(f, nb_faces));
     Kokkos::deep_copy(resu_device, Kokkos::View<double*, Kokkos::HostSpace>(resu, nb_faces));
 
+    // Use const Kokkos views:
+    Kokkos::View<const double*> const_a_device = a_device;
+    Kokkos::View<const int*>   const_ef_device = ef_device;
+    Kokkos::View<const double*> const_f_device = f_device;
+    
     FLOPS=0;
     SEC=0;
     for (int sample=0;sample<samples;sample++)
     {
           auto start = std::chrono::high_resolution_clock::now();
           Kokkos::parallel_for(nb_elem, KOKKOS_LAMBDA(const int elem) {
-              double pre = a_device(elem);
+              double pre = const_a_device(elem);
               for (int j=0; j<4; j++)
               {
-                  int face = ef_device(4*elem+j);
-                  Kokkos::atomic_add(&resu_device(face), pre * f_device(face));
+                  int face = const_ef_device(4*elem+j);
+                  Kokkos::atomic_add(&resu_device(face), pre * const_f_device(face));
               }
           });
           Kokkos::fence();
@@ -95,7 +100,7 @@ int main() {
     SEC/=samples;
     std::cout << "[Kernel OpDiv] Kokkos Mean time: " << 1000*SEC << " ms " << 0.1*int(0.01*0.001*0.001*FLOPS/SEC) << " GFLOPS\n";
 
-    // Tuned views:
+    // Tuned views with trait:
     using RandomAccess = Kokkos::MemoryTraits<Kokkos::RandomAccess>;
     Kokkos::View<const double*> a_view  = a_device;
     Kokkos::View<const int*, RandomAccess> ef_view    = ef_device;

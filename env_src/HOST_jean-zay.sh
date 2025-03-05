@@ -26,11 +26,12 @@ define_modules_config()
       fi
       [ "$TRUST_CUDA_CC" = "" ] && TRUST_CUDA_CC=70           # V100
       [ "$TRUST_CUDA_CC" = 80 ] && module="arch/a100 "$module # A100
-      [ "$TRUST_CUDA_CC" = 90 ] && module="arch/h100 gcc/11.3.1 openmpi/4.1.5-cuda" # H100
+      [ "$TRUST_CUDA_CC" = 90 ] && module="arch/h100 gcc/11.3.1 openmpi/4.1.5-cuda" # H100 (pas le choix sur gcc et openmpi...)
    else
       # 21/06/2023 : ND : passage a gcc
       module="gcc/8.5.0 openmpi/4.0.5"
    fi
+   module=$module" cmake/3.30.1"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -84,6 +85,7 @@ define_soumission_batch()
       q="" && [ $arch != v100 ] && q="_"$arch
       qos=qos_gpu$q-t3 && cpu=1200 && [ "$prod" != 1 ] && [ $NB_PROCS -le 32 ] && qos=qos_gpu$q-dev && cpu=120 
       [ "`id | grep aih`" != "" ] && project="aih@$arch" # GENDEN
+      [ "`id | grep hbx`" != "" ] && project="hbx@$arch" # eDARI
    else
       ntasks=40 # number of cores max
       queue=cpu_p1

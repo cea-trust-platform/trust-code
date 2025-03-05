@@ -508,7 +508,7 @@ then
    # New (SuiteSparse/Cholmod/UmfPack):
    if [ "$minimal_mumps" = 0 ]
    then
-      if [ "$TRUST_USE_CUDA" = 1 ]
+      if [ "$TRUST_USE_GPU" = 1 ]
       then
          # La version GPU (Cholmod) n'est disponible que pour les long (pas pratique...) et cela plante encore sur topaze int64
          echo "SuiteSparse disabled"
