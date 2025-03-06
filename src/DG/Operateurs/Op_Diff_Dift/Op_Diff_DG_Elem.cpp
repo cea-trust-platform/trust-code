@@ -152,7 +152,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const DoubleTab& eta_F = ch.get_eta_facet();  // Compute the penalisation coefficient
-  const Quadrature_base& quad = domaine.get_quadrature(2); //TODO a trouver avec Option_DG
+  const Quadrature_base& quad = domaine.get_quadrature(); //TODO a trouver avec Option_DG
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
   int nb_pts_integ_max = quad.nb_pts_integ_max();
   double coeff;
@@ -432,7 +432,7 @@ void Op_Diff_DG_Elem::contribuer_au_second_membre(DoubleTab& resu ) const
   const DoubleTab& face_normales = domaine.face_normales();
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
-  const Quadrature_base& quad = domaine.get_quadrature(2);
+  const Quadrature_base& quad = domaine.get_quadrature();
   const DoubleTab& integ_points_facets = quad.get_integ_points_facets();
   int nb_pts_int_fac = integ_points_facets.dimension(1);
 

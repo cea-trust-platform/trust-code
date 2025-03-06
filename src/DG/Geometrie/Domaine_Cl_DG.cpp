@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,7 +84,7 @@ int Domaine_Cl_DG::initialiser(double temps)
   Domaine_Cl_dis_base::initialiser(temps);
 
   if (nb_bord_periodicite() > 0)
-      Process::exit("Periodic conditions are not coded yet for DG");
+    Process::exit("Periodic conditions are not coded yet for DG");
   return 1;
 }
 

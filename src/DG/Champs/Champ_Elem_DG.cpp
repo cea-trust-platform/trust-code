@@ -591,7 +591,7 @@ DoubleTab& Champ_Elem_DG::eval_elem(DoubleTab& tab_valeurs) const
 
   const int nb_elem = domaine.nb_elem();
 
-  const Quadrature_base& quad = domaine.get_quadrature();
+  const Quadrature_base& quad = domaine.get_quadrature(5);
   int nb_pts_integ_max = quad.nb_pts_integ_max();
 
   const Champ_base& ch_base = le_champ();
@@ -622,7 +622,7 @@ DoubleTab& Champ_Elem_DG::valeur_aux_elems(const DoubleTab& positions, const Int
 
   const DoubleVect& volume = domaine.volumes();
 
-  const Quadrature_base& quad = domaine.get_quadrature();
+  const Quadrature_base& quad = domaine.get_quadrature(5);
   int nb_pts_integ_max = quad.nb_pts_integ_max();
 
   const Champ_base& ch_base = le_champ();
@@ -668,14 +668,14 @@ DoubleTab& Champ_Elem_DG::valeur_aux_elems(const DoubleTab& positions, const Int
 void Champ_Elem_DG::compute_stab_param()
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
-  int nb_elem = domaine.nb_elem();
-  eta_elem.resize(nb_elem);
+  int nb_elem_tot = domaine.nb_elem_tot();
+  eta_elem.resize(nb_elem_tot);
   eta_facet.resize(domaine.nb_faces());
   const IntTab& type_elem = domaine.get_type_elem();  // IntTab that indicate the number of facet of each elem
 
   //          Computation of the stabilisation parameters for triangle
   const DoubleTab& sig=domaine.get_sig();
-  for (int e = 0; e < domaine.nb_elem(); e++)
+  for (int e = 0; e < nb_elem_tot; e++)
     {
       double ordre = get_order();
       if(type_elem(e)==3) // triangle

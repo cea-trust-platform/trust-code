@@ -27,7 +27,7 @@ Champ_base& Champ_Fonc_P1_DG::affecter_(const Champ_base& ch)
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG, le_dom_VF.valeur());
 
-  const Quadrature_base& quad = domaine.get_quadrature();
+  const Quadrature_base& quad = domaine.get_quadrature(5);
   const DoubleTab& integ_points = quad.get_integ_points();
   int nb_elem = domaine.nb_elem();
 
@@ -51,7 +51,7 @@ DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const 
 
   const DoubleVect& volume = domaine.volumes();
 
-  const Quadrature_base& quad = domaine.get_quadrature();
+  const Quadrature_base& quad = domaine.get_quadrature(5);
   int nb_pts_integ_max = quad.nb_pts_integ_max();
 
   const DoubleTab& values = le_champ().valeurs();

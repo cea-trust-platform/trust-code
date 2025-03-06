@@ -100,7 +100,7 @@ void Domaine_DG::get_position(DoubleTab& positions) const
  */
 void Domaine_DG::get_nb_integ_points(IntTab& nb_integ_points) const
 {
-  const Quadrature_base& quad = get_quadrature();
+  const Quadrature_base& quad = get_quadrature(5);
   nb_integ_points = quad.get_tab_nb_pts_integ();
 //  nb_integ_points.ref(tab_pts_integ);
 }
@@ -111,7 +111,7 @@ void Domaine_DG::get_nb_integ_points(IntTab& nb_integ_points) const
  */
 void Domaine_DG::get_ind_integ_points(IntTab& ind_integ_points) const
 {
-  const Quadrature_base& quad = get_quadrature();
+  const Quadrature_base& quad = get_quadrature(5);
   ind_integ_points = quad.get_ind_pts_integ();
 //  ind_integ_points.ref(ind_pts_integ);
 }
@@ -167,18 +167,18 @@ double Domaine_DG::compute_L2_norm(const DoubleVect& val_source) const
  */
 void Domaine_DG::compute_mesh_param()
 {
-  int nb_elem = this->nb_elem();
+  int nb_elem_tot = this->nb_elem_tot();
   DoubleTab& xs = domaine().les_sommets(); // facets barycentre
   const IntTab& vert_elems = domaine().les_elems();
   const IntTab& elem_faces=this->elem_faces();
   const IntTab& face_som=this->face_sommets();
-  dia_.resize(nb_elem); ///< Array of the diameter for each cell
-  per_.resize(nb_elem); ///< Perimeter of each cell
-  rho_.resize(nb_elem); ///< Diameter of the largest incircle for each cell
-  sig_.resize(nb_elem); ///< Aspect ratio of each cell
-  surf_.resize(nb_elem); ///< Surface of each cell
+  dia_.resize(nb_elem_tot); ///< Array of the diameter for each cell
+  per_.resize(nb_elem_tot); ///< Perimeter of each cell
+  rho_.resize(nb_elem_tot); ///< Diameter of the largest incircle for each cell
+  sig_.resize(nb_elem_tot); ///< Aspect ratio of each cell
+  surf_.resize(nb_elem_tot); ///< Surface of each cell
 
-  for (int e = 0; e < nb_elem; e++)
+  for (int e = 0; e < nb_elem_tot; e++)
     {
       int nsom = type_elem_(e);
       if (nsom==3)
@@ -205,12 +205,12 @@ void Domaine_DG::compute_mesh_param()
               int f_e = elem_faces(e,f);
               int s1 = face_som(f_e,0);
               int s2 = face_som(f_e,1);
-              double x1= xs(s1,0);
-              double y2=xs(s2,1);
-              double x2=xs(s2,0);
-              double y1=xs(s1,1);
-              double prod=x1*y2-x2*y1;
-              std::cout<< "Les sommets sont ("<<x1<<","<<y1<<") et (" <<x2<<","<<y2<<") et prod : "<<prod<<std::endl ;
+//              double x1= xs(s1,0);
+//              double y2=xs(s2,1);
+//              double x2=xs(s2,0);
+//              double y1=xs(s1,1);
+//              double prod=x1*y2-x2*y1;
+//              std::cout<< "Les sommets sont ("<<x1<<","<<y1<<") et (" <<x2<<","<<y2<<") et prod : "<<prod<<std::endl ;
               surf_(e) +=std::abs(xs(s1,0)*xs(s2,1)-xs(s2,0)*xs(s1,1)); // It s 2 times the surface but then we need to multiply by 2 ...
               per_(e)+= std::sqrt((xs(s1,0) - xs(s2,0)) * (xs(s1,0) - xs(s2,0)) + (xs(s1,1) - xs(s2,1)) * (xs(s1,1) - xs(s2,1)));
 
@@ -232,15 +232,17 @@ void Domaine_DG::compute_mesh_param()
 void Domaine_DG::calculer_h_carre()
 {
   h_carre=0;
-  int nb_elem = this->nb_elem();
-  for (int e = 0; e < nb_elem; e++)
+  for (int e = 0; e < this->nb_elem(); e++)
     {
       h_carre=std::max(h_carre,dia_(e)*dia_(e));
     }
+  h_carre = Process::mp_max(h_carre);
+
   // Calcul de h_carre
   //h_carre = 1;
   if (h_carre_.size()) return; // deja fait
-  h_carre_.resize(nb_elem_tot());
+  int nb_elem_tot = this->nb_elem_tot();
+  h_carre_.resize(nb_elem_tot);
   h_carre_ = h_carre;
 //  h_carre = 1.;
 }
