@@ -528,7 +528,6 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 
 int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& tab_Gpoint, DoubleTab& tab_b)
 {
-  ToDo_Kokkos("Check we have a test case!");
   const Domaine_VEF& domaine_VEF =  domaine_Vef();
   const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
   const int nb_cond_lim = domaine_Cl.nb_cond_lim();
@@ -542,6 +541,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& tab_Gpoint, Do
       if (sub_type(Entree_fluide_vitesse_imposee, cl_base) && champ_front.instationnaire() )
         {
           // Construction de la liste des faces a traiter (reelles + virtuelles)
+          ToDo_Kokkos("Check we have a test case!");
           const int nb_faces_bord_tot = front_VF.nb_faces_tot();
           int dimension_ = Objet_U::dimension;
           CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
