@@ -33,8 +33,10 @@ template<typename T> struct ConstInnerType<T,2> { using TYPE = const T**;  };
 template<typename T> struct ConstInnerType<T,3> { using TYPE = const T***;  };
 template<typename T> struct ConstInnerType<T,4> { using TYPE = const T****;  };
 
+using unmanaged_memory = Kokkos::MemoryTraits<Kokkos::Unmanaged>;
+
 template<typename T, int _SHAPE_>
-using DeviceView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, Kokkos::LayoutRight>;
+using DeviceView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, Kokkos::LayoutRight, unmanaged_memory>;
 
 // Whatever the compilation type, the host memory space:
 using host_mirror_space = Kokkos::HostSpace;
@@ -57,17 +59,15 @@ memory_space;
 //"You do not need to explicitly specify host_execution_space because host_mirror_space already implies that you are using the host execution space."
 //memory space implies execution space
 
-using unmanaged_memory = Kokkos::MemoryTraits<Kokkos::Unmanaged>;
-
 // The actual view type that will be manipulated everywhere in the kernels (a *device* view)
 template<typename T, int _SHAPE_>
-using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
+using View = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, unmanaged_memory>;
 
 // Views on the host that allow conditional execution of loop that are not fully ported to device. They are unmanaged to avoid new allocation
 template<typename T, int _SHAPE_>
 using HostView = Kokkos::View<typename InnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
 template<typename T, int _SHAPE_>
-using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space>;
+using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, unmanaged_memory>;
 template<typename T, int _SHAPE_>
 using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
 
