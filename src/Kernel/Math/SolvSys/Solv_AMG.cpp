@@ -72,25 +72,26 @@ Entree& Solv_AMG::readOn(Entree& is)
       is >> motcle;
     }
   // We select the more efficient/robust one:
-#if defined(TRUST_USE_CUDA) || defined(TRUST_USE_ROCM)
+#if defined(TRUST_USE_CUDA)
   library = "petsc_gpu";
   chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver
+  /*
+    #if defined(MPIX_CUDA_AWARE_SUPPORT) && (OMPI_MAJOR_VERSION == 4)
+    library = "amgx";
+    chaine_lue_ += " { precond sa-amg { }";    // Best GPU solver on Nvidia if MPI-GPU Aware OpenMPI 4.x (Hypre diverge...)
+    #endif
+  */
+#elif defined(TRUST_USE_ROCM)
+  library = "petsc_gpu";
+  const char* value = std::getenv("ROCM_ARCH");
+  if (value != nullptr && std::string(value) == "gfx1100")
+    chaine_lue_ += " { precond sa-amg { }";    // GPU Solver for gfx1100 (Hypre crash)
+  else
+    chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver
 #else
   library = "petsc";
   chaine_lue_ += " { precond boomeramg { }"; // Best CPU solver
 #endif
-  const char* value = std::getenv("ROCM_ARCH");
-  if (value != nullptr && std::string(value) == "gfx1100")
-    {
-      library = "petsc_gpu";
-      chaine_lue_ += " { precond sa-amg { }";    // GPU Solver for gfx1100 (Hypre crash)
-    }
-  /*
-  #if defined(MPIX_CUDA_AWARE_SUPPORT) && (OMPI_MAJOR_VERSION == 4)
-  library = "amgx";
-  chaine_lue_ += " { precond sa-amg { }";    // Best GPU solver on Nvidia if MPI-GPU Aware OpenMPI 4.x (Hypre diverge...)
-  #endif
-  */
   if (rtol>0)
     {
       chaine_lue_ += " rtol ";
