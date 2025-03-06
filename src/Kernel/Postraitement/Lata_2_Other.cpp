@@ -64,10 +64,18 @@ void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
   dom_trio.typer(type_elem);
   dom_trio.type_elem()->associer_domaine(dom_trio);
 
+  bool poly_generique = false;
+  if (dom.get_domain_type() == Domain::UNSTRUCTURED)
+    {
+      const DomainUnstructured& geom = dom.cast_DomainUnstructured();
+      if (geom.elem_faces_.dimension(0) > 0 && geom.faces_.dimension(0) > 0)
+        poly_generique = true; /* pas le cas de post triomc */
+    }
+
   /*
    * XXX Elie Saikali => pour polyedre/polygon faut remplir plus de choses ;)
    */
-  if (type_elem == "POLYEDRE")
+  if (type_elem == "POLYEDRE" && poly_generique)
     {
       // dom_trio tjrs en 32 ... faut bricoler ...
       Domaine_32_64<trustIdType> dom_trio_poubelle;
@@ -77,8 +85,8 @@ void convert_domain_to_Domaine(const Domain& dom, Domaine& dom_trio)
         {
           const DomainUnstructured& geom = dom.cast_DomainUnstructured();
           const auto& elems = geom.elements_; // elem -> nodes
-          const auto& faces = geom.faces_; // elem -> nodes
-          const auto& ef = geom.elem_faces_; // elem -> nodes
+          const auto& faces = geom.faces_; // faces -> nodes
+          const auto& ef = geom.elem_faces_; // elem -> faces
           const auto& nod = geom.nodes_;
 
           trustIdType dim1_tmp = nod.dimension(0);
