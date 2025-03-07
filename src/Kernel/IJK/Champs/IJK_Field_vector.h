@@ -19,6 +19,7 @@
 #include <FixedVector.h>
 #include <IJK_Field.h>
 #include <Field_base.h>
+#include <Champ_Generique_base.h> // For Entity
 
 /*! @brief The class IJK_Field_vector is a fixed array of polymorphic IJK fields.
  *
@@ -62,6 +63,7 @@ public:
   {
     nature_ = Nature_du_champ::vectoriel;
     nb_compo_ = N;
+    loc_ = Entity::ELEMENT;
   }
 
   void nommer(const Nom& nam) override
@@ -79,6 +81,9 @@ public:
     for (int i=0; i<N; i++)
       this->data_[i]->add_synonymous(nam + Nom(compos[i]));
   }
+
+  Entity& localisation() { return loc_; }
+  const Entity& localisation() const { return loc_; }
 
   IJK_Field_template<T,TRUSTArray<T>>& operator[](int i)
   {
@@ -114,6 +119,9 @@ public:
   {
     return this->data_[0]->get_domaine();
   }
+
+private:
+  Entity loc_;
 };
 
 template<class T, int N>

@@ -78,9 +78,8 @@ void allocate_velocity(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int ghos
   v[1].allocate(s, Domaine_IJK::FACES_J, ghost);
   v[2].allocate(s, Domaine_IJK::FACES_K, ghost);
 
-  v[0].nommer(nam + Nom("_X"));
-  v[1].nommer(nam + Nom("_Y"));
-  v[2].nommer(nam + Nom("_Z"));
+  v.nommer(nam);
+  v.localisation() = Entity::FACE;
 }
 
 template<class T, int N>
@@ -93,6 +92,7 @@ void allocate_cell_vector(IJK_Field_vector<T, N>& v, const Domaine_IJK& s, int g
       IJK_Field_template<T,TRUSTArray<T>>::increase_alloc_counter();
     }
   v.nommer(nam);
+  v.localisation() = Entity::ELEMENT;
 }
 
 void calculer_rho_v(const IJK_Field_double& rho,
