@@ -17,7 +17,7 @@ Build=$TRUST_ROOT/build/Outils/VisIt/plugins/lata/build
 #################
 # Clean if needed
 #################
-if [ $0 -nt ${Build} ]; then
+if [ $0 -nt ${Build} ] || [ src/generate_lata_xml.sh -nt ${Build} ]; then
     echo "CLEANING: removing ${Build}"
     rm -rf ${Build}
 fi
