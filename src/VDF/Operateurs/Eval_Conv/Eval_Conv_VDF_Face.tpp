@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,19 +39,14 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, const DoubleTab* 
   double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
   if (DERIVED_T::IS_AMONT)
     {
+      const double surf = 0.5 * (surface(fac1) + surface(fac2));
       for (int k = 0; k < ncomp; k++)
         {
-          psc = 0.25*(dt_vitesse(fac1,k)+dt_vitesse(fac2,k))*(surface(fac1)+surface(fac2));
-          const int f = psc > 0 ? fac1 : fac2;
-
-          if (a_r)
-            {
-              const int elem = elem_(f, 0), elem2 = elem_(f, 1);
-              const int e = dt_vitesse(f,k) > 0 ? (elem > -1 ? elem : elem2) : (elem2 > -1 ? elem2 : elem);
-              psc *= (*a_r)(e, k);
-            }
-
-          flux[k] = -psc * inco(f, k) * porosite(f);
+          const double u_mean = 0.5 * (dt_vitesse(fac1, k) + dt_vitesse(fac2, k));
+          const int donor_face = u_mean > 0 ? fac1 : fac2;
+          const double u_donor = inco(donor_face, k);
+          const double ar = a_r ? (*a_r)(num_elem, k) : 1.0;
+          flux[k] = -ar * surf * u_mean * u_donor * porosite(donor_face);
         }
     }
   else if (DERIVED_T::IS_CENTRE)
@@ -451,19 +446,13 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(const DoubleTab* a_r, int num_elem, in
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
   else
     {
+      const double surf = 0.5 * (surface(fac1) + surface(fac2));
       for (int k = 0; k < aii.size_array(); k++)
         {
-          double psc = 0.25 * (dt_vitesse(fac1, k) + dt_vitesse(fac2, k)) * (surface(fac1) + surface(fac2));
-          const int f = psc > 0 ? fac1 : fac2;
-
-          if (a_r)
-            {
-              const int elem = elem_(f, 0), elem2 = elem_(f, 1);
-              const int e = dt_vitesse(f, k) > 0 ? (elem > -1 ? elem : elem2) : (elem2 > -1 ? elem2 : elem);
-              psc *= (*a_r)(e, k);
-            }
-
-          const double psc1 = psc * porosite(fac1), psc2 = psc * porosite(fac2);
+          const double u_mean = 0.5 * (dt_vitesse(fac1, k) + dt_vitesse(fac2, k));
+          const double ar = a_r ? (*a_r)(num_elem, k) : 1.0;
+          const double psc1 = ar * surf * u_mean * porosite(fac1);
+          const double psc2 = ar * surf * u_mean * porosite(fac2);
           fill_coeffs_proto<Type_Double>(k, psc1, psc2, aii, ajj);
         }
     }
