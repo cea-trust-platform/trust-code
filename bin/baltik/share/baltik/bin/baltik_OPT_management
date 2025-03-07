@@ -32,7 +32,7 @@ human_name_from_name()
  name=$1
  human=$name
  [ $name = "optim" ] && human="optimized"
- [ $name = "semi_optim" ] && human="semi-optimized using -g -O3"
+ [ $name = "semi_optim" ] && human="semi-optimized -O3 option and assert enabled"
  [ $name = "optim_valgrind" ] && human="optimized with valgrind"
  [ $name = "debug_valgrind" ] && human="debug with valgrind"
  [ $name = "gcov" ] && human="coverage"
