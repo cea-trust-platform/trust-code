@@ -301,85 +301,139 @@ class Write_notebook:
 
         code = "from trustutils import plot \n \n"
         columns = chaine2Tex(tableau.label).split("|")
-        code += f"columns={columns} \n"
-        code += "tab = plot.Table(columns)\n"
 
-        for ligne in tableau.listeLignes:
-            from Ligne import Lignes
+        if not tableau.transposed_display:
+            code += f"columns={columns} \n"
+            code += "tab = plot.Table(columns)\n"
 
-            if not isinstance(ligne, Lignes) and ligne.valeurs != "Undefined":
-                valeur_f = ligne.valeurs.split()
-                for i in range(len(valeur_f)):
-                    try:
-                        valeur_f[i] = eval(valeur_f[i])
-                    except:
-                        valeur_f[i] = chaine2Tex(valeur_f[i])
-                        # pass
-                code += f'tab.addLine([{valeur_f}],r"{chaine2Tex(ligne.legende)}")\n'
+            for ligne in tableau.listeLignes:
+                from Ligne import Lignes
 
-            elif ligne.fichier != "Undefined":
-                code += f'data = plot.loadText("{ligne.fichier}"'
-                if not isinstance(ligne, Lignes):
-                    code += ',transpose=False, dtype="str")\n'
-                else:
-                    code += ',transpose=False, dtype="str", skiprows={ligne.numero_premiere_ligne - 1})\n'
+                if not isinstance(ligne, Lignes) and ligne.valeurs != "Undefined":
+                    valeur_f = ligne.valeurs.split()
+                    for i in range(len(valeur_f)):
+                        try:
+                            valeur_f[i] = eval(valeur_f[i])
+                        except:
+                            valeur_f[i] = chaine2Tex(valeur_f[i])
+                            # pass
+                    code += f'tab.addLine([{valeur_f}],r"{chaine2Tex(ligne.legende)}")\n'
 
-            nb_colonnes_f = tableau.nb_colonnes
-            if ligne.nb_colonnes_fichier:
-                nb_colonnes_f = ligne.nb_colonnes_fichier
-            try:
-                if ligne.colonnes:
-                    colonnes = ligne.colonnes.split()
-                    if isinstance(ligne, Lignes):
-                        nb_ligne = (
-                            ligne.numero_derniere_ligne
-                            + 1
-                            - ligne.numero_premiere_ligne
-                        )
-                        decal = 1
-                        num_ligne = 0
+                elif ligne.fichier != "Undefined":
+                    code += f'data = plot.loadText("{ligne.fichier}"'
+                    if not isinstance(ligne, Lignes):
+                        code += ',transpose=False, dtype="str")\n'
                     else:
-                        nb_ligne = 1
-                        decal = 0
-                        num_ligne = -1
-                    for ll in range(nb_ligne):
-                        code += "tab.addLine([["
-                        for i in range(tableau.nb_colonnes):
-                            formule = colonnes[i + decal]
+                        code += ',transpose=False, dtype="str", skiprows={ligne.numero_premiere_ligne - 1})\n'
 
-                            size_fichier = -1
-                            if ligne.fichier != "Undefined":
-                                path = f"build/{ligne.fichier}"
-                                if os.path.exists(path):
-                                    with open(path, "r") as fp:
-                                        size_fichier = len(fp.readlines())
-
-                            for j in range(nb_colonnes_f):
-                                original_string = f"${j + 1}"
-                                if size_fichier == 1:
-                                    replacement_string = f"data[{j}]"
-                                else:
-                                    replacement_string = f"data[{num_ligne}][{j}]"
-                                formule = formule.replace(
-                                    original_string, replacement_string
-                                )
-                                formule = formule.replace("rien", '""')
-                                pass
-                            pass
-                            code += f"{formule},"
-                        pass
+                nb_colonnes_f = tableau.nb_colonnes
+                if ligne.nb_colonnes_fichier:
+                    nb_colonnes_f = ligne.nb_colonnes_fichier
+                try:
+                    if ligne.colonnes:
+                        colonnes = ligne.colonnes.split()
                         if isinstance(ligne, Lignes):
-                            code += f"]],data[{ll}][0])\n"
+                            nb_ligne = (
+                                ligne.numero_derniere_ligne
+                                + 1
+                                - ligne.numero_premiere_ligne
+                            )
+                            decal = 1
+                            num_ligne = 0
                         else:
-                            code += f']],r"{chaine2Tex(ligne.legende)}")\n'
-                        num_ligne += 1
-                pass
+                            nb_ligne = 1
+                            decal = 0
+                            num_ligne = -1
+                        for ll in range(nb_ligne):
+                            code += "tab.addLine([["
+                            for i in range(tableau.nb_colonnes):
+                                formule = colonnes[i + decal]
+
+                                size_fichier = -1
+                                if ligne.fichier != "Undefined":
+                                    path = f"build/{ligne.fichier}"
+                                    if os.path.exists(path):
+                                        with open(path, "r") as fp:
+                                            size_fichier = len(fp.readlines())
+
+                                for j in range(nb_colonnes_f):
+                                    original_string = f"${j + 1}"
+                                    if size_fichier == 1:
+                                        replacement_string = f"data[{j}]"
+                                    else:
+                                        replacement_string = f"data[{num_ligne}][{j}]"
+                                    formule = formule.replace(
+                                        original_string, replacement_string
+                                    )
+                                    formule = formule.replace("rien", '""')
+                                    pass
+                                pass
+                                code += f"{formule},"
+                            pass
+                            if isinstance(ligne, Lignes):
+                                code += f"]],data[{ll}][0])\n"
+                            else:
+                                code += f']],r"{chaine2Tex(ligne.legende)}")\n'
+                            num_ligne += 1
+                    pass
+                except:
+                    ligne.gestMsg.ecrire(
+                        GestionMessages._ERR,
+                        f"unable to read {nb_colonnes_f} values in file {ligne.fichier}."
+                        ,
+                    )
+        else:
+            nb_fichier = 0
+            legend = columns 
+            columns = [ ]
+            alias = {}
+            for (i,ligne) in enumerate(tableau.listeLignes):
+                from Ligne import Lignes
+
+                if ligne.fichier != "Undefined":
+                    code += f'data{nb_fichier} = plot.loadText("{ligne.fichier}"'
+                    if not isinstance(ligne, Lignes):
+                        code += ',transpose=True, dtype="float")\n'
+                    else:
+                        code += ',transpose=True, dtype="float", skiprows={ligne.numero_premiere_ligne - 1})\n'
+                    if ligne.alias != None:
+                        alias[ligne.alias]=i
+
+                nb_fichier+=1
+                columns.append(ligne.legende)
+            
+            code += f"columns={columns} \n"
+            code += f"legend={legend} \n"
+            code += "tab = plot.Table(columns)\n"
+
+            try:
+                code += f"for k in range({tableau.nb_colonnes}):\n"
+                code += "\ttab.addLine([["
+                for i, ligne in enumerate(tableau.listeLignes):
+                    if ligne.fichier != "Undefined":
+                        code += f"data{i}[k],"
+                    elif ligne.difference!="Undefined":
+                       args = ligne.difference.split()
+                       methode = args[0]
+                       line1 = alias[args[1]]
+                       line2 = alias[args[2]]
+                       if methode.upper()=="delta".upper():
+                           code += f"data{line1}[k] - data{line2}[k],"
+                       elif methode.upper()=="ecart_relatif".upper():
+                           code += f"2.*(data{line1}[k] - data{line2}[k])/(abs(data{line1}[k]) + abs(data{line2}[k])),"
+                       elif methode.upper()=="formule".upper() or methode.upper()=="FORMULA":
+                           formule = args[3]
+                           formule = formule.replace(str(line1), "data{line1}[k]")                      
+                           formule = formule.replace(str(line2), "data{line2}[k]")                      
+
+                code += f"]],legend[k])\n"
             except:
                 ligne.gestMsg.ecrire(
                     GestionMessages._ERR,
-                    f"unable to read {nb_colonnes_f} values in file {ligne.fichier}."
-                    ,
-                )
+                    f"unable to read tab infos",      )
+
+                
+                
         if tableau.titre != "Undefined":
             titre = tableau.titre.replace('"', "")
             code += f'tab.setTitle("{chaine2Tex(titre)}")\n'
