@@ -71,6 +71,10 @@ using ConstView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typena
 template<typename T, int _SHAPE_>
 using ConstHostView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, host_mirror_space, unmanaged_memory>;
 
+// Add a const View on GPU with RandomAccess (seems beneficial on Nvidia with nvcc (not nvc++ -cuda!) and very AMD)
+template<typename T, int _SHAPE_>
+using RandomAccessView = Kokkos::View<typename ConstInnerType<T, _SHAPE_>::TYPE, typename DeviceView<T,_SHAPE_>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+
 // Handy aliases
 using IntArrView = View<int, 1>;
 using DoubleArrView = View<double, 1>;

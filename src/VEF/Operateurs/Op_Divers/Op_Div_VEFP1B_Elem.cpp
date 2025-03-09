@@ -102,31 +102,50 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nfe = domaine.nb_faces_elem();
   int nb_elem = domaine.nb_elem();
-
-  CIntTabView face_voisins_v = face_voisins.view_ro();
-  CDoubleTabView face_normales_v = face_normales.view_ro();
-  CIntTabView elem_faces_v = elem_faces.view_ro();
-  CDoubleTabView vit_v = vit.view_ro();
-  DoubleTabView div_v = div.view_rw(); // read-write
   int dim = Objet_U::dimension;  // Objet_U::dimension can not be read from Kernel.
 
-  // Full kernel
-  auto kern_ajouter = KOKKOS_LAMBDA(int elem)
-  {
-    double pscf = 0;
-    for (int indice = 0; indice < nfe; indice++)
+  CIntTabView elem_faces_v = elem_faces.view_ro();
+  DoubleTabView div_v = div.view_rw(); // read-write
+  if (getenv("TRUST_USE_RANDOM_ACCESS")!=nullptr)
+    {
+      // Random access
+      RandomAccessView<int, 2> face_voisins_v = face_voisins.view_ro();
+      RandomAccessView<double, 2> face_normales_v = face_normales.view_ro();
+      RandomAccessView<double, 2> vit_v = vit.view_ro();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
+                             const int elem)
       {
-        int face = elem_faces_v(elem, indice);
-        int signe = elem == face_voisins_v(face, 0) ? 1 : -1;
-        for (int comp = 0; comp < dim; comp++)
-          pscf += signe * vit_v(face, comp) * face_normales_v(face, comp);
-      }
-    div_v(elem, 0) += pscf;
-  };
-
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, kern_ajouter);
+        double pscf = 0;
+        for (int indice = 0; indice < nfe; indice++)
+          {
+            int face = elem_faces_v(elem, indice);
+            int signe = elem == face_voisins_v(face, 0) ? 1 : -1;
+            for (int comp = 0; comp < dim; comp++)
+              pscf += signe * vit_v(face, comp) * face_normales_v(face, comp);
+          }
+        div_v(elem, 0) += pscf;
+      });
+    }
+  else
+    {
+      CIntTabView face_voisins_v = face_voisins.view_ro();
+      CDoubleTabView face_normales_v = face_normales.view_ro();
+      CDoubleTabView vit_v = vit.view_ro();
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem, KOKKOS_LAMBDA(
+                             const int elem)
+      {
+        double pscf = 0;
+        for (int indice = 0; indice < nfe; indice++)
+          {
+            int face = elem_faces_v(elem, indice);
+            int signe = elem == face_voisins_v(face, 0) ? 1 : -1;
+            for (int comp = 0; comp < dim; comp++)
+              pscf += signe * vit_v(face, comp) * face_normales_v(face, comp);
+          }
+        div_v(elem, 0) += pscf;
+      });
+    }
   end_gpu_timer(__KERNEL_NAME__);
-
   assert_invalide_items_non_calcules(div);
   return div;
 }
