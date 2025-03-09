@@ -1699,12 +1699,11 @@ void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solutio
       // Save also the RHS if on the host:
       if (SecondMembrePetsc_!=nullptr)
         {
-#ifndef PETSC_HAVE_HDF5
           Cerr << "Writing also the RHS in the file " << filename << finl;
           VecView(SecondMembrePetsc_, viewer);
-#endif
         }
-      else Process::exit("You can't export anymore matrix&RHS at PETSc format with AmgX solver. Switch to PETSc solver instead.");
+      else
+        Process::exit("You can't export anymore matrix&RHS at PETSc format with AmgX solver. Switch to PETSc solver instead.");
       PetscViewerDestroy(&viewer);
 
       // ASCII output for small matrix(debugging)
@@ -2050,7 +2049,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                                            : matrice_morse_intermediaire;
 
       // Verification stencil de la matrice
-      nouveau_stencil_ = (MatricePetsc_ == nullptr ? true : check_stencil(matrice_morse));
+      nouveau_stencil_ = (MatricePetsc_ == nullptr || rebuild_matrix_ || read_matrix_ ? true : check_stencil(matrice_morse));
 
       // Build x and b if necessary
       Create_vectors(secmem);
@@ -3210,8 +3209,8 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
   // Est ce un nouveau stencil ?
   double start = Statistiques::get_time_now();
   int new_stencil=0;
-  if (rebuild_matrix_ || read_matrix_ || !mataij_)
-    new_stencil = 1;
+  if (!mataij_)
+    new_stencil = 1; // Don't how to check the stencil with symmetric ?
   else
     {
       PetscBool done;

@@ -21,6 +21,7 @@
 #ifdef TRUST_USE_ROCM
 #include <rocm-core/rocm_version.h>
 #endif
+#include <comm_incl.h> // Mandatory to have MPIX_CUDA_AWARE_SUPPORT defined or not
 
 Implemente_instanciable(Solv_AMG,"Solv_AMG",SolveurSys_base);
 // XD amg solveur_sys_base amg 0 Wrapper for AMG preconditioner-based solver which switch for the best one on CPU/GPU Nvidia/GPU AMD
@@ -51,6 +52,7 @@ Sortie& Solv_AMG::printOn(Sortie& s ) const
  * @throws Process::exit if the input syntax is incorrect or if an unsupported
  * library is specified.
  */
+
 Entree& Solv_AMG::readOn(Entree& is)
 {
   // amg solver { rtol value [impr] }
@@ -73,21 +75,33 @@ Entree& Solv_AMG::readOn(Entree& is)
     }
   // We select the more efficient/robust one:
 #if defined(TRUST_USE_CUDA)
+#if defined(MPIX_CUDA_AWARE_SUPPORT) && (OMPI_MAJOR_VERSION == 4)
+  if (Process::nproc()>4)
+    {
+      library = "amgx";
+      chaine_lue_ += " { precond c-amg { }";    // Best GPU solver on Nvidia if MPI-GPU Aware OpenMPI 4.x
+    }
+  else
+    {
+      library = "petsc_gpu";
+      chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver if not MPI-GPU Aware (Hypre diverge on multi-GPU node)
+    }
+#else
   library = "petsc_gpu";
-  chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver
-  /*
-    #if defined(MPIX_CUDA_AWARE_SUPPORT) && (OMPI_MAJOR_VERSION == 4)
-    library = "amgx";
-    chaine_lue_ += " { precond sa-amg { }";    // Best GPU solver on Nvidia if MPI-GPU Aware OpenMPI 4.x (Hypre diverge...)
-    #endif
-  */
+  chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver if not MPI-GPU Aware (Hypre diverge else)
+#endif
 #elif defined(TRUST_USE_ROCM)
   library = "petsc_gpu";
   const char* value = std::getenv("ROCM_ARCH");
   if (value != nullptr && std::string(value) == "gfx1100")
-    chaine_lue_ += " { precond sa-amg { }";    // GPU Solver for gfx1100 (Hypre crash)
+    {
+      if (Process::is_parallel())
+        chaine_lue_ += " { precond ua-amg { }";  // Converge mais plus lent que sa-amg
+      else
+        chaine_lue_ += " { precond sa-amg { }";  // Crash en parallele
+    }
   else
-    chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver
+    chaine_lue_ += " { precond boomeramg { }"; // Best GPU solver (// sa-amg is slow...)
 #else
   library = "petsc";
   chaine_lue_ += " { precond boomeramg { }"; // Best CPU solver
