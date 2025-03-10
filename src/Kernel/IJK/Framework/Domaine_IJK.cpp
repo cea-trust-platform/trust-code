@@ -1,17 +1,17 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*****************************************************************************/
+ * Copyright (c) 2025, CEA
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *****************************************************************************/
 #include <EFichier.h>
 #include <Domaine_IJK.h>
 #include <Hexaedre.h>
@@ -37,43 +37,43 @@ Domaine_IJK::Domaine_IJK()
   sizes_all_slices_.dimensionner(3);
   volume_elem_ = 0.;
   mapping_ = 0;
-  for(int i = 0; i < 3; ++i)
-    {
-      nb_elem_local_[i] = 0;
-      nb_nodes_local_[i] = 0;
-      uniform_[i] = false;
-      periodic_[i] = false;
-      offset_[i] = 0;
-      nproc_per_direction_[i] = 0;
-      for(int j = 0; j < 3; ++j)
-        nb_faces_local_[i][j] = 0;
-      for(int j = 0; j < 2; ++j)
-        neighbour_processors_[j][i] = -1;
-    }
+  for (int i = 0; i < 3; ++i)
+  {
+    nb_elem_local_[i] = 0;
+    nb_nodes_local_[i] = 0;
+    uniform_[i] = false;
+    periodic_[i] = false;
+    offset_[i] = 0;
+    nproc_per_direction_[i] = 0;
+    for (int j = 0; j < 3; ++j)
+      nb_faces_local_[i][j] = 0;
+    for (int j = 0; j < 2; ++j)
+      neighbour_processors_[j][i] = -1;
+  }
 }
 
-Sortie& Domaine_IJK::printOn(Sortie& os) const
+Sortie &Domaine_IJK::printOn(Sortie &os) const
 {
   Cerr << "Domain loaded for this subclass" << finl;
   return os;
 }
 
-Entree& Domaine_IJK::readOn(Entree& is)
+Entree &Domaine_IJK::readOn(Entree &is)
 {
   static const int dim = Objet_U::dimension;
 
   Cerr << "Reading Domaine_IJK (" << le_nom() << ")" << finl;
 
-  if(dim < 1)
+  if (dim < 1)
     Process::exit("Dimension must be set before declaring the domain.");
 
-  ArrOfDouble origin(dim);            // Defaults to 0.
-  ArrOfInt perio_flags(dim);          // Defaults to not periodic.
-  ArrOfInt ndir(dim);                 // Number of elements per direction.
-  ndir = -1;                          // Default means "unspecified".
-  ArrOfDouble size_dom(dim);          // Constant element size in each direction.
-  Noms file_coords(dim);              // File(s) with the coord of each node in a direction.
-  size_dom = -1.;                     // Default means "unspecified".
+  ArrOfDouble origin(dim);   // Defaults to 0.
+  ArrOfInt perio_flags(dim); // Defaults to not periodic.
+  ArrOfInt ndir(dim);        // Number of elements per direction.
+  ndir = -1;                 // Default means "unspecified".
+  ArrOfDouble size_dom(dim); // Constant element size in each direction.
+  Noms file_coords(dim);     // File(s) with the coord of each node in a direction.
+  size_dom = -1.;            // Default means "unspecified".
   IntTab groups(dim);
   groups = 1;
 
@@ -88,7 +88,7 @@ Entree& Domaine_IJK::readOn(Entree& is)
   int rang;
   is >> motlu;
 
-  if(motlu != "{")
+  if (motlu != "{")
     Process::exit(" The symbol { was expected after 'read|lire'");
 
   Motcles les_mots(50);
@@ -104,123 +104,121 @@ Entree& Domaine_IJK::readOn(Entree& is)
   }
 
   is >> motlu;
-  while(motlu != "}")
+  while (motlu != "}")
+  {
+    rang = les_mots.search(motlu);
+    switch (rang)
     {
-      rang = les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0:
-          for(int i = 0; i < dim; ++i)
-            is >> ndir[i];
-          break;
-        case 1:
-          for(int i = 0; i < dim; ++i)
-            is >> size_dom[i];
-          break;
-        case 2:
-          for(int i = 0; i < dim; ++i)
-            is >> file_coords[i];
-          break;
-        case 3:
-          for(int i = 0; i < dim; ++i)
-            is >> origin[i];
-          break;
-        case 4:
-          for(int i = 0; i < dim; ++i)
-            is >> perio_flags[i];
-          break;
-        case 5:
-          for(int i = 0; i < dim; ++i)
-            is >> nprocs[i];
-          break;
-        case 6:
-          for(int i = 0; i < dim; ++i)
-            is >> groups[i];
-          break;
-        case 7:
-          is >> ft_extension_;
-          break;
-        default:
-          Cerr << "Keyword : " << motlu <<" not understood by Domaine_IJK::readOn. Either update if needed or change the keyword." << finl;
-          Process::exit();
-          break;
-        }
-      is >> motlu;
+    case 0:
+      for (int i = 0; i < dim; ++i)
+        is >> ndir[i];
+      break;
+    case 1:
+      for (int i = 0; i < dim; ++i)
+        is >> size_dom[i];
+      break;
+    case 2:
+      for (int i = 0; i < dim; ++i)
+        is >> file_coords[i];
+      break;
+    case 3:
+      for (int i = 0; i < dim; ++i)
+        is >> origin[i];
+      break;
+    case 4:
+      for (int i = 0; i < dim; ++i)
+        is >> perio_flags[i];
+      break;
+    case 5:
+      for (int i = 0; i < dim; ++i)
+        is >> nprocs[i];
+      break;
+    case 6:
+      for (int i = 0; i < dim; ++i)
+        is >> groups[i];
+      break;
+    default:
+      Cerr << "Keyword : " << motlu << " not understood by Domaine_IJK::readOn. Either update if needed or change the keyword." << finl;
+      Process::exit();
+      break;
     }
+    is >> motlu;
+  }
 
   // Initializing the sizes of eulerian elements
-  VECT(ArrOfDouble) delta_dir(3);
+  VECT(ArrOfDouble)
+  delta_dir(3);
   for (int i = 0; i < 3; ++i)
+  {
+    if (file_coords[i] != "??")
     {
-      if (file_coords[i] != "??")
+      if (Process::je_suis_maitre())
+      {
+        Cerr << "Reading coordinates for direction " << i << " in file " << file_coords[i] << finl;
+        EFichier EFcoord(file_coords[i]);
+        // Skipping the origin. If the origin was written in the file, it may lead to errors.
+        double previous_x = 0.;
+        int n = 0;
+        while (1)
         {
-          if (Process::je_suis_maitre())
-            {
-              Cerr << "Reading coordinates for direction " << i << " in file " << file_coords[i] << finl;
-              EFichier EFcoord(file_coords[i]);
-              // Skipping the origin. If the origin was written in the file, it may lead to errors.
-              double previous_x = 0.;
-              int n = 0;
-              while(1)
-                {
-                  double next_x;
-                  EFcoord >> next_x;
-                  if (EFcoord.eof())
-                    break;
-                  if (n == 0)
-                    origin[i] = next_x;
-                  else
-                    delta_dir[i].append_array(next_x - previous_x);
-                  n++;
-                  previous_x = next_x;
-                }
-              if (delta_dir[i].size_array() < 1)
-                Cerr << "Error in Domaine_IJK::readOn: input file contains less than 2 values" << finl;
-            }
-          envoyer_broadcast(delta_dir[i], 0);
+          double next_x;
+          EFcoord >> next_x;
+          if (EFcoord.eof())
+            break;
+          if (n == 0)
+            origin[i] = next_x;
+          else
+            delta_dir[i].append_array(next_x - previous_x);
+          n++;
+          previous_x = next_x;
         }
-      else if (ndir[i] != -1) // Then it's uniform
-        {
-          if (ndir[i] < 1 || size_dom[i] <= 0.)
-            {
-              Cerr << "Error in Domaine_IJK::readOn: wrong value of nbelem or uniform_domain_size for direction " << i
-                   << "\n : nbelem = " << ndir[i] << " domain_size = " << size_dom[i] << finl;
-              Process::exit();
-            }
-          delta_dir[i].resize_array(ndir[i]);
-          delta_dir[i] = size_dom[i] / ndir[i];
-        }
-      else // The dataset wasn't filled properly. nbelem takes 3 parameters.
-        {
-          Cerr << "Error in Domaine_IJK::readOn: you must provide (nbelem x y z)\n"
-               << "   or file_coords for each direction i, j and k" << finl;
-          Process::exit();
-        }
-      double x = 0;
-      for (int j = 0; j < delta_dir[i].size_array(); j++)
-        {
-          if (delta_dir[i][j] <= 0.)
-            {
-              Cerr << "Error in Domaine_IJK::readOn: size of element " << j << "  in direction " << i << " is not positive" << finl;
-              Process::exit();
-            }
-          x += delta_dir[i][j];
-        }
-      Cerr << "Direction " << i << " has " << delta_dir[i].size_array() << " elements. Total domain size = " << x << finl;
+        if (delta_dir[i].size_array() < 1)
+          Cerr << "Error in Domaine_IJK::readOn: input file contains less than 2 values" << finl;
+      }
+      envoyer_broadcast(delta_dir[i], 0);
     }
+    else if (ndir[i] != -1) // Then it's uniform
+    {
+      if (ndir[i] < 1 || size_dom[i] <= 0.)
+      {
+        Cerr << "Error in Domaine_IJK::readOn: wrong value of nbelem or uniform_domain_size for direction " << i
+             << "\n : nbelem = " << ndir[i] << " domain_size = " << size_dom[i] << finl;
+        Process::exit();
+      }
+      delta_dir[i].resize_array(ndir[i]);
+      delta_dir[i] = size_dom[i] / ndir[i];
+    }
+    else // The dataset wasn't filled properly. nbelem takes 3 parameters.
+    {
+      Cerr << "Error in Domaine_IJK::readOn: you must provide (nbelem x y z)\n"
+           << "   or file_coords for each direction i, j and k" << finl;
+      Process::exit();
+    }
+    double x = 0;
+    for (int j = 0; j < delta_dir[i].size_array(); j++)
+    {
+      if (delta_dir[i][j] <= 0.)
+      {
+        Cerr << "Error in Domaine_IJK::readOn: size of element " << j << "  in direction " << i << " is not positive" << finl;
+        Process::exit();
+      }
+      x += delta_dir[i][j];
+    }
+    Cerr << "Direction " << i << " has " << delta_dir[i].size_array() << " elements. Total domain size = " << x << finl;
+  }
 
   int tot_proc = 1;
   for (int j = 0; j < dim; j++)
-    {
-      if(nprocs[j] < 1)
-        Process::exit("Proc number in every direction must be strictly positive! Did you forget 'nprocs'?");
-      tot_proc *= nprocs[j];
-    }
+  {
+    if (nprocs[j] < 1)
+      Process::exit("Proc number in every direction must be strictly positive! Did you forget 'nprocs'?");
+    tot_proc *= nprocs[j];
+  }
   if (tot_proc != Process::nproc())
-    {
-      Cerr << "!! ERROR: Domaine_IJK is built with a total number of " << tot_proc << " procs, but TRUST/Trio was launched with " << Process::nproc() << " procs!!" << finl;
-      Process::exit();
-    }
+  {
+    Cerr << "!! ERROR: Domaine_IJK is built with a total number of " << tot_proc << " procs, but TRUST/Trio was launched with " << Process::nproc() << " procs!!" << finl;
+    Process::exit();
+  }
 
   Cerr << "nproc in i, j, k directions = " << nprocs[0] << " " << nprocs[1] << " " << nprocs[2] << finl;
   Cerr << "grouping processes in i, j, k directions (node topology) = "
@@ -234,7 +232,7 @@ Entree& Domaine_IJK::readOn(Entree& is)
   return is;
 }
 
-static void retirer_doublons(ArrOfDouble& tab, double epsilon)
+static void retirer_doublons(ArrOfDouble &tab, double epsilon)
 {
   const int n = tab.size_array();
   if (n == 0)
@@ -242,18 +240,18 @@ static void retirer_doublons(ArrOfDouble& tab, double epsilon)
   double last_value = tab[0];
   int dest = 1;
   for (int i = 1; i < n; i++)
+  {
+    double x = tab[i];
+    if (x > last_value + epsilon)
     {
-      double x = tab[i];
-      if (x > last_value + epsilon)
-        {
-          tab[dest++] = x;
-          last_value = x;
-        }
+      tab[dest++] = x;
+      last_value = x;
     }
+  }
   tab.resize_array(dest);
 }
 
-static void find_unique_coord(const DoubleTab& src, int column, ArrOfDouble& result)
+static void find_unique_coord(const DoubleTab &src, int column, ArrOfDouble &result)
 {
   const int n = src.dimension(0);
   ArrOfDouble tmp(n);
@@ -263,53 +261,48 @@ static void find_unique_coord(const DoubleTab& src, int column, ArrOfDouble& res
   tmp.ordonne_array();
   retirer_doublons(tmp, Objet_U::precision_geom);
 
-
   if (Process::me() != 0)
-    {
-      envoyer(tmp, 0, 53);
-    }
+  {
+    envoyer(tmp, 0, 53);
+  }
   else
+  {
+    result = tmp;
+    int np = Process::nproc();
+    for (i = 1; i < np; i++)
     {
-      result = tmp;
-      int np = Process::nproc();
-      for (i = 1; i < np; i++)
-        {
-          recevoir(tmp, i, 53 /* canal */);
-          int m1Loc = tmp.size_array();
-          int m2Loc = result.size_array();
-          result.resize_array(m2Loc+m1Loc);
-          result.inject_array(tmp, m1Loc /* nbelem */, m2Loc /* dest index */, 0 /* src index */);
-        }
-      result.ordonne_array();
-      retirer_doublons(result, Objet_U::precision_geom);
+      recevoir(tmp, i, 53 /* canal */);
+      int m1Loc = tmp.size_array();
+      int m2Loc = result.size_array();
+      result.resize_array(m2Loc + m1Loc);
+      result.inject_array(tmp, m1Loc /* nbelem */, m2Loc /* dest index */, 0 /* src index */);
     }
-
+    result.ordonne_array();
+    retirer_doublons(result, Objet_U::precision_geom);
+  }
   envoyer_broadcast(result, 0);
 }
 
-
-
 // Extracts the mesh origin, dimensions and cell sizes from a distributed VDF mesh.
-//
-void Domaine_IJK::initialize_from_unstructured(const Domaine& domaine,
+void Domaine_IJK::initialize_from_unstructured(const Domaine &domaine,
                                                int direction_for_x,
                                                int direction_for_y,
                                                int direction_for_z,
                                                bool perio_x, bool perio_y, bool perio_z)
 {
   if (!sub_type(Hexaedre, domaine.type_elem().valeur()))
-    {
-      Cerr << "Error in IJK_Grid_Geometry::initialize_from_unstructured:\n"
-           << " the provided domaine does not have Hexaedre element type" << finl;
-      exit();
-    }
+  {
+    Cerr << "Error in IJK_Grid_Geometry::initialize_from_unstructured:\n"
+         << " the provided domaine does not have Hexaedre element type" << finl;
+    exit();
+  }
   periodic_[0] = perio_x;
   periodic_[1] = perio_y;
   periodic_[2] = perio_z;
   // Find all coordinates in the unstructured mesh
   // swap directions
-  const DoubleTab& coord_som = domaine.les_sommets();
-  Cout << "IJK_Grid_Geometry::initialize_from_unstructured maps x->" <<  direction_for_x
+  const DoubleTab &coord_som = domaine.les_sommets();
+  Cout << "IJK_Grid_Geometry::initialize_from_unstructured maps x->" << direction_for_x
        << " y->" << direction_for_y << " z->" << direction_for_z << finl;
 
   find_unique_coord(coord_som, 0 /* coordonnees y */, node_coordinates_xyz_[direction_for_x]);
@@ -318,38 +311,38 @@ void Domaine_IJK::initialize_from_unstructured(const Domaine& domaine,
   const double eps = Objet_U::precision_geom;
 
   for (int dir = 0; dir < 3; dir++)
+  {
+    const ArrOfDouble &coord = node_coordinates_xyz_[dir];
+    ArrOfDouble &delta = delta_xyz_[dir];
+    const int nelem = coord.size_array() - 1;
+    Cout << " Direction " << dir << " has " << nelem << " elements. coord[0]="
+         << coord[0] << " coord[" << nelem << "]=" << coord[nelem];
+    delta.resize_array(nelem);
+    double mindelta = 1e30;
+    double maxdelta = 0.;
+    for (int i = 0; i < nelem; i++)
     {
-      const ArrOfDouble& coord = node_coordinates_xyz_[dir];
-      ArrOfDouble& delta = delta_xyz_[dir];
-      const int nelem = coord.size_array() - 1;
-      Cout << " Direction " << dir << " has " << nelem << " elements. coord[0]="
-           << coord[0] << " coord[" << nelem << "]=" << coord[nelem];
-      delta.resize_array(nelem);
-      double mindelta = 1e30;
-      double maxdelta = 0.;
-      for (int i = 0; i < nelem; i++)
-        {
-          const double d = coord[i+1] - coord[i];
-          delta[i] = d;
-          mindelta = std::min(d, mindelta);
-          maxdelta = std::max(d, maxdelta);
-        }
-      if (maxdelta - mindelta < eps)
-        {
-          // The mesh is uniform: recompute a constant delta with a better accuracy:
-          double d = (coord[nelem] - coord[0]) / (double) nelem;
-          delta = d; // affect the exact same value to all cells
-          Cout << " Uniform, delta=" << d << finl;
-          uniform_[dir] = true;
-        }
-      else
-        {
-          Cout << "IJK_Grid_Geometry::initialize_from_unstructured direction " << dir
-               << " Not uniform, min delta=" << mindelta
-               << " max delta=" << maxdelta << finl;
-          uniform_[dir] = false;
-        }
+      const double d = coord[i + 1] - coord[i];
+      delta[i] = d;
+      mindelta = std::min(d, mindelta);
+      maxdelta = std::max(d, maxdelta);
     }
+    if (maxdelta - mindelta < eps)
+    {
+      // The mesh is uniform: recompute a constant delta with a better accuracy:
+      double d = (coord[nelem] - coord[0]) / (double)nelem;
+      delta = d; // affect the exact same value to all cells
+      Cout << " Uniform, delta=" << d << finl;
+      uniform_[dir] = true;
+    }
+    else
+    {
+      Cout << "IJK_Grid_Geometry::initialize_from_unstructured direction " << dir
+           << " Not uniform, min delta=" << mindelta
+           << " max delta=" << maxdelta << finl;
+      uniform_[dir] = false;
+    }
+  }
 }
 
 /*! @brief Buils a splitting of the given deometry on the requested number of processors
@@ -368,7 +361,7 @@ void Domaine_IJK::initialize_from_unstructured(const Domaine& domaine,
  *  @param process_grouping_j 1 by default. Number of processors per subdomain in j direction.
  *  @param process_grouping_k 1 by default. Number of processors per subdomain in k direction.
  */
-void Domaine_IJK::initialize_splitting(Domaine_IJK& geom,
+void Domaine_IJK::initialize_splitting(Domaine_IJK &geom,
                                        int nproc_i, int nproc_j, int nproc_k,
                                        int process_grouping_i,
                                        int process_grouping_j,
@@ -380,98 +373,95 @@ void Domaine_IJK::initialize_splitting(Domaine_IJK& geom,
 
   const int available_nproc = Process::nproc();
   if (nproc_i * nproc_j * nproc_k > available_nproc)
-    {
-      Cerr << "Error in Domaine_IJK::initialize_splitting(nproc_i =" << nproc_i
-           << ", nproc_j =" << nproc_j
-           << ", nproc_k =" << nproc_k
-           << "): requested splitting larger than available processor number (" << available_nproc << ")" << endl;
-      Process::exit();
-    }
+  {
+    Cerr << "Error in Domaine_IJK::initialize_splitting(nproc_i =" << nproc_i
+         << ", nproc_j =" << nproc_j
+         << ", nproc_k =" << nproc_k
+         << "): requested splitting larger than available processor number (" << available_nproc << ")" << endl;
+    Process::exit();
+  }
 
-  if (nproc_i > geom.get_nb_elem_tot(0)
-      || nproc_j > geom.get_nb_elem_tot(1)
-      || nproc_k > geom.get_nb_elem_tot(2))
-    {
-      Cerr << "Error in Domaine_IJK::initialize_splitting(nproc_i = " << nproc_i
-           << ", nproc_j = " << nproc_j
-           << ", nproc_k = " << nproc_k
-           << "): requested splitting larger than total number of cells in one direction";
-      Cerr << "\n (number of cells: "
-           << geom.get_nb_elem_tot(0) << " "
-           << geom.get_nb_elem_tot(1) << " "
-           << geom.get_nb_elem_tot(2) << ")" << endl;
-      Process::exit();
-    }
+  if (nproc_i > geom.get_nb_elem_tot(0) || nproc_j > geom.get_nb_elem_tot(1) || nproc_k > geom.get_nb_elem_tot(2))
+  {
+    Cerr << "Error in Domaine_IJK::initialize_splitting(nproc_i = " << nproc_i
+         << ", nproc_j = " << nproc_j
+         << ", nproc_k = " << nproc_k
+         << "): requested splitting larger than total number of cells in one direction";
+    Cerr << "\n (number of cells: "
+         << geom.get_nb_elem_tot(0) << " "
+         << geom.get_nb_elem_tot(1) << " "
+         << geom.get_nb_elem_tot(2) << ")" << endl;
+    Process::exit();
+  }
 
   IntTab mapping;
-  VECT(ArrOfInt) sizes_all_slices(3);
+  VECT(ArrOfInt)
+  sizes_all_slices(3);
   // Compute processor mapping
   mapping.resize(nproc_i, nproc_j, nproc_k);
 
   // master processor computes splitting:
   if (Process::je_suis_maitre())
+  {
+    // Try to group subdomains by n in each direction on consecutive mpi processes:
+    FixedVector<int, 3> process_grouping;
+    process_grouping[0] = process_grouping_i;
+    process_grouping[1] = process_grouping_j;
+    process_grouping[2] = process_grouping_k;
+    FixedVector<int, 3> nprocdir;
+    nprocdir[0] = nproc_i;
+    nprocdir[1] = nproc_j;
+    nprocdir[2] = nproc_k;
+    FixedVector<int, 3> ngroups;
+    for (int i = 0; i < 3; i++)
     {
-      // Try to group subdomains by n in each direction on consecutive mpi processes:
-      FixedVector<int, 3> process_grouping;
-      process_grouping[0] = process_grouping_i;
-      process_grouping[1] = process_grouping_j;
-      process_grouping[2] = process_grouping_k;
-      FixedVector<int, 3> nprocdir;
-      nprocdir[0] = nproc_i;
-      nprocdir[1] = nproc_j;
-      nprocdir[2] = nproc_k;
-      FixedVector<int, 3> ngroups;
-      for (int i = 0; i < 3; i++)
-        {
-          while (nprocdir[i] % process_grouping[i] != 0)
-            process_grouping[i] /= 2;
-          ngroups[i] = nprocdir[i] / process_grouping[i];
-        }
-
-      // Build processor mapping
-      // Loop on groups of processes (idea is that one group maps to one computer node)
-      for (int k = 0; k < ngroups[2]; k++)
-        {
-          for (int j = 0; j < ngroups[1]; j++)
-            {
-              for (int i = 0; i < ngroups[0]; i++)
-                {
-                  // Loop on processes in the group
-                  for (int k2 = 0; k2 < process_grouping[2]; k2++)
-                    {
-                      for (int j2 = 0; j2 < process_grouping[1]; j2++)
-                        {
-                          for (int i2 = 0; i2 < process_grouping[0]; i2++)
-                            {
-                              int p = k;
-                              p = (p * ngroups[1]) + j;
-                              p = (p * ngroups[0]) + i;
-                              p = (p * process_grouping[2]) + k2;
-                              p = (p * process_grouping[1]) + j2;
-                              p = (p * process_grouping[0]) + i2;
-                              int iposition = i * process_grouping[0] + i2;
-                              int jposition = j * process_grouping[1] + j2;
-                              int kposition = k * process_grouping[2] + k2;
-                              mapping(iposition, jposition, kposition) = p;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-      // Compute mesh slicing
-      for (int i = 0; i < 3; i++)
-        {
-          const int n = mapping.dimension(i);
-          const int ne = geom.get_nb_elem_tot(i);
-          sizes_all_slices[i].resize_array(n);
-          for (int j = 0; j < n; j++)
-            {
-              sizes_all_slices[i][j] = (ne * (j+1) / n) - (ne * j / n);
-            }
-        }
+      while (nprocdir[i] % process_grouping[i] != 0)
+        process_grouping[i] /= 2;
+      ngroups[i] = nprocdir[i] / process_grouping[i];
     }
+
+    // Build processor mapping
+    // Loop on groups of processes (idea is that one group maps to one computer node)
+    for (int k = 0; k < ngroups[2]; k++)
+    {
+      for (int j = 0; j < ngroups[1]; j++)
+      {
+        for (int i = 0; i < ngroups[0]; i++)
+        {
+          // Loop on processes in the group
+          for (int k2 = 0; k2 < process_grouping[2]; k2++)
+          {
+            for (int j2 = 0; j2 < process_grouping[1]; j2++)
+            {
+              for (int i2 = 0; i2 < process_grouping[0]; i2++)
+              {
+                int p = k;
+                p = (p * ngroups[1]) + j;
+                p = (p * ngroups[0]) + i;
+                p = (p * process_grouping[2]) + k2;
+                p = (p * process_grouping[1]) + j2;
+                p = (p * process_grouping[0]) + i2;
+                int iposition = i * process_grouping[0] + i2;
+                int jposition = j * process_grouping[1] + j2;
+                int kposition = k * process_grouping[2] + k2;
+                mapping(iposition, jposition, kposition) = p;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Compute mesh slicing
+    for (int i = 0; i < 3; i++)
+    {
+      const int n = mapping.dimension(i);
+      const int ne = geom.get_nb_elem_tot(i);
+      sizes_all_slices[i].resize_array(n);
+      for (int j = 0; j < n; j++)
+        sizes_all_slices[i][j] = (ne * (j + 1) / n) - (ne * j / n);
+    }
+  }
   // broadcast to all mpi processes:
   envoyer_broadcast(mapping, 0);
   envoyer_broadcast(sizes_all_slices, 0);
@@ -495,10 +485,10 @@ void Domaine_IJK::initialize_splitting(Domaine_IJK& geom,
  *  @param slice_size_k Contains for each slice in the k direction, the number of cells this slice.
  *  @param processor_mapping Provides the rank of the mpi process that will own this subdomain.
  */
-void Domaine_IJK::initialize_mapping(Domaine_IJK& geom, const ArrOfInt& slice_size_i,
-                                     const ArrOfInt& slice_size_j,
-                                     const ArrOfInt& slice_size_k,
-                                     const IntTab& processor_mapping)
+void Domaine_IJK::initialize_mapping(Domaine_IJK &geom, const ArrOfInt &slice_size_i,
+                                     const ArrOfInt &slice_size_j,
+                                     const ArrOfInt &slice_size_k,
+                                     const IntTab &processor_mapping)
 {
   assert(slice_size_i.size_array() == processor_mapping.dimension(0));
   assert(slice_size_j.size_array() == processor_mapping.dimension(1));
@@ -512,15 +502,15 @@ void Domaine_IJK::initialize_mapping(Domaine_IJK& geom, const ArrOfInt& slice_si
   sizes_all_slices_[1] = slice_size_j;
   sizes_all_slices_[2] = slice_size_k;
   for (int i = 0; i < 3; i++)
-    {
-      const int n = sizes_all_slices_[i].size_array();
-      nproc_per_direction_[i] = n;
-      offsets_all_slices_[i].resize_array(n);
-      offsets_all_slices_[i][0] = 0;
-      for (int j = 1; j < n; ++j)
-        offsets_all_slices_[i][j] = offsets_all_slices_[i][j - 1] + sizes_all_slices_[i][j - 1];
-      assert(offsets_all_slices_[i][n - 1] + sizes_all_slices_[i][n - 1] == geom.get_nb_elem_tot(i));
-    }
+  {
+    const int n = sizes_all_slices_[i].size_array();
+    nproc_per_direction_[i] = n;
+    offsets_all_slices_[i].resize_array(n);
+    offsets_all_slices_[i][0] = 0;
+    for (int j = 1; j < n; ++j)
+      offsets_all_slices_[i][j] = offsets_all_slices_[i][j - 1] + sizes_all_slices_[i][j - 1];
+    assert(offsets_all_slices_[i][n - 1] + sizes_all_slices_[i][n - 1] == geom.get_nb_elem_tot(i));
+  }
   // Find my rank in the processor mapping, fill processor_position_
   bool ok = false;
   processor_position_[0] = processor_position_[1] = processor_position_[2] = -1; // default, if I'm not in the mapping.
@@ -528,96 +518,94 @@ void Domaine_IJK::initialize_mapping(Domaine_IJK& geom, const ArrOfInt& slice_si
     int pos_i = -1, pos_j = -1, pos_k = -1;
     const int myrank = Process::me();
     for (pos_k = 0; pos_k < nproc_per_direction_[2]; pos_k++)
+    {
+      for (pos_j = 0; pos_j < nproc_per_direction_[1]; pos_j++)
       {
-        for (pos_j = 0; pos_j < nproc_per_direction_[1]; pos_j++)
+        for (pos_i = 0; pos_i < nproc_per_direction_[0]; pos_i++)
+        {
+          int numproc = mapping_(pos_i, pos_j, pos_k);
+          assert(numproc >= 0 && numproc < Process::nproc());
+          if (numproc == myrank)
           {
-            for (pos_i = 0; pos_i < nproc_per_direction_[0]; pos_i++)
-              {
-                int numproc = mapping_(pos_i, pos_j, pos_k);
-                assert(numproc >= 0 && numproc < Process::nproc());
-                if (numproc == myrank)
-                  {
-                    assert(!ok); // check that processor has not yet been visited
-                    ok = true;
-                    processor_position_[0] = pos_i;
-                    processor_position_[1] = pos_j;
-                    processor_position_[2] = pos_k;
-                    // don't break, finish browsing the array to search to check for inconsistencies
-                  }
-              }
+            assert(!ok); // check that processor has not yet been visited
+            ok = true;
+            processor_position_[0] = pos_i;
+            processor_position_[1] = pos_j;
+            processor_position_[2] = pos_k;
+            // don't break, finish browsing the array to search to check for inconsistencies
           }
+        }
       }
+    }
   }
   if (!ok)
+  {
+    // this processor has no part of the domain
+    for (int i = 0; i < 3; ++i)
     {
-      // this processor has no part of the domain
-      for (int i = 0; i < 3; ++i)
-        {
-          nb_elem_local_[i] = 0;
-          nb_nodes_local_[i] = 0;
-          for (int j = 0; j < 3; ++j)
-            nb_faces_local_[i][j] = 0;
-          offset_[i] = 0;
-          neighbour_processors_[0][i] = -1;
-          neighbour_processors_[1][i] = -1;
-        }
+      nb_elem_local_[i] = 0;
+      nb_nodes_local_[i] = 0;
+      for (int j = 0; j < 3; ++j)
+        nb_faces_local_[i][j] = 0;
+      offset_[i] = 0;
+      neighbour_processors_[0][i] = -1;
+      neighbour_processors_[1][i] = -1;
     }
+  }
   else
+  {
+    for (int i = 0; i < 3; ++i)
     {
-      for (int i = 0; i < 3; ++i)
-        {
-          nb_elem_local_[i] = sizes_all_slices_[i][processor_position_[i]];
-          nb_nodes_local_[i] = nb_elem_local_[i];
-          if (!geom.get_periodic_flag(i) && processor_position_[i] == nproc_per_direction_[i] -1)
-            {
-              // We have one more node on this processor only if we are the last processor in this direction
-              // and if the domain is not periodic (otherwise, last node is owned by the next processor)
-              nb_nodes_local_[i]++;
-            }
-          for (int j = 0; j < 3; ++j)
-            {
-              // Compute local number of faces on this processor in each direction.
-              // In general nb_faces will be equal to nb_elements except if at the end of
-              // the domain and in the direction of the face normal and if not periodic:
-              if (i == j)
-                nb_faces_local_[j][i] = nb_nodes_local_[i];
-              else
-                nb_faces_local_[j][i] = nb_elem_local_[i];
-            }
-          offset_[i] = offsets_all_slices_[i][processor_position_[i]];
-        }
-      // Compute neighbour processors, taking into account periodicity:
-      for (int i = 0; i < 3; ++i)
-        {
-          for (int previous_or_next = 0; previous_or_next < 2; previous_or_next++)
-            {
-              FixedVector<int, 3> other_pos(processor_position_); // ijk index of neighbour processor
-              if (previous_or_next == 0)
-                other_pos[i]--;
-              else
-                other_pos[i]++;
-              if (other_pos[i] < 0 || other_pos[i] >= nproc_per_direction_[i])
-                {
-                  if (geom.get_periodic_flag(i))
-                    {
-                      // wrap to processor at other end
-                      other_pos[i] = nproc_per_direction_[i] - 1 - processor_position_[i];
-                    }
-                  else
-                    other_pos[i] = -1;
-                }
-              if (other_pos[i] >= 0)
-                {
-                  neighbour_processors_[previous_or_next][i] = mapping_(other_pos[0], other_pos[1], other_pos[2]);
-                }
-              else
-                {
-                  // at boundary of domain:
-                  neighbour_processors_[previous_or_next][i] = -1;
-                }
-            }
-        }
+      nb_elem_local_[i] = sizes_all_slices_[i][processor_position_[i]];
+      nb_nodes_local_[i] = nb_elem_local_[i];
+      if (!geom.get_periodic_flag(i) && processor_position_[i] == nproc_per_direction_[i] - 1)
+      {
+        // We have one more node on this processor only if we are the last processor in this direction
+        // and if the domain is not periodic (otherwise, last node is owned by the next processor)
+        nb_nodes_local_[i]++;
+      }
+      for (int j = 0; j < 3; ++j)
+      {
+        // Compute local number of faces on this processor in each direction.
+        // In general nb_faces will be equal to nb_elements except if at the end of
+        // the domain and in the direction of the face normal and if not periodic:
+        if (i == j)
+          nb_faces_local_[j][i] = nb_nodes_local_[i];
+        else
+          nb_faces_local_[j][i] = nb_elem_local_[i];
+      }
+      offset_[i] = offsets_all_slices_[i][processor_position_[i]];
     }
+    // Compute neighbour processors, taking into account periodicity:
+    for (int i = 0; i < 3; ++i)
+    {
+      for (int previous_or_next = 0; previous_or_next < 2; previous_or_next++)
+      {
+        FixedVector<int, 3> other_pos(processor_position_); // ijk index of neighbour processor
+        if (previous_or_next == 0)
+          other_pos[i]--;
+        else
+          other_pos[i]++;
+        if (other_pos[i] < 0 || other_pos[i] >= nproc_per_direction_[i])
+        {
+          if (geom.get_periodic_flag(i))
+          {
+            // wrap to processor at other end
+            other_pos[i] = nproc_per_direction_[i] - 1 - processor_position_[i];
+          }
+          else
+            other_pos[i] = -1;
+        }
+        if (other_pos[i] >= 0)
+          neighbour_processors_[previous_or_next][i] = mapping_(other_pos[0], other_pos[1], other_pos[2]);
+        else
+        {
+          // at boundary of domain:
+          neighbour_processors_[previous_or_next][i] = -1;
+        }
+      }
+    }
+  }
   Journal() << "Domaine_IJK::initialize_mapping:\n"
             << " processor_position =" << print_vect(processor_position_) << "\n"
             << " offset             =" << print_vect(offset_) << "\n"
@@ -640,9 +628,9 @@ void Domaine_IJK::initialize_mapping(Domaine_IJK& geom, const ArrOfInt& slice_si
  *  @param perio_z Periodic flag along z axis.
  */
 void Domaine_IJK::initialize_origin_deltas(double x0, double y0, double z0,
-                                           const ArrOfDouble& delta_x,
-                                           const ArrOfDouble& delta_y,
-                                           const ArrOfDouble& delta_z,
+                                           const ArrOfDouble &delta_x,
+                                           const ArrOfDouble &delta_y,
+                                           const ArrOfDouble &delta_z,
                                            bool perio_x, bool perio_y, bool perio_z)
 {
   periodic_[0] = perio_x;
@@ -655,28 +643,24 @@ void Domaine_IJK::initialize_origin_deltas(double x0, double y0, double z0,
   delta_xyz_[1] = delta_y;
   delta_xyz_[2] = delta_z;
   for (int dir = 0; dir < 3; ++dir)
+  {
+    int n = delta_xyz_[dir].size_array();
+    node_coordinates_xyz_[dir].resize_array(n + 1);
+    node_coordinates_xyz_[dir][0] = (dir == 0) ? x0 : ((dir == 1) ? y0 : z0);
+    double mindelta = 1e30;
+    double maxdelta = 0.;
+    for (int i = 0; i < n; i++)
     {
-      int n = delta_xyz_[dir].size_array();
-      node_coordinates_xyz_[dir].resize_array(n+1);
-      node_coordinates_xyz_[dir][0] = (dir == 0) ? x0 : ((dir == 1) ? y0 : z0);
-      double mindelta = 1e30;
-      double maxdelta = 0.;
-      for (int i = 0; i < n; i++)
-        {
-          const double d = delta_xyz_[dir][i];
-          node_coordinates_xyz_[dir][i+1] = node_coordinates_xyz_[dir][i] + d;
-          mindelta = std::min(d, mindelta);
-          maxdelta = std::max(d, maxdelta);
-        }
-      if (maxdelta - mindelta < eps)
-        {
-          uniform_[dir] = true;
-        }
-      else
-        {
-          uniform_[dir] = false;
-        }
+      const double d = delta_xyz_[dir][i];
+      node_coordinates_xyz_[dir][i + 1] = node_coordinates_xyz_[dir][i] + d;
+      mindelta = std::min(d, mindelta);
+      maxdelta = std::max(d, maxdelta);
     }
+    if (maxdelta - mindelta < eps)
+      uniform_[dir] = true;
+    else
+      uniform_[dir] = false;
+  }
 }
 
 /*! @brief Builds the geometry, parallel splitting and DOF correspondance
@@ -701,8 +685,8 @@ void Domaine_IJK::initialize_origin_deltas(double x0, double y0, double z0,
  */
 void Domaine_IJK::init_subregion(const Domaine_IJK& src, int ni, int nj, int nk,
                                  int offset_i, int offset_j, int offset_k,
-                                 const Nom& subregion_name,
-                                 bool perio_x, bool perio_y, bool perio_z )
+                                 const Nom &subregion_name,
+                                 bool perio_x, bool perio_y, bool perio_z)
 {
   /* methode difficile a ecrire pour etre generale
      traiter proprement les differentes localisation, par exemple les faces de bord est un casse-tete
@@ -750,10 +734,10 @@ void Domaine_IJK::init_subregion(const Domaine_IJK& src, int ni, int nj, int nk,
  *  @param slice_size_k Contains, for each slice in the z direction, the number of cells in this slice.
  *  @param processor_mapping Provides the rank of the mpi process that will have this subdomain.
  */
-void Domaine_IJK::initialize_with_mapping(const ArrOfInt& slice_size_i,
-                                          const ArrOfInt& slice_size_j,
-                                          const ArrOfInt& slice_size_k,
-                                          const IntTab& processor_mapping)
+void Domaine_IJK::initialize_with_mapping(const ArrOfInt &slice_size_i,
+                                          const ArrOfInt &slice_size_j,
+                                          const ArrOfInt &slice_size_k,
+                                          const IntTab &processor_mapping)
 {
   assert(slice_size_i.size_array() == processor_mapping.dimension(0));
   assert(slice_size_j.size_array() == processor_mapping.dimension(1));
@@ -768,17 +752,17 @@ void Domaine_IJK::initialize_with_mapping(const ArrOfInt& slice_size_i,
   sizes_all_slices_[1] = slice_size_j;
   sizes_all_slices_[2] = slice_size_k;
   for (int i = 0; i < 3; i++)
+  {
+    const int n = sizes_all_slices_[i].size_array();
+    nproc_per_direction_[i] = n;
+    offsets_all_slices_[i].resize_array(n);
+    offsets_all_slices_[i][0] = 0;
+    for (int j = 1; j < n; j++)
     {
-      const int n = sizes_all_slices_[i].size_array();
-      nproc_per_direction_[i] = n;
-      offsets_all_slices_[i].resize_array(n);
-      offsets_all_slices_[i][0] = 0;
-      for (int j = 1; j < n; j++)
-        {
-          offsets_all_slices_[i][j] = offsets_all_slices_[i][j-1] + sizes_all_slices_[i][j-1];
-        }
-      assert(offsets_all_slices_[i][n-1] + sizes_all_slices_[i][n-1] == get_nb_elem_tot(i));
+      offsets_all_slices_[i][j] = offsets_all_slices_[i][j - 1] + sizes_all_slices_[i][j - 1];
     }
+    assert(offsets_all_slices_[i][n - 1] + sizes_all_slices_[i][n - 1] == get_nb_elem_tot(i));
+  }
   // Find my rank in the processor mapping, fill processor_position_
   bool ok = false;
   processor_position_[0] = processor_position_[1] = processor_position_[2] = -1; // default, if I'm not in the mapping.
@@ -786,98 +770,88 @@ void Domaine_IJK::initialize_with_mapping(const ArrOfInt& slice_size_i,
     int pos_i = -1, pos_j = -1, pos_k = -1;
     const int myrank = Process::me();
     for (pos_k = 0; pos_k < nproc_per_direction_[2]; pos_k++)
-      {
-        for (pos_j = 0; pos_j < nproc_per_direction_[1]; pos_j++)
-          {
-            for (pos_i = 0; pos_i < nproc_per_direction_[0]; pos_i++)
-              {
-                int numproc = mapping_(pos_i,pos_j,pos_k);
-                assert(numproc >= 0 && numproc < Process::nproc());
-                if (numproc == myrank)
-                  {
-                    assert(!ok); // check that processor has not yet been visited
-                    ok = true;
-                    processor_position_[0] = pos_i;
-                    processor_position_[1] = pos_j;
-                    processor_position_[2] = pos_k;
-                    // don't break, finish browsing the array to search to check for inconsistencies
-                  }
-              }
-          }
-      }
+      for (pos_j = 0; pos_j < nproc_per_direction_[1]; pos_j++)
+        for (pos_i = 0; pos_i < nproc_per_direction_[0]; pos_i++)
+          int numproc = mapping_(pos_i, pos_j, pos_k);
+    assert(numproc >= 0 && numproc < Process::nproc());
+    if (numproc == myrank)
+    {
+      assert(!ok); // check that processor has not yet been visited
+      ok = true;
+      processor_position_[0] = pos_i;
+      processor_position_[1] = pos_j;
+      processor_position_[2] = pos_k;
+      // don't break, finish browsing the array to search to check for inconsistencies
+    }
   }
   if (!ok)
+  {
+    // this processor has no part of the domain
+    for (int i = 0; i < 3; i++)
     {
-      // this processor has no part of the domain
-      for (int i = 0; i < 3; i++)
-        {
-          nb_elem_local_[i] = 0;
-          nb_nodes_local_[i] = 0;
-          for (int j = 0; j < 3; j++)
-            nb_faces_local_[i][j] = 0;
-          offset_[i] = 0;
-          neighbour_processors_[0][i] = -1;
-          neighbour_processors_[1][i] = -1;
-        }
+      nb_elem_local_[i] = 0;
+      nb_nodes_local_[i] = 0;
+      for (int j = 0; j < 3; j++)
+        nb_faces_local_[i][j] = 0;
+      offset_[i] = 0;
+      neighbour_processors_[0][i] = -1;
+      neighbour_processors_[1][i] = -1;
     }
+  }
   else
+  {
+    for (int i = 0; i < 3; i++)
     {
-      for (int i = 0; i < 3; i++)
-        {
-          nb_elem_local_[i] = sizes_all_slices_[i][processor_position_[i]];
-          nb_nodes_local_[i] = nb_elem_local_[i];
-          if (!get_periodic_flag(i) && processor_position_[i] == nproc_per_direction_[i]-1)
-            {
-              // We have one more node on this processor only if we are the last processor in this direction
-              // and if the domain is not periodic (otherwise, last node is owned by the next processor)
-              nb_nodes_local_[i]++;
-            }
-          for (int j = 0; j < 3; j++)
-            {
-              // Compute local number of faces on this processor in each direction.
-              // In general nb_faces will be equal to nb_elements except if at the end of
-              // the domain and in the direction of the face normal and if not periodic:
-              if (i == j)
-                nb_faces_local_[j][i] = nb_nodes_local_[i];
-              else
-                nb_faces_local_[j][i] = nb_elem_local_[i];
-            }
-          offset_[i] = offsets_all_slices_[i][processor_position_[i]];
-        }
-      // Compute neighbour processors, taking into account periodicity:
-      for (int i = 0; i < 3; i++)
-        {
-          for (int previous_or_next = 0; previous_or_next < 2; previous_or_next++)
-            {
-              Int3 other_pos(processor_position_); // ijk index of neighbour processor
-              if (previous_or_next == 0)
-                other_pos[i]--;
-              else
-                other_pos[i]++;
-              if (other_pos[i] < 0 || other_pos[i] >= nproc_per_direction_[i])
-                {
-                  if (get_periodic_flag(i))
-                    {
-                      // wrap to processor at other end
-                      other_pos[i] = nproc_per_direction_[i] - 1 - processor_position_[i];
-                    }
-                  else
-                    {
-                      other_pos[i] = -1;
-                    }
-                }
-              if (other_pos[i] >= 0)
-                {
-                  neighbour_processors_[previous_or_next][i] = mapping_(other_pos[0], other_pos[1], other_pos[2]);
-                }
-              else
-                {
-                  // at boundary of domain:
-                  neighbour_processors_[previous_or_next][i] = -1;
-                }
-            }
-        }
+      nb_elem_local_[i] = sizes_all_slices_[i][processor_position_[i]];
+      nb_nodes_local_[i] = nb_elem_local_[i];
+      if (!get_periodic_flag(i) && processor_position_[i] == nproc_per_direction_[i] - 1)
+      {
+        // We have one more node on this processor only if we are the last processor in this direction
+        // and if the domain is not periodic (otherwise, last node is owned by the next processor)
+        nb_nodes_local_[i]++;
+      }
+      for (int j = 0; j < 3; j++)
+      {
+        // Compute local number of faces on this processor in each direction.
+        // In general nb_faces will be equal to nb_elements except if at the end of
+        // the domain and in the direction of the face normal and if not periodic:
+        if (i == j)
+          nb_faces_local_[j][i] = nb_nodes_local_[i];
+        else
+          nb_faces_local_[j][i] = nb_elem_local_[i];
+      }
+      offset_[i] = offsets_all_slices_[i][processor_position_[i]];
     }
+    // Compute neighbour processors, taking into account periodicity:
+    for (int i = 0; i < 3; i++)
+    {
+      for (int previous_or_next = 0; previous_or_next < 2; previous_or_next++)
+      {
+        Int3 other_pos(processor_position_); // ijk index of neighbour processor
+        if (previous_or_next == 0)
+          other_pos[i]--;
+        else
+          other_pos[i]++;
+        if (other_pos[i] < 0 || other_pos[i] >= nproc_per_direction_[i])
+        {
+          if (get_periodic_flag(i))
+          {
+            // wrap to processor at other end
+            other_pos[i] = nproc_per_direction_[i] - 1 - processor_position_[i];
+          }
+          else
+            other_pos[i] = -1;
+        }
+        if (other_pos[i] >= 0)
+          neighbour_processors_[previous_or_next][i] = mapping_(other_pos[0], other_pos[1], other_pos[2]);
+        else
+        {
+          // at boundary of domain:
+          neighbour_processors_[previous_or_next][i] = -1;
+        }
+      }
+    }
+  }
   Journal() << "Domaine_IJK::initialize_with_mapping:\n"
             << " processor_position=" << print_vect(processor_position_) << "\n"
             << " offset            =" << print_vect(offset_) << "\n"
@@ -888,9 +862,9 @@ void Domaine_IJK::initialize_with_mapping(const ArrOfInt& slice_size_i,
 
 /*! @brief renvoie new(Faces) ! elle est surchargee par Domaine_VDF par ex.
  */
-Faces* Domaine_IJK::creer_faces()
+Faces *Domaine_IJK::creer_faces()
 {
-  Faces* les_faces = new(Faces);
+  Faces *les_faces = new (Faces);
   return les_faces;
 }
 
@@ -906,19 +880,19 @@ int Domaine_IJK::get_nb_items_local(Localisation loc, int direction) const
   assert(loc == ELEM || loc == NODES || loc == FACES_I ||
          loc == FACES_J || loc == FACES_K);
   assert(direction >= 0 && direction < 3);
-  switch(loc)
-    {
-    case ELEM:
-      return get_nb_elem_local(direction);
-    case NODES:
-      return get_nb_nodes_local(direction);
-    case FACES_I:
-      return get_nb_faces_local(0, direction);
-    case FACES_J:
-      return get_nb_faces_local(1, direction);
-    case FACES_K:
-      return get_nb_faces_local(2, direction);
-    }
+  switch (loc)
+  {
+  case ELEM:
+    return get_nb_elem_local(direction);
+  case NODES:
+    return get_nb_nodes_local(direction);
+  case FACES_I:
+    return get_nb_faces_local(0, direction);
+  case FACES_J:
+    return get_nb_faces_local(1, direction);
+  case FACES_K:
+    return get_nb_faces_local(2, direction);
+  }
   return -1;
 }
 
@@ -947,44 +921,44 @@ double Domaine_IJK::get_domain_length(int direction) const
  *  @param delta Size of cells in each direction
  */
 void Domaine_IJK::get_local_mesh_delta(int direction, int ghost_cells,
-                                       ArrOfDouble_with_ghost& delta) const
+                                       ArrOfDouble_with_ghost &delta) const
 {
   const int ntot = get_nb_elem_tot(direction);
   const int offset = get_offset_local(direction);
-  const ArrOfDouble& global_delta = get_delta(direction);
+  const ArrOfDouble &global_delta = get_delta(direction);
   const int nlocal = get_nb_elem_local(direction);
   delta.resize(nlocal, ghost_cells);
 
   if (ghost_cells > ntot)
-    {
-      Cerr << "Error in Domaine_IJK::get_local_mesh_delta(dir = "<<direction<<",ghost_cells = "<<ghost_cells<<")\n"
-           << "Number of ghost cells larger than number of nodes (" << ntot << ") in the domain !" << endl;
-      Process::exit();
-    }
+  {
+    Cerr << "Error in Domaine_IJK::get_local_mesh_delta(dir = " << direction << ",ghost_cells = " << ghost_cells << ")\n"
+         << "Number of ghost cells larger than number of nodes (" << ntot << ") in the domain !" << endl;
+    Process::exit();
+  }
 
   for (int ilocal = -ghost_cells; ilocal < nlocal + ghost_cells; ilocal++)
+  {
+    const int iglobal = ilocal + offset;
+    double d;
+    if (iglobal < 0)
     {
-      const int iglobal = ilocal + offset;
-      double d;
-      if (iglobal < 0)
-        {
-          if (get_periodic_flag(direction))
-            d = global_delta[iglobal + ntot];
-          else
-            d = global_delta[0];
-        }
-      else if (iglobal >= ntot)
-        {
-          if (get_periodic_flag(direction))
-            d = global_delta[iglobal - ntot];
-          else
-            d = global_delta[ntot - 1];
-        }
+      if (get_periodic_flag(direction))
+        d = global_delta[iglobal + ntot];
       else
-        d = global_delta[iglobal];
-
-      delta[ilocal] = d;
+        d = global_delta[0];
     }
+    else if (iglobal >= ntot)
+    {
+      if (get_periodic_flag(direction))
+        d = global_delta[iglobal - ntot];
+      else
+        d = global_delta[ntot - 1];
+    }
+    else
+      d = global_delta[iglobal];
+
+    delta[ilocal] = d;
+  }
 }
 
 /*! @brief Returns the number of local items (on this processor) for the given localisation in the requested direction
@@ -1005,26 +979,26 @@ int Domaine_IJK::get_nb_items_global(Localisation loc, int direction) const
   if (!periodic_[direction])
     no_perio = 1;
 
-  switch(loc)
-    {
-    case ELEM:
-      break;
-    case NODES:
+  switch (loc)
+  {
+  case ELEM:
+    break;
+  case NODES:
+    n += no_perio;
+    break;
+  case FACES_I:
+    if (direction == 0)
       n += no_perio;
-      break;
-    case FACES_I:
-      if (direction == 0)
-        n += no_perio;
-      break;
-    case FACES_J:
-      if (direction == 1)
-        n += no_perio;
-      break;
-    case FACES_K:
-      if (direction == 2)
-        n += no_perio;
-      break;
-    }
+    break;
+  case FACES_J:
+    if (direction == 1)
+      n += no_perio;
+    break;
+  case FACES_K:
+    if (direction == 2)
+      n += no_perio;
+    break;
+  }
   return n;
 }
 
@@ -1035,7 +1009,7 @@ int Domaine_IJK::get_nb_items_global(Localisation loc, int direction) const
  *  @param loc In IJK, ELEM, NODES, FACES_I, FACES_J or FACES_K
  *  @param tab Array in which we'll store the number of slices in given direction
  */
-void Domaine_IJK::get_slice_size(int direction, Localisation loc, ArrOfInt& tab) const
+void Domaine_IJK::get_slice_size(int direction, Localisation loc, ArrOfInt &tab) const
 {
   assert(loc == ELEM || loc == NODES || loc == FACES_I ||
          loc == FACES_J || loc == FACES_K);
@@ -1043,27 +1017,30 @@ void Domaine_IJK::get_slice_size(int direction, Localisation loc, ArrOfInt& tab)
   tab = sizes_all_slices_[direction];
   const int n = tab.size_array() - 1;
   if (!periodic_[direction])
+  {
+    switch (loc)
     {
-      switch(loc)
-        {
-        case ELEM:
-          break;
-        case NODES:
-          tab[n]++;
-          break;
-        case FACES_I:
-          if (direction == 0) tab[n]++;
-          break;
-        case FACES_J:
-          if (direction == 1) tab[n]++;
-          break;
-        case FACES_K:
-          if (direction == 2) tab[n]++;
-          break;
-        default:
-          break;
-        }
+    case ELEM:
+      break;
+    case NODES:
+      tab[n]++;
+      break;
+    case FACES_I:
+      if (direction == 0)
+        tab[n]++;
+      break;
+    case FACES_J:
+      if (direction == 1)
+        tab[n]++;
+      break;
+    case FACES_K:
+      if (direction == 2)
+        tab[n]++;
+      break;
+    default:
+      break;
     }
+  }
 }
 
 /*! @brief Determines the dof of an element along a localisation
@@ -1132,13 +1109,13 @@ FixedVector<int, 3> Domaine_IJK::convert_packed_to_ijk_cell(int index) const
   if (index < 0)
     ijk[0] = ijk[1] = ijk[2] = -1;
   else
-    {
-      ijk[0] = index % nbmailles_euler_i;
-      index /= nbmailles_euler_i;
-      ijk[1] = index % nbmailles_euler_j;
-      index /= nbmailles_euler_j;
-      ijk[2] = index;
-    }
+  {
+    ijk[0] = index % nbmailles_euler_i;
+    index /= nbmailles_euler_i;
+    ijk[1] = index % nbmailles_euler_j;
+    index /= nbmailles_euler_j;
+    ijk[2] = index;
+  }
   return ijk;
 }
 
@@ -1155,30 +1132,30 @@ FixedVector<int, 3> Domaine_IJK::convert_packed_to_ijk_cell(int index) const
  *  @param ijk_local The local coordinates of the cell.
  *  @param ijk_me A sort of 3D flag. Will be [1,1,1] if the element belongs to me.
  */
-void Domaine_IJK::search_elem(const double& x, const double& y, const double& z,
-                              FixedVector<int, 3>& ijk_global,
-                              FixedVector<int, 3>& ijk_local,
-                              FixedVector<int, 3>& ijk_me) const
+void Domaine_IJK::search_elem(const double &x, const double &y, const double &z,
+                              FixedVector<int, 3> &ijk_global,
+                              FixedVector<int, 3> &ijk_local,
+                              FixedVector<int, 3> &ijk_me) const
 {
   Vecteur3 coords(x, y, z);
   ijk_me[0] = 0;
   ijk_me[1] = 0;
   ijk_me[2] = 0;
   for (int dir = 0; dir < 3; ++dir)
-    {
-      const double d = get_constant_delta(dir);
-      const double o = get_origin(dir);
-      const double val = (coords[dir] - o) / d;
-      const int ival = (int)std::lrint(std::floor(val));
-      ijk_global[dir] = ival;
-      assert((ival >= 0) && (ival < get_nb_elem_tot(dir)));
-      const int ioff = get_offset_local(dir);
-      const int n_loc = get_nb_elem_local(dir);
-      if ((ival >= ioff) && (ival < ioff + n_loc))
-        // It's within my subdomain along this direction
-        ijk_me[dir] = 1;
-      ijk_local[dir] = ival - ioff;
-    }
+  {
+    const double d = get_constant_delta(dir);
+    const double o = get_origin(dir);
+    const double val = (coords[dir] - o) / d;
+    const int ival = (int)std::lrint(std::floor(val));
+    ijk_global[dir] = ival;
+    assert((ival >= 0) && (ival < get_nb_elem_tot(dir)));
+    const int ioff = get_offset_local(dir);
+    const int n_loc = get_nb_elem_local(dir);
+    if ((ival >= ioff) && (ival < ioff + n_loc))
+      // It's within my subdomain along this direction
+      ijk_me[dir] = 1;
+    ijk_local[dir] = ival - ioff;
+  }
 }
 
 /*! @brief Updates volume_elem_
@@ -1187,7 +1164,7 @@ void Domaine_IJK::search_elem(const double& x, const double& y, const double& z,
 void Domaine_IJK::update_volume_elem()
 {
   // volume_elem is already up to date
-  if(volume_elem_status_ == DONE)
+  if (volume_elem_status_ == DONE)
     return;
 
   // This method only makes sense for 3D
@@ -1206,153 +1183,149 @@ void Domaine_IJK::update_volume_elem()
   // Nb of axis with uniform size
   int nb_uniform_axis = 0;
   int not_uniform = -1;
-  for(int dir = 0; dir < 3; ++dir)
-    if(is_uniform(dir))
+  for (int dir = 0; dir < 3; ++dir)
+    if (is_uniform(dir))
       nb_uniform_axis++;
 
   const double size_x = is_uniform(0) ? get_constant_delta(0) : throw;
-  const double size_y = is_uniform(1) ? get_constant_delta(1): throw;
+  const double size_y = is_uniform(1) ? get_constant_delta(1) : throw;
   const double size_z = is_uniform(2) ? get_constant_delta(2) : -123.;
-  const ArrOfDouble& sizes_x = get_delta(0);
-  const ArrOfDouble& sizes_y = get_delta(1);
-  const ArrOfDouble& sizes_z = get_delta(2);
-  switch(nb_uniform_axis)
+  const ArrOfDouble &sizes_x = get_delta(0);
+  const ArrOfDouble &sizes_y = get_delta(1);
+  const ArrOfDouble &sizes_z = get_delta(2);
+  switch (nb_uniform_axis)
+  {
+  case 3: // Constant on all axis
+    size_elem = size_x * size_y * size_z;
+    volume_elem_ = size_elem;
+    volume_elem_status_ = DONE;
+    return;
+  case 2: // Not constant on 1 axis
+    for (int dir = 0; dir < 3; ++dir)
+      if (!is_uniform(dir))
+        not_uniform = dir;
+    if (not_uniform == 0) // Not constant along x axis
     {
-    case 3: // Constant on all axis
-      size_elem = size_x * size_y * size_z;
-      volume_elem_ = size_elem;
-      volume_elem_status_ = DONE;
-      return;
-    case 2: // Not constant on 1 axis
-      for(int dir = 0; dir < 3; ++dir)
-        if(!is_uniform(dir))
-          not_uniform = dir;
-      if(not_uniform == 0) // Not constant along x axis
-        {
-          assert(nx == sizes_x.size_array());
-          for(int idz = 0; idz < nz; ++idz)
-            for(int idy = 0; idy < ny; ++idy)
-              for(int idx = 0; idx < nx; ++idx)
-                {
-                  size_elem = sizes_x[idx] * size_y * size_z;
-                  volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-                }
-        }
-      else if(not_uniform == 1) // Not constant along y axis
-        {
-          assert(ny == sizes_y.size_array());
-          for(int idz = 0; idz < nz; ++idz)
-            for(int idy = 0; idy < ny; ++idy)
-              for(int idx = 0; idx < nx; ++idx)
-                {
-                  size_elem = size_x * sizes_y[idy] * size_z;
-                  volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-                }
-        }
-      else if(not_uniform == 2) // Not constant along z axis
-        {
-          assert(nz == sizes_z.size_array());
-          for(int idz = 0; idz < nz; ++idz)
-            for(int idy = 0; idy < ny; ++idy)
-              for(int idx = 0; idx < nx; ++idx)
-                {
-                  size_elem = size_x * size_y * sizes_z[idz];
-                  volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-                }
-        }
-      else
-        {
-          Cerr << "Error in Maillage_Ft_IJK::update_volume_elem !!! No direction selected?!" <<finl;
-          assert(0);
-          Process::exit();
-        }
-      volume_elem_status_ = DONE;
-      return;
-    case 1: // constant along one axis
-      if(is_uniform(0))
-        not_uniform = 23;
-      else if(is_uniform(1))
-        not_uniform = 13;
-      else if(is_uniform(2))
-        not_uniform = 12;
-      if(not_uniform == 23) // constant along x axis
-        {
-          assert(ny == sizes_y.size_array());
-          assert(nz == sizes_z.size_array());
-          for(int idz = 0; idz < nz; ++idz)
-            for(int idy = 0; idy < ny; ++idy)
-              for(int idx = 0; idx < nx; ++idx)
-                {
-                  size_elem = size_x * sizes_y[idy] * sizes_z[idz];
-                  volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-                }
-        }
-      else if(not_uniform == 13) // constant along y axis
-        {
-          assert(nx == sizes_x.size_array());
-          assert(nz == sizes_z.size_array());
-          for(int idz = 0; idz < nz; ++idz)
-            for(int idy = 0; idy < ny; ++idy)
-              for(int idx = 0; idx < nx; ++idx)
-                {
-                  size_elem = sizes_x[idx] * size_y * sizes_z[idz];
-                  volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-                }
-        }
-      else if(not_uniform == 12) // constant along z axis
-        {
-          assert(ny == sizes_y.size_array());
-          assert(nx == sizes_x.size_array());
-          for(int idz = 0; idz < nz; ++idz)
-            for(int idy = 0; idy < ny; ++idy)
-              for(int idx = 0; idx < nx; ++idx)
-                {
-                  size_elem = sizes_x[idx] * sizes_y[idy] * size_z;
-                  volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-                }
-        }
-      else
-        {
-          Cerr << "Error in Maillage_Ft_IJK::update_volume_elem !!! No direction selected?!" <<finl;
-          assert(0);
-          Process::exit();
-        }
-      volume_elem_status_ = DONE;
-      return;
-    case 0: // Varies on all axis
-      // Checking if everything makes sense
       assert(nx == sizes_x.size_array());
+      for (int idz = 0; idz < nz; ++idz)
+        for (int idy = 0; idy < ny; ++idy)
+          for (int idx = 0; idx < nx; ++idx)
+          {
+            size_elem = sizes_x[idx] * size_y * size_z;
+            volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+          }
+    }
+    else if (not_uniform == 1) // Not constant along y axis
+    {
       assert(ny == sizes_y.size_array());
+      for (int idz = 0; idz < nz; ++idz)
+        for (int idy = 0; idy < ny; ++idy)
+          for (int idx = 0; idx < nx; ++idx)
+          {
+            size_elem = size_x * sizes_y[idy] * size_z;
+            volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+          }
+    }
+    else if (not_uniform == 2) // Not constant along z axis
+    {
       assert(nz == sizes_z.size_array());
-      for(int idz = 0; idz < nz; ++idz)
-        for(int idy = 0; idy < ny; ++idy)
-          for(int idx = 0; idx < nx; ++idx)
-            {
-              size_elem = sizes_x[idx] * sizes_y[idy] * sizes_z[idz];
-              volume_elem_[(idz * ny * nx) +(idy * nx) + idx] = size_elem;
-            }
-      volume_elem_status_ = DONE;
-      return;
-    default:
-      Cerr << "Error Maillage_FT_IJK::update_volume_elem" << finl;
+      for (int idz = 0; idz < nz; ++idz)
+        for (int idy = 0; idy < ny; ++idy)
+          for (int idx = 0; idx < nx; ++idx)
+          {
+            size_elem = size_x * size_y * sizes_z[idz];
+            volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+          }
+    }
+    else
+    {
+      Cerr << "Error in Maillage_Ft_IJK::update_volume_elem !!! No direction selected?!" << finl;
       assert(0);
       Process::exit();
-      return;
     }
-}
-
-void Domaine_IJK::set_extension_from_bulle_param(double vol_bulle, double diam_bulle)
-{
-  int ijk_splitting_ft_extension_from_diameter = 0;
-  for (int c=0; c<3; c++)
+    volume_elem_status_ = DONE;
+    return;
+  case 1: // constant along one axis
+    if (is_uniform(0))
+      not_uniform = 23;
+    else if (is_uniform(1))
+      not_uniform = 13;
+    else if (is_uniform(2))
+      not_uniform = 12;
+    if (not_uniform == 23) // constant along x axis
     {
-      const double delta = get_constant_delta(c);
-      ijk_splitting_ft_extension_from_diameter = std::max(ijk_splitting_ft_extension_from_diameter, (int) ceil(diam_bulle/delta));
+      assert(ny == sizes_y.size_array());
+      assert(nz == sizes_z.size_array());
+      for (int idz = 0; idz < nz; ++idz)
+        for (int idy = 0; idy < ny; ++idy)
+          for (int idx = 0; idx < nx; ++idx)
+          {
+            size_elem = size_x * sizes_y[idy] * sizes_z[idz];
+            volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+          }
     }
-  ft_extension_ = (ijk_splitting_ft_extension_from_diameter > ft_extension_) ? ijk_splitting_ft_extension_from_diameter : ft_extension_;
+    else if (not_uniform == 13) // constant along y axis
+    {
+      assert(nx == sizes_x.size_array());
+      assert(nz == sizes_z.size_array());
+      for (int idz = 0; idz < nz; ++idz)
+        for (int idy = 0; idy < ny; ++idy)
+          for (int idx = 0; idx < nx; ++idx)
+          {
+            size_elem = sizes_x[idx] * size_y * sizes_z[idz];
+            volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+          }
+    }
+    else if (not_uniform == 12) // constant along z axis
+    {
+      assert(ny == sizes_y.size_array());
+      assert(nx == sizes_x.size_array());
+      for (int idz = 0; idz < nz; ++idz)
+        for (int idy = 0; idy < ny; ++idy)
+          for (int idx = 0; idx < nx; ++idx)
+          {
+            size_elem = sizes_x[idx] * sizes_y[idy] * size_z;
+            volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+          }
+    }
+    else
+    {
+      Cerr << "Error in Maillage_Ft_IJK::update_volume_elem !!! No direction selected?!" << finl;
+      assert(0);
+      Process::exit();
+    }
+    volume_elem_status_ = DONE;
+    return;
+  case 0: // Varies on all axis
+    // Checking if everything makes sense
+    assert(nx == sizes_x.size_array());
+    assert(ny == sizes_y.size_array());
+    assert(nz == sizes_z.size_array());
+    for (int idz = 0; idz < nz; ++idz)
+      for (int idy = 0; idy < ny; ++idy)
+        for (int idx = 0; idx < nx; ++idx)
+        {
+          size_elem = sizes_x[idx] * sizes_y[idy] * sizes_z[idz];
+          volume_elem_[(idz * ny * nx) + (idy * nx) + idx] = size_elem;
+        }
+    volume_elem_status_ = DONE;
+    return;
+  default:
+    Cerr << "Error Maillage_FT_IJK::update_volume_elem" << finl;
+    assert(0);
+    Process::exit();
+    return;
+  }
 }
 
-
+/*! Check whether the cell (i,j,k) is contained within the specified ghost along any direction. */
+bool Domaine_IJK::within_ghost(int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const
+{
+  const bool i_within_ghost = ((i >= -negative_ghost_size) && (i < get_nb_elem_local(0) + positive_ghost_size));
+  const bool j_within_ghost = ((j >= -negative_ghost_size) && (j < get_nb_elem_local(1) + positive_ghost_size));
+  const bool k_within_ghost = ((k >= -negative_ghost_size) && (k < get_nb_elem_local(2) + positive_ghost_size));
+  return (i_within_ghost && j_within_ghost && k_within_ghost);
+}
 
 int Domaine_IJK::periodic_get_processor_by_ijk(int slice_i, int slice_j, int slice_k) const
 {
@@ -1397,7 +1370,6 @@ int Domaine_IJK::periodic_get_processor_by_ijk(int slice_i, int slice_j, int sli
     return get_processor_by_ijk(periodic_slice_i, periodic_slice_j, periodic_slice_k);
 }
 
-
 /*! independent_index adds a ghost_size to the packed index.
  * It is similar to the linear_index defined in IJK_Field_local_template, but with
  * a universal, predefined ghost_size of 256 instead of a field-dependent ghost_size.
@@ -1410,8 +1382,8 @@ int Domaine_IJK::get_independent_index(int i, int j, int k) const
   const int ni = get_nb_elem_local(0);
   const int nj = get_nb_elem_local(1);
 
-  int offset = ghost_size + (ni + 2*ghost_size)*ghost_size + (ni + 2*ghost_size)*(nj + 2*ghost_size)*ghost_size;
-  int independent_index = offset + i + (ni + 2*ghost_size)*j + (ni + 2*ghost_size)*(nj + 2*ghost_size)*k;
+  int offset = ghost_size + (ni + 2 * ghost_size) * ghost_size + (ni + 2 * ghost_size) * (nj + 2 * ghost_size) * ghost_size;
+  int independent_index = offset + i + (ni + 2 * ghost_size) * j + (ni + 2 * ghost_size) * (nj + 2 * ghost_size) * k;
 
   return independent_index;
 }
@@ -1423,9 +1395,9 @@ Int3 Domaine_IJK::get_ijk_from_independent_index(int independent_index) const
   const int nj = get_nb_elem_local(1);
 
   // Computation of the indices disregarding the offset (i goes from 0 to ni + 2*ghost_size)
-  int k = (independent_index)/((ni + 2*ghost_size)*(nj + 2*ghost_size));
-  int j = ((independent_index) - (ni + 2*ghost_size)*(nj + 2*ghost_size)*k)/(ni + 2*ghost_size);
-  int i = (independent_index) - (ni + 2*ghost_size)*(nj + 2*ghost_size)*k - (ni + 2*ghost_size)*j;
+  int k = (independent_index) / ((ni + 2 * ghost_size) * (nj + 2 * ghost_size));
+  int j = ((independent_index) - (ni + 2 * ghost_size) * (nj + 2 * ghost_size) * k) / (ni + 2 * ghost_size);
+  int i = (independent_index) - (ni + 2 * ghost_size) * (nj + 2 * ghost_size) * k - (ni + 2 * ghost_size) * j;
 
   // Computation of the indices with the offset (i goes from -ghost_size_ to ni + ghost_size)
   k -= ghost_size;
@@ -1442,7 +1414,7 @@ Int3 Domaine_IJK::get_ijk_from_independent_index(int independent_index) const
  */
 int Domaine_IJK::get_signed_independent_index(int phase, int i, int j, int k) const
 {
-  int signed_independent_index = (phase == 1) ? -1 - get_independent_index(i,j,k) : get_independent_index(i,j,k);
+  int signed_independent_index = (phase == 1) ? -1 - get_independent_index(i, j, k) : get_independent_index(i, j, k);
   return signed_independent_index;
 }
 
@@ -1497,27 +1469,21 @@ int Domaine_IJK::correct_perio_i_local(int direction, int i) const
 
   int index = -1;
   if (is_uniform(direction))
+  {
+    index = i;
+    if (get_periodic_flag(direction))
     {
-      index = i;
-
-      if (get_periodic_flag(direction))
-        {
-          if ((index < 0) && (index + ng - n + 1 < -index))
-            {
-              index += ng;
-            }
-          else if ((index >= n) && (-(index - ng) < index - n + 1))
-            {
-              index -= ng;
-            }
-        }
+      if ((index < 0) && (index + ng - n + 1 < -index))
+        index += ng;
+      else if ((index >= n) && (-(index - ng) < index - n + 1))
+        index -= ng;
     }
+  }
   else
-    {
-      Cerr << "Error: In correct_perio_i_local(), the case of a non-uniform mesh along direction " << direction << " is not implemented." << finl;
-      Process::exit();
-    }
-
+  {
+    Cerr << "Error: In correct_perio_i_local(), the case of a non-uniform mesh along direction " << direction << " is not implemented." << finl;
+    Process::exit();
+  }
   return index;
 }
 
@@ -1528,19 +1494,18 @@ int Domaine_IJK::get_i_along_dir_no_perio(int direction, double coord_dir, Domai
   const double d = get_constant_delta(direction);
 
   const int offset_dir = get_offset_local(direction);
-  double origin_dir = get_origin(direction) - .5*d*loc_equal_dir;
+  double origin_dir = get_origin(direction) - .5 * d * loc_equal_dir;
 
   int index = -1;
   if (is_uniform(direction))
-    {
-      index = (int)(std::floor((coord_dir - origin_dir)/d)) - offset_dir;
-    }
+  {
+    index = (int)(std::floor((coord_dir - origin_dir) / d)) - offset_dir;
+  }
   else
-    {
-      Cerr << "Error: get_i_along_dir_no_perio(), the case of a non-uniform mesh along direction " << direction << " is not implemented." << finl;
-      Process::exit();
-    }
-
+  {
+    Cerr << "Error: get_i_along_dir_no_perio(), the case of a non-uniform mesh along direction " << direction << " is not implemented." << finl;
+    Process::exit();
+  }
   return index;
 }
 
@@ -1560,5 +1525,3 @@ Int3 Domaine_IJK::get_ijk_from_coord(double coord_x, double coord_y, double coor
   Int3 ijk = {i, j, k};
   return ijk;
 }
-
-
