@@ -758,9 +758,7 @@ void Domaine_IJK::initialize_with_mapping(const ArrOfInt &slice_size_i,
     offsets_all_slices_[i].resize_array(n);
     offsets_all_slices_[i][0] = 0;
     for (int j = 1; j < n; j++)
-    {
       offsets_all_slices_[i][j] = offsets_all_slices_[i][j - 1] + sizes_all_slices_[i][j - 1];
-    }
     assert(offsets_all_slices_[i][n - 1] + sizes_all_slices_[i][n - 1] == get_nb_elem_tot(i));
   }
   // Find my rank in the processor mapping, fill processor_position_
@@ -772,17 +770,19 @@ void Domaine_IJK::initialize_with_mapping(const ArrOfInt &slice_size_i,
     for (pos_k = 0; pos_k < nproc_per_direction_[2]; pos_k++)
       for (pos_j = 0; pos_j < nproc_per_direction_[1]; pos_j++)
         for (pos_i = 0; pos_i < nproc_per_direction_[0]; pos_i++)
-          int numproc = mapping_(pos_i, pos_j, pos_k);
-    assert(numproc >= 0 && numproc < Process::nproc());
-    if (numproc == myrank)
-    {
-      assert(!ok); // check that processor has not yet been visited
-      ok = true;
-      processor_position_[0] = pos_i;
-      processor_position_[1] = pos_j;
-      processor_position_[2] = pos_k;
-      // don't break, finish browsing the array to search to check for inconsistencies
-    }
+        {
+          const int numproc = mapping_(pos_i, pos_j, pos_k);
+          assert(numproc >= 0 && numproc < Process::nproc());
+          if (numproc == myrank)
+          {
+            assert(!ok); // check that processor has not yet been visited
+            ok = true;
+            processor_position_[0] = pos_i;
+            processor_position_[1] = pos_j;
+            processor_position_[2] = pos_k;
+            // don't break, finish browsing the array to search to check for inconsistencies
+          }
+        }
   }
   if (!ok)
   {

@@ -82,7 +82,7 @@ public:
   Domaine_IJK();
 
   // Initializes the object by analysing the provided VDF domaine (works for a distributed mesh)
-  void initialize_from_unstructured(const Domaine &,
+  void initialize_from_unstructured(const Domaine&,
                                     int direction_for_x,
                                     int direction_for_y,
                                     int direction_for_z,
@@ -102,7 +102,7 @@ public:
    *  @param process_grouping_j 1 by default. Number of processors per subdomain in j direction.
    *  @param process_grouping_k 1 by default. Number of processors per subdomain in k direction.
    */
-  void initialize_splitting(Domaine_IJK &dom,
+  void initialize_splitting(Domaine_IJK& dom,
                             int nproc_i, int nproc_j, int nproc_k,
                             int process_grouping_i = 1, int process_grouping_j = 1,
                             int process_grouping_k = 1);
@@ -121,10 +121,10 @@ public:
    *  @param slice_size_k Contains for each slice in the k direction, the number of cells this slice.
    *  @param processor_mapping Provides the rank of the mpi process that will own this subdomain.
    */
-  void initialize_mapping(Domaine_IJK &dom, const ArrOfInt &slice_size_i,
-                          const ArrOfInt &slice_size_j,
-                          const ArrOfInt &slice_size_k,
-                          const IntTab &processor_mapping);
+  void initialize_mapping(Domaine_IJK& dom, const ArrOfInt& slice_size_i,
+                          const ArrOfInt& slice_size_j,
+                          const ArrOfInt& slice_size_k,
+                          const IntTab& processor_mapping);
 
   /*! @brief Initializes class elements given dataset's parameters.
    *
@@ -139,9 +139,9 @@ public:
    *  @param perio_z Periodic flag along z axis.
    */
   void initialize_origin_deltas(double x0, double y0, double z0,
-                                const ArrOfDouble &delta_x,
-                                const ArrOfDouble &delta_y,
-                                const ArrOfDouble &delta_z,
+                                const ArrOfDouble& delta_x,
+                                const ArrOfDouble& delta_y,
+                                const ArrOfDouble& delta_z,
                                 bool perio_x, bool perio_y, bool perio_z);
 
   /*! @brief Builds the geometry, parallel splitting and DOF correspondance
@@ -165,7 +165,7 @@ public:
    */
   void init_subregion(const Domaine_IJK& src, int ni, int nj, int nk,
                       int offset_i, int offset_j, int offset_k,
-                      const Nom &subregion,
+                      const Nom& subregion,
                       bool perio_x = false, bool perio_y = false, bool perio_z = false);
 
   /*! @brief Creates a splitting of the domain by specifying the mapping.
@@ -180,10 +180,10 @@ public:
    *  @param slice_size_k Contains, for each slice in the z direction, the number of cells in this slice.
    *  @param processor_mapping Provides the rank of the mpi process that will have this subdomain.
    */
-  void initialize_with_mapping(const ArrOfInt &slice_size_i,
-                               const ArrOfInt &slice_size_j,
-                               const ArrOfInt &slice_size_k,
-                               const IntTab &processor_mapping);
+  void initialize_with_mapping(const ArrOfInt& slice_size_i,
+                               const ArrOfInt& slice_size_j,
+                               const ArrOfInt& slice_size_k,
+                               const IntTab& processor_mapping);
 
   /*! @brief
    *
@@ -340,7 +340,7 @@ public:
    *  @param direction In IJK, x(0), y(1) or z(2).
    *  @return node_coordinates_xyz_[direction]
    */
-  inline const ArrOfDouble &get_node_coordinates(int direction) const
+  inline const ArrOfDouble& get_node_coordinates(int direction) const
   {
     assert(direction >= 0 && direction < 3);
     return node_coordinates_xyz_[direction];
@@ -360,7 +360,7 @@ public:
    *  @param direction In IJK, x(0), y(1) or z(2).
    *  @return Array with the sizes.
    */
-  inline const ArrOfDouble &get_delta(int direction) const
+  inline const ArrOfDouble& get_delta(int direction) const
   {
     assert(direction >= 0 && direction < 3);
     return delta_xyz_[direction];
@@ -378,11 +378,11 @@ public:
   {
     assert(direction >= 0 && direction < 3);
     if (!is_uniform(direction))
-    {
-      Cerr << "Error in Domaine_IJK::get_constant_delta: grid is not uniform in direction : " << direction << endl;
-      assert(0);
-      Process::exit();
-    }
+      {
+        Cerr << "Error in Domaine_IJK::get_constant_delta: grid is not uniform in direction : " << direction << endl;
+        assert(0);
+        Process::exit();
+      }
     return delta_xyz_[direction][0];
   }
 
@@ -398,7 +398,7 @@ public:
    *  @param delta Size of cells in each direction
    */
   void get_local_mesh_delta(int direction, int ghost_cells,
-                            ArrOfDouble_with_ghost &delta) const;
+                            ArrOfDouble_with_ghost& delta) const;
 
   /*! @brief Fills an array containing the mapping of processors
    *
@@ -408,7 +408,7 @@ public:
    *
    *  @param mapping Table in which we'll copy the mapping
    */
-  inline void get_processor_mapping(IntTab &mapping) const { mapping = mapping_; }
+  inline void get_processor_mapping(IntTab& mapping) const { mapping = mapping_; }
 
   /*! @brief Returns the indices of the first cell in requested direction
    *         of every slices in this direction
@@ -416,7 +416,7 @@ public:
    *  @param direction In IJK, x(0), y(1) or z(2).
    *  @param tab Array in which we'll store the offsets in that direction
    */
-  inline void get_slice_offsets(int direction, ArrOfInt &tab) const
+  inline void get_slice_offsets(int direction, ArrOfInt& tab) const
   {
     assert(direction >= 0 && direction < 3);
     tab = offsets_all_slices_[direction];
@@ -429,14 +429,14 @@ public:
    *  @param loc In IJK, ELEM, NODES, FACES_I, FACES_J or FACES_K
    *  @param tab Array in which we'll store the number of slices in given direction
    */
-  void get_slice_size(int direction, Localisation loc, ArrOfInt &tab) const;
+  void get_slice_size(int direction, Localisation loc, ArrOfInt& tab) const;
 
   /*! @brief Return the global index of the processor according to its position.
    *
    *  @param slice Vector with the x, y, and z coordinate of the processor.
    *  @return mapping_(slice[0], slice[1], slice[2])
    */
-  inline int get_processor_by_ijk(const FixedVector<int, 3> &slice) const { return mapping_(slice[0], slice[1], slice[2]); }
+  inline int get_processor_by_ijk(const FixedVector<int, 3>& slice) const { return mapping_(slice[0], slice[1], slice[2]); }
 
   /*! @brief Return the global index of the processor according to its position.
    *
@@ -468,7 +468,7 @@ public:
    */
   Vecteur3 get_coords_of_dof(int i, int j, int k, Localisation loc) const;
 
-  inline double get_coord_of_dof_along_dir(int dir, int i, Localisation loc) const;
+  double get_coord_of_dof_along_dir(int dir, int i, Localisation loc) const;
 
   /*! independent_index adds a ghost_size to the packed index.
    * It is similar to the linear_index defined in IJK_Field_local_template, but with
@@ -550,10 +550,10 @@ public:
    *  @param ijk_local The local coordinates of the cell.
    *  @param ijk_me A sort of 3D flag. Will be [1,1,1] if the element belongs to me.
    */
-  void search_elem(const double &x, const double &y, const double &z,
-                   FixedVector<int, 3> &ijk_global,
-                   FixedVector<int, 3> &ijk_local,
-                   FixedVector<int, 3> &ijk_me) const;
+  void search_elem(const double& x, const double& y, const double& z,
+                   FixedVector<int, 3>& ijk_global,
+                   FixedVector<int, 3>& ijk_local,
+                   FixedVector<int, 3>& ijk_me) const;
 
   /*! @brief Method returns true if periodic in this direction
    *  @param direction In IJK, x(0), y(1) or z(2).
@@ -581,7 +581,7 @@ public:
   void update_volume_elem();
 
   /*! @brief Returns volume_elem_ */
-  inline const DoubleVect &get_volume_elem() const
+  inline const DoubleVect& get_volume_elem() const
   {
     assert(volume_elem_.size_array() > 0 && "volume_elem_ is empty. Update before trying to read it.");
     assert(volume_elem_.size_array() == get_nb_elem_local() && "volume_elem_ is not up to date. Update before trying to read it.");
