@@ -37,7 +37,7 @@ options=$options" --cc $TRUST_cc"				# Compilateur C
 options=$options" --cxx $TRUST_CC"				# Compilateur C++
 options=$options" --fc $TRUST_F77"				# Compilateur Fortran
 options=$options" --makeflags -j$TRUST_NB_PROCS"		# Parallel build
-if [ -d /ccc/work/cont002/triocfd/triou/third-party-visit3.3.3 ]
+if  [ "`whoami`" = triou ]  && [ -d /ccc/work/cont002/triocfd/triou/third-party-visit3.3.3 ]
 then
    options=$options" --thirdparty-path /ccc/work/cont002/triocfd/triou/third-party-visit3.3.3"			# Sur CCRT, on partage le meme third-party
 else
