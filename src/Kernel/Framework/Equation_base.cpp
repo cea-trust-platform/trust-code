@@ -1372,6 +1372,10 @@ void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const 
           exit();
         }
     }
+  else if (nature==basis_function)
+    {
+      // Todo DG implement some check for size ?
+    }
   else
     {
       Cerr<<"The nature of the field is not recognized"<<finl;

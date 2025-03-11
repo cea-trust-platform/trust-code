@@ -107,6 +107,9 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
     assert(0);
 
   creer_champ(champ, z, type, noms[0], unites[0], default_order, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
+
+  champ->fixer_nature_du_champ(basis_function);
+
   if (nature == multi_scalaire)
     {
       throw;

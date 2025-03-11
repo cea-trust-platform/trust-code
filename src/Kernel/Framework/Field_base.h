@@ -24,7 +24,7 @@
  * It handles all the generic aspect of a field:
  *      - its name and synonyms
  *      - its number and names of components
- *      - its nature (scalar, vectorial, multi_scalar)
+ *      - its nature (scalar, vectorial, multi_scalar, basis_function)
  *      - the units associated to each component
  *
  *
@@ -32,7 +32,7 @@
  */
 
 // Definition of the nature of a field:
-enum Nature_du_champ { scalaire, multi_scalaire, vectoriel };
+enum Nature_du_champ { scalaire, multi_scalaire, vectoriel, basis_function };
 
 class Field_base : public Objet_U
 {
