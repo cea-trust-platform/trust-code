@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
+11/03/25 (TRUST) Minor change : Param::ajouter_deriv() removed, use Param::ajouter() instead
 03/03/25 (TRUST) GPU          : Performance regression can be checked with: cd tests/GPU && ./check_perf.sh
 03/03/25 (TRUST) GPU          : Refactor/factorize the Kokkos implementation in TRUSTArray: DualView suppressed and accessors view_ro/view_rw/view_ro rewritten
 26/02/25 (TRUST) Baltiks      : make distrib_git generates dependencies archives as specified in project.cfg without impact. For example, MEDICoCo: ./ICoCo_src will generate ICoCo_src.tar.gz instead of MEDICoCo.tar.gz
