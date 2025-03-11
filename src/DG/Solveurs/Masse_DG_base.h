@@ -29,8 +29,6 @@ public:
 
   void associer_domaine_dis_base(const Domaine_dis_base& ) override;
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
-  void completer() override;
-  void appliquer_coef(DoubleVect& coef) const;
 
 protected:
   REF(Domaine_DG) le_dom_dg_;

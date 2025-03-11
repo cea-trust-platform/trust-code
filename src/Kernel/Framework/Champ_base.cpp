@@ -457,7 +457,11 @@ void Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,N
       nom_dom_inc=ref_cast(Champ_Fonc_base, *this).domaine().le_nom();
     }
 
-  les_valeurs.resize(nb_elem, nb_compo_);
+  bool isChamp_basis_function_DG = (que_suis_je().debute_par("Champ_Elem_DG"));
+  if (isChamp_basis_function_DG)
+    les_valeurs.resize(nb_elem, 1);
+  else
+    les_valeurs.resize(nb_elem, nb_compo_);
 
   if(nom_dom==nom_dom_inc)
     {

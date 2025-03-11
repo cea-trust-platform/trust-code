@@ -99,6 +99,7 @@ public :
 
   // usefull methods to detect discretization
   virtual bool is_ef() const { return false; }
+  virtual bool is_dg() const { return false; }
   virtual bool is_vdf() const { return false; }
   virtual bool is_vef() const { return false; }
   virtual bool is_polymac() const { return false; }

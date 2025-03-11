@@ -26,6 +26,8 @@ public:
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
   virtual void calculer_flux_bord(const DoubleTab& inco) const = delete;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void contribuer_a_avec_(const DoubleTab&, Matrice_Morse&) const ;
+
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { }
   void completer() override;
 

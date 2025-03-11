@@ -20,8 +20,9 @@
 /****************************************************************/
 namespace
 {
-static constexpr double WEIGHTS[3] = {1 / 3, 1 / 3, 1 / 3};
-static constexpr double WEIGHTS_FACETS[2] = {0.5, 0.5};
+static constexpr int NB_PTS_INTEG_FACETS = 3;
+static constexpr double WEIGHTS[3] = {1. / 3, 1. / 3, 1. / 3};
+static constexpr double WEIGHTS_FACETS[3] = {1./6, 4./6, 1./6};
 /*static constexpr double LAMBDA[3][3] = {
       {1/2, 1/2, 0},
       {0, 1/2, 1/2},
@@ -31,6 +32,12 @@ static constexpr double WEIGHTS_FACETS[2] = {0.5, 0.5};
       {1, 0},
       {0, 1}
   }; // Barycentric coordinates coefficients of integration points on facets */
+static constexpr double LAMBDA_FACETS[3][2] =
+{
+  {1., 0.},
+  {1./2, 1./2},
+  {0., 1.}
+}; // Barycentric coordinates coefficients of integration points on facets */
 static constexpr int ORDER = 2;
 }
 
@@ -50,17 +57,16 @@ void Quadrature_Ord2_Triangle::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
-  const IntTab& elems = dom_->domaine().les_elems();
-  int nb_elem = elems.dimension(0);
+  int nb_elem_tot = dom_->nb_elem_tot();
   int nb_pts_integ = 3;
   int ndim = Objet_U::dimension;
   const DoubleTab& xv = dom_->xv(); // facets barycentre
   const IntTab& elem_faces = dom_->elem_faces();
 
-  integ_points_.resize(nb_elem, nb_pts_integ, ndim); // three point per element, 2D -> 1*2 = 2 columns
+  integ_points_.resize(nb_elem_tot, nb_pts_integ, ndim); // three point per element, 2D -> 1*2 = 2 columns
   weights_.resize(nb_pts_integ);
 
-  for (int e = 0; e < nb_elem; e++)
+  for (int e = 0; e < nb_elem_tot; e++)
     {
       for (int pts = 0; pts < nb_pts_integ; pts++)
         {
@@ -72,36 +78,49 @@ void Quadrature_Ord2_Triangle::compute_integ_points()
   weights_[nb_pts_integ-1] = 1;
   for (int pts = 0; pts < nb_pts_integ - 1; pts++)
     {
-      weights_(pts) = ::WEIGHTS[pts];
-      weights_(nb_pts_integ-1) -= weights_(pts);
+      weights_[pts] = ::WEIGHTS[pts];
+      weights_[nb_pts_integ-1] -= weights_(pts);
     }
 }
 
 void Quadrature_Ord2_Triangle::compute_integ_points_on_facet()
 {
+
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
-
-  int nb_faces = dom_->nb_faces(); // Q: Cette ligne renvoie t-elle bien le nombre de faces ? (nb_faces_tot)
+  int nb_faces = dom_->nb_faces();
+  int ndim = Objet_U::dimension;
   DoubleTab& xs = dom_->domaine().les_sommets(); // facets barycentre
   IntTab& face_sommets = dom_->face_sommets();
-  int nb_pts_integ = 2;
+  int nb_pts_integ = NB_PTS_INTEG_FACETS;
 
   integ_points_facets_.resize(nb_faces, nb_pts_integ, Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
   weights_facets_.resize(nb_pts_integ);
 
+  // We ensure that sum(weights)=1 and sum(Lambda[i])=1
+  DoubleTab lambda_facets(nb_pts_integ, ndim);
+  weights_facets_[nb_pts_integ-1] = 1;
   for (int pts = 0; pts < nb_pts_integ; pts++)
     {
-      for (int f = 0; f < nb_faces; f++) // TODO : Utiliser plutôt la fonction copy
+      if (pts < nb_pts_integ )
         {
-          for (int dim = 0; dim < Objet_U::dimension; dim++)
-            integ_points_facets_(f, pts, dim) = xs(face_sommets(f, pts), dim);
+          weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
+//          weights_facets_(nb_pts_integ-1) -= weights_facets_(pts);
         }
+      lambda_facets(pts, 0) = ::LAMBDA_FACETS[pts][0];
+      lambda_facets(pts, 1) =::LAMBDA_FACETS[pts][1];
     }
-  weights_facets_[nb_pts_integ-1] = 1;
-  for (int pts = 0; pts < nb_pts_integ - 1; pts++)
+
+  for (int f = 0; f < nb_faces; f++)
     {
-      weights_facets_[pts] = ::WEIGHTS_FACETS[pts];
-      weights_facets_[nb_pts_integ-1] -= weights_facets_[pts];
+      for (int pts = 0; pts < nb_pts_integ; pts++)
+        {
+          for (int dim = 0; dim < ndim; dim++)
+            {
+              integ_points_facets_(f, pts, dim) = 0.;
+              for (int loc_vert = 0; loc_vert < ndim; loc_vert++)
+                integ_points_facets_(f, pts, dim) += xs(face_sommets(f, loc_vert), dim) * lambda_facets(pts, loc_vert);
+            }
+        }
     }
 }

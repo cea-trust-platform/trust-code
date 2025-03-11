@@ -83,7 +83,7 @@ public :
   inline const DoubleTab& ta() const { return ta_; }
 
   void reordonner(Faces&) override;
-  void modifier_pour_Cl(const Conds_lim& ) override { }
+  void modifier_pour_Cl(const Conds_lim& ) override;
 
   inline const Elem_poly_base& type_elem() const { return type_elem_.valeur(); }
   inline int nb_elem_Cl() const { return nb_elem() - nb_elem_std_; }

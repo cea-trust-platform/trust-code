@@ -268,6 +268,8 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     creer_espace_stockage(nature_source, nb_comp, espace_stockage_);
   espace_stockage_->changer_temps(source.temps());
 
+  nb_comp = espace_stockage->nb_comp(); // with DG, espace_stockage has smaller dimension than source
+
   //double default_value=-1e35;
   //espace_stockage.valeurs()=default_value;
   int decal=10;

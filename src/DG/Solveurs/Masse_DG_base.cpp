@@ -35,38 +35,3 @@ void Masse_DG_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_d
 {
   le_dom_Cl_dg_ = ref_cast(Domaine_Cl_DG, le_dom_Cl_dis_base);
 }
-
-void Masse_DG_base::completer()
-{
-}
-
-void Masse_DG_base::appliquer_coef(DoubleVect& coef) const
-{
-  if (has_coefficient_temporel_)
-    {
-      REF(Champ_base) ref_coeff;
-      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
-
-      DoubleTab values;
-      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
-        {
-          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
-          ConstDoubleTab_parts val_parts(coeff.valeurs());
-          values.ref(val_parts[0]);
-
-        }
-      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
-        {
-          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
-          values.ref(coeff.valeurs());
-
-        }
-      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
-        {
-          DoubleTab nodes;
-          equation().inconnue()->remplir_coord_noeuds(nodes);
-          ref_coeff->valeur_aux(nodes,values);
-        }
-      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
-    }
-}

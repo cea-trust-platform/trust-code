@@ -31,7 +31,8 @@
 #include <Quadri_poly.h>
 #include <Tetra_poly.h>
 #include <EChaine.h>
-//#include <Quadrature_base.h>
+#include <Interprete_bloc.h>
+#include <Quadrature_base.h>
 
 Implemente_instanciable(Domaine_DG, "Domaine_DG", Domaine_Poly_base);
 
@@ -42,151 +43,47 @@ Entree& Domaine_DG::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
-  // fill dof_elem_ !!!
+
   calculer_h_carre();
-  remplir_elem_voisins();
-
-  indices_glob_elem_.resize(nb_elem_tot()+1); // Besoin d'une structure parallele ? echange espace virtuel ne fonctionnera pas correctement ?
-  indices_glob_elem_(0) = 0;
-
-  for (int e = 1; e < domaine().nb_elem_tot()+1; e++)
-    indices_glob_elem_(e) = indices_glob_elem_(e-1) + 3; // Pour les triangles
 }
 
-void Domaine_DG::initialize_dof(const Nom& variable)
+Quadrature_base& Domaine_DG::create_quadrature(const int& order_quad) const
 {
-//  EChaine is(Option_DG::OPTION_DG); //TODO DG recupere le texte de option DG
 
-//  int nb_inc = 1;
-//
-//  IntTab newTab;
-//
-//  newTab.resize(0); // TODO DG besoin de differencier selon le nombre d'inconnues (non connu ici ?)
-//
-//  domaine().creer_tableau_elements(newTab, RESIZE_OPTIONS::NOCOPY_NOINIT);
-//
-//  dof_elem_(0) = 1;
-//  newTab = 1; // TODO DG Pour le moment rempli avec 1 mais potentiellement rempli avec champ med !!!
-//
-//  newTab.echange_espace_virtuel();
-//
-//  dof_elem_.insert({variable,newTab});
-}
+  Nom type_quadrature="Quadrature_Ord"+std::to_string(order_quad)+"_Triangle"; //Todo DG varier avec type_elem + renommer ordre ?
+  Nom nom_quadrature = type_quadrature+"_"+domaine().le_nom();
 
+  // Creation
+  Cerr << "Creating a quadrature named " << nom_quadrature << " based on the domain " << domaine().le_nom() << finl;
 
-void Domaine_DG::remplir_elem_voisins()
-{
-  int max_nb_faces = elem_faces_.dimension(1);
-  elem_voisins_.resize(0, max_nb_faces);
-  domaine().creer_tableau_elements(elem_voisins_, RESIZE_OPTIONS::NOCOPY_NOINIT);
-  elem_voisins_ = -1;
-  //elem_voisins_ = elem_faces_; //elem_faces_ a t'il une structure parallele ?
-  // elem_voisins a besoin de la structure parallele de elem_voisins_ donc md_vector de face avec une taille d'elements ??
-  // a voir pour le remplissage des matrices Petsc ??
-  for (int e = 0; e < domaine().nb_elem(); e++) // ou nb_elem_tot ?
-    for (int f = 0 ; f < max_nb_faces; f++)
-      {
-        if (elem_faces_(e,f) != -1)
-          {
-            elem_voisins_(e,f) = (face_voisins(elem_faces_(e,f),0) == e) ? face_voisins(elem_faces_(e,f),1) : face_voisins(elem_faces_(e,f),0);
-            if (elem_voisins_(e,f) == -1) elem_voisins_(e,f) = -2;
-          }
-      }
-
-  elem_voisins_.echange_espace_virtuel();
-}
-
-void Domaine_DG::modifier_pour_Cl(const Conds_lim& conds_lim)
-{
-  Cerr << "Le Domaine_DG a ete rempli avec succes" << finl;
-  //      calculer_h_carre();
-
-  Journal() << "Domaine_DG::Modifier_pour_Cl" << finl;
-  int nb_cond_lim=conds_lim.size();
-  int num_cond_lim=0;
-  for (; num_cond_lim<nb_cond_lim; num_cond_lim++)
+  Interprete_bloc& interp = Interprete_bloc::interprete_courant();
+  if (interp.objet_global_existant(nom_quadrature))
     {
-      //for cl
-      const Cond_lim_base& cl = conds_lim[num_cond_lim].valeur();
-      if (sub_type(Periodique, cl))
-        {
-          //if Perio
-          const Periodique& la_cl_period = ref_cast(Periodique,cl);
-          int nb_faces_elem = domaine().nb_faces_elem();
-          const Front_VF& la_front_dis = ref_cast(Front_VF,cl.frontiere_dis());
-          int ndeb = 0;
-          int nfin = la_front_dis.nb_faces_tot();
-#ifndef NDEBUG
-          int num_premiere_face = la_front_dis.num_premiere_face();
-          int num_derniere_face = num_premiere_face+nfin;
-#endif
-          int nbr_faces_bord = la_front_dis.nb_faces();
-          assert((nb_faces()==0)||(ndeb<nb_faces()));
-          assert(nfin>=ndeb);
-          int elem1,elem2,k;
-          int face;
-          // Modification des tableaux face_voisins_ , face_normales_ , volumes_entrelaces_
-          // On change l'orientation de certaines normales
-          // de sorte que les normales aux faces de periodicite soient orientees
-          // de face_voisins(la_face_en_question,0) vers face_voisins(la_face_en_question,1)
-          // comme le sont les faces internes d'ailleurs
-
-          DoubleVect C1C2(dimension);
-          double vol,psc=0;
-
-          for (int ind_face=ndeb; ind_face<nfin; ind_face++)
-            {
-              //for ind_face
-              face = la_front_dis.num_face(ind_face);
-              if  ( (face_voisins_(face,0) == -1) || (face_voisins_(face,1) == -1) )
-                {
-                  int faassociee = la_front_dis.num_face(la_cl_period.face_associee(ind_face));
-                  if (ind_face<nbr_faces_bord)
-                    {
-                      assert(faassociee>=num_premiere_face);
-                      assert(faassociee<num_derniere_face);
-                    }
-
-                  elem1 = face_voisins_(face,0);
-                  elem2 = face_voisins_(faassociee,0);
-                  vol = (volumes_[elem1] + volumes_[elem2])/nb_faces_elem;
-                  volumes_entrelaces_[face] = vol;
-                  volumes_entrelaces_[faassociee] = vol;
-                  face_voisins_(face,1) = elem2;
-                  face_voisins_(faassociee,0) = elem1;
-                  face_voisins_(faassociee,1) = elem2;
-                  psc = 0;
-                  for (k=0; k<dimension; k++)
-                    {
-                      C1C2[k] = xv_(face,k) - xp_(face_voisins_(face,0),k);
-                      psc += face_normales_(face,k)*C1C2[k];
-                    }
-
-                  if (psc < 0)
-                    for (k=0; k<dimension; k++)
-                      face_normales_(face,k) *= -1;
-
-                  for (k=0; k<dimension; k++)
-                    face_normales_(faassociee,k) = face_normales_(face,k);
-                }
-            }
-        }
+      Cerr << "Quadrature " << nom_quadrature << " already exists, writing to this object." << finl;
+      Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
+      return quad;
     }
+  else
+    {
+      DerObjU ob;
+      ob.typer(type_quadrature);
+      interp.ajouter(nom_quadrature, ob);
 
-  // PQ : 10/10/05 : les faces periodiques etant a double contribution
-  //		      l'appel a marquer_faces_double_contrib s'effectue dans cette methode
-  //		      afin de pouvoir beneficier de conds_lim.
-  Domaine_VF::marquer_faces_double_contrib(conds_lim);
+      Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
+      quad.associer_domaine(*this);
+      return quad;
+    }
 }
 
-//void Domaine_DG::set_quadrature(int order, const Quadrature* quad)
+//TODO DG h_carre with diameter
+//void Domaine_DG::calculer_h_carre()
 //{
-//  assert(quad_map_.count(order) == 0); // fail if a quadrature is already registered for this order
-//  quad_map_[order] = quad;
-//}
+//  // Calcul de h_carre
+//  h_carre = 1;
+//  if (h_carre_.size()) return; // deja fait
+//  h_carre_.resize(nb_elem_tot());
 //
-//const Quadrature& Domaine_DG::get_quadrature(int order) const
-//{
-//  return *quad_map_.at(order);
+//  h_carre_ = 1.;
+////  h_carre = 1.;
 //}
 

@@ -19,25 +19,45 @@
 #include <Parser_U.h>
 #include <Domaine_DG.h>
 #include <Objet_U.h>
+#include <Matrice_Morse_Sym.h>
 
 class Quadrature_base : public Objet_U
 {
   Declare_base(Quadrature_base);
 public:
 
-  const DoubleTab& get_integ_points();
-  const DoubleTab& get_integ_points_facets();
+  inline DoubleTab& get_integ_points() { return integ_points_; }
+  inline const DoubleTab& get_integ_points() const { return integ_points_; }
+  inline const DoubleTab& get_integ_points_facets() const { return integ_points_facets_; }
+
+  inline const DoubleTab& get_weights() const { return weights_; }
+  inline const DoubleTab& get_weights_facets() const { return weights_facets_; }
 
 //  void register_quadrature();
-//  DoubleTab get_weights();
-//  DoubleTab get_weights_facets();
 
+  /*! Compute for the whole domain the exact location of integration points per element
+   */
   virtual void compute_integ_points() = 0;
+
+  /*! Compute for the whole domain the exact location of integration points per facet
+   */
   virtual void compute_integ_points_on_facet() = 0;
+
+  /*! Compute the mass matrix
+   */
+
+  virtual int order() const=0;
+  virtual int nb_pts_integ() const=0;
+  virtual int nb_pts_integ_facets() const=0;
+
+
+
+  /*! Compute for a elem the projection of a function on the basis functions
+   */
+//  virtual DoubleTab compute_projection_on_elem(const DoubleTab& val_pts_integer) const = 0;
 
   void associer_domaine(const Domaine_DG& dom);
   void initialiser_weights_and_points();
-
 
   /*! Compute the integral of a function on the whole domain
    */
@@ -48,10 +68,16 @@ public:
   /*! Compute the integral of a function on one triangle
    */
   double compute_integral_on_elem(int num_elem, Parser_U& parser) const ;
+  /*! Compute the integral of a function on each triangle
+   */
+  double compute_integral_on_elem(Parser_U& parser) const ;
 
   /*! Compute the integral of a function on one triangle with its value on integration points
    */
   double compute_integral_on_elem(int num_elem, DoubleTab& val_pts_integ) const ;
+  /*! Compute the integral of a function on each triangle with its value on integration points
+   */
+  DoubleTab compute_integral_on_elem(DoubleTab& val_pts_integ) const ;
 
   /*! Compute the integral of a function on one facet
    */
@@ -59,6 +85,7 @@ public:
   /*! Compute the integral of a function on one facet with its value on integration points
    */
   double compute_integral_on_facet(int num_facet, DoubleTab& val_pts_integ) const ;
+
 
 protected:
   REF(Domaine_DG) dom_;
@@ -68,6 +95,10 @@ protected:
   DoubleTab integ_points_facets_;
   DoubleTab weights_;
   DoubleTab weights_facets_;
+
+  Matrice_Morse_Sym mass_matrix_;
+  Matrice_Morse_Sym inv_mass_matrix_;
+
 
 };
 

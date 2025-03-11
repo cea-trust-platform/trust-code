@@ -39,17 +39,16 @@ void Quadrature_Ord1_Triangle::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
-  const IntTab& elems = dom_->domaine().les_elems();
-  int nb_elem = elems.dimension(0);
+  int nb_elem_tot = dom_->nb_elem_tot();
   int nb_pts_integ = ::ORDER; // one point per element, 2D -> 1*2 = 2 columns
   int ndim = Objet_U::dimension;
 
-  integ_points_.resize(nb_elem, nb_pts_integ, ndim);
+  integ_points_.resize(nb_elem_tot, nb_pts_integ, ndim);
   weights_.resize(nb_pts_integ);
   const DoubleTab& xp = dom_->xp(); // barycentre elem
   for (int pts = 0; pts < nb_pts_integ; pts++)
     {
-      for (int e = 0; e < nb_elem; e++) // TODO : Utiliser plutôt la fonction copy
+      for (int e = 0; e < nb_elem_tot; e++) // TODO : Utiliser plutôt la fonction copy
         {
           for (int dim = 0; dim < ndim; dim++)
             integ_points_(e, pts, dim) = xp(e, dim);
@@ -68,17 +67,17 @@ void Quadrature_Ord1_Triangle::compute_integ_points_on_facet()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
-  int nb_faces = dom_->nb_faces(); // Q: Cette ligne renvoie t-elle bien le nombre de faces ? (nb_faces_tot)
+  int nb_faces = dom_->nb_faces();
   DoubleTab& xv = dom_->xv(); // facets barycentre
   int nb_pts_integ = ::ORDER;
 
-  weights_.resize(nb_pts_integ);
-  integ_points_facets_.resize(nb_faces, ::ORDER * Objet_U::dimension); // one point per facets, 2D -> 1*2 = 2 columns
+  weights_facets_.resize(nb_pts_integ);
+  integ_points_facets_.resize(nb_faces, ::ORDER, 2); // one point per facets, 2D -> 1*2 = 2 columns
   for (int pts = 0; pts < nb_pts_integ; pts++)
     {
       for (int f = 0; f < nb_faces; f++) // TODO : Utiliser plutôt la fonction copy
         {
-          for (int dim = 0; dim < Objet_U::dimension; dim++)
+          for (int dim = 0; dim < 2; dim++)
             integ_points_facets_(f, pts, dim) = xv(f, dim);
         }
       weights_facets_(pts) = ::WEIGHTS_FACETS[pts];

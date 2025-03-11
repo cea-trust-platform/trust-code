@@ -406,6 +406,92 @@ void Domaine_Poly_base::discretiser()
   //calculer_h_carre();
 }
 
+
+void Domaine_Poly_base::modifier_pour_Cl(const Conds_lim& conds_lim)
+{
+  Cerr << "Le Domaine_Poly a ete rempli avec succes" << finl;
+  //      calculer_h_carre();
+
+  Journal() << "Domaine_Poly_base::Modifier_pour_Cl" << finl;
+  int nb_cond_lim=conds_lim.size();
+  int num_cond_lim=0;
+  for (; num_cond_lim<nb_cond_lim; num_cond_lim++)
+    {
+      //for cl
+      const Cond_lim_base& cl = conds_lim[num_cond_lim].valeur();
+      if (sub_type(Periodique, cl))
+        {
+          //if Perio
+          const Periodique& la_cl_period = ref_cast(Periodique,cl);
+          int nb_faces_elem = domaine().nb_faces_elem();
+          const Front_VF& la_front_dis = ref_cast(Front_VF,cl.frontiere_dis());
+          int ndeb = 0;
+          int nfin = la_front_dis.nb_faces_tot();
+#ifndef NDEBUG
+          int num_premiere_face = la_front_dis.num_premiere_face();
+          int num_derniere_face = num_premiere_face+nfin;
+#endif
+          int nbr_faces_bord = la_front_dis.nb_faces();
+          assert((nb_faces()==0)||(ndeb<nb_faces()));
+          assert(nfin>=ndeb);
+          int elem1,elem2,k;
+          int face;
+          // Modification des tableaux face_voisins_ , face_normales_ , volumes_entrelaces_
+          // On change l'orientation de certaines normales
+          // de sorte que les normales aux faces de periodicite soient orientees
+          // de face_voisins(la_face_en_question,0) vers face_voisins(la_face_en_question,1)
+          // comme le sont les faces internes d'ailleurs
+
+          DoubleVect C1C2(dimension);
+          double vol,psc=0;
+
+          for (int ind_face=ndeb; ind_face<nfin; ind_face++)
+            {
+              //for ind_face
+              face = la_front_dis.num_face(ind_face);
+              if  ( (face_voisins_(face,0) == -1) || (face_voisins_(face,1) == -1) )
+                {
+                  int faassociee = la_front_dis.num_face(la_cl_period.face_associee(ind_face));
+                  if (ind_face<nbr_faces_bord)
+                    {
+                      assert(faassociee>=num_premiere_face);
+                      assert(faassociee<num_derniere_face);
+                    }
+
+                  elem1 = face_voisins_(face,0);
+                  elem2 = face_voisins_(faassociee,0);
+                  vol = (volumes_[elem1] + volumes_[elem2])/nb_faces_elem;
+                  volumes_entrelaces_[face] = vol;
+                  volumes_entrelaces_[faassociee] = vol;
+                  face_voisins_(face,1) = elem2;
+                  face_voisins_(faassociee,0) = elem1;
+                  face_voisins_(faassociee,1) = elem2;
+                  psc = 0;
+                  for (k=0; k<dimension; k++)
+                    {
+                      C1C2[k] = xv_(face,k) - xp_(face_voisins_(face,0),k);
+                      psc += face_normales_(face,k)*C1C2[k];
+                    }
+
+                  if (psc < 0)
+                    for (k=0; k<dimension; k++)
+                      face_normales_(face,k) *= -1;
+
+                  for (k=0; k<dimension; k++)
+                    face_normales_(faassociee,k) = face_normales_(face,k);
+                }
+            }
+        }
+    }
+
+  // PQ : 10/10/05 : les faces periodiques etant a double contribution
+  //          l'appel a marquer_faces_double_contrib s'effectue dans cette methode
+  //          afin de pouvoir beneficier de conds_lim.
+  Domaine_VF::marquer_faces_double_contrib(conds_lim);
+}
+
+
+
 void Domaine_Poly_base::detecter_faces_non_planes() const
 {
   const IntTab& f_e = face_voisins(), &f_s = face_sommets_;
@@ -571,11 +657,11 @@ void Domaine_Poly_base::calculer_h_carre()
   // Calcul de h_carre
   h_carre = 1.e30;
   if (h_carre_.size()) return; // deja fait
-  h_carre_.resize(nb_faces());
+  h_carre_.resize(nb_elem_tot());
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();
   const int nb_faces_elem=domaine().nb_faces_elem();
-  const int nbe=nb_elem();
+  const int nbe=nb_elem_tot();
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {
       double surf_max = 0;

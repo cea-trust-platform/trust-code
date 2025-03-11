@@ -30,6 +30,12 @@ public:
   /*! Compute for the whole domain the exact location of integration points per facet
    */
   void compute_integ_points_on_facet() override;
+
+  inline int order() const override { return 1; }
+  inline int nb_pts_integ() const override { return 1; }
+  inline int nb_pts_integ_facets() const override { return 1; }
+
+
 };
 
 #endif

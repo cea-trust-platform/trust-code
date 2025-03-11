@@ -19,6 +19,7 @@
 #include <Champ_Inc_P0_base.h>
 #include <Operateur.h>
 #include <Quadrature_base.h>
+#include <Matrice_Dense.h>
 
 // Champ correspondant a une inconnue scalaire (type temperature ou pression)
 // Degres de libertes : valeur aux elements + flux aux faces
@@ -30,15 +31,48 @@ public:
   int imprime(Sortie&, int) const override;
 
   int fixer_nb_valeurs_nodales(int n) override;
-  inline const OWN_PTR(Quadrature_base)& quadrature() const { return quadrature_; }
+
   void associer_domaine_dis_base(const Domaine_dis_base&) override;
 
-  /* fonctions reconstruisant de maniere plus precise le champ aux faces */
-  DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
+  inline const int& get_order() const { return order_; }
+  inline const IntTab& indices_glob_elem() const { return indices_glob_elem_; }
+
+  inline const int& nb_bfunc() const { return nb_bfunc_; }
+
+  //Evaluation of the basis functions on integration points for elements and facets
+  void eval_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& fbasis) const;
+  void eval_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& grad_fbasis) const;
+
+  //Evaluation of the gradient of the basis functions on integration points for elements and facets
+  void eval_grad_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& fbasis) const;
+  void eval_grad_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& grad_fbasis) const;
+
+
+  inline const Matrice_Morse& get_mass_matrix() const { return mass_matrix_; }
+  inline const Matrice_Morse& get_inv_mass_matrix() const { return inv_mass_matrix_; }
+
+  const Matrice_Dense eval_invMassMatrix(const Quadrature_base& quad, const int& nelem) const;
+
+  /* fonctions pour reconstruire la valeur du champ selon la localisation */
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
 
 protected:
+  /*! Compute the mass matrix
+   */
+  void allocate_mass_matrix();
+  void build_mass_matrix();
 
-  OWN_PTR(Quadrature_base) quadrature_;
+
+  void build_inv_mass_matrix();
+
+  int order_ = -1;
+  int nb_bfunc_ = -1;
+
+  IntTab indices_glob_elem_;
+
+  Matrice_Morse mass_matrix_;
+  Matrice_Morse inv_mass_matrix_;
+
 };
 
 

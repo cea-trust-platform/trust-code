@@ -18,6 +18,9 @@
 #include <Domaine_Cl_dis.h>
 #include <Domaine_DG.h>
 #include <Option_DG.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+
 
 Implemente_instanciable(Champ_Elem_DG, "Champ_Elem_DG", Champ_Inc_P0_base);
 
@@ -27,6 +30,120 @@ Entree& Champ_Elem_DG::readOn(Entree& s)
 {
   lire_donnees(s);
   return s;
+}
+
+void Champ_Elem_DG::allocate_mass_matrix()
+{
+  assert(Objet_U::dimension == 2); // no triangle in 3D!
+
+  int nb_elem_tot = le_dom_VF->nb_elem_tot();
+
+  IntTab indice(0, 2);
+
+  int current_indice = 0;
+  indices_glob_elem_.resize(nb_elem_tot+1);
+  indices_glob_elem_(0)=0;
+  for (int e = 0; e < nb_elem_tot; e++)
+    {
+      for (int i = 0; i < nb_bfunc_; i++ )
+        for (int j = 0; j < nb_bfunc_; j++ )
+          indice.append_line( current_indice+i, current_indice+j);
+      indices_glob_elem_(e+1) = indices_glob_elem_(e) +  nb_bfunc_;
+      current_indice+=nb_bfunc_;
+    }
+
+  int size_inc = indices_glob_elem_(nb_elem_tot);
+
+  tableau_trier_retirer_doublons(indice);
+  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, mass_matrix_);
+  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, inv_mass_matrix_);
+}
+
+void Champ_Elem_DG::build_mass_matrix()
+{
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+  const DoubleVect& ve = domaine.volumes();
+
+  const Elem_geom_base& elem_geom = domaine.domaine().type_elem().valeur();
+
+  bool is_simplexe = strcmp(elem_geom.que_suis_je(), "Triangle") || strcmp(elem_geom.que_suis_je(), "Tetraedre");
+  if (!is_simplexe) throw; //TODO for polyhedron
+
+  int current_indice = 0;
+
+  Quadrature_base& quad = domaine.create_quadrature(2);
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  DoubleTab fbase(nb_bfunc_, nb_pts_integ);
+  DoubleTab product(nb_pts_integ);
+
+  for (int e = 0; e < le_dom_VF->nb_elem_tot(); e++)
+    {
+      eval_bfunc(quad, e, fbase);
+
+      mass_matrix_(current_indice, current_indice) = ve(e);
+
+      if (order_ == 0) continue;
+
+      /****************************************************************/
+      /* Formule de quadrature : Ern, Finite Elements II, 2021, p 71  */
+      /****************************************************************/
+
+      for (int i=0; i<nb_bfunc_; i++)
+        {
+          for (int j=0; j<nb_bfunc_; j++)
+            {
+              product = 0.;
+              for (int k = 0; k < nb_pts_integ ; k++)
+                product(k) = fbase(i, k) * fbase(j, k);
+
+              mass_matrix_(current_indice+i, current_indice+j) = quad.compute_integral_on_elem(e, product);
+            }
+        }
+
+      current_indice+=nb_bfunc_;
+    }
+
+}
+
+void Champ_Elem_DG::build_inv_mass_matrix()
+{
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+  const DoubleVect& ve = domaine.volumes();
+
+  const Elem_geom_base& elem_geom = domaine.domaine().type_elem().valeur();
+
+  bool is_simplexe = strcmp(elem_geom.que_suis_je(), "Triangle") || strcmp(elem_geom.que_suis_je(), "Tetraedre");
+  if (!is_simplexe) throw; //TODO for polyhedron
+
+  int current_indice = 0;
+
+  for (int e = 0; e < le_dom_VF->nb_elem_tot(); e++)
+    {
+      double invV = 1/ve(e);
+
+      inv_mass_matrix_(current_indice, current_indice) = invV;
+
+      if (order_ == 0) continue;
+
+      inv_mass_matrix_(current_indice, current_indice+1) = 0.;
+      inv_mass_matrix_(current_indice, current_indice+2) = 0.;
+
+      double sumx2 = mass_matrix_(current_indice+1, current_indice+1);
+      double sumy2 = mass_matrix_(current_indice+2, current_indice+2);
+      double sumxy = mass_matrix_(current_indice+1, current_indice+2);
+
+      double inv_det = 1./(sumy2*sumx2 - sumxy*sumxy);
+
+      inv_mass_matrix_(current_indice+1, current_indice+1) = sumy2*inv_det;
+      inv_mass_matrix_(current_indice+2, current_indice+2) = sumx2*inv_det;
+
+      inv_mass_matrix_(current_indice+1, current_indice+2) = -sumxy*inv_det;
+      inv_mass_matrix_(current_indice+2, current_indice+1) = -sumxy*inv_det;
+
+      current_indice+=nb_bfunc_;
+    }
 }
 
 int Champ_Elem_DG::imprime(Sortie& os, int ncomp) const
@@ -63,38 +180,305 @@ int Champ_Elem_DG::fixer_nb_valeurs_nodales(int n)
 }
 
 
+
 void Champ_Elem_DG::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 {
   le_dom_VF = ref_cast(Domaine_VF, z_dis);
 
-  int order = Option_DG::Get_order_for(nom_)+1;
+  order_ = Option_DG::Get_order_for(nom_);// Todo regler la relation ordre inconnu/quadrature avec dictionnaire ?
+  nb_bfunc_ = Option_DG::Nb_col_from_order(order_);
 
-  Nom nom_domaine =le_dom_VF->domaine().le_nom();
-  Nom type_quadrature="Quadrature_Ord"+std::to_string(order)+"_Triangle"; //Todo DG varier avec type_elem + renommer ordre ?
-  Nom nom_quadrature = type_quadrature+"_"+nom_domaine;
+  allocate_mass_matrix();
+  build_mass_matrix();
 
-  Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
-  quadrature_ = quad;
+  build_inv_mass_matrix();
+
 }
+
+void Champ_Elem_DG::eval_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& fbasis) const
+{
+  const DoubleTab& integ_points = quad.get_integ_points();
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  assert(fbasis.dimension(0) == nb_bfunc_ && fbasis.dimension(1) == nb_pts_integ);
+
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+  const DoubleTab& xp = domaine.xp(); // barycentre elem
+
+  if (Objet_U::dimension == 2)
+    {
+      double invh = 1./sqrt(domaine.carre_pas_maille(nelem));
+
+      for (int pt = 0; pt < nb_pts_integ; pt++)
+        {
+          fbasis(0, pt) = 1;
+          if (order_ == 0) continue;
+
+          fbasis(1, pt) = (integ_points(nelem, pt, 0) - xp(nelem,0))*invh;
+          fbasis(2, pt) = (integ_points(nelem, pt, 1) - xp(nelem,1))*invh;
+
+          if (order_ == 1) continue;
+          throw;
+        }
+    }
+  else if (Objet_U::dimension == 3)
+    throw; //TODO
+  else
+    Process::exit();
+}
+
+void Champ_Elem_DG::eval_grad_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& grad_fbasis) const
+{
+//  const DoubleTab& integ_points_on_facets = quad.get_integ_points_facets();
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  assert(grad_fbasis.dimension(0) == nb_bfunc_ && grad_fbasis.dimension(1) == nb_pts_integ && grad_fbasis.dimension(2) == Objet_U::dimension);
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+  if (Objet_U::dimension == 2)
+    {
+      double invh = 1./sqrt(domaine.carre_pas_maille(nelem));
+
+      for (int pt = 0; pt < nb_pts_integ; pt++)
+        {
+
+          grad_fbasis(1, pt, 0) = invh;
+//          grad_fbasis(1, pt, 1) = 0;
+//          grad_fbasis(2, pt, 0) = 0;
+          grad_fbasis(2, pt, 1) = invh;
+
+          if (order_ == 1) continue;
+          throw;
+        }
+    }
+  else if (Objet_U::dimension == 3)
+    throw; //TODO
+  else
+    Process::exit();
+
+}
+
+
+void Champ_Elem_DG::eval_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& fbasis) const
+{
+  const DoubleTab& integ_points_on_facets = quad.get_integ_points_facets();
+  int nb_pts_integ_on_facets = quad.nb_pts_integ_facets();
+
+  assert(fbasis.dimension(0) == nb_bfunc_ && fbasis.dimension(1) == nb_pts_integ_on_facets);
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+  const DoubleTab& xp = domaine.xp(); // barycentre elem
+
+  if (Objet_U::dimension == 2)
+    {
+      double invh = 1./sqrt(domaine.carre_pas_maille(nelem));
+
+      for (int pt = 0; pt < nb_pts_integ_on_facets; pt++)
+        {
+          fbasis(0, pt) = 1;
+          if (order_ == 0) continue;
+
+          fbasis(1, pt) = (integ_points_on_facets(num_face, pt, 0) - xp(nelem,0))*invh;
+          fbasis(2, pt) = (integ_points_on_facets(num_face, pt, 1) - xp(nelem,1))*invh;
+
+          if (order_ == 1) continue;
+          throw;
+        }
+    }
+  else if (Objet_U::dimension == 3)
+    throw; //TODO
+  else
+    Process::exit();
+}
+
+void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& grad_fbasis) const
+{
+//  const DoubleTab& integ_points_on_facets = quad.get_integ_points_facets();
+// Q : Arrive t-on ici quand l'ordre est à 0 ?  A.Peita
+  int nb_pts_integ_on_facets = quad.nb_pts_integ_facets();
+
+  assert(grad_fbasis.dimension(0) == nb_bfunc_ && grad_fbasis.dimension(1) == nb_pts_integ_on_facets && grad_fbasis.dimension(2) == Objet_U::dimension );
+
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+  if (Objet_U::dimension == 2)
+    {
+      double invh = 1./sqrt(domaine.carre_pas_maille(nelem));
+
+      for (int pt = 0; pt < nb_pts_integ_on_facets; pt++)
+        {
+
+          grad_fbasis(1, pt, 0) = invh;
+//          grad_fbasis(1, pt, 1) = 0.;
+//          grad_fbasis(2, pt, 0) = 0.;
+          grad_fbasis(2, pt, 1) = invh;
+
+          if (order_ == 1) continue;
+          throw;
+        }
+    }
+  else if (Objet_U::dimension == 3)
+    throw; //TODO
+  else
+    Process::exit();
+}
+
+
+const Matrice_Dense Champ_Elem_DG::eval_invMassMatrix(const Quadrature_base& quad, const int& nelem) const
+{
+
+  // TODo DG adapt to high order quadrature ? possible ? or inverse mass matrix with specific quadrature ?
+
+  const DoubleTab& weights = quad.get_weights();
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  Matrice_Dense matrice(nb_bfunc_, nb_bfunc_);
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+  const DoubleVect& ve = domaine.volumes();
+
+  DoubleTab fbase(nb_bfunc_, nb_pts_integ);
+
+  eval_bfunc(quad, nelem, fbase);
+
+  if (Objet_U::dimension == 2)
+    {
+      double invV = 1./ve(nelem);
+      matrice(0, 0) = invV;
+
+      matrice(0, 1) = 0.;
+      matrice(0, 2) = 0.;
+
+      matrice(1, 0) = 0.;
+      matrice(2, 0) = 0.;
+
+      double sumx2 = 0.;
+      double sumy2 = 0.;
+      double sumxy = 0.;
+
+      for (int f = 0; f < nb_pts_integ; f++)
+        {
+          sumx2 += weights(f)*ve(nelem)*fbase(1,f)*fbase(1,f);
+          sumxy += weights(f)*ve(nelem)*fbase(1,f)*fbase(2,f);;
+          sumy2 += weights(f)*ve(nelem)*fbase(2,f)*fbase(2,f);
+        }
+
+      double inv_det = 1./(sumy2*sumx2 - sumxy*sumxy);
+
+      matrice(1, 1) = sumy2*inv_det;
+      matrice(2, 2) = sumx2*inv_det;
+
+      matrice(1, 2) = -sumxy*inv_det;
+      matrice(2, 1) = -sumxy*inv_det;
+    }
+  else if (Objet_U::dimension == 3)
+    throw; //TODO
+  else
+    Process::exit();
+
+  return matrice;
+}
+
+
 
 Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
-//  DoubleTab_parts part(valeurs());
-//  for (int i = 0; i < part.size(); i++) ch.valeur_aux(i ? domaine.xv() : domaine.xp(), part[i]);
+
+  Quadrature_base& quad = domaine.create_quadrature(5); // if Uniforme remplissage automatique
+  //sinon interdit d'avoir 1
 
   //creation d'un DoubleTab intermediaire pour recuperer les valeurs du champ ch sur les points de quadrature ?
+  DoubleTab& integ_points = quad.get_integ_points();
+  int nb_pts_integ = quad.nb_pts_integ();
 
-  ch.valeur_aux(domaine.xp(), valeurs());
+  int nb_elem = domaine.nb_elem();
 
-  // calcul de la quadrature pour remplir le tableau valeurs
+  DoubleTab position;
+  DoubleTab product(nb_pts_integ);
+  DoubleTab values(nb_pts_integ,1);
+  DoubleTab phi_rhs(nb_bfunc_);
+  DoubleTab res;
+
+  DoubleTab fbase(nb_bfunc_, nb_pts_integ);
+
+
+  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+    {
+      position.ref_tab(integ_points, num_elem,1);
+      position.reshape(nb_pts_integ, Objet_U::dimension);
+
+      ch.valeur_aux(position, values);
+
+      eval_bfunc(quad, num_elem, fbase);
+
+      for (int fb = 0; fb < nb_bfunc_; fb++)
+        {
+          for (int k = 0; k < nb_pts_integ ; k++)
+            product(k) = values(k,0) * fbase(fb, k);
+
+          phi_rhs(fb) = quad.compute_integral_on_elem(num_elem, product);
+        }
+
+      Matrice_Dense invM = eval_invMassMatrix(quad, num_elem); //to remove and ref on global matrix
+
+      res.ref_tab(valeurs(), num_elem, 1);
+      invM.ajouter_multvect_(phi_rhs, res);
+    }
 
   valeurs().echange_espace_virtuel();
   return *this;
 }
 
-DoubleTab& Champ_Elem_DG::valeur_aux_faces(DoubleTab& dst) const
+DoubleTab& Champ_Elem_DG::valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const
 {
-  throw;
-  return dst;
+
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+  const DoubleVect& volume = domaine.volumes();
+
+  Quadrature_base& quad = domaine.create_quadrature(5);
+  int nb_pts_integ = quad.nb_pts_integ();
+
+  const Champ_base& ch_base = le_champ();
+  const DoubleTab& values = ch_base.valeurs();
+  int nb_polys = polys.size();
+
+  if (nb_polys == 0)
+    return result;
+
+  // TODO : FIXME
+  // For FT the resize should be done in its good position and not here ...
+  if (result.nb_dim() == 1) result.resize(nb_polys, 1);
+
+  assert(result.line_size() == 1);
+  ToDo_Kokkos("critical");
+
+  DoubleTab fbase(nb_bfunc_, nb_pts_integ);
+  DoubleTab product(nb_pts_integ);
+
+  for (int i = 0; i < nb_polys; i++)
+    {
+      int cell = polys(i);
+      assert(cell < values.dimension_tot(0));
+
+      if (cell != -1)
+        {
+          eval_bfunc(quad, cell, fbase);
+
+          product = 0.;
+          for (int k = 0; k < nb_pts_integ ; k++)
+            for (int l =0; l<nb_bfunc_; l++)
+              product(k) += values(cell,l) * fbase(l,k); // reconstruction valeurs du champ aux points d'integrations
+
+          result(i,0) = quad.compute_integral_on_elem(cell, product);
+          result(i,0) /= volume(cell);
+        }
+    }
+
+  return result;
+
 }

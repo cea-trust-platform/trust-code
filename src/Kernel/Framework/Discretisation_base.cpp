@@ -179,7 +179,14 @@ void Discretisation_base::champ_fixer_membres_communs(Champ_base& ch, const Doma
   ch.associer_domaine_dis_base(z);
   ch.nommer(nom);
   ch.fixer_nb_comp(nb_comp);
-  if ((nb_comp > 1) && (nb_comp == dimension))
+  if (z.que_suis_je() == "Domaine_DG")
+    {
+      Noms noms(nb_comp);
+      for (int k = 0; k<nb_comp; k++)
+        noms[k] = nom + "_phi_" + std::to_string(k);
+      ch.fixer_noms_compo(noms);
+    }
+  else if ((nb_comp > 1) && (nb_comp == dimension))
     {
       Noms noms(nb_comp);
       if (!axi)

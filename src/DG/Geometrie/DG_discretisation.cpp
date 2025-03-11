@@ -27,9 +27,6 @@
 #include <Domaine_Cl_DG.h>
 #include <Domaine_Cl_dis.h>
 #include <Option_DG.h>
-#include <Interprete_bloc.h>
-#include <Quadrature_base.h>
-#include <Champ_Elem_DG.h>
 //#include <grad_U_Champ_Face_DG.h>
 
 Implemente_instanciable(DG_discretisation, "DG", Discret_Thyd);
@@ -110,33 +107,6 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
     nb_ddl = dom_dis.nb_elem();
   else
     assert(0);
-
-  //associer une quadrature si temperature, vitesse ou pression
-  // Nom de la quadrature que l'on va associer
-  Nom nom_domaine =dom_dis.domaine().le_nom();
-  Nom type_quadrature="Quadrature_Ord"+std::to_string(order_DG+1)+"_Triangle"; //Todo DG varier avec type_elem + renommer ordre ?
-  Nom nom_quadrature = type_quadrature+"_"+nom_domaine;
-
-  // Creation
-  Cerr << "Creating a quadrature named " << nom_quadrature << " based on the domain " << nom_domaine << finl;
-
-
-  Interprete_bloc& interp = Interprete_bloc::interprete_courant();
-  if (interp.objet_global_existant(nom_quadrature))
-    {
-      Cerr << "Quadrature " << nom_quadrature
-           << " already exists, writing to this object." << finl;
-    }
-  else
-    {
-      DerObjU ob;
-      ob.typer(type_quadrature);
-      interp.ajouter(nom_quadrature, ob);
-    }
-
-  Quadrature_base& quad = ref_cast(Quadrature_base, interprete().objet(nom_quadrature));
-  const Domaine_DG& dom_dg = ref_cast(Domaine_DG, dom_dis);
-  quad.associer_domaine(dom_dg);
 
   creer_champ(champ, dom_dis, type, noms[0], unites[0], default_order, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
   
@@ -256,8 +226,7 @@ void DG_discretisation::discretiser_champ_fonc_don(const Motcle& directive, cons
     assert(0);
 
   // Si c'est un champ multiscalaire, uh !
-  if (nb_comp < 0)
-    nb_comp = default_nb_comp;
+  nb_comp = default_nb_comp;
   if (champ_fonc)
     creer_champ(*champ_fonc, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps, directive, que_suis_je());
   else

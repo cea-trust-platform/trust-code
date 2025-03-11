@@ -14,6 +14,9 @@
  *****************************************************************************/
 
 #include <Quadrature_base.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+
 
 Implemente_base(Quadrature_base,"Quadrature_base",Objet_U);
 
@@ -27,36 +30,13 @@ Entree& Quadrature_base::readOn(Entree& is)
   return is;
 }
 
-//void Quadrature::register_quadrature()
-//{
-//  dom_->set_quadrature(order(), this);
-//}
-
-const DoubleTab& Quadrature_base::get_integ_points()
-{
-  return integ_points_;
-}
-
-const DoubleTab& Quadrature_base::get_integ_points_facets()
-{
-  return integ_points_facets_;
-}
-
-//DoubleTab Quadrature::get_weights()
-//{
-//  return weights_;
-//}
-
-//DoubleTab Quadrature::get_weights_facets()
-//{
-//  return weights_facets_;
-//}
 
 void Quadrature_base::associer_domaine(const Domaine_DG& dom)
 {
   dom_ = dom;
   initialiser_weights_and_points();
 }
+
 
 void Quadrature_base::initialiser_weights_and_points()
 {
@@ -95,6 +75,19 @@ double Quadrature_base::compute_integral_on_elem(int num_elem, DoubleTab& val_pt
       acc += val_on_pts * weights_(pts);
     }
   return acc * volume;
+}
+
+DoubleTab Quadrature_base::compute_integral_on_elem(DoubleTab& val_pts_integ) const
+{
+  int nb_elem_tot = dom_->nb_elem_tot();
+  DoubleTab results(nb_elem_tot);
+  DoubleTab val_pts_elem;
+  for (int num_elem = 0; num_elem < nb_elem_tot; num_elem++)
+    {
+      val_pts_elem.ref_tab(val_pts_integ, num_elem,1);
+      results[num_elem] = compute_integral_on_elem(num_elem, val_pts_elem);
+    }
+  return results;
 }
 
 double Quadrature_base::compute_integral_on_facet(int num_facet, Parser_U& parser) const

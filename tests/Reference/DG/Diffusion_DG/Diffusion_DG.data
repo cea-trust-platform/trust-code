@@ -10,7 +10,7 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 4 4
+        Nombre_de_Noeuds 11 11
         Longueurs 1. 1.
     }
     {
@@ -51,11 +51,11 @@ Scheme_euler_explicit sch_expl
 Read sch_expl
 {
     tinit 0
-		nb_pas_dt_max 2
     tmax 300.
-    dt_min 0.00001
+    dt_min 0.0001
     dt_max 0.1
     dt_impr 1.e-8
+    facsec 0.5
     seuil_statio 1.e-8
 }
 
@@ -65,7 +65,7 @@ Read sch_impl
     tinit   0
     dt_max  0.5
     facsec 1e30
-    seuil_statio 1e-6
+    seuil_statio 1e-8
     solveur implicite { solveur petsc cholesky { } }
 }
 
@@ -77,28 +77,29 @@ Read pb
 {
 
     solide {
-        rho Champ_Uniforme 1 2
+        rho Champ_Uniforme 1 2.
         lambda Champ_Uniforme 1 0.01
-        Cp Champ_Uniforme 1 0.5
+        Cp Champ_Uniforme 1 1.
     }
 
     Conduction
     {
         diffusion { }
         initial_conditions {
-            temperature Champ_Uniforme 3 1. 0. 0.
+            temperature Champ_Fonc_XYZ dom 1 sin(2*pi*x)*sin(2*pi*y)
         }
         boundary_conditions {
-            Haut paroi_adiabatique
-            Droit paroi_adiabatique
-            Gauche paroi_adiabatique
-            Bas paroi_temperature_imposee Champ_Front_Uniforme 3 5. 0. 0.
+            Bas paroi_temperature_imposee Champ_Front_Uniforme 1 0. 
+            Haut paroi_temperature_imposee Champ_Front_Uniforme 1 0. 
+            Droit paroi_temperature_imposee Champ_Front_Uniforme 1 0. 
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0. 
         }
     }
 
     Post_processing
     {
-        fields dt_post 30.
+				format lata
+        fields dt_post 1
         {
             temperature elem
         }

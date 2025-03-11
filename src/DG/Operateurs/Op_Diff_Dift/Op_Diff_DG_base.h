@@ -41,21 +41,19 @@ public:
     nu_a_jour_ = 0;
   }
 
-  void update_nu() const; //met a jour nu et nu_fac
-  const DoubleTab& get_nu() const { return nu_; }
-  const DoubleTab& get_nu_fac() const { return nu_fac_; }
+  void update_nu() const; //met a jour nu
 
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
   int impr(Sortie& os) const override;
-  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:
   REF(Domaine_DG) le_dom_dg_;
   REF(Domaine_Cl_DG) la_zcl_dg_;
-  REF(Champ_base) diffusivite_;
-  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
-  mutable int nu_a_jour_ = 0; //si on doit mettre a jour nu
   mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
+
+  REF(Champ_base) diffusivite_;
+  mutable int nu_a_jour_ = 0; //si on doit mettre a jour nu
+  mutable DoubleTab nu_;
 };
 
 
