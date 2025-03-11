@@ -516,7 +516,7 @@ do
       then
          echo "GPU =`nvidia-smi  -q | grep 'Product Name' | cut -d':' -f 2 | sed 's/^ //'`"
       elif [ -f /usr/bin/rocminfo ]
-      then 
+      then
          echo "GPU =`rocminfo | awk -F: '/Radeon/ {print $2}'`"
       else
          echo "GPU ="
