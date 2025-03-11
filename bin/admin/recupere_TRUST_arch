@@ -78,7 +78,7 @@ do
 <TD>RAM</TD>
 <TD>Cache</TD>
 <TD>Freq</TD>
-<TD>Nvidia</TD>
+<TD>GPU</TD>
 <TD>End</TD>
 <TD>OS</TD>
 <TD>CC</TD>
@@ -263,7 +263,7 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";nvidia="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
+	host="";os="";rel="";GPU="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
 	executable="-";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>";testgrind="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
@@ -272,8 +272,8 @@ do
 	TRIOXDATA=$TRIOXDATA && [ "`grep TRIOXDATA:error $CR`" != "" ] && TRIOXDATA="<TD $ROUGE>KO</TD>"
 	GNUPLOT="<TD $BLANC>NOT</TD>" && [ "`grep gnuplot:OK $CR`" != "" ] && GNUPLOT="<TD $VERT>OK</TD>"
 	GNUPLOT=$GNUPLOT && [ "`grep gnuplot:error $CR`" != "" ] && GNUPLOT="<TD $ROUGE>KO</TD>"
-	nvidia=`grep " Device " $CR | grep -v "Device compiler exited with error" | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
-	[ "$nvidia" = "" ] && nvidia=`$TRUST_Awk -F= '/Nvidia=/ {print $2}' $CR`
+	GPU=`grep " Device " $CR | grep -v "Device compiler exited with error" | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
+	[ "$GPU" = "" ] && GPU=`$TRUST_Awk -F= '/GPU=/ {print $2}' $CR`
 	COL2="";taux=$vide
 	ptaux=""	
 	if [ ${#PERF} != 0 ] && [ -f $PERF ]
@@ -383,7 +383,7 @@ $TD$nb_procs$FTD
 $TD$ram$FTD
 $TD$cache$FTD
 $TD$freq$FTD
-$TD$nvidia$FTD
+$TD$GPU$FTD
 $FIN
 $TD$os$FTD
 $TD$TRUST_CC$FTD

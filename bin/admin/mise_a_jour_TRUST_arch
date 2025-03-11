@@ -512,9 +512,12 @@ do
       #########################
       if [ `nvidia-smi  -h &>/dev/null; echo $?` = 0 ]
       then
-         echo "Nvidia=`nvidia-smi  -q | grep 'Product Name' | cut -d':' -f 2 | sed 's/^ //'`"
+         echo "GPU=`nvidia-smi  -q | grep 'Product Name' | cut -d':' -f 2 | sed 's/^ //'`"
+      elif [ -f /usr/bin/rocminfo ]
+      then 
+         echo "GPU=`rocminfo | awk -F: '/Radeon/ {print $2}'`"
       else
-         echo "Nvidia="
+         echo "GPU="
       fi
       ######################
       # MED est il compile ?
@@ -715,7 +718,7 @@ do
    echo "freq="`[ -f /proc/cpuinfo ] && awk '/cpu MHz/ {print int($4)}' /proc/cpuinfo | tail -1` >> $PERF
    #echo "vga="`lspci 2>/dev/null | awk -F: '/VGA/ {print $3}'` >> $PERF
    # Mieux pour NVidia
-   echo "nvidia=`cat /proc/driver/nvidia/cards/0 2>/dev/null | awk -F: '/Model/ {print $2}'` `nvidia-smi -a 2>/dev/null | awk -F: '/Driver/ {print $2}'`" >> $PERF
+   echo "GPU=`cat /proc/driver/nvidia/cards/0 2>/dev/null | awk -F: '/Model/ {print $2}'` `nvidia-smi -a 2>/dev/null | awk -F: '/Driver/ {print $2}'`" >> $PERF
    CC_PERF="CC "`basename $TRUST_CC_BASE`
    if [ "`basename $TRUST_CC_BASE`" = "nvc++" ]
    then
