@@ -277,38 +277,8 @@ Entree& Sonde::readOn(Entree& is)
   // Affectation du nom du champ
   nom_champ_lu_ = motlu;
 
-  //Creation des Champ_Generique_refChamp necessaire pour l initialisation de la REF a Champ_Generique_base
-  //Si le champ demande est un Champ_base connu du probleme on cree le Champ_Generique_refChamp correspondant
-  Probleme_base& Pb = mon_post->probleme();
-  const Motcles& noms_champs_postraitables = mon_post->les_sondes().get_noms_champs_postraitables();
-  if (noms_champs_postraitables.contient_(nom_champ_lu_))
-    {
-      Pb.creer_champ(nom_champ_lu_);
-      //On va creer un Champ_Generique_refChamp dont le nom a pour base
-      //le nom du champ auquel on fait reference et non pas une composante de ce champ
-      OBS_PTR(Champ_base) champ_ref = Pb.get_champ(nom_champ_lu_);
-      const Nom& le_nom_champ = champ_ref->le_nom();
-      const Motcle nom_domaine = mon_post->domaine()->le_nom();
-      Motcle identifiant;
-
-      identifiant = Motcle(le_nom_champ)+"_natif_"+nom_domaine;
-      if (!mon_post->comprend_champ_post(identifiant))
-        {
-          mon_post->creer_champ_post(le_nom_champ,"natif",is);
-        }
-    }
-  else
-    {
-      Nom expression;
-      int is_champ_predefini = Pb.expression_predefini(motlu,expression);
-      if ((is_champ_predefini) && (!mon_post->comprend_champ_post(nom_champ_lu_)))
-        {
-          OWN_PTR(Champ_Generique_base) champ;
-          Entree_complete s_complete(expression,is);
-          s_complete>>champ;
-          mon_post->complete_champ(champ,nom_champ_lu_);
-        }
-    }
+  validate_position();
+  create_champ_generique(is, motlu);
 
   // Lecture des caracteristiques de la sonde
   IntVect fait(2);
@@ -350,6 +320,9 @@ Entree& Sonde::readOn(Entree& is)
           Cerr << les_motcles;
           exit();
         }
+
+      if(rang != 0)
+        validate_type(motlu); // restrict valid localisation for IJK notably
 
       switch(rang)
         {
@@ -413,29 +386,28 @@ Entree& Sonde::readOn(Entree& is)
             DoubleVect origine(dimension);
             DoubleVect extremite(dimension);
             DoubleVect dx(dimension);
-            int i=0,j=0;
             is >> nbre_points;
             les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
-            for (; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               {
                 is >> origine(i);
                 type_+=" ";
                 type_+=(Nom)origine(i);
               }
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               {
                 is >> extremite(i);
                 type_+=" ";
                 type_+=(Nom)extremite(i);
               }
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               if (rang2==6)
                 dx(i)=(extremite(i))/(nbre_points-1);
               else
                 dx(i)=(extremite(i)-origine(i))/(nbre_points-1);
-            for (i=0; i<nbre_points; i++)
-              for (j=0; j<dimension; j++)
+            for (int i=0; i<nbre_points; i++)
+              for (int j=0; j<dimension; j++)
                 les_positions_sondes_initiales_(i,j)=origine(j)+i*dx(j);
             break;
           }
@@ -452,35 +424,34 @@ Entree& Sonde::readOn(Entree& is)
             DoubleVect extremite2(dimension);
             DoubleVect dx1(dimension);
             DoubleVect dx2(dimension);
-            int i=0,j=0,k=0;
             is >> nbre_points1;
             is >> nbre_points2;
             nbre_points=nbre_points1*nbre_points2;
             les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
-            for (; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> origine(i);
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> extremite1(i);
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> extremite2(i);
             if (rang2==7)
               {
-                for (i=0; i<dimension; i++)
+                for (int i=0; i<dimension; i++)
                   dx1(i)=(extremite1(i))/(nbre_points1-1);
-                for (i=0; i<dimension; i++)
+                for (int i=0; i<dimension; i++)
                   dx2(i)=(extremite2(i))/(nbre_points2-1);
               }
             else
               {
-                for (i=0; i<dimension; i++)
+                for (int i=0; i<dimension; i++)
                   dx1(i)=(extremite1(i)-origine(i))/(nbre_points1-1);
-                for (i=0; i<dimension; i++)
+                for (int i=0; i<dimension; i++)
                   dx2(i)=(extremite2(i)-origine(i))/(nbre_points2-1);
               }
-            for (i=0; i<nbre_points1; i++)
-              for (j=0; j<nbre_points2; j++)
-                for (k=0; k<dimension; k++)
+            for (int i=0; i<nbre_points1; i++)
+              for (int j=0; j<nbre_points2; j++)
+                for (int k=0; k<dimension; k++)
                   les_positions_sondes_initiales_(i*nbre_points2+j,k)=origine(k)+i*dx1(k)+j*dx2(k);
             break;
           }
@@ -498,31 +469,30 @@ Entree& Sonde::readOn(Entree& is)
             ArrOfDouble dx1(dimension);
             ArrOfDouble dx2(dimension);
             ArrOfDouble dx3(dimension);
-            int i=0,j=0,k=0;
             is >> nbre_points1;
             is >> nbre_points2;
             is >> nbre_points3;
             nbre_points=nbre_points1*nbre_points2*nbre_points3;
             les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
-            for (; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> origine[i];
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> extremite1[i];
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> extremite2[i];
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               is >> extremite3[i];
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               dx1[i]=(extremite1[i]-origine[i])/(nbre_points1-1);
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               dx2[i]=(extremite2[i]-origine[i])/(nbre_points2-1);
-            for (i=0; i<dimension; i++)
+            for (int i=0; i<dimension; i++)
               dx3[i]=(extremite3[i]-origine[i])/(nbre_points3-1);
-            for (i=0; i<nbre_points1; i++)
-              for (j=0; j<nbre_points2; j++)
+            for (int i=0; i<nbre_points1; i++)
+              for (int j=0; j<nbre_points2; j++)
                 for (int m=0; m<nbre_points3; m++)
-                  for (k=0; k<dimension; k++)
+                  for (int k=0; k<dimension; k++)
                     les_positions_sondes_initiales_(i+j*nbre_points1+m*nbre_points1*nbre_points2,k)=origine[k]+i*dx1[k]+j*dx2[k]+m*dx3[k];
             break;
           }
@@ -697,6 +667,42 @@ Entree& Sonde::readOn(Entree& is)
   return is;
 }
 
+/** Creation des Champ_Generique_refChamp necessaire pour l initialisation de la REF a Champ_Generique_base
+ * Si le champ demande est un Champ_base connu du probleme on cree le Champ_Generique_refChamp correspondant
+ */
+void Sonde::create_champ_generique(Entree& is, const Motcle& motlu)
+{
+  Probleme_base& Pb = mon_post->probleme();
+  const Motcles& noms_champs_postraitables = mon_post->les_sondes().get_noms_champs_postraitables();
+  if (noms_champs_postraitables.contient_(nom_champ_lu_))
+    {
+      Pb.creer_champ(nom_champ_lu_);
+      //On va creer un Champ_Generique_refChamp dont le nom a pour base
+      //le nom du champ auquel on fait reference et non pas une composante de ce champ
+      OBS_PTR(Champ_base) champ_ref = Pb.get_champ(nom_champ_lu_);
+      const Nom& le_nom_champ = champ_ref->le_nom();
+      const Motcle nom_domaine = mon_post->domaine()->le_nom();
+      Motcle identifiant;
+
+      identifiant = Motcle(le_nom_champ)+"_natif_"+nom_domaine;
+      if (!mon_post->comprend_champ_post(identifiant))
+        {
+          mon_post->creer_champ_post(le_nom_champ,"natif",is);
+        }
+    }
+  else
+    {
+      Nom expression;
+      int is_champ_predefini = Pb.expression_predefini(motlu,expression);
+      if ((is_champ_predefini) && (!mon_post->comprend_champ_post(nom_champ_lu_)))
+        {
+          OWN_PTR(Champ_Generique_base) champ;
+          Entree_complete s_complete(expression,is);
+          s_complete>>champ;
+          mon_post->complete_champ(champ,nom_champ_lu_);
+        }
+    }
+}
 
 /*! @brief Associer le postraitement a la sonde.
  *
@@ -718,6 +724,36 @@ void Sonde::associer_post(const Postraitement& le_post)
 const Domaine& Sonde::get_domaine_geom() const
 {
   return mon_champ->get_ref_domain();
+}
+
+void Sonde::fix_probe_position_grav()
+{
+  int nbre_points_tot = les_positions_sondes_.dimension(0);
+  DoubleTab coords_bords(2,dimension);
+  for (int idim=0; idim<dimension; idim++)
+    {
+      coords_bords(0,idim) = les_positions_sondes_(0,idim);
+      coords_bords(1,idim) = les_positions_sondes_(nbre_points_tot-1,idim);
+    }
+
+  Cerr<<"The location of the probe named "<<nom_<<" are modified (to centers of gravity). Check the .log files to see the new location."<<finl;
+  const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
+  const DoubleTab& xp = domaineVF.xp();
+  for (int i=0; i<nbre_points_tot; i++)
+    {
+      if(elem_[i]!=-1)
+        {
+          Journal()<<"The point " << i << " of the probe "<<nom_<<" is moved:";
+          for (int dir=0; dir<dimension; dir++)
+            {
+              Journal() << " x(" << dir << "): " << les_positions_sondes_(i,dir) << " -> " << xp(elem_[i],dir);
+              les_positions_sondes_(i,dir)=xp(elem_[i],dir);
+            }
+          Journal() << finl;
+        }
+    }
+  if (gravcl)
+    ajouter_bords(coords_bords);
 }
 
 /*! @brief Initialise la sonde.
@@ -797,34 +833,7 @@ void Sonde::initialiser()
   const Noms nom_champ = mon_champ->get_property("nom");
 
   if (grav || gravcl)
-    {
-      DoubleTab coords_bords(2,dimension);
-      for (int idim=0; idim<dimension; idim++)
-        {
-          coords_bords(0,idim) = les_positions_sondes_(0,idim);
-          coords_bords(1,idim) = les_positions_sondes_(nbre_points_tot-1,idim);
-        }
-
-      Cerr<<"The location of the probe named "<<nom_<<" are modified (to centers of gravity). Check the .log files to see the new location."<<finl;
-      const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
-      const DoubleTab& xp = domaineVF.xp();
-      for (int i=0; i<nbre_points_tot; i++)
-        {
-          if(elem_[i]!=-1)
-            {
-              Journal()<<"The point " << i << " of the probe "<<nom_<<" is moved:";
-              for (int dir=0; dir<dimension; dir++)
-                {
-                  Journal() << " x(" << dir << "): " << les_positions_sondes_(i,dir) << " -> " << xp(elem_[i],dir);
-                  les_positions_sondes_(i,dir)=xp(elem_[i],dir);
-                }
-              Journal() << finl;
-            }
-        }
-
-      if (gravcl)
-        ajouter_bords(coords_bords);
-    }
+    fix_probe_position_grav();
   else if (nodes)
     {
       const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
@@ -960,9 +969,10 @@ void Sonde::initialiser()
         Cerr << "We remove " << doublons << " duplicated points from the probe " << nom_ << finl;
     }
 
+  fix_probe_position();
+
   // chaque processeur a regarde s'il avait le point
-  // le maitre construit un tableau (prop) determinant qui
-  // va donner la valeur au maitre
+  // le maitre construit un tableau (prop) determinant qui va donner la valeur au maitre
   // Le maitre construit aussi le ArrsOfInt participant
   // lui donnant pour un proc les differents elements de celui-ci
   IntVect prop(elem_);
@@ -1251,18 +1261,25 @@ void Sonde::ouvrir_fichier()
     }
 }
 
+void Sonde::update_source(double un_temps)
+{
+  // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
+  // Implemente au niveau de Sondes
+  OBS_PTR(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
+  ma_source->mettre_a_jour(un_temps);
+}
 
 /*! @brief Effectue une mise a jour en temps de la sonde effectue le postraitement.
  *
- * @param (double temps) le temps de mise a jour
+ * @param (double un_temps) le temps de mise a jour
  * @param (double tinit) le temps initial de la sonde
  */
 void Sonde::mettre_a_jour(double un_temps, double tinit)
 {
-  // La mise a jour du champ est a supprimer car elle doit deja etre faite dans Post::mettre_a_jour()
   double temps_courant = mon_champ->get_time();
   double dt=mon_post->probleme().schema_temps().pas_de_temps();
   double nb;
+
   // Le *(1+Objet_U::precision_geom) est pour eviter des erreurs d'arrondi selon les machines
   // 21/01/25 : remplacement de Objet_U::precision_geom par 1e-15 (issue des patch M3D) suite bttrust #242895
   // car precision_geom est un parametre que l'utilisateur peut changer via jdd
@@ -1274,44 +1291,25 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   // On doit ecrire les sondes
   if (nb>nb_bip)
     {
-      // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
-      // Implemente au niveau de Sondes
-      OBS_PTR(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
-//      OWN_PTR(Champ_base) espace_stockage;
-//      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
-//        ma_source_mod.mettre_a_jour(un_temps);
-      ma_source->mettre_a_jour(un_temps);
+      update_source(un_temps);
 
       // Si le maillage est deformable il faut reconstruire les sondes
       if (mon_post->les_sondes().get_update_positions())
         {
           if (mon_post->probleme().domaine().deformable())
-            {
-              // Fait desormais dans ::initialiser:
-              //if (les_positions_sondes_initiales_.dimension(0) > 0)
-              //    les_positions_sondes_ = les_positions_sondes_initiales_;
-              initialiser();
-            }
+            initialiser();
         }
       nb_bip=nb;
-      //reprise=1;
       postraiter();
     }
 }
 
 
-/*! @brief Effectue un postraitement.
- *
- * Calcul les valeurs du champ aux position demandees
- *     et les imprime sur le fichier associe.
- *
- */
-void Sonde::postraiter()
+void Sonde::fill_local_values()
 {
   // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
   // Implemente au niveau de Sondes
   OBS_PTR(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
-
   if (chsom)
     {
       Champ_base& ma_source_mod =ref_cast_non_const(Champ_base,ma_source.valeur());
@@ -1327,6 +1325,17 @@ void Sonde::postraiter()
       else
         ma_source->valeur_aux_elems_compo(les_positions(),elem_,valeurs_locales, ncomp);
     }
+}
+
+/*! @brief Effectue un postraitement.
+ *
+ * Calcul les valeurs du champ aux position demandees
+ *     et les imprime sur le fichier associe.
+ *
+ */
+void Sonde::postraiter()
+{
+  fill_local_values();
 
   if (gravcl)
     mettre_a_jour_bords();
