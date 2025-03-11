@@ -52,10 +52,12 @@ void Champ_Fonc_Tabule_P0_EF::mettre_a_jour(double t)
   if (la_table->isfonction() != 2)
     {
       const int nbcomp = mes_valeurs.dimension(1);
+      std::vector<double> vals;
+      vals.reserve(nb_param); // Pre-allocate space once
       for (int num_elem = 0; num_elem < nb_elem; num_elem++)
         for (int ncomp = 0; ncomp < nbcomp; ncomp++)
           {
-            std::vector<double> vals;
+            vals.clear();
             for (int n = 0; n < nb_param; n++)
               vals.push_back(val_params_aux_elems[n](num_elem, les_ch_param[n]->valeurs().dimension(1) == 1 ? 0 : ncomp));
             mes_valeurs(num_elem, ncomp) = la_table->val(vals, ncomp);
