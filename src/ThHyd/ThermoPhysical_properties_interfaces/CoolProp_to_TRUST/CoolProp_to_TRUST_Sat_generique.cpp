@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,14 +105,14 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
       if (enum_prop == SAT::CPL_SAT || enum_prop == SAT::CPV_SAT) res[i] = fluide->cpmass();
       if (enum_prop == SAT::LAMBDA) res[i] = fluide->conductivity();
       if (enum_prop == SAT::MU) res[i] = fluide->viscosity();
-      if (enum_prop == SAT::SIGMA  && sigma_mano_<=0.)
+      if (enum_prop == SAT::SIGMA  && user_uniform_sigma_<=0.)
         {
           // soucis la avec plusieurs instance de factory abstract_state
 //          res[i] = fluide->surface_tension();
           const int ph_ = is_liq ? 0 : 1;
           res[i] = CoolProp::PropsSI("surface_tension", "P", P[i], "Q", ph_, fld_name_sat_);
         }
-      else if (enum_prop == SAT::SIGMA && sigma_mano_>0.) res[i] = sigma_mano_;
+      else if (enum_prop == SAT::SIGMA && user_uniform_sigma_>0.) res[i] = user_uniform_sigma_;
     }
   return 0; // FIXME : on suppose que tout OK
 #else

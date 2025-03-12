@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ Entree& Saturation_generique_CoolProp::readOn(Entree& is)
   if (phase_ != "??") TPPI_->verify_phase(phase_);
 
   TPPI_->set_saturation_generique(model_name_, fluid_name_);
-  TPPI_->set_sigma_mano(sigma_mano_);
+  TPPI_->set_user_uniform_sigma(user_uniform_sigma_);
   if (phase_ != "??") TPPI_->set_phase(phase_);
 //  CoolProptT.desactivate_handler(false); // throw on error
 
@@ -43,5 +43,5 @@ void Saturation_generique_CoolProp::set_param(Param& param)
   param.ajouter("model|modele", &model_name_, Param::REQUIRED);
   param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
   param.ajouter("phase", &phase_, Param::OPTIONAL); // optional : liquid or vapor. PI : specify the phase it is really useful (better perf for coolprop) !
-  param.ajouter("sigma_mano", &sigma_mano_, Param::OPTIONAL); // optional : because of issues when we call surface tension in TTSE in coolprop ! Try without and if calculation doesn't pass, input sigma
+  param.ajouter("user_uniform_sigma", &user_uniform_sigma_, Param::OPTIONAL); // optional : because of issues when we call surface tension in TTSE in coolprop ! Try without and if calculation doesn't pass, input sigma
 }

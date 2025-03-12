@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@ class Saturation_generique_EOS : public Saturation_generique_TPPI_base
   Declare_instanciable( Saturation_generique_EOS ) ;
 public :
   void set_param(Param& param) override;
-  double sigma_mano_=-1.;
+  double user_uniform_sigma_=-1.;
 };
 
 #endif /* Saturation_generique_EOS_included */

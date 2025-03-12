@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ public :
 
 protected:
   Motcle phase_;
-  double sigma_mano_=-1.;
+  double user_uniform_sigma_=-1.;
 };
 
 #endif /* Saturation_generique_CoolProp_included */

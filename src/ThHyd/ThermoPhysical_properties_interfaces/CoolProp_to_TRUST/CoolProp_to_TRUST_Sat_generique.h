@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,13 +65,13 @@ public :
   int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
   int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
 
-  int set_sigma_mano(double sigma) override { sigma_mano_ = sigma; return 1; }
+  void set_user_uniform_sigma(const double sigma) override { user_uniform_sigma_ = sigma; }
 
 private:
   int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int , int , bool is_liq = true) const override;
   int tppi_get_single_sat_p__(SAT , const SpanD , SpanD , bool is_liq = true) const;
   int FD_derivative_p(SAT , const SpanD , SpanD , bool is_liq = true) const;
-  double sigma_mano_ = -1.;
+  double user_uniform_sigma_ = -1.;
   std::string fld_name_sat_ = "NONE";
 };
 

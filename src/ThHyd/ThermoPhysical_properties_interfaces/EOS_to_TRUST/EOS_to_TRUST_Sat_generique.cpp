@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,8 +106,8 @@ int EOS_to_TRUST_Sat_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, 
   // XXX : COCO : ARRETE D'APPELER SIGMA COMME CA CAR JE T'AVAIS DIT POURQUOI
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (sigma_mano_ > 0)
-    for (int i =0; i < (int)P.size(); i++) R[i * ncomp + id] = sigma_mano_;
+  if (user_uniform_sigma_ > 0)
+    for (int i =0; i < (int)P.size(); i++) R[i * ncomp + id] = user_uniform_sigma_;
   else
     {
       if (ncomp == 1) return compute_eos_field(P, T, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
@@ -133,8 +133,8 @@ int EOS_to_TRUST_Sat_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, 
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (sigma_mano_ > 0)
-    for (int i =0; i < (int)P.size(); i++) R[i * ncomp + id] = sigma_mano_;
+  if (user_uniform_sigma_ > 0)
+    for (int i =0; i < (int)P.size(); i++) R[i * ncomp + id] = user_uniform_sigma_;
   else
     {
       if (ncomp == 1) return compute_eos_field_h(P, H, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);

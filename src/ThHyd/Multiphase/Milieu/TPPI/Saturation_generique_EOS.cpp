@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ Entree& Saturation_generique_EOS::readOn(Entree& is)
 
   TPPI_->set_saturation_generique(model_name_, fluid_name_);
   TPPI_->desactivate_handler(false); // throw on error
-  TPPI_->set_sigma_mano(sigma_mano_);
+  TPPI_->set_user_uniform_sigma(user_uniform_sigma_);
   return is;
 }
 
@@ -37,5 +37,5 @@ void Saturation_generique_EOS::set_param(Param& param)
   Saturation_base::set_param(param); // T_ref_ et P_ref_ ?? sais pas si utile ...
   param.ajouter("model|modele", &model_name_, Param::REQUIRED);
   param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
-  param.ajouter("sigma_mano", &sigma_mano_, Param::OPTIONAL); // optional : because of issues when we call surface tension in TTSE in coolprop ! Try without and if calculation doesn't pass, input sigma
+  param.ajouter("user_uniform_sigma", &user_uniform_sigma_, Param::OPTIONAL); // optional : because of issues when we call surface tension in TTSE in coolprop ! Try without and if calculation doesn't pass, input sigma
 }
