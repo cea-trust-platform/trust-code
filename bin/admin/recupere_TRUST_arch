@@ -273,7 +273,7 @@ do
 	GNUPLOT="<TD $BLANC>NOT</TD>" && [ "`grep gnuplot:OK $CR`" != "" ] && GNUPLOT="<TD $VERT>OK</TD>"
 	GNUPLOT=$GNUPLOT && [ "`grep gnuplot:error $CR`" != "" ] && GNUPLOT="<TD $ROUGE>KO</TD>"
 	GPU=`grep " Device " $CR | grep -v "Device compiler exited with error" | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
-	[ "$GPU" = "" ] && GPU=`$TRUST_Awk -F= '/GPU=/ {print $2}' $CR`
+	[ "$GPU" = "" ] && GPU=`$TRUST_Awk -F= '/GPU =/ {print $2}' $CR`
 	COL2="";taux=$vide
 	ptaux=""	
 	if [ ${#PERF} != 0 ] && [ -f $PERF ]

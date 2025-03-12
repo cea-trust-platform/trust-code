@@ -512,12 +512,12 @@ do
       #########################
       if [ `nvidia-smi  -h &>/dev/null; echo $?` = 0 ]
       then
-         echo "GPU=`nvidia-smi  -q | grep 'Product Name' | cut -d':' -f 2 | sed 's/^ //'`"
+         echo "GPU =`nvidia-smi  -q | grep 'Product Name' | cut -d':' -f 2 | sed 's/^ //'`"
       elif [ -f /usr/bin/rocminfo ]
       then 
-         echo "GPU=`rocminfo | awk -F: '/Radeon/ {print $2}'`"
+         echo "GPU =`rocminfo | awk -F: '/Radeon/ {print $2}'`"
       else
-         echo "GPU="
+         echo "GPU ="
       fi
       ######################
       # MED est il compile ?

@@ -67,5 +67,5 @@ linux   rsync_ssh       tache   is234637.intra.cea.fr 		-all	   -MPCube -TrioCFD
 linux	rsync_ssh	tache	is248238-coolprop-eos.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD    	 		      -coolprop -eos210 -without-pdflatex  			# Ubuntu 24 titania 
 linux   rsync_ssh       tache   desactive_is157091.intra.cea.fr 			      	 		-benchmark  -cuda -force_latest_mpich   # Fedora ? PL titania
 linux	rsync_ssh	cible	is248238-int32.intra.cea.fr	-all  		-GENEPI3 -TrioCFD -MPCube -TRUST_NK -SIDES -SCORPIO -TrioMC -MATHYS    	  		      -build_32_bit -without-pdflatex  			# Ubuntu 24 
-linux	rsync_ssh	cible	is248238.intra.cea.fr	-all  		-TrioCFD     	  		      -without-pdflatex  			# Ubuntu 24 
+linux   rsync_ssh	tache	is248238-gpu.intra.cea.fr 		-all	-benchmark 	-TrioCFD  	 		-cuda -without-pdflatex -without-visit     # Ubuntu 24.04 titania
 linux   rsync_ssh       tache   is246524.intra.cea.fr  		-all	-benchmark	-TrioCFD			-rocm -without-pdflatex -without-visit     # PC Pierre titania 

@@ -1331,7 +1331,7 @@ then
    # Detection de l'architecture de la carte AMD:
    [ "$ROCM_ARCH" = "" ] && ROCM_ARCH=`$ROCM_PATH/bin/rocminfo 2>&1 | awk '/ gfx/ {print $2}'`
    # Pour les cartes mal supportees (ex PC AMD): https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
-   [ "${ROCM_ARCH#gfx103}" != $ROCM_ARCH ] && ROCM_ARCH=gfx1030 && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
+   [ "${ROCM_ARCH#gfx103}" != "$ROCM_ARCH" ] && ROCM_ARCH=gfx1030 && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
    echo "export ROCM_ARCH=$ROCM_ARCH # Carte AMD" >> $env
 fi
 m="# TRUST will use ROCM ?";e="TRUST_USE_ROCM=\"$TRUST_USE_ROCM\" && export TRUST_USE_ROCM";ecrit $m"|"$e"|"$env
