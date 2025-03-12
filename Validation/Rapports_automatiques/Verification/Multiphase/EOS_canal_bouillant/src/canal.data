@@ -1,0 +1,195 @@
+# PARALLEL OK 8 #
+# GPU NOT #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0  0.0
+        nombre_de_noeuds  2 51
+        longueurs 1 1
+    }
+    {
+        bord  bas       Y = 0.0    0.0 <= X <= 1.0
+        bord  haut      Y = 1  0.0 <= X <= 1.0
+        bord  boundary  X = 0.0    0.0 <= Y <= 1
+        bord  boundary  X = 1.0    0.0 <= Y <= 1
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+$dis dis
+$opt
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    seuil_statio 1e-3
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 }
+        solveur petsc cli { quiet }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    Milieu_composite
+    {
+        $lf Fluide_generique_EOS { model CATHARE2  fluid $eosfl }
+        $gf Fluide_generique_EOS { model CATHARE2  fluid $eosfv }
+        $sf saturation_generique_EOS { model CATHARE2 fluid $eosfl }
+    }
+
+    correlations
+    {
+        flux_interfacial coef_constant { $lf 1e10 $gf 1e10 }
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cholesky { quiet } # cli_quiet { -pc_type hypre -pc_hypre_type boomeramg } #
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions
+        {
+            vitesse Champ_composite 2
+            {
+                Champ_Fonc_xyz dom 2 0 1
+                Champ_Fonc_xyz dom 2 0 1
+            }
+
+            pression Champ_composite 1
+            {
+                Champ_Fonc_xyz dom 1 $press
+            }
+        }
+        boundary_conditions
+        {
+            boundary symetrie
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_composite 2
+            {
+                champ_front_uniforme 2 0 1
+                champ_front_uniforme 2 0 1
+            }
+            haut frontiere_ouverte_pression_imposee champ_front_composite 1
+            {
+                champ_front_uniforme 1 $press
+            }
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha Champ_composite 2
+            {
+                Champ_Fonc_xyz dom 1 1
+                Champ_Fonc_xyz dom 1 0
+            }
+        }
+        convection { amont }
+        boundary_conditions
+        {
+            boundary paroi
+            bas  frontiere_ouverte a_ext champ_front_composite 2
+            {
+                Champ_Front_Uniforme 1 1
+                Champ_Front_Uniforme 1 0
+            }
+            haut frontiere_ouverte a_ext champ_front_composite 2
+            {
+                Champ_Front_Uniforme 1 1
+                Champ_Front_Uniforme 1 0
+            }
+        }
+        sources { flux_interfacial }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+        {
+            temperature Champ_composite 2
+            {
+                Champ_Uniforme 1 $tl
+                Champ_Uniforme 1 $tg
+            }
+        }
+        boundary_conditions
+        {
+            boundary paroi_adiabatique
+            bas    frontiere_ouverte T_ext champ_front_composite 2
+            {
+                Champ_Front_Uniforme 1 $tl
+                Champ_Front_Uniforme 1 $tg
+            }
+            haut   frontiere_ouverte T_ext champ_front_composite 2
+            {
+                Champ_Front_Uniforme 1 $tl
+                Champ_Front_Uniforme 1 $tg
+            }
+        }
+        sources
+        {
+            puissance_thermique Champ_composite 2
+            {
+                champ_uniforme 1 $puiss
+                champ_uniforme 1 0
+            } ,
+            flux_interfacial
+        }
+    }
+    Post_processing
+    {
+
+        probes
+        {
+            rho_m_trust masse_volumique_melange periode 1e8 segment 500 0.5 0 0.5 1
+            h_m_trust       enthalpie_melange periode 1e8 segment 500 0.5 0 0.5 1
+            pression_trust                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1
+            alpha_trust               alpha_$gf periode 1e8 segment 500 0.5 0 0.5 1
+            temperature_l_trust     temperature_$lf periode 1e8 segment 500 0.5 0 0.5 1
+            temperature_g_trust         temperature_$gf periode 1e8 segment 500 0.5 0 0.5 1
+            vitesse_l_trust         vitesse_$lf periode 1e8 segment 500 0.5 0 0.5 1
+            vitesse_g_trust             vitesse_$gf periode 1e8 segment 500 0.5 0 0.5 1
+        }
+        Format lml
+        fields dt_post 1e-2
+        {
+            vitesse elem
+            alpha elem
+            pression elem
+            temperature elem
+            masse_volumique elem
+        }
+    }
+}
+Solve pb
+End
