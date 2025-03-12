@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
   if(Process::je_suis_maitre())
     {
       Cout <<"Reading data file "<<finl;
-      int fin_lu=0;
+      bool fin_lu = false;
       Motcle fin("fin|end");
       EFichier file_;
       ok = file_.ouvrir(name, mode);
@@ -90,7 +90,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
       int nb_accolade_sa=-1;
       int line=1;
       bool petsc_format = false;
-      while (1)
+      while (!fin_lu)
         {
           if (file_.eof())
             {
@@ -102,110 +102,109 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
             nb_accolade--;
           if (fin==motlu)
             {
-              fin_lu=1;
+              fin_lu = true;
               nb_accolade_sa=nb_accolade;
             }
-          if (motlu=="#")
+          if (!fin_lu)
             {
-              // Cerr<<" on passe les commentaires"<<finl;
-              comments += "[" + std::string(name) + "] : Comments bloc starts at line " + std::to_string(line)+ " ";
-              int jol = file_.jumpOfLines();
-              for(int jump=0; jump<jol; jump++)
-                prov <<"\n";
-              line+=jol;
-              file_>>motlu;
-              while (motlu!="#")
+              if (motlu=="#")
                 {
-                  if (file_.eof())
-                    {
-                      Cerr << comments;
-                      Nom msg = "\nProblem while reading some # \n # not closed.\n";
-                      if (fin_lu)
-                        msg+="Keyword Fin is maybe already read.\n";
-                      msg+= "============================================\nExiting TRUST.";
-                      Process::exit(msg);
-                    }
-                  jol = file_.jumpOfLines();
-                  for(int jump=0; jump<jol; jump++)
-                    prov <<"\n";
-                  line += jol;
-                  file_ >> motlu;
-                }
-              comments += "and ends at line " + std::to_string(line)+"\n";
-              jol = file_.jumpOfLines();
-              for(int jump=0; jump<jol; jump++)
-                prov <<"\n";
-              line += jol;
-            }
-
-          else if (motlu=="/*")
-            {
-              // Cerr<<" on passe le bloc de commentaires"<<finl;
-              int ouvrante=1;
-              comments += "[" + std::string(name) + "] : Comments bloc starts at line " + std::to_string(line) + " ";
-              while (ouvrante!=0)
-                {
+                  // Cerr<<" on passe les commentaires"<<finl;
+                  comments += "[" + std::string(name) + "] : Comments bloc starts at line " + std::to_string(line)+ " ";
                   int jol = file_.jumpOfLines();
                   for(int jump=0; jump<jol; jump++)
                     prov <<"\n";
                   line+=jol;
-                  file_ >>motlu;
-                  if (file_.eof())
+                  file_>>motlu;
+                  while (motlu!="#")
                     {
-                      Cerr << comments;
-                      Nom msg = "\nProblem while reading some /* \n not closed.\n";
-                      if (fin_lu)
-                        msg+="Keyword Fin is maybe already read.\n";
-                      msg+= "============================================\nExiting TRUST.";
-                      Process::exit(msg);
+                      if (file_.eof())
+                        {
+                          Cerr << comments;
+                          Nom msg = "\nProblem while reading some # \n # not closed.\n";
+                          msg+= "============================================\nExiting TRUST.";
+                          Process::exit(msg);
+                        }
+                      jol = file_.jumpOfLines();
+                      for(int jump=0; jump<jol; jump++)
+                        prov <<"\n";
+                      line += jol;
+                      file_ >> motlu;
                     }
-                  if (motlu=="/*") ouvrante++;
-                  if (motlu=="*/") ouvrante--;
+                  comments += "and ends at line " + std::to_string(line)+"\n";
+                  jol = file_.jumpOfLines();
+                  for(int jump=0; jump<jol; jump++)
+                    prov <<"\n";
+                  line += jol;
                 }
-              comments += "and ends at line " + std::to_string(line)+"\n";
-              int jol = file_.jumpOfLines();
-              for(int jump=0; jump<jol; jump++)
-                prov <<"\n";
-              line+=jol;
-            }
-          else if (((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") || (motlu.find(",")!=-1 && motlu != "," && !petsc_format)) && ! fin_lu )
-            {
-              Nom msg = "Error while reading '" + motlu.getString() + "' from datafile " + name + " at line " + std::to_string(line) + ".\nCheck for missing space character.\n";
-              msg+= "============================================\nExiting TRUST.";
-              Process::exit(msg);
-            }
 
-          /* GF ne pas reactiver ce morceau de code car cela
-             est complique pour la traduction des jdd en python
-             else if (motlu=="##")
-             {
+              else if (motlu=="/*")
+                {
+                  // Cerr<<" on passe le bloc de commentaires"<<finl;
+                  int ouvrante=1;
+                  comments += "[" + std::string(name) + "] : Comments bloc starts at line " + std::to_string(line) + " ";
+                  while (ouvrante!=0)
+                    {
+                      int jol = file_.jumpOfLines();
+                      for(int jump=0; jump<jol; jump++)
+                        prov <<"\n";
+                      line+=jol;
+                      file_ >>motlu;
+                      if (file_.eof())
+                        {
+                          Cerr << comments;
+                          Nom msg = "\nProblem while reading some /* \n not closed.\n";
+                          msg+= "============================================\nExiting TRUST.";
+                          Process::exit(msg);
+                        }
+                      if (motlu=="/*") ouvrante++;
+                      if (motlu=="*/") ouvrante--;
+                    }
+                  comments += "and ends at line " + std::to_string(line)+"\n";
+                  int jol = file_.jumpOfLines();
+                  for(int jump=0; jump<jol; jump++)
+                    prov <<"\n";
+                  line+=jol;
+                }
+              else if ((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") || (motlu.find("#")!=-1) || (motlu.find(",")!=-1 && motlu != "," && !petsc_format))
+                {
+                  Nom msg = "Error while reading '" + motlu.getString() + "' from datafile " + name + " at line " + std::to_string(line) + ".\nCheck for missing space character.\n";
+                  msg+= "============================================\nExiting TRUST.";
+                  Process::exit(msg);
+                }
 
-             Cerr<<" The comment line is crossed."<<finl;
-             std::string ligne;
-             std::getline(file_.get_ifstream(), ligne);
+              /* GF ne pas reactiver ce morceau de code car cela
+                 est complique pour la traduction des jdd en python
+                 else if (motlu=="##")
+                 {
 
-             }
-          */
-          else
-            {
-              prov<<motlu;
-              int jol = file_.jumpOfLines();
-              if(jol==0)
-                prov << " ";
+                 Cerr<<" The comment line is crossed."<<finl;
+                 std::string ligne;
+                 std::getline(file_.get_ifstream(), ligne);
+
+                 }
+              */
               else
-                for(int jump=0; jump<jol; jump++)
-                  prov <<"\n";
-              line+=jol;
-              if( apply_verif )
-                verifie(motlu);
-              petsc_format = false;
-              if ((motlu.debute_par("-pc_fieldsplit_") && motlu.finit_par("_fields")))
-                petsc_format = true;
-            }
-          file_>>motlu;
+                {
+                  prov<<motlu;
+                  int jol = file_.jumpOfLines();
+                  if(jol==0)
+                    prov << " ";
+                  else
+                    for(int jump=0; jump<jol; jump++)
+                      prov <<"\n";
+                  line+=jol;
+                  if( apply_verif )
+                    verifie(motlu);
+                  petsc_format = false;
+                  if ((motlu.debute_par("-pc_fieldsplit_") && motlu.finit_par("_fields")))
+                    petsc_format = true;
+                }
+              file_>>motlu;
 
+            }
         }
-      if (fin_lu!=0)
+      if (fin_lu)
         nb_accolade=nb_accolade_sa;
       if (nb_accolade!=0)
         {
