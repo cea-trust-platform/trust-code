@@ -193,8 +193,10 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_flux_parietal_(const BC& cl
         }
       if (is_paroi_contact_flux_parietal) // Echange contact
         {
-          if (!cl.que_suis_je().debute_par("Paroi_Echange_contact")) Process::exit(que_suis_je() + " : in pb_multiphase there is no echange contact with a wall heat flux correlation : choisis ton camp camarade !");
+          Process::exit(que_suis_je() + " : paroi_contact with flux parietal is not yet coded ! Change to polymac_P0 or call the 911. ");
 
+          if (!cl.que_suis_je().debute_par("Paroi_Echange_contact"))
+            Process::exit(que_suis_je() + " : in pb_multiphase there is no echange contact with a wall heat flux correlation : choisis ton camp camarade !");
         }
       else if (is_Neumann_flux_parietal) // Neumann
         {

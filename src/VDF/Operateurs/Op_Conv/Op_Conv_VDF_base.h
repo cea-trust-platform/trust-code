@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,11 @@ public:
 
   void set_incompressible(const int flag) override
   {
+    if (flag == 0)
+      {
+        Cerr << "Compressible form of operator \"" << que_suis_je() << "\" :" << finl;
+        Cerr << "Discretization of \u2207(inco \u2297 v) - v \u2207.(inco)" << finl;
+      }
     incompressible_ = flag; // XXX remove later !
     iter_->set_incompressible(flag);
   }
