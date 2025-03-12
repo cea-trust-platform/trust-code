@@ -1530,6 +1530,23 @@ void Domaine_VF::build_mc_face_mesh() const
   mc_face_mesh_->checkConsistency();
 #endif
   mP->decrRef();
+
+  mc_face_mesh_ready_ = true;
+#endif // MEDCOUPLING_
+}
+
+
+void Domaine_VF::build_mc_dual_mesh() const
+{
+#ifdef MEDCOUPLING_
+  Cerr << "   Domaine: Creating **dual** mesh as a MEDCouplingUMesh object for the domain '" << le_nom() << "'" << finl;
+
+  // For now a deep copy of the original mesh:
+  mc_dual_mesh_ = domaine().get_mc_mesh()->deepCopy();
+  const std::string dual_nam = domaine().get_mc_mesh()->getName() + "_dual";
+  mc_dual_mesh_->setName(dual_nam);
+
+  mc_dual_mesh_ready_ = true;
 #endif // MEDCOUPLING_
 }
 

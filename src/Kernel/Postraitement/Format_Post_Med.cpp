@@ -137,6 +137,19 @@ int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_prem
   return ecrire_domaine_dis(domaine, domaine_dis_base, est_le_premier_post);
 }
 
+void Format_Post_Med::ecrire_domaine_dual(const Domaine& domaine, const int est_le_premier_post)
+{
+  Nom nom_fich(med_basename_);
+  nom_fich +="_dual.";
+  Nom format="med";
+  nom_fich += format;
+
+  bool append = !est_le_premier_post;
+
+  ecr_med_.set_file_name_and_dom(nom_fich, domaine);
+  ecr_med_.ecrire_domaine_dual(append);
+}
+
 /*! @brief voir Format_Post_base::ecrire_domaine
  */
 int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const OBS_PTR(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
@@ -433,8 +446,3 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
     }
   return 1;
 }
-
-
-
-
-

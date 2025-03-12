@@ -24,6 +24,8 @@
 #include <TRUST_2_MED.h>
 #include <Sortie_Fichier_base.h>
 #include <Synonyme_info.h>
+#include <Domaine_dis_cache.h>
+#include <Domaine_VF.h>
 
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
@@ -122,7 +124,13 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_champ(const Nom& type,const Nom& nom_cha1,
 }
 
 template <typename _SIZE_>
-void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine(bool m)
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine(bool app)
+{
+  med_non_installe();
+}
+
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dual(bool app)
 {
   med_non_installe();
 }
@@ -202,6 +210,58 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine(bool append)
     }
   OBS_PTR(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretise
   ecrire_domaine_dis(domaine_dis_base, append);
+}
+
+/*! @brief Write the dual of the domain in the file
+ *
+ * @param append = false new file, append = true append to existing file
+ */
+template <>
+void Ecrire_MED_32_64<int>::ecrire_domaine_dual(bool append)
+{
+  if (Objet_U::dimension==0)
+    Process::exit("Dimension is not defined. Check your data file.");
+#ifndef MEDCOUPLING_
+  med_non_installe(); // actually MEDCoupling ... but will do.
+#else
+
+  // Retrieve (or build!) the **dual** mesh associated with the domain.
+  // This potentially means discretizing the domaine !
+
+  //
+  //  TODO TODO ABN HACK HACK, VDF for now, just to have sth working ...
+  //
+  const Domaine_dis_base& dom_dis = Domaine_dis_cache::Build_or_get(Nom("Domaine_VDF"), dom_);
+  const Domaine_VF& dom_vf = ref_cast(Domaine_VF, dom_dis);
+  const auto& dual_m = dom_vf.get_mc_dual_mesh();
+  MEDCouplingUMesh *dual_no_const = const_cast<MEDCouplingUMesh *>(dual_m);  // because of setCoords() and setMeshAtLevel()
+
+  // Prepare final MEDFileUMesh object:
+  MCAuto<MEDFileUMesh> mfu(MEDFileUMesh::New());
+  mfu->setName(dual_m->getName());      // name must be provided
+  mfu->setCoords(dual_no_const->getCoords());  // should be the same coord array for all levels (i.e. dom->les_sommets())
+  mfu->setMeshAtLevel(0, dual_no_const, false);
+
+  // Check the mesh
+#ifndef NDEBUG
+  dual_m->checkConsistency();
+#endif
+
+  // Write:
+  int option = (append ? 1 : 2); /* 2: reset file. 1: append, 0: overwrite objects */
+  Cerr<<"Writing file '" << nom_fichier_<<"' with mesh name '" << dual_m->getName() << "' (append=" << (append ? "true": "false") << ") ..."<<finl;
+  if (major_mode_)
+    mfu->write40(nom_fichier_.getString(), option);
+  else
+    mfu->write(nom_fichier_.getString(), option);
+#endif
+}
+
+template <typename _SIZE_>
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dual(bool append)
+{
+  // not coded for 64b domains ...
+  throw;
 }
 
 /*! @brief Fill face and groups in the MEDCoupling object

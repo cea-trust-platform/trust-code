@@ -180,9 +180,11 @@ public :
   const DoubleTab& normale_paroi_faces() const {return n_y_faces_;}
 
   void build_mc_face_mesh() const;
+  void build_mc_dual_mesh() const;
 
 #ifdef MEDCOUPLING_
-  inline const MEDCouplingUMesh* get_mc_face_mesh() const    { return mc_face_mesh_; }
+  inline const MEDCouplingUMesh* get_mc_face_mesh() const;
+  inline const MEDCouplingUMesh* get_mc_dual_mesh() const;
 #endif
 
 private:
@@ -238,6 +240,9 @@ protected:
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the face domain - stored in Domaine_dis since faces are built here:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
+  mutable MCAuto<MEDCouplingUMesh> mc_dual_mesh_;
+  mutable bool mc_face_mesh_ready_ = false;
+  mutable bool mc_dual_mesh_ready_ = false;
 #endif
 
   /*
@@ -644,5 +649,20 @@ inline std::array<double, 3> Domaine_VF::cross(int dima, int dimb, const double 
   return res;
 }
 
+#ifdef MEDCOUPLING_
+
+inline const MEDCouplingUMesh* Domaine_VF::get_mc_face_mesh() const
+{
+  if (!mc_face_mesh_ready_) build_mc_face_mesh();
+  return mc_face_mesh_;
+}
+
+inline const MEDCouplingUMesh* Domaine_VF::get_mc_dual_mesh() const
+{
+  if (!mc_dual_mesh_ready_) build_mc_dual_mesh();
+  return mc_dual_mesh_;
+}
+
+#endif
 
 #endif /* Domaine_VF_included */

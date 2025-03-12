@@ -21,9 +21,9 @@
 #include <Domaine_forward.h>
 class Nom;
 
-/*! @brief Classe Postraiter_domaine
+/*! @brief Postraiter_domaine allows to write one or more domains in a file with a specified format (MED,LML,LATA,SINGLE_LATA,CGNS).
  *
- * @sa Interprete
+ * @sa Interprete_geometrique_base
  */
 class Postraiter_domaine: public Interprete_geometrique_base
 {
@@ -32,9 +32,10 @@ public:
   Entree& interpreter_(Entree&) override;
   void ecrire(Nom&);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
+
 protected:
   Nom commande_, format_post_;
-  int nb_domaine_ = 0, joint_non_ecrit_ = 1, format_binaire_ = 1, ecrire_frontiere_ = 1;
+  int nb_domaine_ = 0, joint_non_ecrit_ = 1, format_binaire_ = 1, ecrire_frontiere_ = 1, dual_ = 0;
 };
 
 #endif /* Postraiter_domaine_included */

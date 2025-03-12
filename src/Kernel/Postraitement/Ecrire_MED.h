@@ -68,6 +68,7 @@ public :
 
   // This method can be called in both 32 and 64b:
   void ecrire_domaine(bool append=true);
+  void ecrire_domaine_dual(bool append=true);
   void ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append=true);
 
   void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Noms& noms_compo,const Nom& type_elem,double time);
@@ -86,7 +87,7 @@ protected:
 #ifdef MEDCOUPLING_
   const MEDCoupling::MEDCouplingUMesh *mcumesh_ = nullptr;   ///! Real owner is Domain class
   MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;   ///! Ecrire_MED is the owner
-  const MEDCoupling::MEDCouplingUMesh *mc_face_mesh_ = nullptr;   ///! Real owner is Domaine_VF class
+  const MEDCoupling::MEDCouplingUMesh *mc_face_mesh_ = nullptr;   ///< Real owner is Domaine_VF class
 #endif
 };
 

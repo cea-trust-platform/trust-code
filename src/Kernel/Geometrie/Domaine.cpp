@@ -1355,7 +1355,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
     }
   mc_mesh_ready_ = true;
 
-#endif
+#endif // MEDCOUPLING_
 }
 
 template<typename _SZ_>
