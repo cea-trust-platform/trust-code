@@ -84,62 +84,6 @@ void Partitionneur_Tranche_32_64<_SIZE_>::initialiser(const ArrOfInt& nb_tranche
   nb_tranches_ = nb_tranches;
 }
 
-namespace
-{
-
-static int            static_qsort_DoubleTab_colonne;
-
-template <typename _SIZE_>
-static const TRUSTTab<double, _SIZE_> * static_qsort_DoubleTab_ptr;
-
-// Explicit instanciation of the template static variable ...:
-template const TRUSTTab<double, int> * static_qsort_DoubleTab_ptr<int>;
-#if INT_is_64_ == 2
-template const TRUSTTab<double, trustIdType> * static_qsort_DoubleTab_ptr<trustIdType>;
-#endif
-
-/*! @brief fonction outil pour tri quicksort (comparaison de deux reels avec un index)
- */
-template<typename _SIZE_>
-True_int trier_index_compare_fct(const void *i_, const void *j_)
-{
-  const _SIZE_ i = *((_SIZE_*)i_);
-  const _SIZE_ j = *((_SIZE_*)j_);
-  const int k = static_qsort_DoubleTab_colonne;
-  const TRUSTTab<double, _SIZE_>& tab = *static_qsort_DoubleTab_ptr<_SIZE_>;
-  const double x = tab(i,k);
-  const double y = tab(j,k);
-  True_int resu = 0;
-  if (x > y)
-    resu = 1;
-  else if (x < y)
-    resu = -1;
-  return resu;
-}
-
-/*! @brief Fonction outil utilisee dans construire_partition.
- *
- * On reordonne les valeurs du tableau index de sorte que les valeurs
- *   tab(index[i], colonne) soient classees dans l'ordre croissant.
- *
- */
-template<typename _SIZE_>
-void trier_index_colonne_i(const TRUSTTab<double, _SIZE_>& tab,
-                           TRUSTArray<_SIZE_,_SIZE_>& index,
-                           const int colonne)
-{
-  assert(colonne >= 0 && colonne < tab.dimension(1));
-
-  static_qsort_DoubleTab_ptr<_SIZE_> = &tab;
-  static_qsort_DoubleTab_colonne = colonne;
-  _SIZE_ * index_ptr = index.addr();
-  const _SIZE_ index_size = index.size_array();
-  const size_t index_member_size = sizeof(_SIZE_);
-
-  qsort(index_ptr, index_size, index_member_size, trier_index_compare_fct<_SIZE_>);
-}
-}
-
 /*! @brief Remplissage du tableau directions perio a partir des noms des bords periodiques.
  *
  * Pour 0 <= i < Objet_U::dimension directions_perio[i] vaut 1 s'il
@@ -303,7 +247,10 @@ void Partitionneur_Tranche_32_64<_SIZE_>::construire_partition(BigIntVect_& elem
           // Tri des elements de cette partie dans l'ordre croissant
           // de la coordonnee (index pointe sur une partie de liste_elem, on trie
           // donc en realite une partie du tableau liste_elem)
-          trier_index_colonne_i(coord_g, index, direction);
+          std::sort(index.begin(), index.end(), [&](int_t a, int_t b)
+          {
+            return ( coord_g(a,direction)<coord_g(b,direction) );
+          });
 
           // Si cette direction est periodique, permutation circulaire de
           //  nb_elem_partie/(nb_tranches*2) elements pour que les elements de l'extremite

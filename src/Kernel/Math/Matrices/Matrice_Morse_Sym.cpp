@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -623,7 +623,6 @@ void Matrice_Morse_Sym::get_symmetric_stencil_and_coefficients( IntTab&      ste
           tmp1( k ) = tab2_( k + k0 ) - 1;
           tmp2[ k ] = coeff_( k + k0 );
         }
-
       tri_lexicographique_tableau_indirect( tmp1, index );
 
       for ( int k=0; k<size; ++k )

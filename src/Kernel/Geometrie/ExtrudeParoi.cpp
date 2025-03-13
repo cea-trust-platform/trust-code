@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,7 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
   param.ajouter_flag("critere_absolu",&type); // XD_ADD_P entier relative (0, the default) or absolute (1) width for each layer.
   param.ajouter("projection_normale_bord",&projection_normale_bord); // XD_ADD_P rien keyword to project layers on the same plane that contiguous boundaries. defaut values are : epaisseur_relative 1 0.5 projection_normale_bord 1
   param.lire_avec_accolades_depuis(is);
-  epaisseur.array_trier_retirer_doublons();
+  array_trier_retirer_doublons(epaisseur);
   nb_couche=epaisseur.size_array();
   associer_domaine(nom_dom);
   Scatter::uninit_sequential_domain(domaine());

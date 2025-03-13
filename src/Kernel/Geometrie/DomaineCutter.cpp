@@ -1715,7 +1715,7 @@ void DomaineCutter_32_64<_SIZE_>::ecrire_domaines(const Nom& basename, const Dom
           int max_neighbours = 0;
           for (int i_part = 0; i_part < nb_parties_; i_part++)
             {
-              Neighbours[i_part].array_trier_retirer_doublons();
+              array_trier_retirer_doublons(Neighbours[i_part]);
               int nb_neighbours = Neighbours[i_part].size_array();
               mean_neighbours += nb_neighbours;
               if(nb_neighbours < min_neighbours)   min_neighbours = nb_neighbours;

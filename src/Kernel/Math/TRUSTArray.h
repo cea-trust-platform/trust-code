@@ -229,7 +229,6 @@ public:
   }
 
   inline void ordonne_array();
-  inline void array_trier_retirer_doublons();
 
   // methodes virtuelles
 

@@ -24,6 +24,7 @@
 #include <MD_Vector_composite.h>
 #include <Device.h>
 #include <stat_counters.h>
+#include <Array_tools.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION, "Solv_rocALUTION", Solv_Externe);
 // XD rocalution petsc rocalution 0 Solver via rocALUTION API
@@ -879,7 +880,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
           int size = items_pe.size_array();
           for (int i = 0; i < size; i++)
             items_pe[i] = local_renum_[md.items_to_send()(pe, i)];
-          items_pe.array_trier_retirer_doublons();
+          array_trier_retirer_doublons(items_pe);
           // Argh, pas specifie dans la doc mais il fallait que BoundaryIndex soit triee (ToDo le dire au support rocALUTIION pour la doc...)
           for (True_int i=0; i<size; i++)
             renum_items_to_send_.push_back(items_pe[i]);

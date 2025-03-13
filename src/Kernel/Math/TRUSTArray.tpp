@@ -222,31 +222,13 @@ inline void TRUSTArray<_TYPE_, _SIZE_>::append_array(_TYPE_ valeur)
   operator[](sz) = valeur;
 }
 
-/**  Tri des valeurs du tableau dans l'ordre croissant. La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
+/**  Tri des valeurs du tableau dans l'ordre croissant.
  */
 template <typename _TYPE_, typename _SIZE_>
 inline void TRUSTArray<_TYPE_,_SIZE_>::ordonne_array()
 {
   ensureDataOnHost();
   std::sort(span_.begin(), span_.end());
-}
-
-/**  Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
- */
-template <typename _TYPE_, typename _SIZE_>
-inline void TRUSTArray<_TYPE_, _SIZE_>::array_trier_retirer_doublons()
-{
-  ensureDataOnHost();
-  const _SIZE_ size_ = size_array();
-  if (size_ <= 0) return;
-
-  // Sort ascending
-  ordonne_array();
-
-  auto new_end = std::unique(span_.begin(), span_.end());
-
-  _SIZE_ new_size_ = (_SIZE_)std::distance(span_.begin(), new_end);
-  resize_array(new_size_);
 }
 
 /** Attach the array to (part of) an existing block of data stored in another array.

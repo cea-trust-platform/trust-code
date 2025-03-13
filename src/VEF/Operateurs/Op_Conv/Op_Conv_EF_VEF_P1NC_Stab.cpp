@@ -35,6 +35,7 @@
 #include <Periodique.h>
 #include <Symetrie.h>
 #include <Echange_impose_base.h>
+#include <Array_tools.h>
 
 Implemente_instanciable(Op_Conv_EF_VEF_P1NC_Stab,"Op_Conv_EF_Stab_VEF_P1NC",Op_Conv_VEF_Face);
 
@@ -2138,7 +2139,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_data_pour_dirichlet()
           //
 
         }//fin du if sur "Dirichlet"
-      elem_faces_frontiere[n_bord].array_trier_retirer_doublons();
+      array_trier_retirer_doublons(elem_faces_frontiere[n_bord]);
     }//fin du for sur "n_bord"
 }
 

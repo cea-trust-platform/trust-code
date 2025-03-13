@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,14 +43,14 @@ int array_bsearch(const ArrOfInt& tab, int valeur);
 /*! @brief Tri lexicographique d'un tableau
  *
  */
-template <typename _SIZE_>
-int tri_lexicographique_tableau(IntTab_T<_SIZE_>& tab);
+template <typename _TYPE_, typename _SIZE_>
+int tri_lexicographique_tableau(TRUSTTab<_TYPE_,_SIZE_>& tab);
 
 /*! @brief Tri indirect (on trie le tableau index qui contient des numeros de lignes dans tab)
  *
  */
-template <typename _SIZE_>
-int tri_lexicographique_tableau_indirect(const IntTab_T<_SIZE_>& tab, ArrOfInt_T<_SIZE_>& index);
+template <typename _TYPE_, typename _SIZE_>
+int tri_lexicographique_tableau_indirect(const TRUSTTab<_TYPE_,_SIZE_>& tab, ArrOfInt_T<_SIZE_>& index);
 
 /*! @brief Methode outil pour retirer les doublons dans un tableau.
  *

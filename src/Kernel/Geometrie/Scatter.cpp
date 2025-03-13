@@ -36,6 +36,7 @@
 #include <LecFicDiffuse.h>
 #include <Format_Post_Lata.h>
 #include <EFichierBin.h>
+#include <Array_tools.h>
 
 extern Stat_Counter_Id interprete_scatter_counter_;
 
@@ -452,7 +453,7 @@ void Scatter::read_domain_no_comm(Entree& fic)
 
           for(int index=0; index<sommets_to_add.size_array(); index++)
             items_communs.append_array(sommets_to_add[index]); // sommets_to_add is already renumbered with 'nums' - see call to renum_joint_common_items above
-          items_communs.array_trier_retirer_doublons();
+          array_trier_retirer_doublons(items_communs);
 
           const ArrOfInt& elements_to_add = joint_to_add.joint_item(JOINT_ITEM::ELEMENT).items_distants();
           ArrOfInt& items_distants = dom.faces_joint()[my_joint_index].set_joint_item(JOINT_ITEM::ELEMENT).set_items_distants();
@@ -730,81 +731,6 @@ void Scatter::trier_les_joints(Joints& joints)
     }
 }
 
-namespace
-{
-/*! @brief Methode outil pour retirer les doublons dans un tableau.
- * TODO SHOULD MERGE WITH Array_tools.cpp
- */
-void array_trier_retirer_doublons(ArrOfInt& array)
-{
-  const int size_ = array.size_array();
-  if (size_ == 0)
-    return;
-  // Tri dans l'ordre croissant
-  array.ordonne_array();
-  // Retire les doublons
-  int new_size_ = 1;
-  int last_value = array[0];
-  for (int i = 1; i < size_; i++)
-    {
-      if (array[i] != last_value)
-        {
-          array[new_size_] = last_value = array[i];
-          new_size_++;
-        }
-    }
-  array.resize_array(new_size_);
-}
-
-
-/*! @brief Retire de "sorted_array" les elements qui figurent dans "sorted_elements".
- *
- * Les deux tableaux doivent etre initialement ordonnes dans l'ordre croissant.
- *   Exemple:
- *    En entree sorted_array=[1,4,9,10,12,18], sorted_elements=[3,5,9,10,18,25]
- *    En sortie sorted_array=[1,4,12]
- *
- */
-void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorted_elements_list)
-{
-  int i_read;      // Index dans sorted_array (en lecture)
-  int i_write = 0; // Index dans sorted_array (la ou on ecrit)
-  int j = 0;       // Index dans sorted_elements
-  const int n = sorted_array.size_array();
-  const int m = sorted_elements_list.size_array();
-  if (m == 0)
-    return;
-
-  int j_value = sorted_elements_list[j];
-  for (i_read = 0; i_read < n; i_read++)
-    {
-      // Tableau trie ?
-      assert(i_read == 0 || sorted_array[i_read] > sorted_array[i_read-1]);
-      const int i_value = sorted_array[i_read];
-
-      // On avance dans la liste sorted_elements jusqu'a trouver ou depasser
-      // l'element i_value
-      while ((j_value < i_value) && (j < m))
-        {
-          j++;
-          if (j == m)
-            break;
-          assert(sorted_elements_list[j] > j_value); // Tableau trie ?
-          j_value = sorted_elements_list[j];
-        }
-
-      if (j == m || j_value != i_value)
-        {
-          // i_value ne figure pas dans le tableau sorted_elements, on le garde
-          sorted_array[i_write] = i_value;
-          i_write++;
-        }
-    }
-  sorted_array.resize_array(i_write);
-}
-
-} // End anonymous NS
-
 // Si un joint avec le "pe" existe, renvoie son indice,
 // sion cree un nouveau joint et renvoie son indice.
 static int ajouter_joint(Domaine& domaine, int pe)
@@ -1031,7 +957,7 @@ void Scatter::calculer_espace_distant(Domaine&                  domaine,
       {
         ArrOfInt& items = items_distants[pe];
         // Retirer les doublons:
-        ::array_trier_retirer_doublons(items);
+        array_trier_retirer_doublons(items);
         // Retirer les items deja connus:
         const int i_joint = joint_of_pe[pe];
         if (i_joint >= 0)
@@ -1114,7 +1040,7 @@ void Scatter::ajouter_joints(Domaine& domaine,
     // On concatene les deux listes.
     for (int i = 0; i < n; i++)
       pe_voisins.append_array(liste_pe[i]);
-    ::array_trier_retirer_doublons(pe_voisins);
+    array_trier_retirer_doublons(pe_voisins);
     liste_pe.resize_array(0);
   }
   // On retire de pe_voisins les pe pour lesquels un joint existe deja
@@ -1208,7 +1134,7 @@ static void calculer_espace_distant_item(Domaine& le_dom,
                 }
             }
         }
-      ::array_trier_retirer_doublons(liste_items);
+      array_trier_retirer_doublons(liste_items);
       // Ces items doivent etre envoyes au processeur voisin:
       items_to_send[pe_voisin] = liste_items;
     }
@@ -1455,23 +1381,6 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
     }
 }
 
-// Fonction tri (selon la premiere colonne du tableau)
-static True_int fct_tri_table_inverse(const void *ptr1, const void *ptr2)
-{
-  const trustIdType i1 = *(trustIdType*)ptr1;
-  const trustIdType i2 = *(trustIdType*)ptr2;
-#ifdef INT_is_64_
-  if (i1 == i2)
-    return 0;
-  if (i1>i2)
-    return 1;
-  return -1;
-#else
-  return i1 - i2;
-#endif
-
-}
-
 /*! @brief Cette classe fournit les outils pour construire l'espace virtuel d'un tableau contenant des indices d'entites geometriques
  *
  *   (sommets, elements, faces). Elle gere en particulier la
@@ -1544,10 +1453,9 @@ void Traduction_Indice_Global_Local::initialiser(const MD_Vector& md_items)
     }
   // insure se plaint .. regarder si il a raison
   if (table_inverse_.size_array()>0)
-    qsort(table_inverse_.addr(),
-          table_inverse_.dimension(0),
-          2 * sizeof(trustIdType),    // careful! not int.
-          fct_tri_table_inverse);
+    {
+      tri_lexicographique_tableau(table_inverse_);
+    }
 }
 
 void Traduction_Indice_Global_Local::reset()
@@ -1876,7 +1784,7 @@ static void calculer_liste_complete_sommets_joint(const Joint& joint, ArrOfInt& 
   for (int i = 0; i < n; i++)
     liste_sommets.append_array(som_isoles[i]);
   // Retirer les doublons de la liste
-  ::array_trier_retirer_doublons(liste_sommets);
+  array_trier_retirer_doublons(liste_sommets);
 #endif
 }
 
@@ -1943,7 +1851,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
   // Met tous les sommets dans som_isoles (isoles+issus des faces de joint):
   calculer_liste_complete_sommets_joint(joint, som_isoles);
   // On trie som_faces et on supprime les doublons
-  ::array_trier_retirer_doublons(som_faces);
+  array_trier_retirer_doublons(som_faces);
   // Supprime tous les sommets de som_isoles contenus dans som_faces
   array_retirer_elements(som_isoles, som_faces);
   // Supprime les sommets des faces de joint
@@ -1972,7 +1880,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
       }
   Process::Journal() << "common edges found isolated on joint with " << joint.PEvoisin() << " :" << compteur << finl;
   // Retirer les doublons de la liste
-  ::array_trier_retirer_doublons(liste_aretes);
+  array_trier_retirer_doublons(liste_aretes);
 }
 
 static void calculer_liste_complete_items_joint(const Joint& joint, const JOINT_ITEM type_item, ArrOfInt& liste_items)
@@ -2294,7 +2202,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
                   elems_dist.append_array(elem);
                 }
             }
-          ::array_trier_retirer_doublons(elems_dist);
+          array_trier_retirer_doublons(elems_dist);
         }
 
       // La suite est la mise a jour de liste_sommets pour l'iteration suivante.
@@ -2318,7 +2226,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
                   sommets.append_array(som);
                 }
             }
-          ::array_trier_retirer_doublons(sommets);
+          array_trier_retirer_doublons(sommets);
         }
       // Parcourir les listes de sommets. Pour chaque sommet, s'il est de joint,
       // envoyer aux processeurs possedant ce sommet une requete "le processeur i
@@ -2371,7 +2279,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
       for (pe = 0; pe < nproc; pe++)
         {
           ArrOfInt& sommets = liste_sommets[pe];
-          ::array_trier_retirer_doublons(sommets);
+          array_trier_retirer_doublons(sommets);
         }
     }
 
@@ -2422,13 +2330,8 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
   }
 }
 
-static int fct_cmp_coord_dimension = -1;
-static double fct_cmp_coord_epsilon = -1.;
-
-static inline True_int fct_cmp_coordonnees(const double * s1, const double *s2)
+static inline True_int fct_cmp_coordonnees(const double * s1, const double *s2, int dim, const double epsilon)
 {
-  const int dim = fct_cmp_coord_dimension;
-  const double epsilon = fct_cmp_coord_epsilon;
   assert(dim==2 || dim==3);
   if (s1[0] < s2[0] - epsilon)
     return -1;
@@ -2446,21 +2349,6 @@ static inline True_int fct_cmp_coordonnees(const double * s1, const double *s2)
     return 1;
   else
     return 0;
-}
-
-static const DoubleTab * fct_cmp_coord_tableau = 0;
-// Fonction de comparaison pour le tri d'un tableau d'indirection vers
-// des coordonnees de sommets. Fonction appelee par qsort.
-// ptr1 et ptr2 sont des adresses de deux entiers dans le tableau "index"
-// Les coordonnees comparees sont dans le tableau *fct_cmp_coord_tableau
-static True_int fct_cmp_index_coord(const void * ptr1, const void * ptr2)
-{
-  const int i1 = *(const int *)ptr1;
-  const int i2 = *(const int *)ptr2;
-  const double * s1 = & (*fct_cmp_coord_tableau)(i1,0);
-  const double * s2 = & (*fct_cmp_coord_tableau)(i2,0);
-  const True_int resu = fct_cmp_coordonnees(s1, s2);
-  return resu;
 }
 
 /*! @brief Construit le tableau "correspondance" tel que Pour 0 <= i < sommets2.
@@ -2482,12 +2370,6 @@ static True_int fct_cmp_index_coord(const void * ptr1, const void * ptr2)
 int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab& sommets2,
                                      ArrOfInt& correspondance, const double epsilon)
 {
-  // Methode non threadsafe a cause des static. On teste
-  if (fct_cmp_coord_tableau)
-    {
-      Cerr << "Thread error in Chercher_Correspondance" << finl;
-      exit();
-    }
   const int nb_sommets1 = sommets1.dimension(0);
   const int nb_sommets2 = sommets2.dimension(0);
   // Precondition necessaire pour fct_cmp_index_coord
@@ -2499,10 +2381,6 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
       correspondance = -1;
       return nb_sommets2;
     }
-
-  fct_cmp_coord_tableau   = &sommets1;
-  fct_cmp_coord_dimension = sommets1.dimension(1);
-  fct_cmp_coord_epsilon   = epsilon;
 
   // Tableau d'indirection trie, tel que les coordonnees sommets1(index[i], .) soient
   // tiees dans l'ordre lexicographique.
@@ -2521,9 +2399,7 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
   //   y==z (a epsilon pres)
   //  mais x!=z
   // Donc la recherche par dichotomie peut echouer par la suite.
-
-  qsort(index.addr(), nb_sommets1, sizeof(int),
-        fct_cmp_index_coord);
+  tri_lexicographique_tableau_indirect(sommets1, index);
 
   // Construction du tableau de correspondance tel que
   //   sommet1(correspondance[i], ...) == sommet2(i, ...)
@@ -2531,6 +2407,7 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
   int nb_echec_dichotomie = 0;
   {
     int i;
+    int nb_dim = sommets1.dimension(1);
     for (i = 0; i < nb_sommets2; i++)
       {
         const double * s2 = & sommets2(i,0);
@@ -2546,7 +2423,7 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
             const int milieu = (imin + imax) >> 1; // (min+max)/2
             k = index[milieu];
             const double * s1 = & sommets1(k, 0);
-            resu_cmp = fct_cmp_coordonnees(s1, s2);
+            resu_cmp = fct_cmp_coordonnees(s1, s2, nb_dim, epsilon);
             switch(resu_cmp)
               {
               case -1:
@@ -2564,7 +2441,7 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
           {
             k = index[imin];
             const double * s1 = & sommets1(k, 0);
-            resu_cmp = fct_cmp_coordonnees(s1, s2);
+            resu_cmp = fct_cmp_coordonnees(s1, s2, nb_dim, epsilon);
           }
         if (resu_cmp == 0)
           {
@@ -2579,7 +2456,7 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
             for (j = 0; j < nb_sommets1; j++)
               {
                 const double * s1 = & sommets1(j,0);
-                resu_cmp = fct_cmp_coordonnees(s1, s2);
+                resu_cmp = fct_cmp_coordonnees(s1, s2, nb_dim, epsilon);
                 if (resu_cmp == 0)
                   break;
               }
@@ -2592,9 +2469,6 @@ int Scatter::Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab&
         correspondance[i] = num_sommet;
       }
   }
-  fct_cmp_coord_dimension = 0;
-  fct_cmp_coord_epsilon   = -1.;
-  fct_cmp_coord_tableau   = 0;
 
   if (nb_echec_dichotomie > 0)
     Process::Journal() << "Chercher_Correspondance Dichotomy failure rate "

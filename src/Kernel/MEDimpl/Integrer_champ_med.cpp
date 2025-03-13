@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,24 +91,6 @@ double portion_surface(const ArrOfDouble& point0,const ArrOfDouble& point1, cons
   return portion_surface_elem(point0,point1,point2,zmax)- portion_surface_elem(point0,point1,point2,zmin);
 }
 
-
-
-
-
-static True_int fonction_tri_data(const void *ptr1,
-                                  const void *ptr2)
-{
-  const double * tab1 = (const double *) ptr1;
-  const double * tab2 = (const double *) ptr2;
-  double delta=(tab1[0] - tab2[0]);
-  if (delta>0)
-    return 1;
-  else if (delta<0)
-    return -1;
-  return 0;
-}
-
-
 /*! @brief Fonction principale de l'interprete.
  *
  * @param (Entree& is) un flot d'entree
@@ -174,26 +156,21 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
 
     for (int elem=0; elem<nb_elem; elem++)
       {
-        DoubleTab zz(3,2);
+        ArrOfInt zz(3);
+        for (int i=0; i<3; i++)
+          zz[i] = les_elems(elem,i);
+        std::sort(zz.begin(), zz.end(), [&](int a, int b)
+        {
+          return (coord(a,2)<coord(b,2));
+        });
         for (int i=0; i<3; i++)
           {
-            int s=les_elems(elem,i);
-            zz(i,1)=s;
-            zz(i,0)=coord(s,2);
-          }
-
-        qsort(zz.addr(),3,sizeof(double) * 2 , fonction_tri_data);
-        for (int i=0; i<3; i++)
-          {
-            int ss=(int)zz(i,1);
-            //          if (ss!=les_elems(elem,i)) Cerr<<" coucou" <<elem<<finl;
+            int ss=zz[i];
             les_elems_mod(elem,i)=ss;
           }
-
       }
-    //
-    ArrOfDouble point0(3),point1(3),point2(3);
 
+    ArrOfDouble point0(3),point1(3),point2(3);
     for (int elem=0; elem<nb_elem; elem++)
       {
 
