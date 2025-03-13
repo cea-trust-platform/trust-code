@@ -12,34 +12,23 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : my_first_class.h
-// Directory : $BASIC_ROOT/src/my_module
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #ifndef my_first_class_included
 #define my_first_class_included
 
-#include <Interprete_geometrique_base.h>
+#include <Interprete.h>
+#include <Domaine.h>
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class my_first_class
-//
-// <Description of class my_first_class>
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class my_first_class : public Interprete_geometrique_base
+class my_first_class : public Interprete
 {
 
   Declare_instanciable( my_first_class ) ;
 
 public :
-  Entree& interpreter_(Entree&) override;
+  Entree& interpreter(Entree&) override;
+
 protected :
+  OBS_PTR(Domaine) domaine_ref_;
 
 };
 

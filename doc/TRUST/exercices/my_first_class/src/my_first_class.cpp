@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : my_first_class.cpp
-// Directory : $BASIC_ROOT/src/my_module
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #include <my_first_class.h>
 #include <Param.h>
@@ -27,25 +21,23 @@
 #include <Equation_base.h>
 #include <SFichier.h>
 
-Implemente_instanciable( my_first_class, "my_first_class", Interprete_geometrique_base ) ;
+Implemente_instanciable( my_first_class, "my_first_class", Interprete ) ;
 
 // Method to print the object my_first_class on the output stream os:
 Sortie& my_first_class::printOn(Sortie& os) const
 {
-  Interprete_geometrique_base::printOn( os );
-  return os;
+  return Interprete::printOn( os );
 }
 
 // Method to read the object my_first_class from the input stream is:
 Entree& my_first_class::readOn(Entree& is)
 {
-  Interprete_geometrique_base::readOn( is );
-  return is;
+  return Interprete::readOn( is );
 }
 
 // Method called by Interprete_geometrique_base::interpreter() method
 // when my_first_class keyword is read in the datafile:
-Entree& my_first_class::interpreter_(Entree& is)
+Entree& my_first_class::interpreter(Entree& is)
 {
 // XD my_first_class interprete my_first_class -3 First class created in the baltik tutorial
   Cerr << "- My first keyword!" << finl;
@@ -68,24 +60,27 @@ Entree& my_first_class::interpreter_(Entree& is)
   // Read the parameters into brackets:
   param.lire_avec_accolades_depuis(is);
 
-  // Read the domain name thanks to Interprete_geometrique_base::associer_domaine(Nom&) method:
-  associer_domaine(domain_name);
-  const Domaine& dom=domaine(0);
+  // Retrieve the domain object name given by the user, and find back the actual instance in memory:
+  Objet_U& obj = Interprete::objet(domain_name);
+  if(!sub_type(Domaine, obj))
+    Process::exit("Object passed to 'my_first_class' is of wrong type!");
+  // Fill our local reference:
+  domaine_ref_ = ref_cast(Domaine, obj);
 
   // Check that everything is read:
-  Cerr << "- Option number " << option_number << " has been read on the domain " << dom.le_nom() << "." << finl;
+  Cerr << "- Option number " << option_number << " has been read on the domain " << domaine_ref_->le_nom() << "." << finl;
 
   // Loop on the boundaries to print
   // the name of the boundaries and
   // the number of faces:
-  for (int i=0; i<dom.nb_bords(); i++)
+  for (int i=0; i<domaine_ref_->nb_bords(); i++)
     {
-      Cerr << "- The boundary named " << dom.bord(i).le_nom() << " has " << dom.bord(i).nb_faces() << " faces." << finl;
+      Cerr << "- The boundary named " << domaine_ref_->bord(i).le_nom() << " has " << domaine_ref_->bord(i).nb_faces() << " faces." << finl;
     }
 
   // We need to use the control volumes (located in the discretized domaine Domaine_VF):
   // The discretized domain is only available from the problem:
-  Probleme_base& problem=ref_cast(Probleme_base, objet(problem_name));
+  Probleme_base& problem=ref_cast(Probleme_base, Interprete::objet(problem_name));
   Cerr << "- The problem name is " << problem.le_nom() << "." <<finl;
 
   Cerr<<"- There are " << problem.nombre_d_equations() << " equations."<<finl;
