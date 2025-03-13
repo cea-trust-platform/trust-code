@@ -4,10 +4,8 @@
 Dimension $dimension
 
 Domaine dom
-
 # BEGIN MESH #
 $name_mesh
-
 $polyedriser
 # END MESH #
 
@@ -54,8 +52,22 @@ Lire pb
 {
     milieu_composite
     {
-        liquide_eau Fluide_Incompressible { mu champ_uniforme 1 1.e-3 rho champ_uniforme 1  1.e3 lambda Champ_Uniforme  1 0.604 Cp Champ_Uniforme 1 75.366 beta_th Champ_Uniforme 1 0 }
-        gaz_air     Fluide_Incompressible { mu champ_uniforme 1 1.e-5 rho champ_uniforme 1  1.e2 lambda Champ_Uniforme  1 0.023 Cp Champ_Uniforme 1 1006   beta_th Champ_Uniforme 1 0 }
+        liquide_eau Fluide_Incompressible 
+            {
+                mu champ_uniforme 1 1.e-3 
+                rho champ_uniforme 1  1.e3 
+                lambda Champ_Uniforme  1 0.604
+                Cp Champ_Uniforme 1 75.366 
+                beta_th Champ_Uniforme 1 0 
+            }
+        gaz_air     Fluide_Incompressible 
+            { 
+                mu champ_uniforme 1 1.e-5 
+                rho champ_uniforme 1  1.e2 
+                lambda Champ_Uniforme  1 0.023 
+                Cp Champ_Uniforme 1 1006  
+                beta_th Champ_Uniforme 1 0 
+            }
         interface_eau_air interface_sigma_constant  { tension_superficielle 0.1 }
     }
     correlations
@@ -125,7 +137,8 @@ Lire pb
     }
     Postraitement
     {
-        Definition_champs 	{
+        Definition_champs 	
+        {
             grdp        refChamp { Pb_champ pb gradient_pression }
             dp 			refChamp { Pb_champ pb distance_paroi_globale }
             diff		operateur_eqn	{
@@ -153,7 +166,8 @@ Lire pb
                 sources { refChamp { pb_champ pb vitesse } }
             }
         }
-        sondes			{
+        sondes			
+        {
             $sondes
         }
         format lata
@@ -168,5 +182,4 @@ Lire pb
 }
 
 Resoudre pb
-
 Fin

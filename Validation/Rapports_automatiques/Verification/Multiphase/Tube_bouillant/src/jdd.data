@@ -56,7 +56,14 @@ Lire pb
 {
     milieu_composite
     {
-        liquide_eau Fluide_Incompressible { mu champ_uniforme 1 1.e-3 rho champ_uniforme 1  1.e3 lambda Champ_Uniforme  1 0.604 Cp Champ_Uniforme 1 75.366 beta_th Champ_Uniforme 1 0 }
+        liquide_eau Fluide_Incompressible 
+        { 
+            mu champ_uniforme 1 1.e-3 
+            rho champ_uniforme 1  1.e3 
+            lambda Champ_Uniforme  1 0.604 
+            Cp Champ_Uniforme 1 75.366 
+            beta_th Champ_Uniforme 1 0 
+        }
     }
     correlations
     {
@@ -114,13 +121,12 @@ Lire pb
     }
     Postraitement
     {
-/*        Definition_champs 	{
-        } */
-        sondes			{
+        sondes			
+        {
             $sondes
         }
-        format lata
-        champs binaire dt_post 1.e-1
+        format single_lata
+        champs binaire dt_post 1.e-2
         {
             alpha elem
             temperature elem
@@ -129,7 +135,7 @@ Lire pb
             vorticite elem
             gradient_vitesse_liquide_eau elem
             alpha_residu elem
-            nu_turb_liquide_eau elem
+            nu_TURBULENTE_liquide_eau elem
             taux_cisaillement elem
         }
     }
