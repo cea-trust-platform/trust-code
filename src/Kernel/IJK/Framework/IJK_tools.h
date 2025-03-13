@@ -61,6 +61,7 @@ void squared_3x3(double& a11, double& a12, double& a13,
 double maxValue(IJK_Field_double& indic);
 
 void interpolate_to_center(IJK_Field_vector3_double& cell_center_field, const IJK_Field_vector3_double& face_field);
+void interpolate_to_center_compo(IJK_Field_double& cell_center_field_compo, const IJK_Field_double& face_field_compo);
 
 
 #endif /* IJK_tools_included */

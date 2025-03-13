@@ -615,6 +615,7 @@ void squared_3x3(double& a11, double& a12, double& a13, double& a21, double& a22
 
 }
 
+
 void interpolate_to_center(IJK_Field_vector3_double& cell_center_field, const IJK_Field_vector3_double& face_field)
 {
   // We are not changing the const semantic of the field to update ghost cells:
@@ -633,4 +634,22 @@ void interpolate_to_center(IJK_Field_vector3_double& cell_center_field, const IJ
           cell_center_field[2](i,j,k) = (face_field[2](i,j,k) + face_field[2](i, j, k+1)) * 0.5;
         }
 }
+
+void interpolate_to_center_compo(IJK_Field_double& cell_center_field_compo, const IJK_Field_double& face_field_compo)
+{
+  Domaine_IJK::Localisation loc = face_field_compo.get_localisation();
+  assert(loc != Domaine_IJK::ELEM && loc != Domaine_IJK::NODES);
+  const int kmax = cell_center_field_compo.nk(),
+            jmax = cell_center_field_compo.nj(),
+            imax = cell_center_field_compo.ni();
+  int ci = (int)loc == Domaine_IJK::FACES_I;
+  int cj = (int)loc == Domaine_IJK::FACES_J;
+  int ck = (int)loc == Domaine_IJK::FACES_K;
+
+  for (int k = 0; k < kmax; k++)
+    for (int j = 0; j < jmax; j++)
+      for (int i = 0; i < imax; i++)
+        cell_center_field_compo(i,j,k) = (face_field_compo(i,j,k) + face_field_compo(i+ci, j+cj, k+ck)) * 0.5;
+}
+
 
