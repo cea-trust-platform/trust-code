@@ -27,6 +27,7 @@ class Domaine_DG : public Domaine_Poly_base
   Declare_instanciable(Domaine_DG);
 public :
   void discretiser() override;
+  void init_equiv() const override;
 
   inline const DoubleTab& get_dia() const { return dia_; }
   inline const DoubleTab& get_invdia() const { return invdia_; }

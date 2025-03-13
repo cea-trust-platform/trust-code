@@ -65,6 +65,12 @@ void Domaine_DG::discretiser()
   set_quadrature(5, quad5);
 }
 
+
+void Domaine_DG::init_equiv() const
+{
+  //TODO DG
+}
+
 void Domaine_DG::get_position(DoubleTab& positions) const
 {
   //TODO Kokkos DG

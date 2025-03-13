@@ -83,7 +83,7 @@ void Quadrature_Ord1_Polygone::compute_integ_points()
         }
     }
 
-  nb_pts_integ_max_ = mp_max(nb_pts_integ_max_);
+  nb_pts_integ_max_ = Process::mp_max(nb_pts_integ_max_);
 
   // Get infos of the mesh
   const IntTab& vert_elems = dom_->domaine().les_elems();
