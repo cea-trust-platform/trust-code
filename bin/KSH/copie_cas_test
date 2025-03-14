@@ -183,6 +183,7 @@ then
    # Change le format en lml
    sed -i "s?ormat[ \t]lata_v2?ormat lml?g" $test.data
    sed -i "s?ormat[ \t]lata?ormat lml?g" $test.data
+   sed -i "s?ormat[ \t]single_lata?ormat lml?g" $test.data
    sed -i "s?ormat[ \t]cgns?ormat lml?g" $test.data
    # Pas le med bazar dans G+
    #sed -i "s?ormat[ \t]med?ormat lml?g" $test.data
