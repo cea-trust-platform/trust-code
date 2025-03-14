@@ -407,7 +407,11 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           CIntArrView faces_doubles = domaine_VEF.faces_doubles().view_ro();
           CDoubleTabView3 gradient_elem = gradient_elem_.view_ro<3>();
           DoubleTabView3 gradient = tab_gradient.view_wo<3>();
+#ifdef TRUST_USE_GPU
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {nb_faces, ncomp_ch_transporte}), KOKKOS_LAMBDA(const int fac, const int comp0)
+#else
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_1D(0, nb_faces), KOKKOS_LAMBDA(const int fac)
+#endif
           {
             if (faces_doubles[fac] /* face perio */ || fac>=premiere_face_int /* face interne */)
               {
@@ -416,7 +420,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 int limiteur = cas;
                 if (ordre == 3 && (traitement_pres_bord[elem1] || traitement_pres_bord[elem2]))
                   limiteur = 1;
+#ifndef TRUST_USE_GPU
                 for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+#endif
                   for (int i = 0; i < dim; i++)
                     {
                       double grad1 = gradient_elem(elem1, comp0, i);
@@ -499,7 +505,12 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const bool isAmont = type_op_boucle == amont;
           const int ordre = ordre_;
 
-          auto kern_conv_aj = KOKKOS_LAMBDA(int poly)
+          // Example where MDRangePolicy should be used only on GPU ! RangePolicy should be used in serial else +40% overhead on Cx test case...
+#ifdef TRUST_USE_GPU
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::MDRangePolicy<Kokkos::Rank<2>>({0,0}, {nb_elem_tot, nfa7}), KOKKOS_LAMBDA(const int poly, const int fa7)
+#else
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(0, nb_elem_tot), KOKKOS_LAMBDA(const int poly)
+#endif
           {
             int rang = rang_elem_non_std_v(poly);
             int contrib = 0;
@@ -555,7 +566,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 // Boucle sur les facettes du polyedre:
                 double centre_fa7[3] {};
                 double cc[3] {};
+#ifndef TRUST_USE_GPU
                 for (int fa7 = 0; fa7 < nfa7; fa7++)
+#endif
                   {
                     int num10 = face[KEL_v(0, fa7)];
                     int num20 = face[KEL_v(1, fa7)];
@@ -680,8 +693,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       }// boucle sur comp
                   } // fin de la boucle sur les facettes
               } // fin de la boucle
-          };
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, kern_conv_aj);
+          });
           end_gpu_timer(__KERNEL_NAME__);
         }
       else
@@ -1428,6 +1440,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
       CIntArrView type_elem_Cl = type_elem_Cl_.view_ro();
       DoubleArrView fluent = fluent_.view_rw();
       // boucle sur les polys
+      // Warning MDRangePolicy slowdown here on GPU...
       Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(const int poly)
       {
         int face[4] {};
