@@ -19,6 +19,12 @@ tar -xzvf $ARCHIVE
 pdi=`basename $ARCHIVE`
 pdi_src=${pdi%.tar.gz}
 cd $pdi_src
+
+echo "@@@ Patching to accept correct build type ..."
+sed -i 's/if(NOT "\${CMAKE_BUILD_TYPE}")/if(CMAKE_BUILD_TYPE STREQUAL "")/' CMakeLists.txt
+echo "@@@ Patching to compile with static HDF5 from TRUST ..."
+sed -i 's/set(HDF5_USE_STATIC_LIBRARIES OFF)/set(HDF5_USE_STATIC_LIBRARIES ON)/' plugins/decl_hdf5/CMakeLists.txt
+
 mkdir -p build
 cd build
 
@@ -33,6 +39,7 @@ fi
 
 # configuration (we use the hdf5 of TRUST)
 options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF -DUSE_yaml=EMBEDDED"
+
 env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir -DINSTALL_PDIPLUGINDIR=$plugin_install_dir $options
 
 # make & install
@@ -48,3 +55,4 @@ fi
 
 # cleaning
 rm -rf $build_dir
+

@@ -5,9 +5,9 @@ HDF5=$(TRUST_HDF5_ROOT)/lib/libhdf5.a
 
 all : $(PDI)
 
-$(PDI) : $(HDF5) $(PDI_ARCHIVE) makefile install
+$(PDI) : $(HDF5) $(PDI_ARCHIVE) makefile install.sh
 	make clean
-	@./install $(PDI_ARCHIVE)
+	@./install.sh $(PDI_ARCHIVE)
 
 clean:
 	rm -rf $(TRUST_ROOT)/lib/src/LIBPDI 
