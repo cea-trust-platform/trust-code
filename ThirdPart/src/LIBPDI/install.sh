@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# PDI installation procedure
+#
+
+# Dev note: switch this to 1 if you want to build in debug mode and
+# preserve the source and build directory.
+debug_mode=0
+
+
+if [ "x$TRUST_ROOT" = "x" ]; then
+  echo TRUST_ROOT not defined!
+  exit -1
+fi
+
 ARCHIVE=$1
 [ ! -f $ARCHIVE ] && echo "$ARCHIVE not found! Update your makefile." && exit -1
 
@@ -40,6 +54,10 @@ fi
 # configuration (we use the hdf5 of TRUST)
 options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF -DUSE_yaml=EMBEDDED"
 
+if [ "$debug_mode" != "0" ]; then
+   options="$options -DCMAKE_BUILD_TYPE=Debug"
+fi
+
 env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir -DINSTALL_PDIPLUGINDIR=$plugin_install_dir $options
 
 # make & install
@@ -54,5 +72,7 @@ if ! [ $status -eq 0 ]; then
 fi
 
 # cleaning
-rm -rf $build_dir
+if [ "$debug_mode" != "0" ]; then
+    rm -rf $build_dir
+fi
 

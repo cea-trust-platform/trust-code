@@ -1,8 +1,15 @@
 #!/bin/bash
-
 #
 # Installation script for MEDCoupling
 #
+
+# Dev note: switch this to 1 if you want to build in debug mode and
+# preserve the source and build directory.
+# For MEDCoupling you may also set the TRUST_ENABLE_MC_DEBUG env variable.
+debug_mode=0
+[ "$TRUST_ENABLE_MC_DEBUG" != "0" ] && debug_mode=1
+
+
 archive_mc=$1
 archive_conf=$2
 tool_dir=`readlink -f $(dirname $0)`
@@ -138,14 +145,14 @@ fi
 #####
 # Build debug version first if requested:
 #####
-if [ "$TRUST_ENABLE_MC_DEBUG" != "0" ] || [ $HOST = $TRUST_HOST_ADMIN ] ; then
+if [ "$debug_mode" != "0" ] || [ $HOST = $TRUST_HOST_ADMIN ] ; then
   rel_type="Debug"
   build_dir=$build_dir_root/${TRUST_ARCH}
   install_dir=$install_dir_root/${TRUST_ARCH}
   use_python=$with_python
   build_and_test_mc
 else
-  # Clean previous Debug version if TRUST_ENABLE_MC_DEBUG set to 0:
+  # Clean previous Debug version if $debug_mode set to 0:
   rm -rf $install_dir_root/${TRUST_ARCH}
 fi
 
@@ -206,3 +213,4 @@ fi
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
 
 echo "All done!"
+

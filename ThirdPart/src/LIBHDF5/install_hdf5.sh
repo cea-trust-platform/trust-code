@@ -3,6 +3,11 @@
 # HDF5 installation procedure
 #
 
+# Dev note: switch this to 1 if you want to build in debug mode and
+# preserve the source and build directory.
+debug_mode=0
+
+
 if [ "x$TRUST_ROOT" = "x" ]; then
   echo TRUST_ROOT not defined!
   exit -1
@@ -72,6 +77,9 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   fi
   options="$options -DHDF5_BUILD_TOOLS=$TOOLS -DHDF5_ENABLE_USING_MEMCHECKER=ON -DHDF5_ENABLE_DIRECT_VFD=OFF"
   options="$options -DHDF5_ENABLE_Z_LIB_SUPPORT=OFF -DHDF5_ENABLE_SZIP_SUPPORT=OFF -DHDF5_ENABLE_SZIP_ENCODING=OFF"
+  if [ "$debug_mode" != "0" ]; then
+      options="$options -DCMAKE_BUILD_TYPE=Debug"
+  fi
   [ "$TRUST_DISABLE_MPI" = 0 ] && options="$options -DHDF5_ENABLE_PARALLEL=ON"
   cmake $options -DCMAKE_INSTALL_PREFIX=$actual_install_dir -DCMAKE_BUILD_TYPE=Release ../$src_dir || exit -1
   # Hack cause get_time multiple defined with OpenMPI sometimes:
@@ -86,7 +94,9 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   make install || exit -1
 
   # Clean build folder
-  ( cd .. ; rm -rf hdf5* )
+  if [ "$debug_mode" != "0" ]; then
+    ( cd .. ; rm -rf hdf5* )
+  fi
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_HDF" ]; then
     echo "Variable TRUST_USE_EXTERNAL_HDF has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_HDF"
@@ -108,7 +118,9 @@ for ze_dir in bin lib include; do
   cd $install_dir/$ze_dir
   for f in $actual_install_dir/$ze_dir/*; do
     link_name=$(basename $f)
-    #link_name=${link_name/_debug/}    # remove "_debug" if HDF5 is compiled in debug mode
+    if [ "$debug_mode" != "0" ]; then
+        link_name=${link_name/_debug/}    # remove "_debug" if HDF5 is compiled in debug mode
+    fi
     ln -nsf $f $link_name || exit -1
   done  
 done

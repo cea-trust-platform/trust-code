@@ -3,6 +3,11 @@
 # MED file installation procedure
 #
 
+# Dev note: switch this to 1 if you want to build in debug mode and
+# preserve the source and build directory.
+debug_mode=0
+
+
 if [ "x$TRUST_ROOT" = "x" ]; then
   echo TRUST_ROOT not defined!
   exit -1
@@ -40,18 +45,19 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   cd $src_dir
   echo "Patching (to avoid doc ...)"
   modified_file=Makefile.in
-  sed -i "s?tests tools doc?tools?g" $modified_file
+  sed -i "s?tests tools doc?tools?g" $modified_file   || exit -1
 
   echo "Patching header file to avoid compilation error"
-  sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)
-  sed -i "s/const char \* const  MEDget/const char * MEDget/g"  $(find . -name MEDiterators.c)
-  sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)
+  sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)   || exit -1
+  sed -i "s/const char \* const  MEDget/const char * MEDget/g"  $(find . -name MEDiterators.c)   || exit -1
+  sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)   || exit -1
 
-  echo "Pathcin to support hdf5 1.14 ..."
-  patch -p1 < $curr_dir/med-hdf5_1_14.patch  
+  echo "Patching to support hdf5 1.14 ..."
+  patch -p1 < $curr_dir/med-hdf5_1_14.patch  || exit -1
 
+  echo "Patching for gcc15 support ..."
   patch -p1 < $curr_dir/patch_med_for_gcc15 || exit 1
-
+  
   # fPIC is not there by default in MED autotools ...
   Wno="-Wno-error -Wno-implicit-function-declaration"
   CFLAGS="${CFLAGS} -fPIC $Wno"
@@ -94,17 +100,24 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   fi
   [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
   echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
-  env CC=$CC CXX=$CXX F77=$FC FC=$FC cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
-      -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_HDF5_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE="$MED_INT" \
-      -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS \
-      -DCMAKE_C_FLAGS="-DH5_USE_110_API"
 
+  build_type=""
+  if [ "$debug_mode" != "0" ]; then
+      build_type="-DCMAKE_BUILD_TYPE=Debug"
+  fi
+  
+  env CC=$CC CXX=$CXX F77=$FC FC=$FC cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
+        -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_HDF5_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE="$MED_INT" \
+        -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS \
+        $build_type \
+        -DCMAKE_C_FLAGS="-DH5_USE_110_API"    || exit -1
+  
   # HACK Darwin TRUST_INT64
   if [ "$TRUST_INT64" = "1" ] && [ `uname -s` = Darwin ]
   then
     echo " HACK Darwin TRUST_INT64"
-    sed -i 's/typedef long  med_int/typedef int64_t  med_int/g' include/med.h
-    sed -i 's/typedef long  med_int/typedef int64_t  med_int/g' include/2.3.6/med.h
+    sed -i 's/typedef long  med_int/typedef int64_t  med_int/g' include/med.h   || exit -1
+    sed -i 's/typedef long  med_int/typedef int64_t  med_int/g' include/2.3.6/med.h  || exit -1
   fi
 
   $TRUST_MAKE  || exit -1
@@ -112,7 +125,9 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   cd ..
 
   # Clean build folder
-  (cd .. ; rm -rf med*)
+  if [ "$debug_mode" != "0" ]; then
+    (cd .. ; rm -rf med*)
+  fi
 
   # patch MEDFileConfig.cmake to not have absolute paths for HDF5 and MPI inside it
   sed -i "s@$TRUST_ROOT@\${PACKAGE_PREFIX_DIR}/../../../..@g" $actual_install_dir/share/cmake/medfile-4.1.1/MEDFileConfig.cmake || exit -1
