@@ -1,0 +1,59 @@
+Statistiques d'initialisation du calcul
+
+Temps total                       29.5599
+
+Statistiques de resolution du probleme
+
+Temps total                       60.5986
+
+
+Timesteps                         10
+Secondes / pas de temps           6.05986
+Dont solveurs Ax=B                5.340141 88% (1 appel/pas de temps)
+Dont mettre_a_jour                0.091299  1% (1 appel/pas de temps)
+Dont operateurs convection        0.254657  4% (1 appel/pas de temps)
+Dont operateurs diffusion         0.052999  0% (1 appel/pas de temps)
+Dont operateurs gradient          0.114491  1% (2 appels/pas de temps)
+Dont operateurs divergence        0.054151  0% (2 appels/pas de temps)
+Dont operations postraitement     0.006334  0% (1 appel/pas de temps)
+Dont calcul dt                    0.053317  0% (2 appels/pas de temps)
+Dont calcul divers                0.127015  2% (0 appels/pas de temps)
+Nb echange_espace_virtuel / pas de temps 17.4
+Nb MPI_allreduce / pas de temps 10.5
+Nb solveur / pas de temps         1
+Secondes / solveur                5.34014
+Iterations / solveur              41.2
+I/O:
+Debit write seq [Mo/s] : 2837
+---------------------------------------------------------------------------------------------------------
+Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated.
+---------------------------------------------------------------------------------------------------------
+Communications avg        0.9 % of total time
+Communications max        1.5 % of total time
+Communications min        0.4 % of total time
+Network latency benchmark 1.43051e-06 s
+Network bandwidth max     3719.32 MB/s
+Total network traffic     463.509 MB / timestep
+Average message size      454.778 kB
+Min waiting time          0 % of total time
+Max waiting time          1.2 % of total time
+Avg waiting time          0.575 % of total time
+
+Timesteps = number of time steps
+Nb solveur = number of linear system resolutions
+Nb assemblage implicite = number of matrix assemblies for the implicit scheme
+Iterations = average number of iterations of the solver
+Communications = fraction of the time spent
+                 in communications between processors (excluding io files)
+Network latency = time of one mpsum measured by an internal bench over 0.1s
+Network bandwidth = maximum on all processors
+                    of the average bandwidth of send_recv operations
+Waiting time = estimation of the waiting time of the different processors
+
+Max_waiting_time big    => probably due to a bad partitioning
+Communications > 30%    => too many processors or network too slow
+
+Statistiques de post resolution
+
+Temps total                       0.016364
+

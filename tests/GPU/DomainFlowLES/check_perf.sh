@@ -2,7 +2,7 @@
 check()
 {
    [ "$2" = -nsys ] && exit
-   if [ ! -f $1.TU ] || [ "`grep 'Arret des processes' $jdd.out_err`" = "" ]
+   if [ ! -f $1.TU ] || [ "`grep 'Arret des processes' $1.out_err`" = "" ]
    then
       echo "==================================================="
       echo "Performance is KO for $1 on $2 : case does not run!"
@@ -10,7 +10,7 @@ check()
       exit -1
    fi
    TU=$1.TU
-   TU_REF=$1.TU.$2
+   TU_REF=$1.TU.$2`[ $np != "" ] && echo x$np`
    if [ ! -f $TU_REF ]
    then
       mv -f $TU $TU_REF && [ "$TRUST_SCM" = 1 ] && git add $TU_REF
@@ -45,15 +45,14 @@ run()
    [ "$3" != "" ] && jdd=$3
    if [ "$np" = "" ] || [ "$np" = 1 ]
    then
-      rm -f $jdd.TU
-      trust $nsys $jdd 1>$jdd.out_err 2>&1
-      check $jdd $gpu
+      np=""
    else  
       make_PAR.data $jdd $np 1>/dev/null 2>&1
-      rm -f PAR_$jdd.TU
-      trust $nsys PAR_$jdd $np 1>$PAR_jdd.out_err 2>&1
-      check PAR_$jdd $gpu
+      jdd=PAR"_"$jdd
    fi
+   rm -f $jdd.TU
+   trust $nsys $jdd $np 1>$jdd.out_err 2>&1
+   check $jdd $gpu
 }
 # Jeu de donnees
 jdd=`pwd`
@@ -67,18 +66,25 @@ do
 done
 # Replace lml format by lata for faster IO
 sed -i "1,$ s?format lml?format lata?g" $jdd.data
+# Surcharge CLI: check_perf.sh [-nsys] [$np] [$jdd]
+nsys="" && [ "$1" = -nsys ] && nsys="-nsys"
+np=1 && [ "$1" != "" ] && np=$1 && shift
+[ "$1" != "" ] && jdd=$1 && shift
 
 # Liste des machines:
-if [ "$1" = -nsys ]
+if [ "$nsys" != "" ]
 then
-   run -nsys
+   run $nsys
 else
+   # MPI Ranks:
+   [ "$TRUST_USE_GPU" != 1 ] && np=8
+   # HOST:   
+   HOST=${HOST%.intra.cea.fr} && [ "$HOST" = portable ] && HOST=is246827
+   # ARCH:
    GPU_ARCH=""
-   [ "$HOST" = portable ] && HOST=is246827
-   HOST=${HOST%.intra.cea.fr}
    [ "$TRUST_USE_CUDA" = 1 ] && GPU_ARCH=_cc$TRUST_CUDA_CC
    [ "$TRUST_USE_ROCM" = 1 ] && GPU_ARCH=_$ROCM_ARCH
-   run $HOST$GPU_ARCH
+   run $HOST$GPU_ARCH $np
 fi
 # clean
 rm -f *.sauv *.lml *.sqlite *.nsys-rep

@@ -1,0 +1,66 @@
+Statistiques d'initialisation du calcul
+
+Temps total                       11.5723
+
+Statistiques de resolution du probleme
+
+Temps total                       130.736
+
+
+Timesteps                         10
+Secondes / pas de temps           13.0736
+Dont solveurs Ax=B                3.598088 27% (4 appels/pas de temps)
+Dont solveur diffusion_implicite  2.414920 18% (6 appels/pas de temps)
+Dont assemblage matrice_implicite 0.937568  7% (6 appels/pas de temps)
+Dont mettre_a_jour                0.307718  2% (5 appels/pas de temps)
+Dont operateurs convection        2.439446 18% (8 appels/pas de temps)
+Dont operateurs diffusion         2.635759 20% (35.9 appels/pas de temps)
+Dont operateurs gradient          0.250367  1% (9 appels/pas de temps)
+Dont operateurs divergence        0.110443  0% (8.2 appels/pas de temps)
+Dont operateurs source            0.079267  0% (6 appels/pas de temps)
+Dont operations postraitement     0.018869  0% (2 appels/pas de temps)
+Dont calcul dt                    0.200034  1% (10 appels/pas de temps)
+Dont modele turbulence            0.064907  0% (2 appels/pas de temps)
+Dont calcul divers                0.624772  4% (0 appels/pas de temps)
+Nb echange_espace_virtuel / pas de temps 221.8
+Nb MPI_allreduce / pas de temps 119.4
+-----------------------------------------------------------------------------------------------------------------------------------------
+Warning: The number of MPI_allreduce calls per time step is high. Contact TRUST support if you plan to run massive parallel calculation.
+-----------------------------------------------------------------------------------------------------------------------------------------
+Nb solveur / pas de temps         4
+Secondes / solveur                0.899522
+Iterations / solveur              29.1
+I/O:
+Debit write seq [Mo/s] : 3416
+---------------------------------------------------------------------------------------------------------
+Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated.
+---------------------------------------------------------------------------------------------------------
+Communications avg        9.4 % of total time
+Communications max        14.9 % of total time
+Communications min        2 % of total time
+Network latency benchmark 1.37091e-06 s
+Network bandwidth max     2569.77 MB/s
+Total network traffic     4092.43 MB / timestep
+Average message size      573.483 kB
+Min waiting time          0.4 % of total time
+Max waiting time          12.2 % of total time
+Avg waiting time          7.7 % of total time
+
+Timesteps = number of time steps
+Nb solveur = number of linear system resolutions
+Nb assemblage implicite = number of matrix assemblies for the implicit scheme
+Iterations = average number of iterations of the solver
+Communications = fraction of the time spent
+                 in communications between processors (excluding io files)
+Network latency = time of one mpsum measured by an internal bench over 0.1s
+Network bandwidth = maximum on all processors
+                    of the average bandwidth of send_recv operations
+Waiting time = estimation of the waiting time of the different processors
+
+Max_waiting_time big    => probably due to a bad partitioning
+Communications > 30%    => too many processors or network too slow
+
+Statistiques de post resolution
+
+Temps total                       0.231158
+
