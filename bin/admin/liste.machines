@@ -69,3 +69,4 @@ linux   rsync_ssh       tache   desactive_is157091.intra.cea.fr 			      	 		-be
 linux	rsync_ssh	cible	is248238-int32.intra.cea.fr	-all  		-GENEPI3 -TrioCFD -MPCube -TRUST_NK -SIDES -SCORPIO -TrioMC -MATHYS    	  		      -build_32_bit -without-pdflatex  			# Ubuntu 24 
 linux   rsync_ssh	tache	is248238-gpu.intra.cea.fr 		-all	-benchmark 	-TrioCFD  	 		-cuda -without-pdflatex -without-visit     # Ubuntu 24.04 titania
 linux   rsync_ssh       tache   is246524.intra.cea.fr  		-all	-benchmark	-TrioCFD			-rocm -without-pdflatex -without-visit     # PC Pierre titania 
+linux   rsync_ssh       tache   is247793.intra.cea.fr  		-limited 	-benchmark				-rocm -without-pdflatex -without-visit     # PC Guillaume titania 

@@ -732,7 +732,7 @@ printf "\n"                                                     >> $project_make
 if [ "$swig" = "1" ]
 then
 printf "# help swig \t\t: build icoco_python through swig \n"                           >> $project_makefile
-printf "swig :optim module_optim\n"                           >> $project_makefile
+printf "swig : optim module_optim\n"                           >> $project_makefile
 printf "\t@echo \"###################\"\n"                 >> $project_makefile
 printf "\t@echo \"# SWIG generation #\"\n"                 >> $project_makefile
 printf "\t@echo \"###################\"\n"                 >> $project_makefile
