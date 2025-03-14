@@ -1,6 +1,5 @@
 # PARALLEL OK #
 dimension 2
-Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
@@ -35,84 +34,106 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC_P0P1NC dis
+VDF dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
 	nb_pas_dt_max 3
-    dt_max  1e-3
-    facsec 1e8
-    seuil_statio 1e-8
-    solveur implicite
+    seuil_statio 1e-3
+    dt_start dt_fixe 1e-3
+    solveur ice
     {
+        criteres_convergence { alpha 1e-5 }
         solveur petsc cli { }
+        seuil_convergence_implicite 1e30
     }
 }
 
-Associate pb dom
-Associate pb sch
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
 Discretize pb dis
 
 sous_zone grille associate grille dom read grille { fonction_sous_zone (y>(0.4))*(y<(0.6)) }
 
 Read pb
 {
-
-    fluide_incompressible
+    Milieu_composite
     {
-        rho    Champ_Uniforme 1 1000
-        mu     Champ_Uniforme 1 1e-3
+        liquide_eau fluide_incompressible
+        {
+            rho    Champ_Uniforme 1 1000
+            mu     Champ_Uniforme 1 1e-3
+            cp     Champ_Uniforme 1 100
+            lambda Champ_Uniforme 1 1
+        }
     }
 
-    Navier_stokes_standard
+    QDM_Multiphase
     {
         solveur_pression petsc cholesky { }
         convection { amont }
-        diffusion { }
-        sources
+        diffusion  { negligeable }
+        initial_conditions
         {
-            perte_charge_singuliere { dir KY coeff 10.0 surface { y = 0.5 grille orientation Champ_Uniforme 2 0 1 } }
+            vitesse Champ_Uniforme 2 0 0
+            pression champ_uniforme 1 0
         }
-        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
         boundary_conditions
         {
             bas frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 2 0 (t_min_1)*1
             haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
             boundary symetrie
         }
+        sources
+        {
+            perte_charge_singuliere { dir KY coeff 10.0 surface { y = 0.5 grille orientation Champ_Uniforme 2 0 1 } }
+        }
     }
-
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha champ_uniforme 1 1
+        }
+        convection { amont }
+        boundary_conditions
+        {
+            boundary paroi
+            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            haut frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+        {
+            temperature Champ_Uniforme 1 0
+        }
+        boundary_conditions
+        {
+            boundary paroi_adiabatique
+            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+        }
+    }
     Post_processing
     {
-        # Definition_champs
-        {
-            erreur_T transformation
-            {
-                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
-                {
-                    refChamp { pb_champ pb temperature nom_source Temp }
-                }
-            }
-            max_erreur_T reduction_0D
-            {
-                methode max source_reference erreur_T
-            }
-        } #
-
         Probes
         {
-            p grav pression_pa periode 1e8 segment 1000 0.05 0 0.05 1
+            p grav pression periode 1e8 segment 1000 0.05 0 0.05 1
         }
         format lml
         fields dt_post 30.
         {
             vitesse elem
-            pression_pa elem
+            pression elem
         }
     }
 }
-
 Solve pb
 End

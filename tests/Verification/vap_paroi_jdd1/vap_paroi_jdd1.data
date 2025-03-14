@@ -78,7 +78,7 @@ Read pb
 
     correlations
     {
-        /* multiplicateur_diphasique friedel { } */
+        multiplicateur_diphasique friedel { }
         flux_interfacial coef_constant { 
                                         liquide_sodium 1e8 /* coeff echange liquide-interface (interface tjrs a Tsat) => petit echange => liquide loin de Tsat */
                                         gaz_sodium 1e10 /* coeff echange gaz-interface (interface tjrs a Tsat) => grande echange => gaz toujours a Tsat */
@@ -134,13 +134,13 @@ Read pb
         }
         sources
         {
-            source_qdm champ_uniforme 6 0 0 0 0 -9.81 -9.81 /* ,
+            source_qdm champ_uniforme 6 0 0 0 0 -9.81 -9.81 ,
             Perte_Charge_Isotrope
             {
                 diam_hydr Champ_Uniforme 1 0.00385 sous_zone tot
                 lambda
                 ((2000_min_((Re-1000)_max_0))*0.194*Re^(-0.2)+(2000_min_((3000-Re)_max_0))*64/Re)/2000
-            } */
+            }
         }
     }
     Masse_Multiphase

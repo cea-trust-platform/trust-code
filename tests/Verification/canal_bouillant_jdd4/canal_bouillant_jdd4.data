@@ -36,8 +36,8 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-VDF  dis
-Option_VDF { p_imposee_aux_faces oui }
+VDF dis
+option_vdf { all_options }
 
 Schema_euler_implicite sch
 Read sch
@@ -74,7 +74,7 @@ Read pb
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
-        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        solveur_pression petsc cholesky { quiet } # cli_quiet { -pc_type hypre -pc_hypre_type boomeramg } #
         convection { amont }
         diffusion  { negligeable }
         initial_conditions
@@ -87,7 +87,7 @@ Read pb
 
             pression Champ_composite 1
             {
-                Champ_Fonc_xyz dom 1 100000.0
+                Champ_Fonc_xyz dom 1 1.e5
             }
         }
         boundary_conditions
@@ -100,7 +100,7 @@ Read pb
             }
             haut frontiere_ouverte_pression_imposee champ_front_composite 1
             {
-                champ_front_uniforme 1 100000.0
+                champ_front_uniforme 1 1.e5
             }
         }
     }
@@ -161,7 +161,7 @@ Read pb
         {
             puissance_thermique Champ_composite 2
             {
-                champ_uniforme 1 100000000.0
+                champ_uniforme 1 1e8
                 champ_uniforme 1 0
             } ,
             flux_interfacial

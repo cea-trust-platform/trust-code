@@ -90,7 +90,7 @@ Read pb
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } } /* en 4 equations. si 6, faut ajouter frottement interfacial. ici sans ishii, donc vl = vg */
-        solveur_pression petsc cholesky { }
+        solveur_pression petsc cholesky { quiet }
         /* solveur_pression petsc cli_quiet
         {
             -pc_type hypre

@@ -1,0 +1,164 @@
+# PARALLEL NOT #
+# lance_test 10 ecarts #
+
+Dimension 3
+ 
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom 
+ { 
+ Pave tube  
+ { 
+ Origine 0. 0. 0. 
+ Nombre_de_Noeuds 41 2 201  
+ Longueurs  0.019 0.1 1.5 
+  } 
+  { 
+  bord symetrie    X = 0   0 <= Y <= 0.1 0 <= Z <= 1.5 
+  bord symetrie   Y = 0. 0 <= X <= 0.019   0 <= Z <= 1.5  
+  bord symetrie  Y = 0.1 0 <= X <= 0.019   0 <= Z <= 1.5  
+  bord top   Z = 1.5   0 <= X <= 0.019  0 <= Y <= 0.1 
+ bord bottom    Z = 0   0 <= X <= 0.019  0 <= Y <= 0.1 
+ bord wall   X = 0.019  0 <= Y <= 0.1 0 <= Z <= 1.5 
+  } 
+ }  
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+ vdf  dis option_vdf { all_options } 
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    tmax 0.1
+    dt_impr 1e-8
+    facsec 1
+    facsec_max 1
+    seuil_statio 1.e-3
+    dt_start dt_fixe 2.e-5
+    solveur ICE
+    {
+        criteres_convergence { alpha 1e-6 pression 1. vitesse 1e-5 temperature 1e8 k 1e-5 omega 1. }
+        iter_min 2
+        solveur petsc cholesky { quiet }
+        seuil_convergence_implicite 1e30
+        
+    }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+    milieu_composite
+    {
+        liquide_eau Fluide_Incompressible 
+        { 
+            mu champ_uniforme 1 1.e-3 
+            rho champ_uniforme 1  1.e3 
+            lambda Champ_Uniforme  1 0.604 
+            Cp Champ_Uniforme 1 75.366 
+            beta_th Champ_Uniforme 1 0 
+        }
+    }
+    correlations
+    {
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1.e-5 alpha_res_min 5.e-6 } }
+        solveur_pression petsc cholesky { quiet }
+        convection { amont }
+        diffusion  { turbulente l_melange { l_melange 1.e-3 } }
+        initial_conditions
+        {
+            vitesse  champ_fonc_xyz dom 3  0  0  1 
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+        conditions_limites
+        {
+            wall paroi_fixe
+            bottom frontiere_ouverte_vitesse_imposee_sortie Champ_front_uniforme 3  0  0  1 
+            top frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
+            symetrie symetrie
+        }
+        sources
+        {
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        conditions_limites
+        {
+            wall paroi
+            bottom	frontiere_ouverte a_ext Champ_Front_fonc_xyz 1 1
+            top	frontiere_ouverte a_ext Champ_Front_fonc_xyz 1 1
+            symetrie  symetrie 
+        }
+        sources {  }
+    }
+    Energie_Multiphase
+    {
+        diffusion { turbulente SGDH { Pr_t 0.9 } }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+            wall neumann_paroi Champ_Front_Uniforme 1 1000
+            bottom	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            top	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            symetrie  symetrie 
+        }
+        sources
+        {
+        }
+    }
+    Postraitement
+    {
+        sondes			
+        {
+              vitesse_liquide_eau vitesse_liquide_eau periode 1.e-2 segment 40 0.00023749773917117444 1.0362859551273107e-06 1.49 0.018762321394522778 8.186659045505753e-05 1.49  
+ temperature_liquide_eau temperature_liquide_eau periode 1.e-2 segment 40 0.00023749773917117444 1.0362859551273107e-06 1.49 0.018762321394522778 8.186659045505753e-05 1.49  
+
+        }
+        format lml
+        champs binaire dt_post 1.e-2
+        {
+            alpha elem
+            temperature elem
+            vitesse elem
+            pression elem
+            vorticite elem
+            gradient_vitesse_liquide_eau elem
+            alpha_residu elem
+            nu_TURBULENTE_liquide_eau elem
+            taux_cisaillement elem
+        }
+    }
+}
+
+Resoudre pb
+
+Fin

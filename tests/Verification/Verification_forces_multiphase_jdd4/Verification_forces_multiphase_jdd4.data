@@ -1,0 +1,210 @@
+# PARALLEL NOT #
+# lance_test 10 ecarts #
+
+Dimension 3
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom 
+ { 
+ Pave block  
+ { 
+ Origine 0. 0. 0. 
+ Nombre_de_Noeuds 41 41 2 
+  Longueurs  0.1 1. 1. 
+ } 
+ { 
+ bord symetrie    X = 0   0 <= Y <= 1. 0 <= Z <= 1.  
+ bord bottom   Y = 0. 0 <= X <= 0.1   0 <= Z <= 1.   
+ bord top  Y = 1. 0 <= X <= 0.1   0 <= Z <= 1.   
+ bord symetrie   Z = 1.   0 <= X <= 0.1  0 <= Y <= 1. 
+ bord symetrie    Z = 0   0 <= X <= 0.1  0 <= Y <= 1. 
+ bord wall   X = 0.1  0 <= Y <= 1 0 <= Z <= 1.  
+ } 
+ }  
+polyedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+ PolyMAC_P0  dis option_PolyMAC { traitement_axi } 
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 2
+    dt_impr 1e-8
+    dt_max 1.e-20
+    dt_min 1.e-20
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-6 pression 1. vitesse 1e-5 temperature 1e8 k 1e-5 omega 1. }
+        iter_min 2
+        solveur petsc cholesky { quiet }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+    milieu_composite
+    {
+        liquide_eau Fluide_Incompressible 
+            {
+                mu champ_uniforme 1 1.e-3 
+                rho champ_uniforme 1  1.e3 
+                lambda Champ_Uniforme  1 0.604
+                Cp Champ_Uniforme 1 75.366 
+                beta_th Champ_Uniforme 1 0 
+            }
+        gaz_air     Fluide_Incompressible 
+            { 
+                mu champ_uniforme 1 1.e-5 
+                rho champ_uniforme 1  1.e2 
+                lambda Champ_Uniforme  1 0.023 
+                Cp Champ_Uniforme 1 1006  
+                beta_th Champ_Uniforme 1 0 
+            }
+        interface_eau_air interface_sigma_constant  { tension_superficielle 0.1 }
+    }
+    correlations
+    {
+        diametre_bulles champ champ_fonc_xyz dom 2 0 0.04
+        flux_interfacial coef_constant { liquide_eau 1e10 gaz_air 1e10 }
+        masse_ajoutee coef_constant { beta .0 }
+        frottement_interfacial bulles_constant { coeff_derive .3 }
+        portance_interfaciale constante { Cl 0.2 }
+        dispersion_bulles constante { d_td_star 0.1 }
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1.e-5 alpha_res_min 5.e-6 } }
+        solveur_pression petsc cholesky { quiet }
+        convection { amont }
+        diffusion  { /* turbulente l_melange { l_melange 1.e-3 } */ }
+        initial_conditions
+        {
+            vitesse  champ_fonc_xyz dom  6 0 0 1-10*x*x 2-20*x*x 0 0 
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+        conditions_limites
+        {
+            wall paroi_fixe
+            bottom frontiere_ouverte_vitesse_imposee_sortie Champ_front_fonc_xyz  6 0 0 1-10*x*x 2-20*x*x 0 0 
+            top frontiere_ouverte_pression_imposee champ_front_fonc_xyz 1 1e5
+            symetrie symetrie
+        }
+        sources
+        {
+            frottement_interfacial { } ,
+            portance_interfaciale { } ,
+            Dispersion_bulles { } ,
+            Correction_Antal { }
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 2 1-.5*y .5*y }
+        convection { amont }
+        conditions_limites
+        {
+            wall paroi
+            bottom	frontiere_ouverte a_ext Champ_Front_fonc_xyz 2  1-.5*y .5*y 
+            top	frontiere_ouverte a_ext Champ_Front_fonc_xyz 2  1-.5*y .5*y
+            symetrie symetrie
+        }
+        sources {  }
+    }
+    Energie_Multiphase
+    {
+        diffusion {  }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            wall paroi_adiabatique
+            bottom	frontiere_ouverte T_ext Champ_Front_Uniforme 2 0 0
+            top	frontiere_ouverte T_ext Champ_Front_Uniforme 2 0 0
+            symetrie symetrie
+        }
+        sources
+        {
+            flux_interfacial
+        }
+    }
+    Postraitement
+    {
+        Definition_champs 	
+        {
+            grdp        refChamp { Pb_champ pb gradient_pression }
+            dp 			refChamp { Pb_champ pb distance_paroi_globale }
+            diff		operateur_eqn	{
+                numero_op 0
+                sources { refChamp { pb_champ pb vitesse } }
+            }
+            conv		operateur_eqn	{
+                numero_op 1
+                sources { refChamp { pb_champ pb vitesse } }
+            }
+            drag		operateur_eqn	{
+                numero_source 0
+                sources { refChamp { pb_champ pb vitesse } }
+            }
+            lift		operateur_eqn	{
+                numero_source 1
+                sources { refChamp { pb_champ pb vitesse } }
+            }
+            disp		operateur_eqn	{
+                numero_source 2
+                sources { refChamp { pb_champ pb vitesse } }
+            }
+            lub		operateur_eqn	{
+                numero_source 3
+                sources { refChamp { pb_champ pb vitesse } }
+            }
+        }
+        sondes			
+        {
+              grdp grdp periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ diff diff periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ conv conv periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ drag drag periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ lift lift periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ disp disp periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ lub lub periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ vorticite vorticite periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+ gradient_vitesse_liquide_eau gradient_vitesse_liquide_eau periode 1.e-2 segment 40 0.00125 0.0125 .5 0.09875 0.9875 .5 
+
+        }
+        format lml
+        champs binaire dt_post 1.e-1
+        {
+            drag elem
+            lift elem
+            disp elem
+            lub elem
+        }
+    }
+}
+
+Resoudre pb
+Fin

@@ -1,4 +1,5 @@
 # PARALLEL OK 8 #
+# GPU NOT #
 dimension 2
 Domaine dom
 
@@ -36,6 +37,7 @@ Scatter dom.Zones dom
 END SCATTER #
 
 PolyMAC_P0 dis
+option_polymac { }
 
 Schema_euler_implicite sch
 Read sch
@@ -60,9 +62,9 @@ Read pb
 {
     Milieu_composite
     {
-        liquide_sodium Fluide_sodium_liquide { P_ref 100000.0 T_ref 800  }
-        gaz_sodium Fluide_sodium_gaz { P_ref 100000.0 T_ref 879.9430097752451 }
-        saturation_sodium saturation_sodium { P_ref 100000.0 T_ref 879.9430097752451 }
+        liquide_sodium Fluide_sodium_liquide { P_ref 1e5 T_ref 800  }
+        gaz_sodium Fluide_sodium_gaz { P_ref 1e5 T_ref 879.9430097752451 }
+        saturation_sodium saturation_sodium { P_ref 1e5 T_ref 879.9430097752451 }
     }
 
     correlations
@@ -72,7 +74,7 @@ Read pb
     QDM_Multiphase
     {
         evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
-        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        solveur_pression petsc cholesky { quiet } # cli_quiet { -pc_type hypre -pc_hypre_type boomeramg } #
         convection { amont }
         diffusion  { negligeable }
         initial_conditions
@@ -85,7 +87,7 @@ Read pb
 
             pression Champ_composite 1
             {
-                Champ_Fonc_xyz dom 1 100000.0
+                Champ_Fonc_xyz dom 1 1.e5
             }
         }
         boundary_conditions
@@ -98,7 +100,7 @@ Read pb
             }
             haut frontiere_ouverte_pression_imposee champ_front_composite 1
             {
-                champ_front_uniforme 1 100000.0
+                champ_front_uniforme 1 1.e5
             }
         }
     }
@@ -159,7 +161,7 @@ Read pb
         {
             puissance_thermique Champ_composite 2
             {
-                champ_uniforme 1 100000000.0
+                champ_uniforme 1 1e8
                 champ_uniforme 1 0
             } ,
             flux_interfacial
@@ -171,7 +173,7 @@ Read pb
         {
             h_analytique transformation
             {
-                methode formule expression 1 1112202.375281125+y*100000000.0/763.0630276367231/1 localisation elem source refChamp { Pb_champ pb pression }
+                methode formule expression 1 1112202.375281125+y*1e8/763.0630276367231/1 localisation elem source refChamp { Pb_champ pb pression }
             }
 
             erreur_h transformation
@@ -182,7 +184,7 @@ Read pb
                     refChamp { Pb_champ pb enthalpie_melange nom_source h } ,
                     transformation
                     {
-                        methode formule expression 1 1112202.375281125+y*100000000.0/763.0630276367231/1 localisation elem nom_source h_ex source refChamp { Pb_champ pb pression }
+                        methode formule expression 1 1112202.375281125+y*1e8/763.0630276367231/1 localisation elem nom_source h_ex source refChamp { Pb_champ pb pression }
                     }
                 }
             }
@@ -195,17 +197,17 @@ Read pb
         }
         probes
         {
-            erreur_h_trust                        erreur_h periode 1e8 segment 100 0.5 0 0.5 1
-            rho_m_trust            masse_volumique_melange periode 1e8 segment 100 0.5 0 0.5 1
-            h_m_trust                    enthalpie_melange periode 1e8 segment 100 0.5 0 0.5 1
-            h_m_analytique                    h_analytique periode 1e8 segment 100 0.5 0 0.5 1
-            pression_trust                     pression_pa periode 1e8 segment 100 0.5 0 0.5 1
-            alpha_trust                   alpha_gaz_sodium periode 1e8 segment 100 0.5 0 0.5 1
-            alpha_analytique                  a_analytique periode 1e8 segment 100 0.5 0 0.5 1
-            temperature_l_trust temperature_liquide_sodium periode 1e8 segment 100 0.5 0 0.5 1
-            temperature_g_trust     temperature_gaz_sodium periode 1e8 segment 100 0.5 0 0.5 1
-            vitesse_l_trust         vitesse_liquide_sodium periode 1e8 segment 100 0.5 0 0.5 1
-            vitesse_g_trust             vitesse_gaz_sodium periode 1e8 segment 100 0.5 0 0.5 1
+            erreur_h_trust                       erreur_h periode 1e8 segment 500 0.5 0 0.5 1
+            rho_m_trust masse_volumique_melange periode 1e8 segment 500 0.5 0 0.5 1
+            h_m_trust       enthalpie_melange periode 1e8 segment 500 0.5 0 0.5 1
+            h_m_analytique                   h_analytique periode 1e8 segment 500 0.5 0 0.5 1
+            pression_trust                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1
+            alpha_trust               alpha_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
+            alpha_analytique                   a_analytique periode 1e8 segment 500 0.5 0 0.5 1
+            temperature_l_trust     temperature_liquide_sodium periode 1e8 segment 500 0.5 0 0.5 1
+            temperature_g_trust         temperature_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
+            vitesse_l_trust         vitesse_liquide_sodium periode 1e8 segment 500 0.5 0 0.5 1
+            vitesse_g_trust             vitesse_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
         }
         Format lml
         fields dt_post 1e-2
