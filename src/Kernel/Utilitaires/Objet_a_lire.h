@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ class Objet_a_lire :public Objet_U
   Declare_instanciable(Objet_a_lire);
 public:
   enum Type { INTEGER = 0, TRUSTID, DOUBLE, OBJECT, FLAG, NON_STD, DERIV, ArrOfInt_size_imp,
-              ArrOfDouble_size_imp, PARAM
+              ArrOfDouble_size_imp, PARAM, BOOLEAN_FLAG
             };
 
   enum Nature { OPTIONAL = 0, REQUIRED = 1 };
@@ -51,6 +51,7 @@ public:
 
   Param& create_param(const char*);
   void set_flag(int*);
+  void set_flag(bool*);
   void set_non_std(Objet_U*);
   ptrParam& add_dict(const char*,int, const char* =0);
   void set_nature(Objet_a_lire::Nature n);
@@ -76,6 +77,7 @@ protected:
   ArrOfInt *arrofint_a_lire;
   ArrOfDouble *arrofdouble_a_lire;
   int *flag_a_lire;
+  bool *boolean_flag_a_lire;
   Motcles dictionnaire_noms;
   ArrOfInt dictionnaire_valeurs;
   LIST(ptrParam) dictionnaire_params;

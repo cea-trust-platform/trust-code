@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ public:
   void ajouter_arr_size_predefinie(const char *, ArrOfDouble* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
 
   void ajouter_flag(const char *,int* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+  void ajouter_flag(const char *,bool* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   Param& ajouter_param(const char *, Param::Nature nat = Param::OPTIONAL);
   void ajouter_non_std(const char *,Objet_U* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
   void ajouter_condition(const char* condition, const char* message,const char*  name=0);

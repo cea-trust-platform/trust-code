@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -170,6 +170,10 @@ void Objet_a_lire::print(Sortie& s) const
       break;
     case FLAG:
       if (*flag_a_lire)
+        s << get_name();
+      break;
+    case BOOLEAN_FLAG:
+      if (*boolean_flag_a_lire)
         s << get_name();
       break;
     case NON_STD:
@@ -412,6 +416,12 @@ void Param::ajouter_arr_size_predefinie(const char *mot, ArrOfDouble *quoi, Para
 }
 
 void Param::ajouter_flag(const char *mot, int *quoi, Param::Nature nat) //int opt)
+{
+  Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
+  obj.set_nature(convert_nature(nat));
+  obj.set_flag(quoi);
+}
+void Param::ajouter_flag(const char *mot, bool *quoi, Param::Nature nat) //int opt)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
