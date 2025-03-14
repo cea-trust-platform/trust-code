@@ -50,7 +50,7 @@ then
       [ -f libcmumps.a ] && PETSC_L=$PETSC_L" cmumps dmumps mumps_common smumps zmumps pord"
       [ -f libpastix.a ] && PETSC_L=$PETSC_L" pastix"
       [ -f libml.a ] && PETSC_L=$PETSC_L" ml"
-      for lib in HYPRE strumpack magma sbutterflypack dbutterflypack cbutterflypack zbutterflypack zfp slate blaspp lapackpp scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetisv3 ptscotch scotch scotcherr scotcherrexit Vc
+      for lib in HYPRE strumpack magma sbutterflypack dbutterflypack cbutterflypack zbutterflypack zfp slate blaspp lapackpp scalapack kokkoskernels blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetisv3 ptscotch scotch scotcherr scotcherrexit Vc
       do
          [ -f lib$lib.a ] && PETSC_L=$PETSC_L" $lib"
       done

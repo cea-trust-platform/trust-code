@@ -265,8 +265,6 @@ d43a8fbe83767978098ba7f8ee25d3d1  ccache/ccache-3.1.4.tar.gz
 ea0931758fc180e3b1950931b9869921  gnuplot/gnuplot-6.0.2.tar.gz
 4fa24da17c99b122a56cb8808b6eb78b  hwloc-2.7.1.tar.gz
 36abe803480d07db87f9ba03cd5a842c  kokkos/kokkos-3.7.02.tgz
-731647b61a4233f568d583702e9cd6d1  kokkos/kokkos-4.2.00.tar.gz
-eafd0d42c9831858aa84fde78576644c  kokkos/kokkos-4.4.01.tar.gz
 2ec50b6f07a7c72d63037e2f02066627  kokkos/kokkos-4.5.00.tar.gz
 48384e324cd1cdcfbdb0d2e16ca55327  lapack/OpenBLAS-0.3.25.tar.gz
 853a0c5c0747c5943e7ef4bbb793162d  lapack/OpenBLAS-0.3.29.tar.gz
@@ -279,10 +277,11 @@ da26c4b43d53a9a6096775245cee847f  petsc/MUMPS_5.5.1.tar.gz
 d4c0862c48e6e9742807e6e50bdf5deb  petsc/STRUMPACK_8.0.0.tar.gz
 e659373ed5e9b961d2fcb6d67d250783  petsc/SuiteSparse-7.7.0.tar.gz
 321557481d18242a771096999a253ad8  petsc/hypre-2.32.0.tar.gz
+0863d5d58a9b2fa008330464300fb9c5  petsc/kokkos-kernels-4.4.01.tar.gz
 af200b5cee080a516af4198c06882a7e  petsc/magma-2.7.1.tar.gz
 6cd66f75f88dfa2cf043de011f85d8bc  petsc/metis-5.1.0-p12.tar.gz
 d3a59c711a8e68cfb31b9ab3cc6dee4b  petsc/parmetis-4.0.3-p9.tar.gz
-a9c0db61a5be6895da5a78ce72d4d284  petsc/petsc-main.tar.gz
+97503bfdd921069b997dd875a60b7a0d  petsc/petsc-3.22.4.tar.gz
 221dab094055b73fa7bed645c426548c  petsc/scalapack-0234af94c657.tar.gz
 5c9c702e4f40c575617702f9883e9416  petsc/scotch-7.0.3.tar.gz
 f121c9d7ef5e43a20899acd93f425b22  petsc/slate-v2023.06.00.tgz

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Script d'installation de PETSC
 # wget https://gitlab.com/petsc/petsc/-/archive/main/petsc-main.tar.gz
-package=petsc-main.tar.gz # 0d22010af3296e66ec9f0dd1bf1a4e5cfa71ec87
+package=petsc-main.tar.gz
+package=petsc-3.22.4.tar.gz
 
 ######################################
 # Ajout d'un package au build de PETSc
@@ -262,11 +263,19 @@ with_packages=""
 # GPU support? #
 ################
 echo "****************************************"
+
+with_gpu=""
+if [ "$TRUST_USE_GPU" = 1 ]
+then
+   # Kokkos #
+   with_gpu=$with_gpu" --with-kokkos=1"
+   with_gpu=$with_gpu" --with-kokkos-dir=$TRUST_ROOT/lib/src/LIBKOKKOS/$TRUST_ARCH"_opt
+   add_package kokkos-kernels
+fi 
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
    PETSC_HAVE_CUDA=$TRUST_USE_CUDA
-   with_gpu="--with-cuda --with-cuda-arch=$TRUST_CUDA_CC"
+   with_gpu=$with_gpu" --with-cuda --with-cuda-arch=$TRUST_CUDA_CC"
    with_gpu=$with_gpu" --with-cudac=$TRUST_NVCC"
    with_gpu=$with_gpu" --with-cuda-dir=$CUDA_ROOT"
    if [ -d $CUDA_ROOT/lib64/stubs ]
@@ -657,7 +666,7 @@ do
    --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
    --with-debugging=$debug \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
-   --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++14 \
+   --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=$TRUST_STDCPP \
    "$LIBS" \
    --with-clean=1 \
    --with-ssl=0 \
