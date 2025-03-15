@@ -239,6 +239,12 @@ Then inside the directory $project_directory/share/archive you should add:
        ./configure $OPTIONS && make && make install
        $OPTIONS contains configure_flag and cpp_flags if specified in the project.cfg file of the baltik
 
+     - If the procedure to install the prerequisite is different than:
+       ./configure $OPTIONS && make && make install
+       you can add into your archive pre_install.sh script or post_install.sh script, and thus the procedure
+       will be modified (here, we suppose pre_install.sh and post_install.sh are both added) to be:
+       ./configure $OPTIONS && ./pre_install.sh && make && make install && ./post_install.sh
+
   2- A test program (C++):
      - will be compiled by TRUST as a baltik to check that it can include the prerequisite
 
