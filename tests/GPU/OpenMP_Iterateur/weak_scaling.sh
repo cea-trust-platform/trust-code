@@ -2,36 +2,33 @@
 # Weak scaling on nodes:
 # Selon machines:
 ext=$1 # Exemple: _10 pour le cas a 80 MDOF. Attention out of memory sur 2GPUs
-unset TRUST_USE_MPI_GPU_AWARE
-benchs="gpu cpu"              && mpis_gpu="1 2"          && mpis_cpu="1 8"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc  && TRUST_USE_MPI_GPU_AWARE=1
+benchs="cpu" && [ "$TRUST_USE_GPU" = 1 ] && benchs="gpu"              
+mpis_gpu="1 2"          && mpis_cpu="1 8"              && jdd_gpu=AmgX             && jdd_cpu=PETSc
 if [ "$HOST" = adastra ]
 then
-   [ "$TRUST_USE_ROCM" = 1 ]  && benchs="gpu"             && mpis_gpu="4 32 256"     && int="_int64" && ext_gpu=BENCH_AMD        && TRUST_USE_MPI_GPU_AWARE=1
-   [ "$TRUST_USE_ROCM" != 1 ] && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && ext_cpu=BENCH_CPU
+   [ "$ROCM_ARCH" = gfx90a ]  && mpis_gpu="4 32 256"     	&& ext_gpu=BENCH_AMD        
+   [ "$ROCM_ARCH" = gfx942 ]  && mpis_gpu="2 16 128"     	&& ext_gpu=BENCH_AMD        
+   [ "$TRUST_USE_ROCM" != 1 ] && mpis_cpu="64 512 4096 32768" 	&& ext_cpu=BENCH_CPU
 fi
 if [ "$HOST" = topaze ]
 then
-   [ "$TRUST_USE_CUDA" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128"     && int="_int64" && ext_gpu=BENCH_NVIDIA     && TRUST_USE_MPI_GPU_AWARE=1
-   [ "$TRUST_USE_CUDA" != 1 ] && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && ext_cpu=BENCH_CPU
+   [ "$TRUST_USE_CUDA" = 1 ]  && mpis_gpu="2 16 128"     	&& ext_gpu=BENCH_NVIDIA     
+   [ "$TRUST_USE_CUDA" != 1 ] && mpis_cpu="64 512 4096 32768" 	&& ext_cpu=BENCH_CPU
 fi
-[ "$HOST" = jean-zay ]        && benchs="gpu"             && mpis_gpu="2 16 128 512"      && int="_int64" && ext_gpu=BENCH_NVIDIA
-[ "$HOST" = irene-amd-ccrt ]  && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && ext_cpu=BENCH_CPU
-[ "$1" = "-disable_mpi_gpu_aware" ] && unset TRUST_USE_MPI_GPU_AWARE
-export TRUST_USE_MPI_GPU_AWARE
-env_gpu=$TRUST_ROOT/env_TRUST.sh
-env_cpu=$local/trust/tma$int/env_TRUST.sh
+[ "$HOST" = jean-zay ]        && mpis_gpu="2 16 128 512"      	&& ext_gpu=BENCH_NVIDIA
+[ "$HOST" = irene-amd-ccrt ]  && mpis_cpu="64 512 4096 32768" 	&& ext_cpu=BENCH_CPU
+E
 cas=`pwd`
 cas=`basename $cas .data`
-jdd_cpu=$cas && [ "$ext_cpu" != "" ] && jdd_cpu=$jdd_cpu"_"$ext_cpu$ext.data
-jdd_gpu=$cas && [ "$ext_gpu" != "" ] && jdd_gpu=$jdd_gpu"_"$ext_gpu$ext.data
-[ ! -f $env_cpu ] && jdd_cpu=""
+jdd_cpu=$cas && [ "$ext_cpu" != "" ] && jdd_cpu=$jdd_cpu"_"$ext_cpu$ext
+jdd_gpu=$cas && [ "$ext_gpu" != "" ] && jdd_gpu=$jdd_gpu"_"$ext_gpu$ext
 
 mkdir -p weak_scaling$ext && cd weak_scaling$ext
 echo -e "Host     \tDOF \t\tConfig       \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s \tIters \tLoadImb Energy[J] \tGPU Direct\t DRAM[Gb] \t ms/Iter"
 for bench in $benchs
 do
-   [ $bench = gpu ] && mpis=$mpis_gpu && source $env_gpu 1>/dev/null
-   [ $bench = cpu ] && mpis=$mpis_cpu && source $env_cpu 1>/dev/null
+   [ $bench = gpu ] && mpis=$mpis_gpu 
+   [ $bench = cpu ] && mpis=$mpis_cpu
    smallest_mpi=1000000
    for mpi in $mpis
    do
@@ -75,15 +72,6 @@ do
       then
          trust $jdd $mpi -journal=0 1>$jdd.out_err 2>&1
 	 err=$?
-	 # On desactive GPU_DIRECT si active et on relance...
-	 if [ $err != 0 ] && [ "$TRUST_USE_MPI_GPU_AWARE" != "" ]
-	 then
-	    echo "Error with GPU Direct. See $jdd.out_err_GPU_DIRECT. Trying without..."
-	    mv -f $jdd.out_err $jdd.out_err_GPU_DIRECT
-	    unset TRUST_USE_MPI_GPU_AWARE
-	    trust $jdd $mpi -journal=0 1>$jdd.out_err 2>&1
-	    err=$?
-	 fi
 	 [ $err != 0 ] && rm -f *.TU && echo "Error:See "`pwd`/$jdd.out_err
       fi	 
       # Analyse

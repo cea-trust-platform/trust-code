@@ -2,6 +2,7 @@
 check()
 {
    [ "$2" = -nsys ] && exit
+   grep "AMG solver" $1.out_err 2>/dev/null
    if [ ! -f $1.TU ] || [ "`grep 'Arret des processes' $1.out_err`" = "" ]
    then
       echo "==================================================="
@@ -10,18 +11,13 @@ check()
       exit -1
    fi
    TU=$1.TU
-   TU_REF=$1.TU.$2`[ $np != "" ] && echo x$np`
+   TU_REF=$1.TU.$2`[ "$np" != "" ] && echo x$np`
    if [ ! -f $TU_REF ]
    then
       mv -f $TU $TU_REF && [ "$TRUST_SCM" = 1 ] && git add $TU_REF
       echo "Creating new reference $TU_REF"
       exit
    fi   
-   # Non regression faiblement testee sur le nombre d'iterations des solveurs
-   ref=`awk '/Iterations/ && /solveur/ {print $NF}' $TU_REF`
-   new=`awk '/Iterations/ && /solveur/ {print $NF}' $TU`
-   [ $ref != $new ] && echo "Solver convergence is different ($ref != $new) ! Possible regression..." && exit -1
-
    ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $TU_REF`
    new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $TU`
    echo $ref $new | awk '// {if (2*($2-$1)/($1+$2)>0.05) {exit 1}}' # On verifie qu'on ne depasse pas +5% de la performance
@@ -35,7 +31,15 @@ check()
       echo "=========================================="
    else
       echo "Performance is OK ($ecart%) $new s < $ref s (reference) for $1 on $2"
-      [ `echo "$ecart<-0.99" | bc -l` = 1 ] && echo "Performance is improved so $TU_REF is updated !" && cp $TU $TU_REF
+      if [ `echo "$ecart<-0.99" | bc -l` = 1 ]
+      then
+         echo "Performance is improved so $TU_REF is updated !" && cp $TU $TU_REF
+      else
+         # Non regression faiblement testee sur le nombre d'iterations des solveurs
+         its_ref=`awk '/Iterations/ && /solveur/ {print $NF}' $TU_REF`
+         its_new=`awk '/Iterations/ && /solveur/ {print $NF}' $TU`
+         [ $its_ref != $its_new ] && echo "Solver convergence is different ($its_ref != $its_new) ! Possible regression..." && exit -1
+      fi
    fi
 }
 run()
