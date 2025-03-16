@@ -11,7 +11,7 @@
 dimension 3
 Pb_Hydraulique_ibm pb
 Domaine dom
-system "mkdir -p results"
+mkdir results
 
 # DEBUT MAILLAGE #
 Read_MED {
