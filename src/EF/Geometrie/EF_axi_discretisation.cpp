@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,5 +16,6 @@
 #include <EF_axi_discretisation.h>
 
 Implemente_instanciable( EF_axi_discretisation, "EF_axi", EF_discretisation );
+// XD EF_axi discretisation_base EF_axi -1 Element Finite discretization.
 Sortie& EF_axi_discretisation::printOn(Sortie& os) const { return EF_discretisation::printOn(os); }
 Entree& EF_axi_discretisation::readOn(Entree& is) { return EF_discretisation::readOn(is); }
