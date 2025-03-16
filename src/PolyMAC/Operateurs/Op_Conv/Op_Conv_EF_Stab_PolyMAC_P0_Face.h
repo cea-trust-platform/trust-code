@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@ class Op_Conv_EF_Stab_PolyMAC_P0_Face: public Op_Conv_EF_Stab_PolyMAC_P0P1NC_Fac
 {
   Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face );
 public:
+  void completer() override;
   double calculer_dt_stab() const override;
 
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;

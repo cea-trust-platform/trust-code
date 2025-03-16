@@ -107,21 +107,22 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &fs = domaine.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
-  const DoubleTab& nf = domaine.face_normales(), &rho = equation().milieu().masse_volumique().passe(),
+  const DoubleTab& nf = domaine.face_normales(), *rho = pbm ? &equation().milieu().masse_volumique().passe() : nullptr,
                    *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &vfd = domaine.volumes_entrelaces_dir();
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee")) : nullptr;
-  int i, e, f, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;
+  int i, e, f, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, cR = rho ? (*rho).dimension_tot(0) == 1 : 0;
+  const DoubleTab *coeff_t = has_coefficient_temporel_ ? &equation().get_champ(name_of_coefficient_temporel_).valeurs() : nullptr;
 
   /* faces : si CLs, pas de produit par alpha * rho en multiphase */
   DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
   for (f = 0; f < domaine.nb_faces(); f++) //faces reelles
     {
       if (!pbm || fcl(f, 0) >= 2)
-        for (masse = 0, n = 0; n < N; n++) masse(n, n) = 1; //pas Pb_Multiphase ou CL -> pas de alpha * rho
+        for (masse = 0, n = 0; n < N; n++) masse(n, n) = coeff_t ? (*coeff_t)[f] : 1.0; //pas Pb_Multiphase ou CL -> pas de alpha * rho
       else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
             for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
-            if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
+            if (corr) corr->ajouter(&(*alpha)(e, 0), &(*rho)(!cR * e, 0), masse_e); //partie masse ajoutee
             for (n = 0; n < N; n++)
               for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) / vf(f) * masse_e(n, m); //contribution au alpha * rho de la face
           }
@@ -143,15 +144,22 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   for (e = 0, i = nf_tot; e < domaine.nb_elem_tot(); e++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
     {
       for (masse = 0, n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1; //partie diagonale
-      if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse); //partie masse ajoutee
+      if (corr) corr->ajouter(&(*alpha)(e, 0), &(*rho)(!cR * e, 0), masse); //partie masse ajoutee
       for (d = 0; d < D; d++, i++)
         for (n = 0; n < N; n++)
           {
             double fac = pe(e) * ve(e) / dt;
-            for (m = 0; m < N; m++) secmem(i, n) -= fac * masse(n, m) * (resoudre_en_increments * inco(i, m) - passe(i, m));
+            for (m = 0; m < N; m++)
+              {
+                double ma = a_r ? masse(n, m) : (coeff_t ? (*coeff_t)[(i - nf_tot)/dimension] : 1.0);
+                secmem(i, n) -= fac * ma * (resoudre_en_increments * inco(i, m) - passe(i, m));
+              }
             if (mat)
               for (m = 0; m < N; m++)
-                if (masse(n, m)) (*mat)(N * i + n, N * i + m) += fac * masse(n, m);
+                {
+                  double ma = a_r ? masse(n, m) : (coeff_t ? (*coeff_t)[(i - nf_tot)/dimension] : 1.0);
+                  if (ma) (*mat)(N * i + n, N * i + m) += fac * ma;
+                }
           }
     }
   i++;

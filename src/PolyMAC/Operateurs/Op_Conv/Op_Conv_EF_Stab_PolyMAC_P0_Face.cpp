@@ -54,6 +54,12 @@ Entree& Op_Conv_Centre_PolyMAC_P0_Face::readOn(Entree& is)
   return Op_Conv_PolyMAC_base::readOn(is);
 }
 
+void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
+{
+  Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::completer();
+  ref_cast(Champ_Face_PolyMAC_P0, vitesse_.valeur()).init_auxiliary_variables();
+}
+
 double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
