@@ -76,7 +76,6 @@ void Champs_compris_IJK::ajoute_champ_vectoriel(const IJK_Field_vector3_double& 
   Cerr<<"Champs_compris_IJK::ajoute_champ_vectoriel " << champ.le_nom() <<finl;
 }
 
-
 const Noms Champs_compris_IJK::liste_noms_compris_vectoriel() const
 {
   Noms nom_compris;
@@ -167,5 +166,12 @@ void Champs_compris_IJK::switch_vector_field(const Nom& field_name, const Nom& p
       Cerr << "Champs_compris_IJK : swapping IJK field vector " << field_name << " with " << next_name <<finl;
 
     }
+}
 
+const Noms Champs_compris_IJK::liste_noms_compris() const
+{
+  Noms nom_compris;
+  for (auto const& champ : liste_champs_)
+    nom_compris.add(champ.first);
+  return nom_compris;
 }

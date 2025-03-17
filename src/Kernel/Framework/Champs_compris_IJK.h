@@ -35,6 +35,7 @@ public :
   bool has_champ_vectoriel(const Motcle& nom) const;
   const IJK_Field_vector3_double& get_champ_vectoriel(const Motcle& nom) const;
   const Noms liste_noms_compris_vectoriel() const;
+  const Noms liste_noms_compris() const;
 
   void switch_ft_fields();
 
