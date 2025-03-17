@@ -270,7 +270,10 @@ then
    # Kokkos #
    with_gpu=$with_gpu" --with-kokkos=1"
    with_gpu=$with_gpu" --with-kokkos-dir=$TRUST_ROOT/lib/src/LIBKOKKOS/$TRUST_ARCH"_opt
-   add_package kokkos-kernels
+   #PL: Necessite 4.4.01 car sinon build PETSc plante avec 4.5.0 mais ensuite build debug de TRUST echoue
+   #Attendre soit montee de version de PETSc, soit installer kokkos-kernels avec kokkos (meme niveau de version) et fournir a PETSc en croisant les doigts
+   #On va pas revenir a Kokkos 4.4 n'est ce pas ?
+   #add_package kokkos-kernels
 fi 
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
