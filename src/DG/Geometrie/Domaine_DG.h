@@ -34,7 +34,8 @@ public :
   inline const DoubleTab& get_per() const { return per_; }
   inline const DoubleTab& get_rho() const { return rho_; }
   inline const DoubleTab& get_sig() const { return sig_; }
-  inline const IntTab& get_type_elem() const { return type_elem_; }
+  inline const IntTab& get_nfaces_elem() const { return nfaces_elem_; }
+  inline const TRUST_Deriv<Elem_poly_base> get_type_elem() const { return type_elem_; }
 
 
   inline void set_quadrature(int order, const Quadrature_base* quad);
@@ -63,15 +64,14 @@ protected:
   DoubleTab per_;
   DoubleTab rho_;
   DoubleTab sig_;
-  DoubleTab surf_;
-  IntTab type_elem_;
+  IntTab nfaces_elem_;
   int order_quad_=-1;
 // DoubleVect h_, sigma;
 
   IntTab stencil_sorted_; //table of stencil sorted for each elements
 
   void compute_mesh_param(); // Compute the stabilization parameters
-  bool type_elems();
+  bool build_nfaces_elem_();
 };
 
 void Domaine_DG::set_quadrature(int order, const Quadrature_base* quad)

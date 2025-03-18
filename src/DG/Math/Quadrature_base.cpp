@@ -106,3 +106,29 @@ double Quadrature_base::compute_integral(DoubleTab& vals_pts_integ) const
   Process::mp_sum(acc);
   return acc;
 }
+
+
+
+// Function to calculate the area of a triangle from the coordinates of its vertices
+double Quadrature_base::triangleArea(double x1, double y1, double x2, double y2, double x3, double y3)
+{
+  return 0.5 * fabs(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2));
+}
+// Function to calculate the weight scaler for tesselation
+double Quadrature_base::calculateWeightScale(const IntTab& vert_elems, const DoubleTab& xs, DoubleVect& volumes, int e, int s1, int s2, int s3)
+{
+  return triangleArea(
+           xs(vert_elems(e, s1), 0), xs(vert_elems(e, s1), 1),
+           xs(vert_elems(e, s2), 0), xs(vert_elems(e, s2), 1),
+           xs(vert_elems(e, s3), 0), xs(vert_elems(e, s3), 1)
+         ) / volumes(e);
+}
+
+double Quadrature_base::calculateWeightScale(double ve, double s1x, double s1y, double s2x, double s2y, double s3x, double s3y)
+{
+  return triangleArea(
+           s1x, s1y,
+           s2x, s2y,
+           s3x, s3y
+         ) / ve;
+}

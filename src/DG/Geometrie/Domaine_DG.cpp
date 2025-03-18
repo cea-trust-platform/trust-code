@@ -51,7 +51,7 @@ Entree& Domaine_DG::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
-  bool tri_or_quad_only = type_elems();
+  bool tri_or_quad_only = build_nfaces_elem_();
   if (tri_or_quad_only==false)
     Process::exit("General meshes not implemented yet"); // TODO : Change this if general meshes implemented
   compute_mesh_param();
@@ -212,11 +212,10 @@ void Domaine_DG::compute_mesh_param()
   per_.resize(nb_elem_tot); ///< Perimeter of each cell
   rho_.resize(nb_elem_tot); ///< Diameter of the largest incircle for each cell
   sig_.resize(nb_elem_tot); ///< Aspect ratio of each cell
-  surf_.resize(nb_elem_tot); ///< Surface of each cell
 
   for (int e = 0; e < nb_elem_tot; e++)
     {
-      int nsom = type_elem_(e);
+      int nsom = nfaces_elem_(e);
       if (nsom==3)
         {
           dia_(e) = 1 / (2 * volumes(e));
@@ -233,7 +232,6 @@ void Domaine_DG::compute_mesh_param()
         }
       else
         {
-          surf_(e)=0;
           per_(e)=0;
           double h_e=0;
           for (int f = 0; f < nsom; f++)  // local index of facet
@@ -247,15 +245,13 @@ void Domaine_DG::compute_mesh_param()
 //              double y1=xs(s1,1);
 //              double prod=x1*y2-x2*y1;
 //              std::cout<< "Les sommets sont ("<<x1<<","<<y1<<") et (" <<x2<<","<<y2<<") et prod : "<<prod<<std::endl ;
-              surf_(e) +=std::abs(xs(s1,0)*xs(s2,1)-xs(s2,0)*xs(s1,1)); // It s 2 times the surface but then we need to multiply by 2 ...
               per_(e)+= std::sqrt((xs(s1,0) - xs(s2,0)) * (xs(s1,0) - xs(s2,0)) + (xs(s1,1) - xs(s2,1)) * (xs(s1,1) - xs(s2,1)));
 
               // calcul of h
               for (int loc_vert2 = f+1; loc_vert2 < nsom; loc_vert2++) // That's tricky: we use the bijection between vertices and faces to loop over the vertices simultaneously.
                 h_e=std::max(h_e,std::sqrt((xs(vert_elems(e, f),0) - xs(vert_elems(e, loc_vert2),0)) * (xs(vert_elems(e, f),0) - xs(vert_elems(e, loc_vert2),0)) + (xs(vert_elems(e, f),1) - xs(vert_elems(e, loc_vert2),1)) * (xs(vert_elems(e, f),1) - xs(vert_elems(e, loc_vert2),1)))); // max between the distance of each vertices
             }
-          surf_(e)=std::abs(surf_(e)); // can be negative otherwise
-          rho_(e)=(surf_(e)/per_(e));
+          rho_(e)=2.*(volumes(e)/per_(e));
           dia_(e)=h_e;
           sig_(e)=h_e/rho_(e);
         }
@@ -287,9 +283,9 @@ void Domaine_DG::calculer_h_carre()
  *
  * If the mesh is only composed with the same type of element, return yes.
  */
-bool Domaine_DG::type_elems()
+bool Domaine_DG::build_nfaces_elem_()
 {
-  type_elem_.resize(nb_elem_tot());
+  nfaces_elem_.resize(nb_elem_tot());
   bool only_tri_quad=true;
   const IntTab& elem_face = elem_faces();
   int nb_f_elem_max=elem_face.dimension(1);
@@ -300,7 +296,7 @@ bool Domaine_DG::type_elems()
         {
           for (int e = 0; e < nb_elem_tot(); e++)
             {
-              type_elem_(e) = 3; // triangles
+              nfaces_elem_(e) = 3; // triangles
             }
         }
       else if (nb_f_elem_max == 4) // mix of triangles and quads
@@ -309,10 +305,10 @@ bool Domaine_DG::type_elems()
             {
               if (elem_face(e, 3) == -1)
                 {
-                  type_elem_(e) = 3; // triangles
+                  nfaces_elem_(e) = 3; // triangles
                   continue;
                 }
-              type_elem_(e) = 4; // quads
+              nfaces_elem_(e) = 4; // quads
             }
         }
       else // Mix of polys
@@ -322,18 +318,18 @@ bool Domaine_DG::type_elems()
             {
               if (elem_face(e, 3) == -1)
                 {
-                  type_elem_(e) = 3; // triangles
+                  nfaces_elem_(e) = 3; // triangles
                   continue;
                 }
               if (elem_face(e, 4) == -1)
                 {
-                  type_elem_(e) = 4; // quads
+                  nfaces_elem_(e) = 4; // quads
                   continue;
                 }
               for (int i_f = 5; i_f < nb_f_elem_max; i_f++)
                 {
                   if (elem_face(e, i_f) == -1 || i_f == nb_f_elem_max)
-                    type_elem_(e) = i_f+1; // polys
+                    nfaces_elem_(e) = i_f+1; // polys
                   continue;
                 }
             }

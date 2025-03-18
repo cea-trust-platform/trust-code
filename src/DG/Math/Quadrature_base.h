@@ -101,6 +101,15 @@ protected:
   DoubleTab weights_tri_; // local numbers
   DoubleTab weights_facets_; // local numbers
 
+  // Computes the area of a triangle from vertex coordinates
+  double triangleArea(double x1, double y1, double x2, double y2, double x3, double y3);
+
+  // Computes a weight scale based on tessellation triangle and element volume
+  double calculateWeightScale(const IntTab& vert_elems, const DoubleTab& xs, DoubleVect& volumes, int e, int s1, int s2, int s3);
+  double calculateWeightScale(double ve, double s1x, double s1y, double s2x, double s2y, double s3x, double s3y);
+
+
+
 };
 
 #endif

@@ -671,14 +671,14 @@ void Champ_Elem_DG::compute_stab_param()
   int nb_elem_tot = domaine.nb_elem_tot();
   eta_elem.resize(nb_elem_tot);
   eta_facet.resize(domaine.nb_faces());
-  const IntTab& type_elem = domaine.get_type_elem();  // IntTab that indicate the number of facet of each elem
+  const IntTab& nfaces_elem = domaine.get_nfaces_elem();  // IntTab that indicate the number of facet of each elem
 
   //          Computation of the stabilisation parameters for triangle
   const DoubleTab& sig=domaine.get_sig();
   for (int e = 0; e < nb_elem_tot; e++)
     {
       double ordre = get_order();
-      if(type_elem(e)==3) // triangle
+      if(nfaces_elem(e)==3) // triangle
         {
           eta_elem(e) = 6. / M_PI * (sig(e)*sig(e))*(ordre + 1.)*(ordre + 2.);
         }

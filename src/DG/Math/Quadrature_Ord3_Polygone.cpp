@@ -21,168 +21,232 @@
 namespace
 {
 static constexpr int nb_pts_integ_tri = {3};
-static constexpr int nb_pts_integ_quad = {9};
+// static constexpr int nb_pts_integ_quad = {9};
+// static constexpr int nb_pts_integ_quad = {5}; // less expensive
 static constexpr int nb_pts_integ_facet = {3};
 
-static constexpr double WEIGHTS_QUAD[9] = {1./36., 1./36., 1./36., 1./36., 1./9., 1./9., 1./9., 1./9., 4./9.};
-static constexpr double WEIGHTS_FACETS[3] = {1./6., 1./6., 2./3.};
-static constexpr double LAMBDA_QUAD[9][4] =
+// static constexpr double WEIGHTS_QUAD[9] = {1./36., 1./36., 1./36., 1./36., 1./9., 1./9., 1./9., 1./9., 4./9.};
+// static constexpr double WEIGHTS_QUAD_POLY[9] = {1./36., 1./36., 1./36., 1./36., 1./9., 1./9., 1./9., 1./9., 4./9.};
+// static constexpr double WEIGHTS_QUAD[5] = {1./6., 1./6., 1./6., 1./6., 2./6.}; // less expensive  -> wrong, need to be ponderate by the fraction of volume of each triangle
+// static constexpr double WEIGHTS_QUAD_POLY[5] = {1./6., 1./6., 1./6., 1./6., 2./6.}; // less expensive
+static constexpr double WEIGHTS_FACETS[3] = {1. / 6., 1. / 6., 2. / 3.};
+/*static constexpr double LAMBDA_QUAD[9][4] =
 {
   {1.,0.,0.,0.},
   {0.,1.,0.,0.},
   {0.,0.,1.,0.},
   {0.,0.,0.,1.},
   {1./2.,1./2.,0.,0.},
+  {0.,1./2.,0.,1./2.},
+  {0.,0.,1./2.,1./2.},
+  {1./2.,0.,1./2.,0.},
+  {1./4.,1./4.,1./4.,1./4.}
+};  // Barycentric coordinates coefficients of integration points in elem */
+/*static constexpr double LAMBDA_QUAD_POLY[9][4] =
+{
+  {1.,0.,0.,0.},
+  {0.,1.,0.,0.},
+  {0.,0.,0.,1.},
+  {0.,0.,1.,0.},
+  {1./2.,1./2.,0.,0.},
   {0.,1./2.,1./2.,0.},
   {0.,0.,1./2.,1./2.},
   {1./2.,0.,0.,1./2.},
   {1./4.,1./4.,1./4.,1./4.}
 }; // Barycentric coordinates coefficients of integration points in elem */
+
+/*static constexpr double LAMBDA_QUAD[5][4] =  // doesn't work for the moment
+{
+  {1./2.,1./2.,0.,0.},
+  {0.,1./2.,0.,1./2.},
+  {0.,0.,1./2.,1./2.},
+  {1./2.,0.,1./2.,0.},
+  {1./2.,0.,0.,1./2.}
+};  // Barycentric coordinates coefficients of integration points in elem */
+// less expensive
+
+/*static constexpr double LAMBDA_QUAD_POLY[5][4] = // doesn't work for the moment
+{
+  {1./2.,1./2.,0.,0.},
+  {0.,1./2.,1./2.,0},
+  {0.,0.,1./2.,1./2.},
+  {1./2.,0.,0.,1./2.},
+  {1./2.,0.,1./2.,0.}
+};  // Barycentric coordinates coefficients of integration points in elem */
+// less expensive
+
+static constexpr int N_TRI_IN_QUAD = {2};
+static constexpr int TRI_IN_QUAD[2][3] =
+{
+  {0, 1, 2},
+  {0, 2, 3}
+}; // List of vertices that decomposes quad in tri */*
+
+static constexpr int TRI_IN_CART[2][3] =
+{
+  {0, 1, 2},
+  {1, 2, 3}
+}; // List of vertices that decomposes quad in tri */
+
 static constexpr double LAMBDA_FACETS[3][2] =
 {
   {1., 0.},
-  {0.,1.},
+  {0., 1.},
   {1. / 2., 1. / 2.}
 }; // Barycentric coordinates coefficients of integration points on facets */
 
 static constexpr double LAMBDA_TRI[3][3] =
 {
-  {1./2.,1./2.,0.},
-  {0.,1./2.,1./2.},
-  {1./2.,0.,1./2.}
+  {1. / 2., 1. / 2., 0.},
+  {0., 1. / 2., 1. / 2.},
+  {1. / 2., 0., 1. / 2.}
 }; // Barycentric coordinates coefficients of integration points in elem */
 static constexpr double WEIGHTS_TRI[3] = {1. / 3, 1. / 3, 1. / 3};
 }
-
 
 void Quadrature_Ord3_Polygone::compute_integ_points()
 {
   assert(Objet_U::dimension == 2); // no triangle in 3D!
 
-  // Get the types of elems
-  const IntTab& type_elem = dom_->get_type_elem();  // IntTab that indicate the number of facet of each elem
-
-
-  // Filling the table Tab_nb_pts_integ
-  int cumul=0;
-  tab_nb_pts_integ_.resize(dom_->nb_elem_tot());
-  ind_pts_integ_.resize(dom_->nb_elem_tot());
-  nb_pts_integ_max_=0;
-  for( int e = 0 ; e<dom_->nb_elem_tot(); e++)
-    {
-      if(type_elem(e)==3)
-        {
-
-          tab_nb_pts_integ_(e)=::nb_pts_integ_tri;
-          ind_pts_integ_(e)=cumul;
-          cumul+= ::nb_pts_integ_tri;
-          nb_pts_integ_max_=std::max(nb_pts_integ_max_,::nb_pts_integ_tri);
-        }
-      else if(type_elem(e)==4)
-        {
-          tab_nb_pts_integ_(e)=::nb_pts_integ_quad;
-          ind_pts_integ_(e)=cumul;
-          cumul+= ::nb_pts_integ_quad;
-          nb_pts_integ_max_=std::max(nb_pts_integ_max_,::nb_pts_integ_quad);
-        }
-      else
-        {
-          Process::exit("Polygonale meshes not implemented yet in Quadrature_Ord3_Polygone.cpp");
-        }
-    }
-
-  nb_pts_integ_max_ = Process::mp_max(nb_pts_integ_max_);
-
   // Get infos of the mesh
   const IntTab& vert_elems = dom_->domaine().les_elems();
   int nb_elem_tot = dom_->nb_elem_tot();
   int ndim = Objet_U::dimension;
-  DoubleTab& xs = dom_->domaine().les_sommets(); // facets barycentre
+  const DoubleTab& xs = dom_->domaine().les_sommets(); // facets barycentre
+  DoubleVect& volumes = dom_->volumes();
+  const IntTab& nfaces_elem = dom_->get_nfaces_elem(); // IntTab that indicate the number of facet of each elem
+  const IntTab& elem_faces = dom_->elem_faces();       // IntTab connectivity between elem and facet
+  const IntTab& face_sommets = dom_->face_sommets();   // IntTab connectivity between facet and vertices
+  const DoubleTab& xp = dom_->xp();                    // barycentre elem
 
+  // Filling the table Tab_nb_pts_integ
+  int cumul = 0;
+  tab_nb_pts_integ_.resize(dom_->nb_elem_tot());
+  ind_pts_integ_.resize(dom_->nb_elem_tot());
+  DoubleTab lambda_tri; // tesselation
+  IntTab tri_in_quad;   // tesselation
 
-
-  // We ensure that sum(weights)=1 and sum(Lambda[i])=1
-  DoubleTab lambda_quad(::nb_pts_integ_quad, 4);  // ndim+2 = number of vertices
-  DoubleTab lambda_tri(::nb_pts_integ_tri, 3);  // ndim+2 = number of vertices
-
-  integ_points_.resize(cumul, ndim); // cumul : number total of integ points
-  weights_.resize(cumul);            // Each weight with global numerotation: Linked by the tables ind_elem and tab_nb_elem
-  weights_quad_.resize(::nb_pts_integ_quad);
-  weights_tri_.resize(::nb_pts_integ_tri);
-  weights_quad_[::nb_pts_integ_quad-1] = 1.;
-  for (int pts = 0; pts < ::nb_pts_integ_quad; pts++)
+  nb_pts_integ_max_ = 0;
+  int nb_pts_quad;
+  // only for quad
+  tri_in_quad.resize(::N_TRI_IN_QUAD, 3);
+  if (dom_->get_type_elem()->que_suis_je() == "Quadri_poly")
     {
-      if (pts < ::nb_pts_integ_quad - 1)
-        {
-          weights_quad_(pts) = ::WEIGHTS_QUAD[pts];
-          weights_quad_(::nb_pts_integ_quad-1) -= weights_quad_(pts);
-        }
-      lambda_quad(pts, 0) = ::LAMBDA_QUAD[pts][0];
-      lambda_quad(pts, 1) = ::LAMBDA_QUAD[pts][1];
-      lambda_quad(pts, 2) = ::LAMBDA_QUAD[pts][2];
-      lambda_quad(pts, 3) = 1. -lambda_quad(pts, 2) - lambda_quad(pts, 1) - lambda_quad(pts, 0);
+      for (int n_tri = 0; n_tri < ::N_TRI_IN_QUAD; n_tri++)
+        for (int i = 0; i < 3; i++)
+          tri_in_quad(n_tri, i) = ::TRI_IN_CART[n_tri][i];
     }
-  weights_tri_[::nb_pts_integ_tri-1] = 1.;
+  else
+    {
+      for (int n_tri = 0; n_tri < ::N_TRI_IN_QUAD; n_tri++)
+        for (int i = 0; i < 3; i++)
+          tri_in_quad(n_tri, i) = ::TRI_IN_QUAD[n_tri][i];
+    }
+
+  for (int e = 0; e < dom_->nb_elem_tot(); e++)
+    {
+      int nsom = nfaces_elem(e); // Récupération du nombre de faces de l'élément
+      switch (nsom)
+        {
+        case 3: // triangle
+          tab_nb_pts_integ_(e) = ::nb_pts_integ_tri;
+          ind_pts_integ_(e) = cumul;
+          cumul += ::nb_pts_integ_tri;
+          nb_pts_integ_max_ = std::max(nb_pts_integ_max_, ::nb_pts_integ_tri);
+          break;
+        case 4:                                 // quadrangle
+          nb_pts_quad = 2 * ::nb_pts_integ_tri; // tesselation with 2 triangle S1S4S3 and S1S2S3
+          tab_nb_pts_integ_(e) = nb_pts_quad;
+          ind_pts_integ_(e) = cumul;
+          cumul += nb_pts_quad;
+          nb_pts_integ_max_ = std::max(nb_pts_integ_max_, nb_pts_quad);
+          break;
+        default: // other
+          int nb_pts_integ_e = nsom * ::nb_pts_integ_tri;
+          tab_nb_pts_integ_(e) = nb_pts_integ_e;
+          ind_pts_integ_(e) = cumul;
+          cumul += nb_pts_integ_e;
+          nb_pts_integ_max_ = std::max(nb_pts_integ_max_, nb_pts_integ_e);
+          Process::exit("Polygonale meshes not implemented yet in Quadrature_Ord5_Polygone.cpp");
+          break;
+        }
+    }
+  // Adjustment of weights for quadrature of triangle
+  weights_tri_.resize(::nb_pts_integ_tri);
+  weights_tri_[::nb_pts_integ_tri - 1] = 1.;
+  lambda_tri.resize(::nb_pts_integ_tri, 3); // tesselation
   for (int pts = 0; pts < ::nb_pts_integ_tri; pts++)
     {
       if (pts < nb_pts_integ_tri - 1)
         {
           weights_tri_(pts) = ::WEIGHTS_TRI[pts];
-          weights_tri_(nb_pts_integ_tri-1) -= weights_tri_(pts);
+          weights_tri_(nb_pts_integ_tri - 1) -= weights_tri_(pts);
         }
       lambda_tri(pts, 0) = ::LAMBDA_TRI[pts][0];
       lambda_tri(pts, 1) = ::LAMBDA_TRI[pts][1];
       lambda_tri(pts, 2) = 1. - lambda_tri(pts, 1) - lambda_tri(pts, 0);
     }
 
-  int ind_elem_e=0;
-  int nsom=0;
-  DoubleTab lambda(2*nb_pts_integ_quad,4);
-  for (int pts = 0; pts < nb_pts_integ_quad; pts++)
-    {
-      lambda(pts,0)=lambda_quad(pts,0);
-      lambda(pts,1)=lambda_quad(pts,1);
-      lambda(pts,2)=lambda_quad(pts,2);
-      lambda(pts,3)=lambda_quad(pts,3);
-    }
-  for (int pts = 0; pts < nb_pts_integ_tri; pts++)
-    {
-      lambda(nb_pts_integ_quad+pts,0)=lambda_tri(pts,0);
-      lambda(nb_pts_integ_quad+pts,1)=lambda_tri(pts,1);
-      lambda(nb_pts_integ_quad+pts,2)=lambda_tri(pts,2);
-    }
-  int curs=0;
+  nb_pts_integ_max_ = Process::mp_max(nb_pts_integ_max_);
+
+  // We ensure that sum(weights)=1 and sum(Lambda[i])=1
+
+  integ_points_.resize(cumul, ndim); // cumul : number total of integ points
+  weights_.resize(cumul);            // Each weight with global numerotation: Linked by the tables ind_elem and tab_nb_elem
+
   for (int e = 0; e < nb_elem_tot; e++)
     {
-      ind_elem_e=ind_pts_integ_(e); // It may be faster to recalculate this with GPU
-      if(nsom!=type_elem(e))
+      int ind_elem_e = ind_pts_integ_(e); // It may be faster to recalculate this with GPU
+      int nsom = nfaces_elem(e);          // Récupération du nombre de faces de l'élément
+      switch (nsom)
         {
-          nsom = type_elem(e);
-          if (nsom==3)
-            curs=1; // lambda=lambda_tri;
-          if (nsom==4)
-            curs=0; // lambda=lambda_quad;
-        }
-      for (int pts = 0; pts < tab_nb_pts_integ_(e); pts++)
-        {
-          for (int dim = 0; dim < ndim; dim++)
+        case 3: // triangle
+          for (int pts = 0; pts < ::nb_pts_integ_tri; pts++)
             {
-              for (int loc_vert = 0; loc_vert < nsom; loc_vert++)  // ndim+2 = number of vertices
-                integ_points_(ind_elem_e + pts, dim) += xs(vert_elems(e, loc_vert), dim) * lambda(curs*nb_pts_integ_quad+pts, loc_vert);
+              for (int dim = 0; dim < ndim; dim++)
+                for (int loc_vert = 0; loc_vert < 3; loc_vert++) // ndim+2 = number of vertices
+                  integ_points_(ind_elem_e + pts, dim) += xs(vert_elems(e, loc_vert), dim) * lambda_tri(pts, loc_vert);
+              weights_(ind_elem_e + pts) = weights_tri_(pts);
             }
-          if(type_elem(e)==3)
-            {weights_(ind_elem_e + pts) = weights_tri_(pts);} // tri or quad ?
-          else if (type_elem(e)==4)
-            {weights_(ind_elem_e + pts) = weights_quad_(pts);}// tri or quad ?
-          else
-            {Process::exit("Polygonale meshes not implemented yet in Quadrature_Ord3_Polygone.cpp");}
+          break;
+        case 4: // quadrangle
+          for (int n_tri = 0; n_tri < ::N_TRI_IN_QUAD; n_tri++)
+            {
+              double weight_scale = calculateWeightScale(vert_elems, xs, volumes, e, tri_in_quad(n_tri, 0), tri_in_quad(n_tri, 1), tri_in_quad(n_tri, 2));
+              for (int pts = 0; pts < ::nb_pts_integ_tri; pts++)
+                {
+                  for (int dim = 0; dim < ndim; dim++)
+                    for (int loc_vert = 0; loc_vert < 3; loc_vert++)
+                      integ_points_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri, dim) += xs(vert_elems(e, tri_in_quad(n_tri, loc_vert)), dim) * lambda_tri(pts, loc_vert);
+                  weights_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri) = weight_scale * weights_tri_(pts);
+                }
+            }
+          break;
+        default: // other
+          Process::exit("Polygonale meshes not implemented yet in Quadrature_Ord5_Polygone.cpp");
+          for (int n_tri = 0; n_tri < nsom; n_tri++)
+            {
+              int f = elem_faces(e, n_tri);
+              double weight_scale = calculateWeightScale(volumes(e), xs(face_sommets(f, 0), 0), xs(face_sommets(f, 0), 1), xs(face_sommets(f, 1), 0), xs(face_sommets(f, 1), 1), xp(e, 0), xp(e, 1));
+              for (int pts = 0; pts < ::nb_pts_integ_tri; pts++)
+                {
+                  for (int dim = 0; dim < ndim; dim++)
+                    {
+                      for (int loc_vert = 0; loc_vert < 2; loc_vert++)
+                        integ_points_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri, dim) += xs(face_sommets(f, loc_vert), dim) * lambda_tri(pts, loc_vert);
+                      integ_points_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri, dim) += xp(e, dim) * lambda_tri(pts, 3);
+                    }
+                  weights_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri) = weight_scale * weights_tri_(pts);
+                }
+            }
+          break;
         }
     }
 }
 
 void Quadrature_Ord3_Polygone::compute_integ_points_on_facet()
 {
-  nb_pts_integ_facets_=::nb_pts_integ_facet;
+  nb_pts_integ_facets_ = ::nb_pts_integ_facet;
   assert(Objet_U::dimension == 2); // no quadrangle in 3D!
 
   int nb_faces = dom_->nb_faces();
@@ -195,13 +259,13 @@ void Quadrature_Ord3_Polygone::compute_integ_points_on_facet()
 
   // We ensure that sum(weights)=1 and sum(Lambda[i])=1
   DoubleTab lambda_facets(nb_pts_integ_facets_, ndim);
-  weights_facets_[nb_pts_integ_facets_-1] = 1.;
+  weights_facets_[nb_pts_integ_facets_ - 1] = 1.;
   for (int pts = 0; pts < nb_pts_integ_facets_; pts++)
     {
       if (pts < nb_pts_integ_facets_ - 1)
         {
           weights_facets_(pts) = ::WEIGHTS_FACETS[pts];
-          weights_facets_(nb_pts_integ_facets_-1) -= weights_facets_(pts);
+          weights_facets_(nb_pts_integ_facets_ - 1) -= weights_facets_(pts);
         }
       lambda_facets(pts, 0) = ::LAMBDA_FACETS[pts][0];
       lambda_facets(pts, 1) = 1. - lambda_facets(pts, 0);
