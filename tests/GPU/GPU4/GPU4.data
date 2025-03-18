@@ -8,8 +8,8 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 10 10 3
-        /* Nombre_de_Noeuds 31 31 10 */
+        Nombre_de_Noeuds 19 19 5
+        /* Nombre_de_Noeuds 61 61 19 */
         Longueurs 10 10 3
     }
     {
@@ -23,7 +23,6 @@ Mailler dom
 }
 Dilate dom 1.e-3
 Tetraedriser_homogene dom
-Raffiner_isotrope dom
 Corriger_frontiere_periodique { domaine dom bord perio }
 # END MESH #
 
