@@ -652,7 +652,7 @@ then follow the instructions displayed on the terminal.
 \vspace{0.2cm}
 \begin{itemize} 
 \item Open a cpp file from Project Explorer tab: \\
-  Double click on TRUST-1.9.4 $\rightarrow$ Kernel $\rightarrow$ Framework $\rightarrow$ Probleme\_base.cpp \\ \vspace{0.2cm}
+  Double click on TRUST $\rightarrow$ Kernel $\rightarrow$ Framework $\rightarrow$ Probleme\_base.cpp \\ \vspace{0.2cm}
   or : Ctrl+shift+R then type Probleme\_base.cpp \\ \vspace{0.2cm}
 \item In the cpp file: Right click on method "postraiter()" \\
   $\Rightarrow$ F3: Opens Declaration \\
@@ -716,13 +716,13 @@ then follow the instructions displayed on the terminal.
 \begin{itemize}
 \item Have a look at the 2 files my\_first\_class.h|cpp.\\
 
-\item Each time a source file is added to the project, you need to reconfigure your project to take new files into account when building the exectuable:\\
+\item \textbf{Important remark:} Each time a source file is added to the project, you need to reconfigure your project to take new files into account when building the exectuable:\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ ./configure}
 
 \item Build your project with Eclipse or in the terminal.
 
-\item Edit the 2 files with vim|nedit|gedit|emacs.
+\item Edit the 2 files with gedit|vim or use Eclipse.
 \end{itemize}
 \end{block}
 
@@ -744,24 +744,24 @@ $\rightarrow$ Click on "$\blacktriangleright$" button of "my\_project" in the "P
 \begin{block}{Baltik commands}
 
 \begin{itemize}
-\item We want to change the inheritance of the class in order that it inherits from "Interprete\_geometrique\_base" class
+\item We want to change the inheritance of the class in order that it inherits from "Interprete" class
 instead of "Objet\_U".
 
-"Interprete\_geometrique\_base" class is the base class of all the keywords doing tasks on domains (eg: Mailler, Lire\_fichier,...).\\
+"Interprete" class is the base class of all the keywords doing tasks when read from the datafile, example (read, associate, solve, ...).\\
 \vspace{0.1cm}
 So:
     \begin{itemize}
-    \item [$\circ$] add an "\#include <Interprete\_geometrique\_base.h>" in my\_first\_class.h,
-    \item [$\circ$] replace "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
-    \item [$\circ$] Interprete\_geometrique\_base contains a pure virtual method which you should implement\\
-    \item [$\circ$] rebuild your application and an error will occur!
+    \item [$\circ$] add an "\#include <Interprete.h>" in my\_first\_class.h,
+    \item [$\circ$] replace "Objet\_U" to "Interprete" in the .h and .cpp files,
+    \item [$\circ$] Interprete contains a virtual method which does an exit (it should be reimplemented). In the next release, it will be a pure virtual method.\\
+    %\item [$\circ$] rebuild your application and an error will occur!
     \end{itemize}
 
-This error indicates that a pure virtual function ("interpreter\_") should be implemented.
+%This error indicates that a pure virtual function ("interpreter\_") should be implemented.
 
-\item Look at the "Interprete\_geometrique\_base" class:
+\item Look at the "Interprete" class:
     \begin{itemize}
-    \item [$\circ$] in Eclipse: highlight the string "Interprete\_geometrique\_base" and push the F3 button of your keyboard to open the declaration file of this class
+    \item [$\circ$] in Eclipse: highlight the string "Interprete" and push the F3 button of your keyboard to open the declaration file of this class
     \end{itemize}
 \end{itemize}
 
@@ -774,15 +774,15 @@ This error indicates that a pure virtual function ("interpreter\_") should be im
 \begin{block}{Baltik commands}
 
 \begin{itemize}
-\item Look at "interpreter()" method, which calls the "interpreter\_()" method. \\
- This method is called each time a keyword is read in the data file (eg: "Read\_file dom dom.geom", "Solve pb",...).
+\item Look at "interpreter()" method \\ %, which calls the "interpreter\_()" method. \\
+ This method is called each time a keyword is read from the datafile (eg: "Read\_file dom dom.geom", "Solve pb",...).
 
-\item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
+\item Define the public method "interpreter(Entree\&)" in the include file and implement it
 (just print a message with "Cerr" like "- My first keyword!") into the cpp file. \\
 "Entree" is a TRUST class to read an input stream (from a file for example):\\
-virtual Entree\& interpreter\_(Entree\&) override;
+virtual Entree\& interpreter(Entree\&) override;
 
-\item Rebuild your project and fix errors until the binary of your project is built
+\item Rebuild your project and fix errors until the debug binary of your project is generated
 \end{itemize}
 \end{block}
 
@@ -809,10 +809,10 @@ ERROR...
 \texttt{\$ cd Cx}\\
 
 \item Edit the data file:\\
-\texttt{\$ nedit Cx.data \&} \\
+\texttt{\$ gedit Cx.data \&} \\
 Add keywords "my\_first\_class" and "End" after the line where \underline{the problem is discretized}.\\
 
-\item Run this datafile with your baltik binary to check that this new keyword is recognized (see next slide).
+\item Run this datafile with your baltik binary and check that this new keyword is recognized (see next slide).
 \end{itemize}
 
 \end{block}
@@ -832,15 +832,15 @@ Add keywords "my\_first\_class" and "End" after the line where \underline{the pr
     $\rightarrow$ Click on "Resume" button (or F8) to run the calculation until the end\\
 \end{exampleblock}    
 
-\begin{block}{On a terminal:}
+\begin{block}{On a terminal, you can only run:}
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ exec=\$exec\_debug trust Cx}\\
 \end{block}    
     
-\begin{block}{}
-\textbf{Nota bene:} "Interprete\_geometrique\_base::interpreter()" method is called first,
-then it calls "my\_first\_class::interpreter\_()" method.
-\end{block}
+%\begin{block}{}
+%\textbf{NB:} "Interprete::interpreter()" method is called first,
+%then it calls "my\_first\_class::interpreter\_()" method.
+%\end{block}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -862,7 +862,28 @@ then it calls "my\_first\_class::interpreter\_()" method.
 \begin{block}{}
 
 \begin{itemize}
-\item Now, we want to read from the datafile this syntax:
+\item Now, instead of reading:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+ my\_new\_keyword
+\end{alltt}
+\end{minipage}}
+\end{center}
+%
+we want you to read this syntax from the datafile:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+ my\_new\_keyword \{ {\bf{domain}} dom\_name {\bf{option}} 0 \}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\item The recommended way is to use \textbf{Param} objects.
+
+\item As an example, see the next slide to see how to use \textbf{Param} to read the syntax:
+%
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -870,8 +891,6 @@ then it calls "my\_first\_class::interpreter\_()" method.
 \end{alltt}
 \end{minipage}}
 \end{center}
-and we will use \textbf{Param} objects as shown on the next slide.
-
 \end{itemize}
 
 \end{block}
@@ -889,7 +908,7 @@ and we will use \textbf{Param} objects as shown on the next slide.
 \#include <Param.h>\\
 Entree\& Class::interpreter(Entree\& is)\\
 \{\\
-{\bf{Nom}} opt;\\
+{\bf{int}} opt = 0;\\
 {\bf{Nom}} pb\_name;\\
 {\bf{Cerr}} <\textcompwordmark{}< "Reading parameters of A from a stream (cin or file)" <\textcompwordmark{}< {\bf{finl}};\\
 {\bf{Param}} \textcolor{orange}{param}(que\_suis\_je());\\
@@ -919,26 +938,41 @@ return is;\\
 
 \begin{itemize}
 
-\item In our case, the read of the parameters will be done by the interpreter\_() method. We want to read this syntax from the data:
+\item As said before, we want to read this syntax from the data:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-{\bf{my\_first\_class}} \{ {\bf{domaine}} dom {\bf{option}} 0 \} \\
-\textcolor{blue}{\# dom is the domain name \#}
+\small{
+{\bf{my\_first\_class}} \{ {\bf{domain}} dom {\bf{option}} 0 \}
+\textcolor{blue}{\# dom is domain name \#}
+}
 \end{alltt}
 \end{minipage}}
 \end{center}
 
- Have a look at the "Interprete\_geometrique\_base" sub-class "Extruder" which is very similar to what we want. The data file syntax is:
+\item here is how to do:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-{\bf{Extruder}} \{ {\bf{domaine}}\;DomainName\;{\bf{nb\_tranches}}\;N\;{\bf{direction}}\;X Y Z \}
+\small{
+Entree\& Class::interpreter(Entree\& is)\\
+\{\\
+{\bf{Nom}} domain\_name;\\
+... \textcolor{blue}{// read params from the datafile}\\
+\textcolor{blue}{// Retrieve the domain object name given by the user, and find}\\
+\textcolor{blue}{// back the actual instance in memory:}\\
+{\bf{Objet\_U\&}} obj = Interprete::objet(domain\_name);\\
+\textcolor{blue}{// Sanity check: if read domain name does not correspond to a domain, exit}\\
+{\bf{if}}(!sub\_type(Domaine, obj))\\
+{\bf{Process::exit(}}"Object passed to 'Class' is of wrong type!"{\bf{);}}\\
+\textcolor{blue}{// Fill the local reference to domain:}\\
+domaine\_ref\_ = {\bf{ref\_cast}}(Domaine, obj);\\
+...\\
+\}
+}
 \end{alltt}
 \end{minipage}}
 \end{center}
-\item Add into the "my\_first\_class::interpreter\_(Entree\&)" method the read of these parameters into braces using the Param object.
-\item Do not forget to add "\#include <Param.h>" into the my\_first\_class.cpp file, cause you are using now Param object.
 
 \end{itemize}
 
@@ -953,25 +987,14 @@ return is;\\
 \begin{itemize}
 
 
-
-
-\item Now we want to obtain the domain object using its name. 
-\begin{itemize}
-\item You can have a look at the following method: \\
-Interprete\_geometrique\_base::associer\_domaine ( Nom \& nom\_dom)
-\item Look for this method on the HTML documentation or via Eclipse.\\
- What is the task of this method? 
-\end{itemize}
-
-
-
-\item Once implementation is finished, add a check at the end of the method
-"interpreter\_(Entree\&)" and find how to print the domain name:
+\item Fix your implementation of "interpreter()" method (add missing includes)
+\item Add a print at the end of the method
+"interpreter(Entree\&)" and find how to print the domain name:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
 {\bf{Cerr}} <\textcompwordmark{}< "Option number " <\textcompwordmark{}< option\_number <\textcompwordmark{}< " has been read on the
-domain's named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
+domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -1020,9 +1043,9 @@ domain's named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 
 \begin{itemize}
 
-\item Edit the "my\_first\_class.cpp" file and add into the "interpreter\_()" method a loop on the boundaries.
+\item Edit the "my\_first\_class.cpp" file and add into the "interpreter()" method a loop on the boundaries.
 
-Look for help inside the "Domaine", "Bord", "Frontiere" classes in the HTML documentation to access to the:
+Look for help inside the "Domaine", "Bord", "Frontiere" classes in Eclipse or in the HTML documentation to access to the:
     \begin{itemize}
     \item [$\circ$] Number of boundaries (\textbf{nb\_bords()} method)
     \item [$\circ$] Boundaries (\textbf{bord(int)} method)
@@ -1048,23 +1071,23 @@ Print these information with something like:
 \frametitle{Modify your cpp class (Part 2)}
 \begin{block}{Compute the sum of the control volumes of a domain discretized in VEF}
 \begin{itemize}
-\item Information about control volumes is in the "Domaine\_VF" class (a "Domaine\_dis" discretized domain) which can't be accessed 
+\item Information about control volumes is in the "Domaine\_VF" class (discretized domain) which can't be accessed 
 from the domain, but only from the problem. 
 
-So, you need to read another parameter in your data file:\\
+So, you need to read another parameter from your datafile:\\
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-{\bf{my\_first\_class}} \{ {\bf{domaine}} dom {\bf{option}} 0 {\bf{problem}} pb \}
+{\bf{my\_first\_class}} \{ {\bf{domain}} dom {\bf{option}} 0 {\bf{problem}} pb \}
 \end{alltt}
 \end{minipage}}
 \end{center}
 
-\item Add the read of a new parameter problem into "my\_first\_class.cpp" file (see "Extraire\_plan::interpreter\_(Entree\&)" method for instance).
+\item Add the read of a new parameter problem into "my\_first\_class.cpp" file (see the example at the beggining of this part).
 
 \item Remember the "equation" or "problem" UML diagram of the presentation's slides.
 
-\item Look for help inside the "Domaine\_VF", "Probleme\_base" and "Domaine\_dis\_base" into the HTML documentation to access to the:
+\item Look for help inside the "Domaine\_VF", "Probleme\_base" and "Domaine\_dis\_base" in Eclipse or the HTML documentation to access to the:
     \begin{itemize}
     \item [$\circ$] discretized domain (\textbf{domaine\_dis()} method)
     \item [$\circ$] control volumes (\textbf{volumes\_entrelaces()} method)
@@ -1103,7 +1126,7 @@ Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Domaine\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{{\bf{Add XData tags}}}
+\subsection{{\bf{Add XD tags (keyword documentation)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1120,13 +1143,13 @@ Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Domaine\
 \begin{block}{}
 
 \begin{itemize}
-\item We want now to add XData tag to create the automated documentation of your new code.
-\item First we have to create this documentation for the first time.\\
+\item We want now to add XD tags to create the automated documentation of your new code.
+\item First, we have to create this documentation for the first time.\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make gui}
 \item Open the documentation file:\\
 \texttt{\$ evince \$project\_directory/build/xdata/XTriou/doc.pdf \&}
-\item Now we will add comments in our cpp files to add information in the documentation.
+\item Now will add XD tags (keyword documentation) in cpp files.
 \item For this open the help of the TRAD\_2 syntaxe:\\
 \texttt{\$ gedit \$project\_directory/build/xdata/XTriou/doc\_TRAD\_2 \&}
 \end{itemize}
@@ -1144,9 +1167,9 @@ Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Domaine\
 \begin{alltt}
 \textcolor{blue}{// XD english\_class\_name base\_class\_name TRUST\_class\_name mode description}
 \end{alltt}
-\item The "english\_class\_name" and "TRUST\_class\_name" can be "my\_first\_class".
+where "english\_class\_name" and "TRUST\_class\_name" can be "my\_first\_class".
 \item The "base\_class\_name" is the name of the section in which will appear the information of your new class in the 'doc.pdf' file.
-\item The "mode" is to choose with the help of the doc\_TRAD\_2 file. Here we use "-3".
+\item The "mode" is to choose with the help of the doc\_TRAD\_2 file. Here set it to "-3".
 \end{itemize}
 
 \end{block}
@@ -1163,7 +1186,7 @@ Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Domaine\
 param.ajouter(...);  \textcolor{blue}{// XD\_ADD\_P type description}
 \end{alltt}
 where "type" can be (cf 'doc\_TRAD\_2' file): 'int', 'floattant', 'chaine', 'rien'...
-\item Compile the documentation:\\
+\item rebuild the documentation:\\
 \texttt{\$ make gui}
 \item Check that the documentation of your new class is in the new doc:\\
 \texttt{\$ evince \$project\_directory/build/xdata/XTriou/doc.pdf \&}
@@ -1293,7 +1316,7 @@ where "DataFileName" is the name of the data file (eg: Cx).
 \item For that, you will:
 \begin{itemize}
 \item  create an object of the class \textbf{Nom} and fill it by collecting the datafile's name using \textbf{Objet\_U::nom\_du\_cas()} method.
-\item complete the datafile's name with the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
+\item complete the datafile's name with the string "\_result.txt" thanks to the "operator" += method of the class \textbf{Nom}.
 \item create the output file with the \textbf{SFichier} class and print the sum into it.
 \end{itemize}
 \item Compile your project and run Cx datafile: \\
@@ -1925,18 +1948,18 @@ For more information about GDB commands, refer to the help menu.\\
 \texttt{(gdb) print matrice}\\
 \texttt{(gdb) print matrice.que\_suis\_je() \textcolor{blue}{\# Kind of matrix ?}}\\
 \texttt{(gdb) print matrice.que\_suis\_je().nom\_ \textcolor{blue}{\# Kind of matrix ?}}
-\texttt{(gdb) up 5 \textcolor{blue}{\# Move up 5 levels}}\\
-\texttt{(gdb) list 900}
+\texttt{(gdb) up 6 \textcolor{blue}{\# Move up 6 levels}}\\
+\texttt{(gdb) list 865}
 
 \item Print others variables:\\
 \texttt{(gdb) \textcolor{blue}{\# Pressure field}}\\
-\texttt{(gdb) print la\_pression.que\_suis\_je().nom\_}\\
+\texttt{(gdb) print la\_pression->que\_suis\_je().nom\_}\\
 \texttt{(gdb) \textcolor{blue}{\# Pressure values (DoubleTab)}}\\
-\texttt{(gdb) print la\_pression.valeurs()}\\
+\texttt{(gdb) print la\_pression->valeurs()}\\
 \texttt{(gdb) \textcolor{blue}{\# DoubleTab dimension}}\\
-\texttt{(gdb) print la\_pression.valeurs().nb\_dim()}\\
+\texttt{(gdb) print la\_pression->valeurs().nb\_dim()}\\
 \texttt{(gdb) \textcolor{blue}{\# Dump the field values}}\\
-\texttt{(gdb) dumptab la\_pression.valeurs()}
+\texttt{(gdb) pttab la\_pression->valeurs()}
 \end{itemize}
 
 \end{block}
@@ -1983,24 +2006,21 @@ For more information about GDB commands, refer to the help menu.\\
 \begin{block}{}
 
 \begin{itemize}
-\item Edit the "my\_first\_class.cpp" file and remove the initialization of the sum to calcule the total of control volumes.\\
-In place of "double sum=0;", put only "double sum;".\\
+\item Edit the "my\_first\_class.cpp" file and remove initialization the following line (before computing the sum of control volumes):\\
+double sum = 0;
+\item Edit "my\_first\_class.h" and add in protected:\\
+double sum; // do not initialize it to 0
 \item Rebuild your project and run the test case:\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make debug optim}\\
 \texttt{\$ cd build/Cx/}\\
-    \begin{itemize}
-    \item [$\circ$] in mode optim:\\
-    \texttt{\$ exec=\$exec\_opt trust Cx}\\
-In this case, no error appears.
-    \item [$\circ$] in mode debug:\\
-    \texttt{\$ exec=\$exec\_debug trust Cx}\\
-In this case also, no error appears.
-    \item [$\circ$] in mode valgrind:\\
-    \texttt{\$ VALGRIND=1 exec=\$exec\_opt trust Cx}\\
+\texttt{\$ exec=\$exec\_opt trust Cx   \# in mode optim, no error!}\\
+\texttt{\$ exec=\$exec\_debug trust Cx \# in mode debug, no error too}\\
+\texttt{\$ VALGRIND=1 exec=\$exec\_opt trust Cx \# in mode valgrind} \\
+Valgrind detects that there is a "Conditional jump or move depends on uninitialised value(s)"\\
 On the other hand, in this case, there are errors.\\
-    \texttt{\$ ==7517== ERROR SUMMARY: 187 errors from 109 contexts}
-    \end{itemize}
+\texttt{\$ ==28400== ERROR SUMMARY: 772 errors from 114 contexts} \\
+\texttt{NB: In valgrind+debug mode, you'll get the file+line number }
 \end{itemize}
 
 \end{block}
@@ -2042,6 +2062,7 @@ On the other hand, in this case, there are errors.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{\bf{Appendix}}
+
 \subsection{\bf{Configuring TRUST project in Eclipse}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2083,7 +2104,7 @@ Load TRUST environment and copy "upwind" test case as described on p.\ref{initTr
 \begin{exampleblock}{Create the project}
 \begin{itemize}
 \item File $\rightarrow$ New $\rightarrow$ C/C++ Project $\rightarrow$ C++ Managed Build \\
- $\Rightarrow$ Project name: TRUST-X.Y.Z (e.g.: TRUST-1.8.2) \\
+ $\Rightarrow$ Project name: TRUST-X.Y.Z (e.g.: TRUST-1.9.5) \\
  $\Rightarrow$ Project type: "Executable"  $\rightarrow$  "Empty Project" \\
  $\Rightarrow$ Toolchains: "Linux GCC" \\
  $\Rightarrow$ Finish
