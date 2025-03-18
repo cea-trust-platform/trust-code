@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,13 +36,9 @@ class Interprete;
  */
 class Interprete : public Objet_U
 {
-  Declare_instanciable(Interprete);
+  Declare_base(Interprete);
 public:
-  virtual Entree& interpreter(Entree& is)
-  {
-    exit();
-    return is;
-  }
+  virtual Entree& interpreter(Entree&) = 0 ;
 
   static Objet_U& objet(const Nom&);
   static int objet_existant(const Nom&);

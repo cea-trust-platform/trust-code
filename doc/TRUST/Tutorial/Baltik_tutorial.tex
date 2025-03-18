@@ -753,11 +753,9 @@ So:
     \begin{itemize}
     \item [$\circ$] add an "\#include <Interprete.h>" in my\_first\_class.h,
     \item [$\circ$] replace "Objet\_U" to "Interprete" in the .h and .cpp files,
-    \item [$\circ$] Interprete contains a virtual method which does an exit (it should be reimplemented). In the next release, it will be a pure virtual method.\\
-    %\item [$\circ$] rebuild your application and an error will occur!
+    \item [$\circ$] Interprete class is an abstact class, it contains a pure virtual method which should be implemented!\\
+    \item [$\circ$] rebuild your application and an error will occur!
     \end{itemize}
-
-%This error indicates that a pure virtual function ("interpreter\_") should be implemented.
 
 \item Look at the "Interprete" class:
     \begin{itemize}
@@ -780,7 +778,7 @@ So:
 \item Define the public method "interpreter(Entree\&)" in the include file and implement it
 (just print a message with "Cerr" like "- My first keyword!") into the cpp file. \\
 "Entree" is a TRUST class to read an input stream (from a file for example):\\
-virtual Entree\& interpreter(Entree\&) override;
+Entree\& interpreter(Entree\&) override;
 
 \item Rebuild your project and fix errors until the debug binary of your project is generated
 \end{itemize}
