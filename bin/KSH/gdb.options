@@ -1,3 +1,6 @@
+# To print a TRUSTArray/Vect/Tab (10 first values), use: pttab name_of_array
+# To print a TRUSTArray (range [0,21[), use: pttab name_of_array 21
+# To print a TRUSTArray (range [15,30[), use: pttab name_of_array 15 30
 define pttab
   # Syntax:
   # pttab ze_tab       <- will print 10 first values
@@ -33,7 +36,7 @@ define dumptab
  while $i < $dima
     set $j = 0
     while $j < $dimb
-       printf "%16.12f ", $arg0.data_[$i*$dimb+$j++]
+       printf "%16.12f ", *(&$arg0[$i*$dimb+$j++])
     end
     printf "\n"
     set $i = $i+1
@@ -41,7 +44,7 @@ define dumptab
 end 
 
 
-# To print a TRUST IntTab, use: dumpinttab name_of_array
+# To Print a TRUST IntTab, use: dumpinttab name_of_array
 define dumpinttab
  set $dimb = $arg0.line_size()
  set $dima = $arg0.dimension_tot(0)
@@ -50,7 +53,7 @@ define dumpinttab
  while $i < $dima
     set $j = 0
     while $j < $dimb
-       printf "%10d ", $arg0.data_[$i*$dimb+$j++]
+       printf "%10d ", *(&$arg0[$i*$dimb+$j++])
     end
     printf "\n"
     set $i = $i+1
@@ -60,11 +63,11 @@ end
 
 # To print a TRUST IntVect, use: dumpint name_of_array
 define dumpint
- set $dima = $arg0.size_array_
+ set $dima = $arg0.size_array()
  printf "%8d\n", $dima
  set $i = 0
  while $i < $dima
-    printf "[%10d]= %10d\n", $i, $arg0.data_[$i++]
+    printf "[%10d]= %10d\n", $i, *(&$arg0[$i++])
  end
 end
 
@@ -93,5 +96,5 @@ end
 define pintarray
   printf "%10d\n", $arg0.data_[$arg1]
 end
-# To print a value of a TRUST array tab(i,j), use: print tab.operator(i,j)
+# to print a value of a TRUST array tab(i,j), use: print tab.operator(i,j)
 break exit
