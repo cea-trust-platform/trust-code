@@ -238,7 +238,6 @@ void Champ_Gen_de_Champs_Gen::completer(const Postraitement_base& post)
         {
           OBS_PTR(Champ_Generique_base)& source_ref=sources_reference_.add(OBS_PTR(Champ_Generique_base)());
           const Postraitement& postraitement =ref_cast(Postraitement,post);
-          //const Probleme_base& pb = ref_cast(Postraitement,post).probleme();
           source_ref = postraitement.get_champ_post(noms_sources_ref_[i]);
         }
     }
@@ -246,6 +245,13 @@ void Champ_Gen_de_Champs_Gen::completer(const Postraitement_base& post)
   for (int i = n_sources_ref ; i < n; i++)
     {
       Champ_Generique_base& source_a_completer = ref_cast(Champ_Generique_base,set_source(i));
+      if (sub_type(Champ_Gen_de_Champs_Gen,source_a_completer))
+        {
+          Champ_Gen_de_Champs_Gen& champ = ref_cast(Champ_Gen_de_Champs_Gen,source_a_completer);
+          const Nom& my_parent = champ.get_parent_name();
+          Nom me = my_parent == "??" ? nom_post_ : my_parent + "_" + nom_post_;
+          champ.set_parent_name(me);
+        }
       source_a_completer.completer(post);
     }
 

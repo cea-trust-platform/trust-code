@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,13 @@ void Champ_Generique_Moyenne::completer(const Postraitement_base& post)
   const Domaine_dis_base& zdis = get_ref_domaine_dis_base();
 
   Op_Moyenne_.associer(zdis,ch_integre,tstat_deb_,tstat_fin_);
-  Op_Moyenne_.completer(Pb);
+
+  Nom prefix = Pb.le_nom() + "_";
+  if(post.le_nom() != "??" && post.le_nom() != "neant")
+    prefix += post.le_nom() +"_";
+  if(parent_name_ != "??" && !use_source_name_only_)
+    prefix += parent_name_ + "_";
+  Op_Moyenne_.completer(Pb, prefix);
 }
 
 const Champ_base& Champ_Generique_Moyenne::get_champ_without_evaluation(OWN_PTR(Champ_base)& espace_stockage) const

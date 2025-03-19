@@ -112,7 +112,7 @@ lire pb
             WALL paroi_adiabatique
         }
     }
-    sauvegarde single_hdf Cas.sauv
+    sauvegarde pdi Cas.sauv
 }
 
 ecritureLectureSpecial 0

@@ -180,7 +180,7 @@ Read pb_box
             y_plus    elem
         }
     }
-    Sauvegarde_simple single_hdf DomainFlowLES_pb_box.sauv
+    Sauvegarde_simple pdi DomainFlowLES_pb_box.sauv
     # Resume_last_time single_hdf DomainFlowLES_pb_box.sauv #
 }
 # Read the second problem #
@@ -310,7 +310,7 @@ Read pb_dom
 
 
 
-    Sauvegarde_simple single_hdf DomainFlowLES_pb_dom.sauv
+    Sauvegarde_simple pdi DomainFlowLES_pb_dom.sauv
     # Resume_last_time single_hdf DomainFlowLES_pb_dom.sauv #
 }
 

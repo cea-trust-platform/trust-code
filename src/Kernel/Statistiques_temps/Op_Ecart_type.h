@@ -43,7 +43,7 @@ public:
   inline void fixer_tstat_deb(double, double) override;
   inline void fixer_tstat_fin(double) override;
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
-  void completer(const Probleme_base&) override;
+  void completer(const Probleme_base&, const Nom&) override;
   DoubleTab calculer_valeurs() const override;
   inline std::vector<YAML_data> data_a_sauvegarder() const override;
   inline int sauvegarder(Sortie& os) const override;
@@ -100,7 +100,7 @@ inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis, const Cham
  */
 inline std::vector<YAML_data> Op_Ecart_type::data_a_sauvegarder() const
 {
-  std::string name = integrale_carre_champ_.le_champ_calcule().le_nom().getString();
+  const std::string& name = integrale_carre_champ_.le_champ_calcule().get_pdi_name().getString();
   int nb_dim = integrale_carre_champ_.le_champ_calcule().valeurs().nb_dim();
   YAML_data d(name, "double", nb_dim);
 

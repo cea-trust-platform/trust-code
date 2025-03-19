@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,17 +35,20 @@ Entree& Op_Moyenne::lire_ch_moyenne(Entree& is)
   return is >> ch_moyenne_convergee_;
 }
 
-void Op_Moyenne::completer(const Probleme_base& Pb)
+void Op_Moyenne::completer(const Probleme_base& Pb, const Nom& prefix)
 {
-  Nom nom_pour_post = Pb.le_nom() + "_Moyenne_";
+  Nom nom_pour_post = "Moyenne_";
 
   const OBS_PTR(Champ_Generique_base) &mon_champ = integrale_champ_.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);
 
   integrale_champ_.le_champ_calcule().nommer(nom_pour_post);
-  // Dimensionnement du champ integrale_champ a la meme taille que mon_champ
 
+  Nom pdi_name = prefix + nom_pour_post;
+  integrale_champ_.le_champ_calcule().set_pdi_name(pdi_name);
+
+  // Dimensionnement du champ integrale_champ a la meme taille que mon_champ
   OWN_PTR(Champ_base) espace_stockage_source;
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   const DoubleTab& tab1 = source.valeurs();

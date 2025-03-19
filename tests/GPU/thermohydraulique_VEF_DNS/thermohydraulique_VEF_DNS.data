@@ -444,7 +444,7 @@ Lire pb
 
 
     } # fin liste ptraitement #
-    Sauvegarde single_hdf DNS_Stationnaire.sauv
+    Sauvegarde pdi DNS_Stationnaire.sauv
 } # fin lire #
 
 EcritureLectureSpecial 0

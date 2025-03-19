@@ -296,7 +296,7 @@ lire pb
             }
         }
     }
-    sauvegarde single_hdf Cas.sauv
+    sauvegarde pdi Cas.sauv
 }
 
 ecritureLectureSpecial 0

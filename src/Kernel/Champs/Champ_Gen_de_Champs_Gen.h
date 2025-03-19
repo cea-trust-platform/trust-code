@@ -85,6 +85,9 @@ public:
 
   void nommer_sources(const Postraitement_base& post);
   virtual void nommer_source();
+  void set_parent_name(const Nom& nom) { parent_name_ = nom; }
+  const Nom& get_parent_name() const { return parent_name_; }
+
   int get_info_type_post() const override;
 
   const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;
@@ -98,6 +101,7 @@ public:
   virtual void lire_bidon(Entree& is) const;
 
 protected:
+  Nom parent_name_; //Name of the field for which I am the source
   LIST(OWN_PTR(Champ_Generique_base)) sources_;        //Attribut qui designent les sources de "premier niveau"
   LIST(Nom) noms_sources_ref_;
   LIST(OBS_PTR(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un

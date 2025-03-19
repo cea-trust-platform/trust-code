@@ -46,7 +46,7 @@ public:
   virtual double temps() const =0;
   virtual const Integrale_tps_Champ& integrale() const =0;
   virtual void initialiser(double val) =0;
-  virtual void completer(const Probleme_base&) =0;
+  virtual void completer(const Probleme_base&, const Nom& post_name) =0;
   virtual DoubleTab calculer_valeurs() const =0;
   virtual int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
   inline double tstat_deb() const { return tstat_deb_; }

@@ -50,7 +50,7 @@ public:
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
   inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
-  void completer(const Probleme_base&) override;
+  void completer(const Probleme_base&, const Nom&) override;
   DoubleTab calculer_valeurs() const override;
 
 protected:
@@ -125,7 +125,7 @@ inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Cha
  */
 inline std::vector<YAML_data> Op_Correlation::data_a_sauvegarder() const
 {
-  std::string name = integrale_tps_ab_.le_champ_calcule().le_nom().getString();
+  const std::string& name = integrale_tps_ab_.le_champ_calcule().get_pdi_name().getString();
   int nb_dim = integrale_tps_ab_.le_champ_calcule().valeurs().nb_dim();
   YAML_data d(name, "double", nb_dim);
   std::vector<YAML_data> data;

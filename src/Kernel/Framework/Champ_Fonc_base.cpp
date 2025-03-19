@@ -83,6 +83,14 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, RESIZE_OPTION
 }
 
 
+const Nom& Champ_Fonc_base::get_pdi_name() const
+{
+  if(pdi_name_ == "??")
+    return nom_;
+  else
+    return pdi_name_;
+}
+
 /*! @brief Sauvegarde le champ sur un flot de sortie Ecrit le nom, le temps et les valeurs.
  *
  * @param (Sortie& fich) un flot de sortie
@@ -110,12 +118,12 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
   else if (TRUST_2_PDI::is_PDI_checkpoint())
     {
       bytes = 8 * valeurs().size_array();
-
+      const Nom& name = get_pdi_name();
       TRUST_2_PDI pdi_interface;
-      pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 1 /*write mode*/);
+      pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
 
       DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
-      pdi_interface.TRUST_start_sharing(nom_.getString(), unknwon.addr());
+      pdi_interface.TRUST_start_sharing(name.getString(), unknwon.addr());
     }
   else
     {
@@ -149,8 +157,9 @@ int Champ_Fonc_base::reprendre(Entree& fich)
       if(TRUST_2_PDI::is_PDI_restart())
         {
           TRUST_2_PDI pdi_interface;
-          pdi_interface.share_TRUSTTab_dimensions(valeurs(), nom_, 0 /*read mode*/);
-          pdi_interface.read(nom_.getChar(), valeurs().addr());
+          const Nom& name = get_pdi_name();
+          pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 0 /*read mode*/);
+          pdi_interface.read(name.getChar(), valeurs().addr());
         }
       else
         {

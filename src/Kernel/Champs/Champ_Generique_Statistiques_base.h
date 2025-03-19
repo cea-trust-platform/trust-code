@@ -70,8 +70,11 @@ public:
     return tstat_fin_;
   }
 
+  void use_source_name_only(bool b) { use_source_name_only_ = b; }
+
 protected:
 
+  bool use_source_name_only_ = false; // for PDI: does the name has to be prefixed with the name of my parent field, or am I just using my name?
   double tstat_deb_, tstat_fin_; //temps de debut et de fin des statistiques pour ce champ
 };
 

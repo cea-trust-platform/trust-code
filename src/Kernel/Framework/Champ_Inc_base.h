@@ -162,10 +162,13 @@ public:
 
   void PDI_save_type(bool b) { PDI_save_type_ = b; }
   virtual std::vector<YAML_data> data_a_sauvegarder() const;
+  Nom get_PDI_dname() const;
+  void set_PDI_dname(const Nom& name) { PDI_dname_ = name; }
 
 protected:
   // Par defaut on initialise les valeurs a zero
   virtual void creer_tableau_distribue(const MD_Vector&, RESIZE_OPTIONS = RESIZE_OPTIONS::COPY_INIT);
+
 
   Roue_ptr les_valeurs;
   OBS_PTR(Domaine_Cl_dis_base) mon_dom_cl_dis;
@@ -180,6 +183,7 @@ protected:
   bool bord_fluide_multiphase_ = false, via_ch_fonc_reprise_ = false;
 
   bool PDI_save_type_ = false; // do we save the type of the unknown in pdi format?
+  Nom PDI_dname_; // For restart with PDI: to use if the name of the dataset we want to read is different from the name of the field
 
 };
 

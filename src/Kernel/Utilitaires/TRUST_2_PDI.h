@@ -77,7 +77,7 @@ public:
     const Comm_Group_MPI* nodeComm = dynamic_cast<const Comm_Group_MPI*>(&ngrp);
     if(nodeComm)
       {
-        MPI_Comm comm = nodeComm->get_mpi_comm(); // mpi communicator of my node
+        const MPI_Comm& comm = nodeComm->get_mpi_comm(); // mpi communicator of my node
         int nodeSz = nodeComm->nproc();  // number of procs in my node
         int nodeRk = nodeComm->rank();   // my rank inside the node
         int nodeId = nodeComm->get_node_id(); // id of my node (among all the other nodes)
@@ -85,13 +85,14 @@ public:
         const Comm_Group& nm = PE_Groups::get_node_master(); // Communicator for the master of my node (this communicator is empty if I'm not the master of my node)
         const Comm_Group_MPI* nodeMaster = dynamic_cast<const Comm_Group_MPI*>(&nm);
         assert(nodeMaster);
-        MPI_Comm masterComm = nodeMaster->get_mpi_comm();  // mpi communicator reserved for the master of my node only
+        const MPI_Comm& masterComm = nodeMaster->get_mpi_comm();  // mpi communicator reserved for the master of my node only
 
         PDI_multi_expose("Parallelism",
-                         "node",&comm, PDI_OUT,
+                         /* only the first data needs to be non const*/
                          "nodeSize",&nodeSz, PDI_OUT,
                          "nodeRk",    &nodeRk, PDI_OUT,
                          "nodeId",    &nodeId, PDI_OUT,
+                         "node",&comm, PDI_OUT,
                          "master", &masterComm, PDI_OUT,
                          nullptr);
       }

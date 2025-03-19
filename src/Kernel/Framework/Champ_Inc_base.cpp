@@ -336,12 +336,30 @@ double Champ_Inc_base::recuperer_temps_passe(int i) const
   const Roue& la_roue = les_valeurs.valeur();
   return la_roue.passe(i).temps();
 }
+/*! @brief for PDI IO: retrieve the name of the HDF5 dataset in which the field will be saved or be restored from
+ */
+Nom Champ_Inc_base::get_PDI_dname() const
+{
+  Nom name = PDI_dname_;
+  if(name == "??")
+    {
+      if(mon_equation_non_nul())
+        name = equation().probleme().le_nom() + "_" + le_nom();
+      else
+        {
+          // Sometimes (with Champ_fonc_reprise), the equation has not been associated yet so we can't prefix the name of the dataset with the name of the problem
+          Cerr << "Champ_Inc_base::get_PDI_dname equation has not been associated yet. Please set the dataset name with Champ_Inc_base::set_PDI_dname()." << finl;
+          Process::exit();
+        }
+    }
+  return name;
+}
 
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.
  */
 std::vector<YAML_data> Champ_Inc_base::data_a_sauvegarder() const
 {
-  std::string name = equation().probleme().le_nom().getString() + "_" + le_nom().getString() ;
+  std::string name = get_PDI_dname().getString();
   int nb_dim = valeurs().nb_dim();
   YAML_data d(name, "double", nb_dim);
   d.set_save_field_type(PDI_save_type_);
@@ -382,7 +400,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
 
       // Sharing the dimensions of the unknown field with PDI
       TRUST_2_PDI pdi_interface;
-      Nom name = equation().probleme().le_nom() + "_" + nom_;
+      Nom name = get_PDI_dname();
       pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
 
       if(PDI_save_type_)
@@ -437,9 +455,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
       if(TRUST_2_PDI::is_PDI_restart())
         {
           TRUST_2_PDI pdi_interface;
-          // Sometimes (with Champ_fonc_reprise), the equation has not been associated yet so we just share the raw name of the field
-          // otherwise, we need to prefix it with the name of the problem
-          Nom name = mon_equation_non_nul() ? equation().probleme().le_nom() + "_" + nom_ : nom_;
+          Nom name = get_PDI_dname();
           pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 0 /*read mode*/);
           if( valeurs().dimension_tot(0) )
             pdi_interface.read(name.getChar(), valeurs().addr());

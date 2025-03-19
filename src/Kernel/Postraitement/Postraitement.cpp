@@ -856,7 +856,6 @@ std::vector<YAML_data> Postraitement::data_a_sauvegarder() const
             post.set_conditions(cond);
           data.insert(data.end(), post_data.begin(), post_data.end());
         }
-
       auto add_stat = [&](const std::string& n, const std::string& type)
       {
         YAML_data d(n, type);
@@ -866,13 +865,17 @@ std::vector<YAML_data> Postraitement::data_a_sauvegarder() const
       };
 
       const std::string& pb_name = probleme().le_nom().getString();
-      std::string stat_name = pb_name + "_stat_nb_champs";
+      Nom vide;
+      const Nom& nom_post = le_nom();
+      std::string post_name = (nom_post != "neant") && (nom_post != vide) ? nom_post.getString() + "_" : "";
+
+      std::string stat_name = pb_name + "_" + post_name + "stat_nb_champs";
       add_stat(stat_name, "int");
 
-      stat_name = pb_name + "_stat_tdeb";
+      stat_name = pb_name + "_" + post_name + "stat_tdeb";
       add_stat(stat_name, "double");
 
-      stat_name = pb_name + "_stat_tend";
+      stat_name = pb_name + "_" + post_name + "stat_tend";
       add_stat(stat_name, "double");
     }
   return data;
@@ -909,13 +912,16 @@ int Postraitement::sauvegarder(Sortie& os) const
             {
               TRUST_2_PDI pdi_interface;
               const std::string& pb_name = probleme().le_nom().getString();
+              Nom vide;
+              const Nom& nom_post = le_nom();
+              std::string post_name = (nom_post != "neant") && (nom_post != vide) ? nom_post.getString() + "_" : "";
               int nb_champs = nb_champs_stat_;
               double tdeb = tstat_deb_, tend =  tstat_dernier_calcul_;
-              std::string name = pb_name + "_stat_nb_champs";
+              std::string name = pb_name + "_" + post_name + "stat_nb_champs";
               pdi_interface.TRUST_start_sharing(name, &nb_champs);
-              name = pb_name + "_stat_tdeb";
+              name = pb_name + "_" + post_name + "stat_tdeb";
               pdi_interface.TRUST_start_sharing(name, &tdeb);
-              name = pb_name + "_stat_tend";
+              name = pb_name + "_" + post_name + "stat_tend";
               pdi_interface.TRUST_start_sharing(name, &tend);
             }
 
@@ -951,9 +957,13 @@ int Postraitement::reprendre(Entree& is)
                 {
                   TRUST_2_PDI pdi_interface;
                   const std::string& pb_name = probleme().le_nom().getString();
-                  pdi_interface.read(pb_name + "_stat_nb_champs", &n);
-                  pdi_interface.read(pb_name + "_stat_tdeb", &tstat_deb_sauv);
-                  pdi_interface.read(pb_name + "_stat_tend", &temps_derniere_mise_a_jour_stats);
+                  Nom vide;
+                  const Nom& nom_post = le_nom();
+                  std::string post_name = (nom_post != "neant") && (nom_post != vide) ? nom_post.getString() + "_" : "";
+
+                  pdi_interface.read(pb_name + "_" + post_name + "stat_nb_champs", &n);
+                  pdi_interface.read(pb_name + "_" + post_name + "stat_tdeb", &tstat_deb_sauv);
+                  pdi_interface.read(pb_name + "_" + post_name + "stat_tend", &temps_derniere_mise_a_jour_stats);
                 }
               else
                 {
@@ -2185,6 +2195,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
 
       champ_post.fixer_noms_compo(compo);
       champ_stat.fixer_tdeb_tfin(t_deb,t_fin);
+      champ_stat.use_source_name_only(true);
       OWN_PTR(Champ_Generique_base)& champ_a_completer = champs_post_complet_.add_if_not(champ);
       champ_a_completer->completer(*this);
 

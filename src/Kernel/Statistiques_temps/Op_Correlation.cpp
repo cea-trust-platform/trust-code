@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ Entree& Op_Correlation::readOn(Entree& s)
   return s;
 }
 
-void Op_Correlation::completer(const Probleme_base& Pb)
+void Op_Correlation::completer(const Probleme_base& Pb, const Nom& prefix)
 {
   const OBS_PTR(Champ_Generique_base)& a = la_moyenne_a().integrale().le_champ();
   const OBS_PTR(Champ_Generique_base)& b = la_moyenne_b().integrale().le_champ();
@@ -153,9 +153,12 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   if (nb_comp > 1)
     val.resize(0, nb_comp);
 
-  Nom nom_pour_post = Pb.le_nom() + "_Correlation_";
+  Nom nom_pour_post = "Correlation_";
   nom_pour_post += nom_a + "_" + nom_b;
   integrale_tps_ab_.le_champ_calcule().nommer(nom_pour_post);
+
+  Nom pdi_name = prefix + nom_pour_post;
+  integrale_tps_ab_.le_champ_calcule().set_pdi_name(pdi_name);
 
   integrale_tps_ab_.le_champ_calcule().associer_domaine_dis_base(domaine);
   integrale_tps_ab_.le_champ_calcule().fixer_nb_comp(nb_comp);

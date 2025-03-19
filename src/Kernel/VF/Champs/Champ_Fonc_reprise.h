@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,9 +76,9 @@ public:
 
 private:
   OWN_PTR(Champ_Inc_base) vrai_champ_;
-  void init_pdi( const Probleme_base& pb, Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen);
-  void read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, Nom nom_ident,
-                            Nom nom_ident_champ_stat, int reprend_champ_moyen, Nom nom_ident_champ_keps, int reprend_modele_k_eps, int pdi_format = 0);
+  void init_pdi( const Probleme_base& pb, const Nom& nom_fic, const Nom& ch_ident, int last_time, double un_temps, int reprend_champ_moyen);
+  void read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, const Nom& nom_ident,
+                            const Nom& nom_ident_champ_stat, int reprend_champ_moyen, const Nom& nom_ident_champ_keps, int reprend_modele_k_eps, int pdi_format = 0);
   inline virtual const Champ_Inc_base& le_champ() const { return vrai_champ_.valeur(); }
   inline virtual Champ_Inc_base& le_champ() { return vrai_champ_.valeur(); }
 };

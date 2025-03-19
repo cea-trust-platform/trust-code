@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,8 @@ public:
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
+  inline void set_pdi_name(const Nom& nom) { pdi_name_ = nom; }
+  const Nom& get_pdi_name() const;
 
   Champ_base& affecter_(const Champ_base&) override;
   Champ_base& affecter_compo(const Champ_base&, int compo) override;
@@ -59,6 +61,7 @@ protected:
   // Par defaut on initialise les valeurs a zero
   virtual void creer_tableau_distribue(const MD_Vector&, RESIZE_OPTIONS = RESIZE_OPTIONS::COPY_INIT);
   OBS_PTR(Domaine_VF) le_dom_VF;
+  Nom pdi_name_; // name to use when saving the field with PDI (ensures that the name is unique among all the other fields, as we can't the same data declared multiples times with PDI)
 };
 
 #endif /* Champ_Fonc_base_included */

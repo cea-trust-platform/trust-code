@@ -26,6 +26,7 @@ class Op_Moyenne: public Operateur_Statistique_tps_base
 public:
   Entree& lire_ch_moyenne(Entree& is);
   inline const Nom& le_nom() const override { return integrale_champ_.le_champ_calcule().le_nom(); }
+  inline void set_pdi_name(const Nom& nom) { integrale_champ_.le_champ_calcule().set_pdi_name(nom); }
   inline double temps() const override { return integrale_champ_.le_champ_calcule().temps(); }
   inline Champ_Don_base& moyenne_convergee() { return ch_moyenne_convergee_; }
   inline const Integrale_tps_Champ& integrale() const override { return integrale_champ_; }
@@ -41,7 +42,7 @@ public:
   inline std::vector<YAML_data> data_a_sauvegarder() const override;
   inline int sauvegarder(Sortie& os) const override;
   inline int reprendre(Entree& is) override;
-  void completer(const Probleme_base&) override;
+  void completer(const Probleme_base&, const Nom&) override;
   DoubleTab calculer_valeurs() const override;
 
 protected:
@@ -95,7 +96,7 @@ inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_G
  */
 inline std::vector<YAML_data> Op_Moyenne::data_a_sauvegarder() const
 {
-  std::string name = integrale_champ_.le_champ_calcule().le_nom().getString();
+  const std::string& name = integrale_champ_.le_champ_calcule().get_pdi_name().getString();
   int nb_dim = integrale_champ_.le_champ_calcule().valeurs().nb_dim();
   YAML_data d(name, "double", nb_dim);
 

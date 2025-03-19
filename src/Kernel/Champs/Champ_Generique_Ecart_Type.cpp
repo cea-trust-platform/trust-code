@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,13 @@ void Champ_Generique_Ecart_Type::completer(const Postraitement_base& post)
       const Operateur_Statistique_tps_base& operateur = ref_cast(Champ_Generique_Moyenne,champ_stat_base).Operateur_Statistique();
       const Op_Moyenne& op_moyenne = ref_cast(Op_Moyenne,operateur);
       Op_Ecart_Type_.associer_op_stat(op_moyenne);
-      Op_Ecart_Type_.completer(Pb);
+
+      Nom prefix = Pb.le_nom() + "_";
+      if(post.le_nom() != "??" && post.le_nom() != "neant")
+        prefix += post.le_nom() +"_";
+      if(parent_name_ != "??" && !use_source_name_only_)
+        prefix += parent_name_ + "_";
+      Op_Ecart_Type_.completer(Pb, prefix);
     }
   else
     {

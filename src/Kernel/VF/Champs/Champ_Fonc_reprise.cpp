@@ -118,8 +118,12 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   // Cas du K-Epsilon
   if (((Motcle)nom_champ).debute_par("K_EPS"))
     {
+      if(format_rep == "pdi")
+        {
+          Cerr << "Champ_Fonc_reprise Error! Restart with K_EPS not supported yet with PDI format! Please contact TRUST support." << finl;
+          Process::exit();
+        }
       reprend_modele_k_eps=1;
-
       // cas du k-epsilon realisable
       if (Motcle(nom_champ).finit_par("_REALISABLE"))
         {
@@ -145,19 +149,24 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   vrai_champ_.typer(ch_inc.que_suis_je());
   vrai_champ_->associer_domaine_dis_base(pb.domaine_dis());
   //vrai_champ_->fixer_nb_valeurs_temporelles(2);
-  Nom inc_name = ch_inc.le_nom();
-  if(format_rep == "pdi")
-    {
-      Nom nom_ch = pb.le_nom() + "_" + ch_inc.le_nom();
-      le_champ().nommer(nom_ch);
-    }
-  else
-    vrai_champ_->nommer(inc_name);
+  vrai_champ_->nommer(ch_inc.le_nom());
   vrai_champ_->fixer_nb_comp(ch_inc.nb_comp());
   //vrai_champ_->fixer_nb_valeurs_nodales(ch_inc.nb_valeurs_nodales());
   vrai_champ_->valeurs() = ch_inc.valeurs();
   vrai_champ_->set_via_ch_fonc_reprise(); // useful for PolyMAC for the moment !
   nb_compo_ = ch_inc.nb_comp();
+
+  // creation des identifiants pdi (necessaire pour l'initialisation de PDI)
+  Nom nom_champ_pdi =pb.le_nom() + "_";
+  if (reprend_champ_moyen)
+    {
+      nom_champ_pdi += "Moyenne_";
+      nom_champ_pdi += Motcle(nom_champ_inc) + "_";
+      nom_champ_pdi += Motcle("NATIF_");
+      nom_champ_pdi += Motcle(pb.domaine().le_nom());
+    }
+  else
+    nom_champ_pdi += nom_champ_inc;
 
   statistiques().begin_count(temporary_counter_);
 
@@ -200,7 +209,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       fic_hdf.close();
     }
   else if (format_rep == "pdi")
-    init_pdi(pb, nom_fic, last_time, un_temps, reprend_champ_moyen);
+    init_pdi(pb, nom_fic, nom_champ_pdi, last_time, un_temps, reprend_champ_moyen);
   else
     {
       if (format_rep == "xyz")
@@ -275,8 +284,8 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       nom_ident="Operateurs_Statistique_tps";
       nom_ident+=pb.domaine().le_nom();
       nom_ident+=nom_temps;
-      nom_ident_champ_stat=pb.le_nom() + "_" + nom_champ;
 
+      nom_ident_champ_stat=nom_champ;
       nom_ident_champ_stat+="Champ_Fonc";
       type.suffix("Champ");
       nom_ident_champ_stat+=type;
@@ -316,7 +325,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   else if(format_rep == "pdi")
     {
       Entree bidon;
-      read_field_from_file(s, bidon, pb, nom_ident, nom_ident_champ_stat, reprend_champ_moyen, nom_ident_champ_keps, reprend_modele_k_eps, 1 /*pdi_format*/);
+      read_field_from_file(s, bidon, pb, nom_champ_pdi, "", reprend_champ_moyen, "", reprend_modele_k_eps, 1 /*pdi_format*/);
     }
   else
     read_field_from_file(s, fic_rep.valeur(), pb, nom_ident, nom_ident_champ_stat, reprend_champ_moyen, nom_ident_champ_keps, reprend_modele_k_eps);
@@ -365,24 +374,24 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   return s ;
 }
 
-void Champ_Fonc_reprise::init_pdi(const Probleme_base& pb, Nom nom_fic, int last_time, double un_temps, int reprend_champ_moyen)
+void Champ_Fonc_reprise::init_pdi(const Probleme_base& pb, const Nom& nom_fic, const Nom& ch_ident, int last_time, double un_temps, int reprend_champ_moyen)
 {
   TRUST_2_PDI::set_PDI_restart(1);
 
   Ecrire_YAML yaml_file;
   yaml_file.add_pb_base(pb, nom_fic);
   int nb_dim = le_champ().valeurs().nb_dim();
-  Nom nom_ch = le_champ().le_nom();
-  yaml_file.add_field(pb.le_nom(), nom_ch, nb_dim);
+  const Nom& pbname = pb.le_nom();
+  yaml_file.add_field(pbname, ch_ident, nb_dim);
   if(reprend_champ_moyen)
     {
-      Nom pbname = pb.le_nom();
       yaml_file.add_scalar(pbname, pbname + "_stat_nb_champs", "int", false /* same data for every proc */ );
       yaml_file.add_scalar(pbname, pbname + "_stat_tdeb", "double", false /* same data for every proc */);
       yaml_file.add_scalar(pbname, pbname + "_stat_tend", "double", false /* same data for every proc */);
     }
-  yaml_file.write_champ_fonc_restart_file("restart.yml");
-  TRUST_2_PDI::init("restart.yml");
+  std::string yaml_fname = "restart_" + pbname.getString() + "_" + le_champ().le_nom().getString() + ".yml";
+  yaml_file.write_champ_fonc_restart_file(yaml_fname);
+  TRUST_2_PDI::init(yaml_fname);
 
   TRUST_2_PDI pdi_interface;
   int last_iteration = -1;
@@ -391,13 +400,15 @@ void Champ_Fonc_reprise::init_pdi(const Probleme_base& pb, Nom nom_fic, int last
 
 }
 
-void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, Nom nom_ident,
-                                              Nom nom_ident_champ_stat, int reprend_champ_moyen, Nom nom_ident_champ_keps, int reprend_modele_k_eps,
+void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const Probleme_base& pb, const Nom& nom_ident,
+                                              const Nom& nom_ident_champ_stat, int reprend_champ_moyen, const Nom& nom_ident_champ_keps, int reprend_modele_k_eps,
                                               int pdi_format)
 {
   // Lecture du fichier
   if(!pdi_format)
     avancer_fichier(file, nom_ident);
+  else
+    le_champ().set_PDI_dname(nom_ident);
 
   if (reprend_champ_moyen)
     {
@@ -428,16 +439,13 @@ void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const P
       Nom pb_name = pb.le_nom();
       ajout += pb_name;
       ajout += " ";
-      if(pdi_format)
-        ajout += le_champ().le_nom().getSuffix(pb_name + "_");
-      else
-        ajout += le_champ().le_nom();
+      ajout += le_champ().le_nom();
       ajout += " }";
       Entree_complete s_complete(ajout,jdd);
       s_complete>>champ;
-
       champ_moyen.associer(pb.domaine_dis(),champ.valeur(),tdeb,tfin);
-      champ_moyen.completer(pb);
+      champ_moyen.completer(pb, "");
+      champ_moyen.set_pdi_name(nom_ident);
       champ_moyen.fixer_tstat_deb(tdeb,tfin);
       champ_moyen.reprendre(file);
 
@@ -451,7 +459,6 @@ void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const P
     }
   else
     le_champ().reprendre(file);
-
 }
 
 void Champ_Fonc_reprise::mettre_a_jour(double t)

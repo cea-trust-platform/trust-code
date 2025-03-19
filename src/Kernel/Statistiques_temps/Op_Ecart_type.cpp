@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,15 +29,19 @@ Entree& Op_Ecart_type::readOn(Entree& s)
   return s;
 }
 
-void Op_Ecart_type::completer(const Probleme_base& Pb)
+void Op_Ecart_type::completer(const Probleme_base& Pb, const Nom& prefix)
 {
-  Nom nom_pour_post = Pb.le_nom() + "_Ecart_type_";
+  Nom nom_pour_post = "Ecart_type_";
 
   const OBS_PTR(Champ_Generique_base) &mon_champ = integrale_carre_champ_.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);
 
   integrale_carre_champ_.le_champ_calcule().nommer(nom_pour_post);
+
+  Nom pdi_name = prefix + nom_pour_post;
+  integrale_carre_champ_.le_champ_calcule().set_pdi_name(pdi_name);
+
   if (la_moyenne_.non_nul())
     integrale_champ_ = moyenne().integrale();
 
