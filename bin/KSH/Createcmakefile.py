@@ -380,7 +380,6 @@ include_directories(SYSTEM
     ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include 
     ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include 
     ${CUDA_INC_PATH} 
-    ${ROCM_PATH}/include  
     ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include 
     ${TRUST_ROOT}/lib/src/LIBROCALUTION/include 
     ${TRUST_LATAFILTER}/include 
@@ -391,6 +390,12 @@ include_directories(SYSTEM
     ${TRUST_ROOT}/include/EOS 
     ${TRUST_ROOT}/include/CoolProp
 )
+if ( NOT ${ROCM_PATH} STREQUAL "")
+  include_directories(SYSTEM
+    ${ROCM_PATH}/include
+  )
+endif()
+
 
 #
 # Extra compiler flags - coming from env/Cmake.env:

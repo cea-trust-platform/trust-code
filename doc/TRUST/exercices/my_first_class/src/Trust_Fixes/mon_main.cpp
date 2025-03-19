@@ -144,12 +144,13 @@ static int init_parallel_mpi(OWN_PTR(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool check_enabled, bool with_petsc)
 {
-  bool init_kokkos_before_mpi = true; // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
+  bool init_kokkos_before_mpi = (getenv("KOKKOS_AFTER_MPI") == nullptr);
+  // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
   if (init_kokkos_before_mpi)
     {
-      // Kokkos initialisation
+      // Kokkos initialization
       True_int argc2 = argc;
-      Kokkos::initialize( argc2, argv );
+      Kokkos::initialize(argc2, argv);
     }
   Nom arguments_info="";
   arguments_info +="Kokkos initialized!\n";
@@ -157,10 +158,6 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
-  // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
-  // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
-  Objet_U::computeOnDevice = getenv("TRUST_DISABLE_DEVICE") == nullptr ? true : false;
-
   bool must_mpi_initialize = true;
   if (with_petsc)
     {
@@ -213,7 +210,7 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
 
   if (!init_kokkos_before_mpi)
     {
-      // Kokkos initialisation
+      // Kokkos initialization
       True_int argc2 = argc;
       Kokkos::initialize(argc2, argv);
       if (Process::je_suis_maitre())
@@ -330,6 +327,13 @@ void mon_main::dowork(const Nom& nom_du_cas)
     if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";
     Process::Journal() << "Journal logging started" << finl;
   }
+
+#ifdef TRUST_USE_GPU
+  // PL: It will be better to do it sooner (near Cuda init or Kokkos init) but need stat and journal initialized
+  // Soon obsolete:
+  init_device();
+  self_test();
+#endif
 
   Nom nomfic( nom_du_cas );
   nomfic += ".stop";
