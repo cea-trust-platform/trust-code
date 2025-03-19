@@ -18,16 +18,13 @@
 
 #include <Interprete.h>
 
-/*! @brief Ecrit un objet : Mkdir ob1
+/*! @brief Keyword to create a directory, typically from a data file
  *
- * @sa Mkdir_Fichier
  */
-
 class Mkdir : public Interprete
 {
   Declare_instanciable(Mkdir);
 public :
   Entree& interpreter(Entree&) override;
 };
-
 #endif /* Mkdir_included */

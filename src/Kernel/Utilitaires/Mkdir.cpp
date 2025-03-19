@@ -21,14 +21,18 @@ Implemente_instanciable(Mkdir,"Mkdir",Interprete);
 // XD mkdir interprete mkdir 0 equivalent to system mkdir
 // XD attr directory chaine directory 0 directory to create
 
+/*! @brief call to the printOn method of the Interpreter class
+ *
+ */
 Sortie& Mkdir::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
+/*! @brief call to the readOn method of the Interpreter class
+ *
+ */
 Entree& Mkdir::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Lit le nom d'un objet dans is Ecrit l'objet correspondant sur la sortie standard
+/*! @brief make directories: create the directory named is
  *
- * @param (Entree& is)
- * @return (Entree&)
  */
 Entree& Mkdir::interpreter(Entree& is)
 {
