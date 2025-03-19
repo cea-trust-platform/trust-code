@@ -472,3 +472,32 @@ void Matrice_Dense::multiplyToRight(const Matrice_Dense& B, Matrice_Dense& RES) 
     }
   return;
 }
+
+Matrice_Dense operator+(const Matrice_Dense& A, const Matrice_Dense& B)
+{
+  assert( A.nb_lignes() == B.nb_lignes() );
+  assert( A.nb_colonnes() == B.nb_colonnes() );
+  Matrice_Dense resu(A.nb_lignes(), A.nb_colonnes());
+  for (int i=0; i<A.nb_lignes(); i++)
+    {
+      for (int j=0; j<A.nb_colonnes(); j++)
+        {
+          resu.set_coefficient(i,j,A(i,j)+B(i,j));
+        }
+    }
+  return resu;
+}
+
+Matrice_Dense operator*(const double& a, const Matrice_Dense& B)
+{
+  Matrice_Dense resu(B.nb_lignes(), B.nb_colonnes());
+  for (int i=0; i<B.nb_lignes(); i++)
+    {
+      for (int j=0; j<B.nb_colonnes(); j++)
+        {
+          resu.set_coefficient(i,j,a*B(i,j));
+        }
+    }
+  return resu;
+}
+
