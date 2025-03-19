@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,15 +49,22 @@ void Champ_Fonc_Tabule_P0_EF::mettre_a_jour(double t)
   for (int i = 0; i < nb_param; i++)
     les_ch_param[i]->valeur_aux_elems(centres_de_gravites, les_polys, val_params_aux_elems[i]);
   // Compute the field according to the parameter field
-  const int nbcomp = mes_valeurs.dimension(1);
-  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
-    for (int ncomp = 0; ncomp < nbcomp; ncomp++)
-      {
-        std::vector<double> vals;
-        for (int n = 0; n < nb_param; n++)
-          vals.push_back(val_params_aux_elems[n](num_elem, les_ch_param[n]->valeurs().dimension(1) == 1 ? 0 : ncomp));
-        mes_valeurs(num_elem, ncomp) = la_table->val(vals, ncomp);
-      }
+  if (la_table->isfonction() != 2)
+    {
+      const int nbcomp = mes_valeurs.dimension(1);
+      for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+        for (int ncomp = 0; ncomp < nbcomp; ncomp++)
+          {
+            std::vector<double> vals;
+            for (int n = 0; n < nb_param; n++)
+              vals.push_back(val_params_aux_elems[n](num_elem, les_ch_param[n]->valeurs().dimension(1) == 1 ? 0 : ncomp));
+            mes_valeurs(num_elem, ncomp) = la_table->val(vals, ncomp);
+          }
+    }
+  else
+    {
+      la_table->valeurs(val_params_aux_elems[0], centres_de_gravites, t, mes_valeurs);
+    }
 
   Champ_Fonc_base::mettre_a_jour(t);
 }
