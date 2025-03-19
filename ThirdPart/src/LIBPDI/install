@@ -8,7 +8,7 @@ rm -fr $build_dir
 mkdir -p $build_dir
 
 # Path to library install
-install_dir=$TRUST_ROOT/lib/src/LIBPDI
+install_dir=$TRUST_PDI_ROOT
 plugin_install_dir=$install_dir/lib64
 rm -rf $install_dir
 mkdir -p $install_dir
