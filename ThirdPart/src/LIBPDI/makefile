@@ -1,6 +1,6 @@
 ext_pkg=$(TRUST_ROOT)/externalpackages/PDI
-PDI_ARCHIVE=$(ext_pkg)/pdi-1.7.1.tar.gz
-PDI=$(TRUST_ROOT)/lib/src/LIBPDI/lib64/libpdi.so
+PDI_ARCHIVE=$(ext_pkg)/pdi-1.8.3.tar.gz
+PDI=$(TRUST_PDI_ROOT)/lib64/libpdi.so
 HDF5=$(TRUST_HDF5_ROOT)/lib/libhdf5.a
 
 all : $(PDI)
