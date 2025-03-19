@@ -109,6 +109,7 @@ then
                then
                   intel=`dirname $(dirname $TRUST_F77_BASE)`
                   [ "$TRUST_ARCH_CC" = "linux_icpc" ] && intel=`dirname $intel`
+                  intel=`realpath $intel`
                   intel_sys_path=`cat $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h | sed "s/ /\n/g" | grep $intel | sed "s/-L//g" | tr '\n' ' '`
                   SYSLIBS_P=$SYSLIBS_P" "$intel_sys_path
                fi

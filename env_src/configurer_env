@@ -1453,7 +1453,7 @@ else
       then
          MPI_BIN=`dirname $mpiCC` # Variable temporaire utile ensuite
 	 # On a besoin de specifier le compilateur utilise par mpiCC
-	 if [ "`$mpiCC -show | grep -i openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ]
+	 if [ "`$mpiCC -show | grep -i openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi | grep -v intel-compilers`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ]
 	 then
             m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC"  && ecrit $m"|"$e"|"$env;eval $e
@@ -1858,8 +1858,8 @@ OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
   linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc*) TRUST_SUPPORTED=1
-	[ "$TRUST_STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=530 && ver<=1411) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
-	[ "$TRUST_STDCPP" = c++17 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=820 && ver<=1411) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	[ "$TRUST_STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=530 && ver<=1420) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	[ "$TRUST_STDCPP" = c++17 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=820 && ver<=1420) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
