@@ -181,7 +181,7 @@ Read pb_box
         }
     }
     Sauvegarde_simple pdi DomainFlowLES_pb_box.sauv
-    # Resume_last_time single_hdf DomainFlowLES_pb_box.sauv #
+    # Resume_last_time pdi DomainFlowLES_pb_box.sauv #
 }
 # Read the second problem #
 Read pb_dom
@@ -311,7 +311,7 @@ Read pb_dom
 
 
     Sauvegarde_simple pdi DomainFlowLES_pb_dom.sauv
-    # Resume_last_time single_hdf DomainFlowLES_pb_dom.sauv #
+    # Resume_last_time pdi DomainFlowLES_pb_dom.sauv #
 }
 
 EcritureLectureSpecial 0

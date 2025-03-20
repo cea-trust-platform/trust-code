@@ -62,6 +62,10 @@ Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 // XD attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
 // XD attr is_multi_scalar rien is_multi_scalar_diffusion 1 Flag to activate the multi_scalar diffusion operator
 
+// XD format_file objet_lecture nul 0 Format of the file
+// XD attr format chaine(into=["binaire","formatte","xyz","single_hdf", "pdi"]) format 1 Type of file (the file format).
+// XD attr name_file chaine name_file 0 Name of file.
+
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
 LIST(Nom) glob_noms_fichiers;
@@ -84,7 +88,7 @@ Sortie& Probleme_base::printOn(Sortie& os) const
  *      nom_equation bloc de lecture d'une equation
  *      Postraitement bloc de lecture postraitement
  *      reprise | sauvegarde | sauvegarde_simple
- *      formatte | binaire
+ *      formatte | binaire | pdi
  *      nom_de_fichier
  *      }
  *  L'option sauvegarde_simple permet de sauver le probleme dans le fichier choisi
