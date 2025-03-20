@@ -192,7 +192,7 @@ void main2 (int argc,char **argv) {
         }
 
     }
-  else
+  else if (emetteur_group.containsMyRank())
     {
       cas="emetteur";
       if (is_master)
