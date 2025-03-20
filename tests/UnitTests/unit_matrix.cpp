@@ -40,3 +40,51 @@ TEST(Matrice_Dense, solve) {
       EXPECT_DOUBLE_EQ(x(1), 1);
 }
 
+TEST(Matrice_Dense, AddTwoMatrix) {
+      Matrice_Dense A(2,2);
+      A(0,0) = 1;
+      A(0,1) = 2;
+      A(1,0) = 3;
+      A(1,1) = 4;
+      Matrice_Dense B(2,2);
+      B(0,0) = 1;
+      B(0,1) = 2;
+      B(1,0) = 3;
+      B(1,1) = 4;
+      Matrice_Dense C(2,2);
+      C=A+B;
+      EXPECT_DOUBLE_EQ(C(0,0),2);
+      EXPECT_DOUBLE_EQ(C(0,1),4);
+      EXPECT_DOUBLE_EQ(C(1,0),6);
+      EXPECT_DOUBLE_EQ(C(1,1),8);
+}
+
+TEST(Matrice_Dense, MultiplyMatrixByDouble) {
+      Matrice_Dense A(2,2);
+      A(0,0) = 1;
+      A(0,1) = 2;
+      A(1,0) = 3;
+      A(1,1) = 4;
+      double my_double=3;
+      Matrice_Dense C(2,2);
+      C=my_double*A;
+      EXPECT_DOUBLE_EQ(C(0,0),3);
+      EXPECT_DOUBLE_EQ(C(0,1),6);
+      EXPECT_DOUBLE_EQ(C(1,0),9);
+      EXPECT_DOUBLE_EQ(C(1,1),12);
+}
+
+TEST(Matrice_Dense, ScalarProduct) {
+      Matrice_Dense A(2,2);
+      A(0,0) = 1;
+      A(0,1) = 2;
+      A(1,0) = 3;
+      A(1,1) = 4;
+      DoubleVect B(2);
+      B(0)=1;
+      B(1)=1;
+      DoubleVect C(2);
+      C=A*B;
+      EXPECT_DOUBLE_EQ(C(0),3);
+      EXPECT_DOUBLE_EQ(C(1),7);
+}
