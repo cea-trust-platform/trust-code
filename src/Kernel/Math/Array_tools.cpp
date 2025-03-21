@@ -121,7 +121,7 @@ static inline int same_line(const IntTab_T<_SIZE_>& v, _SIZE_ i, _SIZE_ j)
 {
   const int ls = v.line_size();
   for (int k = 0; k < ls; k++)
-    if (v[i*ls+k] != v[j*ls+k])
+    if (v(i,k) != v(j,k))
       return 0;
   return 1;
 }

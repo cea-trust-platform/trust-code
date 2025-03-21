@@ -26,6 +26,7 @@ set(src_unit
      unit_array_kokkos.cpp
      unit_matrix.cpp
      unit_kokkos.cpp
+     unit_array_tools.cpp
 #     ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTArray.cpp
 #     ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTVect_tools.cpp
 #     ${CMAKE_SOURCE_DIR}/Kernel/Math/TRUSTTravPool.cpp
