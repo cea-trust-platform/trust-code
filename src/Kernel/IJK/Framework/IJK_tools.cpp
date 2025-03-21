@@ -617,6 +617,9 @@ void squared_3x3(double& a11, double& a12, double& a13, double& a21, double& a22
 
 void interpolate_to_center(IJK_Field_vector3_double& cell_center_field, const IJK_Field_vector3_double& face_field)
 {
+  // We are not changing the const semantic of the field to update ghost cells:
+  IJK_Field_vector3_double& face_fld_non_const = const_cast<IJK_Field_vector3_double&>(face_field);
+  face_fld_non_const.echange_espace_virtuel();
   /* Interpole le champ face_field aux centres des elements et le stocke dans cell_center_field */
   const int kmax = cell_center_field[0].nk();
   const int jmax = cell_center_field[0].nj();
