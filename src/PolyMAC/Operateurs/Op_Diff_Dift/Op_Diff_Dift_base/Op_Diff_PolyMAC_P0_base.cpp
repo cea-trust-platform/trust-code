@@ -20,6 +20,7 @@
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Champ_Don_Fonc_xyz.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <Aire_interfaciale.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Milieu_base.h>
@@ -78,6 +79,17 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
       N_mil = equation().milieu().has_masse_volumique() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
       N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
+
+  const bool is_aire_int = sub_type(Aire_interfaciale, equation()); /* cas Aire_interfaciale, pas de nu lam ... */
+
+  if (is_aire_int)
+    {
+      nu_ = 0.;
+      /* modification par une classe fille */
+      modifier_mu(nu_);
+      nu_a_jour_ = 1;
+      return;
+    }
 
   /* nu_ : si necessaire, on doit etendre la champ source */
   if (N_nu == N && N_nu_src == N_mil)

@@ -13,50 +13,28 @@
 *
 *****************************************************************************/
 
-#ifndef Aire_interfaciale_included
-#define Aire_interfaciale_included
+#ifndef Transport_turbulent_aire_interfaciale_included
+#define Transport_turbulent_aire_interfaciale_included
+#include <TRUSTTab.h>
+#include <Transport_turbulent_base.h>
 
-#include <Convection_Diffusion_std.h>
-#include <Fluide_base.h>
-#include <TRUST_Ref.h>
-
-/*! @brief classe Aire_interfaciale Equation de transport de l'aire interfaciale
+/*! @brief classe Transport_turbulent_aire_interfaciale Transport turbulent de type aire_interfaciale:
  *
- * @sa Conv_Diffusion_std Convection_Diffusion_Temperature
+ *     < u'_i theta'> = - nu_t / Pr_t d_i theta = - sigma_t nu_t d_i theta
+ *     (l'utilisateur peut donner sigma_t ou Pr_t)
+ *
+ *
  */
-class Aire_interfaciale : public Convection_Diffusion_std
+class Transport_turbulent_aire_interfaciale : public Transport_turbulent_base
 {
-  Declare_instanciable_sans_constructeur(Aire_interfaciale);
+  Declare_instanciable(Transport_turbulent_aire_interfaciale);
+public:
+  int dimension_min_nu() const override
+  {
+    return 1; //isotrope
+  }
+  void modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const override;
 
-public :
-
-  Aire_interfaciale();
-
-  void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc_base& inconnue() const override { return l_inco_ch_; }
-  inline Champ_Inc_base& inconnue() override { return l_inco_ch_; }
-  void discretiser() override;
-  const Milieu_base& milieu() const override;
-  Milieu_base& milieu() override;
-  void associer_milieu_base(const Milieu_base& ) override;
-  int impr(Sortie& os) const override;
-  void mettre_a_jour(double temps) override;
-
-  int positive_unkown() override {return 1;}
-
-  int nombre_d_operateurs() const override { return has_diff_turb_ ? 2 : 1; }
-  const Operateur& operateur(int) const override;
-  Operateur& operateur(int) override;
-
-  const Motcle& domaine_application() const override;
-
-protected :
-  OWN_PTR(Champ_Inc_base) l_inco_ch_;
-  OWN_PTR(Champ_Fonc_base)  diametre_bulles_;
-  OBS_PTR(Fluide_base) le_fluide_;
-
-  bool has_diff_turb_ = false;
-  int n_l_=-1 ; // Number of the liquid phase (the one where no IA is stored)
 };
 
-#endif /* Aire_interfaciale_included */
+#endif

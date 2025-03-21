@@ -13,50 +13,50 @@
 *
 *****************************************************************************/
 
-#ifndef Aire_interfaciale_included
-#define Aire_interfaciale_included
+#include <Transport_turbulent_aire_interfaciale.h>
+#include <Param.h>
+#include <Probleme_base.h>
 
-#include <Convection_Diffusion_std.h>
-#include <Fluide_base.h>
-#include <TRUST_Ref.h>
+#include <Pb_Multiphase.h>
+#include <TRUSTTrav.h>
 
-/*! @brief classe Aire_interfaciale Equation de transport de l'aire interfaciale
- *
- * @sa Conv_Diffusion_std Convection_Diffusion_Temperature
- */
-class Aire_interfaciale : public Convection_Diffusion_std
+Implemente_instanciable(Transport_turbulent_aire_interfaciale, "Transport_turbulent_aire_interfaciale", Transport_turbulent_base);
+// XD type_diffusion_turbulente_multiphase_aire_interfaciale type_diffusion_turbulente_multiphase_deriv aire_interfaciale 1 not_set
+
+Sortie& Transport_turbulent_aire_interfaciale::printOn(Sortie& os) const
 {
-  Declare_instanciable_sans_constructeur(Aire_interfaciale);
+  return os;
+}
 
-public :
+Entree& Transport_turbulent_aire_interfaciale::readOn(Entree& is)
+{
+  return is;
+}
 
-  Aire_interfaciale();
+// Modifier_nu modifie mu : alpha et rho font partie du terme
+void Transport_turbulent_aire_interfaciale::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
+{
+  const DoubleTab& rho = eq.milieu().masse_volumique().passe();
+  int  nl = nu.dimension(0), N = nu.dimension(1), D = dimension;
 
-  void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc_base& inconnue() const override { return l_inco_ch_; }
-  inline Champ_Inc_base& inconnue() override { return l_inco_ch_; }
-  void discretiser() override;
-  const Milieu_base& milieu() const override;
-  Milieu_base& milieu() override;
-  void associer_milieu_base(const Milieu_base& ) override;
-  int impr(Sortie& os) const override;
-  void mettre_a_jour(double temps) override;
+  //viscosite cinematique turbulente
+  DoubleTrav nu_t(nl, N);
+  visc_turb.eddy_viscosity(nu_t); /* on a nu turb */
 
-  int positive_unkown() override {return 1;}
-
-  int nombre_d_operateurs() const override { return has_diff_turb_ ? 2 : 1; }
-  const Operateur& operateur(int) const override;
-  Operateur& operateur(int) override;
-
-  const Motcle& domaine_application() const override;
-
-protected :
-  OWN_PTR(Champ_Inc_base) l_inco_ch_;
-  OWN_PTR(Champ_Fonc_base)  diametre_bulles_;
-  OBS_PTR(Fluide_base) le_fluide_;
-
-  bool has_diff_turb_ = false;
-  int n_l_=-1 ; // Number of the liquid phase (the one where no IA is stored)
-};
-
-#endif /* Aire_interfaciale_included */
+  if (nu.nb_dim() == 2)
+    for (int i = 0; i < nl; i++)
+      {
+        for (int n = 0; n < 1; n++) //isotrope
+          nu(i, n) = rho(i, n) * nu_t(i, n) / 0.405;
+      }
+  else if (nu.nb_dim() == 3)
+    for (int i = 0; i < nl; i++)
+      for (int n = 0; n < N; n++)
+        for (int d = 0; d < D; d++) //anisotrope diagonal
+          nu(i, n, d) = rho(i, n) * nu_t(i, n) / 0.405;
+  else
+    for (int i = 0; i < nl; i++)
+      for (int n = 0; n < N; n++)
+        for (int d = 0; d < D; d++) //anisotrope complet
+          nu(i, n, d, d) = rho(i, n) * nu_t(i, n) / 0.405;
+}

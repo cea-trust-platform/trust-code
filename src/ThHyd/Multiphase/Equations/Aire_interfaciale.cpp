@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Transport_turbulent_aire_interfaciale.h>
 #include <EcritureLectureSpecial.h>
 #include <Schema_Implicite_base.h>
 #include <Scalaire_impose_paroi.h>
@@ -27,7 +28,6 @@
 #include <Pb_Multiphase.h>
 #include <Neumann_paroi.h>
 #include <Discret_Thyd.h>
-
 #include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <EChaine.h>
@@ -46,6 +46,9 @@ Sortie& Aire_interfaciale::printOn(Sortie& is) const
 
 Entree& Aire_interfaciale::readOn(Entree& is)
 {
+  terme_diffusif.associer_eqn(*this);
+  terme_convectif.associer_eqn(*this);
+
   assert(l_inco_ch_.non_nul());
   assert(le_fluide_.non_nul());
   Convection_Diffusion_std::readOn(is);
@@ -53,7 +56,8 @@ Entree& Aire_interfaciale::readOn(Entree& is)
   terme_convectif.set_fichier("Convection_interfacial_area");
   terme_convectif.set_description((Nom)"interfacial area transfer rate=Integral(-A*u*ndS) [kg] if SI units used");
 
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, probleme()) ? &ref_cast(Pb_Multiphase, probleme()) : nullptr;
+  Pb_Multiphase *pbm = sub_type(Pb_Multiphase, probleme()) ? &ref_cast(Pb_Multiphase, probleme()) : nullptr;
+
 
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
   for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
@@ -61,6 +65,37 @@ Entree& Aire_interfaciale::readOn(Entree& is)
   if (n_l_ < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
   if (pbm->has_correlation("diametre_bulles")) Process::exit(que_suis_je() + " : the interfacial area equation sets bubble diameter, there cannot be an exterior correlation !");
+
+  if (pbm)
+    {
+      const QDM_Multiphase& qdm = ref_cast(QDM_Multiphase, pbm->equation_qdm());
+
+      if (discretisation().is_vdf())
+        {
+          Cerr << "The turbulent operator of Aire_interfaciale equation is not yet ported to the VDF discretization ..." << finl;
+          Process::exit();
+        }
+
+      if (qdm.operateur_diff()->is_turb() && terme_diffusif->is_turb())
+        {
+          terme_diffusif.set_fichier("Diffusion_interfacial_area");
+          terme_diffusif.set_description((Nom)"interfacial area transfer rate=Integral(mu_t/0.405*grad(ai)*ndS) [W] if SI units used");
+          has_diff_turb_  = true;
+
+          /*
+           * Teste si la corr Transport_turbulent_aire_interfaciale ...
+           */
+          if (terme_diffusif->correlation_viscosite_turbulente())
+            {
+              if (!sub_type(Transport_turbulent_aire_interfaciale, *terme_diffusif->correlation_viscosite_turbulente()))
+                {
+                  Cerr << "Error in you Aire_interfaciale::readOn !! \n You can only use the Transport_turbulent_aire_interfaciale correlation for the diffusion operator !" << finl;
+                  Process::exit();
+                }
+            }
+        }
+
+    }
 
   return is;
 }
@@ -128,22 +163,64 @@ void Aire_interfaciale::associer_fluide(const Fluide_base& un_fluide)
 
 const Operateur& Aire_interfaciale::operateur(int i) const
 {
-  if (i)
+  if (!has_diff_turb_)
     {
-      Cerr << "Aire_interfaciale : wrong operator number " << i << finl;
-      Process::exit();
+      if (i)
+        {
+          Cerr << "Error for Aire_interfaciale::operateur(int i)" << finl;
+          Cerr << "Aire_interfaciale has " << nombre_d_operateurs() <<" operators "<<finl;
+          Cerr << "and you are trying to access the " << i <<" th one."<< finl;
+          exit();
+        }
+
+      return terme_convectif;
     }
-  return terme_convectif;
+
+  switch(i)
+    {
+    case 0:
+      return terme_diffusif;
+    case 1:
+      return terme_convectif;
+    default :
+      Cerr << "Error for Aire_interfaciale::operateur(int i)" << finl;
+      Cerr << "Aire_interfaciale has " << nombre_d_operateurs() <<" operators "<<finl;
+      Cerr << "and you are trying to access the " << i <<" th one."<< finl;
+      exit();
+    }
+  // Pour les compilos!!
+  return terme_diffusif;
 }
 
 Operateur& Aire_interfaciale::operateur(int i)
 {
-  if (i)
+  if (!has_diff_turb_)
     {
-      Cerr << "Aire_interfaciale : wrong operator number " << i << finl;
-      Process::exit();
+      if (i)
+        {
+          Cerr << "Error for Aire_interfaciale::operateur(int i)" << finl;
+          Cerr << "Aire_interfaciale has " << nombre_d_operateurs() <<" operators "<<finl;
+          Cerr << "and you are trying to access the " << i <<" th one."<< finl;
+          exit();
+        }
+
+      return terme_convectif;
     }
-  return terme_convectif;
+
+  switch(i)
+    {
+    case 0:
+      return terme_diffusif;
+    case 1:
+      return terme_convectif;
+    default :
+      Cerr << "Error for Aire_interfaciale::operateur(int i)" << finl;
+      Cerr << "Aire_interfaciale has " << nombre_d_operateurs() <<" operators "<<finl;
+      Cerr << "and you are trying to access the " << i <<" th one."<< finl;
+      exit();
+    }
+  // Pour les compilos!!
+  return terme_diffusif;
 }
 
 void Aire_interfaciale::mettre_a_jour(double temps)
