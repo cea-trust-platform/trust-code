@@ -40,6 +40,11 @@ find_library(libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_
 #    message(FATAL_ERROR "Could not find BALTIK library: ${libbaltik_name}.so - did you run: make module_optim in your baltik (potentially in debug)??")
 #endif()
 
+if (APPLE)
+  find_package(PythonInterp 3 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
+  find_package(PythonLibs 3 REQUIRED)    # ... so that TRUST Python libs are found too.
+endif()
+
 find_package(Python3 COMPONENTS Interpreter Development.Module  REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
@@ -53,6 +58,9 @@ include_directories(
   ${TRUST_ROOT}/lib/src/LIBICOCOAPI/include
   ${MEDCOUPLING_DIR}/include
   ${Python3_INCLUDE_DIRS})
+
+message("@@@@ Python3_INCLUDE_DIRS : ${Python3_INCLUDE_DIRS} ")
+message("@@@@ Python3_EXECUTABLE : ${Python3_EXECUTABLE} ")
 
 # Configuring .i file to put TRUST version into it
 set(TRUST_VERSION $ENV{TRUST_VERSION})
