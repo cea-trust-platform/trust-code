@@ -58,9 +58,6 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   echo "Patching for gcc15 support ..."
   patch -p1 < $curr_dir/patch_med_for_gcc15 || exit 1
   
-  echo "Patching to deactivate HDF5 err handler ... (otherwise PDI will fail)"
-  sed -i 's/H5Eset_auto(NULL,NULL);//' $(find . -name MEDmodeErreurVerrouiller.c)
-
   # fPIC is not there by default in MED autotools ...
   Wno="-Wno-error -Wno-implicit-function-declaration"
   CFLAGS="${CFLAGS} -fPIC $Wno"

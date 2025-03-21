@@ -18,8 +18,11 @@ ARCHIVE=$1
 
 # Path to library build
 build_dir=$TRUST_ROOT/build/lib/LIBPDI
-rm -fr $build_dir
-mkdir -p $build_dir
+if [ "$debug_mode" = "0" ]; then
+    rm -fr $build_dir
+    mkdir -p $build_dir
+fi
+curr_dir=`dirname -- $( readlink -f -- "$0"; )`
 
 # Path to library install
 install_dir=$TRUST_PDI_ROOT
@@ -29,7 +32,9 @@ mkdir -p $install_dir
 
 # Building library
 cd $build_dir
-tar -xzvf $ARCHIVE
+if [ "$debug_mode" = "0" ]; then
+    tar -xzvf $ARCHIVE
+fi
 pdi=`basename $ARCHIVE`
 pdi_src=${pdi%.tar.gz}
 cd $pdi_src
@@ -38,6 +43,8 @@ echo "@@@ Patching to accept correct build type ..."
 sed -i 's/if(NOT "\${CMAKE_BUILD_TYPE}")/if(CMAKE_BUILD_TYPE STREQUAL "")/' CMakeLists.txt
 echo "@@@ Patching to compile with static HDF5 from TRUST ..."
 sed -i 's/set(HDF5_USE_STATIC_LIBRARIES OFF)/set(HDF5_USE_STATIC_LIBRARIES ON)/' plugins/decl_hdf5/CMakeLists.txt
+echo "@@@ Patching to dynamically swicth to correct API version ..."
+patch -p1 < $curr_dir/hdf5_err_handler.patch  || exit -1
 
 mkdir -p build
 cd build
