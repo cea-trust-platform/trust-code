@@ -6,9 +6,17 @@ sed -i 's/liquid("__MODEL__", "__FLUID__")/liquid("EOS_Cathare2", "WaterLiquid")
 sed -i 's/steam("__MODEL__", "__FLUID__")/steam("EOS_Cathare2", "WaterVapor")/g' EOS_test_cat2.cpp
 
 # Ajout tirpc comme dans bin/mklibs
-tirpc="" && [ "`grep tirpc $TRUST_EOS_HOME_DIR/lib/pkgconfig/eos.pc 2>/dev/null`" != "" ] && tirpc="-ltirpc"
+tirpc=""
+if [ -f $TRUST_EOS_HOME_DIR/lib/pkgconfig/eos.pc ]
+then
+   [ "`grep tirpc $TRUST_EOS_HOME_DIR/lib/pkgconfig/eos.pc 2>/dev/null`" != "" ] && tirpc="-ltirpc"
+else
+   # old EOS versions seems to not have eos.pc
+   [ "`ldd $TRUST_EOS_HOME_DIR/lib/libeos.so 2>/dev/null | grep libtirpc.so`" != "" ] && tirpc="-ltirpc"
+fi
 
-$TRUST_CC_BASE -std=c++14 -Wall -o EOS_test_cat2.x -I$TRUST_EOS_HOME_DIR/include/ -I$TRUST_ROOT/include/ -I$TRUST_ROOT/include/EOS/ EOS_test_cat2.cpp $TRUST_EOS_HOME_DIR/lib/libeos.a $tirpc -lgfortran
+
+$TRUST_CC_BASE -std=$TRUST_STDCPP -Wall -o EOS_test_cat2.x -I$TRUST_EOS_HOME_DIR/include/ -I$TRUST_ROOT/include/ -I$TRUST_ROOT/include/EOS/ EOS_test_cat2.cpp $TRUST_EOS_HOME_DIR/lib/libeos.a $tirpc -lgfortran
 
 ./EOS_test_cat2.x &>out
 
