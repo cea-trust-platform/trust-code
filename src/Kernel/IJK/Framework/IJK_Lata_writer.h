@@ -67,6 +67,9 @@ template<typename _TYPE_, typename _TYPE_ARRAY_>
 void lire_dans_lata(const char *filename, int tstep, const char *geometryname, const char *fieldname,
                     IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vx, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vy, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& vz);
 
+
+bool lata_has_field(const char *filename, int tstep, const char *geometryname, const char *fieldname);
+
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void read_lata_parallel_template(const char *filename_with_path, int tstep, const char *geometryname, const char *fieldname,
                                  const int i_compo,

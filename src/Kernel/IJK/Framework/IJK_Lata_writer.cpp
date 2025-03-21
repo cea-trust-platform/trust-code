@@ -189,3 +189,16 @@ Nom basename(const Nom& filename)
   split_path_filename(filename, path, name);
   return name;
 }
+
+bool lata_has_field(const char *filename_with_path, int tstep, const char *geometryname, const char *fieldname)
+{
+  Nom path, dbname;
+  split_path_filename(filename_with_path, path, dbname);
+  LataDB db;
+
+  db.read_master_file(path, filename_with_path);
+
+
+  return db.field_exists(tstep, geometryname, fieldname);
+
+}
