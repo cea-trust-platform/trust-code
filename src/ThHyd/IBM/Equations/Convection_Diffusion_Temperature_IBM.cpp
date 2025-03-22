@@ -42,6 +42,7 @@ void Convection_Diffusion_Temperature_IBM::set_param(Param& param)
 int Convection_Diffusion_Temperature_IBM::preparer_calcul()
 {
   Equation_base::preparer_calcul();
+
   preparer_calcul_ibm_proto();
   return 1;
 }
@@ -67,7 +68,7 @@ void Convection_Diffusion_Temperature_IBM::derivee_en_temps_inco_sources(DoubleT
 
 void Convection_Diffusion_Temperature_IBM::verify_scheme()
 {
-  if (equation_non_resolue() == 0)
+  if (is_IBM() && equation_non_resolue() == 0)
     {
       Cerr << "*******(IBM) Use an implicit time scheme (at least Euler explicit + diffusion) with Source_PDF_base.*******" << finl;
       abort();

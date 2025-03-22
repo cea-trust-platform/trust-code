@@ -62,7 +62,9 @@ Entree& Equation_IBM_proto::readOn_ibm_proto(Entree& is, Equation_base& eq)
       eq.sources()[i_source_pdf_]->set_fichier((Nom)the_suffix+"_Bilan_term_induced_by_obstacle");
     }
 
-  if (i_source_pdf_ == -1)
+  // XXX Elie Saikali
+  // ok pour temperature pour le moment (cas test Comte_Bellot_EF_IBC dans trio ! a corrriger plus tard Michel !)
+  if (i_source_pdf_ == -1 && eq_IBM_->que_suis_je().debute_par("Navier_Stokes"))
     {
       Cerr << "No PDF source term read in your equation " << eq_IBM_->que_suis_je() << " !!!"<< finl;
       Cerr << "Either add this source term or use a non_IBM problem !!!"<< finl;
@@ -184,21 +186,27 @@ void Equation_IBM_proto::assembler_ibm_proto(Matrice_Morse& matrice, const Doubl
         {
           // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
           // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
-          for (int i = 0; i < size_s; i++)
+          if (!is_IBM())
+            eq_IBM_->sources().contribuer_a_avec(inco, matrice);
+          else
             {
-              if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+              for (int i = 0; i < size_s; i++)
                 {
-                  const Source_base& src_base = eq_IBM_->sources()(i).valeur();
-                  src_base.contribuer_a_avec(inco,matrice);
+                  if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+                    {
+                      const Source_base& src_base = eq_IBM_->sources()(i).valeur();
+                      src_base.contribuer_a_avec(inco, matrice);
+                    }
                 }
             }
           statistiques().end_count(assemblage_sys_counter_,0,0);
-          for (int i = 0; i < size_s; i++)
+          if (!is_IBM())
+            eq_IBM_->sources().ajouter(resu);
+          else
             {
-              if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-                {
+              for (int i = 0; i < size_s; i++)
+                if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
                   eq_IBM_->sources()(i).ajouter(resu);
-                }
             }
           statistiques().begin_count(assemblage_sys_counter_);
           matrice.ajouter_multvect(inco, resu); // Add source residual first
@@ -249,21 +257,26 @@ void Equation_IBM_proto::assembler_ibm_proto(Matrice_Morse& matrice, const Doubl
           }
           statistiques().begin_count(assemblage_sys_counter_);
         }
-      for (int i = 0; i < size_s; i++)
+      if (! is_IBM() )
+        eq_IBM_->sources().contribuer_a_avec(inco,matrice);
+      else
         {
-          if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-            {
-              const Source_base& src_base = eq_IBM_->sources()(i).valeur();
-              src_base.contribuer_a_avec(inco,matrice);
-            }
+          for (int i = 0; i < size_s; i++)
+            if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
+              {
+                const Source_base& src_base = eq_IBM_->sources()(i).valeur();
+                src_base.contribuer_a_avec(inco, matrice);
+              }
         }
       statistiques().end_count(assemblage_sys_counter_,0,0);
-      for (int i = 0; i < size_s; i++)
+
+      if (!is_IBM())
+        eq_IBM_->sources().ajouter(resu);
+      else
         {
-          if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
-            {
+          for (int i = 0; i < size_s; i++)
+            if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") <= -1)
               eq_IBM_->sources()(i).ajouter(resu);
-            }
         }
       statistiques().begin_count(assemblage_sys_counter_);
       matrice.ajouter_multvect(inco, resu); // Ajout de A*Inco(n)
@@ -278,14 +291,15 @@ void Equation_IBM_proto::assembler_ibm_proto(Matrice_Morse& matrice, const Doubl
     }
 
   // pour ne pas avoir des termes PDF infinis lors de l'ajout de A*Inco(n)
-  for (int i = 0; i < size_s; i++)
-    {
-      if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") > -1)
-        {
-          const Source_base& src_base = eq_IBM_->sources()(i).valeur();
-          src_base.contribuer_a_avec(inco,matrice);
-        }
-    }
+  if ( is_IBM() )
+    for (int i = 0; i < size_s; i++)
+      {
+        if (eq_IBM_->sources()(i).valeur().que_suis_je().find("Source_PDF") > -1)
+          {
+            const Source_base& src_base = eq_IBM_->sources()(i).valeur();
+            src_base.contribuer_a_avec(inco,matrice);
+          }
+      }
   // ajouter source PDF avec le bon signe
   derivee_en_temps_inco_ibm_proto(resu);
 }

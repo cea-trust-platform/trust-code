@@ -39,7 +39,7 @@ public:
   inline int get_i_source_pdf() const { return i_source_pdf_; }
   inline const DoubleTab& get_champ_coeff_pdf_som() const { return champ_coeff_pdf_som_; }
   inline void set_champ_coeff_pdf_som(DoubleTab& coeff) { champ_coeff_pdf_som_ = coeff; }
-//  inline bool is_IBM() { return (i_source_pdf_ != -1) ? true : false ;}
+  inline bool is_IBM() { return (i_source_pdf_ != -1) ? true : false ;} // utile pour eq temperature ... a retirer plus tard !
 
 protected:
   OBS_PTR(Equation_base) eq_IBM_;
