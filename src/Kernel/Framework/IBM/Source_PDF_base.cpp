@@ -18,6 +18,7 @@
 #include <Source_PDF_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <Type_info.h>
 #include <SFichier.h>
 #include <Param.h>
 
@@ -43,6 +44,24 @@ Entree& Source_PDF_base::readOn(Entree& s)
           interpolation_bool_ = true;
           if ((interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl") || (interpolation_lue_->que_suis_je() == "Interpolation_IBM_power_law_tbl_u_star") ) imm_wall_law_ = true;
         }
+    }
+
+  if (!equation().probleme().que_suis_je().contient("_IBM"))
+    {
+      Cerr << "Error in the equation " << equation().que_suis_je() << " !" << finl;
+      Cerr << "You are using a " << que_suis_je() << " source term but your problem is not an IBM problem !" << finl;
+      Cerr << "Fix your data set and use one of the following problems : " << finl;
+
+      Noms noms_pb;
+      Type_info::les_sous_types(Nom("Probleme_base"), noms_pb);
+
+      for (auto &itr : noms_pb)
+        if (itr.contient("_IBM"))
+          Cerr << "  - " << itr << finl;
+
+      Cerr << "  - Pb_Couple_Optimisation_IBM" << finl;
+
+      Process::exit();
     }
   return s;
 }
