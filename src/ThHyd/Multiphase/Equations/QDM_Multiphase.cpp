@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -403,6 +403,9 @@ int QDM_Multiphase::preparer_calcul()
   const double temps = schema_temps().temps_courant();
   pression().changer_temps(temps);
   pression_pa().changer_temps(temps);
+
+  if (evanescence_.non_nul())
+    evanescence_->preparer_calcul();
 
   return 1;
 }

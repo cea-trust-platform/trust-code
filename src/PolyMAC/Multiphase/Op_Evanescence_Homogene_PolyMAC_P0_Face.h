@@ -28,7 +28,6 @@ protected:
   void calc_grad_alpha_elem(DoubleTab&) const;
   void calc_grad_alpha_faces(DoubleTab&) const override;
   void calc_vort_elem(DoubleTab&) const;
-  void calc_vort_faces(DoubleTab&) const override;
 
 };
 

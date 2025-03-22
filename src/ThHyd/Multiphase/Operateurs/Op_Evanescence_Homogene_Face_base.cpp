@@ -253,3 +253,62 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   // si var aux :
   ajouter_blocs_aux(maj, coeff, matrices, secmem);
 }
+
+void Op_Evanescence_Homogene_Face_base::calc_vort_faces(DoubleTab& vort) const
+{
+  vort = 0;
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis());
+  const IntTab& f_e = domaine.face_voisins();
+  const DoubleVect& vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
+  const DoubleTab& n_f = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir();
+  const DoubleTab& vorticite = equation().probleme().get_champ("vorticite").passe(),
+                   &grad_v = equation().probleme().get_champ("gradient_vitesse").passe();
+
+  const int D = dimension, N = vort.dimension_tot(2), nf = domaine.nb_faces(), nf_tot = domaine.nb_faces_tot();
+  int c, e, f, n, d, d2, n_l = 0;
+  DoubleTrav grad_l(D, D), scal_grad(D);
+
+  for (f = 0; f < nf; f++)
+    for (c = 0; c < 2; c++)
+      {
+        e = f_e(f, c);
+
+        if (e < 0)
+          continue;
+
+        if (D == 2)
+          {
+            for (n = 0; n < N; n++)
+              for (d = 0; d < D; d++)
+                vort(f, d, n) += vorticite(e, n) * vfd(f, c) / vf(f);
+          }
+        else
+          {
+            for (n = 0; n < N; n++)
+              for (d = 0; d < D; d++)
+                vort(f, d, n) += vorticite(e, N * d + n) * vfd(f, c) / vf(f);
+          }
+      }
+
+  if (D == 3)
+    for (f = 0; f < nf; f++)
+      {
+        grad_l = 0; // we fill grad_l so that grad_l(d, d2) = du_d/dx_d2 by averaging between both elements
+        for (d = 0; d < D; d++)
+          for (d2 = 0; d2 < D; d2++)
+            for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+              grad_l(d, d2) += vfd(f, c) / vf(f) * grad_v(nf_tot + D * e + d2, n_l * D + d);
+        //We replace the n_l components by the one calculated without interpolation to elements
+        scal_grad = 0; // scal_grad(d) = grad(u_d).n_f
+        for (d = 0; d < D; d++)
+          for (d2 = 0; d2 < D; d2++)
+            scal_grad(d) += grad_l(d, d2) * n_f(f, d2) / fs(f);
+        for (d = 0; d < D; d++)
+          for (d2 = 0; d2 < D; d2++)
+            grad_l(d, d2) += (grad_v(f, n_l * D + d) - scal_grad(d)) * n_f(f, d2) / fs(f);
+        // We calculate the local vorticity using this local gradient
+        vort(f, 0, n_l) = grad_l(2, 1) - grad_l(1, 2); // dUz/dy - dUy/dz
+        vort(f, 1, n_l) = grad_l(0, 2) - grad_l(2, 0); // dUx/dz - dUz/dx
+        vort(f, 2, n_l) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
+      }
+}
