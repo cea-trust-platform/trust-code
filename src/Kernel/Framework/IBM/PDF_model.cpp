@@ -91,14 +91,14 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
     {
       if (dim_variable_ != Objet_U::dimension)
         {
-          Cerr << "PDF_model pour un vecteur: Objet_U::dimension != dim_variable_: " << dim_variable_ << finl;
+          Cerr << "PDF_model for a vector: Objet_U::dimension != dim_variable_: " << dim_variable_ << finl;
           Process::exit();
         }
     }
   Cerr << " imposed variable dimension = " << dim_variable_ << finl;
   if (local_ == 1 && (dim_variable_ != Objet_U::dimension))
     {
-      Cerr << "PDF_model avec repere local pour un vecteur seulement (Objet_U::dimension != dim_variable_) = " << dim_variable_ << finl;
+      Cerr << "PDF_model with local system for a vector only (Objet_U::dimension != dim_variable_) = " << dim_variable_ << finl;
       Process::exit();
     }
 

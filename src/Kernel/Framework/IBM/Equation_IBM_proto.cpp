@@ -128,7 +128,7 @@ DoubleTab& Equation_IBM_proto::derivee_en_temps_inco_ibm_proto(DoubleTab& derive
     }
   else if(pdf_bilan != 0 )
     {
-      Cerr<<"Source_PDF_EF: Modele pdf_bilan must be 0; 1 or 2 only"<<endl;
+      Cerr<<"Source_PDF_EF: Model pdf_bilan must be 0; 1 or 2 only"<<endl;
       Process::exit();
     }
 
@@ -218,8 +218,8 @@ void Equation_IBM_proto::assembler_ibm_proto(Matrice_Morse& matrice, const Doubl
         }
       else
         {
-          Cerr << "VIA_CONTRIBUER_AU_SECOND_MEMBRE pas code pour " << eq_IBM_->que_suis_je() << ":assembler" << finl;
-          Cerr << "avec discretisation " <<  eq_IBM_->probleme().discretisation().que_suis_je() << "" << finl;
+          Cerr << "VIA_CONTRIBUER_AU_SECOND_MEMBRE not coded for " << eq_IBM_->que_suis_je() << ":assembler" << finl;
+          Cerr << "with discretisation " <<  eq_IBM_->probleme().discretisation().que_suis_je() << "" << finl;
           Process::exit();
         }
       // // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
