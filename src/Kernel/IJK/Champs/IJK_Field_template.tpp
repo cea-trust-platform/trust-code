@@ -19,6 +19,12 @@
 #include <IJK_Shear_Periodic_helpler.h>
 #include <IJK_communications.h>
 #include <Domaine_IJK.h>
+#include <LataTools.h>
+#include <LataDB.h>
+#include <EcrFicPartageBin.h>
+#include <errno.h>
+#include <IJK_Striped_Writer.h>
+#include <Parallel_io_parameters.h>
 
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
@@ -574,5 +580,30 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate_shear_BC(int type, doubl
   shear_BC_helpler_.allocate(ni_local,  nj_local, nk_local,  this->ghost_size_,  this->nb_compo_,  type,  phy_ppty_v,  phy_ppty_l,  use_inv_rho_in_pressure_solver);
 }
 
-
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::dumplata_scalar(const char *filename, int step)
+{
+  Process::barrier();
+  SFichier master_file;
+  Nom prefix = Nom(filename) + Nom(".") + Nom(step) + Nom(".");
+  Nom fd = prefix + this->le_nom();
+  IJK_Striped_Writer striped_writer;
+  const Size_t n = striped_writer.write_data_template<float,_TYPE_,_TYPE_ARRAY_>(fd, *this);
+  if (Process::je_suis_maitre())
+    {
+      master_file.ouvrir(filename, ios::app);
+      Nom loc;
+      if (get_localisation() == Domaine_IJK::ELEM)
+        loc = "ELEM";
+      else
+        loc = "SOM";
+      const Nom& geomname = get_domaine().le_nom();
+      master_file << "Champ " << this->le_nom() << " " << basename(fd) << " geometrie=" << geomname;
+#ifdef INT_is_64_
+      master_file << " file_offset=6";
+#endif
+      master_file << " size=" << (int)n << " localisation=" << loc << " composantes=1" << finl;
+    }
+  Process::barrier();
+}
 #endif /* IJK_Field_template_TPP_H */

@@ -24,6 +24,10 @@
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
+// pour IJK_Lata_writer.cpp. TODO : FIXME : to do enum class !!!!!
+#define DIRECTION_I 0
+#define DIRECTION_J 1
+#define DIRECTION_K 2
 
 /*! @brief : This class is an IJK_Field_local with parallel informations.
  *
@@ -59,6 +63,9 @@ public:
     allocate(d,l,ghost_size,0,1,name);
   }
   void allocate_shear_BC(int monofluide, double rov, double rol, int use_inv_rho_in_pressure_solver=0);
+
+  virtual void dumplata_scalar(const char *filename, int step);
+
   const Domaine_IJK& get_domaine() const { return domaine_ref_.valeur(); }
   Domaine_IJK::Localisation get_localisation() const { return localisation_; }
   void echange_espace_virtuel(int ghost);

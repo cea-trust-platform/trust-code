@@ -27,10 +27,7 @@
 #include <IJKArray_with_ghost.h>
 #include <IJK_communications.h>
 
-// pour IJK_Lata_writer.cpp. TODO : FIXME : to do enum class !!!!!
-#define DIRECTION_I 0
-#define DIRECTION_J 1
-#define DIRECTION_K 2
+
 
 // .Description
 // Useless class but for some reason, verifie_pere only seems to work if it's here ??
