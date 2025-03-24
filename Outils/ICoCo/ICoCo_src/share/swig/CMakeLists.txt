@@ -41,6 +41,7 @@ find_library(libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_
 #endif()
 
 if (APPLE)
+  # Necessary for MAC, otherwise system python detected when finding package Python3
   find_package(PythonInterp 3 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
   find_package(PythonLibs 3 REQUIRED)    # ... so that TRUST Python libs are found too.
 endif()

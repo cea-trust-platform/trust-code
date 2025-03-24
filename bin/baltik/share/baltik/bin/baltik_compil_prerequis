@@ -136,7 +136,7 @@ echo $status_tot
 
 
 
-[ $status_tot -eq 0 ] && exit 0
+[ "$status_tot" -eq "0" ] && exit 0
 
 ## on tente l'installation
 install_arch $archive $destination $nom_prerequis

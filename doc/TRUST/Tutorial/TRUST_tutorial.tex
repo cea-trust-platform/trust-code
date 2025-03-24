@@ -290,7 +290,7 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 
 \begin{itemize}
 \item Edit the data file Obstacle.data and set the time step to 0.004s:\\
-\textbf{nedit Obstacle.data \&}\\
+\textbf{gedit Obstacle.data \&}\\
 
 \item Replace the keyword "\textbf{format lml}" with "\textbf{format lata\index{format lata}}" inside the post-processing block in order to use VisIt post-processing tool during and/or at the end of calculation.
 \end{itemize}
@@ -442,7 +442,7 @@ or using "trust -evol" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}
 
 \item Edit the different output (*.out) files to read the complete balances (mass, stress, energy, ...) on the whole domain or at the boundaries.
 
-\item Now we want to edit the data file in order to resume the calculation. So, open it using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}.
+\item Now we want to edit the data file in order to resume the calculation. So, open it using "evol" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}.
 \end{itemize}
 
 \end{block}
@@ -454,7 +454,7 @@ or using "trust -evol" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}
 \begin{block}{}
 
 \begin{itemize}
-\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool if it is still running).
+\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "evol" tool if it is still running).
 
 \item \label{save_restart} Edit your data file with "Edit data", then modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema".
 
@@ -481,7 +481,7 @@ or using "trust -evol" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}
 
 \begin{itemize}
 \item Edit the data file Obstacle.data:\\
-\textbf{nedit Obstacle.data \&}\\
+\textbf{gedit Obstacle.data \&}\\
 
 \item Add to the post-processing block of Obstacle.data the following elements:\\
 
@@ -841,7 +841,7 @@ $$
 
 \item This coupled problem is constituted by 2 domains of calculation with a mesh of 10x10 cells ($\Delta x = \Delta y = 0.1m$). 
 
-\item Now open your data file with "Plot2D" tool:\\
+\item Now open your data file with "evol" tool:\\
 \textbf{trust -evol\index{trust -evol} docond  \&} \\
 
 \item Click on "Edit data".
@@ -892,7 +892,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item Substitute the discretization VDF\index{VDF} (pressure nodes at the element center) to VEFPreP1B\index{VEFPreP1B} (pressure nodes at the element's center and nodes).
 
-\item Close the Plot2D tool.
+\item Close the "evol" tool.
 
 %\item Check the meshes with: \\
 %\textbf{trust -mesh\index{trust -mesh} docond}
@@ -987,8 +987,8 @@ The calculation will stop after the current time step and make post-process.
 
 \item Open the Generic Guide with (it will be useful to search for keywords in this exercise): \textbf{trust -doc \&\index{trust -doc \&}}
 
-\item Edit the data file with your favorite editor (\textbf{nedit} is recommended because it is configured to recognize the TRUST syntax):\\
-\textbf{nedit TP\_Temp\_QC\_VEF.data \&} \\
+\item Edit the data file with your favorite editor (\textbf{gedit} is recommended because it is configured to recognize the TRUST syntax):\\
+\textbf{gedit TP\_Temp\_QC\_VEF.data \&} \\
 or \\
 \textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF  \&} and "Edit data" button.
 \end{itemize}
@@ -1015,7 +1015,7 @@ or \\
     \item [$\circ$] Write the results on the \textbf{lata} format and change the \textbf{dt\_post\index{dt\_post}} period to 1s.
     \item [$\circ$] We are looking for the steady state, so suppress tmax\index{tmax} keyword and change the \textbf{seuil\_statio\index{seuil\_statio}} $\varepsilon$ value to 10 ($|dT/dt|<\varepsilon$ and $dt \sim 0.001s$ so $|dT|<0.01$).
     \item [$\circ$] Add the keyword \textbf{impr} into the pressure solver to print its convergence.
-    \item [$\circ$] If you use Plot2D tool, save and close the editor.
+    \item [$\circ$] If you use "evol" tool, save and close the editor.
     \end{itemize}
 
 \item Run the simulation with the TRUST command:\\
@@ -1033,13 +1033,13 @@ or \\
 \begin{itemize}
 \item Click on "Start computation!".
 \item Check mass flow rate (absolute and relative values) in the TP\_Temp\_QC\_VEF.out file: \\
-\textbf{nedit TP\_Temp\_QC\_VEF.out \&} \\
-or look at the upper small window on the right of the PLOT2D tool.
+\textbf{gedit TP\_Temp\_QC\_VEF.out \&} \\
+or look at the upper small window on the right of the "evol" tool.
 
 \item Once the calculation finishes, visualize the results by running \textbf{VisIt}:\\
 \textbf{visit\index{visit} -o TP\_Temp\_QC\_VEF.lata \&}\\
 or \\
-"Visualization" button on Plot2D tool.
+"Visualization" button on "evol" tool.
 \begin{itemize}
     \item [$\circ$] Show the mesh (Plots: "Add $\rightarrow$ Mesh $\rightarrow$ dom $\rightarrow$ Draw").
     \item [$\circ$] Visualize the temperature field (Select the last Time with the slicer, then Plots: "Add $\rightarrow$ Pseudo Color $\rightarrow$ TEMPERATURE\_SOM\_dom  $\rightarrow$ Draw").
@@ -1085,11 +1085,11 @@ or \\
 \begin{block}{}
 
 \begin{itemize}
-\item Run the calculation with this time scheme using the PLOT2D tool or: \\
+\item Run the calculation with this time scheme using the "evol" tool or: \\
 {\footnotesize{\textbf{trust TP\_Temp\_QC\_VEF.data 1$>$TP\_Temp\_QC\_VEF.out 2$>$TP\_Temp\_QC\_VEF.err}}}
 
 \item Edit the file containing information about dt (used time step), dt\_stab (stability time step), \textbf{facsec\index{facsec}} (dt=dt\_stab*facsec) and residuals evolution for each equation: \\
-\textbf{nedit TP\_Temp\_QC\_VEF.dt\_ev \&}
+\textbf{gedit TP\_Temp\_QC\_VEF.dt\_ev \&}
 
 \item  If everything is OK, try to enhance the convergence speed of the implicit solver with the value of \textbf{seuil\_convergence\_implicite\index{seuil\_convergence\_implicite}} keyword (look at the TP\_Temp\_QC\_VEF.out file, if the number of iterations for GMRES\index{gmres} is comprised between 3 and 5 then it is enough to converge quickly).
 
@@ -1760,7 +1760,7 @@ second, and modify \textbf{dt\_min\index{dt\_min}} and \textbf{dt\_max\index{dt\
 \item Run the study and follow the time evolution with the probes:\\
 \textbf{trust -evol\index{trust -evol} diagonale \&} \\
 "Start computation!" button and "Plot" or "Plot on same" for probes.
-\item Check the flow rate in inlet boundary in the diagonale\_pb\_Debit.out file (plotted on the right of the PLOT2D window). You should find a value near $6.8 \; 10^{-3} m^2.s^{-1}$.
+\item Check the flow rate in inlet boundary in the diagonale\_pb\_Debit.out file (plotted on the right of the "evol" window). You should find a value near $6.8 \; 10^{-3} m^2.s^{-1}$.
 \item Use VisIt to post-process the results at t=0.2, t=0.4s and t=0.7s. VisIt has some interesting feature for this study. It can give concentration histogram to check the numerical diffusion in the concentration equation: Add $\rightarrow$ Histogram $\rightarrow$ CONCENTRATION\_ELEM\_dom.
 The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ before $t=0.5s$ and $Vol(t)=3.33.10^{-3}$ after.
 \end{itemize}
@@ -2984,7 +2984,7 @@ which allows to export the generated mesh on MED format.
 \item Then copy file.geo as follows:
 \textbf{dir=\$project\_directory/share/Validation/Rapports\_automatiques/Turbulence} \\
 \textbf{cp \, \$dir/LES/Drag/src/shape.geo \, file.geo} \\
-\textbf{nedit file.geo \& } \\
+\textbf{gedit file.geo \& } \\
 \textbf{gmsh file.geo \&} }}\\
 \end{itemize}
 
