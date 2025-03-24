@@ -10,7 +10,7 @@ project(ICoCo_SWIG CXX)
 enable_testing()
 
 set(TRUST_ROOT $ENV{TRUST_ROOT})
-set(MEDCOUPLING_DIR "$ENV{TRUST_MEDCOUPLING_ROOT}/$ENV{TRUST_ARCH}_opt")
+set(MEDCOUPLING_DIR "$ENV{TRUST_MEDCOUPLING_ROOT}/$ENV{TRUST_ARCH}${OPT}")
 
 if(NOT $ENV{TRUST_ARCH_CC} STREQUAL "linux_nvc++")
 add_definitions(-Wno-error)

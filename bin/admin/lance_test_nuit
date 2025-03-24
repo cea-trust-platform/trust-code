@@ -54,6 +54,7 @@ check_components()
             echo " "
             [ $TRUST_ROOT = $TRUST_ROOT_MASTER ] && export MAKEATELIER_SEVERITY=1
             COMPOSANT_OK=0
+            COMPOSANT_BUILD_OK=0
             # First pass, reconfigure to clean properly (in the case where the TRUST_ROOT has changed):
             #[ "$Composant" != ICoCo ] && source env_$Composant.sh && make dist_clean
             #[ "$Composant" == ICoCo ] && source env_MED$Composant.sh && make dist_clean
@@ -71,7 +72,7 @@ check_components()
             then
                make_option="make check_all_optim check_trust_optim"
             fi
-            if [ "$Composant" = flica5 ]
+            if [ "$Composant" = flica5 ] || [ "$Composant" = TRUST_NK ]
             then
                make_option="make check_optim"
             fi
@@ -90,7 +91,7 @@ check_components()
                fi
             fi
             $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
-            make optim module_optim debug module_debug &&
+            make optim module_optim debug module_debug && COMPOSANT_BUILD_OK=1 &&
             $make_option && echo "$Composant OK" && COMPOSANT_OK=1
             MODIF_TRUST_OK=1
             if [ -d share/kernel_official_sources ]
@@ -116,7 +117,7 @@ check_components()
             #[ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
             # Verification independance des sous BALTIKs de TrioCFD n'est plus necessaire suite a la fusion des sous-baltiks de triocfd
             DOC_PDF_OK=0
-            if [ $* != tuleap/Kernel ]
+            if [ $* != tuleap/Kernel ] && [ "$COMPOSANT_BUILD_OK" = 1 ] 
             then
                echo " "
                # Pas de check_gui sur baltiks sans XD
@@ -125,7 +126,7 @@ check_components()
                [ "`grep "Error" $Gui_log`" != "" ] && DOC_PDF_OK=0 && echo DOC_PDF_OK=0
                if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
                then
-                  if [ "$Composant" != Test_Baltik ] && [ "$Composant" != "flica5" ] && [ "$Composant" != "mpcube" ] && [ "$Composant" != "TRUST_NK" ] && [ "$Composant" != "sides" ] && [ "$Composant" != "scorpio" ] && [ "$Composant" != "sympy_to_TRUST" ] && [ "$Composant" != "pemfc" ] && [ "$Composant" != "triomc" ] [ "$Composant" != "mathys" ]
+                  if [ "$Composant" != Test_Baltik ] && [ "$Composant" != "flica5" ] && [ "$Composant" != "mpcube" ] && [ "$Composant" != "TRUST_NK" ] && [ "$Composant" != "sides" ] && [ "$Composant" != "scorpio" ] && [ "$Composant" != "sympy_to_TRUST" ] && [ "$Composant" != "pemfc" ] && [ "$Composant" != "triomc" ] && [ "$Composant" != "mathys" ]
                   then
                      ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
                   fi
@@ -149,7 +150,7 @@ check_components()
                if [ $DOC_PDF_OK = 0 ]
                then
                   echo $ECHO_OPTS "KO."
-                  cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
+                  [ "$COMPOSANT_BUILD_OK" = 1 ] && cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
                else
                   echo $ECHO_OPTS "OK"
                fi
@@ -208,16 +209,20 @@ check_components()
                elif [ "$Composant" = ICoCo ]
                then
                   # Machines en mode sequentiel
-                  wompi_machines=`liste_machines "\-disable-mpi"`
-                  wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
-                  wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
-                  wompi_machines=$wompi_machines" `liste_machines "\-openmp "`"
+                  #wompi_machines=`liste_machines "\-disable-mpi"`
+                  #wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
+                  #wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
+                  #wompi_machines=$wompi_machines" `liste_machines "\-openmp "`"
                   # Machines en mode parallele
-                  machines=""
-                  for machine in $all_machines
-                  do
-                     [[ "$wompi_machines" != *"$machine"* ]] && machines=$machines" $machine"
-                  done
+                  #machines=""
+                  #for machine in $all_machines
+                  #do
+                  #   [[ "$wompi_machines" != *"$machine"* ]] && machines=$machines" $machine"
+                  #done
+                  machines=`liste_machines "\-ICoCo"`
+               elif [ "$Composant" = equation_convection_diffusion ]
+               then
+                  machines=`liste_machines "\-ICoCo"`
                elif [ "$Composant" = TrioCFD ] || [ "$Composant" = triocfd ]
                then
                   machines=`liste_machines "\-TrioCFD"`

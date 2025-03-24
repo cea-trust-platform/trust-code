@@ -282,7 +282,10 @@ elif [ "`basename $TRUST_CC_BASE`" = "amdclang++" ] || [ "`basename $TRUST_CC_BA
 then
    echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $4}'`
 else
-   echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $3}'`
+   CC_PERF=`$TRUST_CC_BASE --version 2>/dev/null | head -1 | $TRUST_Awk '{print $3}'`
+   [ "$CC_PERF" = "version" ] && CC_PERF="`$TRUST_CC_BASE --version 2>/dev/null | head -1 | $TRUST_Awk '{print $4}'`"
+   echo Info_global CC `basename $TRUST_CC_BASE` $CC_PERF
+
 fi
 
 #OS=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && OS=`awk '(NF>0) {gsub("Welcome to ","",$0);print $0}' /etc/issue | head -1`

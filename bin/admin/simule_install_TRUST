@@ -32,11 +32,11 @@ then
   scp -o ConnectTimeout=10 -o BatchMode=yes $version_arch $machine:$cible/.
   ssh -o ConnectTimeout=10 -o BatchMode=yes $machine -n '
   cd '$cible';
-  tar xvfz '$paquet';
+  tar xfz '$paquet';
   rm -f '$paquet';
   export TRUST_VERSION='$version';
   ./TRUST-'$version'/bin/Installer_TRUST 1>'$install_log' 2>&1;
-  if [ $? = 0 ] && [ "`grep "^BUILD_" '$install_log' | grep "KO" 2>/dev/null`" = "" ]
+  if [ $? = 0 ] && [ "`grep "^BUILD_EXEC" '$install_log' | grep "KO" 2>/dev/null`" = "" ] && [ "`grep "^BUILD_TOOLS" '$install_log' | grep "KO" 2>/dev/null`" = "" ]
   then
      echo "Installation OK!"
      echo " "
