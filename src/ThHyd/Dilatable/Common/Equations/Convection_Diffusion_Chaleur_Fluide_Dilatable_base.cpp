@@ -103,8 +103,7 @@ std::vector<YAML_data> Convection_Diffusion_Chaleur_Fluide_Dilatable_base::data_
   std::vector<YAML_data> data = Equation_base::data_a_sauvegarder();
   Nom pth("pression_thermo");
   pth += probleme().domaine().le_nom();
-  std::string name = pth.getString();
-  YAML_data d(name, "double");
+  YAML_data d(pth.getString(), "double");
   d.set_local(false /*same value for everyone*/);
   data.push_back(d);
   return data;

@@ -187,7 +187,7 @@ void Save_Restart::setTinitFromLastTime(double last_time)
   Cerr << "In the backup file, we find the last time: " << last_time << " and read the fields." << finl;
 }
 
-void Save_Restart::checkVersion(Nom nomfic)
+void Save_Restart::checkVersion(const Nom& nomfic)
 {
   if (Process::mp_min(restart_version_) != Process::mp_max(restart_version_))
     {
@@ -351,14 +351,13 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
     }
 
   // Read the filename:
-  Nom nomfic;
   Nom nom_yaml;
   if( format_rep == "pdi" )
-    lire_pdi_sauvegarde_reprise(is, motlu, nomfic, nom_yaml);
+    lire_pdi_sauvegarde_reprise(is, motlu, restart_filename_, nom_yaml);
   else
-    is >> nomfic;
+    is >> restart_filename_;
   // Force reprise hdf au dela d'un certain nombre de rangs MPI:
-  if (format_rep != "xyz" && Process::force_single_file(Process::nproc(), nomfic))
+  if (format_rep != "xyz" && Process::force_single_file(Process::nproc(), restart_filename_))
     format_rep = "pdi";
 
   if(format_rep == "pdi")
@@ -367,7 +366,7 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
       if(yaml_fname == "??")
         {
           Ecrire_YAML yaml_file;
-          yaml_file.add_pb_base(pb_base_, nomfic);
+          yaml_file.add_pb_base(pb_base_, restart_filename_);
           yaml_fname = "restart_" + pb_base_->le_nom().getString() + ".yml";
           yaml_file.write_restart_file(yaml_fname);
         }
@@ -386,14 +385,14 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
       // !! DEPRECATED HDF5 FILE !!
       Cerr << "WARNING::you are using a deprecated backup file format. Please switch to PDI." << finl;
       LecFicDiffuse test;
-      if (!test.ouvrir(nomfic))
+      if (!test.ouvrir(restart_filename_))
         {
-          Cerr << "Error! " << nomfic << " file not found ! " << finl;
+          Cerr << "Error! " << restart_filename_ << " file not found ! " << finl;
           Process::exit();
         }
       FichierHDFPar fic_hdf;
       Entree_Brute input_data;
-      fic_hdf.open(nomfic, true);
+      fic_hdf.open(restart_filename_, true);
       fic_hdf.read_dataset("/sauv", Process::me(),input_data);
 
       if(resume_last_time)
@@ -408,7 +407,7 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
       if (motlu=="format_sauvegarde:")
         {
           input_data >> restart_version_;
-          checkVersion(nomfic);
+          checkVersion(restart_filename_);
         }
       else
         {
@@ -432,10 +431,10 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
           EcritureLectureSpecial::mode_lec = 1;
           fic.typer(EcritureLectureSpecial::Input);
         }
-      fic->ouvrir(nomfic);
+      fic->ouvrir(restart_filename_);
       if (fic->fail())
         {
-          Cerr << "Error during the opening of the restart file : " << nomfic << finl;
+          Cerr << "Error during the opening of the restart file : " << restart_filename_ << finl;
           Process::exit();
         }
 
@@ -448,7 +447,7 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
           setTinitFromLastTime(last_time);
 
           fic->close();
-          fic->ouvrir(nomfic);
+          fic->ouvrir(restart_filename_);
         }
 
       // Lecture de la version du format de sauvegarde si c'est une reprise classique
@@ -466,13 +465,13 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
             {
               // We close and re-open the file:
               fic->close();
-              fic->ouvrir(nomfic);
+              fic->ouvrir(restart_filename_);
               restart_version_ = 151;
             }
           else
             {
               Cerr << "-------------------------------------------------------------------------------------" << finl;
-              Cerr << "The resumption file " << nomfic << " can not be read by this version of TRUST" << finl;
+              Cerr << "The resumption file " << restart_filename_ << " can not be read by this version of TRUST" << finl;
               Cerr << "which is a later version than 1.5. Indeed, the numbering of the faces have changed" << finl;
               Cerr << "and it would produce an erroneous resumption. If you want to use this version," << finl;
               Cerr << "you must do a resumption of the file .xyz saved during the previous calculation" << finl;
@@ -486,7 +485,7 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
       else
         {
           fic.valeur() >> restart_version_;
-          checkVersion(nomfic);
+          checkVersion(restart_filename_);
         }
 
       // Restart computation from checkpoint file
@@ -505,20 +504,20 @@ void Save_Restart::lire_sauvegarde(Entree& is, Motcle& motlu)
   // restart_file=1: le fichier est ecrasee a chaque sauvegarde (et ne donc contient qu'un seul instant)
   if (motlu == "sauvegarde_simple")
     simple_restart_ = true;
-  is >> restart_format_;
-  if ((Motcle(restart_format_) != "binaire") && (Motcle(restart_format_) != "formatte") &&
-      (Motcle(restart_format_) != "xyz") && (Motcle(restart_format_) != "single_hdf") &&
-      (Motcle(restart_format_) != "pdi") )
+  is >> checkpoint_format_;
+  if ((Motcle(checkpoint_format_) != "binaire") && (Motcle(checkpoint_format_) != "formatte") &&
+      (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "single_hdf") &&
+      (Motcle(checkpoint_format_) != "pdi") )
     {
-      restart_file_name_ = restart_format_;
-      restart_format_ = "binaire";
+      checkpoint_filename_ = checkpoint_format_;
+      checkpoint_format_ = "binaire";
     }
   else
     {
-      if( Motcle(restart_format_) == "pdi" )
-        lire_pdi_sauvegarde_reprise(is, motlu, restart_file_name_, yaml_fname_);
+      if( Motcle(checkpoint_format_) == "pdi" )
+        lire_pdi_sauvegarde_reprise(is, motlu, checkpoint_filename_, yaml_fname_);
       else
-        is >> restart_file_name_;
+        is >> checkpoint_filename_;
     }
 }
 
@@ -531,11 +530,11 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
            << pb_base_->discretisation().que_suis_je() <<  " => EcritureLectureSpecial = 0 !" << finl;
       EcritureLectureSpecial::Active = 0;
     }
-  restart_format_ = "binaire";
-  restart_file_name_ = Objet_U::nom_du_cas();
-  restart_file_name_ += "_";
-  restart_file_name_ += pb_base_->le_nom();
-  restart_file_name_ += ".sauv";
+  checkpoint_format_ = "binaire";
+  checkpoint_filename_ = Objet_U::nom_du_cas();
+  checkpoint_filename_ += "_";
+  checkpoint_filename_ += pb_base_->le_nom();
+  checkpoint_filename_ += ".sauv";
 
   while (1)
     {
@@ -556,12 +555,12 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
 
   ficsauv_.detach();
   // Force sauvegarde hdf au dela d'un certain nombre de rangs MPI:
-  if (restart_format_ != "xyz" && Process::force_single_file(Process::nproc(), restart_file_name_))
-    restart_format_ = "pdi";
+  if (checkpoint_format_ != "xyz" && Process::force_single_file(Process::nproc(), checkpoint_filename_))
+    checkpoint_format_ = "pdi";
 
-  if ((Motcle(restart_format_) != "binaire") && (Motcle(restart_format_) != "formatte") &&
-      (Motcle(restart_format_) != "xyz") && (Motcle(restart_format_) != "single_hdf") &&
-      (Motcle(restart_format_) != "pdi"))
+  if ((Motcle(checkpoint_format_) != "binaire") && (Motcle(checkpoint_format_) != "formatte") &&
+      (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "single_hdf") &&
+      (Motcle(checkpoint_format_) != "pdi"))
     {
       Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi." << finl;
       Process::exit();
@@ -590,7 +589,7 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
  */
 int Save_Restart::sauver() const
 {
-  int pdi_format = Motcle(restart_format_) == "pdi";
+  int pdi_format = Motcle(checkpoint_format_) == "pdi";
   if(pdi_format)
     {
       if(!TRUST_2_PDI::is_PDI_initialized())
@@ -600,7 +599,7 @@ int Save_Restart::sauver() const
             {
               Ecrire_YAML yaml_file;
               yaml_fname = "save_" + pb_base_->le_nom().getString() + ".yml";
-              yaml_file.add_pb_base(pb_base_, restart_file_name_);
+              yaml_file.add_pb_base(pb_base_, checkpoint_filename_);
               yaml_file.write_checkpoint_file(yaml_fname);
             }
           TRUST_2_PDI::init(yaml_fname);
@@ -631,7 +630,7 @@ int Save_Restart::sauver() const
   else if (!ficsauv_.non_nul())
     {
       // Si le fichier de sauvegarde n'a pas ete ouvert alors on cree le fichier de sauvegarde:
-      if (Motcle(restart_format_) == "formatte")
+      if (Motcle(checkpoint_format_) == "formatte")
         {
           ficsauv_.typer("EcrFicCollecte");
           //
@@ -640,29 +639,29 @@ int Save_Restart::sauver() const
           // saved are double values).
           //
           ficsauv_->set_64b(false);
-          ficsauv_->ouvrir(restart_file_name_);
+          ficsauv_->ouvrir(checkpoint_filename_);
           ficsauv_->setf(ios::scientific);
         }
-      else if (Motcle(restart_format_) == "binaire")
+      else if (Motcle(checkpoint_format_) == "binaire")
         {
           ficsauv_.typer("EcrFicCollecteBin");
           ficsauv_->set_64b(false); // see comment above!
-          ficsauv_->ouvrir(restart_file_name_);
+          ficsauv_->ouvrir(checkpoint_filename_);
         }
-      else if (Motcle(restart_format_) == "xyz")
+      else if (Motcle(checkpoint_format_) == "xyz")
         {
           ficsauv_.typer(EcritureLectureSpecial::get_Output());
-          ficsauv_->ouvrir(restart_file_name_);
+          ficsauv_->ouvrir(checkpoint_filename_);
         }
       else
         {
           Cerr << "Error in Probleme_base::sauver() " << finl;
           Cerr << "The format for the backup file must be either binary or formatted" << finl;
-          Cerr << "But it is :" << restart_format_ << finl;
+          Cerr << "But it is :" << checkpoint_format_ << finl;
           Process::exit();
         }
       // Si c'est la premiere sauvegarde, on note en en-tete le format de sauvegarde
-      if (Motcle(restart_format_) == "xyz")
+      if (Motcle(checkpoint_format_) == "xyz")
         {
           if (Process::je_suis_maitre())
             ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
@@ -673,7 +672,7 @@ int Save_Restart::sauver() const
 
   // On realise l'ecriture de la sauvegarde
   int bytes;
-  EcritureLectureSpecial::mode_ecr = (Motcle(restart_format_) == "xyz");
+  EcritureLectureSpecial::mode_ecr = (Motcle(checkpoint_format_) == "xyz");
   TRUST_2_PDI::set_PDI_checkpoint(pdi_format);
   if(pdi_format)
     {
@@ -707,7 +706,7 @@ int Save_Restart::sauver() const
   // Si c'est une sauvegarde simple, on referme immediatement et proprement le fichier
   if (simple_restart_ && !pdi_format)
     {
-      if (Motcle(restart_format_) == "xyz")
+      if (Motcle(checkpoint_format_) == "xyz")
         {
           if (Process::je_suis_maitre())
             ficsauv_.valeur() << Nom("fin");
@@ -728,11 +727,11 @@ void Save_Restart::finir()
 {
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
-  if(Motcle(restart_format_) == "pdi" && TRUST_2_PDI::is_PDI_initialized())
+  if(Motcle(checkpoint_format_) == "pdi" && TRUST_2_PDI::is_PDI_initialized())
     TRUST_2_PDI::finalize();
   else  if (!simple_restart_ && ficsauv_.non_nul())
     {
-      if (Motcle(restart_format_) == "xyz")
+      if (Motcle(checkpoint_format_) == "xyz")
         {
           if (Process::je_suis_maitre())
             ficsauv_.valeur() << Nom("fin");
@@ -749,7 +748,7 @@ void Save_Restart::finir()
     }
   // Si la sauvegarde est classique et que l'utilisateur n'a pas desactive la sauvegarde finale xyz
   // alors on effectue la sauvegarde finale xyz
-  if (Motcle(restart_format_) != "xyz" && (EcritureLectureSpecial::Active))
+  if (Motcle(checkpoint_format_) != "xyz" && (EcritureLectureSpecial::Active))
     sauver_xyz(1);
 
   for(int i=0; i<pb_base_->nombre_d_equations(); i++)

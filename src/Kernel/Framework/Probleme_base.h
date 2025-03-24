@@ -74,10 +74,9 @@ public:
   int reprendre(Entree& ) override;
   inline int is_sauvegarde_simple() const { return save_restart_.is_sauvegarde_simple(); }
   inline const Nom& restart_filename() const { return save_restart_.restart_filename(); }
-  inline const Nom& restart_format() const { return save_restart_.restart_format(); }
+  inline const Nom& checkpoint_filename() const { return save_restart_.checkpoint_filename(); }
+  inline const Nom& checkpoint_format() const { return save_restart_.checkpoint_format(); }
   inline const Nom& yaml_filename() const { return save_restart_.yaml_filename(); }
-
-  void checkVersion(Nom nomfic);
 
   virtual const Equation_base& get_equation_by_name(const Nom&) const;
   virtual Equation_base& getset_equation_by_name(const Nom&);

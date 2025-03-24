@@ -359,9 +359,9 @@ Nom Champ_Inc_base::get_PDI_dname() const
  */
 std::vector<YAML_data> Champ_Inc_base::data_a_sauvegarder() const
 {
-  std::string name = get_PDI_dname().getString();
+  const Nom& name = get_PDI_dname();
   int nb_dim = valeurs().nb_dim();
-  YAML_data d(name, "double", nb_dim);
+  YAML_data d(name.getString(), "double", nb_dim);
   d.set_save_field_type(PDI_save_type_);
   std::vector<YAML_data> data;
   data.push_back(d);
@@ -400,7 +400,7 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
 
       // Sharing the dimensions of the unknown field with PDI
       TRUST_2_PDI pdi_interface;
-      Nom name = get_PDI_dname();
+      const Nom& name = get_PDI_dname();
       pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
 
       if(PDI_save_type_)
@@ -455,7 +455,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
       if(TRUST_2_PDI::is_PDI_restart())
         {
           TRUST_2_PDI pdi_interface;
-          Nom name = get_PDI_dname();
+          const Nom& name = get_PDI_dname();
           pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 0 /*read mode*/);
           if( valeurs().dimension_tot(0) )
             pdi_interface.read(name.getChar(), valeurs().addr());

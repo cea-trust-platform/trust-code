@@ -375,7 +375,7 @@ void Probleme_Couple::sauver() const
   for (int i=0; i<nb_problemes(); i++)
     {
       const Probleme_base& pb=ref_cast(Probleme_base,probleme(i));
-      Nom format = pb.restart_format();
+      const Nom& format = pb.checkpoint_format();
       if(Motcle(format) == "pdi")
         {
           if(i>0 && pb.yaml_filename() != yaml_fname)
@@ -384,7 +384,7 @@ void Probleme_Couple::sauver() const
               Process::exit();
             }
           yaml_fname = pb.yaml_filename();
-          Nom fname = pb.restart_filename();
+          const Nom& fname = pb.checkpoint_filename();
           yaml_file.add_pb_base(pb, fname);
           pdi_format = true;
         }
