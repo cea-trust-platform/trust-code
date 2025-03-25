@@ -142,7 +142,7 @@ if [ "$TRUST_ENABLE_MC_DEBUG" != "0" ] || [ $HOST = $TRUST_HOST_ADMIN ] ; then
   rel_type="Debug"
   build_dir=$build_dir_root/${TRUST_ARCH}
   install_dir=$install_dir_root/${TRUST_ARCH}
-  use_python=OFF
+  use_python=$with_python
   build_and_test_mc
 else
   # Clean previous Debug version if TRUST_ENABLE_MC_DEBUG set to 0:
