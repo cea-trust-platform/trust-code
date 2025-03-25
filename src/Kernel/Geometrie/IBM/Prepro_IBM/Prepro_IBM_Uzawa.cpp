@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,18 +14,14 @@
 *****************************************************************************/
 #include <Prepro_IBM_Uzawa.h>
 
-Implemente_instanciable( Prepro_IBM_Uzawa," Prepro_IBM_Uzawa|methode_IBM_Uzawa",Prepro_IBM_base ) ;
+Implemente_instanciable( Prepro_IBM_Uzawa,"Prepro_IBM_Uzawa|methode_IBM_Uzawa",Prepro_IBM_base );
 
-Sortie& Prepro_IBM_Uzawa::printOn(Sortie& os) const
-{
-  Prepro_IBM_base::printOn(os);
-  return os;
-}
+Sortie& Prepro_IBM_Uzawa::printOn(Sortie& os) const { return Prepro_IBM_base::printOn(os); }
 
 void Prepro_IBM_Uzawa::set_param(Param& param)
 {
   Prepro_IBM_base::set_param(param);
-  param.ajouter("choix_de_la_methode_uzawa",&lvl_,Param::OPTIONAL); // choix de la methode d'Uzawa
+  param.ajouter("choix_de_la_methode_uzawa", &lvl_, Param::OPTIONAL); // choix de la methode d'Uzawa
 }
 
 Entree& Prepro_IBM_Uzawa::readOn(Entree& is)
@@ -35,23 +31,15 @@ Entree& Prepro_IBM_Uzawa::readOn(Entree& is)
   set_param(param);
   param.lire_avec_accolades_depuis(is);
 
-  if(lvl_==1)
-    {
-      Cout<<"Uzawa : methode LVL1"<<endl;
-    }
-  else if(lvl_==2)
-    {
-      Cout<<"Uzawa : methode LVL2"<<endl;
-    }
+  if (lvl_ == 1)
+    Cout << "Uzawa : methode LVL1" << endl;
+  else if (lvl_ == 2)
+    Cout << "Uzawa : methode LVL2" << endl;
   else
     {
-      Cerr<<"Prepro_IBM_Uzawa : choix_de_la_methode_uzawa : invalide argument"<<endl;
-      abort();
+      Cerr << "Prepro_IBM_Uzawa : choix_de_la_methode_uzawa : invalide argument" << endl;
+      Process::exit();
     }
 
   return is;
-}
-
-void intersect_uzawa( )
-{
 }

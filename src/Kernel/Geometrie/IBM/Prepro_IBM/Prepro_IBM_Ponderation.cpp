@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,13 +15,9 @@
 
 #include <Prepro_IBM_Ponderation.h>
 
-Implemente_instanciable( Prepro_IBM_Ponderation," Prepro_IBM_Ponderation|methode_IBM_ponderation",Prepro_IBM_base ) ;
+Implemente_instanciable( Prepro_IBM_Ponderation,"Prepro_IBM_Ponderation|methode_IBM_ponderation",Prepro_IBM_base );
 
-Sortie& Prepro_IBM_Ponderation::printOn(Sortie& os) const
-{
-  Prepro_IBM_base::printOn(os);
-  return os;
-}
+Sortie& Prepro_IBM_Ponderation::printOn(Sortie& os) const { return Prepro_IBM_base::printOn(os); }
 
 void Prepro_IBM_Ponderation::set_param(Param& param)
 {
@@ -37,29 +33,17 @@ Entree& Prepro_IBM_Ponderation::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   if(pond_==1)
-    {
-      Cout<<"Weighting method = arimethic weight"<<endl;
-    }
+    Cout<<"Weighting method = arimethic weight"<<endl;
   else if(pond_==2)
-    {
-      Cout<<"Weighting method = area weight"<<endl;
-    }
+    Cout<<"Weighting method = area weight"<<endl;
   else if(pond_==3)
-    {
-      Cout<<"Weighting method =  inverse distance weight"<<endl;
-    }
+    Cout<<"Weighting method =  inverse distance weight"<<endl;
   else if(pond_==4)
-    {
-      Cout<<"Weighting method = area and inverse distance weight"<<endl;
-    }
+    Cout<<"Weighting method = area and inverse distance weight"<<endl;
   else
     {
       Cerr<<"Prepro_IBM_ponderation : Type_de_ponderation : invalide argument = "<<pond_<<endl;
-      abort();
+      Process::exit();
     }
   return is;
-}
-
-void intersect_ponderation( )
-{
 }
