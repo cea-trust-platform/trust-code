@@ -1367,12 +1367,15 @@ void Solv_Petsc::create_solver(Entree& entree)
                     add_amgx_option("p:dense_lu_num_rows","2");
                     if (rang==10) // C-AMG
                       {
-                        add_amgx_option("p:algorithm","CLASSICAL");
-                        add_amgx_option("p:selector","PMIS","PMIS selector seems to take less memory, and much faster setup than HMIS.");
+                        add_amgx_option("p:algorithm","CLASSICAL","Best choice if you have enough memory and fine tune carefully p:selector and p:strength parameters.");
+                        //add_amgx_option("p:selector","PMIS","PMIS selector seems to take less memory, and much faster setup than HMIS."); // Ne permet pas autre chose que p:strength_threshold=0.25 sur le maillage 220e6 de DomainFlowLES !
+                        add_amgx_option("p:selector","HMIS","PMIS may offer faster setup but weaker (some issues for a high number of GPUs) than serial implementation!");
                         add_amgx_option("p:interpolator","D2","Also available D1. D2 is considerably more expensive during both setup and solve phases, but convergence on difficult problems");
                         Nom strength("AHAT");
                         add_amgx_option("p:strength",strength,"Choose the strength of connection metric to use. Allowable options are AHAT and ALL");
-                        if (strength=="AHAT") add_amgx_option("p:strength_threshold","0.25","All edges with strength below this threshold will be discarded. Higher: faster setup, lower memory but lower convergence");
+                        //if (strength=="AHAT") add_amgx_option("p:strength_threshold","0.25","All edges with strength below this threshold will be discarded. Higher: faster setup, lower memory but lower convergence");
+                        // Change 0.25 to 0.8 as Boomeramg: in all cases, less memory and faster times globally
+                        if (strength=="AHAT") add_amgx_option("p:strength_threshold","0.8","All edges with strength below this threshold will be discarded. Higher: faster setup, lower memory but lower convergence. You may try 0.25 for better convergence if enough memory.");
                       }
                     else if (rang==11) // SA-AMG
                       {
@@ -1610,7 +1613,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       if (Process::nproc()<=4)
         add_amgx_option("determinism_flag","1", "15% slower but enabled for NR tests");
 #ifdef MPIX_CUDA_AWARE_SUPPORT
-      if (getenv("AMGX_USE_MPI_GPU_AWARE")) add_amgx_option("communicator","MPI_DIRECT","Enable GPU direct with MPI Cuda-Aware. Yet to prove to be better (30% slower):");
+      if (getenv("AMGX_USE_MPI_GPU_AWARE")) add_amgx_option("communicator","MPI_DIRECT","Enable GPU direct with MPI Cuda-Aware. No gain for the moment.");
 #endif
       s << amgx_options_;
       Cerr << "Writing the AmgX config file: " << config() << finl;
