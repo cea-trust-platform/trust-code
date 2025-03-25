@@ -1,0 +1,82 @@
+dimension 2
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 1. 1.
+        Nombre_de_Noeuds 2 2
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche 	X = 1.	1. <= Y <= 2.
+        Bord Haut 	Y = 2.	1. <= X <= 2.
+        Bord Bas 	Y = 1.	1. <= X <= 2.
+        Bord Droit 	X = 2.	1. <= Y <= 2.
+    }
+}
+Raffiner_isotrope dom
+Postraiter_domaine { format lata fichier mesh.lata domaine dom }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+# VDF discretizaton #
+VDF dis
+
+Pb_hydraulique pb
+Scheme_euler_explicit sch
+Read sch
+{
+    nb_pas_dt_max 1
+    tinit 0.
+}
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+    }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { quick }
+        diffusion { }
+        initial_conditions { vitesse Champ_Fonc_XYZ dom 2 x*y x+y }
+        boundary_conditions {
+            Haut 	frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 x*y x+y
+            Bas 	frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 x*y x+y
+            Gauche 	frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 x*y x+y
+            Droit 	frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 x*y x+y
+        }
+    }
+
+    Post_processing
+    {
+    	Definition_champs
+    	{
+    	    mean_value Reduction_0D { methode average source refChamp { Pb_champ pb pression } }
+    	}
+        Probes { mean_value mean_value periode 1 points 1 1.5 1.5 }
+        format lata Fields dt_post 1e8 { pression elem pression som }
+    }
+}
+Solve pb
+

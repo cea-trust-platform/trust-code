@@ -1,0 +1,6 @@
+#!/bin/bash
+jdd=EnableReorderingMesh
+cp $1.data $jdd.data
+TRUST_MESH_REORDERING=1 trust $jdd 2>&1 1>$jdd.out_err 2>&1 || exit -1
+compare_sonde $1"_MEAN_VALUE".son $jdd"_MEAN_VALUE".son 2>&1 1>compare.log 2>&1 || exit -1
+echo "OK"

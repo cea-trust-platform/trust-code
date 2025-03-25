@@ -251,6 +251,9 @@ void Domaine_VF::renumeroter(Faces& les_faces)
  */
 void Domaine_VF::discretiser()
 {
+  // ToDo reordering, best place here ?
+  if (getenv("TRUST_MESH_REORDERING")!=nullptr) domaine().reordering();
+
   Cerr << "<<<<<<<<<< Discretization VF >>>>>>>>>>" << finl;
 
   Domaine_dis_base::discretiser();

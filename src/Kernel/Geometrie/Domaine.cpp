@@ -1472,14 +1472,191 @@ void Domaine_32_64<_SIZE_>::fill_from_list(std::list<Domaine_32_64*>& lst)
   Cerr << "Filling from list - End!" << finl;
 }
 
+// Will be called just before Discretiser dom in sequential or parallel
+// cause the sub-domain should be reordered !
+template <typename _SIZE_>
+void Domaine_32_64<_SIZE_>::reordering()
+{
+  Cerr << "****************************************************************" << finl;
+  Cerr << "[Reordering] mesh items (nodes/cells) to improve data locality ..." << finl;
+  // Sequential only before Partition or Discretize
+  assert(Process::nproc() == 1);
+
+  // Nodes and Cells renum
+  ArrOfInt_t renum_nodes(nb_som());
+  ArrOfInt_t renum_elems(nb_elem());
+  for (int_t i = 0; i < renum_nodes.size_array(); i++)
+    renum_nodes(i) = i;
+  for (int_t i = 0; i < renum_elems.size_array(); i++)
+    renum_elems(i) = i;
+
+  bool test = false;
+  if (test)
+    {
+      // Dumb reordering to test:
+      renum_nodes(1) = 0;
+      renum_nodes(0) = 1;
+      renum_elems(1) = 3;
+      renum_elems(3) = 1;
+    }
+  else
+    {
+      struct Point
+      {
+        double x, y, z;
+        int_t id;
+        uint64_t morton;
+      };
+      std::vector<Point> nodes, cells;
+      auto fill = [](auto &points, const auto &coord)
+      {
+        Point p;
+        for (int_t i=0; i<coord.dimension(0); i++)
+          {
+            p.x = coord(i, 0);
+            p.y = coord(i, 1);
+            p.z = dimension == 3 ? coord(i, 2) : 0;
+            p.id = i;
+            points.push_back(p);
+          }
+      };
+      fill(nodes, sommets_);
+      DoubleTab_t xp;
+      calculer_centres_gravite(xp);
+      fill(cells, xp);
+
+      // To compute renum:
+      // Morton SFC (easy to code but not perfect)
+      // or Hilbert SFC (perfect but complex) through ArboX
+      // or reverse RCM (ideal for sparse matrix to reduce bandwith but SFC methods do well) through Metis
+      auto morton_sfc = [](auto &points, auto &renum)
+      {
+        double xmin = std::numeric_limits<double>::max();
+        double xmax = -xmin;
+        double ymin = std::numeric_limits<double>::max();
+        double ymax = -ymin;
+        double zmin = std::numeric_limits<double>::max();
+        double zmax = -zmin;
+        for (auto &p: points)
+          {
+            xmin = std::min(p.x, xmin);
+            xmax = std::max(p.x, xmax);
+            ymin = std::min(p.y, ymin);
+            ymax = std::max(p.y, ymax);
+            zmin = std::min(p.z, zmin);
+            zmax = std::max(p.z, zmax);
+          }
+        // Convert floating-point coordinates to integers:
+        for (auto &p: points)
+          {
+            // Scale coordinates to fit within the 64-bit range
+            uint64_t range = 1e12; //std::numeric_limits<uint64_t>::max();
+            uint32_t scaledX = static_cast<uint32_t>((p.x - xmin) / (xmax - xmin) * (double)range);
+            uint32_t scaledY = static_cast<uint32_t>((p.y - ymin) / (ymax - ymin) * (double)range);
+            uint32_t scaledZ = dimension==3 ? static_cast<uint32_t>((p.z - zmin) / (zmax - zmin) * (double)range) : 0;
+            uint64_t morton = 0;
+            for (uint64_t i = 0; i < sizeof(uint32_t) * 8; ++i)
+              {
+                if (dimension==3)
+                  morton |= ((scaledX & (1ULL << i)) << (2 * i)) |
+                            ((scaledY & (1ULL << i)) << (2 * i + 1)) |
+                            ((scaledZ & (1ULL << i)) << (2 * i + 2));
+                else
+                  morton |= (scaledX & (1ULL << i)) << i |
+                            (scaledY & (1ULL << i)) << (i + 1);
+              }
+            p.morton = morton;
+          }
+        // Sort nodes, cells, and faces using their computed Morton codes.
+        std::sort(points.begin(), points.end(), [](const Point &a, const Point &b) { return a.morton < b.morton; });
+        // Build renum
+        int_t i = 0;
+        for (auto &p : points)
+          renum(p.id) = i++;
+      };
+      Cerr << "[Reordering] Apply Morton SFC algorithm to build renum on nodes then cells ..." << finl;
+      morton_sfc(nodes, renum_nodes);
+      morton_sfc(cells, renum_elems);
+    }
+
+  // Renum utilities:
+  auto renum_Tab_indices = [] (auto& tab, const auto& renum)
+  {
+    assert(tab.nb_dim() == 2);
+    auto new_tab(tab);
+    for (int_t i = 0; i < tab.dimension(0); i++)
+      for (int j = 0; j < tab.dimension(1); j++)
+        new_tab(renum(i), j) = tab(i, j);
+    tab = new_tab;
+  };
+  auto renum_Tab_values = [] (auto& tab, const auto& renum)
+  {
+    assert(tab.nb_dim()==2);
+    for (int_t i=0; i<tab.dimension(0); i++)
+      for (int j=0; j<tab.dimension(1); j++)
+        tab(i,j) = renum(tab(i,j));
+  };
+  auto renum_Vect_values = [] (auto& vect, const auto& renum)
+  {
+    for (int_t i=0; i<vect.size_array(); i++)
+      vect(i) = renum(vect(i));
+  };
+
+  // Create test with non uniform value and compute a reduced
+  Cerr << "Provisoire " << sommets_ << finl;
+  renum_Tab_indices(sommets_, renum_nodes);
+  Cerr << "Provisoire " << sommets_ << finl;
+  //Cerr << renum_som_perio_ << finl; ToDo Why ?
+  //renum_Vect_values(renum_som_perio_, renum_nodes);
+  //Cerr << renum_som_perio_ << finl;
+  Cerr << "Provisoire " << mes_elems_ << finl;
+  renum_Tab_indices(mes_elems_, renum_elems);
+  renum_Tab_values(mes_elems_, renum_nodes);
+  Cerr << "Provisoire " << mes_elems_ << finl;
+  if (aretes_som_.size_array()!=0)
+    {
+      Process::exit("Reordering not supported yet.");
+      renum_Tab_values(aretes_som_, renum_nodes);
+      renum_Tab_indices(elem_aretes_, renum_elems);
+    }
+  for (int i=0; i<nb_ss_domaines(); i++)
+    renum_Vect_values(ss_domaine(i).les_elems(), renum_elems);
+  for (int i=0; i<mes_faces_bord_.size(); i++)
+    renum_Tab_values(mes_faces_bord_(i).les_sommets_des_faces(), renum_nodes);
+  for (int i=0; i<mes_faces_raccord_.size(); i++)
+    renum_Tab_values(mes_faces_raccord_(i)->les_sommets_des_faces(), renum_nodes);
+  for (int i=0; i<mes_bords_int_.size(); i++)
+    renum_Tab_values(mes_bords_int_(i).les_sommets_des_faces(), renum_nodes);
+  for (int i=0; i<mes_groupes_faces_.size(); i++)
+    renum_Tab_values(mes_groupes_faces_(i).les_sommets_des_faces(), renum_nodes);
+  for (int i=0; i<domaines_frontieres_.size(); i++)
+    domaines_frontieres_(i)->reordering();
+
+  // ToDO domaines_frontieres_
+  if (Process::nproc()>1)
+    {
+      // elem_virt_pe_num_
+      for (int i=0; i<mes_faces_joint_.size(); i++)
+        renum_Tab_values(mes_faces_joint_(i).les_sommets_des_faces(), renum_nodes);
+      // ToDo communiquer avec les process voisins Voir Raffiner_isotrope_parallele::interpreter
+    }
+  Scatter::init_sequential_domain(*this);
+  int_t nodes=0, elems=0;
+  for (int i=0; i<renum_nodes.size_array(); i++)
+    if (renum_nodes(i)!=i) nodes++;
+  for (int i=0; i<renum_elems.size_array(); i++)
+    if (renum_elems(i)!=i) elems++;
+  Cerr << "[Reordering] " << nodes << " nodes and " << elems << " cells were permuted." << finl;
+  Cerr << "****************************************************************" << finl;
+}
 
 /*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints
- *
- * Le noeud de numero k devient le noeud de numero Les_Nums[k] l'element de
- * numero e devient l'element de numero e+elem_offset
- *
- * @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
- */
+*
+* Le noeud de numero k devient le noeud de numero Les_Nums[k] l'element de
+* numero e devient l'element de numero e+elem_offset
+*
+* @param (IntVect& Les_Nums) le vecteur contenant la nouvelle numerotation Nouveau_numero_noeud_i = Les_Nums[Ancien_numero_noeud_i]
+*/
 template <typename _SIZE_>
 void Domaine_32_64<_SIZE_>::renum_joint_common_items(const IntVect_t& Les_Nums, const int_t elem_offset)
 {
@@ -2001,7 +2178,7 @@ void Domaine_32_64<int>::creer_aretes()
             aretes_communes_to_recv[indice_pe].append_array(i); // indice local de l'arete
           }
       }
-    // Aretes virtuelles
+// Aretes virtuelles
     for (i = nb_aretes_reelles; i < n_aretes_tot; i++)
       {
         const int pe = pe_aretes[i];
