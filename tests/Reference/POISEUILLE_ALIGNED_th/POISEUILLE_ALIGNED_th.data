@@ -1,13 +1,13 @@
 # PARALLEL OK #
 # Thermohydraulique 2D laminaire POISEUILLE_ALIGNED_temp
 Re = (rho*U_max*L)/mu
-      rho = 1.0 kg/m^3
-      U_max = 1 m/s
-      L = 1 m
-      Re = 1
-      mu = (rho*U_max*L)/Re
-      A.N.
-      mu = 1.0 #
+rho = 1.0 kg/m^3
+U_max = 1 m/s
+L = 1 m
+Re = 1
+mu = (rho*U_max*L)/Re
+A.N.
+mu = 1.0 #
 
 dimension 3
 Pb_Thermohydraulique_IBM pb
@@ -86,11 +86,11 @@ Read pb
     Navier_Stokes_IBM
     {
         postraiter_gradient_pression_sans_masse
-	
+
         projection_initiale 1
         methode_calcul_pression_initiale avec_sources
         solveur_pression petsc cholesky { }
-	
+
         convection { generic centre }
         diffusion { option { grad_u_transpose_partout 1 } }
         sources
@@ -112,7 +112,7 @@ Read pb
                 modele
                 {
                     eta 1.0e-12
-		    bilan_PDF 2
+                    bilan_PDF 2
                     vitesse_imposee_data champ_uniforme 3 0. 0. 0.
                 }
                 interpolation IBM_element_fluide
@@ -183,7 +183,7 @@ Read pb
                 modele
                 {
                     eta 1.0e-10
-		    bilan_PDF 2
+                    bilan_PDF 2
                     variable_imposee_data champ_uniforme 1 0.
                 }
                 interpolation IBM_element_fluide
@@ -217,7 +217,7 @@ Read pb
                     }
                 }
             }
-	}
+        }
         boundary_conditions
         {
             Wall Symetrie

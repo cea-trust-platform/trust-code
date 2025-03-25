@@ -1,13 +1,13 @@
 # PARALLEL OK #
 # Hydraulique 2D laminaire POISEUILLE_ALIGNED_power_law
 Re = (rho*U_max*L)/mu
-     rho = 1.0 kg/m^3
-           U_max = 1 m/s
-                   L = 1 m
-                       Re = 1
-                            mu = (rho*U_max*L)/Re
-                                 A.N.
-                                 mu = 1.0 #
+rho = 1.0 kg/m^3
+U_max = 1 m/s
+L = 1 m
+Re = 1
+mu = (rho*U_max*L)/Re
+A.N.
+mu = 1.0 #
 
 dimension 3
 Pb_Hydraulique_ibm pb
