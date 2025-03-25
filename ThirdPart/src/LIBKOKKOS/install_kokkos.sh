@@ -111,7 +111,12 @@ if [ ! -f $KOKKOS_ROOT_DIR/lib64/libkokkos.a ]; then
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEBUG_DUALVIEW_MODIFY_CHECK=ON"  # Debug check on dual views
         else
            CMAKE_OPT="$CMAKE_OPT -DKokkos_ENABLE_DEPRECATION_WARNINGS=OFF" # Optimisation sur petits kernels sinon std::string crees dans Kokkos::check_conversion_safety !
-           CMAKE_OPT="$CMAKE_OPT -DKOKKOS_ARCH_AVX2=ON" # only work if TRUST is also compiled with avx option (such as mavx2), not the case in debug mode
+	   if [ "`grep avx2 /proc/cpuinfo 2>/dev/null`" != "" ]
+	   then
+              CMAKE_OPT="$CMAKE_OPT -DKOKKOS_ARCH_AVX2=ON" # only work if TRUST is also compiled with avx option (such as mavx2), not the case in debug mode
+	   else
+	      CMAKE_OPT="$CMAKE_OPT -DKOKKOS_ARCH_AVX=ON"
+	   fi
         fi
         # Autres options possibles: See https://kokkos.github.io/kokkos-core-wiki/keywords.html#cmake-keywords
         # et ici aussi: https://kokkos.org/kokkos-core-wiki/API/core/Macros.html
