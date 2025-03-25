@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,32 +13,37 @@
 *
 *****************************************************************************/
 
+#include <Linear_algebra_tools_impl.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Build_Map_to_Structured.h>
+#include <Connectivite_som_elem.h>
+#include <Dirichlet_loi_paroi.h>
+#include <Dirichlet_homogene.h>
+#include <Static_Int_Lists.h>
+#include <MD_Vector_tools.h>
+#include <MD_Vector_base.h>
+#include <Faces_builder.h>
+#include <Analyse_Angle.h>
+#include <DeviceMemory.h>
 #include <Domaine_VF.h>
 #include <Periodique.h>
 #include <Conds_lim.h>
-#include <Static_Int_Lists.h>
-#include <Connectivite_som_elem.h>
-#include <Faces_builder.h>
+#include <Symetrie.h>
 #include <Domaine.h>
-#include <MD_Vector_tools.h>
 #include <Scatter.h>
-#include <MD_Vector_base.h>
-#include <Analyse_Angle.h>
-#include <Linear_algebra_tools_impl.h>
 #include <Device.h>
+#include <Navier.h>
+#include <iomanip>
+#include <utility>
+#include <set>
+
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
+#include <MEDLoader.hxx>
 
 using namespace MEDCoupling;
 #endif
-#include <Dirichlet_homogene.h>
-#include <Dirichlet_paroi_defilante.h>
-#include <Navier.h>
-#include <Symetrie.h>
-#include <Dirichlet_loi_paroi.h>
-#include <DeviceMemory.h>
-#include <set>
 
 Implemente_base(Domaine_VF,"Domaine_VF",Domaine_dis_base);
 
@@ -392,6 +397,9 @@ void Domaine_VF::discretiser()
   infobord();                        // Aires des bords
   info_elem_som();                // Nombre elements et sommets
   Cerr << "<<<<<< End of Discretization VF >>>>>>>>>>" << finl;
+
+  if (Build_Map_to_Structured::BUILD_MAP_TO_STRUCTURED)
+    build_map_mc_Cmesh();
 }
 
 void Domaine_VF::discretiser_no_face()
@@ -822,6 +830,139 @@ DoubleTab Domaine_VF::calculer_xgr() const
       xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
   return xgr;
 }
+
+void Domaine_VF::build_map_mc_Cmesh()
+{
+#ifdef MEDCOUPLING_
+
+  if (domaine().type_elem()->que_suis_je() != "Quadrangle"
+      && domaine().type_elem()->que_suis_je() != "Rectangle"
+      && domaine().type_elem()->que_suis_je() != "Hexaedre")
+    {
+      Cerr << "Error in Domaine_VF::build_mc_Cmesh ! You use the interpret Build_Map_to_Structured but your elem type is " << domaine().type_elem()->que_suis_je() << " !!!" << finl;
+      Cerr << "This option is only available for Quadrangle/Rectangle/Hexaedre types !!! Remove this interpret from your data file." << finl;
+      Process::exit();
+    }
+
+  Cerr << finl;
+  Cerr << "###########################################" << finl;
+  Cerr << "@@@@@@@@ Building Structured infos @@@@@@@@" << finl;
+  Cerr << "###########################################" << finl;
+
+  /* Step 1. build mesh */
+  build_mc_Cmesh();
+
+  /* Step 1. build elem correspondance : indx est i + (nx - 1) * (j + (ny - 1) * k) */
+  build_mc_Cmesh_elemCorrespondence();
+
+
+
+  mc_Cmesh_ready_ = true;
+  Cerr << "##################################################" << finl;
+  Cerr << "@@@@@@@@ End of Building Structured infos @@@@@@@@" << finl;
+  Cerr << "##################################################" << finl;
+  Cerr << finl;
+
+#else
+  Cerr << "Error in Domaine_VF::build_mc_Cmesh ! You use the interpret Build_Map_to_Structured but your TRUST version is compiled without MEDCOUPLING !!!" << finl;
+  Process::exit();
+#endif
+}
+
+#ifdef MEDCOUPLING_
+
+void Domaine_VF::build_mc_Cmesh()
+{
+  const auto& u_mesh = domaine().get_mc_mesh(); // will be built
+  const auto& coords = u_mesh->getCoords();
+  const int nb_soms = coords->getNumberOfTuples();
+  const int nb_elems = u_mesh->getNumberOfCells();
+  const int mesh_dim = u_mesh->getMeshDimension();
+
+  Cerr << "Domaine_VF: Creating a MEDCouplingCMesh object for the domaine_VF '" << que_suis_je() << "' & the domaine '" << domaine().le_nom() << "' ..." << finl;
+  mc_Cmesh_ = MEDCouplingCMesh::New("TRUST_CMesh");
+
+  // Extraire et trier les coords uniques !!
+  for (int i = 0; i < nb_soms; ++i)
+    {
+      double pt[mesh_dim];
+      coords->getTuple(i, pt);
+      mc_Cmesh_x_coords_.push_back(pt[0]);
+      mc_Cmesh_y_coords_.push_back(pt[1]);
+
+      if (mesh_dim > 2)
+        mc_Cmesh_z_coords_.push_back(pt[2]);
+    }
+
+  std::sort(mc_Cmesh_x_coords_.begin(), mc_Cmesh_x_coords_.end());
+  mc_Cmesh_x_coords_.erase(std::unique(mc_Cmesh_x_coords_.begin(), mc_Cmesh_x_coords_.end()), mc_Cmesh_x_coords_.end());
+
+  std::sort(mc_Cmesh_y_coords_.begin(), mc_Cmesh_y_coords_.end());
+  mc_Cmesh_y_coords_.erase(std::unique(mc_Cmesh_y_coords_.begin(), mc_Cmesh_y_coords_.end()), mc_Cmesh_y_coords_.end());
+
+  if (mesh_dim > 2)
+    {
+      std::sort(mc_Cmesh_z_coords_.begin(), mc_Cmesh_z_coords_.end());
+      mc_Cmesh_z_coords_.erase(std::unique(mc_Cmesh_z_coords_.begin(), mc_Cmesh_z_coords_.end()), mc_Cmesh_z_coords_.end());
+    }
+
+  const int nx = mc_Cmesh_x_coords_.size(), ny = mc_Cmesh_y_coords_.size();
+  const int nz = (mesh_dim > 2) ? mc_Cmesh_z_coords_.size() : 1;
+
+  const int nb_som_cart = nx * ny * nz;
+  const int nb_elem_cart = (mesh_dim > 2) ? (nx - 1) * (ny - 1) * (nz - 1) : (nx - 1) * (ny - 1);
+
+  if (nb_som_cart != nb_soms || nb_elem_cart != nb_elems)
+    {
+      Cerr << "Issue in converting the TRUST mesh to MEDCouplingCMesh ... It seems that the mesh is not an IJK-like mesh !!!" << finl;
+      Cerr << "Nb soms : " << nb_soms << " for TRUST mesh vs " << nb_som_cart << " for the MEDCouplingCMesh" << finl;
+      Cerr << "Nb elems : " << nb_elems << " for TRUST mesh vs " << nb_elem_cart << " for the MEDCouplingCMesh" << finl;
+      Process::exit();
+    }
+
+  Cerr << "Structured mesh dimensions (nodes) : " << nx << " x " << ny;
+  if (mesh_dim > 2) Cerr << " x " << nz;
+  Cerr << finl;
+
+  // MEDCouplingCMesh => 1D arrays
+  MCAuto<DataArrayDouble> x_array = DataArrayDouble::New(), y_array = DataArrayDouble::New();
+  MCAuto<DataArrayDouble> z_array = (mesh_dim > 2) ? DataArrayDouble::New() : nullptr;
+
+  x_array->alloc(nx, 1);
+  y_array->alloc(ny, 1);
+
+  if (mesh_dim > 2)
+    z_array->alloc(nz, 1);
+
+  for (int i = 0; i < nx; ++i)
+    x_array->setIJ(i, 0, mc_Cmesh_x_coords_[i]);
+
+  for (int i = 0; i < ny; ++i)
+    y_array->setIJ(i, 0, mc_Cmesh_y_coords_[i]);
+
+  if (mesh_dim > 2)
+    for (int i = 0; i < nz; ++i)
+      z_array->setIJ(i, 0, mc_Cmesh_z_coords_[i]);
+
+  mc_Cmesh_->setCoords(x_array, y_array, z_array);
+}
+
+void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
+{
+
+}
+
+void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
+{
+
+}
+
+void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
+{
+
+}
+
+#endif
 
 /*! Methode inspiree de Raccord_distant_homogene::initialise
  */

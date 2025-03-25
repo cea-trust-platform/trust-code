@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,17 @@
 #include <Domaine_dis_base.h>
 #include <Domaine_forward.h>
 #include <TRUSTArrays.h>
-
 #include <Front_VF.h>
+
+#include <medcoupling++.h>
+
+#ifdef MEDCOUPLING_
+#include <MEDCouplingFieldTemplate.hxx>
+#include <MEDCouplingCMesh.hxx>
+using MEDCoupling::MEDCouplingCMesh;
+using MEDCoupling::MCAuto;
+using MEDCoupling::MEDCouplingFieldDouble;
+#endif
 
 class Domaine_Cl_dis_base;
 
@@ -218,6 +227,104 @@ protected:
   IntVect rang_elem_non_std_;    // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
+
+  /*
+   * XXX Elie Saikali
+   *
+   *  Si demande, on construit un maillage structure de type MEDCouplingCMesh et les maps elems/faces/noeuds qui vont avec (CART -> TRUST) !
+   *
+   */
+  void build_map_mc_Cmesh();
+
+#ifdef MEDCOUPLING_
+  MCAuto<MEDCouplingCMesh> mc_Cmesh_;
+  std::vector<int> mc_Cmesh_elemCorrespondence_, mc_Cmesh_facesCorrespondence_, mc_Cmesh_nodesCorrespondence_;
+  std::vector<double> mc_Cmesh_x_coords_, mc_Cmesh_y_coords_, mc_Cmesh_z_coords_;
+
+  bool mc_Cmesh_ready_ = false;
+
+  void build_mc_Cmesh();
+  void build_mc_Cmesh_elemCorrespondence();
+  void build_mc_Cmesh_facesCorrespondence();
+  void build_mc_Cmesh_nodesCorrespondence();
+
+  template <typename TYPE>
+  TYPE Cmesh_error(const char * nom_funct) const
+  {
+    cerr << "Domaine_VF::" << nom_funct << " should not be called since the MEDCouplingCMesh of Domaine_VF is not yet filled !!!" << endl;
+    Cerr << "Add the interpret Build_Map_to_Structured in your data file !!!" << finl;
+    throw;
+  }
+
+#endif
+
+public:
+
+#ifdef MEDCOUPLING_
+  inline const MEDCouplingCMesh* get_mc_CMesh() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_;
+    else return Cmesh_error<MEDCouplingCMesh*>(__func__);
+  }
+
+  const std::vector<int>& get_mc_Cmesh_elemCorrespondence() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_elemCorrespondence_;
+    else return Cmesh_error<std::vector<int>&>(__func__);
+  }
+
+  const std::vector<int>& get_mc_Cmesh_facesCorrespondence() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_facesCorrespondence_;
+    else return Cmesh_error<std::vector<int>&>(__func__);
+  }
+
+  const std::vector<int>& get_mc_Cmesh_nodesCorrespondence() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_nodesCorrespondence_;
+    else return Cmesh_error<std::vector<int>&>(__func__);
+  }
+
+  const std::vector<double>& get_mc_Cmesh_x_coords() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_x_coords_;
+    else return Cmesh_error<std::vector<double>&>(__func__);
+  }
+
+  const std::vector<double>& get_mc_Cmesh_y_coords() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_y_coords_;
+    else return Cmesh_error<std::vector<double>&>(__func__);
+  }
+
+  const std::vector<double>& get_mc_Cmesh_z_coords() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_z_coords_;
+    else return Cmesh_error<std::vector<double>&>(__func__);
+  }
+
+  // Attention : n_som i pas elem !
+  int get_mc_Cmesh_ni() const
+  {
+    if (mc_Cmesh_ready_) return static_cast<int>(mc_Cmesh_x_coords_.size());
+    else return Cmesh_error<int>(__func__);
+  }
+
+  // Attention : n_som j pas elem !
+  int get_mc_Cmesh_nj() const
+  {
+    if (mc_Cmesh_ready_) return static_cast<int>(mc_Cmesh_y_coords_.size());
+    else return Cmesh_error<int>(__func__);
+  }
+
+  // Attention : n_som k pas elem !
+  int get_mc_Cmesh_nk() const
+  {
+    if (mc_Cmesh_ready_) return static_cast<int>(mc_Cmesh_z_coords_.size());
+    else return Cmesh_error<int>(__func__);
+  }
+
+#endif
 };
 
 // Renvoie le numero local de face a partir d'un numero de face global et de elem local (0 ou 1)

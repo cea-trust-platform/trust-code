@@ -1260,7 +1260,7 @@ template<typename _SZ_>
 void Domaine_32_64<_SZ_>::build_mc_mesh() const
 {
 #ifdef MEDCOUPLING_
-  Cerr << "   Domaine: Creating a MEDCouplingUMesh object for the domain '" << le_nom() << "'" << finl;
+  Cerr << "Domaine: Creating a MEDCouplingUMesh object for the domain '" << le_nom() << "'" << finl;
 
   using MEDCoupling::DataArrayInt;
   using MEDCoupling::DataArrayDouble;
