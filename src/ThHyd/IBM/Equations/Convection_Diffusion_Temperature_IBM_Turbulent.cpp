@@ -18,7 +18,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Convection_Diffusion_Temperature_IBM_Turbulent, "Convection_Diffusion_Temperature_IBM_Turbulent", Convection_Diffusion_Temperature_IBM);
-// XD convection_ciffusion_temperature_ibm_turbulent eqn_base convection_ciffusion_temperature_ibm_turbulent -1 IBM Energy equation (temperature diffusion convection) as well as the associated turbulence model equations.
+// XD convection_diffusion_temperature_ibm_turbulent eqn_base convection_diffusion_temperature_ibm_turbulent -1 IBM Energy equation (temperature diffusion convection) as well as the associated turbulence model equations.
 // XD attr modele_turbulence modele_turbulence_scal_base modele_turbulence 1 Turbulence model for the energy equation.
 
 Sortie& Convection_Diffusion_Temperature_IBM_Turbulent::printOn(Sortie& is) const { return Equation_base::printOn(is); }

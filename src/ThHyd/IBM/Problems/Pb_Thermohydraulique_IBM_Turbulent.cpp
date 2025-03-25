@@ -21,7 +21,7 @@ Implemente_instanciable(Pb_Thermohydraulique_IBM_Turbulent, "Pb_Thermohydrauliqu
 // XD Pb_Thermohydraulique_IBM_Turbulent Pb_base Pb_Thermohydraulique_IBM_Turbulent -1 Resolution of thermohydraulic problem, with turbulence modelling.
 // XD attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
 // XD attr navier_stokes_ibm_turbulent navier_stokes_ibm_turbulent navier_stokes_ibm_turbulent 0 IBM Navier-Stokes equations as well as the associated turbulence model equations.
-// XD attr convection_diffusion_temperature_ibm_turbulent convection_diffusion_temperature_ibm_turbulent IBM convection_diffusion_temperature_ibm_turbulent 0 Energy equation (temperature diffusion convection) as well as the associated turbulence model equations.
+// XD attr convection_diffusion_temperature_ibm_turbulent convection_diffusion_temperature_ibm_turbulent convection_diffusion_temperature_ibm_turbulent 0 Energy equation (temperature diffusion convection) as well as the associated turbulence model equations.
 
 Sortie& Pb_Thermohydraulique_IBM_Turbulent::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 

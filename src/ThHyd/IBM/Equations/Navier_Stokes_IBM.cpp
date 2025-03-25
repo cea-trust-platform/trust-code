@@ -37,6 +37,7 @@ Implemente_instanciable(Navier_Stokes_IBM, "Navier_Stokes_IBM", Navier_Stokes_st
 // XD attr correction_vitesse_modifie entier correction_vitesse_modifie 1 (IBM advanced) fix velocity for PDF
 // XD attr correction_pression_modifie entier correction_pression_modifie 1 (IBM advanced) fix pressure for PDF
 // XD attr gradient_pression_qdm_modifie entier gradient_pression_qdm_modifie 1 (IBM advanced) fix pressure gradient
+// XD attr correction_variable_initiale entier correction_variable_initiale 1 Modify initial variable
 
 Sortie& Navier_Stokes_IBM::printOn(Sortie& is) const
 {

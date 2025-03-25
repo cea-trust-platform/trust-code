@@ -18,6 +18,7 @@
 
 Implemente_instanciable(Conduction_IBM, "Conduction_IBM", Conduction);
 // XD Conduction_ibm Conduction Conduction_ibm -1 IBM Heat equation.
+// XD attr correction_variable_initiale entier correction_variable_initiale 1 Modify initial variable
 
 Sortie& Conduction_IBM::printOn(Sortie& s) const
 {

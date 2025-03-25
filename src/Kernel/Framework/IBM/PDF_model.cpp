@@ -39,9 +39,9 @@ Entree& PDF_model::readOn(Entree& is)
   param.ajouter("echelle_relaxation_coefficient_PDF",&echelle_relax_,Param::OPTIONAL); // XD_ADD_P floattant time relaxation on the forcing term to help convergence
   param.ajouter_flag("local",&local_); // XD_ADD_P rien whether the prescribed velocity is expressed in the global or local basis
   param.ajouter_non_std("vitesse_imposee_data",(this),Param::OPTIONAL); // XD_ADD_P field_base Prescribed velocity as a field
-  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P quatremots Prescribed velocity as a set of ananlytical component
+  param.ajouter_non_std("vitesse_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P listchaine Prescribed velocity as a set of ananlytical component
   param.ajouter_non_std("variable_imposee_data",(this),Param::OPTIONAL); // XD_ADD_P field_base Prescribed variable as a field
-  param.ajouter_non_std("variable_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P quatremots Prescribed variable as a set of ananlytical component
+  param.ajouter_non_std("variable_imposee_fonction",(this),Param::OPTIONAL); // XD_ADD_P listchaine Prescribed variable as a set of ananlytical component
   param.lire_avec_accolades_depuis(is);
   if (type_variable_imposee_ == -1)
     {
