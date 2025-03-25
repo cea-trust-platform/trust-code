@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+25/03/25 (TRUST) New feature  : Create new Pb_XXX_IBM problems and XXX_IBM equations to be used when using a Source_PDF model for immersed boundary methods
 24/03/25 (TRUST) New feature  : Possible to use a multiphase multiplicator with the VDF discretization
 24/03/25 (TRUST) New feature  : Isotrope, Anisotrope, Circular and Directional pressure-loss sources are available for the VDF discretization
 24/03/25 (TRUST) New feature  : Flux_parietal correlation for Pb_Multiphase can be used with the VDF discretization
