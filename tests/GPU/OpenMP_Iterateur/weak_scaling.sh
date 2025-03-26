@@ -85,6 +85,7 @@ do
       direct="Off" && [ "`grep 'Enabling GPU' $jdd.out_err`" != "" ] && direct="On"
       kj=`grep -l $jdd myjob.* 2>/dev/null | tail -1 | awk -F. '{print $2}' | xargs -I {} sacct --format=JobID,ElapsedRaw,ConsumedEnergyRaw,NodeList --jobs={} 2>/dev/null | awk '/\.batch/ {print $3}'`
       awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its -v direct=$direct -v kj=$kj -v dram=$dram '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu"\t"dt" \t"s" \t"b" \t"int(dof/dt*0.001*0.001)" \t"int(its)" \t"lib" \t"kj" \t\t"direct" \t\t"dram" \t\t"1000*s/its}' $jdd.TU
+      rm -f *.xyz *.sauv *.Zones # Clean
       cd - 1>/dev/null 2>&1
    done    
 done
