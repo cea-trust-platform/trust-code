@@ -43,6 +43,13 @@ void Champs_compris_IJK::ajoute_champ_vectoriel(const IJK_Field_vector3_double& 
     std::string upperCase = nom_champ, lowerCase = nom_champ;
     std::transform(nom_champ.begin(), nom_champ.end(), upperCase.begin(), ::toupper);
     std::transform(nom_champ.begin(), nom_champ.end(), lowerCase.begin(), ::tolower);
+
+    if (has_champ_vectoriel(upperCase) || has_champ_vectoriel(lowerCase))
+      {
+        //TODO(teo.boutin) maybe check pointers equality before giving an error.
+        Cerr << "Champs_compris_IJK::ajoute_champ_vectoriel : trying to add a field twice : " << upperCase << finl;
+        Process::exit();
+      }
     liste_champs_vecto_[upperCase] = champ;
     liste_champs_vecto_[lowerCase] = champ;
   };
@@ -60,6 +67,8 @@ void Champs_compris_IJK::ajoute_champ_vectoriel(const IJK_Field_vector3_double& 
   int nb_composantes = champ.nb_comp();
   for (int i = 0; i < nb_composantes; i++)
     ajoute_champ(champ[i]);
+
+  Cerr<<"Champs_compris_IJK::ajoute_champ_vectoriel " << champ.le_nom() <<finl;
 }
 
 
@@ -69,4 +78,90 @@ const Noms Champs_compris_IJK::liste_noms_compris_vectoriel() const
   for (auto const& champ : liste_champs_vecto_)
     nom_compris.add(champ.first);
   return nom_compris;
+}
+
+void Champs_compris_IJK::switch_ft_fields()
+{
+
+  Cerr << "Champs_compris_IJK : start switch old to next" <<finl;
+
+
+  for (auto& old : liste_champs_vecto_)
+    {
+
+      Nom old_name = old.first;
+
+      if (old_name.debute_par("OLD_"))
+        {
+          Nom next_name = old_name.getSuffix("OLD_");
+
+          OBS_PTR(IJK_Field_vector3_double) ptr = old.second;
+
+          auto next = liste_champs_vecto_.find(next_name.getString());
+
+          old.second = next->second;
+          next->second = ptr;
+
+          Cerr << "Champs_compris_IJK : swapping IJK field vector " << old_name << " with " << next_name <<finl;
+
+        }
+
+
+      if (old_name.debute_par("old_"))
+        {
+          Nom next_name = old_name.getSuffix("old_");
+
+          OBS_PTR(IJK_Field_vector3_double) ptr = old.second;
+
+          auto next = liste_champs_vecto_.find(next_name.getString());
+
+          old.second = next->second;
+          next->second = ptr;
+
+          Cerr << "Champs_compris_IJK : swapping IJK field vector " << old_name << " with " << next_name <<finl;
+
+        }
+
+    }
+
+  for (auto& old : liste_champs_)
+    {
+
+      Nom old_name = old.first;
+
+      if (old_name.debute_par("OLD_"))
+        {
+          Nom next_name = old_name.getSuffix("OLD_");
+
+          auto& ptr = old.second;
+
+          auto next = liste_champs_.find(next_name.getString());
+
+          old.second = next->second;
+          next->second = ptr;
+
+          Cerr << "Champs_compris_IJK : swapping IJK field " << old_name << " with " << next_name <<finl;
+
+        }
+
+
+      if (old_name.debute_par("old_"))
+        {
+          Nom next_name = old_name.getSuffix("old_");
+
+          auto& ptr = old.second;
+
+          auto next = liste_champs_.find(next_name.getString());
+
+          old.second = next->second;
+          next->second = ptr;
+
+          Cerr << "Champs_compris_IJK : swapping IJK field " << old_name << " with " << next_name <<finl;
+
+        }
+
+    }
+  Cerr << "Champs_compris_IJK : end switch old to next" <<finl;
+
+
 }
