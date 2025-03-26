@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,6 @@
 
 static int face_associee=-1;
 
-//static ArrOfDouble coef_som;
 static ArrOfDouble gradi(3);
 static ArrOfDouble gradj(3);
 static inline void
@@ -345,13 +344,12 @@ static inline void remplir_sommets(const Domaine_VEF& domaine_VEF,
   const IntTab& face_som = domaine_VEF.face_sommets();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const Domaine& dom=domaine_VEF.domaine();
-  int i,j,k;
-  for(i=0; i<Objet_U::dimension; i++)
+  for(int i=0; i<Objet_U::dimension; i++)
     sommets[i]=dom.get_renum_som_perio(face_som(face,i));
   if(elem1!=-1)
     {
       int ok=0;
-      for(i=0; i<dplusun; i++)
+      for(int i=0; i<dplusun; i++)
         if( (elem_faces(elem1,i)==face) ||
             (elem_faces(elem1,i)==face_associee) )
           {
@@ -363,8 +361,8 @@ static inline void remplir_sommets(const Domaine_VEF& domaine_VEF,
           }
         else
           {
-            j=dom.get_renum_som_perio(elem_som(elem1, i));
-            for(k=0; k<Objet_U::dimension; k++)
+            int j=dom.get_renum_som_perio(elem_som(elem1, i));
+            for(int k=0; k<Objet_U::dimension; k++)
               if(j==sommets[k])
                 faces_op1[k]=elem_faces(elem1, i);
           }
@@ -385,7 +383,7 @@ static inline void remplir_sommets(const Domaine_VEF& domaine_VEF,
   if(elem2!=-1)
     {
       //int ok=0;
-      for(i=0; i<dplusun; i++)
+      for(int i=0; i<dplusun; i++)
         if( (elem_faces(elem2,i)==face)||
             (elem_faces(elem2,i)==face_associee) )
           {
@@ -396,8 +394,8 @@ static inline void remplir_sommets(const Domaine_VEF& domaine_VEF,
           }
         else
           {
-            j=dom.get_renum_som_perio(elem_som(elem2, i));
-            for(k=0; k<Objet_U::dimension; k++)
+            int j=dom.get_renum_som_perio(elem_som(elem2, i));
+            for(int k=0; k<Objet_U::dimension; k++)
               if(j==sommets[k])
                 faces_op2[k]=elem_faces(elem2, i);
           }
@@ -512,60 +510,29 @@ static double dotproduct_array_fois_inverse_quantitee_entrelacee(const ArrOfDoub
   //return  dotproduct_array(gradi,gradj)*inverse_quantitee_entrelacee(face,0);
 }
 
-static void contribuer_matriceP0P1(const Domaine_VEF& domaine_VEF,
-                                   const DoubleTab& inverse_quantitee_entrelacee,
-                                   int face, int elem1, int elem2,
-                                   ArrOfInt& sommets, ArrOfInt& faces_op1,
-                                   ArrOfInt& faces_op2,
-                                   const ArrOfDouble& coef_som,
-                                   IntLists& voisins, DoubleLists& coeffs,
-                                   int& nnz)
+static void contribuer_matriceP0P1(int elem1, int elem2, const ArrOfInt& sommets,
+                                   IntLists& voisins, DoubleLists& coeffs)
 {
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  assert(elem1==face_voisins(face, 0));
-  assert(elem2==face_voisins(face, 1));
-
   int dimension=Objet_U::dimension,
       dplusdeux=dimension+2;
-  double psc;
-  //double coeff_som=1./(dimension)/(dimension+1);
-
 
   for(int i=0; i<dplusdeux; i++)
     {
       int si=sommets[i];
       if (si<0) break;
-      calculer_grad(face_voisins, elem1, elem2,coef_som, si, faces_op1[i],
-                    faces_op2[i], normales, gradi);
-      for(int k=0; k<dimension; k++)
-        gradj[k]=normales(face,k);
-      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                             inverse_quantitee_entrelacee,face);
       int rang1=voisins[elem1].rang(si);
       if(rang1==-1)
         {
           voisins[elem1].add(si);
-          coeffs[elem1].add(psc);
-          nnz++;
-        }
-      else
-        {
-          coeffs[elem1][rang1]+=psc;
+          coeffs[elem1].add(0);
         }
       if (elem2!=-1)
         {
           int rang2=voisins[elem2].rang(si);
-          psc*=-1;
           if(rang2==-1)
             {
               voisins[elem2].add(si);
-              coeffs[elem2].add(psc);
-              nnz++;
-            }
-          else
-            {
-              coeffs[elem2][rang2]+=psc;
+              coeffs[elem2].add(0);
             }
         }
     }
@@ -618,54 +585,30 @@ static void update_matriceP0P1(const Domaine_VEF& domaine_VEF,
     }
 }
 
-static void contribuer_matriceP1P1(const Domaine_VEF& domaine_VEF,
-                                   const DoubleTab& inverse_quantitee_entrelacee,
-                                   int face, int elem1, int elem2,
-                                   ArrOfInt& sommets, ArrOfInt& faces_op1,
-                                   ArrOfInt& faces_op2,           const ArrOfDouble& coef_som,
-                                   IntLists& voisins, DoubleLists& coeffs,
-                                   DoubleVect& diag, int& nnz)
-{
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
+static void contribuer_matriceP1P1(int elem1, int elem2, const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
 
+{
   int dimension=Objet_U::dimension,
       dplusdeux=dimension+2;
-  double psc;
-  //double coeff_som=1./(dimension)/(dimension+1);
-  //coeff_som*=coeff_som;
-  int i,j;
 
   // On ne traite pas les sommets -1 qui
   // sont en fin de tableau sommets:
   while (sommets[dplusdeux-1]==-1)
     dplusdeux--;
 
-  for(i=0; i<dplusdeux; i++)
+  for(int i=0; i<dplusdeux; i++)
     {
       int si=sommets[i];
-      calculer_grad(face_voisins, elem1, elem2,  coef_som,si, faces_op1[i],
-                    faces_op2[i], normales, gradi);
-      diag[si]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
-                                                                   inverse_quantitee_entrelacee,face);
-      for(j=i+1; j<dplusdeux; j++)
+      for(int j=i+1; j<dplusdeux; j++)
         {
           int sj=sommets[j];
-          calculer_grad(face_voisins, elem1, elem2,  coef_som,sj, faces_op1[j],
-                        faces_op2[j], normales, gradj);
-          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,inverse_quantitee_entrelacee,face);
           int rang=voisins[si].rang(sj);
           if (sj>si)
             {
               if(rang==-1)
                 {
                   voisins[si].add(sj);
-                  coeffs[si].add(psc);
-                  nnz++;
-                }
-              else
-                {
-                  coeffs[si][rang]+=psc;
+                  coeffs[si].add(0);
                 }
             }
         }
@@ -725,33 +668,19 @@ static void update_matriceP1P1(const Domaine_VEF& domaine_VEF,
 }
 
 static void contribuer_matricePaPa(const Domaine_VEF& domaine_VEF,
-                                   const DoubleTab& inverse_quantitee_entrelacee,
-                                   int face, int elem1, int elem2,
-                                   ArrOfInt& sommets, ArrOfInt& faces_op1,
-                                   ArrOfInt& faces_op2,
-                                   IntLists& voisins, DoubleLists& coeffs,
-                                   DoubleVect& diag, int& nnz)
+                                   int elem1, int elem2,
+                                   const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
+
 {
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j, k, l;
-  double psc;
-  // On ne traite pas les sommets -1 qui
-  // sont en fin de tableau sommets:
-  //while (sommets(dplusdeux-1)==-1)
-  //   dplusdeux--;
-
-
-
   int jmax=5;
   if(elem2==-1) jmax=4;
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<jmax; j++)
+      for(int j=i+1; j<jmax; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -764,18 +693,11 @@ static void contribuer_matricePaPa(const Domaine_VEF& domaine_VEF,
           assert(arete1!=-1);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem1, elem2,
-                                  faces_op1[i], faces_op2[i],
-                                  faces_op1[j], faces_op2[j],
-                                  normales, gradi);
-              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
-                                                                               inverse_quantitee_entrelacee,face);
               int jj=j;
-              for(k=i; k<3; k++)
+              for(int k=i; k<3; k++)
                 {
                   int sk=sommets[k];
-                  for(l=jj+1; l<jmax; l++)
+                  for(int l=jj+1; l<jmax; l++)
                     {
                       int sl=sommets[l];
                       int arete2;
@@ -790,25 +712,14 @@ static void contribuer_matricePaPa(const Domaine_VEF& domaine_VEF,
                       assert(arete2!=-1);
                       if(ok_arete[arete2])
                         {
-                          calculer_grad_arete(face, face_voisins, k, l,
-                                              elem1, elem2,
-                                              faces_op1[k], faces_op2[k],
-                                              faces_op1[l], faces_op2[l],
-                                              normales, gradj);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                                 inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
                           int rang=voisins[arete1].rang(arete2);
                           if(rang==-1)
                             {
                               voisins[arete1].add(arete2);
-                              coeffs[arete1].add(psc);
-                              nnz++;
-                            }
-                          else
-                            {
-                              coeffs[arete1][rang]+=psc;
+                              coeffs[arete1].add(0);
+
                             }
                           arete1=tmp;
                         }
@@ -915,45 +826,19 @@ static void update_matricePaPa(const Domaine_VEF& domaine_VEF,
     }
 }
 static void
-contribuer_matrice_NeumannP0P1(const Domaine_VEF& domaine_VEF,
-                               const DoubleTab& inverse_quantitee_entrelacee,
-                               int face, int elem,
-                               ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
-                               IntLists& voisins, DoubleLists& coeffs,
-                               int& nnz)
-{
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
+contribuer_matrice_NeumannP0P1(int elem, const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
 
+{
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
-  double unsurdim=1./Objet_U::dimension;
-  double psc;
-  //  double coeff_som=1./(dimension)/(dplusun);
-
-
   for(int i=0; i<dplusun; i++)
     {
       int si=sommets[i];
-      calculer_grad(face_voisins, elem, -1, coef_som,si, faces_op1[i],
-                    -1, normales, gradi);
-      if(faces_op1[i]!=face)
-        for (int comp=0; comp<dimension; comp++)
-          gradi[comp]+=normales(face,comp)*unsurdim;
-      for(int k=0; k<dimension; k++)
-        gradj[k]=normales(face,k);
-      psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                             inverse_quantitee_entrelacee,face);
       int rang1=voisins[elem].rang(si);
       if(rang1==-1)
         {
           voisins[elem].add(si);
-          coeffs[elem].add(psc);
-          nnz++;
-        }
-      else
-        {
-          coeffs[elem][rang1]+=psc;
+          coeffs[elem].add(0);
         }
     }
 }
@@ -1004,55 +889,22 @@ update_matrice_NeumannP0P1(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP1P1(const Domaine_VEF& domaine_VEF,
-                               const DoubleTab& inverse_quantitee_entrelacee,
-                               int face, int elem,
-                               ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
-                               IntLists& voisins, DoubleLists& coeffs,
-                               DoubleVect& diag, int& nnz)
-{
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
+contribuer_matrice_NeumannP1P1(int elem, const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
 
+{
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
-  double unsurdim=1./Objet_U::dimension;
-  double psc;
-  //  double coeff_som=1./(dimension)/(dplusun);
-  //coeff_som*=coeff_som;
-
-
-  int i,j;
-  for(i=0; i<dplusun; i++)
+  for(int i=0; i<dplusun; i++)
     {
       int si=sommets[i];
-      calculer_grad(face_voisins, elem, -1, coef_som, si, faces_op1[i],
-                    -1, normales, gradi);
-      if(faces_op1[i]!=face)
-        for (int comp=0; comp<dimension; comp++)
-          gradi[comp]+= normales(face,comp)*unsurdim;
-      diag[si]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
-                                                                   inverse_quantitee_entrelacee,face);
-      for(j=i+1; j<dplusun; j++)
+      for(int j=i+1; j<dplusun; j++)
         {
           int sj=sommets[j];
-          calculer_grad(face_voisins, elem, -1,  coef_som,sj, faces_op1[j],
-                        -1, normales, gradj);
-          if(faces_op1[j]!=face)
-            for (int comp=0; comp<dimension; comp++)
-              gradj[comp]+= normales(face,comp)*unsurdim;
-          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,inverse_quantitee_entrelacee,face);
           int rang=voisins[si].rang(sj);
           if(rang==-1)
             {
               voisins[si].add(sj);
-              coeffs[si].add(psc);
-              nnz++;
-            }
-          else
-            {
-
-              coeffs[si][rang]+=psc;
+              coeffs[si].add(0);
             }
         }
     }
@@ -1114,52 +966,21 @@ update_matrice_NeumannP1P1(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_SymetrieP1P1(const Domaine_VEF& domaine_VEF,
-                                const DoubleTab& inverse_quantitee_entrelacee,
-                                int face, int elem,
-                                ArrOfInt& sommets, ArrOfInt& faces_op1,const ArrOfDouble& coef_som,
-                                IntLists& voisins, DoubleLists& coeffs,
-                                DoubleVect& diag, int& nnz)
+contribuer_matrice_SymetrieP1P1(int elem, const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
 {
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
-
-  double psc;
-  //  double coeff_som=1./(dimension)/(dplusun);
-  //  coeff_som*=coeff_som;
-
-
-  int i,j;
-  for(i=0; i<dplusun; i++)
+  for(int i=0; i<dplusun; i++)
     {
       int si=sommets[i];
-      calculer_grad(face_voisins, elem, -1, coef_som, si, faces_op1[i],
-                    -1, normales, gradi);
-      projette(gradi, face, normales);
-      diag[si]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
-                                                                   inverse_quantitee_entrelacee,face);
-      for(j=i+1; j<dplusun; j++)
+      for(int j=i+1; j<dplusun; j++)
         {
           int sj=sommets[j];
-          calculer_grad(face_voisins, elem,  -1, coef_som, sj, faces_op1[j],
-                        -1, normales, gradj);
-          projette(gradj, face, normales);
-          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                 inverse_quantitee_entrelacee,face);
           int rang=voisins[si].rang(sj);
           if(rang==-1)
             {
               voisins[si].add(sj);
-              coeffs[si].add(psc);
-              nnz++;
-            }
-          else
-            {
-
-              coeffs[si][rang]+=psc;
+              coeffs[si].add(0);
             }
         }
     }
@@ -1217,26 +1038,16 @@ update_matrice_SymetrieP1P1(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF,
-                               const DoubleTab& inverse_quantitee_entrelacee,
-                               int face, int elem,
-                               ArrOfInt& sommets, ArrOfInt& faces_op1,
-                               IntLists& voisins, DoubleLists& coeffs,
-                               DoubleVect& diag, int& nnz)
+contribuer_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF, int elem, const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
+
 {
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j, k, l;
-  double psc;
-
-
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<4; j++)
+      for(int j=i+1; j<4; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -1244,18 +1055,11 @@ contribuer_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem, -1,
-                                  faces_op1[i], -1,
-                                  faces_op1[j], -1,
-                                  normales, gradi);
-              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
-                                                                               inverse_quantitee_entrelacee,face);
               int jj=j;
-              for(k=i; k<3; k++)
+              for(int k=i; k<3; k++)
                 {
                   int sk=sommets[k];
-                  for(l=jj+1; l<4; l++)
+                  for(int l=jj+1; l<4; l++)
                     {
                       int sl=sommets[l];
                       int arete2= chercher_arete(domaine_VEF,elem, sl, sk,
@@ -1264,25 +1068,14 @@ contribuer_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF,
                       assert(arete2!=-1);
                       if(ok_arete[arete2])
                         {
-                          calculer_grad_arete(face, face_voisins, k, l,
-                                              elem, -1,
-                                              faces_op1[k], -1,
-                                              faces_op1[l], -1,
-                                              normales, gradj);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                                 inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
                           int rang=voisins[arete1].rang(arete2);
                           if(rang==-1)
                             {
                               voisins[arete1].add(arete2);
-                              coeffs[arete1].add(psc);
-                              nnz++;
-                            }
-                          else
-                            {
-                              coeffs[arete1][rang]+=psc;
+                              coeffs[arete1].add(0);
+
                             }
                           arete1=tmp;
                         }
@@ -1374,26 +1167,15 @@ update_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF,
-                                const DoubleTab& inverse_quantitee_entrelacee,
-                                int face, int elem,
-                                ArrOfInt& sommets, ArrOfInt& faces_op1,
-                                IntLists& voisins, DoubleLists& coeffs,
-                                DoubleVect& diag, int& nnz)
+contribuer_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF, int elem, const ArrOfInt& sommets, IntLists& voisins, DoubleLists& coeffs)
 {
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j, k, l;
-  double psc;
-
-
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<4; j++)
+      for(int j=i+1; j<4; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -1401,19 +1183,11 @@ contribuer_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem, -1,
-                                  faces_op1[i], -1,
-                                  faces_op1[j], -1,
-                                  normales, gradi);
-              projette(gradi, face, normales);
-              diag[arete1]+=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradi,
-                                                                               inverse_quantitee_entrelacee,face);
               int jj=j;
-              for(k=i; k<3; k++)
+              for(int k=i; k<3; k++)
                 {
                   int sk=sommets[k];
-                  for(l=jj+1; l<4; l++)
+                  for(int l=jj+1; l<4; l++)
                     {
                       int sl=sommets[l];
                       int arete2= chercher_arete(domaine_VEF,elem, sl, sk,
@@ -1422,26 +1196,14 @@ contribuer_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF,
                       assert(arete2!=-1);
                       if(ok_arete[arete2])
                         {
-                          calculer_grad_arete(face, face_voisins, k, l,
-                                              elem, -1,
-                                              faces_op1[k], -1,
-                                              faces_op1[l], -1,
-                                              normales, gradj);
-                          projette(gradj, face, normales);
-                          psc=dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                                 inverse_quantitee_entrelacee,face);
                           int tmp=arete1;
                           if(arete1>arete2) swap(arete1, arete2);
                           int rang=voisins[arete1].rang(arete2);
                           if(rang==-1)
                             {
                               voisins[arete1].add(arete2);
-                              coeffs[arete1].add(psc);
-                              nnz++;
-                            }
-                          else
-                            {
-                              coeffs[arete1][rang]+=psc;
+                              coeffs[arete1].add(0);
+
                             }
                           arete1=tmp;
                         }
@@ -1534,31 +1296,21 @@ update_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF,
     }
 }
 
-static void contribuer_matriceP0Pa(const Domaine_VEF& domaine_VEF,
-                                   const DoubleTab& inverse_quantitee_entrelacee,
-                                   int face, int elem1, int elem2,
-                                   ArrOfInt& sommets,
-                                   ArrOfInt& faces_op1,
-                                   ArrOfInt& faces_op2,
+static void contribuer_matriceP0Pa(const Domaine_VEF& domaine_VEF, int elem1, int elem2,
+                                   const ArrOfInt& sommets,
                                    IntLists& voisins,
-                                   DoubleLists& coeffs,
-                                   int& nnz)
+                                   DoubleLists& coeffs)
+
 {
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j;
-  double psc;
-
-
   int jmax=5;
   if(elem2==-1) jmax=4;
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<jmax; j++)
+      for(int j=i+1; j<jmax; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -1570,39 +1322,19 @@ static void contribuer_matriceP0Pa(const Domaine_VEF& domaine_VEF,
                                     elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem1, elem2,
-                                  faces_op1[i], faces_op2[i],
-                                  faces_op1[j], faces_op2[j],
-                                  normales, gradi);
-              psc=0;
-              for(int comp=0; comp<3; comp++)
-                psc+=gradi[comp]*normales(face, comp)*
-                     (-inverse_quantitee_entrelacee(face,comp));
               int rang=voisins[elem1].rang(arete1);
               if(rang==-1)
                 {
                   voisins[elem1].add(arete1);
-                  coeffs[elem1].add(psc);
-                  nnz++;
-                }
-              else
-                {
-                  coeffs[elem1][rang]+=psc;
+                  coeffs[elem1].add(0);
                 }
               if(elem2!=-1)
                 {
-                  psc*=-1.0;
                   int rangbis=voisins[elem2].rang(arete1);
                   if(rangbis==-1)
                     {
                       voisins[elem2].add(arete1);
-                      coeffs[elem2].add(psc);
-                      nnz++;
-                    }
-                  else
-                    {
-                      coeffs[elem2][rangbis]+=psc;
+                      coeffs[elem2].add(0);
                     }
                 }
             }
@@ -1686,28 +1418,19 @@ static void update_matriceP0Pa(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP0Pa(const Domaine_VEF& domaine_VEF,
-                               const DoubleTab& inverse_quantitee_entrelacee,
-                               int face, int elem,
-                               ArrOfInt& sommets,
-                               ArrOfInt& faces_op1,
+contribuer_matrice_NeumannP0Pa(const Domaine_VEF& domaine_VEF, int elem,
+                               const ArrOfInt& sommets,
                                IntLists& voisins,
-                               DoubleLists& coeffs,
-                               int& nnz)
+                               DoubleLists& coeffs)
+
 {
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j;
-  double psc;
-
-
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<4; j++)
+      for(int j=i+1; j<4; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -1715,25 +1438,11 @@ contribuer_matrice_NeumannP0Pa(const Domaine_VEF& domaine_VEF,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem, -1,
-                                  faces_op1[i], -1,
-                                  faces_op1[j], -1,
-                                  normales, gradi);
-              psc=0;
-              for(int comp=0; comp<3; comp++)
-                psc+=gradi[comp]*normales(face, comp)
-                     *(-inverse_quantitee_entrelacee(face,comp));
               int rang=voisins[elem].rang(arete1);
               if(rang==-1)
                 {
                   voisins[elem].add(arete1);
-                  coeffs[elem].add(psc);
-                  nnz++;
-                }
-              else
-                {
-                  coeffs[elem][rang]+=psc;
+                  coeffs[elem].add(0);
                 }
             }
         }
@@ -1795,34 +1504,21 @@ update_matrice_NeumannP0Pa(const Domaine_VEF& domaine_VEF,
     }
 }
 
-static void contribuer_matriceP1Pa(const Domaine_VEF& domaine_VEF,
-                                   const DoubleTab& inverse_quantitee_entrelacee,
-                                   int face, int elem1, int elem2,
-                                   ArrOfInt& sommets,
-                                   ArrOfInt& faces_op1,
-                                   ArrOfInt& faces_op2,           const ArrOfDouble& coef_som,
+static void contribuer_matriceP1Pa(const Domaine_VEF& domaine_VEF, int elem1, int elem2,
+                                   const ArrOfInt& sommets,
                                    IntLists& voisins,
-                                   DoubleLists& coeffs,
-                                   int& nnz)
+                                   DoubleLists& coeffs)
+
 {
-  // int dimension=Objet_U::dimension,
-  //    dplusun=dimension+1;
-  //  double coeff_som=1./(dimension)/(dplusun);
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j, k;
-  double psc;
-
-
   int jmax=5;
   if(elem2==-1) jmax=4;
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<jmax; j++)
+      for(int j=i+1; j<jmax; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -1834,29 +1530,14 @@ static void contribuer_matriceP1Pa(const Domaine_VEF& domaine_VEF,
                                     elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem1, elem2,
-                                  faces_op1[i], faces_op2[i],
-                                  faces_op1[j], faces_op2[j],
-                                  normales, gradi);
-              for(k=0; k<jmax; k++)
+              for(int k=0; k<jmax; k++)
                 {
                   int sk=sommets[k];
-                  calculer_grad(face_voisins, elem1, elem2, coef_som, sk,
-                                faces_op1[k], faces_op2[k],
-                                normales, gradj);
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                          inverse_quantitee_entrelacee,face);
                   int rang1=voisins[sk].rang(arete1);
                   if(rang1==-1)
                     {
                       voisins[sk].add(arete1);
-                      coeffs[sk].add(psc);
-                      nnz++;
-                    }
-                  else
-                    {
-                      coeffs[sk][rang1]+=psc;
+                      coeffs[sk].add(0);
                     }
                 }
             }
@@ -1934,32 +1615,19 @@ static void update_matriceP1Pa(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP1Pa(const Domaine_VEF& domaine_VEF,
-                               const DoubleTab& inverse_quantitee_entrelacee,
-                               int face, int elem,
-                               ArrOfInt& sommets,
-                               ArrOfInt& faces_op1,    const ArrOfDouble& coef_som,
+contribuer_matrice_NeumannP1Pa(const Domaine_VEF& domaine_VEF, int elem,
+                               const ArrOfInt& sommets,
                                IntLists& voisins,
-                               DoubleLists& coeffs,
-                               int& nnz)
+                               DoubleLists& coeffs)
+
 {
-  int dimension=Objet_U::dimension;
-  //    dplusun=dimension+1;
-  //  double coeff_som=1./(dimension)/(dplusun);
-  double unsurdim=1./Objet_U::dimension;
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j, k;
-  double psc;
-
-
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<4; j++)
+      for(int j=i+1; j<4; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -1967,32 +1635,15 @@ contribuer_matrice_NeumannP1Pa(const Domaine_VEF& domaine_VEF,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem, -1,
-                                  faces_op1[i], -1,
-                                  faces_op1[j], -1,
-                                  normales, gradi);
-              for(k=0; k<4; k++)
+              for(int k=0; k<4; k++)
                 {
                   int sk=sommets[k];
-                  calculer_grad(face_voisins, elem, -1, coef_som, sk,
-                                faces_op1[k], -1,
-                                normales, gradj);
-                  if(faces_op1[k]!=face)
-                    for (int comp=0; comp<dimension; comp++)
-                      gradj[comp]+= normales(face,comp)*unsurdim;
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                          inverse_quantitee_entrelacee,face);
                   int rang1=voisins[sk].rang(arete1);
                   if(rang1==-1)
                     {
                       voisins[sk].add(arete1);
-                      coeffs[sk].add(psc);
-                      nnz++;
-                    }
-                  else
-                    {
-                      coeffs[sk][rang1]+=psc;
+                      coeffs[sk].add(0);
+
                     }
                 }
             }
@@ -2068,31 +1719,19 @@ update_matrice_NeumannP1Pa(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_SymetrieP1Pa(const Domaine_VEF& domaine_VEF,
-                                const DoubleTab& inverse_quantitee_entrelacee,
-                                int face, int elem,
-                                ArrOfInt& sommets,
-                                ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
+contribuer_matrice_SymetrieP1Pa(const Domaine_VEF& domaine_VEF, int elem,
+                                const ArrOfInt& sommets,
                                 IntLists& voisins,
-                                DoubleLists& coeffs,
-                                int& nnz)
+                                DoubleLists& coeffs)
+
 {
-  //int dimension=Objet_U::dimension,
-  //    dplusun=dimension+1;
-  //  double coeff_som=1./(dimension)/(dplusun);
   const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
   const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
-  const IntTab& face_voisins=domaine_VEF.face_voisins();
-  const DoubleTab& normales = domaine_VEF.face_normales();
-  int i, j, k;
-  double psc;
-
-
-  for(i=0; i<3; i++)
+  for(int i=0; i<3; i++)
     {
       int si=sommets[i];
-      for(j=i+1; j<4; j++)
+      for(int j=i+1; j<4; j++)
         {
           int sj=sommets[j];
           int arete1;
@@ -2100,31 +1739,14 @@ contribuer_matrice_SymetrieP1Pa(const Domaine_VEF& domaine_VEF,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
-              calculer_grad_arete(face, face_voisins, i, j,
-                                  elem, -1,
-                                  faces_op1[i], -1,
-                                  faces_op1[j], -1,
-                                  normales, gradi);
-              projette(gradi, face, normales);
-              for(k=0; k<4; k++)
+              for(int k=0; k<4; k++)
                 {
                   int sk=sommets[k];
-                  calculer_grad(face_voisins, elem, -1, coef_som, sk,
-                                faces_op1[k], -1,
-                                normales, gradj);
-                  projette(gradj, face, normales);
-                  psc=-dotproduct_array_fois_inverse_quantitee_entrelacee(gradi,gradj,
-                                                                          inverse_quantitee_entrelacee,face);
                   int rang1=voisins[sk].rang(arete1);
                   if(rang1==-1)
                     {
                       voisins[sk].add(arete1);
-                      coeffs[sk].add(psc);
-                      nnz++;
-                    }
-                  else
-                    {
-                      coeffs[sk][rang1]+=psc;
+                      coeffs[sk].add(0);
                     }
                 }
             }
@@ -2237,10 +1859,8 @@ void assemblerP1P1(const Domaine_dis_base& z,
   int nb_faces = domaine_VEF.nb_faces_tot();
   int nb_som = domaine_VEF.domaine().nb_som_tot();
   int elem1, elem2, face, ok;
-  int nnz=nb_som;
   IntLists voisins(nb_som);
   DoubleLists coeffs(nb_som);
-  DoubleVect diag(nb_som);
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
   ArrOfInt face_opp2(dimension+2);
@@ -2261,26 +1881,14 @@ void assemblerP1P1(const Domaine_dis_base& z,
           sort(sommets, face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP1P1(domaine_VEF,
-                                             inverse_quantitee_entrelacee,
-                                             face, elem1, sommets,
-                                             face_opp1, coef_som,
-                                             voisins, coeffs, diag, nnz);
+              contribuer_matrice_NeumannP1P1(elem1, sommets, voisins, coeffs);
             }
           else if(ok==4)
             {
-              contribuer_matrice_SymetrieP1P1(domaine_VEF,
-                                              inverse_quantitee_entrelacee,
-                                              face, elem1, sommets,
-                                              face_opp1, coef_som,
-                                              voisins, coeffs, diag, nnz);
+              contribuer_matrice_SymetrieP1P1(elem1, sommets, voisins, coeffs);
             }
           else
-            contribuer_matriceP1P1(domaine_VEF,
-                                   inverse_quantitee_entrelacee,
-                                   face, elem1, elem2, sommets,
-                                   face_opp1, face_opp2, coef_som,
-                                   voisins, coeffs, diag, nnz);
+            contribuer_matriceP1P1(elem1, elem2, sommets, voisins, coeffs);
         }
     }
   face_associee=-1;
@@ -2290,24 +1898,13 @@ void assemblerP1P1(const Domaine_dis_base& z,
       elem2=face_voisins(face, 1);
       if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          contribuer_matriceP1P1(domaine_VEF,
-                                 inverse_quantitee_entrelacee,
-                                 face, elem1, elem2, sommets,
-                                 face_opp1, face_opp2, coef_som,
-                                 voisins, coeffs, diag, nnz);
+          contribuer_matriceP1P1(elem1, elem2, sommets, voisins, coeffs);
         }
     }
-
-  for(int i=0; i<nb_som; i++)
-    if(diag(i)==0)
-      {
-        //Cerr << "On modifie la ligne (sommet) orpheline " << i << finl;
-        diag(i)=1.;
-      }
-
+  DoubleVect diag(nb_som);
+  diag=1;
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
   matrice_bloc.remplir(voisins, coeffs, diag, domaine.nb_som(), domaine.nb_som_tot());
@@ -2322,15 +1919,12 @@ void updateP1P1(const Domaine_dis_base& z,
 {
   int dimension=Objet_U::dimension;
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
-  //  const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nint = domaine_VEF.premiere_face_int();
   int nb_faces = domaine_VEF.nb_faces_tot();
-  //  int nb_som = domaine_VEF.domaine().nb_som_tot();
   int elem1, elem2, face, ok;
-  //  int nnz=nb_som;
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
   ArrOfInt face_opp2(dimension+2);
@@ -2448,10 +2042,8 @@ void assemblerPaPa(const Domaine_dis_base& z,
   int nb_faces = domaine_VEF.nb_faces_tot();
   int nb_arete = domaine.nb_aretes_tot();
   int elem1, elem2, face, ok;
-  int nnz=nb_arete;
   IntLists voisins(nb_arete);
   DoubleLists coeffs(nb_arete);
-  DoubleVect diag(nb_arete);
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
   ArrOfInt face_opp2(dimension+2);
@@ -2471,26 +2063,14 @@ void assemblerPaPa(const Domaine_dis_base& z,
                           face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannPaPa(domaine_VEF,
-                                             inverse_quantitee_entrelacee,
-                                             face, elem1, sommets,
-                                             face_opp1,
-                                             voisins, coeffs, diag, nnz);
+              contribuer_matrice_NeumannPaPa(domaine_VEF, elem1, sommets, voisins, coeffs);
             }
           else if(ok==4)
             {
-              contribuer_matrice_SymetriePaPa(domaine_VEF,
-                                              inverse_quantitee_entrelacee,
-                                              face, elem1, sommets,
-                                              face_opp1,
-                                              voisins, coeffs, diag, nnz);
+              contribuer_matrice_SymetriePaPa(domaine_VEF, elem1, sommets, voisins, coeffs);
             }
           else
-            contribuer_matricePaPa(domaine_VEF,
-                                   inverse_quantitee_entrelacee,
-                                   face, elem1, elem2, sommets,
-                                   face_opp1, face_opp2,
-                                   voisins, coeffs, diag, nnz);
+            contribuer_matricePaPa(domaine_VEF, elem1, elem2, sommets, voisins, coeffs);
         }
     }
   face_associee=-1;
@@ -2500,23 +2080,13 @@ void assemblerPaPa(const Domaine_dis_base& z,
       elem2=face_voisins(face, 1);
       if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
-          contribuer_matricePaPa(domaine_VEF,
-                                 inverse_quantitee_entrelacee,
-                                 face, elem1, elem2, sommets,
-                                 face_opp1, face_opp2,
-                                 voisins, coeffs, diag, nnz);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          contribuer_matricePaPa(domaine_VEF, elem1, elem2, sommets, voisins, coeffs);
         }
     }
-  for(int i=0; i<nb_arete; i++)
-    if(diag(i)==0)
-      {
-        // On n'affiche pas car trop sur de gros maillages
-        //Cerr << "On modifie la ligne (arete) orpheline " << i << finl;
-        diag(i)=1;
-      }
 
+  DoubleVect diag(nb_arete);
+  diag = 1;
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
   matrice_bloc.remplir(voisins, coeffs, diag, domaine.nb_aretes(), domaine.nb_aretes_tot());
@@ -2605,7 +2175,6 @@ void assemblerP0Pa(const Domaine_dis_base& z,
   int nb_faces = domaine_VEF.nb_faces_tot();
   int nb_elem = domaine.nb_elem_tot();
   int elem1, elem2, face, ok;
-  int nnz=0;
   IntLists voisins(nb_elem);
   DoubleLists coeffs(nb_elem);
   ArrOfInt sommets(dimension+2);
@@ -2627,20 +2196,14 @@ void assemblerP0Pa(const Domaine_dis_base& z,
                           face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP0Pa(domaine_VEF,
-                                             inverse_quantitee_entrelacee,
-                                             face, elem1, sommets,
-                                             face_opp1,
-                                             voisins, coeffs, nnz);
+              contribuer_matrice_NeumannP0Pa(domaine_VEF, elem1, sommets, voisins, coeffs);
             }
           else if(ok==4)
             {
               ; // RIEN
             }
           else
-            contribuer_matriceP0Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets,
-                                   face_opp1, face_opp2,
-                                   voisins, coeffs, nnz);
+            contribuer_matriceP0Pa(domaine_VEF, elem1, elem2, sommets, voisins, coeffs);
         }
     }
   face_associee=-1;
@@ -2652,11 +2215,7 @@ void assemblerP0Pa(const Domaine_dis_base& z,
         {
           remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
-          contribuer_matriceP0Pa(domaine_VEF,
-                                 inverse_quantitee_entrelacee,
-                                 face, elem1, elem2, sommets,
-                                 face_opp1, face_opp2,
-                                 voisins, coeffs, nnz);
+          contribuer_matriceP0Pa(domaine_VEF, elem1, elem2, sommets, voisins, coeffs);
         }
     }
   matrice.typer("Matrice_Bloc");
@@ -2735,7 +2294,6 @@ void assemblerP1Pa(const Domaine_dis_base& z,
   int nint = domaine_VEF.premiere_face_int();
   int nb_faces = domaine_VEF.nb_faces_tot();
   int elem1, elem2, face, ok;
-  int nnz=0;
   int nb_som = domaine.nb_som_tot();
   IntLists voisins(nb_som);
   DoubleLists coeffs(nb_som);
@@ -2758,26 +2316,14 @@ void assemblerP1Pa(const Domaine_dis_base& z,
                           face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP1Pa(domaine_VEF,
-                                             inverse_quantitee_entrelacee,
-                                             face, elem1, sommets,
-                                             face_opp1,coef_som,
-                                             voisins, coeffs, nnz);
+              contribuer_matrice_NeumannP1Pa(domaine_VEF, elem1, sommets, voisins, coeffs);
             }
           else if(ok==4)
             {
-              contribuer_matrice_SymetrieP1Pa(domaine_VEF,
-                                              inverse_quantitee_entrelacee,
-                                              face, elem1, sommets,
-                                              face_opp1, coef_som,
-                                              voisins, coeffs, nnz);
+              contribuer_matrice_SymetrieP1Pa(domaine_VEF, elem1, sommets, voisins, coeffs);
             }
           else
-            contribuer_matriceP1Pa(domaine_VEF,
-                                   inverse_quantitee_entrelacee,
-                                   face, elem1, elem2, sommets,
-                                   face_opp1, face_opp2, coef_som,
-                                   voisins, coeffs, nnz);
+            contribuer_matriceP1Pa(domaine_VEF, elem1, elem2, sommets, voisins, coeffs);
         }
     }
   face_associee=-1;
@@ -2789,11 +2335,7 @@ void assemblerP1Pa(const Domaine_dis_base& z,
         {
           remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
-          contribuer_matriceP1Pa(domaine_VEF,
-                                 inverse_quantitee_entrelacee,
-                                 face, elem1, elem2, sommets,
-                                 face_opp1, face_opp2, coef_som,
-                                 voisins, coeffs, nnz);
+          contribuer_matriceP1Pa(domaine_VEF, elem1, elem2, sommets, voisins, coeffs);
         }
     }
 
@@ -2880,7 +2422,6 @@ void assemblerP0P1(const Domaine_dis_base& z,
   int nb_faces = domaine_VEF.nb_faces_tot();
   int nb_elem = domaine.nb_elem_tot();
   int elem1, elem2, face, ok;
-  int nnz=0;
   IntLists voisins(nb_elem);
   DoubleLists coeffs(nb_elem);
   ArrOfInt sommets(dimension+2);
@@ -2898,27 +2439,18 @@ void assemblerP0P1(const Domaine_dis_base& z,
           if (ok==-1) break;
           elem1=face_voisins(face, 0);
           elem2=face_voisins(face, 1);
-          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP0P1(domaine_VEF,
-                                             inverse_quantitee_entrelacee,
-                                             face, elem1, sommets,
-                                             face_opp1, coef_som,
-                                             voisins, coeffs, nnz);
+              contribuer_matrice_NeumannP0P1(elem1, sommets, voisins, coeffs);
             }
           else if(ok==4)
             {
               ;// RIEN
             }
           else
-            contribuer_matriceP0P1(domaine_VEF,
-                                   inverse_quantitee_entrelacee,
-                                   face, elem1, elem2, sommets,
-                                   face_opp1, face_opp2, coef_som,
-                                   voisins, coeffs, nnz);
+            contribuer_matriceP0P1(elem1, elem2, sommets, voisins, coeffs);
         }
     }
   face_associee=-1;
@@ -2928,14 +2460,9 @@ void assemblerP0P1(const Domaine_dis_base& z,
       elem2=face_voisins(face, 1);
       if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
-                          face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          contribuer_matriceP0P1(domaine_VEF,
-                                 inverse_quantitee_entrelacee,
-                                 face, elem1, elem2, sommets,
-                                 face_opp1, face_opp2, coef_som,
-                                 voisins, coeffs, nnz);
+          contribuer_matriceP0P1(elem1, elem2, sommets, voisins, coeffs);
         }
     }
 
