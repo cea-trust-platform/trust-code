@@ -238,7 +238,8 @@ protected:
 
 #ifdef MEDCOUPLING_
   MCAuto<MEDCouplingCMesh> mc_Cmesh_;
-  std::vector<int> mc_Cmesh_elemCorrespondence_, mc_Cmesh_facesCorrespondence_, mc_Cmesh_nodesCorrespondence_;
+  std::vector<int> mc_Cmesh_elemCorrespondence_, mc_Cmesh_nodesCorrespondence_;
+  std::vector<int> mc_Cmesh_facesXCorrespondence_, mc_Cmesh_facesYCorrespondence_, mc_Cmesh_facesZCorrespondence_;
   std::vector<double> mc_Cmesh_x_coords_, mc_Cmesh_y_coords_, mc_Cmesh_z_coords_;
 
   bool mc_Cmesh_ready_ = false;
@@ -273,9 +274,21 @@ public:
     else return Cmesh_error<std::vector<int>&>(__func__);
   }
 
-  const std::vector<int>& get_mc_Cmesh_facesCorrespondence() const
+  const std::vector<int>& get_mc_Cmesh_facesXCorrespondence() const
   {
-    if (mc_Cmesh_ready_) return mc_Cmesh_facesCorrespondence_;
+    if (mc_Cmesh_ready_) return mc_Cmesh_facesXCorrespondence_;
+    else return Cmesh_error<std::vector<int>&>(__func__);
+  }
+
+  const std::vector<int>& get_mc_Cmesh_facesYCorrespondence() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_facesYCorrespondence_;
+    else return Cmesh_error<std::vector<int>&>(__func__);
+  }
+
+  const std::vector<int>& get_mc_Cmesh_facesZCorrespondence() const
+  {
+    if (mc_Cmesh_ready_) return mc_Cmesh_facesZCorrespondence_;
     else return Cmesh_error<std::vector<int>&>(__func__);
   }
 

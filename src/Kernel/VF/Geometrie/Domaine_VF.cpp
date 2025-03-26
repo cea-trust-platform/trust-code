@@ -835,8 +835,7 @@ void Domaine_VF::build_map_mc_Cmesh()
 {
 #ifdef MEDCOUPLING_
 
-  if (domaine().type_elem()->que_suis_je() != "Quadrangle"
-      && domaine().type_elem()->que_suis_je() != "Rectangle"
+  if (domaine().type_elem()->que_suis_je() != "Quadrangle" && domaine().type_elem()->que_suis_je() != "Rectangle"
       && domaine().type_elem()->que_suis_je() != "Hexaedre")
     {
       Cerr << "Error in Domaine_VF::build_mc_Cmesh ! You use the interpret Build_Map_to_Structured but your elem type is " << domaine().type_elem()->que_suis_je() << " !!!" << finl;
@@ -852,12 +851,17 @@ void Domaine_VF::build_map_mc_Cmesh()
   /* Step 1. build mesh */
   build_mc_Cmesh();
 
-  /* Step 1. build elem correspondance : indx est i + (nx - 1) * (j + (ny - 1) * k) */
+  /* Step 2. build elem correspondance : indx est i + (nx - 1) * (j + (ny - 1) * k) */
   build_mc_Cmesh_elemCorrespondence();
 
+  /* Step 3. build nodes correspondance : indx est i + nx * (j + ny * k) */
+  build_mc_Cmesh_nodesCorrespondence();
 
+  /* Step 4. build faces correspondance */
+  build_mc_Cmesh_facesCorrespondence();
 
   mc_Cmesh_ready_ = true;
+
   Cerr << "##################################################" << finl;
   Cerr << "@@@@@@@@ End of Building Structured infos @@@@@@@@" << finl;
   Cerr << "##################################################" << finl;
@@ -873,6 +877,7 @@ void Domaine_VF::build_map_mc_Cmesh()
 
 void Domaine_VF::build_mc_Cmesh()
 {
+  Cerr << "Domaine_VF::build_mc_Cmesh() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh(); // will be built
   const auto& coords = u_mesh->getCoords();
   const int nb_soms = coords->getNumberOfTuples();
@@ -906,8 +911,8 @@ void Domaine_VF::build_mc_Cmesh()
       mc_Cmesh_z_coords_.erase(std::unique(mc_Cmesh_z_coords_.begin(), mc_Cmesh_z_coords_.end()), mc_Cmesh_z_coords_.end());
     }
 
-  const int nx = mc_Cmesh_x_coords_.size(), ny = mc_Cmesh_y_coords_.size();
-  const int nz = (mesh_dim > 2) ? mc_Cmesh_z_coords_.size() : 1;
+  const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
+  const int nz = (mesh_dim > 2) ? (int)mc_Cmesh_z_coords_.size() : 1;
 
   const int nb_som_cart = nx * ny * nz;
   const int nb_elem_cart = (mesh_dim > 2) ? (nx - 1) * (ny - 1) * (nz - 1) : (nx - 1) * (ny - 1);
@@ -945,16 +950,38 @@ void Domaine_VF::build_mc_Cmesh()
       z_array->setIJ(i, 0, mc_Cmesh_z_coords_[i]);
 
   mc_Cmesh_->setCoords(x_array, y_array, z_array);
+
+  Cerr << "Domaine_VF::build_mc_Cmesh() ... OK !" << finl;
 }
+
+// magic !
+static int findCartIndex(const std::vector<double>& vect, const double value)
+{
+  if (value < vect.front() || value > vect.back())
+    return -1; // pas dedans
+
+  auto it = std::lower_bound(vect.begin(), vect.end(), value);
+
+  if (it == vect.end())
+    return -1; // pas dedans
+
+  int index = std::distance(vect.begin(), it);
+
+  if (index > 0 && value < vect[index])
+    index--; // juste avant !!
+
+  return index;
+};
 
 // Correspondance entre TRUST_CMesh elems et TRUST
 void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
 {
+  Cerr << "Domaine_VF::build_mc_Cmesh_elemCorrespondence() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh();
   const auto& centers = u_mesh->computeCellCenterOfMass();
   const int nb_elems = u_mesh->getNumberOfCells();
   const int mesh_dim = u_mesh->getMeshDimension();
-  const int nx = mc_Cmesh_x_coords_.size(), ny = mc_Cmesh_y_coords_.size();
+  const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
 
   mc_Cmesh_elemCorrespondence_.resize(nb_elems, -1);
 
@@ -971,38 +998,20 @@ void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
       double center[mesh_dim]; // get center of mass per elem
       centers->getTuple(elem, center);
 
-      // magic !
-      auto findCellIndex = [](const std::vector<double>& coords, double value) -> int
-      {
-        if (value < coords.front() || value > coords.back())
-          return -1; // pas dedans
-
-        auto it = std::lower_bound(coords.begin(), coords.end(), value);
-
-        if (it == coords.end())
-          return -1; // pas dedans
-
-        int index = std::distance(coords.begin(), it);
-
-        if (index > 0 && value < coords[index])
-          index--; // juste avant !!
-
-        return index;
-      };
-
-      int i = findCellIndex(mc_Cmesh_x_coords_, center[0]);
-      int j = findCellIndex(mc_Cmesh_y_coords_, center[1]);
-      int k = (mesh_dim > 2) ? findCellIndex(mc_Cmesh_z_coords_, center[2]) : 0;
+      int i = findCartIndex(mc_Cmesh_x_coords_, center[0]);
+      int j = findCartIndex(mc_Cmesh_y_coords_, center[1]);
+      int k = (mesh_dim > 2) ? findCartIndex(mc_Cmesh_z_coords_, center[2]) : 0;
 
       if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
         {
           Cerr << "Element " << elem << " not contained in the structured mesh !!!" << finl;
-          continue;
+          Process::exit();
         }
 
       const int ijk_idx = i + (nx - 1) * (j + (ny - 1) * k); // i puis j puis k !!
-      mc_Cmesh_elemCorrespondence_[elem] = ijk_idx;
+      mc_Cmesh_elemCorrespondence_[ijk_idx] = elem;
       ptr_cell_idx_arr[elem] = ijk_idx;
+//      Cerr << "Elem non struct. " << elem << " --> Elem struct. " << ijk_idx << finl;
     }
 
   // complete post-processing field to see idx !
@@ -1021,16 +1030,51 @@ void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
     elem_idx->writeVTK(filename.str());
   else
     WriteField(filename.str(), elem_idx, true);
+
+  Cerr << "Domaine_VF::build_mc_Cmesh_elemCorrespondence() ... OK !" << finl;
 }
 
+// Correspondance entre TRUST_CMesh faces et TRUST
 void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
 {
+  Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... " << finl;
 
+
+  Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... OK !" << finl;
 }
 
+// Correspondance entre TRUST_CMesh nodes et TRUST
 void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
 {
+  Cerr << "Domaine_VF::build_mc_Cmesh_nodesCorrespondence() ... " << finl;
+  const auto& u_mesh = domaine().get_mc_mesh();
+  const auto& coords = u_mesh->getCoords();
+  const int nb_soms = u_mesh->getNumberOfNodes();
+  const int mesh_dim = u_mesh->getMeshDimension();
+  const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
 
+  mc_Cmesh_nodesCorrespondence_.resize(nb_soms, -1);
+
+  for (int node = 0; node < nb_soms; ++node)
+    {
+      double coord[mesh_dim]; // Get node coordinates
+      coords->getTuple(node, coord);
+
+      int i = findCartIndex(mc_Cmesh_x_coords_, coord[0]);
+      int j = findCartIndex(mc_Cmesh_y_coords_, coord[1]);
+      int k = (mesh_dim > 2) ? findCartIndex(mc_Cmesh_z_coords_, coord[2]) : 0;
+
+      if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
+        {
+          Cerr << "Node " << node << " not contained in the structured mesh !!!" << finl;
+          Process::exit();
+        }
+
+      const int ijk_idx = i + nx * (j + ny * k); // Indexing for structured mesh nodes
+      mc_Cmesh_nodesCorrespondence_[ijk_idx] = node;
+//      Cerr << "Noeud non struct. " << node << " --> Noeud struct. " << ijk_idx << finl;
+    }
+  Cerr << "Domaine_VF::build_mc_Cmesh_nodesCorrespondence() ... OK !" << finl;
 }
 
 #endif
