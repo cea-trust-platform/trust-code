@@ -1039,6 +1039,177 @@ void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
 {
   Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... " << finl;
 
+  constexpr double eps = 1.e-8;
+  domaine().build_mc_face_mesh(*this);
+  const auto& u_mesh_faces = domaine().get_mc_face_mesh();
+  const auto& centers = u_mesh_faces->computeCellCenterOfMass();
+  const int nbfaces = centers->getNumberOfTuples();
+  const int mesh_dim = u_mesh_faces->getMeshDimension() + 1 /* car descending conn !! */;
+
+  const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size(), nz = (int)mc_Cmesh_z_coords_.size();
+
+  // Nombre de faces suivant X
+  int nb_faces_x = nx * (ny - 1);
+  if (mesh_dim > 2) nb_faces_x *= (nz - 1);
+
+  // Nombre de faces suivant Y
+  int nb_faces_y = (nx-1) * ny;
+  if (mesh_dim > 2) nb_faces_y *= (nz - 1);
+
+  // Nombre de faces suivant Z
+  int nb_faces_z = 0;
+  if (mesh_dim > 2) nb_faces_z = (nx-1) * (ny - 1) * nz;
+
+  assert(nb_faces_x > 0 && nb_faces_y > 0);
+
+  if (mesh_dim > 2) { assert(nb_faces_z > 0); }
+
+  Cerr << "   - Building mc_Cmesh_facesXCorrespondence_ with a size of " << nb_faces_x << finl;
+  Cerr << "   - Building mc_Cmesh_facesYCorrespondence_ with a size of " << nb_faces_y << finl;
+
+  if (mesh_dim > 2)
+    Cerr << "   - Building mc_Cmesh_facesZCorrespondence_ with a size of " << nb_faces_z << finl;
+
+  mc_Cmesh_facesXCorrespondence_.resize(nb_faces_x, -1);
+  mc_Cmesh_facesYCorrespondence_.resize(nb_faces_y, -1);
+  if (mesh_dim > 2) mc_Cmesh_facesZCorrespondence_.resize(nb_faces_z, -1);
+
+  for (int f = 0; f < nbfaces; ++f)
+    {
+      const int ori = orientation(f); // normal
+
+      double center[mesh_dim]; // get center of mass per elem
+      centers->getTuple(f, center);
+
+      if (ori == 0) // fill mc_Cmesh_facesXCorrespondence_
+        {
+          int i = -1, j = -1, k = -1;
+
+          for (int ii = 0; ii < nx; ii++)
+            if (std::abs(center[0] - mc_Cmesh_x_coords_[ii]) < eps)
+              {
+                i = ii;
+                break;
+              }
+
+          for (int jj = 0; jj < ny - 1; jj++)
+            if (std::abs(center[1] - (0.5 * (mc_Cmesh_y_coords_[jj] + mc_Cmesh_y_coords_[jj + 1]))) < eps)
+              {
+                j = jj;
+                break;
+              }
+
+          if (mesh_dim > 2)
+            for (int kk = 0; kk < nz - 1; kk++)
+              if (std::abs(center[2] - 0.5 * (mc_Cmesh_z_coords_[kk] + mc_Cmesh_z_coords_[kk + 1])) < eps)
+                {
+                  k = kk;
+                  break;
+                }
+
+          if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
+            {
+              Cerr << "Faces " << f << " not contained in the structured mesh !!!" << finl;
+              Process::exit();
+            }
+
+          if (mesh_dim < 3) k = 0;
+          const int ijk_idx = i + nx * (j + (ny - 1) * k); // i puis j puis k !!
+
+          mc_Cmesh_facesXCorrespondence_[ijk_idx] = f;
+
+//          Cerr << "face non struct. " << f << " ori  " << ori << "  --> face struct. " << ijk_idx << finl;
+
+        }
+      else if (ori == 1) // fill mc_Cmesh_facesYCorrespondence_
+        {
+          int i = -1, j = -1, k = -1;
+
+          for (int ii = 0; ii < nx - 1; ii++)
+            if (std::abs(center[0] - 0.5 * (mc_Cmesh_x_coords_[ii] + mc_Cmesh_x_coords_[ii + 1])) < eps)
+              {
+                i = ii;
+                break;
+              }
+
+          for (int jj = 0; jj < ny; jj++)
+            if (std::abs(center[1] - mc_Cmesh_y_coords_[jj]) < eps)
+              {
+                j = jj;
+                break;
+              }
+
+          if (mesh_dim > 2)
+            for (int kk = 0; kk < nz - 1; kk++)
+              if (std::abs(center[2] - 0.5 * (mc_Cmesh_z_coords_[kk] + mc_Cmesh_z_coords_[kk + 1])) < eps)
+                {
+                  k = kk;
+                  break;
+                }
+
+          if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
+            {
+              Cerr << "Faces " << f << " not contained in the structured mesh !!!" << finl;
+              Process::exit();
+            }
+
+          if (mesh_dim < 3) k = 0;
+          const int ijk_idx = i + (nx - 1) * (j + ny * k); // i puis j puis k !!
+
+          mc_Cmesh_facesYCorrespondence_[ijk_idx] = f;
+
+//          Cerr << "face non struct. " << f << " ori  " << ori << "  --> face struct. " << ijk_idx << finl;
+        }
+      else
+        {
+          if (mesh_dim < 3)
+            {
+              Cerr << "What !!? The face " << f << " has an orientation along z but the dimension of the mesh is " << mesh_dim << " !!!" << finl;
+              Process::exit();
+            }
+          int i = -1, j = -1, k = -1;
+
+          for (int ii = 0; ii < nx - 1; ii++)
+            if (std::abs(center[0] - 0.5 * (mc_Cmesh_x_coords_[ii] + mc_Cmesh_x_coords_[ii + 1])) < eps)
+              {
+                i = ii;
+                break;
+              }
+
+          for (int jj = 0; jj < ny - 1; jj++)
+            if (std::abs(center[1] - 0.5 * (mc_Cmesh_y_coords_[jj] + mc_Cmesh_y_coords_[jj + 1])) < eps)
+              {
+                j = jj;
+                break;
+              }
+
+          for (int kk = 0; kk < nz; kk++)
+            if (std::abs(center[2] - mc_Cmesh_z_coords_[kk]) < eps)
+              {
+                k = kk;
+                break;
+              }
+
+          if (i == -1 || j == -1 || k == -1)
+            {
+              Cerr << "Faces " << f << " not contained in the structured mesh !!!" << finl;
+              Process::exit();
+            }
+
+          const int ijk_idx = i + (nx - 1) * (j + (ny - 1) * k); // i puis j puis k !!
+
+          mc_Cmesh_facesZCorrespondence_[ijk_idx] = f;
+//          Cerr << "face non struct. " << f << " ori  " << ori << "  --> face struct. " << ijk_idx << finl;
+        }
+    }
+
+  // Trouver le min !
+  int min_xf = *std::min_element(mc_Cmesh_facesXCorrespondence_.begin(), mc_Cmesh_facesXCorrespondence_.end());
+  int min_yf = *std::min_element(mc_Cmesh_facesYCorrespondence_.begin(), mc_Cmesh_facesYCorrespondence_.end());
+  int min_zf = mesh_dim > 2 ? *std::min_element(mc_Cmesh_facesZCorrespondence_.begin(), mc_Cmesh_facesZCorrespondence_.end()) : 0;
+
+  if (min_xf == -1 || min_yf == -1 || min_zf == -1)
+    Process::exit("Big problem in Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... Call the 911 !");
 
   Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... OK !" << finl;
 }
