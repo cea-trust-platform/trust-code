@@ -545,6 +545,10 @@ You can see information about your first commit and actual untracked changes.
 
 \item Build an :
 \begin{itemize}
+\item semi-optimized -O3 option and assert enabled mode:\\
+\texttt{\$ make semi\_optim}\\
+\texttt{\$ ls \$exec\_semi\_optim}
+
 \item optimized binary for profiling (option -pg -O3):\\
 \texttt{\$ make prof}\\
 \texttt{\$ ls \$exec\_pg}
@@ -964,7 +968,7 @@ Entree\& Class::interpreter(Entree\& is)\\
 {\bf{if}}(!sub\_type(Domaine, obj))\\
 {\bf{Process::exit(}}"Object passed to 'Class' is of wrong type!"{\bf{);}}\\
 \textcolor{blue}{// Fill the local reference to domain:}\\
-domaine\_ref\_ = {\bf{ref\_cast}}(Domaine, obj);\\
+Domaine\& domaine\_ref\_ = {\bf{ref\_cast}}(Domaine, obj);\\
 ...\\
 \}
 }

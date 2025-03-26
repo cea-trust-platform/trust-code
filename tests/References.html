@@ -282,6 +282,7 @@
 <TR><TD><SMALL><A HREF="#PETSC_reuse_preconditioner">PETSC_reuse_preconditioner</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
 <TR><TD><SMALL><A HREF="#POISEUILLE_ALIGNED">POISEUILLE_ALIGNED</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
 <TR><TD><SMALL><A HREF="#POISEUILLE_ALIGNED_power_law">POISEUILLE_ALIGNED_power_law</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
+<TR><TD><SMALL><A HREF="#POISEUILLE_ALIGNED_th">POISEUILLE_ALIGNED_th</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
 <TR><TD><SMALL><A HREF="#P_out_var_impl">P_out_var_impl</A></TD><TD><SMALL># Hydraulique 2D : Poiseuille 2D  P variable #</TD></TR>
 <TR><TD><SMALL><A HREF="#Parallel_Domain_Cutting">Parallel_Domain_Cutting</A></TD><TD><SMALL># Testing parallel domain cutting with Parmetis and Ptscotch #</TD></TR>
 <TR><TD><SMALL><A HREF="#Parallel_Domain_Cutting_VEF">Parallel_Domain_Cutting_VEF</A></TD><TD><SMALL># Cas test 3D VEF hydraulique qui teste les partitionnements via parmetis et ptscotch #</TD></TR>
@@ -376,7 +377,7 @@
 <TR><TD><SMALL><A HREF="#Sous_zone_VEF">Sous_zone_VEF</A></TD><TD><SMALL># Thermohydraulique 2D : fields par morceaux sur sous zones en VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#SymetrieSomVitesseParallele">SymetrieSomVitesseParallele</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Symetrie_Implicite">Symetrie_Implicite</A></TD><TD><SMALL># Cas avec une condition de symetrie non parallele aux axes en implicite #</TD></TR>
-<TR><TD><SMALL><A HREF="#TAYLOR_COUETTE">TAYLOR_COUETTE</A></TD><TD><SMALL># PARALLEL RUNS #</TD></TR>
+<TR><TD><SMALL><A HREF="#TAYLOR_COUETTE">TAYLOR_COUETTE</A></TD><TD><SMALL># PARALLEL NOT #</TD></TR>
 <TR><TD><SMALL><A HREF="#TP_THI_VDF_LAM">TP_THI_VDF_LAM</A></TD><TD><SMALL># Boite 3D avec periodicite dans les trois directions : suite du calcul #</TD></TR>
 <TR><TD><SMALL><A HREF="#TP_THI_VEF">TP_THI_VEF</A></TD><TD><SMALL># Boite 3D avec periodicite dans les trois directions : Test de Traitement_particulier_NS_THI_VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Terme_Source_Dirac_VDF">Terme_Source_Dirac_VDF</A></TD><TD><SMALL># Hydraulique 2D : Couplage Boussinesq et terme source Dirac #</TD></TR>
@@ -437,6 +438,7 @@
 <TR><TD><SMALL><A HREF="#cond_vef_impl">cond_vef_impl</A></TD><TD><SMALL># Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #</TD></TR>
 <TR><TD><SMALL><A HREF="#conditions_initiales_vitesse_pression">conditions_initiales_vitesse_pression</A></TD><TD><SMALL>dimension  2</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc">conduc</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
+<TR><TD><SMALL><A HREF="#conduc_PDF">conduc_PDF</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc_VEF">conduc_VEF</A></TD><TD><SMALL># Conduction 2D VEF : Diverses conditions limites #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc_var">conduc_var</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#convertAllToPoly">convertAllToPoly</A></TD><TD><SMALL># Example of reading a haxa mesh and converting to polyedras with convertAllToPoly option #</TD></TR>
@@ -1390,6 +1392,9 @@
 <HR><CENTER><B><A NAME=POISEUILLE_ALIGNED_power_law>POISEUILLE_ALIGNED_power_law</A></B></CENTER>
 <CENTER># PARALLEL OK #</CENTER>
 <CENTER><a href=../tests/Reference/POISEUILLE_ALIGNED_power_law/POISEUILLE_ALIGNED_power_law.data>Edit</a> POISEUILLE_ALIGNED_power_law.data </CENTER>
+<HR><CENTER><B><A NAME=POISEUILLE_ALIGNED_th>POISEUILLE_ALIGNED_th</A></B></CENTER>
+<CENTER># PARALLEL OK #</CENTER>
+<CENTER><a href=../tests/Reference/POISEUILLE_ALIGNED_th/POISEUILLE_ALIGNED_th.data>Edit</a> POISEUILLE_ALIGNED_th.data </CENTER>
 <HR><CENTER><B><A NAME=P_out_var_impl>P_out_var_impl</A></B></CENTER>
 <CENTER># Hydraulique 2D : Poiseuille 2D  P variable #</CENTER>
 <CENTER><a href=../tests/Reference/P_out_var_impl/P_out_var_impl.data>Edit</a> P_out_var_impl.data </CENTER>
@@ -1696,7 +1701,7 @@
 <CENTER><a href=../tests/Reference/Symetrie_Implicite/Symetrie_Implicite.data>Edit</a> Symetrie_Implicite.data </CENTER>
 <CENTER><a href=../tests/Reference/Symetrie_Implicite/couronne_30.geom>Edit</a> couronne_30.geom </CENTER>
 <HR><CENTER><B><A NAME=TAYLOR_COUETTE>TAYLOR_COUETTE</A></B></CENTER>
-<CENTER># PARALLEL RUNS #</CENTER>
+<CENTER># PARALLEL NOT #</CENTER>
 <CENTER><a href=../tests/Reference/TAYLOR_COUETTE/TAYLOR_COUETTE.data>Edit</a> TAYLOR_COUETTE.data </CENTER>
 <HR><CENTER><B><A NAME=TP_THI_VDF_LAM>TP_THI_VDF_LAM</A></B></CENTER>
 <CENTER># Boite 3D avec periodicite dans les trois directions : suite du calcul #</CENTER>
@@ -1887,6 +1892,9 @@
 <CENTER># Conduction 2D : Diverses conditions limites thermiques #</CENTER>
 <CENTER><a href=../tests/Reference/conduc/conduc.data>Edit</a> conduc.data </CENTER>
 <CENTER><a href=../tests/Reference/conduc/conduc.geo>Edit</a> conduc.geo </CENTER>
+<HR><CENTER><B><A NAME=conduc_PDF>conduc_PDF</A></B></CENTER>
+<CENTER># Conduction 2D : Diverses conditions limites thermiques #</CENTER>
+<CENTER><a href=../tests/Reference/conduc_PDF/conduc_PDF.data>Edit</a> conduc_PDF.data </CENTER>
 <HR><CENTER><B><A NAME=conduc_VEF>conduc_VEF</A></B></CENTER>
 <CENTER># Conduction 2D VEF : Diverses conditions limites #</CENTER>
 <CENTER><a href=../tests/Reference/conduc_VEF/conduc_VEF.data>Edit</a> conduc_VEF.data </CENTER>

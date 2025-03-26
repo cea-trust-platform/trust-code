@@ -43,12 +43,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Repere_Translation TARGET=p>Repere_Translation</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>Amg</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#GPU4 TARGET=p>GPU4</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#OpenMP TARGET=p>OpenMP</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#gpu_3D TARGET=p>gpu_3D</A></FONT></td>
-</tr>
-<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Amgx</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#OpenMP TARGET=p>OpenMP</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#gpu_3D TARGET=p>gpu_3D</A></FONT></td>
@@ -145,6 +139,7 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Btd</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EF_BTD TARGET=p>EF_BTD</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_th TARGET=p>POISEUILLE_ALIGNED_th</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>C</b></FONT></td>
@@ -333,7 +328,7 @@
 <td WIDTH=40%><FONT Size=-1><b>Champ_front_fonc_t</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_refP_R12 TARGET=p>EOS_refP_R12</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Grad_VDF_corners TARGET=p>Grad_VDF_corners</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Champ_front_fonc_txyz</b></FONT></td>
@@ -759,7 +754,7 @@
 <td WIDTH=40%><FONT Size=-1><b>Dt_fixe</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#OpenMP_QC TARGET=p>OpenMP_QC</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Collecteur TARGET=p>Collecteur</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_cat2_QC TARGET=p>EOS_cat2_QC</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Dt_min</b></FONT></td>
@@ -972,8 +967,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Fluide_sodium_gaz</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_jdd1 TARGET=p>canal_bouillant_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_jdd2 TARGET=p>canal_bouillant_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Fluide_sodium_liquide</b></FONT></td>
@@ -991,7 +986,7 @@
 <td WIDTH=40%><FONT Size=-1><b>Flux_interfacial</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_refP_R12 TARGET=p>EOS_refP_R12</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_cat2_with_sat TARGET=p>EOS_cat2_with_sat</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Forchheimer</b></FONT></td>
@@ -1140,6 +1135,7 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Ibm_element_fluide</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_th TARGET=p>POISEUILLE_ALIGNED_th</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Ibm_gradient_moyen</b></FONT></td>
@@ -1244,10 +1240,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#turbulence_type_cmfd_jdd3 TARGET=p>turbulence_type_cmfd_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>Lata_to_cgns</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Sonde TARGET=p>Sonde</A></FONT></td>
-</tr>
-<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Leap_frog</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Leap_Frog TARGET=p>Leap_Frog</A></FONT></td>
 </tr>
@@ -1272,8 +1264,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Longitudinale</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#PCR TARGET=p>PCR</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd2 TARGET=p>perte_charge_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pertes_d_charges_CF_VDF TARGET=p>Pertes_d_charges_CF_VDF</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#diffusion_implicite_source_jdd4 TARGET=p>diffusion_implicite_source_jdd4</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Lu</b></FONT></td>
@@ -1426,6 +1418,12 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#JEL_bous TARGET=p>JEL_bous</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#CoefDiffNul TARGET=p>CoefDiffNul</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#DomainFlowLES TARGET=p>DomainFlowLES</A></FONT></td>
+</tr>
+<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>Neumann_paroi</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd1 TARGET=p>Tube_bouillant_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd2 TARGET=p>Tube_bouillant_jdd2</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd3 TARGET=p>Tube_bouillant_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Neumann_paroi_adiabatique</b></FONT></td>
@@ -1822,14 +1820,14 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Perte_charge_isotrope</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd4 TARGET=p>perte_charge_jdd4</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd6 TARGET=p>perte_charge_jdd6</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd2 TARGET=p>perte_charge_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Perte_charge_reguliere</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#PCR TARGET=p>PCR</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd2 TARGET=p>perte_charge_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Pertes_d_charges_CF_VDF TARGET=p>Pertes_d_charges_CF_VDF</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#diffusion_implicite_source_jdd4 TARGET=p>diffusion_implicite_source_jdd4</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Perte_charge_singuliere</b></FONT></td>
@@ -2121,7 +2119,7 @@
 <td WIDTH=40%><FONT Size=-1><b>Rotation</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_aucune TARGET=p>IBM_aucune</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Inward_field_jdd1 TARGET=p>Inward_field_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Runge_kutta_ordre_2</b></FONT></td>
@@ -2164,8 +2162,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Saturation_sodium</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_jdd1 TARGET=p>canal_bouillant_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_jdd2 TARGET=p>canal_bouillant_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Scatter</b></FONT></td>
@@ -2266,9 +2264,9 @@
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Sgdh</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd1 TARGET=p>Tube_solution_analytique_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd2 TARGET=p>Tube_solution_analytique_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd3 TARGET=p>Tube_solution_analytique_jdd3</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd1 TARGET=p>Tube_bouillant_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd2 TARGET=p>Tube_bouillant_jdd2</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd3 TARGET=p>Tube_bouillant_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Simple</b></FONT></td>
@@ -2337,7 +2335,7 @@
 <td WIDTH=40%><FONT Size=-1><b>Source_pdf</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_aucune TARGET=p>IBM_aucune</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>Source_qdm</b></FONT></td>
@@ -2717,13 +2715,13 @@
 <td WIDTH=40%><FONT Size=-1><b>aire</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_aucune TARGET=p>IBM_aucune</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>all_options</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#saut_poro_jdd1 TARGET=p>saut_poro_jdd1</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#saut_poro_jdd2 TARGET=p>saut_poro_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Grad_VDF_PolyMAC TARGET=p>Grad_VDF_PolyMAC</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>all_times</b></FONT></td>
@@ -2934,6 +2932,7 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>btd</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EF_BTD TARGET=p>EF_BTD</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_th TARGET=p>POISEUILLE_ALIGNED_th</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>c0</b></FONT></td>
@@ -3025,7 +3024,7 @@
 <td WIDTH=40%><FONT Size=-1><b>coeff</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#PCS TARGET=p>PCS</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd1 TARGET=p>perte_charge_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>coefficient_diffusion</b></FONT></td>
@@ -3213,8 +3212,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>correspondance_elements</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>couronne</b></FONT></td>
@@ -3354,8 +3353,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>diam_hydr</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Perte_Charge_VEF TARGET=p>Perte_Charge_VEF</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd4 TARGET=p>perte_charge_jdd4</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>diam_hydr_ortho</b></FONT></td>
@@ -3372,8 +3371,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>diametre_hyd_champ</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Diametre_hyd_champ TARGET=p>Diametre_hyd_champ</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EOS_vap_paroi_jdd1 TARGET=p>EOS_vap_paroi_jdd1</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>diffusion</b></FONT></td>
@@ -3586,12 +3585,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#sedimentation_jdd3 TARGET=p>sedimentation_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>echange_externe_radiatif</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd1 TARGET=p>echange_radiatif_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd2 TARGET=p>echange_radiatif_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd3 TARGET=p>echange_radiatif_jdd3</A></FONT></td>
-</tr>
-<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>echelle_relaxation_coefficient_pdf</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
 </tr>
@@ -3635,19 +3628,14 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>elements_fluides</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_power_law TARGET=p>POISEUILLE_ALIGNED_power_law</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>elements_solides</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
-</tr>
-<tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>emissivite</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd1 TARGET=p>echange_radiatif_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd2 TARGET=p>echange_radiatif_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd3 TARGET=p>echange_radiatif_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies</b></FONT></td>
@@ -3699,13 +3687,14 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>est_dirichlet</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>eta</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_aucune TARGET=p>IBM_aucune</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>euclidian_norm</b></FONT></td>
@@ -3748,9 +3737,9 @@
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>facsec_diffusion_for_sets</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd1 TARGET=p>Tube_solution_analytique_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd2 TARGET=p>Tube_solution_analytique_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd3 TARGET=p>Tube_solution_analytique_jdd3</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd2 TARGET=p>Tube_bouillant_jdd2</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd4 TARGET=p>Tube_bouillant_jdd4</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd6 TARGET=p>Tube_bouillant_jdd6</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>facsec_max</b></FONT></td>
@@ -3762,6 +3751,7 @@
 <td WIDTH=40%><FONT Size=-1><b>facteur</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EF_BTD TARGET=p>EF_BTD</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Collecteur TARGET=p>Collecteur</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_th TARGET=p>POISEUILLE_ALIGNED_th</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>facteurs</b></FONT></td>
@@ -3865,8 +3855,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>fluide_sodium_gaz</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_jdd1 TARGET=p>canal_bouillant_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_jdd2 TARGET=p>canal_bouillant_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>fluide_sodium_liquide</b></FONT></td>
@@ -3909,8 +3899,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>fonction_sous_zone</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Extraire_domaine TARGET=p>Extraire_domaine</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#perte_charge_jdd1 TARGET=p>perte_charge_jdd1</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>format</b></FONT></td>
@@ -4009,12 +3999,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#TP_Canal_VEF TARGET=p>TP_Canal_VEF</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>h_imp</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc TARGET=p>conduc</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Himp_var TARGET=p>Himp_var</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Collecteur TARGET=p>Collecteur</A></FONT></td>
-</tr>
-<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>hauteur</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Sous_zone_VDF TARGET=p>Sous_zone_VDF</A></FONT></td>
 </tr>
@@ -4083,8 +4067,8 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Sondes TARGET=p>Sondes</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>is_multi_scalar</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#diffusion_multi_scalaire_jdd1 TARGET=p>diffusion_multi_scalaire_jdd1</A></FONT></td>
+<td WIDTH=40%><FONT Size=-1><b>interpolation_ibm_element_fluide</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>iter_min</b></FONT></td>
@@ -4101,12 +4085,6 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>k_min</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#thermohydraulique_VEF_DNS TARGET=p>thermohydraulique_VEF_DNS</A></FONT></td>
-</tr>
-<tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>kelvin</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd1 TARGET=p>echange_radiatif_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd2 TARGET=p>echange_radiatif_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd3 TARGET=p>echange_radiatif_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>kmetis</b></FONT></td>
@@ -4249,8 +4227,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>loc</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Champ_fonc_MED TARGET=p>Champ_fonc_MED</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>local</b></FONT></td>
@@ -4286,12 +4264,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#OpenMP_QC TARGET=p>OpenMP_QC</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Plaque_VDF TARGET=p>Plaque_VDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cas_RZ_Symetrie_Fluide TARGET=p>Cas_RZ_Symetrie_Fluide</A></FONT></td>
-</tr>
-<tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>maillage_vdf</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#saut_poro_jdd3 TARGET=p>saut_poro_jdd3</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#saut_poro_jdd4 TARGET=p>saut_poro_jdd4</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#porosite_1D_jdd3 TARGET=p>porosite_1D_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>main</b></FONT></td>
@@ -4393,17 +4365,13 @@
 <td WIDTH=40%><FONT Size=-1><b>modele</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_aucune TARGET=p>IBM_aucune</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>modele_turbulence</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#THI_VEF TARGET=p>THI_VEF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#JEL_bous TARGET=p>JEL_bous</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Init_canal TARGET=p>Init_canal</A></FONT></td>
-</tr>
-<tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>models</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#canal_bouillant_models TARGET=p>canal_bouillant_models</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>modif_div_face_dirichlet</b></FONT></td>
@@ -4578,9 +4546,9 @@
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>nb_it_max</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#QCRhoT_constante TARGET=p>QCRhoT_constante</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#test_extraction1d TARGET=p>test_extraction1d</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Echange_impose_jdd1 TARGET=p>Echange_impose_jdd1</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>nb_nodes</b></FONT></td>
@@ -5036,14 +5004,14 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>points_fluides</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_power_law TARGET=p>POISEUILLE_ALIGNED_power_law</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>points_solides</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_gradient_moyen TARGET=p>IBM_gradient_moyen</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>polynomes</b></FONT></td>
@@ -5082,7 +5050,7 @@
 <td WIDTH=40%><FONT Size=-1><b>postraiter_gradient_pression_sans_masse</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#EF_BTD TARGET=p>EF_BTD</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_power_law TARGET=p>POISEUILLE_ALIGNED_power_law</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_th TARGET=p>POISEUILLE_ALIGNED_th</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>pr_t</b></FONT></td>
@@ -5352,7 +5320,7 @@
 <td WIDTH=40%><FONT Size=-1><b>rotation</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_aucune TARGET=p>IBM_aucune</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#IBM_hybrid TARGET=p>IBM_hybrid</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Inward_field_jdd1 TARGET=p>Inward_field_jdd1</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>rtol</b></FONT></td>
@@ -5398,8 +5366,8 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>schema_euler_explicite</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Plaque_VDF TARGET=p>Plaque_VDF</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#CoefDiffNul TARGET=p>CoefDiffNul</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#QC_verifP_jdd1 TARGET=p>QC_verifP_jdd1</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>schema_euler_implicite</b></FONT></td>
@@ -5687,12 +5655,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#VAHL_DAVIS TARGET=p>VAHL_DAVIS</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>t_ext</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cl_var TARGET=p>Cl_var</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#OpenMP TARGET=p>OpenMP</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Sondes TARGET=p>Sondes</A></FONT></td>
-</tr>
-<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>t_fin</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Cx TARGET=p>Cx</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Sondes TARGET=p>Sondes</A></FONT></td>
@@ -5735,12 +5697,6 @@
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd2 TARGET=p>echange_radiatif_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>temperature_unit</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd1 TARGET=p>echange_radiatif_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd2 TARGET=p>echange_radiatif_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#echange_radiatif_jdd3 TARGET=p>echange_radiatif_jdd3</A></FONT></td>
-</tr>
-<tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>temps_debut_prise_en_compte_drho_dt</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#OpenMP_QC TARGET=p>OpenMP_QC</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#QC_temperature_bounds_MUSCL_jdd1 TARGET=p>QC_temperature_bounds_MUSCL_jdd1</A></FONT></td>
@@ -5766,7 +5722,7 @@
 <td WIDTH=40%><FONT Size=-1><b>test</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#MED_docond_64 TARGET=p>MED_docond_64</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd1 TARGET=p>vap_paroi_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Extraire_domaine TARGET=p>Extraire_domaine</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#vap_paroi_jdd2 TARGET=p>vap_paroi_jdd2</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>time</b></FONT></td>
@@ -5804,9 +5760,9 @@
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>traitement_axi</b></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd1 TARGET=p>Tube_solution_analytique_jdd1</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd2 TARGET=p>Tube_solution_analytique_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_solution_analytique_jdd3 TARGET=p>Tube_solution_analytique_jdd3</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd3 TARGET=p>Tube_bouillant_jdd3</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd4 TARGET=p>Tube_bouillant_jdd4</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Tube_bouillant_jdd7 TARGET=p>Tube_bouillant_jdd7</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>traitement_coins</b></FONT></td>
@@ -5930,9 +5886,9 @@
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>use_existing_domain</b></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#conduc_PDF TARGET=p>conduc_PDF</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#Champ_front_MED_jdd1 TARGET=p>Champ_front_MED_jdd1</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#champ_fonc_med_table_jdd2 TARGET=p>champ_fonc_med_table_jdd2</A></FONT></td>
-<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#champ_fonc_med_table_jdd3 TARGET=p>champ_fonc_med_table_jdd3</A></FONT></td>
 </tr>
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>use_hydrostatic_pressure</b></FONT></td>
@@ -6002,6 +5958,7 @@
 <tr valign=top>
 <td WIDTH=40%><FONT Size=-1><b>vitesse_imposee_data</b></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED TARGET=p>POISEUILLE_ALIGNED</A></FONT></td>
+<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_th TARGET=p>POISEUILLE_ALIGNED_th</A></FONT></td>
 <td WIDTH=20%><FONT Size=-2><A HREF=../References.html#POISEUILLE_ALIGNED_power_law TARGET=p>POISEUILLE_ALIGNED_power_law</A></FONT></td>
 </tr>
 <tr valign=top>

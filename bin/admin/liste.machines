@@ -54,6 +54,7 @@ linux	rsync_ssh	tache	is246436.intra.cea.fr				-ICoCo -TrioCFD     			-g 		-with
 linux	rsync_ssh	non	is154726.intra.cea.fr		-all 		 -ICoCo 			-g 		-enable-petsc-debug -enable-mc-debug -without-pdflatex			# UB 22 titania 	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	tache   is240933.intra.cea.fr				        	                     -check-valgrind -without-pdflatex  				# UB 22 Salle de formation titania
 linux	rsync_ssh	tache	is234617-wompi.intra.cea.fr	-all  		-FLICA5  							-disable-mpi -disable-valgrind  							# Ubuntu 22 Bat 451 titania 
+linux	rsync_ssh	tache	is225934.intra.cea.fr	-all  		-FLICA5  							 							# Ubuntu 22 Bat 451 MF titania 
 linux	rsync_ssh	tache	is244274.intra.cea.fr			 	-TRUST_NK  				-Check_decoupage 		 -force-provided-mpich 							# Fedora 32 titania 	Bat 451	LGLS bureau Gilles
 linux   ssh_pass	non	    scania11.intra.cea.fr 		-all		-TrioCFD  -STT -PEMFC -GENEPI3    -without-pdflatex -disable-valgrind 	 		  								# tscibian11 VM (comme Debian 11)
 linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-pdflatex 								# Ub 22 salle de formation titania
