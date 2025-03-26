@@ -371,6 +371,8 @@ void corriger(const Domaine_VEF& domaine_VEF, DoubleTab& champ_filtre_, Matrice&
     }
   if (domaine_VEF.get_alphaA()&& domaine_VEF.get_renum_arete_perio().size_array())
     {
+      champ_filtre_.ensureDataOnHost(); // We need copy H2D as the Pa part of DoubleTab_parts is computed on host
+      ToDo_Kokkos("critical for P0P1Pa");
       DoubleVect& Pa = parties_P[2];  // partie aretes
 
       // Si premier passage on assemble la matrice

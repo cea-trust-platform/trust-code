@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,6 @@ inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& 
     }
   else
     {
-      vect.ensureDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU. Voir le cas 3DPimp0X par ex en commentant la ligne...
       ArrOfInt shape;
       const int line_size = vect.line_size();
       if (tab_ptr)
