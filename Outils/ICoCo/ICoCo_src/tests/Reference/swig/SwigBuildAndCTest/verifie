@@ -7,5 +7,5 @@ else # we are included as a sub project
    cd $MEDICoCo_project_directory/share/swig
 fi
 
-./test_only.sh || exit 255
+make swig_ctest || exit 255
 

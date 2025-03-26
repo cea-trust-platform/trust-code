@@ -739,14 +739,35 @@ printf "\n"                                                     >> $project_make
 
 if [ "$swig" = "1" ]
 then
-printf "# help swig \t\t: build icoco_python through swig \n"                           >> $project_makefile
-printf "swig : optim module_optim\n"                           >> $project_makefile
+printf "# help swig_optim \t\t: build icoco_python through swig in optimized mode\n"                           >> $project_makefile
+printf "swig_optim : optim module_optim\n"                           >> $project_makefile
 printf "\t@echo \"###################\"\n"                 >> $project_makefile
 printf "\t@echo \"# SWIG generation #\"\n"                 >> $project_makefile
 printf "\t@echo \"###################\"\n"                 >> $project_makefile
-printf "\t@source $env_file; cd ${project_directory}/share/swig; ./install_and_test.sh \n"                     >> $project_makefile
+printf "\t@source $env_file; cd ${project_directory}/share/swig; make swig_optim\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-fi                                                  >> $project_makefile
+printf "# help swig_debug \t\t: build icoco_python through swig in debug mode\n"                           >> $project_makefile
+printf "swig_debug : debug module_debug\n"                           >> $project_makefile
+printf "\t@echo \"###################\"\n"                 >> $project_makefile
+printf "\t@echo \"# SWIG generation #\"\n"                 >> $project_makefile
+printf "\t@echo \"###################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; cd ${project_directory}/share/swig; make swig_debug \n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+printf "# help swig_semi_optim \t\t: build icoco_python through swig in semi_optim mode\n"                           >> $project_makefile
+printf "swig_semi_optim : semi_optim module_semi_optim\n"                           >> $project_makefile
+printf "\t@echo \"###################\"\n"                 >> $project_makefile
+printf "\t@echo \"# SWIG generation #\"\n"                 >> $project_makefile
+printf "\t@echo \"###################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; cd ${project_directory}/share/swig; make swig_semi_optim \n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+printf "# help swig_ctest \t\t: run ctest on icoco_python tests (mode is the one used to build swig_mode)\n"                           >> $project_makefile
+printf "swig_ctest : \n"                           >> $project_makefile
+printf "\t@echo \"################\"\n"                 >> $project_makefile
+printf "\t@echo \"# SWIG testing #\"\n"                 >> $project_makefile
+printf "\t@echo \"################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; cd ${project_directory}/share/swig; make swig_ctest \n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+fi
  
 printf "install :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
@@ -765,7 +786,8 @@ for type in $list_cible
 do
  phony="$phony check_$type $type"
 done
-printf ".PHONY : $phony swig validation clean distrib install gui terminal\n"   >> $project_makefile
+[  "$swig" = "1" ] && phony="$phony swig_optim swig_debug swig_semi_optim swig_ctest"
+printf ".PHONY : $phony validation clean distrib install gui terminal\n"   >> $project_makefile
 
 echo "Done."
 echo ""

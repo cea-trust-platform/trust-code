@@ -80,6 +80,7 @@ echo "Project :" $project
 ## generation de env.sh
 
 pwd
+SWIG_MODE=${MODE}
 [ "$VALGRIND" != "0" ] && MODE=${MODE}_valgrind 
 echo "
 unset TRUST_ENV
@@ -131,6 +132,7 @@ echo "./configure" >> configure.sh
 
 #echo "./configure && make $MODE" >> make.sh # ajout du configure, necessaire quand il a un pre_configure (ex -std=c++0x)
 echo "make $MODE" >> make.sh
+[ -f $project/share/swig/CMakeLists.txt ] && echo "make swig_$SWIG_MODE" >> make.sh
 echo "ret=\$?" >> make.sh
 
 # droits apres la compilation

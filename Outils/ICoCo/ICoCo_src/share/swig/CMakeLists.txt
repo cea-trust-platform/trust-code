@@ -92,7 +92,7 @@ if (APPLE)
  swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
 else()
   swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib})   # ${PYTHON_LIBRARIES} removed as in MC
-  #swig_link_libraries(trusticoco ${libdeps} ${libBaltik} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
+  #swig_link_libraries(trusticoco ${libdeps} ${libBaltik} ${libTrio} ${syslib} ) # ${PYTHON_LIBRARIES} removed as in MC
 endif()
 
 ##
@@ -109,7 +109,7 @@ add_test(NAME TRUST_swig
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 
 # If MPI, test setting communicator
-if(NOT "$ENV{TRUST_DISABLE_MPI}" STREQUAL "1")
+if(NOT "$ENV{TRUST_DISABLE_MPI}" STREQUAL "1" AND NOT "$ENV{TRUST_DISABLE_MPI4PY}" STREQUAL "1")
   add_test(NAME TRUST_swig_mpi
          COMMAND ${CMAKE_COMMAND} -E env
               PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}

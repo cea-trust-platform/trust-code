@@ -11,9 +11,15 @@ else # We are included in a sub project
     cd $MEDICoCo_project_directory/share/swig
 fi
 
-rm -rf install build
-mkdir -p build
+# Guess build mode from executable name.
+BUILD_MODE=debug
 
-cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Release
-make -j install
+if [ `echo $exec | grep _semi_opt$ 1>/dev/null 2>&1; echo $?` -eq 0  ]
+then
+   BUILD_MODE=semi_optim
+elif [ `echo $exec | grep _opt$ 1>/dev/null 2>&1; echo $?` -eq 0  ]
+then
+   BUILD_MODE=optim
+fi
+
+make swig_$BUILD_MODE || exit 255
