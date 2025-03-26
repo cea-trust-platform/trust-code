@@ -947,9 +947,80 @@ void Domaine_VF::build_mc_Cmesh()
   mc_Cmesh_->setCoords(x_array, y_array, z_array);
 }
 
+// Correspondance entre TRUST_CMesh elems et TRUST
 void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
 {
+  const auto& u_mesh = domaine().get_mc_mesh();
+  const auto& centers = u_mesh->computeCellCenterOfMass();
+  const int nb_elems = u_mesh->getNumberOfCells();
+  const int mesh_dim = u_mesh->getMeshDimension();
+  const int nx = mc_Cmesh_x_coords_.size(), ny = mc_Cmesh_y_coords_.size();
 
+  mc_Cmesh_elemCorrespondence_.resize(nb_elems, -1);
+
+  // Add a post-processing field to see idx !
+  MCAuto<MEDCouplingFieldDouble> elem_idx = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
+  elem_idx->setMesh(mc_Cmesh_);
+  elem_idx->setName("TRUST_CMesh_Elem_Idx");
+  MCAuto<DataArrayDouble> cell_idx_arr= DataArrayDouble::New();
+  cell_idx_arr->alloc(nb_elems,1);
+  double * ptr_cell_idx_arr(cell_idx_arr->rwBegin());
+
+  for (int elem = 0; elem < nb_elems; ++elem)
+    {
+      double center[mesh_dim]; // get center of mass per elem
+      centers->getTuple(elem, center);
+
+      // magic !
+      auto findCellIndex = [](const std::vector<double>& coords, double value) -> int
+      {
+        if (value < coords.front() || value > coords.back())
+          return -1; // pas dedans
+
+        auto it = std::lower_bound(coords.begin(), coords.end(), value);
+
+        if (it == coords.end())
+          return -1; // pas dedans
+
+        int index = std::distance(coords.begin(), it);
+
+        if (index > 0 && value < coords[index])
+          index--; // juste avant !!
+
+        return index;
+      };
+
+      int i = findCellIndex(mc_Cmesh_x_coords_, center[0]);
+      int j = findCellIndex(mc_Cmesh_y_coords_, center[1]);
+      int k = (mesh_dim > 2) ? findCellIndex(mc_Cmesh_z_coords_, center[2]) : 0;
+
+      if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
+        {
+          Cerr << "Element " << elem << " not contained in the structured mesh !!!" << finl;
+          continue;
+        }
+
+      const int ijk_idx = i + (nx - 1) * (j + (ny - 1) * k); // i puis j puis k !!
+      mc_Cmesh_elemCorrespondence_[elem] = ijk_idx;
+      ptr_cell_idx_arr[elem] = ijk_idx;
+    }
+
+  // complete post-processing field to see idx !
+  elem_idx->setArray(cell_idx_arr);
+  elem_idx->checkConsistencyLight();
+
+  const bool vtk = true;
+  std::stringstream filename;
+
+  if (Process::nproc() == 1)
+    filename << "MEDCouplingCMesh_" << Objet_U::nom_du_cas().getString() << (vtk ? ".vtk" : ".med");
+  else
+    filename << "MEDCouplingCMesh_" << Objet_U::nom_du_cas().getString() << "_" << std::setfill('0') << std::setw(5) << Process::me() << (vtk ? ".vtk" : ".med");
+
+  if (vtk)
+    elem_idx->writeVTK(filename.str());
+  else
+    WriteField(filename.str(), elem_idx, true);
 }
 
 void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
