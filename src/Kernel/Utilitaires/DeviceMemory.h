@@ -38,7 +38,7 @@ public:
   static map_t& getMemoryMap() { return memory_map_; };
   static bool isAllocatedOnDevice(void *);
   static void* addrOnDevice(void*);
-  static void add(void * ptr, void * device_ptr, int size);
+  static void add(void * ptr, void * device_ptr, trustIdType bytes);
   static void del(void * ptr);
   static void printMemoryMap();
   static trustIdType internal_items_size_;

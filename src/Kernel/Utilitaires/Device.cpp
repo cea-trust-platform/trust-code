@@ -198,7 +198,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
     }
   _TYPE_* device_ptr = static_cast<_TYPE_*>(Kokkos::kokkos_malloc(bytes));
   // Map host_ptr with device_ptr:
-  DeviceMemory::add(ptr, device_ptr, size);
+  DeviceMemory::add(ptr, device_ptr, size * sizeof(_TYPE_));
 #ifndef NDEBUG
   const _TYPE_ INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : ( (std::is_same<_TYPE_,int>::value) ? INT_MIN : 0); // Identique a TRUSTArray<_TYPE_>::fill_default_value()
   Kokkos::View<_TYPE_*> ptr_v(device_ptr, size);

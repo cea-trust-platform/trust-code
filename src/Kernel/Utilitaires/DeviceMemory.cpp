@@ -71,18 +71,19 @@ void* DeviceMemory::addrOnDevice(void * ptr)
 {
   if (ptr==nullptr || memory_map_.empty())
     return nullptr;
-  int sz;
+  trustIdType bytes;
   void* device_ptr;
   void* host_ptr;
   for (auto it = memory_map_.begin(); it != memory_map_.end(); ++it)
     {
       host_ptr = it->first;
-      std::tie(sz, device_ptr) = it->second;
-      if (ptr==host_ptr) return device_ptr;
+      std::tie(bytes, device_ptr) = it->second;
+      if (ptr==host_ptr)
+        return device_ptr;
       else
         {
-          // Cas de buffer_base (ptr n'est pas forcement l'adresse de debut du bloc memoire...)
-          if (ptr >= host_ptr && ptr < static_cast<char *>(host_ptr) + sz)
+          // Cas de buffer_base (ptr n'est pas forcement l'adresse de debut du bloc memoire...) ou de DoubleTab_parts
+          if (ptr >= host_ptr && ptr < static_cast<char *>(host_ptr) + bytes)
             return static_cast<char *>(device_ptr) + (static_cast<char *>(ptr) - static_cast<char *>(host_ptr));
         }
     }
@@ -96,14 +97,14 @@ void* DeviceMemory::addrOnDevice(void * ptr)
 /** Add a new line to the memory_map_
  * ptr should be non-null, device_ptr and size may be null
  */
-void DeviceMemory::add(void * ptr, void * device_ptr, int size)
+void DeviceMemory::add(void * ptr, void * device_ptr, trustIdType bytes)
 {
   if (ptr==nullptr) return;
-  DeviceMemory::getMemoryMap()[ptr] = {size, device_ptr};
+  DeviceMemory::getMemoryMap()[ptr] = {bytes, device_ptr};
   if (clock_on)
     {
       Process::Journal() << "Adding Host ptr: " << ptrToString(ptr) << " Device ptr: " << ptrToString(device_ptr)
-                         << " size: " << size << finl;
+                         << " bytes: " << bytes << finl;
       DeviceMemory::printMemoryMap();
     }
 }
@@ -126,14 +127,14 @@ void DeviceMemory::del(void * ptr)
  */
 void DeviceMemory::printMemoryMap()
 {
-  int sz;
+  trustIdType bytes;
   void* device_ptr;
   Process::Journal() << "=== Memory blocks on the device ===" << finl;
   for (const auto& block : memory_map_)
     {
       void* ptr = block.first;
-      std::tie(sz, device_ptr) = block.second;
-      Process::Journal() << "Host ptr: " << ptrToString(ptr) << " Device ptr: " << ptrToString(device_ptr) << " size: " << sz << finl;
+      std::tie(bytes, device_ptr) = block.second;
+      Process::Journal() << "Host ptr: " << ptrToString(ptr) << " Device ptr: " << ptrToString(device_ptr) << " bytes: " << bytes << finl;
     }
   Process::Journal() << "===================================" << finl;
 }
