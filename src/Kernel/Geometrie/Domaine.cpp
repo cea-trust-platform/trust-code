@@ -1280,6 +1280,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
   else
     // Avoid deep copy of vertices:
     coord->useArray(sommets_.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, nnodes, Objet_U::dimension);
+
   coord->setInfoOnComponent(0, "x");
   coord->setInfoOnComponent(1, "y");
   if (Objet_U::dimension == 3) coord->setInfoOnComponent(2, "z");
@@ -1357,6 +1358,7 @@ void Domaine_32_64<_SZ_>::build_mc_mesh() const
 
 #endif // MEDCOUPLING_
 }
+
 
 template<typename _SZ_>
 void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain)

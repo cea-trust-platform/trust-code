@@ -413,7 +413,6 @@ protected:
 
   LIST(OBS_PTR(Domaine_32_64)) domaines_frontieres_;
 
-
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the domain:
   mutable MCAuto<MEDCouplingUMesh> mc_mesh_;

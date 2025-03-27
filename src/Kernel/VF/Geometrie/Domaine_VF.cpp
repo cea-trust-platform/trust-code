@@ -1047,8 +1047,7 @@ void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
   Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... " << finl;
 
   constexpr double eps = 1.e-8;
-  domaine().build_mc_face_mesh(*this);
-  const auto& u_mesh_faces = domaine().get_mc_face_mesh();
+  const auto& u_mesh_faces = get_mc_face_mesh();
   const auto& centers = u_mesh_faces->computeCellCenterOfMass();
   const int nbfaces = static_cast<int>(centers->getNumberOfTuples());
   const int mesh_dim = u_mesh_faces->getMeshDimension() + 1 /* car descending conn !! */;
@@ -1535,17 +1534,110 @@ void Domaine_VF::build_mc_face_mesh() const
 #endif // MEDCOUPLING_
 }
 
-
+/** @brief Build the dual mesh of the domain for post-processing of face fields.
+ *
+ * For each face of each element, a polyhedron is built with faces being made of
+ *   - the original face
+ *   - triangles buit with the element center of mass and each of the segment of the original face
+ * Thus an inner face of the domain has two associated dual polyhedral elements, and a boundary
+ * face has only one associated dual element.
+ * The member face_dual_ is also completed and has the same logic and exact same ordering as face_voisins_.
+ */
 void Domaine_VF::build_mc_dual_mesh() const
 {
 #ifdef MEDCOUPLING_
+  using DAId = MCAuto<DataArrayIdType>;
+  using DAD = MCAuto<DataArrayDouble>;
+
+  const MEDCouplingUMesh* mc_face_mesh = get_mc_face_mesh();
+  const int dim = Objet_U::dimension;
+
   Cerr << "   Domaine: Creating **dual** mesh as a MEDCouplingUMesh object for the domain '" << le_nom() << "'" << finl;
 
-  // For now a deep copy of the original mesh:
-  mc_dual_mesh_ = domaine().get_mc_mesh()->deepCopy();
-  const std::string dual_nam = domaine().get_mc_mesh()->getName() + "_dual";
-  mc_dual_mesh_->setName(dual_nam);
+  // Fills in connectivity for the dual mesh, and correspondance array 'face_dual_'
+  int nb_fac = Process::check_int_overflow(mc_face_mesh->getNumberOfCells());
+  int nb_elem = domaine().nb_elem(); // real only
+  int nb_coo = domaine().nb_som();
+  const mcIdType *fc = mc_face_mesh->getNodalConnectivity()->getConstPointer(),
+                  *fcI= mc_face_mesh->getNodalConnectivityIndex()->getConstPointer();
+  // Init face_dual_
+  face_dual_.resize(nb_fac, 2);
+  face_dual_=-1;
+  // Prepare raw MC connectivity of the dual mesh:
+  DAId c(DataArrayIdType::New()), cI(DataArrayIdType::New());
+  cI->alloc(nb_fac*2, 1); // Conservative pre-allocation (too large because of bound faces)
+  c->alloc(0,1);
+  mcIdType *cIP = cI->getPointer();
+  cIP[0] = 0; // better not forget this ...
+  int gi = 0; // global index of dual elements created
 
+  for(int f=0; f<nb_fac; f++)    // For all the (real) faces
+    {
+      int e1=face_voisins_(f, 0), e2=face_voisins(f, 1);
+      for (int e: {e1, e2})
+        {
+          if (e==-1 || e >= nb_elem) continue;  // skip boundary or virtual
+          mcIdType c_sz = c->getNumberOfTuples();
+          if (dim == 2)  // easy, just triangles to build
+            {
+              c->reAlloc(c_sz + 3 + 1); // will add a triangle
+              mcIdType *cP = c->getPointer();
+              cP[c_sz++] = INTERP_KERNEL::NormalizedCellType::NORM_TRI3;
+              // Triangle connectivity:
+              const mcIdType *p = fc + fcI[f] + 1;
+              cP[c_sz++] = *p;
+              cP[c_sz++] = *(p+1);
+              cP[c_sz++] = e+nb_coo; // index of the barycenter in the final coord array
+            }
+          else // 3D
+            {
+              mcIdType nb_pts = fcI[f+1]-fcI[f]-1;  // nb of points in face f (-1 to skip type)
+              // Increase size of c to fit for the next poyhedron to be inserted:
+              // +1 : for the type
+              // (nb_pts-1)=nb of segs in face,
+              // (nb_pts-1)*(3+1)=nb of points for all triangles (segs in 2D) built on top of those segments
+              //    +1 : to account for the '-1' separator between face in polyhedr conn,
+              // final -1 because no '-1' at the end of the last face... pfffeww!
+              c->reAlloc(c_sz + 1 + nb_pts + (nb_pts-1)*(3+1));
+
+              mcIdType *cP = c->getPointer();
+              cP[c_sz++] = INTERP_KERNEL::NormalizedCellType::NORM_POLYHED;
+              // Add the face itself:
+              for(const mcIdType *p = fc + fcI[f] + 1; p < fc+fcI[f + 1]; p++)
+                cP[c_sz++] = *p;
+              // Add the new faces containing the barycenter:
+              const mcIdType *p2 = fc + fcI[f] + 1;
+              for (mcIdType i = 0; i<nb_pts-1; i++)  // loop on all segs of the face - in 2D this will loop once only
+                {
+                  cP[c_sz++] = -1; // -1 to separate from the prev face in the polyhedron
+                  cP[c_sz++] = e+nb_coo; // index of the barycenter in the final coord array
+                  cP[c_sz++] = *(p2+i);
+                  cP[c_sz++] = *(p2+(i+1)%nb_pts);
+                }
+            }
+          assert(c_sz == c->getNumberOfTuples());  // check the awful realloc from above ...
+          cIP[gi+1] = c_sz;
+          face_dual_(f, e==e1 ? 0:1) = gi;
+          gi++;  // next dual element
+        }
+    }
+
+  // Strip cI that might be too big - surely a down-sizing
+  cI->reAlloc(gi+1);
+  // Prepare final coords - no choice here (sticking coords and xp_ together on TRUST side is a bad idea because of virtuals)
+  // TODO - save/use coords for other (primal) meshes too
+  DAD coo2 = mc_face_mesh->getCoords()->deepCopy();
+  coo2->reAlloc(nb_coo+xp_.dimension(0));
+  std::copy(xp_.addr(), xp_.addr() + nb_elem*dim, coo2->getPointer()+nb_coo*dim);
+
+  const std::string dual_nam = domaine().get_mc_mesh()->getName() + "_dual";
+  mc_dual_mesh_ = MEDCouplingUMesh::New(dual_nam, dim);
+  mc_dual_mesh_->setCoords(coo2);
+  mc_dual_mesh_->setConnectivity(c,cI);
+  std::cout << c->reprZip() << std::endl;
+  std::cout << cI->reprZip() << std::endl;
+  std::cout << coo2->repr() << std::endl;
+  Cout << face_dual_ << finl;
   mc_dual_mesh_ready_ = true;
 #endif // MEDCOUPLING_
 }

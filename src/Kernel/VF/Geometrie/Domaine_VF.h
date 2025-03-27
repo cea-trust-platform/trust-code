@@ -237,6 +237,9 @@ protected:
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
 
+  //
+  // Dual mesh management:
+  //
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the face domain - stored in Domaine_dis since faces are built here:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
@@ -244,6 +247,8 @@ protected:
   mutable bool mc_face_mesh_ready_ = false;
   mutable bool mc_dual_mesh_ready_ = false;
 #endif
+
+  mutable IntTab face_dual_; ///< For each face f, face_dual_(f, j) returns the element built on the left and right of the face in the dual mesh. Same sorting as face_voisins_
 
   /*
    * XXX Elie Saikali
