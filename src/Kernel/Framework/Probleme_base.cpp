@@ -63,7 +63,7 @@ Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 // XD attr is_multi_scalar rien is_multi_scalar_diffusion 1 Flag to activate the multi_scalar diffusion operator
 
 // XD format_file objet_lecture nul 0 Format of the file
-// XD attr format chaine(into=["binaire","formatte","xyz","single_hdf", "pdi"]) format 1 Type of file (the file format).
+// XD attr format chaine(into=["binaire","formatte","xyz","single_hdf","pdi"]) format 1 Type of file (the file format).
 // XD attr name_file chaine name_file 0 Name of file.
 
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
