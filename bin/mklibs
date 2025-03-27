@@ -198,7 +198,7 @@ fi
 ######
 # PDI
 ######
-ALL_P=$ALL_P" \$ENV{TRUST_ROOT}/lib/src/LIBPDI/lib64"
+ALL_P=$ALL_P" \$ENV{TRUST_ROOT}/lib/src/LIBPDI/lib64 \$ENV{TRUST_ROOT}/lib/src/LIBPDI/lib"
 ALL_L=$ALL_L" pdi pdi_decl_hdf5_plugin paraconf yaml"
  
 ########
