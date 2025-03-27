@@ -336,7 +336,6 @@ public:
 #ifdef MEDCOUPLING_
   inline const MEDCouplingUMesh* get_mc_mesh() const;
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  { mc_mesh_ = m;    }
-  inline const MEDCouplingUMesh* get_mc_face_mesh() const    { return mc_face_mesh_; }
   // remapper with other domains
   MEDCouplingRemapper* get_remapper(const Domaine_32_64& other_dom);
   // DEC with other domains
@@ -345,7 +344,6 @@ public:
 #endif
 #endif
   void build_mc_mesh() const;
-  void build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const;
   bool is_mc_mesh_ready() const { return mc_mesh_ready_; }
   // Used in Interprete_geometrique_base for example - method is const, because mc_mesh_ready_ is mutable:
   void set_mc_mesh_ready(bool flag) const { mc_mesh_ready_ = flag; }
@@ -419,8 +417,6 @@ protected:
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the domain:
   mutable MCAuto<MEDCouplingUMesh> mc_mesh_;
-  ///! MEDCoupling version of the face domain:
-  mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
   // One remapper per distant domain...
   std::map<const Domaine_32_64*, MEDCoupling::MEDCouplingRemapper> rmps;
 #ifdef MPI_

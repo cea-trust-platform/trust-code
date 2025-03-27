@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -398,7 +398,7 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
 #ifdef MEDCOUPLING_
       nom_post.prefix("_FACES_");
       nom_post.prefix("_faces_");
-      nom_dom = dom.get_mc_face_mesh()->getName();
+      nom_dom = dom.le_nom();
       for (int i = 0; i < noms_compo.size(); ++i)
         noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_FACES_");
 #else

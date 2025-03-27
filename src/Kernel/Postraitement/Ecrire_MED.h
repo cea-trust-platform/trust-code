@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,6 +86,7 @@ protected:
 #ifdef MEDCOUPLING_
   const MEDCoupling::MEDCouplingUMesh *mcumesh_ = nullptr;   ///! Real owner is Domain class
   MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;   ///! Ecrire_MED is the owner
+  const MEDCoupling::MEDCouplingUMesh *mc_face_mesh_ = nullptr;   ///! Real owner is Domaine_VF class
 #endif
 };
 

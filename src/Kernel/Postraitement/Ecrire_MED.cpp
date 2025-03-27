@@ -229,8 +229,9 @@ void Ecrire_MED_32_64<_SIZE_>::fill_faces_and_boundaries(const OBS_PTR(Domaine_d
     {
       assert((std::is_same<_SIZE_, int>::value));  // we have a Domaine_dis, so we discretized already, so we are 32bits ...
       // Faces mesh - by construction (see build_mc_face_mesh) it will have the same face numbering as in TRUST.
-      dom_->build_mc_face_mesh(domaine_dis_base.valeur());
-      const MEDCouplingUMesh *faces_mesh = dom_->get_mc_face_mesh();
+      const Domaine_VF& dom_vf = ref_cast(Domaine_VF, domaine_dis_base.valeur());
+      dom_vf.build_mc_face_mesh();
+      const MEDCouplingUMesh *faces_mesh = dom_vf.get_mc_face_mesh();
       MCAuto<MEDCouplingUMesh> face_mesh2 = faces_mesh->clone(false); // perform a super light copy, no data array copied
       face_mesh2->setName(mfumesh_->getName());  // names have to be aligned ...
       mfumesh_->setMeshAtLevel(-1, face_mesh2, false);
@@ -463,7 +464,10 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_champ(const Nom& type, const Nom& nom_cha1
   else
     {
       if (type == "CHAMPFACES")
-        field->setMesh(dom_->get_mc_face_mesh());
+        {
+          assert(mc_face_mesh_);
+          field->setMesh(mc_face_mesh_); // mc_face_mesh_ filled in fill_faces_and_boundaries()
+        }
       else
         field->setMesh(dom_->get_mc_mesh());
     }

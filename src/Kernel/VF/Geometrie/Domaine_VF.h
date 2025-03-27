@@ -179,10 +179,17 @@ public :
   const DoubleTab& normale_paroi_elem()  const {return n_y_elem_;}
   const DoubleTab& normale_paroi_faces() const {return n_y_faces_;}
 
+  void build_mc_face_mesh() const;
+
+#ifdef MEDCOUPLING_
+  inline const MEDCouplingUMesh* get_mc_face_mesh() const    { return mc_face_mesh_; }
+#endif
+
 private:
   DoubleVect face_surfaces_;                // surface des faces
 
 protected:
+
   DoubleVect volumes_;                          // volumes des elements
   DoubleVect inverse_volumes_;                  // inverse du volumes des elements
   DoubleVect volumes_entrelaces_;            // volumes entrelaces pour l'integration des Qdm
@@ -227,6 +234,11 @@ protected:
   IntVect rang_elem_non_std_;    // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
+
+#ifdef MEDCOUPLING_
+  ///! MEDCoupling version of the face domain - stored in Domaine_dis since faces are built here:
+  mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
+#endif
 
   /*
    * XXX Elie Saikali
@@ -337,6 +349,7 @@ public:
   }
 
 #endif
+
 };
 
 // Renvoie le numero local de face a partir d'un numero de face global et de elem local (0 ou 1)

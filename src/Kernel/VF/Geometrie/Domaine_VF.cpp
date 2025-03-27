@@ -1460,3 +1460,76 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim)
   dist_paroi_initialisee_ = 1;
   Cerr <<"Initialize the y table " << domaine_.domaine().le_nom();
 }
+
+/*! @brief Build the MEDCoupling **face** mesh.
+ *  It is always made of polygons (in 3D) for simplicity purposes.
+ *  Face numbers (and node numbers) are the same as in TRUST.
+ *
+ *  It unfortunately needs a Domaine_dis_base since this is at this level that the face_sommets relationship is held ...
+ *  As a consequence also the faces of a Domaine can not be postprocessed before discretisation.
+ *  Another consequence is that it is not available for 64 bits domains.
+ */
+void Domaine_VF::build_mc_face_mesh() const
+{
+#ifdef MEDCOUPLING_
+  using MEDCoupling::DataArrayIdType;
+  using MEDCoupling::DataArrayDouble;
+
+  using DAId = MCAuto<DataArrayIdType>;
+
+  const MEDCouplingUMesh* mc_mesh = domaine().get_mc_mesh();
+
+  // Build descending connectivity and convert it to polygons
+  DAId desc(DataArrayIdType::New()), descIndx(DataArrayIdType::New()), revDesc(DataArrayIdType::New()), revDescIndx(DataArrayIdType::New());
+  mc_face_mesh_ = mc_mesh->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
+  if (Objet_U::dimension == 3) mc_face_mesh_->convertAllToPoly();
+
+  // Build second temporary mesh (with shared nodes!) having the TRUST connectivity
+  MCAuto<MEDCouplingUMesh> faces_tmp = mc_face_mesh_->deepCopyConnectivityOnly();
+  const IntTab& faces_sommets = face_sommets();
+  int nb_fac = faces_sommets.dimension(0);
+  int max_som_fac = faces_sommets.dimension_int(1);
+  assert((int)mc_face_mesh_->getNumberOfCells() == nb_fac);
+  DAId c(DataArrayIdType::New()), cI(DataArrayIdType::New());
+  c->alloc(0,1);
+  cI->alloc(nb_fac+1, 1);
+  mcIdType *cIP = cI->getPointer();
+  cIP[0] = 0; // better not forget this ...
+  mcIdType typ = Objet_U::dimension == 3 ? INTERP_KERNEL::NormalizedCellType::NORM_POLYGON : INTERP_KERNEL::NormalizedCellType::NORM_SEG2;
+
+  for (int fac=0; fac<nb_fac; fac++)  // Fills the two MC arrays c and cI describing the connectivity of the face mesh
+    {
+      c->pushBackSilent(typ);
+      int i=0, s=-1;
+      for (; i <  max_som_fac && (s = faces_sommets(fac, i)) >= 0; i++)
+        c->pushBackSilent(s);
+      cIP[fac+1] = cIP[fac] + i + 1; // +1 because of type
+    }
+  faces_tmp->setConnectivity(c, cI);
+
+  // Then we can simply identify cells by their nodal connectivity:
+  DataArrayIdType * mP;
+  mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);
+  // DAId renum(mP); //useful to automatically free memory allocated in mP
+  DAId renum2(mP->invertArrayN2O2O2N(nb_fac));
+#ifndef NDEBUG
+  // All cells should be found:
+  DAId outliers = renum2->findIdsNotInRange(0, nb_fac);
+  if (outliers->getNumberOfTuples() != 0)
+    Process::exit("Invalid renumbering arrays! Should not happen. Some faces could not be matched between the TRUST face domain and the buildDescendingConnectivity() version.");
+#endif
+
+#ifdef NDEBUG
+  bool check = false;
+#else
+  bool check = true;
+#endif
+  // Apply the renumbering so that final mc_face_mesh_ has the same face number as in TRUST
+  mc_face_mesh_->renumberCells(renum2->begin(), check);
+#ifndef NDEBUG
+  mc_face_mesh_->checkConsistency();
+#endif
+  mP->decrRef();
+#endif // MEDCOUPLING_
+}
+
