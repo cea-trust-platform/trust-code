@@ -6,7 +6,7 @@ Pb_conduction pb
 Domaine dom
 Lire_MED {
 	domaine dom
-	file ${mesh}.med # Make it generic # 
+	file /volatile/catA/gj277443/TRUST/DG/Validation/Rapports_automatiques/Verification/Verification_codage/Diffusion_DG/src/Cartesien.med # Make it generic # 
 	convertAllToPoly
 }  
 
@@ -14,7 +14,7 @@ DG dis
 
 Option_DG 
 {
-	order ${order}
+	order 1
 }
 
 
@@ -22,7 +22,7 @@ Scheme_euler_explicit sch_expl
 Read sch_expl
 {
     tinit 0
-    nb_pas_dt_max 200
+	nb_pas_dt_max 3
     tmax 300.
     facsec 1
     # dt_min 0.00000001 # 
@@ -35,6 +35,7 @@ Schema_euler_implicite sch_impl
 Read sch_impl
 {
     tinit   0
+	nb_pas_dt_max 3
     dt_max  0.5
     facsec 1e30
     seuil_statio 1e-6
@@ -42,7 +43,7 @@ Read sch_impl
 }
 
 Associate pb dom
-Associate pb ${sch_temps}
+Associate pb sch_impl
 Discretize pb dis
 
 Read pb
