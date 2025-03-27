@@ -1,0 +1,4 @@
+for M in $list_dis
+do
+cat $M/jdd_*/conv| awk '{print $1,$2,$3}'| sort -n> $M/conv_glob
+done
