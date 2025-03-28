@@ -269,9 +269,8 @@ private:
   bool mc_Cmesh_ready_ = false, mc_Cmesh_with_faces_corr_ = false;
 
   void build_mc_Cmesh();
-  void build_mc_Cmesh_elemCorrespondence();
-  void build_mc_Cmesh_facesCorrespondence();
   void build_mc_Cmesh_nodesCorrespondence();
+  void build_mc_Cmesh_correspondence(bool withFace);
 
   template <typename TYPE>
   TYPE Cmesh_error(const char * nom_funct) const

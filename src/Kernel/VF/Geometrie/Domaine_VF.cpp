@@ -828,6 +828,9 @@ DoubleTab Domaine_VF::calculer_xgr() const
   return xgr;
 }
 
+/** Build internal MEDCoupling cartesian mesh and correspondances
+ *
+ */
 void Domaine_VF::build_map_mc_Cmesh(const bool with_faces)
 {
 #ifdef MEDCOUPLING_
@@ -848,18 +851,13 @@ void Domaine_VF::build_map_mc_Cmesh(const bool with_faces)
   /* Step 1. build mesh */
   build_mc_Cmesh();
 
-  /* Step 2. build elem correspondance : indx est i + (nx - 1) * (j + (ny - 1) * k) */
-  build_mc_Cmesh_elemCorrespondence();
-
-  /* Step 3. build nodes correspondance : indx est i + nx * (j + ny * k) */
+  /* Step 2. build nodes correspondance : indx est i + nx * (j + ny * k) */
   build_mc_Cmesh_nodesCorrespondence();
 
-  /* Step 4. build faces correspondance */
+  /* Step 2. build elem and face correspondance : indx est i + (nx - 1) * (j + (ny - 1) * k) */
+  build_mc_Cmesh_correspondence(with_faces);
+
   mc_Cmesh_with_faces_corr_ = with_faces;
-
-  if (with_faces)
-    build_mc_Cmesh_facesCorrespondence();
-
   mc_Cmesh_ready_ = true;
 
   Cerr << "##################################################" << finl;
@@ -875,18 +873,19 @@ void Domaine_VF::build_map_mc_Cmesh(const bool with_faces)
 
 #ifdef MEDCOUPLING_
 
+/** Build internal MEDCoupling cartesian mesh for various postprocessings.
+ */
 void Domaine_VF::build_mc_Cmesh()
 {
+  using DAD = MCAuto<DataArrayDouble>;
+
   Cerr << "Domaine_VF::build_mc_Cmesh() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh(); // will be built
   const auto& coords = u_mesh->getCoords();
   trustIdType nb_soms_tmp = coords->getNumberOfTuples(), nb_elems_tmp = u_mesh->getNumberOfCells();
 
-  if (nb_soms_tmp >= std::numeric_limits<int>::max() || nb_elems_tmp >= std::numeric_limits<int>::max())
-    Process::exit("Error in Domaine_VF::build_mc_Cmesh !! Domaine is too big and does not fit into 32bits !!");
-
-  const int nb_soms = static_cast<int>(nb_soms_tmp);
-  const int nb_elems = static_cast<int>(nb_elems_tmp);
+  const int nb_soms = Process::check_int_overflow(nb_soms_tmp);
+  const int nb_elems = Process::check_int_overflow(nb_elems_tmp);
   const int mesh_dim = u_mesh->getMeshDimension();
 
   Cerr << "Domaine_VF: Creating a MEDCouplingCMesh object for the domaine_VF '" << que_suis_je() << "' & the domaine '" << domaine().le_nom() << "' ..." << finl;
@@ -894,27 +893,22 @@ void Domaine_VF::build_mc_Cmesh()
 
   std::vector<double> pt(mesh_dim);
 
-  // Extraire et trier les coords uniques !!
-  for (int i = 0; i < nb_soms; ++i)
+  const double eps = Objet_U::precision_geom;
+  DAD coo[3], uniq[3];
+  for (unsigned d=0; d < (unsigned)mesh_dim; d++)
     {
-      coords->getTuple(i, pt.data());
-      mc_Cmesh_x_coords_.push_back(pt[0]);
-      mc_Cmesh_y_coords_.push_back(pt[1]);
-
-      if (mesh_dim > 2)
-        mc_Cmesh_z_coords_.push_back(pt[2]);
+      coo[d] = coords->keepSelectedComponents({d});
+      uniq[d] = coo[d]->getDifferentValues(eps);
+      std::sort(uniq[d]->rwBegin(), uniq[d]->rwEnd());
     }
-
-  std::sort(mc_Cmesh_x_coords_.begin(), mc_Cmesh_x_coords_.end());
-  mc_Cmesh_x_coords_.erase(std::unique(mc_Cmesh_x_coords_.begin(), mc_Cmesh_x_coords_.end()), mc_Cmesh_x_coords_.end());
-
-  std::sort(mc_Cmesh_y_coords_.begin(), mc_Cmesh_y_coords_.end());
-  mc_Cmesh_y_coords_.erase(std::unique(mc_Cmesh_y_coords_.begin(), mc_Cmesh_y_coords_.end()), mc_Cmesh_y_coords_.end());
-
-  if (mesh_dim > 2)
+  mc_Cmesh_x_coords_.resize(uniq[0]->getNumberOfTuples());
+  std::copy(uniq[0]->begin(), uniq[0]->end(),mc_Cmesh_x_coords_.begin());
+  mc_Cmesh_y_coords_.resize(uniq[1]->getNumberOfTuples());
+  std::copy(uniq[1]->begin(), uniq[1]->end(),mc_Cmesh_y_coords_.begin());
+  if (mesh_dim>2)
     {
-      std::sort(mc_Cmesh_z_coords_.begin(), mc_Cmesh_z_coords_.end());
-      mc_Cmesh_z_coords_.erase(std::unique(mc_Cmesh_z_coords_.begin(), mc_Cmesh_z_coords_.end()), mc_Cmesh_z_coords_.end());
+      mc_Cmesh_z_coords_.resize(uniq[2]->getNumberOfTuples());
+      std::copy(uniq[2]->begin(), uniq[2]->end(),mc_Cmesh_z_coords_.begin());
     }
 
   const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
@@ -935,30 +929,109 @@ void Domaine_VF::build_mc_Cmesh()
   if (mesh_dim > 2) Cerr << " x " << nz;
   Cerr << finl;
 
-  // MEDCouplingCMesh => 1D arrays
-  MCAuto<DataArrayDouble> x_array = DataArrayDouble::New(), y_array = DataArrayDouble::New();
-  MCAuto<DataArrayDouble> z_array = (mesh_dim > 2) ? DataArrayDouble::New() : nullptr;
-
-  x_array->alloc(nx, 1);
-  y_array->alloc(ny, 1);
-
   if (mesh_dim > 2)
-    z_array->alloc(nz, 1);
-
-  for (int i = 0; i < nx; ++i)
-    x_array->setIJ(i, 0, mc_Cmesh_x_coords_[i]);
-
-  for (int i = 0; i < ny; ++i)
-    y_array->setIJ(i, 0, mc_Cmesh_y_coords_[i]);
-
-  if (mesh_dim > 2)
-    for (int i = 0; i < nz; ++i)
-      z_array->setIJ(i, 0, mc_Cmesh_z_coords_[i]);
-
-  mc_Cmesh_->setCoords(x_array, y_array, z_array);
+    mc_Cmesh_->setCoords(uniq[0], uniq[1], uniq[2]);
+  else
+    mc_Cmesh_->setCoords(uniq[0], uniq[1]);
 
   Cerr << "Domaine_VF::build_mc_Cmesh() ... OK !" << finl;
 }
+
+/** Correspondance between TRUST_CMesh elements (and faces) and TRUST
+ *
+ */
+void Domaine_VF::build_mc_Cmesh_correspondence(bool withFace)
+{
+  using DAI = MCAuto<DataArrayIdType>;
+  using DAD = MCAuto<DataArrayDouble>;
+
+  Cerr << "Domaine_VF::build_mc_Cmesh_correspondence() building elem (and potentially face) correspondence ... " << finl;
+
+  // Temporary unstruct  version of the CMesh to establish correspondences
+  // The exact same numbering as in the original CMesh is preserved:
+  MCAuto<MEDCouplingUMesh> mc_unstr = mc_Cmesh_->buildUnstructured();
+  const MEDCouplingUMesh * mc_mesh = domaine().get_mc_mesh();
+
+  // Renumber nodes of mc_unstr to use original TRUST node indices:
+  mc_unstr->setCoords(mc_mesh->getCoords());
+  DAI renumb(DataArrayIdType::New());
+  mcIdType n_nod = mc_unstr->getCoords()->getNumberOfTuples();
+  renumb->alloc(n_nod);
+  std::copy(mc_Cmesh_nodesCorrespondence_.data(),mc_Cmesh_nodesCorrespondence_.data()+n_nod, renumb->rwBegin());
+
+  mc_unstr->renumberNodesInConn(renumb->begin()); // only in connectivity
+
+  // Identify elements
+  DataArrayIdType * mP;
+  mc_unstr->areCellsIncludedIn(mc_mesh, 2, mP);  // 2: same nodal connectivity
+
+  // Check that we have covered all cells exactly once:
+  DAI outliers = mP->findIdsNotInRange(0, mc_unstr->getNumberOfCells());
+  if (outliers->getNumberOfTuples() != 0)
+    Process::exit("ERROR: Issue in converting the TRUST mesh to MEDCouplingCMesh ... It seems that the mesh is not an IJK-like mesh!!!");
+
+  mc_Cmesh_elemCorrespondence_.resize(mP->getNumberOfTuples());
+  std::copy(mP->begin(), mP->end(), mc_Cmesh_elemCorrespondence_.data());
+
+//  // Debug
+//  Cerr << "ELEM CORRESPONDANCE" << finl;
+//  int elem_idx = 0;
+//  for (const auto& cor: mc_Cmesh_elemCorrespondence_)
+//    Cerr << "Elem struct. " << elem_idx++ << " --> Elem non struct (original TRUST) " << cor << finl;
+
+  if (withFace)
+    {
+      int mesh_dim = mc_unstr->getMeshDimension();
+      get_mc_face_mesh();
+
+      DAI desc(DataArrayIdType::New()), descIndx(DataArrayIdType::New()), revDesc(DataArrayIdType::New()), revDescIndx(DataArrayIdType::New());
+      MCAuto<MEDCouplingUMesh> mc_unstr_fac(mc_unstr->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx));
+      mcIdType nb_fac = mc_unstr_fac->getNumberOfCells();
+
+      DataArrayIdType * mapFac;
+      mc_unstr_fac->areCellsIncludedIn(mc_face_mesh_, 2, mapFac);  // 2: same nodal connectivity
+
+      DAD faceBary = mc_face_mesh_->computeCellCenterOfMass();
+      const double * faceBaryP = faceBary->getConstPointer();
+      DAI permu(DataArrayIdType::New());
+      permu->alloc(nb_fac);
+      permu->iota();
+
+      auto comp_func_2d = [&](const int& i1, const int& i2) -> bool
+      {
+        std::array<double, 2> tup1 = { faceBaryP[i1*2+1], faceBaryP[i1*2+0] }; // Y, X
+        std::array<double, 2> tup2 = { faceBaryP[i2*2+1], faceBaryP[i2*2+0] };
+        return tup1 < tup2;  // use **reverse** lexicographic ordering natively given by std::array
+      };
+
+      auto comp_func_3d = [&](const int& i1, const int& i2) -> bool
+      {
+        std::array<double, 3> tup1 = { faceBaryP[i1*3+2], faceBaryP[i1*3+1], faceBaryP[i1*3+0] }; // Z, Y, X
+        std::array<double, 3> tup2 = { faceBaryP[i2*3+2], faceBaryP[i2*3+1], faceBaryP[i2*3+0] }; // Z, Y, X
+        return tup1 < tup2;  // use **reverse** lexicographic ordering natively given by std::array
+      };
+
+      if (mesh_dim == 2)
+        std::sort(permu->rwBegin(), permu->rwEnd(), comp_func_2d);
+      else
+        std::sort(permu->rwBegin(), permu->rwEnd(), comp_func_3d);
+      for (mcIdType pp: *permu) // loop on face following lexicographic ordering
+        {
+          int p = static_cast<int>(pp);
+          const int ori = orientation(p); // normal
+          if (ori == 0) mc_Cmesh_facesXCorrespondence_.push_back(p);
+          if (ori == 1) mc_Cmesh_facesYCorrespondence_.push_back(p);
+          if (mesh_dim > 2 && ori == 2) mc_Cmesh_facesZCorrespondence_.push_back(p);
+        }
+
+      Cerr << "   - Built mc_Cmesh_facesXCorrespondence_ with size " << (int)mc_Cmesh_facesXCorrespondence_.size() << finl;
+      Cerr << "   - Built mc_Cmesh_facesYCorrespondence_ with size " << (int)mc_Cmesh_facesYCorrespondence_.size() << finl;
+      if (mesh_dim > 2)
+        Cerr << "   - Built mc_Cmesh_facesZCorrespondence_ with size " << (int)mc_Cmesh_facesZCorrespondence_.size() << finl;
+    }
+  Cerr << "Domaine_VF::build_mc_Cmesh_correspondence() - done!" << finl;
+}
+
 
 // magic !
 static int findCartIndex(const std::vector<double>& vect, const double value)
@@ -979,254 +1052,14 @@ static int findCartIndex(const std::vector<double>& vect, const double value)
   return index;
 };
 
-// Correspondance entre TRUST_CMesh elems et TRUST
-void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
-{
-  Cerr << "Domaine_VF::build_mc_Cmesh_elemCorrespondence() ... " << finl;
-  const auto& u_mesh = domaine().get_mc_mesh();
-  const auto& centers = u_mesh->computeCellCenterOfMass();
-  const int nb_elems = static_cast<int>(u_mesh->getNumberOfCells());
-  const int mesh_dim = u_mesh->getMeshDimension();
-  const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
-
-  mc_Cmesh_elemCorrespondence_.resize(nb_elems, -1);
-
-  // Add a post-processing field to see idx !
-  MCAuto<MEDCouplingFieldDouble> elem_idx = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
-  elem_idx->setMesh(mc_Cmesh_);
-  elem_idx->setName("TRUST_CMesh_Elem_Idx");
-  MCAuto<DataArrayDouble> cell_idx_arr= DataArrayDouble::New();
-  cell_idx_arr->alloc(nb_elems,1);
-  double * ptr_cell_idx_arr(cell_idx_arr->rwBegin());
-
-  std::vector<double> center(mesh_dim);
-
-  for (int elem = 0; elem < nb_elems; ++elem)
-    {
-      centers->getTuple(elem, center.data()); // get center of mass per elem
-
-      int i = findCartIndex(mc_Cmesh_x_coords_, center[0]);
-      int j = findCartIndex(mc_Cmesh_y_coords_, center[1]);
-      int k = (mesh_dim > 2) ? findCartIndex(mc_Cmesh_z_coords_, center[2]) : 0;
-
-      if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
-        {
-          Cerr << "Element " << elem << " not contained in the structured mesh !!!" << finl;
-          Process::exit();
-        }
-
-      const int ijk_idx = i + (nx - 1) * (j + (ny - 1) * k); // i puis j puis k !!
-      mc_Cmesh_elemCorrespondence_[ijk_idx] = elem;
-      ptr_cell_idx_arr[elem] = ijk_idx;
-//      Cerr << "Elem non struct. " << elem << " --> Elem struct. " << ijk_idx << finl;
-    }
-
-  // complete post-processing field to see idx !
-  elem_idx->setArray(cell_idx_arr);
-  elem_idx->checkConsistencyLight();
-
-  const bool vtk = true;
-  std::stringstream filename;
-
-  if (Process::nproc() == 1)
-    filename << "MEDCouplingCMesh_" << Objet_U::nom_du_cas().getString() << (vtk ? ".vtk" : ".med");
-  else
-    filename << "MEDCouplingCMesh_" << Objet_U::nom_du_cas().getString() << "_" << std::setfill('0') << std::setw(5) << Process::me() << (vtk ? ".vtk" : ".med");
-
-  if (vtk)
-    elem_idx->writeVTK(filename.str());
-  else
-    WriteField(filename.str(), elem_idx, true);
-
-  Cerr << "Domaine_VF::build_mc_Cmesh_elemCorrespondence() ... OK !" << finl;
-}
-
-// Correspondance entre TRUST_CMesh faces et TRUST
-void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
-{
-  Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... " << finl;
-
-  constexpr double eps = 1.e-8;
-  const auto& u_mesh_faces = get_mc_face_mesh();
-  const auto& centers = u_mesh_faces->computeCellCenterOfMass();
-  const int nbfaces = static_cast<int>(centers->getNumberOfTuples());
-  const int mesh_dim = u_mesh_faces->getMeshDimension() + 1 /* car descending conn !! */;
-
-  const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size(), nz = (int)mc_Cmesh_z_coords_.size();
-
-  // Nombre de faces suivant X
-  int nb_faces_x = nx * (ny - 1);
-  if (mesh_dim > 2) nb_faces_x *= (nz - 1);
-
-  // Nombre de faces suivant Y
-  int nb_faces_y = (nx-1) * ny;
-  if (mesh_dim > 2) nb_faces_y *= (nz - 1);
-
-  // Nombre de faces suivant Z
-  int nb_faces_z = 0;
-  if (mesh_dim > 2) nb_faces_z = (nx-1) * (ny - 1) * nz;
-
-  assert(nb_faces_x > 0 && nb_faces_y > 0);
-
-  if (mesh_dim > 2) { assert(nb_faces_z > 0); }
-
-  Cerr << "   - Building mc_Cmesh_facesXCorrespondence_ with a size of " << nb_faces_x << finl;
-  Cerr << "   - Building mc_Cmesh_facesYCorrespondence_ with a size of " << nb_faces_y << finl;
-
-  if (mesh_dim > 2)
-    Cerr << "   - Building mc_Cmesh_facesZCorrespondence_ with a size of " << nb_faces_z << finl;
-
-  mc_Cmesh_facesXCorrespondence_.resize(nb_faces_x, -1);
-  mc_Cmesh_facesYCorrespondence_.resize(nb_faces_y, -1);
-  if (mesh_dim > 2) mc_Cmesh_facesZCorrespondence_.resize(nb_faces_z, -1);
-
-  std::vector<double> center(mesh_dim);
-
-  for (int f = 0; f < nbfaces; ++f)
-    {
-      const int ori = orientation(f); // normal
-
-      centers->getTuple(f, center.data()); // get center of mass per elem
-
-      if (ori == 0) // fill mc_Cmesh_facesXCorrespondence_
-        {
-          int i = -1, j = -1, k = -1;
-
-          for (int ii = 0; ii < nx; ii++)
-            if (std::abs(center[0] - mc_Cmesh_x_coords_[ii]) < eps)
-              {
-                i = ii;
-                break;
-              }
-
-          for (int jj = 0; jj < ny - 1; jj++)
-            if (std::abs(center[1] - (0.5 * (mc_Cmesh_y_coords_[jj] + mc_Cmesh_y_coords_[jj + 1]))) < eps)
-              {
-                j = jj;
-                break;
-              }
-
-          if (mesh_dim > 2)
-            for (int kk = 0; kk < nz - 1; kk++)
-              if (std::abs(center[2] - 0.5 * (mc_Cmesh_z_coords_[kk] + mc_Cmesh_z_coords_[kk + 1])) < eps)
-                {
-                  k = kk;
-                  break;
-                }
-
-          if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
-            {
-              Cerr << "Faces " << f << " not contained in the structured mesh !!!" << finl;
-              Process::exit();
-            }
-
-          if (mesh_dim < 3) k = 0;
-          const int ijk_idx = i + nx * (j + (ny - 1) * k); // i puis j puis k !!
-
-          mc_Cmesh_facesXCorrespondence_[ijk_idx] = f;
-
-//          Cerr << "face non struct. " << f << " ori  " << ori << "  --> face struct. " << ijk_idx << finl;
-
-        }
-      else if (ori == 1) // fill mc_Cmesh_facesYCorrespondence_
-        {
-          int i = -1, j = -1, k = -1;
-
-          for (int ii = 0; ii < nx - 1; ii++)
-            if (std::abs(center[0] - 0.5 * (mc_Cmesh_x_coords_[ii] + mc_Cmesh_x_coords_[ii + 1])) < eps)
-              {
-                i = ii;
-                break;
-              }
-
-          for (int jj = 0; jj < ny; jj++)
-            if (std::abs(center[1] - mc_Cmesh_y_coords_[jj]) < eps)
-              {
-                j = jj;
-                break;
-              }
-
-          if (mesh_dim > 2)
-            for (int kk = 0; kk < nz - 1; kk++)
-              if (std::abs(center[2] - 0.5 * (mc_Cmesh_z_coords_[kk] + mc_Cmesh_z_coords_[kk + 1])) < eps)
-                {
-                  k = kk;
-                  break;
-                }
-
-          if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
-            {
-              Cerr << "Faces " << f << " not contained in the structured mesh !!!" << finl;
-              Process::exit();
-            }
-
-          if (mesh_dim < 3) k = 0;
-          const int ijk_idx = i + (nx - 1) * (j + ny * k); // i puis j puis k !!
-
-          mc_Cmesh_facesYCorrespondence_[ijk_idx] = f;
-
-//          Cerr << "face non struct. " << f << " ori  " << ori << "  --> face struct. " << ijk_idx << finl;
-        }
-      else
-        {
-          if (mesh_dim < 3)
-            {
-              Cerr << "What !!? The face " << f << " has an orientation along z but the dimension of the mesh is " << mesh_dim << " !!!" << finl;
-              Process::exit();
-            }
-          int i = -1, j = -1, k = -1;
-
-          for (int ii = 0; ii < nx - 1; ii++)
-            if (std::abs(center[0] - 0.5 * (mc_Cmesh_x_coords_[ii] + mc_Cmesh_x_coords_[ii + 1])) < eps)
-              {
-                i = ii;
-                break;
-              }
-
-          for (int jj = 0; jj < ny - 1; jj++)
-            if (std::abs(center[1] - 0.5 * (mc_Cmesh_y_coords_[jj] + mc_Cmesh_y_coords_[jj + 1])) < eps)
-              {
-                j = jj;
-                break;
-              }
-
-          for (int kk = 0; kk < nz; kk++)
-            if (std::abs(center[2] - mc_Cmesh_z_coords_[kk]) < eps)
-              {
-                k = kk;
-                break;
-              }
-
-          if (i == -1 || j == -1 || k == -1)
-            {
-              Cerr << "Faces " << f << " not contained in the structured mesh !!!" << finl;
-              Process::exit();
-            }
-
-          const int ijk_idx = i + (nx - 1) * (j + (ny - 1) * k); // i puis j puis k !!
-
-          mc_Cmesh_facesZCorrespondence_[ijk_idx] = f;
-//          Cerr << "face non struct. " << f << " ori  " << ori << "  --> face struct. " << ijk_idx << finl;
-        }
-    }
-
-  // Trouver le min !
-  int min_xf = *std::min_element(mc_Cmesh_facesXCorrespondence_.begin(), mc_Cmesh_facesXCorrespondence_.end());
-  int min_yf = *std::min_element(mc_Cmesh_facesYCorrespondence_.begin(), mc_Cmesh_facesYCorrespondence_.end());
-  int min_zf = mesh_dim > 2 ? *std::min_element(mc_Cmesh_facesZCorrespondence_.begin(), mc_Cmesh_facesZCorrespondence_.end()) : 0;
-
-  if (min_xf == -1 || min_yf == -1 || min_zf == -1)
-    Process::exit("Big problem in Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... Call the 911 !");
-
-  Cerr << "Domaine_VF::build_mc_Cmesh_facesCorrespondence() ... OK !" << finl;
-}
-
-// Correspondance entre TRUST_CMesh nodes et TRUST
+/** Correspondance between TRUST_CMesh nodes and TRUST
+ */
 void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
 {
   Cerr << "Domaine_VF::build_mc_Cmesh_nodesCorrespondence() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh();
-  const auto& coords = u_mesh->getCoords();
+  const double* coordsP = u_mesh->getCoords()->getConstPointer();
+  const int space_dim = static_cast<int>(u_mesh->getCoords()->getNumberOfComponents());
   const int nb_soms = static_cast<int>(u_mesh->getNumberOfNodes());
   const int mesh_dim = u_mesh->getMeshDimension();
   const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
@@ -1236,11 +1069,9 @@ void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
 
   for (int node = 0; node < nb_soms; ++node)
     {
-      coords->getTuple(node, coord.data()); // Get node coordinates
-
-      int i = findCartIndex(mc_Cmesh_x_coords_, coord[0]);
-      int j = findCartIndex(mc_Cmesh_y_coords_, coord[1]);
-      int k = (mesh_dim > 2) ? findCartIndex(mc_Cmesh_z_coords_, coord[2]) : 0;
+      int i = findCartIndex(mc_Cmesh_x_coords_, coordsP[node*space_dim + 0]);
+      int j = findCartIndex(mc_Cmesh_y_coords_, coordsP[node*space_dim + 1]);
+      int k = (mesh_dim > 2) ? findCartIndex(mc_Cmesh_z_coords_, coordsP[node*space_dim + 2]) : 0;
 
       if (i == -1 || j == -1 || (mesh_dim > 2 && k == -1))
         {
@@ -1508,7 +1339,7 @@ void Domaine_VF::build_mc_face_mesh() const
 
   // Then we can simply identify cells by their nodal connectivity:
   DataArrayIdType * mP;
-  mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);
+  mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);    // 2: same nodal connectivity
   // DAId renum(mP); //useful to automatically free memory allocated in mP
   DAId renum2(mP->invertArrayN2O2O2N(nb_fac));
 #ifndef NDEBUG
@@ -1634,10 +1465,6 @@ void Domaine_VF::build_mc_dual_mesh() const
   mc_dual_mesh_ = MEDCouplingUMesh::New(dual_nam, dim);
   mc_dual_mesh_->setCoords(coo2);
   mc_dual_mesh_->setConnectivity(c,cI);
-  std::cout << c->reprZip() << std::endl;
-  std::cout << cI->reprZip() << std::endl;
-  std::cout << coo2->repr() << std::endl;
-  Cout << face_dual_ << finl;
   mc_dual_mesh_ready_ = true;
 #endif // MEDCOUPLING_
 }
