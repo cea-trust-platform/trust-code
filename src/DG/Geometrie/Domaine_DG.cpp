@@ -51,9 +51,7 @@ Entree& Domaine_DG::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
-  bool tri_or_quad_only = build_nfaces_elem_();
-  if (tri_or_quad_only==false)
-    Process::exit("General meshes not implemented yet"); // TODO : Change this if general meshes implemented
+  build_nfaces_elem_();
   compute_mesh_param();
   calculer_h_carre();
   Quadrature_base* quad1 = new Quadrature_Ord1_Polygone(*this);
@@ -292,46 +290,29 @@ bool Domaine_DG::build_nfaces_elem_()
 
   if (Objet_U::dimension == 2)
     {
-      if (nb_f_elem_max == 3) // only triangles
+      for (int e = 0; e < nb_elem_tot(); e++)
         {
-          for (int e = 0; e < nb_elem_tot(); e++)
+          if (elem_face(e, 3) == -1)
             {
               nfaces_elem_(e) = 3; // triangles
             }
-        }
-      else if (nb_f_elem_max == 4) // mix of triangles and quads
-        {
-          for (int e = 0; e < nb_elem_tot(); e++)
+          else if (elem_face(e, 4) == -1)
             {
-              if (elem_face(e, 3) == -1)
-                {
-                  nfaces_elem_(e) = 3; // triangles
-                  continue;
-                }
               nfaces_elem_(e) = 4; // quads
             }
-        }
-      else // Mix of polys
-        {
-          only_tri_quad = false;
-          for (int e = 0; e < nb_elem_tot(); e++)
+          else
             {
-              if (elem_face(e, 3) == -1)
+              int i_f = 5;
+              for (; i_f < nb_f_elem_max; i_f++)
                 {
-                  nfaces_elem_(e) = 3; // triangles
-                  continue;
+                  if (elem_face(e, i_f) == -1)
+                    {
+                      nfaces_elem_(e) = i_f; // polys
+                      break;
+                    }
                 }
-              if (elem_face(e, 4) == -1)
-                {
-                  nfaces_elem_(e) = 4; // quads
-                  continue;
-                }
-              for (int i_f = 5; i_f < nb_f_elem_max; i_f++)
-                {
-                  if (elem_face(e, i_f) == -1 || i_f == nb_f_elem_max)
-                    nfaces_elem_(e) = i_f+1; // polys
-                  continue;
-                }
+              if (i_f == nb_f_elem_max)
+                nfaces_elem_(e) = i_f; // full poly
             }
         }
     }

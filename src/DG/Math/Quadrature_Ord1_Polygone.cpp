@@ -128,7 +128,6 @@ void Quadrature_Ord1_Polygone::compute_integ_points()
           ind_pts_integ_(e) = cumul;
           cumul += nb_pts_integ_e;
           nb_pts_integ_max_ = std::max(nb_pts_integ_max_, nb_pts_integ_e);
-          Process::exit("Polygonale meshes not implemented yet in Quadrature_Ord5_Polygone.cpp");
           break;
         }
     }
@@ -184,7 +183,6 @@ void Quadrature_Ord1_Polygone::compute_integ_points()
             }
           break;
         default: // other
-          Process::exit("Polygonale meshes not implemented yet in Quadrature_Ord5_Polygone.cpp");
           for (int n_tri = 0; n_tri < nsom; n_tri++)
             {
               int f = elem_faces(e, n_tri);
@@ -195,7 +193,7 @@ void Quadrature_Ord1_Polygone::compute_integ_points()
                     {
                       for (int loc_vert = 0; loc_vert < 2; loc_vert++)
                         integ_points_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri, dim) += xs(face_sommets(f, loc_vert), dim) * lambda_tri(pts, loc_vert);
-                      integ_points_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri, dim) += xp(e, dim) * lambda_tri(pts, 3);
+                      integ_points_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri, dim) += xp(e, dim) * lambda_tri(pts, 2);
                     }
                   weights_(ind_elem_e + pts + n_tri * ::nb_pts_integ_tri) = weight_scale * weights_tri_(pts);
                 }
