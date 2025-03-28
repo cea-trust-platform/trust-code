@@ -39,6 +39,11 @@ void Champs_compris_IJK::ajoute_champ_vectoriel(const IJK_Field_vector3_double& 
   // Adding a field name referring to champ inside liste_champs_ dictionnary
   auto add_key = [&](const Nom& n)
   {
+    if (n == "??")
+      {
+        Cerr << "Champs_compris_IJK::ajoute_champ_vectoriel : trying to add a field with no name" << finl;
+        Process::exit();
+      }
     std::string nom_champ = n.getString();
     std::string upperCase = nom_champ, lowerCase = nom_champ;
     std::transform(nom_champ.begin(), nom_champ.end(), upperCase.begin(), ::toupper);
@@ -82,86 +87,85 @@ const Noms Champs_compris_IJK::liste_noms_compris_vectoriel() const
 
 void Champs_compris_IJK::switch_ft_fields()
 {
-
   Cerr << "Champs_compris_IJK : start switch old to next" <<finl;
-
-
-  for (auto& old : liste_champs_vecto_)
-    {
-
-      Nom old_name = old.first;
-
-      if (old_name.debute_par("OLD_"))
-        {
-          Nom next_name = old_name.getSuffix("OLD_");
-
-          OBS_PTR(IJK_Field_vector3_double) ptr = old.second;
-
-          auto next = liste_champs_vecto_.find(next_name.getString());
-
-          old.second = next->second;
-          next->second = ptr;
-
-          Cerr << "Champs_compris_IJK : swapping IJK field vector " << old_name << " with " << next_name <<finl;
-
-        }
-
-
-      if (old_name.debute_par("old_"))
-        {
-          Nom next_name = old_name.getSuffix("old_");
-
-          OBS_PTR(IJK_Field_vector3_double) ptr = old.second;
-
-          auto next = liste_champs_vecto_.find(next_name.getString());
-
-          old.second = next->second;
-          next->second = ptr;
-
-          Cerr << "Champs_compris_IJK : swapping IJK field vector " << old_name << " with " << next_name <<finl;
-
-        }
-
-    }
 
   for (auto& old : liste_champs_)
     {
-
       Nom old_name = old.first;
-
-      if (old_name.debute_par("OLD_"))
-        {
-          Nom next_name = old_name.getSuffix("OLD_");
-
-          auto& ptr = old.second;
-
-          auto next = liste_champs_.find(next_name.getString());
-
-          old.second = next->second;
-          next->second = ptr;
-
-          Cerr << "Champs_compris_IJK : swapping IJK field " << old_name << " with " << next_name <<finl;
-
-        }
-
-
-      if (old_name.debute_par("old_"))
-        {
-          Nom next_name = old_name.getSuffix("old_");
-
-          auto& ptr = old.second;
-
-          auto next = liste_champs_.find(next_name.getString());
-
-          old.second = next->second;
-          next->second = ptr;
-
-          Cerr << "Champs_compris_IJK : swapping IJK field " << old_name << " with " << next_name <<finl;
-
-        }
-
+      switch_field(old_name, "OLD_");
+      switch_field(old_name, "old_");
     }
+
+  for (auto& old : liste_champs_vecto_)
+    {
+      Nom old_name = old.first;
+      switch_vector_field(old_name, "OLD_");
+      switch_vector_field(old_name, "old_");
+    }
+
   Cerr << "Champs_compris_IJK : end switch old to next" <<finl;
 
+
+}
+
+
+void Champs_compris_IJK::switch_field(const Nom& field_name, const Nom& prefix)
+{
+
+  if (field_name.debute_par(prefix))
+    {
+      Nom next_name = field_name.getSuffix(prefix);
+
+
+      auto next = liste_champs_.find(next_name.getString());
+      if (next == liste_champs_.end())
+        {
+          Cerr << "Champs_compris_IJK : field " << next_name << " not found for swapping with " << field_name <<finl;
+          Cerr << "Champs_compris_IJK : Warning: only name fields with prefix OLD_ if they are in IJK_Interface and using the next/old semantic" <<finl;
+          Process::exit();
+        }
+
+      // do the swapping
+      auto ptr = liste_champs_[field_name.getString()];
+      liste_champs_[field_name.getString()]=liste_champs_[next_name.getString()];
+      liste_champs_[next_name.getString()]=ptr;
+
+      // Must rename the fields so they are written in lata with correct name
+      liste_champs_[field_name.getString()]->nommer(field_name);
+      liste_champs_[next_name.getString()]->nommer(next_name);
+
+      Cerr << "Champs_compris_IJK : swapping IJK field " << field_name << " with " << next_name <<finl;
+
+    }
+
+}
+void Champs_compris_IJK::switch_vector_field(const Nom& field_name, const Nom& prefix)
+{
+
+  if (field_name.debute_par(prefix))
+    {
+      Nom next_name = field_name.getSuffix(prefix);
+
+      auto next = liste_champs_vecto_.find(next_name.getString());
+
+      if (next == liste_champs_vecto_.end())
+        {
+          Cerr << "Champs_compris_IJK : field " << next_name << " not found for swapping with " << field_name <<finl;
+          Cerr << "Champs_compris_IJK : Warning: only name fields with prefix OLD_ if they are in IJK_Interface and using the next/old semantic" <<finl;
+          Process::exit();
+        }
+
+      // do the swapping
+      auto ptr = liste_champs_vecto_[field_name.getString()];
+      liste_champs_vecto_[field_name.getString()]=liste_champs_vecto_[next_name.getString()];
+      liste_champs_vecto_[next_name.getString()]=ptr;
+
+      // Must rename the fields so they are written in lata with correct name
+      liste_champs_vecto_[field_name.getString()]->nommer(field_name);
+      liste_champs_vecto_[next_name.getString()]->nommer(next_name);
+
+      Cerr << "Champs_compris_IJK : swapping IJK field vector " << field_name << " with " << next_name <<finl;
+
+    }
 
 }

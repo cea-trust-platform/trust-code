@@ -62,6 +62,11 @@ void Champs_compris_T<FIELD_TYPE>::ajoute_champ(const FIELD_TYPE& champ)
   // Adding a field name referring to champ inside liste_champs_ dictionnary
   auto add_key = [&](const Nom& n)
   {
+    if (n == "??")
+      {
+        Cerr << "Champs_compris_T<FIELD_TYPE>::ajoute_champ : trying to add a field with no name" << finl;
+        Process::exit();
+      }
     std::string nom_champ = n.getString();
     std::string upperCase = nom_champ, lowerCase = nom_champ;
     std::transform(nom_champ.begin(), nom_champ.end(), upperCase.begin(), ::toupper);
