@@ -1676,7 +1676,8 @@ mv $TRUST_ROOT/$version_arch $GRAVAGE/.
 ls $GRAVAGE/$version_arch
 cd $TRUST_ROOT
 mv externalpackages.tar externalpackages-next.tar
-cp_ftp externalpackages-next.tar $PUBLIC/../externalpackages/
+# Copy externalpackages-next.tar to ftp only if current branch is Livraison
+[ "`git rev-parse --abbrev-ref HEAD`" = "Livraison" ] && cp_ftp externalpackages-next.tar $PUBLIC/../externalpackages/
 rm -f TRUST.tar.gz externalpackages-next.tar
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #
@@ -1687,6 +1688,10 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 ####################
 echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
+if [ "`git rev-parse --abbrev-ref HEAD`" != "Livraison" ]
+then
+   echo "Warning: tested TRUST branch is `git rev-parse --abbrev-ref HEAD`" >> $MESSAGES_NUIT
+fi
 if [ -f $TRUST_ROOT/RELEASE_NOTES ]
 then
    echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
