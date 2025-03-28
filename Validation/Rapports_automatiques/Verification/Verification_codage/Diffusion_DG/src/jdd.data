@@ -31,6 +31,7 @@ Option_PolyMAC { use_osqp }
 Option_DG 
 {
 	order 2
+	gram_schmidt 1
 }
 
 Schema_euler_implicite sch
@@ -41,23 +42,6 @@ Read sch
     facsec 1e8
     seuil_statio 1e-8
     solveur implicite { solveur petsc cholesky { } }
-    # solveur implicite
-    {
-        solveur petsc cli
-        {
-            -pc_type hypre
-            -pc_hypre_type boomeramg
-            -pc_hypre_boomeramg_strong_threshold 0.8
-            -pc_hypre_boomeramg_agg_nl 4
-            -pc_hypre_boomeramg_agg_num_paths 5
-            -pc_hypre_boomeramg_max_levels 25
-            -pc_hypre_boomeramg_coarsen_type PMIS
-            -pc_hypre_boomeramg_interp_type ext+i
-            -pc_hypre_boomeramg_P_max 2
-            -pc_hypre_boomeramg_truncfactor 0.5
-            -ksp_type fgmres
-        }
-    } #
 }
 
 Associate pb dom

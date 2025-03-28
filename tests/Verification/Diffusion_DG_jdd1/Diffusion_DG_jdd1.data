@@ -1,20 +1,36 @@
 # Conduction 2D : Diverses conditions limites thermiques #
-# PARALLEL OK 8 #
+# PARALLEL OK 4 #
 dimension 2
 
 Pb_conduction pb
 Domaine dom
 Lire_MED {
 	domaine dom
-	file /volatile/catA/gj277443/TRUST/DG/Validation/Rapports_automatiques/Verification/Verification_codage/Diffusion_DG/src/Quadrangle.med # Make it generic # 
+	file Quadrangle.med 
 	convertAllToPoly
 }  
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partitionneur Metis { Nb_parts 4 }
+    Larg_joint 1
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
 
 DG dis
 
 Option_DG 
 {
 	order 1
+	gram_schmidt 1
 }
 
 
@@ -59,7 +75,7 @@ Read pb
     {
         diffusion { }
         initial_conditions {
-            temperature Champ_Fonc_xyz dom 1 0.*sin(2*pi*x)*sin(2*pi*y)
+            temperature Champ_Fonc_xyz dom 1 1.
         }
          sources {
         Puissance_thermique champ_fonc_xyz dom 1 0.08*pi*pi*sin(2.*pi*x)*sin(2.*pi*y)
