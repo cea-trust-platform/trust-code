@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ public :
   static int Nb_col_from_order(const int order);
 
   static int DEFAULT_ORDER;
+  static int GRAM_SCHMIDT;
   static std::map<std::string, int> ORDER_OVERRIDE;
   static int QUAD_ORDER;
 };

@@ -261,6 +261,7 @@
 |Gen
 |Generic
 |Gmres
+|Gram_schmidt
 |H_ext
 |Hlsat
 |Hvsat

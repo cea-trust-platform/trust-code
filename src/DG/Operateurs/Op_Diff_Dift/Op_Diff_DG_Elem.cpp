@@ -198,7 +198,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
 
   const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
   const DoubleTab& eta_F = ch.get_eta_facet();  // Compute the penalisation coefficient
-  const Quadrature_base& quad = domaine.get_quadrature(); //TODO a trouver avec Option_DG
+  const Quadrature_base& quad = domaine.get_quadrature();
   const IntTab& indices_glob_elem = ch.indices_glob_elem();
   int nb_pts_integ_max = quad.nb_pts_integ_max();
   double coeff;
@@ -275,7 +275,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
             for (int j=0; j<nb_bfunc; j++)
               {
                 for (int k = 0; k < nb_pts_int_fac ; k++)
-                  product(k) = fbase0(i,k) * fbase0(j,k);
+                  product(k) = fbase0(i,k) * fbase0(j,k); //TODO DG kronecker ?
 
                 coeff = nu * eta_F(f)* invh_T* quad.compute_integral_on_facet(f, product);
                 if (mat)
@@ -418,7 +418,7 @@ void Op_Diff_DG_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, cons
               for (int j=0; j<nb_bfunc; j++)
                 {
                   for (int k = 0; k < nb_pts_int_fac ; k++)
-                    product(k) = fbase0(i, k) * fbase0(j, k);
+                    product(k) = fbase0(i, k) * fbase0(j, k); //TODO DG kronecker ?
 
                   coeff = nu*eta_F(f) * invh_T * quad.compute_integral_on_facet(f, product);
                   if (mat)

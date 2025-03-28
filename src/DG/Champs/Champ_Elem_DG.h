@@ -50,7 +50,7 @@ public:
 
 
   inline const Matrice_Morse& get_mass_matrix() const { return mass_matrix_; }
-  inline const Matrice_Morse& get_inv_mass_matrix() const { return inv_mass_matrix_; }
+//  inline const Matrice_Morse& get_inv_mass_matrix() const { return inv_mass_matrix_; }
 
   inline const DoubleTab& get_eta_elem() const { return eta_elem; }
   inline const DoubleTab& get_eta_facet() const { return eta_facet; }
@@ -63,24 +63,32 @@ public:
   DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
   DoubleTab& eval_elem(DoubleTab& valeurs) const override;
 
-
-  void compute_stab_param();
 protected:
   /*! Compute the mass matrix
    */
   void allocate_mass_matrix();
+  void allocate_transition_matrix();
+  void compute_stab_param();
+
   void build_mass_matrix();
+  void build_transition_matrix();
+  void orthonormalize(const int& nelem, DoubleTab& fbasis) const;
 
 
-  void build_inv_mass_matrix();
+  void gramSchmidt(DoubleTab& fbase, const Quadrature_base& quad, const int& num_elem, const int& current_indice, const int& nb_pts_integ, const double& volume, int index);
+
+//  void build_inv_mass_matrix();
 
   int order_ = -1;
   int nb_bfunc_ = -1;
 
+  bool is_orthonormalized_ = false;
+
   IntTab indices_glob_elem_;
 
   Matrice_Morse mass_matrix_;
-  Matrice_Morse inv_mass_matrix_;
+//  Matrice_Morse inv_mass_matrix_;
+  Matrice_Morse transition_matrix_;
 
   DoubleTab eta_elem;
   DoubleTab eta_facet;

@@ -55,6 +55,7 @@ public :
 
   void calculer_h_carre() override;
 
+  inline const bool& gram_schmidt() const { return gram_schmidt_;}
 
 protected:
 
@@ -66,6 +67,7 @@ protected:
   DoubleTab sig_;
   IntTab nfaces_elem_;
   int order_quad_=-1;
+  bool gram_schmidt_;
 // DoubleVect h_, sigma;
 
   IntTab stencil_sorted_; //table of stencil sorted for each elements

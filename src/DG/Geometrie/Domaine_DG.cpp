@@ -52,6 +52,9 @@ void Domaine_DG::discretiser()
 {
   Domaine_Poly_base::discretiser();
   build_nfaces_elem_();
+
+  gram_schmidt_ = Option_DG::GRAM_SCHMIDT;
+
   compute_mesh_param();
   calculer_h_carre();
   Quadrature_base* quad1 = new Quadrature_Ord1_Polygone(*this);

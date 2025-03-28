@@ -58,7 +58,33 @@ void Champ_Elem_DG::allocate_mass_matrix()
 
   tableau_trier_retirer_doublons(indice);
   Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, mass_matrix_);
-  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, inv_mass_matrix_);
+//  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, inv_mass_matrix_);
+}
+
+void Champ_Elem_DG::allocate_transition_matrix()
+{
+  assert(Objet_U::dimension == 2); // no triangle in 3D!
+
+  int nb_elem_tot = le_dom_VF->nb_elem_tot();
+
+  IntTab indice(0, 2);
+
+  int current_indice = 0;
+  indices_glob_elem_.resize(nb_elem_tot+1);
+  indices_glob_elem_(0)=0;
+  for (int e = 0; e < nb_elem_tot; e++)
+    {
+      for (int i = 0; i < nb_bfunc_; i++ )
+        for (int j = 0; j < i+1; j++ )
+          indice.append_line( current_indice+i, current_indice+j);
+      indices_glob_elem_(e+1) = indices_glob_elem_(e) +  nb_bfunc_;
+      current_indice+=nb_bfunc_;
+    }
+
+  int size_inc = indices_glob_elem_(nb_elem_tot);
+
+  tableau_trier_retirer_doublons(indice);
+  Matrix_tools::allocate_morse_matrix(size_inc, size_inc, indice, transition_matrix_);
 }
 
 /*! @brief Fill up the mass matrix after computing its coefficients
@@ -110,6 +136,107 @@ void Champ_Elem_DG::build_mass_matrix()
     }
 }
 
+void Champ_Elem_DG::build_transition_matrix()
+{
+  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+
+//  const Elem_geom_base& elem_geom = domaine.domaine().type_elem().valeur();
+//  bool is_simplexe = strcmp(elem_geom.que_suis_je(), "Triangle") || strcmp(elem_geom.que_suis_je(), "Tetraedre");
+//  if (!is_simplexe) throw; //TODO for polyhedron
+
+  const DoubleVect& ve = domaine.volumes();
+
+  int current_indice = 0;
+  const Quadrature_base& quad = domaine.get_quadrature();
+  const IntTab& tab_pts_integ= quad.get_tab_nb_pts_integ();
+  int nb_pts_integ_max = quad.nb_pts_integ_max();
+  DoubleTab fbase(nb_bfunc_, nb_pts_integ_max);
+
+  for (int e = 0; e < le_dom_VF->nb_elem_tot(); e++)
+    {
+      int nb_pts_integ = tab_pts_integ(e);
+
+      eval_bfunc(quad, e, fbase);
+      if (domaine.gram_schmidt()) gramSchmidt(fbase, quad, e, current_indice, nb_pts_integ, ve(e), 0);
+
+      current_indice+=nb_bfunc_;
+    }
+
+  if (domaine.gram_schmidt()) is_orthonormalized_ = true;
+
+  // test new basis
+//  allocate_mass_matrix();
+//
+//  int nb_pts_integ_max = quad.nb_pts_integ_max();
+//  DoubleTab product(nb_pts_integ_max);
+//  DoubleTab fbase_test(nb_bfunc_,nb_pts_integ_max);
+//  Matrice_Morse test;
+//  current_indice = 0;
+//
+//  for (int e = 0; e < le_dom_VF->nb_elem_tot(); e++)
+//    {
+//      eval_bfunc(quad, e, fbase_test);
+//
+//      for (int i=0; i<nb_bfunc_; i++)
+//        for (int j=0; j<nb_bfunc_; j++)
+//          {
+//            product = 0.;
+//            for (int k = 0; k < tab_pts_integ(e) ; k++)
+//              product(k) = fbase_test(i, k) * fbase_test(j, k);
+//
+//            mass_matrix_(current_indice+i, current_indice+j) = quad.compute_integral_on_elem(e, product);
+//          }
+//      mass_matrix_.construire_sous_bloc(current_indice, current_indice, current_indice+nb_bfunc_-1, current_indice+nb_bfunc_-1, test);
+//      Cout << test << finl;
+//
+//      current_indice+=nb_bfunc_;
+//
+//    }
+
+}
+
+// Recursive Gram-Schmidt orthogonalization function with transition matrix
+void Champ_Elem_DG::gramSchmidt(DoubleTab& fbase, const Quadrature_base& quad, const int& num_elem, const int& current_indice, const int& nb_pts_integ, const double& volume, int index)
+{
+  if (index >= nb_bfunc_) return;
+
+  DoubleTab product(nb_pts_integ);
+  transition_matrix_(current_indice+index, current_indice+index) = 1.;
+
+  for (int j = 0; j < index; ++j)
+    {
+      for (int k = 0; k < nb_pts_integ ; k++)
+        product(k) = fbase(index, k) * fbase(j, k);
+
+      double numerateur = quad.compute_integral_on_elem(num_elem, product);
+
+      for (int k = 0; k < nb_pts_integ ; k++)
+        product(k) = fbase(j, k) * fbase(j, k);
+
+      double denominateur = quad.compute_integral_on_elem(num_elem, product);
+
+      double projection = numerateur / denominateur;
+
+      for (int k = 0; k < nb_pts_integ ; k++)
+        fbase(index,k) -= projection * fbase(j,k);
+
+      for (int l = 0; l < j+1; l++)
+        transition_matrix_(current_indice+index, current_indice+l) -= projection*transition_matrix_(current_indice+j, current_indice+l);
+    }
+
+  // Normalize the basis
+  for (int k = 0; k < nb_pts_integ ; k++)
+    product(k) = fbase(index, k) * fbase(index, k);
+  double norm = quad.compute_integral_on_elem(num_elem, product)/volume;
+  for (int j = 0; j < index+1 ; j++)
+    transition_matrix_(current_indice+index, current_indice+j) /= sqrt(norm);
+  for (int k = 0; k < nb_pts_integ ; k++)
+    fbase(index, k) /= sqrt(norm);
+
+  // Recursive for the next index
+  gramSchmidt(fbase, quad, num_elem, current_indice, nb_pts_integ, volume, index + 1);
+}
+
 /*! @brief Compute the mass matrix of cell nelem
  *
  * @param quad quadature used to compute mass matrix
@@ -142,45 +269,45 @@ const Matrice_Dense  Champ_Elem_DG::build_local_mass_matrix(const Quadrature_bas
 /*! @brief construct inverse of global mass matrix, Unused now, cleaning used
  *
  */
-void Champ_Elem_DG::build_inv_mass_matrix()
-{
-  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
-
-  const DoubleVect& ve = domaine.volumes();
-
-  const Elem_geom_base& elem_geom = domaine.domaine().type_elem().valeur();
-
-  bool is_simplexe = strcmp(elem_geom.que_suis_je(), "Triangle") || strcmp(elem_geom.que_suis_je(), "Tetraedre");
-  if (!is_simplexe) throw; //TODO for polyhedron
-
-  int current_indice = 0;
-
-  for (int e = 0; e < le_dom_VF->nb_elem_tot(); e++)
-    {
-      double invV = 1/ve(e);
-
-      inv_mass_matrix_(current_indice, current_indice) = invV;
-
-      if (order_ == 0) continue;
-
-      inv_mass_matrix_(current_indice, current_indice+1) = 0.;
-      inv_mass_matrix_(current_indice, current_indice+2) = 0.;
-
-      double sumx2 = mass_matrix_(current_indice+1, current_indice+1);
-      double sumy2 = mass_matrix_(current_indice+2, current_indice+2);
-      double sumxy = mass_matrix_(current_indice+1, current_indice+2);
-
-      double inv_det = 1./(sumy2*sumx2 - sumxy*sumxy);
-
-      inv_mass_matrix_(current_indice+1, current_indice+1) = sumy2*inv_det;
-      inv_mass_matrix_(current_indice+2, current_indice+2) = sumx2*inv_det;
-
-      inv_mass_matrix_(current_indice+1, current_indice+2) = -sumxy*inv_det;
-      inv_mass_matrix_(current_indice+2, current_indice+1) = -sumxy*inv_det;
-
-      current_indice+=nb_bfunc_;
-    }
-}
+//void Champ_Elem_DG::build_inv_mass_matrix()
+//{
+//  const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+//
+//  const DoubleVect& ve = domaine.volumes();
+//
+//  const Elem_geom_base& elem_geom = domaine.domaine().type_elem().valeur();
+//
+//  bool is_simplexe = strcmp(elem_geom.que_suis_je(), "Triangle") || strcmp(elem_geom.que_suis_je(), "Tetraedre");
+//  if (!is_simplexe) throw; //TODO for polyhedron
+//
+//  int current_indice = 0;
+//
+//  for (int e = 0; e < le_dom_VF->nb_elem_tot(); e++)
+//    {
+//      double invV = 1/ve(e);
+//
+//      inv_mass_matrix_(current_indice, current_indice) = invV;
+//
+//      if (order_ == 0) continue;
+//
+//      inv_mass_matrix_(current_indice, current_indice+1) = 0.;
+//      inv_mass_matrix_(current_indice, current_indice+2) = 0.;
+//
+//      double sumx2 = mass_matrix_(current_indice+1, current_indice+1);
+//      double sumy2 = mass_matrix_(current_indice+2, current_indice+2);
+//      double sumxy = mass_matrix_(current_indice+1, current_indice+2);
+//
+//      double inv_det = 1./(sumy2*sumx2 - sumxy*sumxy);
+//
+//      inv_mass_matrix_(current_indice+1, current_indice+1) = sumy2*inv_det;
+//      inv_mass_matrix_(current_indice+2, current_indice+2) = sumx2*inv_det;
+//
+//      inv_mass_matrix_(current_indice+1, current_indice+2) = -sumxy*inv_det;
+//      inv_mass_matrix_(current_indice+2, current_indice+1) = -sumxy*inv_det;
+//
+//      current_indice+=nb_bfunc_;
+//    }
+//}
 
 int Champ_Elem_DG::imprime(Sortie& os, int ncomp) const
 {
@@ -223,9 +350,20 @@ void Champ_Elem_DG::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
   domaine.set_default_order(2*(order_==1)+5*(order_==2));
   nb_bfunc_ = Option_DG::Nb_col_from_order(order_);
 
-  allocate_mass_matrix();
-  build_mass_matrix();
-  build_inv_mass_matrix();
+  if (domaine.gram_schmidt())
+    {
+      allocate_transition_matrix();
+      build_transition_matrix();
+    }
+  else
+    {
+      allocate_mass_matrix();
+      build_mass_matrix();
+      //      build_inv_mass_matrix();
+    }
+
+  // computation of the stabilization parameters
+  compute_stab_param();
 
 }
 
@@ -263,6 +401,41 @@ void Champ_Elem_DG::eval_bfunc(const Quadrature_base& quad, const int& nelem, Do
     throw; //TODO
   else
     Process::exit();
+
+  if (is_orthonormalized_)
+    orthonormalize(nelem, fbasis);
+}
+
+void Champ_Elem_DG::orthonormalize(const int& nelem, DoubleTab& fbasis) const
+{
+  int current_indice = indices_glob_elem_(nelem);
+  const int nb_pts_integ= fbasis.dimension(1);
+
+  double multvect;
+
+  for (int i=nb_bfunc_-1; i>=0; i--) // reverse to take advantage of the triangular matrix
+    {
+      for (int k = 0; k < nb_pts_integ ; k++)
+        {
+          if (fbasis.nb_dim() == 2)
+            {
+              multvect = 0.;
+              for (int j=0; j<i+1; j++)
+                multvect += transition_matrix_(current_indice+i,current_indice+j)*fbasis(j,k);
+              fbasis(i,k) = multvect;
+            }
+          else if (fbasis.nb_dim() == 3) // grad cases
+            {
+              for (int l = 0; l < Objet_U::dimension ; l++)
+                {
+                  multvect = 0.;
+                  for (int j=0; j<i+1; j++)
+                    multvect += transition_matrix_(current_indice+i,current_indice+j)*fbasis(j,k,l);
+                  fbasis(i,k,l) = multvect;
+                }
+            }
+        }
+    }
 }
 
 void Champ_Elem_DG::eval_bfunc(const DoubleTab& coords, const int& nelem, DoubleTab& fbasis) const
@@ -302,6 +475,9 @@ void Champ_Elem_DG::eval_bfunc(const DoubleTab& coords, const int& nelem, Double
     throw; //TODO
   else
     Process::exit();
+
+  if (is_orthonormalized_)
+    orthonormalize(nelem, fbasis);
 }
 
 void Champ_Elem_DG::eval_grad_bfunc(const Quadrature_base& quad, const int& nelem, DoubleTab& grad_fbasis) const
@@ -323,16 +499,16 @@ void Champ_Elem_DG::eval_grad_bfunc(const Quadrature_base& quad, const int& nele
         {
 
           grad_fbasis(1, pt, 0) = invh;
-//          grad_fbasis(1, pt, 1) = 0;
-//          grad_fbasis(2, pt, 0) = 0;
+          grad_fbasis(1, pt, 1) = 0.;
+          grad_fbasis(2, pt, 0) = 0.;
           grad_fbasis(2, pt, 1) = invh;
 
           if (order_ == 1) continue;
           grad_fbasis(3, pt, 0) = invh*(integ_points(ind_elem+pt, 1) - xp(nelem,1))*invh;
           grad_fbasis(3, pt, 1) = invh*(integ_points(ind_elem+pt, 0) - xp(nelem,0))*invh;
           grad_fbasis(4, pt, 0) = 2*invh*(integ_points(ind_elem+pt, 0) - xp(nelem,0))*invh;
-          //grad_fbasis(4, pt, 1) = 0;
-          //grad_fbasis(5, pt, 0) = 0;
+          grad_fbasis(4, pt, 1) = 0.;
+          grad_fbasis(5, pt, 0) = 0.;
           grad_fbasis(5, pt, 1) = 2*invh*(integ_points(ind_elem+pt, 1) - xp(nelem,1))*invh;
 
           if (order_ == 2) continue;
@@ -344,6 +520,9 @@ void Champ_Elem_DG::eval_grad_bfunc(const Quadrature_base& quad, const int& nele
     throw; //TODO
   else
     Process::exit();
+
+  if (is_orthonormalized_)
+    orthonormalize(nelem, grad_fbasis);
 }
 
 
@@ -381,6 +560,9 @@ void Champ_Elem_DG::eval_bfunc_on_facets(const Quadrature_base& quad, const int&
     throw; //TODO
   else
     Process::exit();
+
+  if (is_orthonormalized_)
+    orthonormalize(nelem, fbasis);
 }
 
 void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const int& nelem, const int& num_face, DoubleTab& grad_fbasis) const
@@ -402,8 +584,8 @@ void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const
         {
 
           grad_fbasis(1, pt, 0) = invh;
-//          grad_fbasis(1, pt, 1) = 0.;
-//          grad_fbasis(2, pt, 0) = 0.;
+          grad_fbasis(1, pt, 1) = 0.;
+          grad_fbasis(2, pt, 0) = 0.;
           grad_fbasis(2, pt, 1) = invh;
 
           if (order_ == 1) continue;
@@ -411,8 +593,8 @@ void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const
           grad_fbasis(3, pt, 0) = invh*(integ_points_on_facets(num_face, pt, 1) - xp(nelem,1))*invh;  //xy
           grad_fbasis(3, pt, 1) = invh*(integ_points_on_facets(num_face, pt, 0) - xp(nelem,0))*invh;  //xy
           grad_fbasis(4, pt, 0) = 2*invh*(integ_points_on_facets(num_face, pt, 0) - xp(nelem,0))*invh;  //xx
-          //grad_fbasis(4, pt, 1) = 0;  //xy
-          //grad_fbasis(5, pt, 0) = 0;  //xy
+          grad_fbasis(4, pt, 1) = 0.;  //xy
+          grad_fbasis(5, pt, 0) = 0.;  //xy
           grad_fbasis(5, pt, 1) = 2*invh*(integ_points_on_facets(num_face, pt, 1) - xp(nelem,1))*invh;  //xy
           if (order_ == 2) continue;
           throw;
@@ -422,6 +604,9 @@ void Champ_Elem_DG::eval_grad_bfunc_on_facets(const Quadrature_base& quad, const
     throw; //TODO
   else
     Process::exit();
+
+  if (is_orthonormalized_)
+    orthonormalize(nelem, grad_fbasis);
 }
 
 
@@ -490,6 +675,7 @@ const Matrice_Dense Champ_Elem_DG::eval_invMassMatrix(const Quadrature_base& qua
 Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
 {
   const Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
+  const DoubleVect& volume = domaine.volumes();
 
   const Quadrature_base& quad = domaine.get_quadrature(); // if Uniforme remplissage automatique
   //sinon interdit d'avoir 1
@@ -522,14 +708,20 @@ Champ_base& Champ_Elem_DG::affecter_(const Champ_base& ch)
           phi_rhs(fb) = quad.compute_integral_on_elem(num_elem, product);
         }
 
-      Matrice_Dense invM = eval_invMassMatrix(quad, num_elem); //to remove and ref on global matrix
+      if (domaine.gram_schmidt())
+        {
+          for (int fb = 0; fb < nb_bfunc_; fb++)
+            valeurs()(num_elem,fb) = phi_rhs(fb)/volume(num_elem);
+        }
+      else
+        {
+          Matrice_Dense invM = eval_invMassMatrix(quad, num_elem); //to remove and ref on global matrix
+          res.ref_tab(valeurs(), num_elem, 1);
 
-      res.ref_tab(valeurs(), num_elem, 1);
-      invM.ajouter_multvect_(phi_rhs, res);
+          invM.ajouter_multvect_(phi_rhs, res);
+        }
     }
 
-  // computation of the stabilization parameters
-  compute_stab_param();
   valeurs().echange_espace_virtuel();
   return *this;
 }

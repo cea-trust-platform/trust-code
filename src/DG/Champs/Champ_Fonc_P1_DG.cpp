@@ -81,7 +81,7 @@ DoubleTab& Champ_Fonc_P1_DG::valeur_aux_elems(const DoubleTab& positions, const 
 //          value_pts.ref_tab(values,cell,1); //pb de const
 
           result(i,0) = quad.compute_integral_on_elem(cell, value_pts);
-          result(i,0) /= volume(cell); //TODO DG est ce necessaire de multiplier dans integral pour diviser deriere ?
+          result(i,0) /= volume(cell);
         }
     }
 

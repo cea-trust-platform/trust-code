@@ -28,14 +28,29 @@ Entree& Masse_DG_Elem::readOn(Entree& s) { return s; }
 
 DoubleTab& Masse_DG_Elem::appliquer_impl(DoubleTab& sm) const
 {
-  const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
+  if (le_dom_dg_->gram_schmidt())
+    {
+      const DoubleVect& volume = le_dom_dg_->volumes();
 
-  const Matrice_Base& invM = ch.get_inv_mass_matrix();
+      tab_divide_any_shape(sm, volume);
+      sm.echange_espace_virtuel();
+    }
+  else
+    {
+      const Champ_Elem_DG& ch = ref_cast(Champ_Elem_DG, equation().inconnue());
+      const Quadrature_base& quad = le_dom_dg_->get_quadrature();
+      DoubleTab res;
+      DoubleTab invSm;
+      invSm.copy(sm, RESIZE_OPTIONS::COPY_INIT);
 
-  DoubleTab invSm;
-  invSm.copy(sm, RESIZE_OPTIONS::COPY_INIT);
+      for (int num_elem = 0; num_elem < le_dom_dg_->nb_elem(); num_elem++)
+        {
+          Matrice_Dense invM = ch.eval_invMassMatrix(quad, num_elem);
+          res.ref_tab(sm, num_elem, 1);
 
-  invM.multvect(invSm, sm);
+          invM.multvect(invSm, res);
+        }
+    }
 
   return sm;
 }

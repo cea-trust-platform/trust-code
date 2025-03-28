@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,6 +21,7 @@
 
 int Option_DG::DEFAULT_ORDER = 1;
 std::map<std::string, int> Option_DG::ORDER_OVERRIDE = {};
+int Option_DG::GRAM_SCHMIDT = 1;
 
 Implemente_instanciable(Option_DG,"Option_DG",Interprete);
 // XD Option_DG interprete Option_DG 1 Class for DG options.
@@ -39,6 +40,7 @@ Entree& Option_DG::interpreter(Entree& is)
   param.ajouter("velocity_order",&vo); // XD_ADD_P int optional order for DG velocity unknown
   param.ajouter("pressure_order",&po); // XD_ADD_P int optional order for DG pressure unknown
   param.ajouter("temperature_order",&to); // XD_ADD_P int optional order for DG temperature unknown
+  param.ajouter("gram_schmidt",&GRAM_SCHMIDT); // XD_ADD_P int Gram Schmidt orthogonalization (1 by default)
   param.lire_avec_accolades_depuis(is);
 
   if (vo != -1)
