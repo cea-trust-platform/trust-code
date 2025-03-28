@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,7 +81,8 @@ public :
   ///
   void associer_domaine(const Domaine&);
   void discretiser_root(const Nom& typ);
-  virtual void discretiser() {}
+  virtual void discretiser() { }
+  virtual void build_map_mc_Cmesh(const bool with_faces) { /* Do nothing */ }
   virtual void discretiser_no_face() = 0;
   virtual void typer_discretiser_ss_domaine(int i) = 0;
   virtual void modifier_pour_Cl(const Conds_lim&) =0;

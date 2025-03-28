@@ -397,9 +397,6 @@ void Domaine_VF::discretiser()
   infobord();                        // Aires des bords
   info_elem_som();                // Nombre elements et sommets
   Cerr << "<<<<<< End of Discretization VF >>>>>>>>>>" << finl;
-
-  if (Build_Map_to_Structured::BUILD_MAP_TO_STRUCTURED)
-    build_map_mc_Cmesh();
 }
 
 void Domaine_VF::discretiser_no_face()
@@ -831,7 +828,7 @@ DoubleTab Domaine_VF::calculer_xgr() const
   return xgr;
 }
 
-void Domaine_VF::build_map_mc_Cmesh()
+void Domaine_VF::build_map_mc_Cmesh(const bool with_faces)
 {
 #ifdef MEDCOUPLING_
 
@@ -858,7 +855,10 @@ void Domaine_VF::build_map_mc_Cmesh()
   build_mc_Cmesh_nodesCorrespondence();
 
   /* Step 4. build faces correspondance */
-  build_mc_Cmesh_facesCorrespondence();
+  mc_Cmesh_with_faces_corr_ = with_faces;
+
+  if (with_faces)
+    build_mc_Cmesh_facesCorrespondence();
 
   mc_Cmesh_ready_ = true;
 

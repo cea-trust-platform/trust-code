@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Build_Map_to_Structured.h>
 #include <Discretisation_base.h>
 #include <Frontiere_dis_base.h>
 #include <Domaine_dis_base.h>
@@ -163,6 +164,9 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
     discretiser();
   else
     discretiser_no_face();
+
+  if (Build_Map_to_Structured::BUILD_MAP_TO_STRUCTURED)
+    build_map_mc_Cmesh(face_ok); /* ici pour avoir l'info sur face_normals */
 
   // Remplit les sous_domaines_dis, les type, et leur associe les domaine_dis et les sous_domaine correspondantes.
   les_sous_domaines_dis.dimensionner(dom.nb_ss_domaines());

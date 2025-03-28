@@ -234,15 +234,17 @@ protected:
    *  Si demande, on construit un maillage structure de type MEDCouplingCMesh et les maps elems/faces/noeuds qui vont avec (CART -> TRUST) !
    *
    */
-  void build_map_mc_Cmesh();
+public:
+  void build_map_mc_Cmesh(const bool with_faces) override;
 
 #ifdef MEDCOUPLING_
+private:
   MCAuto<MEDCouplingCMesh> mc_Cmesh_;
   std::vector<int> mc_Cmesh_elemCorrespondence_, mc_Cmesh_nodesCorrespondence_;
   std::vector<int> mc_Cmesh_facesXCorrespondence_, mc_Cmesh_facesYCorrespondence_, mc_Cmesh_facesZCorrespondence_;
   std::vector<double> mc_Cmesh_x_coords_, mc_Cmesh_y_coords_, mc_Cmesh_z_coords_;
 
-  bool mc_Cmesh_ready_ = false;
+  bool mc_Cmesh_ready_ = false, mc_Cmesh_with_faces_corr_ = false;
 
   void build_mc_Cmesh();
   void build_mc_Cmesh_elemCorrespondence();
@@ -257,11 +259,8 @@ protected:
     throw;
   }
 
-#endif
-
 public:
 
-#ifdef MEDCOUPLING_
   inline const MEDCouplingCMesh* get_mc_CMesh() const
   {
     if (mc_Cmesh_ready_) return mc_Cmesh_;
@@ -276,19 +275,19 @@ public:
 
   const std::vector<int>& get_mc_Cmesh_facesXCorrespondence() const
   {
-    if (mc_Cmesh_ready_) return mc_Cmesh_facesXCorrespondence_;
+    if (mc_Cmesh_ready_ && mc_Cmesh_with_faces_corr_) return mc_Cmesh_facesXCorrespondence_;
     else return Cmesh_error<std::vector<int>&>(__func__);
   }
 
   const std::vector<int>& get_mc_Cmesh_facesYCorrespondence() const
   {
-    if (mc_Cmesh_ready_) return mc_Cmesh_facesYCorrespondence_;
+    if (mc_Cmesh_ready_ && mc_Cmesh_with_faces_corr_) return mc_Cmesh_facesYCorrespondence_;
     else return Cmesh_error<std::vector<int>&>(__func__);
   }
 
   const std::vector<int>& get_mc_Cmesh_facesZCorrespondence() const
   {
-    if (mc_Cmesh_ready_) return mc_Cmesh_facesZCorrespondence_;
+    if (mc_Cmesh_ready_ && mc_Cmesh_with_faces_corr_) return mc_Cmesh_facesZCorrespondence_;
     else return Cmesh_error<std::vector<int>&>(__func__);
   }
 
