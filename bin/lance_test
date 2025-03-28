@@ -1093,6 +1093,13 @@ then
           liste_skipped=$liste_skipped" $i"
           i=""
        fi
+       # Discard test case with PDI if LIBPDI disabled:
+       if [ "$TRUST_DISABLE_PDI" = 1 ] && [ "`grep -i pdi $REP/* 2>/dev/null`" != "" ]
+       then
+          echo "Test $i skipped (TRUST is not built with PDI support)"
+          liste_skipped=$liste_skipped" $i"
+          i=""
+       fi
        # Discard ICoCo test cases if ICoCo baltik is not built with TRUST
        exec_name=`basename $exec_debug`  # ND: I use exec_name instead of TRUST, otherwise pemfc ICoCo test cases not run
        ICoCo_exec=$TRUST_ROOT/Outils/ICoCo/ICoCo_src/`basename $exec` && ICoCo_exec=`echo $ICoCo_exec | sed "1,$ s?$exec_name?ICoCo?g"`

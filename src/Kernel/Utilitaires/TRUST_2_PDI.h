@@ -16,8 +16,6 @@
 #ifndef TRUST_2_PDI_included
 #define TRUST_2_PDI_included
 
-#include <pdi.h>
-#include <paraconf.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -25,6 +23,11 @@
 #include <TRUSTTab.h>
 #include <Comm_Group_MPI.h>
 #include <PE_Groups.h>
+#include <pdi++.h>
+#ifdef HAS_PDI
+#include <pdi.h>
+#include <paraconf.h>
+#endif
 
 /*! @brief classe TRUST_2_PDI Encapsulation of PDI methods (library used for IO operations). See the website pdi.dev for more info
  *
@@ -65,6 +68,7 @@ public:
         Process::exit();
       }
 
+#ifdef HAS_PDI
     // PDI initialization, done thanks to the specification tree contained in the yaml file IO_config
     PC_tree_t tconf = PC_parse_path(IO_config.c_str());
     PDI_init(PC_get(tconf, ".pdi"));
@@ -96,8 +100,8 @@ public:
                          "master", &masterComm, PDI_OUT,
                          nullptr);
       }
-#endif
-
+#endif /* MPI_ */
+#endif /* HAS_PDI */
     PDI_initialized_ = 1;
   }
 
@@ -110,8 +114,10 @@ public:
     PDI_checkpoint_ = 0;
     PDI_restart_ = 0;
 
+#ifdef HAS_PDI
     // finalize PDI
     PDI_finalize();
+#endif
   }
 
   static void set_PDI_checkpoint(int c) { PDI_checkpoint_ = c; }
@@ -124,13 +130,17 @@ public:
   // Method to use to read the data named name and retrieve it in data
   void read(const std::string& name, void *data)
   {
+#ifdef HAS_PDI
     PDI_expose(name.c_str(), data, PDI_INOUT);
+#endif
   }
 
   // Method to use to write the data named name and located in data
   void write(const std::string& name, void *data)
   {
+#ifdef HAS_PDI
     PDI_expose(name.c_str(), data, PDI_OUT);
+#endif
   }
 
   // Method to use to read all the data contained in the map data at once, with the following structure:
@@ -154,30 +164,38 @@ public:
   // This will not write or read anything unless some event is triggered!
   void TRUST_start_sharing(const std::string& name, void *data)
   {
+#ifdef HAS_PDI
     PDI_share(name.c_str(), data, PDI_OUT);
+#endif
     shared_data_.push_back(name);
   }
 
   // Method to use to trigger an event (to supervise the timing of the writes/reads)
   void trigger(const std::string& event)
   {
+#ifdef HAS_PDI
     PDI_event(event.c_str());
+#endif
   }
 
   // Method to use to stop sharing the last variable that we shared with PDI
   // (which makes it available once again)
   void stop_sharing_last_variable()
   {
+#ifdef HAS_PDI
     PDI_reclaim(shared_data_.back().c_str());
+#endif
     shared_data_.pop_back();
   }
 
   // Method to use to stop sharing all variables that we shared with PDI
   void stop_sharing()
   {
+#ifdef HAS_PDI
     // stop sharing everything starting from the end
     for(auto it = shared_data_.rbegin(); it != shared_data_.rend(); it++)
       PDI_reclaim(it->c_str());
+#endif
     shared_data_.clear();
   }
 

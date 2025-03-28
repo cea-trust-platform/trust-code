@@ -80,6 +80,11 @@ if ! [ $status -eq 0 ]; then
   exit -1
 fi
 
+# Headers for TRUST include
+include_trust=$TRUST_ROOT/include
+echo "Adding PDI header files to $include_trust !"
+echo "#define HAS_PDI" > $install_dir/include/pdi++.h
+
 # cleaning
 if [ "$debug_mode" = "0" ]; then
     rm -rf $build_dir

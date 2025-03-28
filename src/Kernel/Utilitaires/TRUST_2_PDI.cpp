@@ -22,6 +22,7 @@ std::vector<std::string> TRUST_2_PDI::shared_data_;
 
 void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)
 {
+#ifdef HAS_PDI
   // we start by sharing all the variables
   for(auto& d: data)
     {
@@ -37,6 +38,7 @@ void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::str
   // stop sharing data, starting from the last shared object
   for (auto it = data.rbegin(); it != data.rend(); ++it)
     PDI_reclaim(it->first.c_str());
+#endif
 }
 
 /*! @brief Generic method to share the dimensions of a TRUST DoubleTab with PDI
@@ -81,9 +83,8 @@ void TRUST_2_PDI::share_type(const Nom& name, const Nom& type)
   int sz = type.longueur();
 
   // here we expose the data, so that PDI can keep a copy of it without having to share it later
-  PDI_expose(size.c_str(), &sz, PDI_OUT);
-  PDI_expose(tname.c_str(), t, PDI_OUT);
-
+  write(size, &sz);
+  write(tname, t);
 }
 
 /*! @brief Generic method to read the type of a TRUST object in the HDF5 file
@@ -93,6 +94,7 @@ void TRUST_2_PDI::share_type(const Nom& name, const Nom& type)
  */
 void TRUST_2_PDI::get_type(const Nom& name, Nom& type)
 {
+#ifdef HAS_PDI
   int tmp;
   PDI_share("TYPES", &tmp, PDI_INOUT);
 
@@ -112,6 +114,7 @@ void TRUST_2_PDI::get_type(const Nom& name, Nom& type)
   PDI_reclaim(tname.c_str());
 
   PDI_reclaim("TYPES");
+#endif
 }
 
 /*! @brief Generic method to prepare the restart of a computation
@@ -126,7 +129,7 @@ void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_
   if(Process::node_master()) // if I'm the master of my node (no need for everyone to read)
     {
       int nb_proc = -1;
-      PDI_expose("nb_proc", &nb_proc, PDI_INOUT);
+      read("nb_proc", &nb_proc);
       if(nb_proc != Process::nproc())
         {
           Cerr << "TRUST_2_PDI::prepareRestart():: PDI Restart Error ! The backup file has been generated with " << nb_proc << " processors, whereas the current computation is launched with "
@@ -137,9 +140,9 @@ void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_
 
   // Get time scheme information
   int nb_sauv = -1;
-  PDI_expose("iter", &nb_sauv, PDI_INOUT);
+  read("iter", &nb_sauv);
   std::vector<double> temps(nb_sauv+1);
-  PDI_expose("temps_sauvegardes", temps.data(), PDI_INOUT);
+  read("temps_sauvegardes", temps.data());
 
   // Restart from the last time
   if (resume_last_time)
@@ -166,7 +169,7 @@ void TRUST_2_PDI::prepareRestart(int& last_iteration, double& tinit, int resume_
     }
 
   // letting PDI know which iteration/time to read during restart
-  PDI_expose("iter", &last_iteration, PDI_OUT);
-  PDI_expose("temps", &tinit, PDI_OUT);
+  write("iter", &last_iteration);
+  write("temps", &tinit);
 }
 

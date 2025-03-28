@@ -2619,6 +2619,7 @@ $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataFilter.h
 $MPI_INCLUDE/mpi.h
 $TRUST_ROOT/lib/src/LIBVC/include/Vc/Vc
 $TRUST_ROOT/lib/src/LIBCGNS/include/cgns++.h
+$TRUST_ROOT/lib/src/LIBPDI/include/pdi++.h
 "
 for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx _custom
 do

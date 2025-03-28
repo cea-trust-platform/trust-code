@@ -334,6 +334,7 @@ echo "   -disable-tcl_tk                   Disable Tcl/Tk detection/installation
 echo "   -disable-gmsh                     Disable Gmsh installation and build."
 echo "   -disable-trustify                 Do not build the trustify documentation tool."
 echo "   -disable-plot2d                   Disable PLOT2D installation and build."
+echo "   -disable-pdi                      Disable the build/link of the PDI library."
 echo "   -disable-checks                   Disable checks for external packages, sources, disk space and speed."
 echo "   -disable-check_sources            Disable check sources before compiling."
 echo " "
@@ -378,7 +379,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-trustify -disable-gtest $*
+  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-cgns -disable-metis -disable-pdi -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 -disable-trustify -disable-gtest $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]
@@ -403,6 +404,7 @@ export TRUST_DISABLE_MPIIO=0
 export TRUST_DISABLE_CGNS=0
 export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
+export TRUST_DISABLE_PDI=0
 
 ####
 # 64 bit, new mode, is now 'on' by default!
@@ -829,6 +831,7 @@ echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_
 echo "TRUST_ENABLE_MC_DEBUG=$TRUST_ENABLE_MC_DEBUG && export TRUST_ENABLE_MC_DEBUG # Disable/enable MEDCoupling debug" >> $var
 echo "TRUST_ENABLE_KOKKOS_DEBUG=$TRUST_ENABLE_KOKKOS_DEBUG && export TRUST_ENABLE_KOKKOS_DEBUG # Disable/enable Kokkos debug" >> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
+echo "TRUST_DISABLE_PDI=$TRUST_DISABLE_PDI && export TRUST_DISABLE_PDI  # Disable/enable PDI library."   >> $var
 echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
 echo "TRUST_INT64_NEW=$TRUST_INT64_NEW && export TRUST_INT64_NEW  # Build in 64 bits integer indices. New method." >> $var
 echo "TRUST_DISABLE_MPI4PY=$TRUST_DISABLE_MPI4PY && export TRUST_DISABLE_MPI4PY  # disable mpi4py build." >> $var
