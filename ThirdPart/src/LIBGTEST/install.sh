@@ -46,4 +46,7 @@ cmake "$src_dir" $OPTIONS -DCMAKE_INSTALL_PREFIX="$install_dir" -DCMAKE_BUILD_TY
 $TRUST_MAKE || exit 1
 make install || exit 1
 
+# clean build folders
+rm -rf $build_dir $build_root/$src_dir_rel
+
 echo "gtest - All done!"

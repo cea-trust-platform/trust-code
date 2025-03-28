@@ -94,7 +94,7 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   make install || exit -1
 
   # Clean build folder
-  if [ "$debug_mode" != "0" ]; then
+  if [ "$debug_mode" = "0" ]; then
     ( cd .. ; rm -rf hdf5* )
   fi
 else  

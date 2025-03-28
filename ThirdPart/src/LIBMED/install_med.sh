@@ -125,7 +125,7 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   cd ..
 
   # Clean build folder
-  if [ "$debug_mode" != "0" ]; then
+  if [ "$debug_mode" = "0" ]; then
     (cd .. ; rm -rf med*)
   fi
 
