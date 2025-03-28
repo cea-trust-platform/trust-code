@@ -880,18 +880,24 @@ void Domaine_VF::build_mc_Cmesh()
   Cerr << "Domaine_VF::build_mc_Cmesh() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh(); // will be built
   const auto& coords = u_mesh->getCoords();
-  const int nb_soms = coords->getNumberOfTuples();
-  const int nb_elems = u_mesh->getNumberOfCells();
+  trustIdType nb_soms_tmp = coords->getNumberOfTuples(), nb_elems_tmp = u_mesh->getNumberOfCells();
+
+  if (nb_soms_tmp >= std::numeric_limits<int>::max() || nb_elems_tmp >= std::numeric_limits<int>::max())
+    Process::exit("Error in Domaine_VF::build_mc_Cmesh !! Domaine is too big and does not fit into 32bits !!");
+
+  const int nb_soms = static_cast<int>(nb_soms_tmp);
+  const int nb_elems = static_cast<int>(nb_elems_tmp);
   const int mesh_dim = u_mesh->getMeshDimension();
 
   Cerr << "Domaine_VF: Creating a MEDCouplingCMesh object for the domaine_VF '" << que_suis_je() << "' & the domaine '" << domaine().le_nom() << "' ..." << finl;
   mc_Cmesh_ = MEDCouplingCMesh::New("TRUST_CMesh");
 
+  std::vector<double> pt(mesh_dim);
+
   // Extraire et trier les coords uniques !!
   for (int i = 0; i < nb_soms; ++i)
     {
-      double pt[mesh_dim];
-      coords->getTuple(i, pt);
+      coords->getTuple(i, pt.data());
       mc_Cmesh_x_coords_.push_back(pt[0]);
       mc_Cmesh_y_coords_.push_back(pt[1]);
 
@@ -965,7 +971,7 @@ static int findCartIndex(const std::vector<double>& vect, const double value)
   if (it == vect.end())
     return -1; // pas dedans
 
-  int index = std::distance(vect.begin(), it);
+  int index = static_cast<int>(std::distance(vect.begin(), it));
 
   if (index > 0 && value < vect[index])
     index--; // juste avant !!
@@ -979,7 +985,7 @@ void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
   Cerr << "Domaine_VF::build_mc_Cmesh_elemCorrespondence() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh();
   const auto& centers = u_mesh->computeCellCenterOfMass();
-  const int nb_elems = u_mesh->getNumberOfCells();
+  const int nb_elems = static_cast<int>(u_mesh->getNumberOfCells());
   const int mesh_dim = u_mesh->getMeshDimension();
   const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
 
@@ -993,10 +999,11 @@ void Domaine_VF::build_mc_Cmesh_elemCorrespondence()
   cell_idx_arr->alloc(nb_elems,1);
   double * ptr_cell_idx_arr(cell_idx_arr->rwBegin());
 
+  std::vector<double> center(mesh_dim);
+
   for (int elem = 0; elem < nb_elems; ++elem)
     {
-      double center[mesh_dim]; // get center of mass per elem
-      centers->getTuple(elem, center);
+      centers->getTuple(elem, center.data()); // get center of mass per elem
 
       int i = findCartIndex(mc_Cmesh_x_coords_, center[0]);
       int j = findCartIndex(mc_Cmesh_y_coords_, center[1]);
@@ -1043,7 +1050,7 @@ void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
   domaine().build_mc_face_mesh(*this);
   const auto& u_mesh_faces = domaine().get_mc_face_mesh();
   const auto& centers = u_mesh_faces->computeCellCenterOfMass();
-  const int nbfaces = centers->getNumberOfTuples();
+  const int nbfaces = static_cast<int>(centers->getNumberOfTuples());
   const int mesh_dim = u_mesh_faces->getMeshDimension() + 1 /* car descending conn !! */;
 
   const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size(), nz = (int)mc_Cmesh_z_coords_.size();
@@ -1074,12 +1081,13 @@ void Domaine_VF::build_mc_Cmesh_facesCorrespondence()
   mc_Cmesh_facesYCorrespondence_.resize(nb_faces_y, -1);
   if (mesh_dim > 2) mc_Cmesh_facesZCorrespondence_.resize(nb_faces_z, -1);
 
+  std::vector<double> center(mesh_dim);
+
   for (int f = 0; f < nbfaces; ++f)
     {
       const int ori = orientation(f); // normal
 
-      double center[mesh_dim]; // get center of mass per elem
-      centers->getTuple(f, center);
+      centers->getTuple(f, center.data()); // get center of mass per elem
 
       if (ori == 0) // fill mc_Cmesh_facesXCorrespondence_
         {
@@ -1220,16 +1228,16 @@ void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
   Cerr << "Domaine_VF::build_mc_Cmesh_nodesCorrespondence() ... " << finl;
   const auto& u_mesh = domaine().get_mc_mesh();
   const auto& coords = u_mesh->getCoords();
-  const int nb_soms = u_mesh->getNumberOfNodes();
+  const int nb_soms = static_cast<int>(u_mesh->getNumberOfNodes());
   const int mesh_dim = u_mesh->getMeshDimension();
   const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
 
   mc_Cmesh_nodesCorrespondence_.resize(nb_soms, -1);
+  std::vector<double> coord(mesh_dim);
 
   for (int node = 0; node < nb_soms; ++node)
     {
-      double coord[mesh_dim]; // Get node coordinates
-      coords->getTuple(node, coord);
+      coords->getTuple(node, coord.data()); // Get node coordinates
 
       int i = findCartIndex(mc_Cmesh_x_coords_, coord[0]);
       int j = findCartIndex(mc_Cmesh_y_coords_, coord[1]);
