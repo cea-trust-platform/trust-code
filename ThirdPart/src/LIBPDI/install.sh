@@ -61,6 +61,8 @@ fi
 # configuration (we use the hdf5 of TRUST)
 options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_DECL_NETCDF_PLUGIN=OFF -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF -DUSE_yaml=EMBEDDED"
 
+[ "$TRUST_DISABLE_MPI" = 1 ] &&  options="$options -DBUILD_MPI_PLUGIN=OFF -DBUILD_HDF5_PARALLEL=OFF"
+
 if [ "$debug_mode" != "0" ]; then
    options="$options -DCMAKE_BUILD_TYPE=Debug"
 fi
@@ -79,7 +81,7 @@ if ! [ $status -eq 0 ]; then
 fi
 
 # cleaning
-if [ "$debug_mode" != "0" ]; then
+if [ "$debug_mode" = "0" ]; then
     rm -rf $build_dir
 fi
 
