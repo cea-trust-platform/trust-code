@@ -37,9 +37,6 @@ public :
   inline const IntTab& get_nfaces_elem() const { return nfaces_elem_; }
   inline const TRUST_Deriv<Elem_poly_base> get_type_elem() const { return type_elem_; }
 
-
-  inline void set_quadrature(int order, const Quadrature_base* quad);
-
   inline const Quadrature_base& get_quadrature(int order) const;
   inline const Quadrature_base& get_quadrature() const;
 
@@ -59,7 +56,10 @@ public :
 
 protected:
 
-  std::map<int, const Quadrature_base*> quad_map_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
+  std::shared_ptr<Quadrature_base> quad1_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
+  std::shared_ptr<Quadrature_base> quad3_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
+  std::shared_ptr<Quadrature_base> quad5_;   // Key: quadrature order, value: DoubleTab representing the quadrature barycenters for that order
+
   DoubleTab dia_;
   DoubleTab invdia_;
   DoubleTab per_;
@@ -76,20 +76,29 @@ protected:
   bool build_nfaces_elem_();
 };
 
-void Domaine_DG::set_quadrature(int order, const Quadrature_base* quad)
-{
-  assert(quad_map_.count(order) == 0); // fail if a quadrature is already registered for this order
-  quad_map_[order] = quad;
-}
-
 const Quadrature_base& Domaine_DG::get_quadrature(int order) const
 {
-  return *quad_map_.at(order);
+  switch(order)
+    {
+    case 1:
+      return *quad1_;
+    case 3:
+      return *quad3_;
+    case 5:
+      return *quad5_;
+    default:
+      {
+        Cerr << "not implemented quadrature order " << finl;
+        Process::exit();
+      }
+    }
+
+  return *quad1_;
 }
 
 const Quadrature_base& Domaine_DG::get_quadrature() const // overloaded to give the defaut order, depending of the order of the method
 {
-  return *quad_map_.at(order_quad_);
+  return get_quadrature(order_quad_);
 }
 
 

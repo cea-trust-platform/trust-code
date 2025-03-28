@@ -347,7 +347,7 @@ void Champ_Elem_DG::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
   Domaine_DG& domaine = ref_cast(Domaine_DG,le_dom_VF.valeur());
 
   order_ = Option_DG::Get_order_for(nom_);// Todo regler la relation ordre inconnu/quadrature avec dictionnaire ?
-  domaine.set_default_order(2*(order_==1)+5*(order_==2));
+  domaine.set_default_order(3*(order_==1)+5*(order_==2));
   nb_bfunc_ = Option_DG::Nb_col_from_order(order_);
 
   if (domaine.gram_schmidt())

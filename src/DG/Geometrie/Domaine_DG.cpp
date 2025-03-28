@@ -57,12 +57,9 @@ void Domaine_DG::discretiser()
 
   compute_mesh_param();
   calculer_h_carre();
-  Quadrature_base* quad1 = new Quadrature_Ord1_Polygone(*this);
-  Quadrature_base* quad2 = new Quadrature_Ord3_Polygone(*this);
-  Quadrature_base* quad5 = new Quadrature_Ord5_Polygone(*this);
-  set_quadrature(1, quad1);
-  set_quadrature(2, quad2);
-  set_quadrature(5, quad5);
+  quad1_ = std::make_shared<Quadrature_Ord1_Polygone>(*this);
+  quad3_ = std::make_shared<Quadrature_Ord3_Polygone>(*this);
+  quad5_ = std::make_shared<Quadrature_Ord5_Polygone>(*this);
 
 
   int nelem_tot = nb_elem_tot();
@@ -87,9 +84,9 @@ void Domaine_DG::discretiser()
           elem1 = face_voisins(face, 0);
           elem2 = face_voisins(face, 1);
 
-          if (elem1 != nelem)
+          if (elem1 != nelem && elem1 != -1)
             elem_stencil.push_back(elem1);
-          else if (elem2 != -1)
+          else if (elem2 != -1 && elem2 != nelem)
             elem_stencil.push_back(elem2);
         }
       std::sort(elem_stencil.begin(), elem_stencil.end());
@@ -98,7 +95,6 @@ void Domaine_DG::discretiser()
       for (int k = 0; k < size_stencil; k++)
         stencil_sorted_(nelem,k) = elem_stencil[k];
     }
-
 }
 /*! @brief Set the global default order
  *
