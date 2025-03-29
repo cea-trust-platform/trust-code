@@ -1,0 +1,65 @@
+Statistiques d'initialisation du calcul
+
+Temps total                       4.57706
+
+Statistiques de resolution du probleme
+
+Temps total                       0.957743
+
+
+Timesteps                         10
+Secondes / pas de temps           0.095773
+Dont solveurs Ax=B                0.082260 85% (1 appel/pas de temps)
+Dont mettre_a_jour                0.002239  2% (1 appel/pas de temps)
+Dont operateurs convection        0.003259  3% (1 appel/pas de temps)
+Dont operateurs diffusion         0.001561  1% (1 appel/pas de temps)
+Dont operateurs gradient          0.000910  0% (2 appels/pas de temps)
+Dont operateurs divergence        0.000616  0% (2 appels/pas de temps)
+Dont operations postraitement     0.001335  1% (1 appel/pas de temps)
+Dont calcul dt                    0.000751  0% (2 appels/pas de temps)
+Dont calcul divers                0.003292  3% (0 appels/pas de temps)
+Nb echange_espace_virtuel / pas de temps 9.9
+Nb MPI_allreduce / pas de temps 14.1
+Nb solveur / pas de temps         1
+Secondes / solveur                0.0822602
+Iterations / solveur              13.8
+GPU statistics per time step (experimental):
+Libraries : 0.082063 s 85.7%  1.0 calls
+Kernels   : 0.009659 s 10.1% 153.3 calls
+Copy H2D  : 0.000340 s  0.4%  5.8 calls  8.5 GB/s
+Copy D2H  : 0.000213 s  0.2%  4.0 calls  7.2 GB/s
+Alloc/Free: 0.000625 s  0.7%  6.0 calls
+GPU: 95.7% Copy H<->D: 0.5% Alloc/Free: 0.6% Comm: 2% CPU & Others: 0.9%
+I/O:
+---------------------------------------------------------------------------------------------------------
+Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated.
+---------------------------------------------------------------------------------------------------------
+Communications avg        2 % of total time
+Communications max        2.4 % of total time
+Communications min        1.6 % of total time
+Network latency benchmark 4.70877e-06 s
+Network bandwidth max     41603 MB/s
+Total network traffic     189.878 MB / timestep
+Average message size      734.824 kB
+Min waiting time          0.3 % of total time
+Max waiting time          1.2 % of total time
+Avg waiting time          0.725 % of total time
+
+Timesteps = number of time steps
+Nb solveur = number of linear system resolutions
+Nb assemblage implicite = number of matrix assemblies for the implicit scheme
+Iterations = average number of iterations of the solver
+Communications = fraction of the time spent
+                 in communications between processors (excluding io files)
+Network latency = time of one mpsum measured by an internal bench over 0.1s
+Network bandwidth = maximum on all processors
+                    of the average bandwidth of send_recv operations
+Waiting time = estimation of the waiting time of the different processors
+
+Max_waiting_time big    => probably due to a bad partitioning
+Communications > 30%    => too many processors or network too slow
+
+Statistiques de post resolution
+
+Temps total                       0.39579
+
