@@ -1677,7 +1677,7 @@ ls $GRAVAGE/$version_arch
 cd $TRUST_ROOT
 mv externalpackages.tar externalpackages-next.tar
 # Copy externalpackages-next.tar to ftp only if current branch is Livraison
-[ "`git rev-parse --abbrev-ref HEAD`" = "Livraison" ] && cp_ftp externalpackages-next.tar $PUBLIC/../externalpackages/
+[ "`cd externalpackages ; git rev-parse --abbrev-ref HEAD`" = "Livraison" ] && cp_ftp externalpackages-next.tar $PUBLIC/../externalpackages/
 rm -f TRUST.tar.gz externalpackages-next.tar
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #

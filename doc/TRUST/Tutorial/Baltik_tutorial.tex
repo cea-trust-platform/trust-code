@@ -558,7 +558,7 @@ You can see information about your first commit and actual untracked changes.
 \texttt{\$ ls \$exec\_gcov}
 \end{itemize}
 
-Notice that TRUST optimized binary for profiling or a TRUST optimized binary for test coverage must exist in order to be able to compile your baltik's profiling or test coverage executable. \\
+{\color{red} Notice that TRUST optimized binary for profiling or a TRUST optimized binary for test coverage must exist in order to be able to compile your baltik's profiling or test coverage executable.} \\
 \end{itemize}
 
 \end{block}
@@ -1499,12 +1499,8 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{block}{Baltik commands}
 
 \begin{itemize}
-\item Create a new Jupyter validation form:\\
-\texttt{\$ cd Formation\_TRUST/yourname/upwind}\\
-\texttt{\$ trust -jupyter}
-\item Now you have a upwind.ipynb file (i.e. a new Jupyter notebook).
 
-\item You have to add this notebook into your baltik:\\
+\item Go the the directory where to create your notebook:\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ cd share/Validation/Rapports\_automatiques}
 
@@ -1513,8 +1509,13 @@ $\rightarrow$ Search for "Debog" keyword.
 
 \item Add the needed files (data file, mesh \& .ipynb file):\\
 \texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.data upwind/src}\\
-\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.geo upwind/src}\\
-\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.ipynb upwind/}
+\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.geo upwind/src}
+
+\item Create a new Jupyter validation form:\\
+\texttt{\$ cd upwind}\\
+\texttt{\$ trust -jupyter}
+\item Now you have a upwind.ipynb file (i.e. a new Jupyter notebook).
+
 \end{itemize}
 
 \end{block}

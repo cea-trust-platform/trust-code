@@ -250,7 +250,7 @@
 <TR><TD><SMALL><A HREF="#Moyenne_vol_quadra_3d">Moyenne_vol_quadra_3d</A></TD><TD><SMALL># Thermohydraulique 3D + Moyenne volumique + filtre quadratique #</TD></TR>
 <TR><TD><SMALL><A HREF="#Moyenne_volumique_2d">Moyenne_volumique_2d</A></TD><TD><SMALL># Thermohydraulique 2D + Moyenne volumique #</TD></TR>
 <TR><TD><SMALL><A HREF="#Moyenne_volumique_3d">Moyenne_volumique_3d</A></TD><TD><SMALL># Thermohydraulique 3D + Moyenne volumique #</TD></TR>
-<TR><TD><SMALL><A HREF="#MultipleFiles">MultipleFiles</A></TD><TD><SMALL># Teste le mot cle MultipleFiles NP qui force l'ecriture de fichiers uniques pour partitionnement, sauvegarde, etc... au dela de NP MPI processes #</TD></TR>
+<TR><TD><SMALL><A HREF="#MultipleFiles">MultipleFiles</A></TD><TD><SMALL># Teste le mot cle MultipleFiles NP qui force l'ecriture de fichiers uniques pour partitionnement, sauvegarde (via PDI), etc... au dela de NP MPI processes #</TD></TR>
 <TR><TD><SMALL><A HREF="#Newton_3D">Newton_3D</A></TD><TD><SMALL># Hydraulique 3D  #</TD></TR>
 <TR><TD><SMALL><A HREF="#Obstacle">Obstacle</A></TD><TD><SMALL># Hydraulique 2D laminar with Quick scheme #</TD></TR>
 <TR><TD><SMALL><A HREF="#Obstacle_reprise">Obstacle_reprise</A></TD><TD><SMALL># ThemoHydraulique 2D avec Champ_Fonc_Reprise depuis un probleme hydraulique #</TD></TR>
@@ -266,6 +266,7 @@
 <TR><TD><SMALL><A HREF="#PCR">PCR</A></TD><TD><SMALL># Hydraulique 2D pertes de charges regulieres #</TD></TR>
 <TR><TD><SMALL><A HREF="#PCS">PCS</A></TD><TD><SMALL># Hydraulique 2D pertes de charges singulieres #</TD></TR>
 <TR><TD><SMALL><A HREF="#PCS_med_VEF">PCS_med_VEF</A></TD><TD><SMALL># Perte_Charge_Singuliere MED 3D VEF #</TD></TR>
+<TR><TD><SMALL><A HREF="#PDI_Pb_couple">PDI_Pb_couple</A></TD><TD><SMALL># ThermoHydraulique 1D-3D : conduite chauffee #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_C-AMG">PETSC_C-AMG</A></TD><TD><SMALL># Hydraulique 2D : Paroi defilante #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_Canal_perio_VEF_3D">PETSC_Canal_perio_VEF_3D</A></TD><TD><SMALL># SIMULATION D UN CANAL 3D #</TD></TR>
 <TR><TD><SMALL><A HREF="#PETSC_DECIDE">PETSC_DECIDE</A></TD><TD><SMALL># Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #</TD></TR>
@@ -1288,7 +1289,7 @@
 <CENTER><a href=../tests/Reference/Moyenne_volumique_3d/Moyenne_volumique_3d.data>Edit</a> Moyenne_volumique_3d.data </CENTER>
 <CENTER><a href=../tests/Reference/Moyenne_volumique_3d/poreux3d.geom.gz>Edit</a> poreux3d.geom.gz </CENTER>
 <HR><CENTER><B><A NAME=MultipleFiles>MultipleFiles</A></B></CENTER>
-<CENTER># Teste le mot cle MultipleFiles NP qui force l'ecriture de fichiers uniques pour partitionnement, sauvegarde, etc... au dela de NP MPI processes #</CENTER>
+<CENTER># Teste le mot cle MultipleFiles NP qui force l'ecriture de fichiers uniques pour partitionnement, sauvegarde (via PDI), etc... au dela de NP MPI processes #</CENTER>
 <CENTER><a href=../tests/Reference/MultipleFiles/MultipleFiles.data>Edit</a> MultipleFiles.data </CENTER>
 <HR><CENTER><B><A NAME=Newton_3D>Newton_3D</A></B></CENTER>
 <CENTER># Hydraulique 3D  #</CENTER>
@@ -1340,6 +1341,9 @@
 <HR><CENTER><B><A NAME=PCS_med_VEF>PCS_med_VEF</A></B></CENTER>
 <CENTER># Perte_Charge_Singuliere MED 3D VEF #</CENTER>
 <CENTER><a href=../tests/Reference/PCS_med_VEF/PCS_med_VEF.data>Edit</a> PCS_med_VEF.data </CENTER>
+<HR><CENTER><B><A NAME=PDI_Pb_couple>PDI_Pb_couple</A></B></CENTER>
+<CENTER># ThermoHydraulique 1D-3D : conduite chauffee #</CENTER>
+<CENTER><a href=../tests/Reference/PDI_Pb_couple/PDI_Pb_couple.data>Edit</a> PDI_Pb_couple.data </CENTER>
 <HR><CENTER><B><A NAME=PETSC_C-AMG>PETSC_C-AMG</A></B></CENTER>
 <CENTER># Hydraulique 2D : Paroi defilante #</CENTER>
 <CENTER><a href=../tests/Reference/PETSC_C-AMG/PETSC_C-AMG.data>Edit</a> PETSC_C-AMG.data </CENTER>
