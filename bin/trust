@@ -145,7 +145,7 @@ help()
    echo "-perf                         : Run perf tool (profiling)."
    echo "-trace                        : Run traceanalyzer tool (MPI profiling)."
    [ "`nsys --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-nsys                         : Run Nsight system tool (GPU profiling)."
-   [ "`ncu --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-ncu                         : Run Nsight compute tool (GPU Kernel profiling)."
+   [ "`ncu --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-ncu kernel                    : Run Nsight compute tool on given kernel (GPU Kernel profiling)."
    [ "`compute-sanitizer --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-cs memcheck|racecheck|initcheck|synccheck : Run compute sanitizer tool (GPU debugging)."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
@@ -456,7 +456,7 @@ do
       NSYS=1
    elif [ "$1" = "-ncu" ]
    then
-      NCU=1
+      NCU=1 && shift && kernel=$1
    elif [ "$1" = "-cs" ]
    then
       CS=1;shift;CS_OPTION=$1
@@ -902,7 +902,7 @@ then
    # Detect ncu location:
    ncu=`ls $CUDA_ROOT/../compilers/bin/ncu 2>/dev/null | tail -1`
    export PATH=`dirname $ncu`:$PATH
-   nsight="ncu --target-processes all -o $NOM.qdrep.ncu-rep"
+   nsight="ncu --target-processes all --set full --nvtx --kernel-name-base=demangled -k regex:$kernel -f -o $NOM.qdrep.ncu-rep"
    echo $nsight
 elif [ "$CS" = 1 ]
 then
