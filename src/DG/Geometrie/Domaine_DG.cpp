@@ -292,11 +292,11 @@ bool Domaine_DG::build_nfaces_elem_()
     {
       for (int e = 0; e < nb_elem_tot(); e++)
         {
-          if (elem_face(e, 3) == -1)
+          if ((nb_f_elem_max == 3) || (elem_face(e, 3) == -1))
             {
               nfaces_elem_(e) = 3; // triangles
             }
-          else if (elem_face(e, 4) == -1)
+          else if ((nb_f_elem_max == 4) || (elem_face(e, 4) == -1))
             {
               nfaces_elem_(e) = 4; // quads
             }
