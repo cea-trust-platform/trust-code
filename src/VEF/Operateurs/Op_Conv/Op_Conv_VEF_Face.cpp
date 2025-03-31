@@ -511,8 +511,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                              3 // vs
                                              + 12 // vsom
                                              + 3 // vc
-                                             + 3 // xc
-                                             + 12 // xsom
+                                             + (ordre == 3 ? 3 : 0) // xc
+                                             + (ordre == 3 ? 12 : 0) // xsom
                                              + 3 // centre_fa7
                                              + 3 // cc
                                            );
@@ -570,9 +570,10 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   ScratchPadDouble vc(teamMember.thread_scratch(0), 3);
                   calcul_vc_tetra_views(face.data(), vc.data(), vs.data(), vsom.data(), vitesse_v, itypcl, porosite_face_v);
                   // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                  ScratchPadDouble xc(teamMember.thread_scratch(0), 3);
+                  ScratchPadDouble xc;
                   if (ordre == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                     {
+                      xc = ScratchPadDouble(teamMember.thread_scratch(0), 3);
                       ScratchPadDouble xsom(teamMember.thread_scratch(0), 12);
                       for (int i = 0; i < nsom; i++)
                         for (int j = 0; j < dim; j++)
