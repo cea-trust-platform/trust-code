@@ -627,7 +627,7 @@ const Matrice_Dense Champ_Elem_DG::eval_invMassMatrix(const Quadrature_base& qua
 
   eval_bfunc(quad, nelem, fbase);
 
-  if (Objet_U::dimension == 2||order_==1) // TODO: When general order, make it local to the cell
+  if (Objet_U::dimension == 2 && order_==1) // TODO: When general order, make it local to the cell
     {
       double invV = 1./ve(nelem);
       matrice(0, 0) = invV;
@@ -657,7 +657,7 @@ const Matrice_Dense Champ_Elem_DG::eval_invMassMatrix(const Quadrature_base& qua
       matrice(1, 2) = -sumxy*inv_det;
       matrice(2, 1) = -sumxy*inv_det;
     }
-  else if (Objet_U::dimension == 2||order_==2)
+  else if (Objet_U::dimension == 2 && order_==2)
     {
       matrice=build_local_mass_matrix(quad,  nelem); // Creation of the local mass matrix.
       matrice.inverse(); // Inversion of the local mass matrix.
