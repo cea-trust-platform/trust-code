@@ -31,7 +31,7 @@ Option_PolyMAC { use_osqp }
 Option_DG 
 {
 	order 2
-	gram_schmidt 1
+	gram_schmidt 0
 }
 
 Schema_euler_implicite sch

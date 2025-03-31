@@ -81,10 +81,10 @@ Read pb
         Puissance_thermique champ_fonc_xyz dom 1 0.08*pi*pi*sin(2.*pi*x)*sin(2.*pi*y)
         }  
         boundary_conditions {
-            Bas temperature_imposee_paroi Champ_Front_Uniforme 1 0. 
-            Haut temperature_imposee_paroi Champ_Front_Uniforme 1 0.
-            Droit temperature_imposee_paroi Champ_Front_Uniforme 1 0.
-            Gauche temperature_imposee_paroi Champ_Front_Uniforme 1 0.
+            Bas temperature_imposee_paroi Champ_Front_fonc_txyz 1 0. 
+            Haut temperature_imposee_paroi Champ_Front_fonc_txyz 1 0.
+            Droit temperature_imposee_paroi Champ_Front_fonc_txyz 1 0.
+            Gauche temperature_imposee_paroi Champ_Front_fonc_txyz 1 0.
         }
     }
 
