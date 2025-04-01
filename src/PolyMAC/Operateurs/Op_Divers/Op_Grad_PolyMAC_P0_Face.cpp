@@ -238,7 +238,9 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 
   DoubleTrav gb(nf_tot, M), gf(N), a_v(N); //-grad p aux bords , (grad p)_f, produit alpha * vol
 
-  std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> -grad p aux bords -(dgp_gb)-> grad p ailleurs
+  //std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> -grad p aux bords -(dgp_gb)-> grad p ailleurs
+  dgp_gb_.clear();
+  dgb_v_.clear();
 
   for (int f = 0; f < domaine.nb_faces_tot(); f++)
     if (fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
@@ -248,7 +250,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
         for (int n = 0; n < N; n++, m += (M > 1))
           {
             double fac = 1. / (fs(f) * ve(e));
-            std::map<int, double> *dv = mat_v ? &dgb_v[M * f + m] : nullptr; //dv[indice dans mat_NS] = coeff
+            std::map<int, double> *dv = mat_v ? &dgb_v_[M * f + m] : nullptr; //dv[indice dans mat_NS] = coeff
             int i = nf_tot + D * e;
             for (int d = 0; d < D; d++, i++)
               if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
@@ -268,10 +270,18 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       abort();
 
   /* aux faces */
-  std::vector<std::map<int, double>> dgf_pe(N), dgf_gb(N); //dependance de [grad p]_f en les pressions aux elements, en les grad p aux faces de bord
+  //std::vector<std::map<int, double>> dgf_pe(N), dgf_gb(N); //dependance de [grad p]_f en les pressions aux elements, en les grad p aux faces de bord
+  if (dgf_pe_.size()==0)
+    {
+      dgf_pe_.resize(N);
+      dgf_gb_.resize(N);
+    }
 
   for (int f = 0; f < domaine.nb_faces_tot(); f++)
     {
+      for (int n = 0; n < N; n++)
+        dgf_pe_[n].clear(), dgf_gb_[n].clear();
+
       a_v = 0.;
 
       for (int i = 0; i < 2; i++)
@@ -299,10 +309,10 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               gf(n) += fac * val;
 
               if (mat_p && e < ne_tot)
-                dgf_pe[n][e] += fac;
+                dgf_pe_[n].push_back({e, fac});
 
-              if (mat_v && fb >= 0 && dgb_v.count(M * fb + m))
-                dgf_gb[n][M * fb + m] += fac;
+              if (mat_v && fb >= 0 && dgb_v_.count(M * fb + m))
+                dgf_gb_[n].push_back({M * fb + m, fac});
             }
         }
 
@@ -315,11 +325,11 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               const double fac = a_v(n) * pf(f);
               secmem(f, n) -= fac * gf(n);
 
-              for (auto &&i_c : dgf_pe[n])
+              for (auto &&i_c : dgf_pe_[n])
                 (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
 
-              for (auto &&i_c : dgf_gb[n])
-                dgp_gb[N * f + n][M * i_c.first + m] += fac * i_c.second;
+              for (auto &&i_c : dgf_gb_[n])
+                dgp_gb_[N * f + n][M * i_c.first + m] += fac * i_c.second;
             }
         }
 
@@ -340,26 +350,22 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 
                       secmem(nf_tot + D * e + d, n) -= fac * gf(n);
 
-                      for (auto &i_c : dgf_pe[n])
+                      for (auto &i_c : dgf_pe_[n])
                         (*mat_p)(N * (nf_tot + D * e + d) + n, M * i_c.first + m) += fac * i_c.second;
 
-                      for (auto &i_c : dgf_gb[n])
-                        dgp_gb[N * (nf_tot + D * e + d) + n][M * i_c.first + m] += fac * i_c.second;
+                      for (auto &i_c : dgf_gb_[n])
+                        dgp_gb_[N * (nf_tot + D * e + d) + n][M * i_c.first + m] += fac * i_c.second;
                     }
                 }
         }
-
-
-      for (int n = 0; n < N; n++)
-        dgf_pe[n].clear(), dgf_gb[n].clear();
     }
 
   /* correction de mat_NS : en une seule ligne! */
   if (mat_v)
-    for (auto &i_jc : dgp_gb)
+    for (auto &i_jc : dgp_gb_)
       for (auto &j_c : i_jc.second)
-        if (dgb_v.count(j_c.first))
-          for (auto &k_d : dgb_v.at(j_c.first))
+        if (dgb_v_.count(j_c.first))
+          for (auto &k_d : dgb_v_.at(j_c.first))
             (*mat_v)(i_jc.first, k_d.first) += j_c.second * k_d.second;
 
   statistiques().end_count(gradient_counter_);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,10 @@ public:
 
 private:
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
+  mutable std::map<int, std::map<int, double>> dgp_gb_;
+  mutable std::map<int, std::map<int, double>> dgb_v_;
+  mutable std::vector<std::vector<std::pair<int, double>>> dgf_pe_;
+  mutable std::vector<std::vector<std::pair<int, double>>> dgf_gb_;
 };
 
 #endif /* Op_Grad_PolyMAC_P0_Face_included */
