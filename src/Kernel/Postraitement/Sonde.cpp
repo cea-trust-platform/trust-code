@@ -726,6 +726,25 @@ const Domaine& Sonde::get_domaine_geom() const
   return mon_champ->get_ref_domain();
 }
 
+const Noms Sonde::get_noms_champ() const
+{
+  return mon_champ->get_property("nom");
+}
+
+int Sonde::get_nb_compo_champ() const
+{
+  const Noms noms_comp = mon_champ->get_property("composantes");
+  Motcle directive = mon_champ->get_directive_pour_discr();
+  int nb_comp = (directive == "temperature" || directive == "champ_elem_DG") ? 1 : noms_comp.size();
+  return nb_comp;
+}
+
+double Sonde::get_temps_champ() const
+{
+  // TODO ABN : when is it different from Pb::temps_courant ?? Inc fields maybe ?
+  return mon_champ->get_time();
+}
+
 void Sonde::fix_probe_position_grav()
 {
   int nbre_points_tot = les_positions_sondes_.dimension(0);
@@ -828,9 +847,7 @@ void Sonde::initialiser()
     if (tmp[i]==-1)
       Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << domaine_geom.le_nom() << finl;
 
-  // Probes may be moved to cog, face, vertex:
-  const Domaine& domaine = mon_champ->get_ref_domain();
-  const Noms nom_champ = mon_champ->get_property("nom");
+  const Noms noms_champ = get_noms_champ();
 
   if (grav || gravcl)
     fix_probe_position_grav();
@@ -849,12 +866,12 @@ void Sonde::initialiser()
           Motcle dom_interp=mon_champ->get_ref_domain().le_nom();
           Cerr << finl;
           Cerr << "Error in your probe : " << nom_ << finl;
-          Cerr << "You can not project to nodes, the field " << nom_champ[0] << finl;
+          Cerr << "You can not project to nodes, the field " << noms_champ[0] << finl;
           Cerr << "which is interpolated on the domain " << dom_interp << finl;
           exit();
         }
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to faces). Check the .log files to see the new location."<<finl;
-      const int nfaces_par_element = domaine.nb_faces_elem() ;
+      const int nfaces_par_element = domaine_geom.nb_faces_elem() ;
       for (int i=0; i<nbre_points_tot; i++)
         {
           double dist_min=DMAXFLOAT;
@@ -899,14 +916,14 @@ void Sonde::initialiser()
           Motcle dom_interp=mon_champ->get_ref_domain().le_nom();
           Cerr << finl;
           Cerr << "Error in your probe : " << nom_ << finl;
-          Cerr << "You can not project to vertexes, the field " << nom_champ[0] << finl;
+          Cerr << "You can not project to vertexes, the field " << noms_champ[0] << finl;
           Cerr << "which is interpolated on the domain " << dom_interp << finl;
           exit();
         }
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to vertexes). Check the .log files to see the new location."<<finl;
-      const IntTab& sommet_elem = domaine.les_elems();
-      const int sommets_par_element = domaine.les_elems().dimension(1);
-      const DoubleTab& coord = domaine.les_sommets();
+      const IntTab& sommet_elem = domaine_geom.les_elems();
+      const int sommets_par_element = domaine_geom.les_elems().dimension(1);
+      const DoubleTab& coord = domaine_geom.les_sommets();
       for (int i=0; i<nbre_points_tot; i++)
         {
           double dist_min=DMAXFLOAT;
@@ -1067,8 +1084,7 @@ void Sonde::initialiser()
     {
       if (ncomp == -1)
         {
-          const Noms noms_comp = mon_champ->get_property("composantes");
-          int nb_comp = noms_comp.size();
+          int nb_comp = get_nb_compo_champ();
           valeurs_sur_maitre.resize(nbre_points_tot,nb_comp);
         }
       else
@@ -1077,9 +1093,7 @@ void Sonde::initialiser()
   // Dimensionnement de valeurs_locales
   if (ncomp == -1)
     {
-      const Noms noms_comp = mon_champ->get_property("composantes");
-      Motcle directive = mon_champ->get_directive_pour_discr();
-      int nb_comp = (directive == "temperature" || directive == "champ_elem_DG") ? 1 : noms_comp.size();
+      int nb_comp = get_nb_compo_champ();
       valeurs_locales.resize(nbre_points,nb_comp);
     }
   else
@@ -1276,7 +1290,7 @@ void Sonde::update_source(double un_temps)
  */
 void Sonde::mettre_a_jour(double un_temps, double tinit)
 {
-  double temps_courant = mon_champ->get_time();
+  double temps_courant = get_temps_champ();
   double dt=mon_post->probleme().schema_temps().pas_de_temps();
   double nb;
 

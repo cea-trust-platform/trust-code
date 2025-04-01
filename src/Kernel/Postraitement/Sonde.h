@@ -75,6 +75,12 @@ public :
 protected :
   /** Retrieve the domain to be used for the probe */
   virtual const Domaine& get_domaine_geom() const;
+  /** Retrieve the field names - overriden in IJK */
+  virtual const Noms get_noms_champ() const;
+  /** Retrieve the number of component for the field - overriden in IJK */
+  virtual int get_nb_compo_champ() const;
+  /** Retrieve the current time for the field - overriden in IJK */
+  virtual double get_temps_champ() const;
   /** Should exit if invalid type for a probe - overriden for IJK */
   virtual void validate_type(const Motcle& loc) const { }
   /** Should exit if invalid position has been set for a probe - overriden for IJK */
