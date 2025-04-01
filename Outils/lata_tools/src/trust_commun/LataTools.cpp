@@ -88,21 +88,14 @@ void split_path_filename(const char *s, Nom& path, Nom& filename)
   filename = s+i+1;
 }
 
-static const BigArrOfTID * array_to_sort_ptr = 0;
-int compare_indirect(const void *ptr1, const void *ptr2)
-{
-  trustIdType i1 = *(const int*)ptr1;
-  trustIdType i2 = *(const int*)ptr2;
-  trustIdType diff = (*array_to_sort_ptr)[i1] - (*array_to_sort_ptr)[i2];
-  return (diff>0) ? 1 : ((diff==0) ? 0 : -1);
-}
-
 void array_sort_indirect(const BigArrOfTID& array_to_sort, BigArrOfTID& index)
 {
   const trustIdType n = array_to_sort.size_array();
   index.resize_array(n);
   for (trustIdType i = 0; i < n; i++)
     index[i] = i;
-  array_to_sort_ptr = &array_to_sort;
-  qsort(index.addr(), n, sizeof(int), compare_indirect);
+  std::sort(index.begin(), index.end(), [&](trustIdType a, trustIdType b)
+  {
+    return ( array_to_sort(a)<array_to_sort(b) );
+  });
 }
