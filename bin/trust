@@ -864,7 +864,9 @@ then
    exec="heaptrack $binary"
 elif [ "$ADVISOR" = 1 ]
 then
-   exec="advisor --collect=survey $binary"
+   collect=survey
+   [ $NB_PROCS = 1 ] && collect=roofline # Longer but much more infos... 
+   exec="advixe-cl --collect $collect -project-dir advisor_result -- $binary"
 elif [ "$VTUNE" = 1 ]
 then
    # -r directory is mandatory for MPI run:
@@ -1304,7 +1306,9 @@ else
    then
       run="$nsight $gdb $exec $NOM $PETSC_OPTIONS $quiet"
    else
-      run="$nsight $TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS $quiet"
+      mpirun="$TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS"
+      [ $USE_MPIRUN = 0 ] && [ "$gdb" = "" ] && mpirun=""
+      run="$nsight $mpirun $exec $NOM $NB_PROCS $PETSC_OPTIONS $quiet"
    fi
    if [ "$create_sub_file" ]
    then
@@ -1358,7 +1362,8 @@ then
    vtune-gui $vtune_result*/*.vtune
 elif [ "$ADVISOR" = 1 ]
 then
-   advisor-gui `ls -art | grep e0 | tail -1`
+   advisor-gui ./advisor_result
+   rm -rf ./advisor_result
 elif [ "$PERF" = 1 ] && [ -f $NOM.perf ]
 then
    if [ -f /usr/bin/hotspot ]
