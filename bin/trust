@@ -1355,6 +1355,9 @@ then
 elif [ "$HEAPTRACK" = 1 ]
 then
    echo "Heaptrack log ?.* are created."
+   echo "======================================================="
+   echo "A non flat Consumed graph indicates a memory increase !"
+   echo "======================================================="
    #heaptrack --analyze `find . -newer $NOM.log -name heaptrack.'*'.*st*`
    heaptrack_gui `find . -newer $NOM.log -name heaptrack.'*'.*st*`
 elif [ "$VTUNE" = 1 ]
