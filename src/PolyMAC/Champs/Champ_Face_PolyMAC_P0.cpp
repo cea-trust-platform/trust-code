@@ -168,10 +168,6 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 
 void Champ_Face_PolyMAC_P0::init_ve2() const
 {
-#ifdef _COMPILE_AVEC_PGCC_AVANT_22_7
-  Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
-  Process::exit();
-#else
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
 
   if (ve2d.dimension(0) || valeurs().get_md_vector() != domaine.mdv_ch_face)
@@ -353,8 +349,6 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   CRIMP(ve2bj);
   CRIMP(ve2c);
   CRIMP(ve2bc);
-
-#endif
 }
 
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */

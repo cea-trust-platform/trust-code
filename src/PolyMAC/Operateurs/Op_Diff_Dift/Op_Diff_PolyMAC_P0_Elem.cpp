@@ -246,10 +246,6 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
 
 void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-#ifdef _COMPILE_AVEC_PGCC_AVANT_22_7
-  Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
-  Process::exit();
-#else
   statistiques().begin_count(diffusion_counter_);
 
   init_op_ext();
@@ -342,6 +338,5 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
     }
 
   statistiques().end_count(diffusion_counter_);
-#endif
 }
 
