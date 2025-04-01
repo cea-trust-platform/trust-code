@@ -1,3 +1,4 @@
+XX/XX/25 (TRUST) Bug fix      : PolyMAC_P0 calculations crashed with out of memory. Better memory allocation which leads to performance improvement
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------

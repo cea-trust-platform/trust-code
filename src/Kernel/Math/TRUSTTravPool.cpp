@@ -159,7 +159,6 @@ typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::GetFreeBlock(
  *      many times -> the array of size 10 is registered at each destruction (because it was always arrays of size 1 that were
  *      requested ...) -> same mitigation as above.
  *
- *  TODO TODO ABN: Strategy 2 is retained for now, because of PolyMAC which does a lot of stupid 'append_line' on Trav!!
  */
 template<typename _TYPE_>
 typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::ResizeBlock(typename TRUSTTravPool<_TYPE_>::block_ptr_t p, int new_sz)
@@ -168,19 +167,27 @@ typename TRUSTTravPool<_TYPE_>::block_ptr_t TRUSTTravPool<_TYPE_>::ResizeBlock(t
   assert(p->size() > 0);
   assert(new_sz > 0);  // new_sz == 0 should never happen, see TRUSTArray::resize_array_()
 
-//  // Strategy 1
-//  // Get new bigger block
-//  block_ptr_t new_blk = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_sz);
-//  // Copy data
-//  std::copy(p->begin(), p->end(), new_blk->begin());
-//  // Release small block
-//  TRUSTTravPool<_TYPE_>::ReleaseBlock(p);
-//  return new_blk;
-
-  // Strategy 2
-  // Resize ... and that's it!
-  p->resize(new_sz);
-  return p;
+  bool first_strategy = true;
+  // Second strategy may increase memory with a growing pool if DoubleTrav resized several times
+  // in a loop as in Op_Grad_PolyMAC_P0_Face::ajouter_blocs
+  if (first_strategy)
+    {
+      // Strategy 1
+      // Get new bigger block
+      block_ptr_t new_blk = TRUSTTravPool<_TYPE_>::GetFreeBlock(new_sz);
+      // Copy data
+      std::copy(p->begin(), p->end(), new_blk->begin());
+      // Release small block
+      TRUSTTravPool<_TYPE_>::ReleaseBlock(p);
+      return new_blk;
+    }
+  else
+    {
+      // Strategy 2
+      // Resize ... and that's it!
+      p->resize(new_sz);
+      return p;
+    }
 }
 
 /*! Release a block.
