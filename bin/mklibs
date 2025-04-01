@@ -200,7 +200,7 @@ fi
 ######
 if [ "$TRUST_DISABLE_PDI" != 1 ]; then
     ALL_P=$ALL_P" \$ENV{TRUST_ROOT}/lib/src/LIBPDI/lib64 \$ENV{TRUST_ROOT}/lib/src/LIBPDI/lib"
-    ALL_L=$ALL_L" pdi pdi_decl_hdf5_plugin paraconf yaml"
+    ALL_L=$ALL_L" pdi pdi_decl_hdf5_plugin paraconf yaml spdlog"
 fi
 
 ########
