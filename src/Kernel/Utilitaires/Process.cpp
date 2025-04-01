@@ -425,6 +425,13 @@ double Process::ram_processeur()
 #endif
 }
 
+#include <malloc.h>
+void Process::print_allocated_memory(std::string s)
+{
+  struct mallinfo2 info = mallinfo2();
+  Cout << "Total allocated memory: " << s << " " << info.uordblks << " B" << finl;
+}
+
 void Process::imprimer_ram_totale(int all_process)
 {
   double memoire=ram_processeur();
@@ -432,14 +439,7 @@ void Process::imprimer_ram_totale(int all_process)
     {
       int Mo=1024*1024;
       if (all_process) Journal() << (int)(memoire/Mo) << " MBytes of RAM taken by the processor " << Process::me() << finl;
-      /*      if (Process::nproc()>100)
-              {
-                memoire=Process::nproc()*memoire;
-                Cout << (int)(memoire/Mo) << " MBytes of RAM taken by the calculation (estimation)." << finl;
-              }
-            else */
       {
-        //int max_memoire=Process::mp_max(memoire); // int au lieu de double provoque un segfault comment detecter ?
         double max_memoire=Process::mp_max(memoire);
         double total_memoire=Process::mp_sum(memoire);
         Cout << (int)(total_memoire/Mo) << " MBytes of RAM taken by the calculation (max on a rank: "<<(int)(max_memoire/Mo)<<" MB)." << finl;
