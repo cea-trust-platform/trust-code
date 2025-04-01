@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,13 +32,9 @@ public:
   inline OWN_PTR(Solveur_Implicite_base)& solveur() { return le_solveur; }
   inline const OWN_PTR(Solveur_Implicite_base)& solveur() const { return le_solveur; }
   void set_param(Param& param) override;
-  inline int get_convection_implicite() const { return convection_implicite_; }
-  inline int get_evanescence_multiphase() const { return evanescence_multiphase_; }
 
 protected:
   OWN_PTR(Solveur_Implicite_base) le_solveur;
-  int convection_implicite_ = 0; // 1 = implicit the convective terms (used by M3D)
-  int evanescence_multiphase_ = 0; // 1 = flag to be consistant with multiphase problem concerning the treatment of the evanescence in the convective terms (used by M3D)
 };
 
 #endif /* Schema_Implicite_base_included */
