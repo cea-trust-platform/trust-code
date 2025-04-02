@@ -1,7 +1,7 @@
-XX/XX/25 (TRUST) Bug fix      : PolyMAC_P0 calculations crashed with out of memory. Better memory allocation which leads to performance improvement
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+02/04/25 (TRUST) Bug fix      : PolyMAC_P0 calculations crashed with out of memory. Better memory allocation which leads to performance improvement
 28/03/25 (TRUST) New feature  : Backup files can be written in HDF5 format using the PDI library. There is no longer a single backup file for every processor, but one file per NUMA node. The syntax to use is as follows: "sauvegarde/reprise pdi filename". If one wants to use a personal YAML file to initialize PDI, the syntax is: "sauvegarde/reprise pdi { checkpoint_fname ... yaml_fname ... }". This keyword is also available with Champ_Fonc_Reprise. The "single_hdf" keyword is now obsolete for saving a TRUST computation, but can still be used to read checkpoint files in the old format.
 28/03/25 (TRUST) IO           : Option -journal_shared (to dump log in a single HDF file) is no longer available
 25/03/25 (TRUST) New feature  : Create new Pb_XXX_IBM problems and XXX_IBM equations to be used when using a Source_PDF model for immersed boundary methods

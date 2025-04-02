@@ -425,12 +425,12 @@ double Process::ram_processeur()
 #endif
 }
 
-#include <malloc.h>
+/* #include <malloc.h>
 void Process::print_allocated_memory(std::string s)
 {
   struct mallinfo2 info = mallinfo2();
   Cout << "Total allocated memory: " << s << " " << info.uordblks << " B" << finl;
-}
+} */
 
 void Process::imprimer_ram_totale(int all_process)
 {

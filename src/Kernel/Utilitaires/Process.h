@@ -125,7 +125,7 @@ public:
   static Sortie& Journal(int message_level = 0);
   static double ram_processeur();
   static void imprimer_ram_totale(int all_process = 0);
-  static void print_allocated_memory(std::string s); // To look for memory increase
+  //static void print_allocated_memory(std::string s); // To look for memory increase
   static int exception_sur_exit;
   static int multiple_files;
   static bool force_single_file(const int ranks, const Nom& filename);
