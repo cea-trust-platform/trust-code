@@ -1,7 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
-28/03/25 (TRUST) Baltiks      : New Makefile targets "make swig_optim, swig_debug, swig_semi_optim, swig ctest" for baltiks (if $project_directory/share/swig/CMakeLists.txt exists) to build/test icoco_python
+03/04/25 (TRUST) Baltiks      : In addition to optimized $TRUST_MEDCOUPLING_ROOT/env.sh, new debug environment $TRUST_MEDCOUPLING_ROOT/env_debug.sh is available if medcoupling debug mode enabled (./configure -enable-mc-debug)
+03/04/25 (TRUST) Baltiks      : New Makefile targets "make swig_optim, swig_debug, swig_semi_optim, swig ctest" for baltiks (if $project_directory/share/swig/CMakeLists.txt exists) to build/test icoco_python
 11/03/25 (TRUST) Minor change : Param::ajouter_deriv() removed, use Param::ajouter() instead
 03/03/25 (TRUST) GPU          : Performance regression can be checked with: cd tests/GPU && ./check_perf.sh
 03/03/25 (TRUST) GPU          : Refactor/factorize the Kokkos implementation in TRUSTArray: DualView suppressed and accessors view_ro/view_rw/view_ro rewritten

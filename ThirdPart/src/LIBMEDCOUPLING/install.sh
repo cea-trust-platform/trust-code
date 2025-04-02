@@ -183,6 +183,7 @@ done
 echo "@@@@@@@@@@@@ Creating env file ..."
 MC_ENV_FILE_tmp=$install_dir/env_tmp.sh  # install_dir is the Release path
 MC_ENV_FILE=$install_dir/../env.sh
+MC_DEBUG_ENV_FILE=$install_dir/../env_debug.sh && rm -f $MC_DEBUG_ENV_FILE
 #echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
 echo "export LD_LIBRARY_PATH=\$TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}_opt/lib:\$LD_LIBRARY_PATH" > $MC_ENV_FILE_tmp
 site_pkg=`cd $TRUST_MEDCOUPLING_ROOT/\${TRUST_ARCH}\${OPT}/lib;find * -name site-packages`
@@ -211,6 +212,13 @@ fi
 
 # Update env file:
 mv $MC_ENV_FILE_tmp $MC_ENV_FILE
+if [ -L $TRUST_MEDCOUPLING_ROOT/${TRUST_ARCH} ]
+then
+   echo "echo \"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\"" > $MC_DEBUG_ENV_FILE
+   echo "echo \"Caution: MEDCoupling not compiled in Debug mode\"" >> $MC_DEBUG_ENV_FILE
+   echo "echo \"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\"" >> $MC_DEBUG_ENV_FILE
+fi
+cat $MC_ENV_FILE | sed "s?\${TRUST_ARCH}_opt?\${TRUST_ARCH}?g" >> $MC_DEBUG_ENV_FILE
 
 echo "All done!"
 
