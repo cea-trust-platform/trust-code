@@ -451,7 +451,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
   int special = EcritureLectureSpecial::is_lecture_special();
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
-      Cerr << "Resume of the field " << nom_;
+      Cerr << "Resume of the field " << nom_ << finl;
       if(TRUST_2_PDI::is_PDI_restart())
         {
           TRUST_2_PDI pdi_interface;
@@ -492,7 +492,7 @@ int Champ_Inc_base::reprendre(Entree& fich)
           Cerr << "PDI format does not require to navigate through file..." << finl;
           Process::exit();
         }
-      DoubleTab tempo;
+      BigDoubleTab tempo;
       fich >> un_temps;
       tempo.jump(fich);
     }

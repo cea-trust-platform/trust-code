@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -461,7 +461,10 @@ Entree& Entree::operator_template(_TYPE_& ob)
               char *ptr = (char*) &pr;
               istream_->read(ptr, sizeof(std::int64_t));
               if (pr > std::numeric_limits<int>::max())
-                Process::exit("Can't read this int64 binary file with an int32 binary: values too big, overflow!!");
+                {
+                  Cerr << "Can't read this int64 binary file with an int32 binary: values too big, overflow!!" << finl;
+                  throw;
+                }
               // It's ok, we passed the check above, we can safely downcast:
               ob = static_cast<_TYPE_>(pr);
             }
