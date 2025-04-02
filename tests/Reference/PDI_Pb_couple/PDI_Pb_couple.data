@@ -1,3 +1,4 @@
+# GPU NOT # # RND in Parser not supported yet on GPU #
 # ThermoHydraulique 1D-3D : conduite chauffee #
 # quasi compressible gaz parfait VDF #
 # chauffage puissance volumique , perte de charge reguliere #
