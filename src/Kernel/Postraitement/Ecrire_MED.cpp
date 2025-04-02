@@ -79,12 +79,13 @@ Ecrire_MED_32_64<_SIZE_>::Ecrire_MED_32_64(const Nom& file_name, const Domaine_t
 }
 
 template <typename _SIZE_>
-void Ecrire_MED_32_64<_SIZE_>::set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom)
+void Ecrire_MED_32_64<_SIZE_>::set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom, const Domaine_dis_base& dom_dis)
 {
   nom_fichier_ = Sortie_Fichier_base::root;
   if (nom_fichier_!="") nom_fichier_+="/";
   nom_fichier_ += file_name;
   dom_ = dom;
+  domaine_dis_ = ref_cast(Domaine_VF, dom_dis);
 }
 
 // XD Ecrire_MED_32_64 interprete Write_MED -1 Write a domain to MED format into a file.
@@ -136,7 +137,7 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dual(bool app)
 }
 
 template <typename _SIZE_>
-void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(bool append)
 {
   med_non_installe();
 }
@@ -208,8 +209,7 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine(bool append)
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << finl;
     }
-  OBS_PTR(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretise
-  ecrire_domaine_dis(domaine_dis_base, append);
+  ecrire_domaine_dis(append);
 }
 
 /*! @brief Write the dual of the domain in the file
@@ -227,12 +227,8 @@ void Ecrire_MED_32_64<int>::ecrire_domaine_dual(bool append)
 
   // Retrieve (or build!) the **dual** mesh associated with the domain.
   // This potentially means discretizing the domaine !
-
-  //
-  //  TODO TODO ABN HACK HACK, VDF for now, just to have sth working ...
-  //
-  const Domaine_dis_base& dom_dis = Domaine_dis_cache::Build_or_get(Nom("Domaine_VDF"), dom_);
-  const Domaine_VF& dom_vf = ref_cast(Domaine_VF, dom_dis);
+  assert(domaine_dis_.non_nul());
+  const Domaine_VF& dom_vf = ref_cast(Domaine_VF, domaine_dis_.valeur());
   const auto& dual_m = dom_vf.get_mc_dual_mesh();
   MEDCouplingUMesh *dual_no_const = const_cast<MEDCouplingUMesh *>(dual_m);  // because of setCoords() and setMeshAtLevel()
 
@@ -273,7 +269,7 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dual(bool append)
  * joints) since by construction TRUST places those faces first, but faces of **joints** are renumbered.
  */
 template <typename _SIZE_>
-void Ecrire_MED_32_64<_SIZE_>::fill_faces_and_boundaries(const OBS_PTR(Domaine_dis_base)& domaine_dis_base)
+void Ecrire_MED_32_64<_SIZE_>::fill_faces_and_boundaries()
 {
   using Frontiere_t = Frontiere_32_64<_SIZE_>;
 
@@ -283,13 +279,13 @@ void Ecrire_MED_32_64<_SIZE_>::fill_faces_and_boundaries(const OBS_PTR(Domaine_d
   get_bords_infos(noms_bords_and_jnts, sz_bords_and_jnts);
 
   int_t nfaces = 0;
-  bool full_face_mesh = domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0;
+  bool full_face_mesh = domaine_dis_.non_nul() && ref_cast(Domaine_VF, domaine_dis_.valeur()).elem_faces().size()>0;
   // If the domain has faces (eg:domain computation), we can create a face mesh (all faces, incl internal ones), else only a boundary mesh
   if (full_face_mesh)
     {
       assert((std::is_same<_SIZE_, int>::value));  // we have a Domaine_dis, so we discretized already, so we are 32bits ...
       // Faces mesh - by construction (see build_mc_face_mesh) it will have the same face numbering as in TRUST.
-      const Domaine_VF& dom_vf = ref_cast(Domaine_VF, domaine_dis_base.valeur());
+      const Domaine_VF& dom_vf = ref_cast(Domaine_VF, domaine_dis_.valeur());
       dom_vf.build_mc_face_mesh();
       const MEDCouplingUMesh *faces_mesh = dom_vf.get_mc_face_mesh();
       MCAuto<MEDCouplingUMesh> face_mesh2 = faces_mesh->clone(false); // perform a super light copy, no data array copied
@@ -389,7 +385,7 @@ void Ecrire_MED_32_64<_SIZE_>::fill_faces_and_boundaries(const OBS_PTR(Domaine_d
  * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
  */
 template <typename _SIZE_>
-void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(bool append)
 {
   if (Objet_U::dimension==0)
     Process::exit("Dimension is not defined. Check your data file.");
@@ -414,7 +410,7 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base
 #endif
 
   // Faces and group of faces representing boundaries:
-  fill_faces_and_boundaries(domaine_dis_base);
+  fill_faces_and_boundaries();
 
   // Write:
   int option = (append ? 1 : 2); /* 2: reset file. 1: append, 0: overwrite objects */
@@ -428,7 +424,7 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base
 
 #if INT_is_64_ == 2
 template <>
-void Ecrire_MED_32_64<trustIdType>::ecrire_domaine_dis(const OBS_PTR(Domaine_dis_base)& domaine_dis_base, bool append)
+void Ecrire_MED_32_64<trustIdType>::ecrire_domaine_dis(bool append)
 {
   Process::exit("Ecrire_MED_32_64<trustIdType>::ecrire_domaine_dis() -- Not allowed with a 64b object!");
 }
@@ -524,10 +520,7 @@ void Ecrire_MED_32_64<_SIZE_>::ecrire_champ(const Nom& type, const Nom& nom_cha1
   else
     {
       if (type == "CHAMPFACES")
-        {
-          assert(mc_face_mesh_);
-          field->setMesh(mc_face_mesh_); // mc_face_mesh_ filled in fill_faces_and_boundaries()
-        }
+        field->setMesh(domaine_dis_->get_mc_face_mesh());
       else
         field->setMesh(dom_->get_mc_mesh());
     }

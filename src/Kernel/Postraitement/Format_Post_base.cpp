@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -174,6 +174,7 @@ void Format_Post_base::ecrire_domaine_dual(const Domaine& domaine,const int est_
 
 int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const OBS_PTR(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
 {
+  domaine_dis_ = domaine_dis_base;
   return ecrire_domaine(domaine, est_le_premier_post);
 }
 
