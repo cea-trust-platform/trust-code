@@ -79,13 +79,14 @@ Ecrire_MED_32_64<_SIZE_>::Ecrire_MED_32_64(const Nom& file_name, const Domaine_t
 }
 
 template <typename _SIZE_>
-void Ecrire_MED_32_64<_SIZE_>::set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom, const Domaine_dis_base& dom_dis)
+void Ecrire_MED_32_64<_SIZE_>::set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom, const Domaine_dis_base* dom_dis)
 {
   nom_fichier_ = Sortie_Fichier_base::root;
   if (nom_fichier_!="") nom_fichier_+="/";
   nom_fichier_ += file_name;
   dom_ = dom;
-  domaine_dis_ = ref_cast(Domaine_VF, dom_dis);
+  if(dom_dis)
+    domaine_dis_ = ref_cast(Domaine_VF, *dom_dis);
 }
 
 // XD Ecrire_MED_32_64 interprete Write_MED -1 Write a domain to MED format into a file.

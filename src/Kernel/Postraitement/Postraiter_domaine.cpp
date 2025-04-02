@@ -14,6 +14,8 @@
 *****************************************************************************/
 
 #include <Postraiter_domaine.h>
+#include <Domaine_dis_cache.h>
+#include <Domaine_dis_base.h>
 #include <Format_Post_base.h>
 #include <communications.h>
 #include <Sous_Domaine.h>
@@ -293,7 +295,11 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
       double t_init = 0.;
       post.preparer_post(dom.le_nom(), est_le_premie_post, reprise, t_init);
       if(dual_)
-        post.ecrire_domaine_dual(dom, est_le_premie_post);
+        {
+          const OBS_PTR(Domaine_dis_base) dom_dis = Domaine_dis_cache::Build_or_get("Domaine_VF_inst", dom);
+          post.ecrire_domaine_dis(dom, dom_dis, est_le_premie_post);
+          post.ecrire_domaine_dual(dom, est_le_premie_post);
+        }
       else
         post.ecrire_domaine(dom, est_le_premie_post);
     }

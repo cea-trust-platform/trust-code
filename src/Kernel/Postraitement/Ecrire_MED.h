@@ -53,7 +53,7 @@ public :
 
   Ecrire_MED_32_64(const Nom& file_name, const Domaine_t& dom);
 
-  void set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom, const Domaine_dis_base& dom_dis);
+  void set_file_name_and_dom(const Nom& file_name, const Domaine_t& dom, const Domaine_dis_base* dom_dis=nullptr);
 
   ///! Set major mode for MED file writing. See major_mode member below.
   void set_major_mode(bool majorMod) { major_mode_ = majorMod; }
