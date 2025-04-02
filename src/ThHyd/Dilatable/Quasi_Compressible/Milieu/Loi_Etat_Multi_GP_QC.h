@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,8 @@ public :
 protected :
   void rabot(int futur = 0);
   LIST(OBS_PTR(Espece)) liste_especes;
-  int correction_fraction_,ignore_check_fraction_;
+  bool correction_fraction_ = false;
+  bool ignore_check_fraction_ = false;
   double Sc_,dtol_fraction_;
 
 private:

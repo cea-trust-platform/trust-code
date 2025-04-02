@@ -319,8 +319,8 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "impr_extremums " << impr_extremums_ << finl ;
   os << "niter_max_diffusion_implicite " << niter_max_diff_impl_ << finl ;
   os << "no_file_allocation " << file_allocation_ << finl ;
-  os << "disable_progress " << disable_progress_ << finl ;
-  os << "disable_dt_ev " << disable_dt_ev_ << finl ;
+  os << "disable_progress " << int(disable_progress_) << finl ; // TODO allow outputs of bool in Sortie
+  os << "disable_dt_ev " << int(disable_dt_ev_) << finl ;
   os << "fin " << finl;
   return os ;
 }
@@ -536,8 +536,6 @@ Schema_Temps_base::Schema_Temps_base()
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
   residu_old_slope_=-1000;
   cumul_slope_=1e-20;
-  disable_progress_ = 0;
-  disable_dt_ev_ = 0;
   gnuplot_header_ = 0;
   dt_gf_ = DMAXFLOAT;
 }

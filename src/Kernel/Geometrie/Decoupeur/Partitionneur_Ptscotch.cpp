@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,8 +37,6 @@ Implemente_instanciable_sans_constructeur(Partitionneur_Ptscotch,"Partitionneur_
 
 Partitionneur_Ptscotch::Partitionneur_Ptscotch()
 {
-  nb_parties_ = -1;
-  use_weights_ = 0;
 }
 
 Sortie& Partitionneur_Ptscotch::printOn(Sortie& os) const

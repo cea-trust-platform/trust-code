@@ -72,7 +72,12 @@ public :
   inline int get_cl_pression_sommet_faible() const { return cl_pression_sommet_faible_; }
 
 private:
-  int P1Bulle_ = 1, alphaE_ = 1, alphaS_ = 1, alphaA_ = 0, alphaRT_ = 0, modif_div_face_dirichlet_ = 0;
+  bool alphaE_=true;
+  bool alphaS_=true;
+  bool alphaA_=false;
+  bool alphaRT_=false;
+  int P1Bulle_ = 1;
+  int modif_div_face_dirichlet_ = 0;
   int cl_pression_sommet_faible_ = 0; // determine si les cl de pression sont imposees de facon faible ou forte -> voir divergence et assembleur, zcl
 
   void discretiser_champ_(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, OWN_PTR(Champ_Inc_base)& champ,

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,6 @@ Champ_Post_Operateur_Eqn::Champ_Post_Operateur_Eqn()
   numero_op_=-1;
   numero_source_=-1;
   numero_masse_ = -1;
-  sans_solveur_masse_=0;
   compo_=-1;
 }
 

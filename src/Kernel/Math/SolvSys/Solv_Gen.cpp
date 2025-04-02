@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,9 +34,6 @@ Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
 Solv_Gen::Solv_Gen()
 {
   seuil_ = _SEUIL_Gen_;
-  nb_it_max_ = 1000000;
-  nb_it_max_flag = 0;
-  force_ = 0;
 }
 
 void Solv_Gen::reinit()

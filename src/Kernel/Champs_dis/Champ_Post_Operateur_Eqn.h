@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ public:
 protected:
   int numero_source_,numero_op_, numero_masse_;
   OBS_PTR(Equation_base) ref_eq_;
-  int sans_solveur_masse_;
+  bool sans_solveur_masse_ = false;
   Entity localisation_inco_ = Entity::NODE;
   int compo_;                            //Pour identifier la composante a recuperer
 };

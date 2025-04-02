@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ protected:
 
   IntVect correspondance_solide_fluide;
   DoubleTab autre_h;
-  int Reprise_temperature = -1;
+  bool Reprise_temperature = false;
 
   double T_CL0 = -100., T_CL1 = -100.; // CL sur le domaine. En seq. = Tinf et Tsup ; En parallele = Tvoisin
   double Tinf = -100., Tsup = -100.; // Temperature entree, sortie

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   Nom nom_pb;
   Nom nom_dom;
   ArrOfDouble origine,point1,point2,point3;
-  int triangle;
+  bool triangle = false;
   double epaisseur;
   Param param(que_suis_je());
   param.ajouter("domaine",&nom_dom,Param::REQUIRED); // XD_ADD_P ref_domaine domain name
@@ -62,7 +62,8 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   param.ajouter_flag("triangle",&triangle); // XD_ADD_P rien not_set
   param.ajouter("epaisseur",&epaisseur,Param::REQUIRED); // XD_ADD_P floattant thickness
 
-  int via_extraire_surface=0, inverse_condition_element;
+  bool via_extraire_surface = false;
+  bool inverse_condition_element = false;
   param.ajouter_flag("via_extraire_surface",&via_extraire_surface); // XD_ADD_P rien not_set
   param.ajouter_flag("inverse_condition_element",&inverse_condition_element); // XD_ADD_P rien not_set
 

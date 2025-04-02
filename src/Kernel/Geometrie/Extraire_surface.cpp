@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
   Nom nom_pb;
   Nom nom_domaine_surfacique;
   Nom expr_elements("1"),expr_faces("1");
-  int avec_les_bords;
+  bool avec_les_bords;
   Noms noms_des_bords;
   Param param(que_suis_je());
   param.ajouter("domaine",&nom_domaine_surfacique,Param::REQUIRED); // XD_ADD_P ref_domaine Domain in which faces are saved
@@ -76,12 +76,12 @@ void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const A
 
 // Extraction d'une ou plusieurs frontieres du domaine volumique selon certaines conditions
 
-void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords)
+void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, bool avec_les_bords, const Noms& noms_des_bords)
 {
   extraire_surface_without_cleaning(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);
   NettoieNoeuds::nettoie(domaine_surfacique);
 }
-void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords)
+void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, bool avec_les_bords, const Noms& noms_des_bords)
 {
   domaine_surfacique.nommer(nom_domaine_surfacique);
   Parser_U condition_elements,condition_faces;
@@ -173,11 +173,11 @@ void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfac
 
   // on flage les face sde bords qui nous interesse
   ArrOfInt face_bord_int(nb_faces);
-  if (avec_les_bords==1)
+  if (avec_les_bords)
     face_bord_int=1;
   if (noms_des_bords.size()!=0)
     {
-      if (avec_les_bords!=0)
+      if (avec_les_bords)
         {
           Cerr<<" the option avec_les_bords is incompatible with the option avec_certains_bords"<<finl;
           exit();

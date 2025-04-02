@@ -53,8 +53,8 @@ Sortie& Solv_GCP::printOn(Sortie& s ) const
 
 Entree& Solv_GCP::readOn(Entree& is )
 {
-  int precond_nul;
-  int impr,quiet;
+  bool precond_nul;
+  bool impr,quiet;
   Param param((*this).que_suis_je());
   param.ajouter("seuil",&seuil_,Param::REQUIRED);  // XD attr seuil floattant seuil 0 Value of the final residue. The gradient ceases iteration when the Euclidean residue standard ||Ax-B|| is less than this value.
   param.ajouter("nb_it_max",&nb_it_max_); // XD attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.

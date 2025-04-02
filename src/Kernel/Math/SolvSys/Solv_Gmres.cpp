@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,8 +28,6 @@ Implemente_instanciable_sans_constructeur(Solv_Gmres,"Solv_Gmres",solv_iteratif)
 Solv_Gmres::Solv_Gmres()
 {
   seuil_ = 1.e-12;
-  is_local_gmres=0;
-  precond_diag=0;
   nb_it_max_ = 1000000;
   controle_residu_ =0;
   dim_espace_Krilov_=10;
@@ -82,13 +80,13 @@ int Solv_Gmres::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   else if (mot=="quiet") fixer_limpr(-1);
   else if (mot=="diag")
     {
-      is_local_gmres=1;
+      is_local_gmres=true;
       precond_diag=1;
     }
   else if (mot=="sans_precond")
     {
-      is_local_gmres=1;
-      precond_diag=0;
+      is_local_gmres=true;
+      precond_diag=false;
     }
   else retval = -1;
 

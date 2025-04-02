@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ public:
 protected :
   void set_param(Param& param);
   OBS_PTR(Navier_Stokes_std) eq_hydraulique_;
-  int impr = 0;
+  bool impr = false;
 };
 
 

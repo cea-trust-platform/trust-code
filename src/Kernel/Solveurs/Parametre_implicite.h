@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ public:
   {
     return  nb_it_max_ ;
   }
-  inline int& calcul_explicite()
+  inline bool& calcul_explicite()
   {
     return calcul_explicite_ ;
   }
@@ -85,7 +85,8 @@ protected:
   double seuil_generation_solveur_,seuil_test_preliminaire_solveur_,seuil_verification_solveur_;
   int seuil_test_preliminaire_lu_;
   double seuil_convergence_implicite_;
-  int nb_it_max_,calcul_explicite_;
+  int nb_it_max_;
+  bool calcul_explicite_ = false;
   double seuil_diffusion_implicite_;
   Parser_U equation_frequence_resolue_;
 };

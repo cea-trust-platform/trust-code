@@ -37,7 +37,7 @@ protected:
   double eps_ = 1.0e-12; // precision geometrique
   double c_prepro_ = 0.; // facteur multiplicatif pour la recherche du ptr fluide
   IntTab dimTab_ ; // choix des directions de recherche du pt fluide
-  int save_prepro_ = false; // Sauvegarde des résultats dans un fichier MED
+  bool save_prepro_ = false; // Sauvegarde des résultats dans un fichier MED
 
   OWN_PTR(Champ_Don_base) fluid_points_;
   OWN_PTR(Champ_Don_base) fluid_elems_;

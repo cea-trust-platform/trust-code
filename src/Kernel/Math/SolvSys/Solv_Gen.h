@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,10 @@ protected :
 
   OWN_PTR(Precond_base) le_precond_;
   OWN_PTR(SolvElem_base) le_solveur_elem_;
-  int nb_it_max_, nb_it_max_flag, force_;
+  int nb_it_max_ = 1000000;
+  int nb_it_max_flag = 0;
+  bool force_ = false;
+
 };
 
 #endif /* Solv_Gen_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,8 @@ protected :
   int Gmres(const Matrice_Morse&, const DoubleVect&, DoubleVect& );
 
   DoubleVects v; //espcace Krilov
-  int is_local_gmres,precond_diag;
+  bool is_local_gmres = false;
+  bool precond_diag = false;
   int nb_it_max_, controle_residu_, dim_espace_Krilov_;
 };
 

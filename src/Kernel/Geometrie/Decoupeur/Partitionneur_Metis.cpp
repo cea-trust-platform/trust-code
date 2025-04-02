@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -147,7 +147,7 @@ void Partitionneur_Metis_32_64<_SIZE_>::construire_partition(BigIntVect_& elem_p
   if (nb_parties_ == 1)
     {
       int_t nb_elem = ref_domaine_->nb_elem_tot();
-      if (use_segment_to_build_connectivite_elem_elem_==1)
+      if (use_segment_to_build_connectivite_elem_elem_)
         nb_elem = ref_domaine_->nb_som();
       elem_part.resize(nb_elem);
       elem_part = 0;
@@ -162,7 +162,7 @@ void Partitionneur_Metis_32_64<_SIZE_>::construire_partition(BigIntVect_& elem_p
   Static_Int_Lists_32_64<_SIZE_> graph_elements_perio;
   //const Domaine& dom = ref_domaine_.valeur();
   Domain_Graph graph;
-  if (use_segment_to_build_connectivite_elem_elem_==0)
+  if (!use_segment_to_build_connectivite_elem_elem_)
     graph.construire_graph_elem_elem<_SIZE_>(ref_domaine_.valeur(), this->liste_bords_periodiques_,
                                              use_weights_,
                                              graph_elements_perio);
@@ -268,7 +268,7 @@ void Partitionneur_Metis_32_64<_SIZE_>::construire_partition(BigIntVect_& elem_p
            << "  but it takes more memory)" << finl;
     }
 
-  if (use_segment_to_build_connectivite_elem_elem_==0)
+  if (!use_segment_to_build_connectivite_elem_elem_)
     {
       Cerr << "Correction elem0 on processor 0" << finl;
       this->corriger_elem0_sur_proc0(elem_part);

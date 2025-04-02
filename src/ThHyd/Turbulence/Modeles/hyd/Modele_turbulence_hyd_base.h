@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ protected:
 
 private:
   double XNUTM_ = 1.E8, dt_diff_sur_dt_conv_ = -1;
-  int calcul_borne_locale_visco_turb_ = 0;
+  bool calcul_borne_locale_visco_turb_ = false;
   OWN_PTR(Champ_Fonc_base)  corr_visco_turb_;
   DoubleVect borne_visco_turb_;
 };

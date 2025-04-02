@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ public:
 protected:
   double Prandtl_K_ = 1., Prandtl_Eps_ = 1.3, Prandtl_Omega_ = 2.;
   double K_MIN_ = 1.e-20, EPS_MIN_ = 1.e-20, EPS_MAX_ = 1.e+10, OMEGA_MIN_ = 1.e-20, OMEGA_MAX_ = 1.e+10;
-  int lquiet_ = 0;
+  bool lquiet_ = false;
 };
 
 #endif /* Modele_turbulence_hyd_2_eq_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@ public:
 private:
   // Parametres du partitionneur
   OBS_PTR(Domaine) ref_domaine_;
-  int nb_parties_;
+  int nb_parties_ = -1;
 
   // Drapeau: utiliser ou pas la ponderation des edges dans metis.
-  int use_weights_;
+  bool use_weights_ = false;
 };
 
 #endif

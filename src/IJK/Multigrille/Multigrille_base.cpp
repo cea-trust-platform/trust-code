@@ -71,7 +71,6 @@ Multigrille_base::Multigrille_base() : precision_double_(0), precision_float_(1)
   max_iter_gcp_ = 0; // default, use multigrid solver, not gcp
   max_iter_gmres_ = 0; // default, use multigrid solver, not gmres
   n_krilov_ = 3;
-  impr_ = 0;
   impr_gmres_ = 2;
   solv_jacobi_ = 0;
   solver_precision_ = precision_double_;

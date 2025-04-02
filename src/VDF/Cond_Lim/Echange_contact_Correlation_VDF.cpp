@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ Entree& Echange_contact_Correlation_VDF::readOn(Entree& is )
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique") };
 
   Param param(que_suis_je());
-  Reprise_temperature=0;
+  Reprise_temperature=false;
   dt_impr = 1e10;
   set_param(param);
   param.lire_avec_accolades_depuis(is);
@@ -494,7 +494,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
   const int ME = Process::me();
   const int nbproc = Process::nproc();
   FILE *Fichier_sauv;
-  if (Reprise_temperature==1)
+  if (Reprise_temperature)
     {
       if (nbproc>1)
         {
@@ -591,7 +591,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
               exit();
             }
         }
-      Reprise_temperature=0;
+      Reprise_temperature=false;
     }
 
   calculer_CL();

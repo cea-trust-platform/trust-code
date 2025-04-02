@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,6 +45,6 @@ protected:
   // Parametres du partitionneur
   OBS_PTR(Domaine) ref_domaine_;
   Nom filename_;
-  int corriger_partition_;
+  bool corriger_partition_ = false;
 };
 #endif

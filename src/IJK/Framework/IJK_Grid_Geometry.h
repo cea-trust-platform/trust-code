@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,7 @@ public:
                                     int direction_for_y,
                                     int direction_for_z,
                                     bool perio_x, bool perio_y, bool perio_z);
+
 
   // Initializes the object with the given parameters
   void initialize_origin_deltas(double x0, double y0, double z0,

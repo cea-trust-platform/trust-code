@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -162,7 +162,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
               Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;
               Cerr << "Try suppress use_existing_domain option." << finl;
               //Process::exit();
-              use_existing_domain_ = 0;
+              use_existing_domain_ = false;
             }
         }
     }
@@ -368,7 +368,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       // last_time_only_ specifie dans le jeu de donnees ou non
       double tmax = temps_sauv_[nb_dt - 1];
       double dt = temps_sauv_[nb_dt - 1];
-      if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
+      if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_) && (!est_egal(tmax, t))))
         {
           Cout << "We assume that the field " << fieldName << " is stationary." << finl;
           search_field = false;

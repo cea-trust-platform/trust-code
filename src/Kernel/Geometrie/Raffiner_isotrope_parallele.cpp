@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -191,18 +191,19 @@ void mon_construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 
 Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
 {
-  int form=0, format_hdf = 0;
+  int form=0;
+  bool format_hdf = false;
   Nom org,newd;
   Param param(que_suis_je());
 // XD Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
   param.ajouter("name_of_initial_domaines|name_of_initial_zones",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Domaines
   param.ajouter("name_of_new_domaines|name_of_new_zones",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Domaines
   param.ajouter("ascii",&form);  // XD_ADD_P flag writing Domaines in ascii format
-  param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P flag writing Domaines in hdf format
+  param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P rien writing Domaines in hdf format
   param.lire_avec_accolades(is);
   // Force un fichier unique au dela d'un certain nombre de rangs MPI:
   if (Process::force_single_file(Process::nproc(), org+".Zones"))
-    format_hdf = 1;
+    format_hdf = true;
   int binaire=!form;
   if (form && format_hdf)
     {

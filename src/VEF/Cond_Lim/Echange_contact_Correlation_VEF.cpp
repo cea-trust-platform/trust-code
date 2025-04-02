@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ Entree& Echange_contact_Correlation_VEF::readOn(Entree& is )
   if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0P1NC"), Nom("PolyMAC_P0")   };
 
   Param param(que_suis_je());
-  Reprise_temperature=0;
+  Reprise_temperature=false;
   dt_impr = 1e10;
   avec_rayo=0;
   set_param(param);
@@ -713,10 +713,10 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
   Fichier_sauv_nom+=".sauv";
 
   // Operation de reprise du champ de temperature dans le fluide
-  if (Reprise_temperature==1)
+  if (Reprise_temperature)
     {
       Echange_contact_Correlation_VEF_reprendre(Fichier_sauv_nom, temps, T);
-      Reprise_temperature=0;
+      Reprise_temperature=false;
     }
 
   calculer_CL();

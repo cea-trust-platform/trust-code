@@ -240,8 +240,7 @@ Entree& LireMED_32_64<_SIZE_>::interpreter_(Entree& is)
           s += Nom(" ") + motlu;
         }
       Param param(this->que_suis_je());
-      int convpoly = 0;
-      param.ajouter_flag("convertAllToPoly", &convpoly);       // XD_ADD_P flag Option to convert mesh with mixed cells into polyhedral/polygonal cells
+      param.ajouter_flag("convertAllToPoly", &convertAllToPoly_);       // XD_ADD_P flag Option to convert mesh with mixed cells into polyhedral/polygonal cells
 
       param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD_ADD_P ref_domaine Corresponds to the domain name.
       param.ajouter("file|fichier", &nom_fichier_, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
@@ -253,7 +252,6 @@ Entree& LireMED_32_64<_SIZE_>::interpreter_(Entree& is)
 
       EChaine is2(s);
       param.lire_avec_accolades(is2);
-      convertAllToPoly_ = (convpoly != 0);
     }
   else // old syntax ?
     {

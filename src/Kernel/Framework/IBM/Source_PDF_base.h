@@ -82,7 +82,7 @@ protected:
 
   OWN_PTR(Champ_Don_base) champ_rotation_lu_, champ_rotation_, champ_aire_lu_, champ_aire_, champ_rho_;
 
-  int transpose_rotation_ = -1;
+  bool transpose_rotation_ = false;
   DoubleTab indicateur_nodal_champ_aire_;
   DoubleTab variable_imposee_;
   PDF_model modele_lu_;

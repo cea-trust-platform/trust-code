@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #include <time.h>
 
 Implemente_instanciable(VerifierCoin,"VerifierCoin",Interprete_geometrique_base);
-int VerifierCoin::expert_only=0;
+bool VerifierCoin::expert_only=false;
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
  *
@@ -82,7 +82,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
   param.lire_avec_accolades_depuis(is);
   int lecture_decoupage_som=(decoup_som!=""?1:0);
 
-  if (Process::is_parallel() && expert_only==0)
+  if (Process::is_parallel() && !expert_only)
     {
       Cerr << que_suis_je() << " interpreter can be used only for sequential calculation." << finl;
       Cerr << "For parallel calculation, please use "<< que_suis_je() <<" interpreter" << finl;
@@ -90,7 +90,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
       exit();
     }
   // Pas de changement du maillage si option expert_only utilise
-  Journal() << "expert_only= " << expert_only << finl;
+  Journal() << "expert_only= " << int(expert_only) << finl;
   if (!expert_only)
     {
       Scatter::uninit_sequential_domain(dom);

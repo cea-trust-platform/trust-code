@@ -187,7 +187,8 @@ protected:
 
   void uzawa(const DoubleTab&, const Matrice_Base&, SolveurSys&, DoubleTab&, DoubleTab&);
   Nom chaine_champ_combi;
-  int methode_calcul_pression_initiale_, postraiter_gradient_pression_sans_masse_ = 0;
+  int methode_calcul_pression_initiale_;
+  bool postraiter_gradient_pression_sans_masse_ = false;
   // pour genepi il est important d avoir divu =0 car accumulation d'erreur
   // meme si c'est pas faisable avec tous les schemas
   int div_u_nul_et_non_dsurdt_divu_;

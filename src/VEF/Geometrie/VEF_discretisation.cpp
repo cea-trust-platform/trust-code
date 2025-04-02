@@ -44,7 +44,8 @@ Implemente_instanciable(VEF_discretisation, "VEFPreP1B|VEF", Discret_Thyd);
 // Par defaut, P0+P1 et changement de base pour faire P0+P1->P1Bulle
 Entree& VEF_discretisation::readOn(Entree& is)
 {
-  alphaE_ = alphaS_ = alphaA_ = alphaRT_ = P1Bulle_ = 0;
+  alphaE_ = alphaS_ = alphaA_ = alphaRT_ = false; // why are defaults overriden here ???? xdata comments below are wrong because of this...
+  P1Bulle_ = 0;
   cl_pression_sommet_faible_ = 1;
   modif_div_face_dirichlet_ = 0;
 
@@ -64,18 +65,18 @@ Entree& VEF_discretisation::readOn(Entree& is)
       Cerr << "Le support Pa n'est disponible qu'en 3D." << finl;
       Process::exit();
     }
-  if (alphaE_ + alphaS_ + alphaA_ == 0)
+  if (!alphaE_ && !alphaS_ && !alphaA_)
     {
       Cerr << "Il faut choisir au moins un support parmi P0, P1, Pa." << finl;
       Process::exit();
     }
-  if (alphaA_ == 1 && !alphaE_)
+  if (alphaA_ && !alphaE_)
     {
       Cerr << "Les discretisations Pa ou P1+Pa ne sont pas encore supportees." << finl;
       Process::exit();
     }
   if (P1Bulle_)
-    if (!((alphaE_ == 1) && (alphaS_ == 1) && (alphaA_ == 0)))
+    if (!((alphaE_) && (alphaS_) && (!alphaA_)))
       {
         Cerr << "L'option changement_de_base_P1bulle n'est disponible qu'en P0/P1" << finl;
         Process::exit();
@@ -83,7 +84,7 @@ Entree& VEF_discretisation::readOn(Entree& is)
 
   if (alphaRT_)
     {
-      if (alphaE_ + alphaS_ + alphaA_ == 0)
+      if (!alphaE_ && !alphaS_ && !alphaA_)
         {
           Cerr << "Choose P0 discretization." << finl;
           Process::exit();

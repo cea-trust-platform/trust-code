@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Interpolation_IBM_base : public Objet_U
 
 public:
   virtual void discretise(const Discretisation_base&, Domaine_dis_base&);
-  inline int get_impr()
+  inline bool get_impr()
   {
     return impr_;
   };
@@ -53,7 +53,7 @@ protected:
   OWN_PTR(Champ_Don_base) corresp_elems_lu_;
   OWN_PTR(Champ_Don_base) corresp_elems_;
   bool has_corresp_ = false;
-  int impr_=0;  // Default value
+  bool impr_ = false;  // Default value
   int N_histo_=10;  // Default value for number of histogram boxes for printed data
 };
 

@@ -45,7 +45,7 @@ protected :
   double temps_relax_=1.0e+12;
   double echelle_relax_=5.0e-2;
   int type_variable_imposee_= -1;
-  int local_ = -1;
+  bool local_ = false;
   int pdf_bilan_ = 0; // 0: terme pdf; 1: termes pdf + temps; 2: termes pdf + temps + conv
   friend class Source_PDF_base;
   friend class Source_PDF_EF;

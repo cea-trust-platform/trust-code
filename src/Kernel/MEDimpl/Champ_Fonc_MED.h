@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,9 +74,9 @@ protected:
   Nom nom_fichier_med_;
   Nom nom_champ_, nom_decoup_, nom_dom_, nom_maillage_;
   Motcle loc_;
-  int use_existing_domain_=0;
+  bool use_existing_domain_ = false;
   double temps_=0.0;
-  int last_time_only_=0;
+  bool last_time_only_ = false;
 
   // Other:
   OBS_PTR(Domaine) mon_dom;

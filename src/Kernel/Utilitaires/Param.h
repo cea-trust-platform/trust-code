@@ -40,19 +40,19 @@ public:
   enum Nature { OPTIONAL = 0, REQUIRED = 1 };
   Param(const char *);
   // ajout d'argument
-  void ajouter(const char *,int* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+  void ajouter(const char *,int* ,Param::Nature nat = Param::OPTIONAL);
 #if INT_is_64_ == 2
-  void ajouter(const char *,trustIdType* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+  void ajouter(const char *,trustIdType* ,Param::Nature nat = Param::OPTIONAL);
 #endif
-  void ajouter(const char *,double* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
-  void ajouter(const char *, Objet_U* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
-  void ajouter_arr_size_predefinie(const char *, ArrOfInt* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
-  void ajouter_arr_size_predefinie(const char *, ArrOfDouble* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+  void ajouter(const char *,double* ,Param::Nature nat = Param::OPTIONAL);
+  void ajouter(const char *, Objet_U* ,Param::Nature nat = Param::OPTIONAL);
+  void ajouter_arr_size_predefinie(const char *, ArrOfInt* ,Param::Nature nat = Param::OPTIONAL);
+  void ajouter_arr_size_predefinie(const char *, ArrOfDouble* ,Param::Nature nat = Param::OPTIONAL);
 
-  void ajouter_flag(const char *,int* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
-  void ajouter_flag(const char *,bool* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+  void ajouter_flag(const char *,int* ,Param::Nature nat = Param::OPTIONAL);
+  void ajouter_flag(const char *,bool* ,Param::Nature nat = Param::OPTIONAL);
   Param& ajouter_param(const char *, Param::Nature nat = Param::OPTIONAL);
-  void ajouter_non_std(const char *,Objet_U* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
+  void ajouter_non_std(const char *,Objet_U* ,Param::Nature nat = Param::OPTIONAL);
   void ajouter_condition(const char* condition, const char* message,const char*  name=0);
   void supprimer(const char *);
   void supprimer_condition(const char*  name);

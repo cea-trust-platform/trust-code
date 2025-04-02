@@ -262,7 +262,7 @@ Entree& Decouper_32_64<_SIZE_>::lire(Entree& is)
   this->domaine().imprimer();
 
   Param param(this->que_suis_je());
-  int hdf;
+  bool hdf;
   param.ajouter_non_std("partitionneur|partition_tool",(this),Param::REQUIRED);
   param.ajouter("larg_joint",&epaisseur_joint_);
   param.ajouter_condition("value_of_larg_joint_ge_1","The joint thickness must greater or equal to 1.");

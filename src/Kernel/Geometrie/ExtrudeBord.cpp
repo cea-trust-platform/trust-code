@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
 
   const Domaine& dom=domaine();
 
-  if (dom.nb_som_elem()==8 && (hexa_old == 1))
+  if (dom.nb_som_elem()==8 && (hexa_old))
     extruder_hexa_old(nom_front, nom_dom_surfacique, vect_dir, nbpas);
   else if (dom.nb_som_elem()==4 || dom.nb_som_elem()==8)
     extruder_bord(nom_front, nom_dom_surfacique, vect_dir, nbpas);
@@ -123,7 +123,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
 
     }
 
-  if (Trois_Tetra==1)  // Evolution de la methode Extrude bord pour l'adapter a 3tetra
+  if (Trois_Tetra)  // Evolution de la methode Extrude bord pour l'adapter a 3tetra
     {
       Extruder_en3 extr3;
       extr3.setNbTranches(nbpas);
@@ -141,7 +141,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
           // exit();
         }
     }
-  else if (Vingt_Tetra==1)
+  else if (Vingt_Tetra)
     {
       Extruder_en20 extr;
       extr.setNbTranches(nbpas);

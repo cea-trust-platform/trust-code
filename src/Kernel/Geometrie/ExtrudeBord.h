@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,9 +53,9 @@ private:
 
   void extruder_bord(Nom& nom_front, Nom& nom_dom2, DoubleVect& vect_dir, int nbpas);
   void extruder_hexa_old(Nom& nom_front, Nom& nom_dom2, DoubleVect& vect_dir, int nbpas);
-  int hexa_old=0;    // flag pour ancienne version de l'extrusion des hexas : 0 = ancienne version
-  int Trois_Tetra=0; // flag pour extrusion en trois tetraedres plutot qu'en 14 (option par defaut)
-  int Vingt_Tetra=0; // flag pour extrusion en vingr tetraedres plutot qu'en 14 (option par defaut)
+  bool hexa_old=false;    // flag pour ancienne version de l'extrusion des hexas : 0 = ancienne version
+  bool Trois_Tetra=false; // flag pour extrusion en trois tetraedres plutot qu'en 14 (option par defaut)
+  bool Vingt_Tetra=false; // flag pour extrusion en vingr tetraedres plutot qu'en 14 (option par defaut)
   int en3D_=1;
 };
 

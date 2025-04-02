@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,6 @@ Parametre_implicite::Parametre_implicite()
   seuil_test_preliminaire_lu_=0;
   seuil_diffusion_implicite_=-1;
   nb_it_max_=1000000;
-  calcul_explicite_=0;
   Nom eq_freq_resolue="0";
   equation_frequence_resolue_.setNbVar(1);
   equation_frequence_resolue_.setString(eq_freq_resolue);
@@ -71,7 +70,7 @@ Entree& Parametre_implicite::readOn(Entree& is)
   if (seuil_convergence_solveur_prov>0)
     set_seuil_solveur_avec_seuil_convergence_solveur(seuil_convergence_solveur_prov);
   if (seuil_diffusion_implicite_>0)
-    calcul_explicite_=1;
+    calcul_explicite_=true;
   equation_frequence_resolue_.setString(eq_freq_resolue);
   equation_frequence_resolue_.parseString();
   le_solveur_.nommer("solveur_implicite");

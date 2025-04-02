@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,11 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   if (dimension==3)
     condition_elements.addVar("z");
 
-  //ArrOfDouble origine,point1,point2,point3;
-  // int avec_les_bords;
   Param param(que_suis_je());
   param.ajouter("domaine",&nom_dom,Param::REQUIRED); // XD_ADD_P ref_domaine Domain in which faces are saved
   param.ajouter("probleme",&nom_pb,Param::REQUIRED); // XD_ADD_P ref_Pb_base Problem from which faces should be extracted
   param.ajouter("condition_elements",&expr_elements); // XD_ADD_P chaine not_set
   param.ajouter("sous_domaine|sous_zone",&nom_sous_domaine); // XD_ADD_P ref_sous_zone not_set
-  //param.ajouter("condition_faces",&expr_faces);
-  // param.ajouter_flag("avec_les_bords",&avec_les_bords);
   param.lire_avec_accolades_depuis(is);
 
   condition_elements.setString(expr_elements);

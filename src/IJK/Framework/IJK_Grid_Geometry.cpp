@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,14 @@ Entree& IJK_Grid_Geometry::readOn(Entree& is)
   Cerr << "Reading IJK_Grid_Geometry parameters (" << le_nom() << ")" << finl;
   Param param(que_suis_je());
   ArrOfDouble origin(3); // defaults to [0,0,0]
-  ArrOfInt perio_flags(3); // defaults to not periodic
   ArrOfInt ndir(3); // Number of elements per direction
   ndir = -1; // default means "unspecified"
   ArrOfDouble constant_deltadir(3); // Constant element size in each direction
   Noms file_coord(3);
   constant_deltadir = -1.; // default means "unspecified"
-  param.ajouter_flag("perio_i", &perio_flags[0]); // XD_ADD_P rien flag to specify the border along the I direction is periodic
-  param.ajouter_flag("perio_j", &perio_flags[1]); // XD_ADD_P rien flag to specify the border along the J direction is periodic
-  param.ajouter_flag("perio_k", &perio_flags[2]); // XD_ADD_P rien flag to specify the border along the K direction is periodic
+  param.ajouter_flag("perio_i", &periodic_[0]); // XD_ADD_P rien flag to specify the border along the I direction is periodic
+  param.ajouter_flag("perio_j", &periodic_[1]); // XD_ADD_P rien flag to specify the border along the J direction is periodic
+  param.ajouter_flag("perio_k", &periodic_[2]); // XD_ADD_P rien flag to specify the border along the K direction is periodic
   param.ajouter("nbelem_i", &ndir[0]); // XD_ADD_P entier the number of elements of the grid in the I direction
   param.ajouter("nbelem_j", &ndir[1]); // XD_ADD_P entier the number of elements of the grid in the J direction
   param.ajouter("nbelem_k", &ndir[2]); // XD_ADD_P entier the number of elements of the grid in the K direction
@@ -130,7 +129,7 @@ Entree& IJK_Grid_Geometry::readOn(Entree& is)
 
   initialize_origin_deltas(origin[0], origin[1], origin[2],
                            delta_dir[0], delta_dir[1], delta_dir[2],
-                           perio_flags[0], perio_flags[1], perio_flags[2]);
+                           periodic_[0], periodic_[1], periodic_[2]);
   return is;
 }
 
@@ -201,6 +200,8 @@ void IJK_Grid_Geometry::initialize_from_unstructured(const Domaine& domaine,
            << " the provided domaine does not have Hexaedre element type" << finl;
       exit();
     }
+  // TODO change this mess when passing these parameters to myself, needed for now because other places are passing these params.
+  // this init is messed up...
   periodic_[0] = perio_x;
   periodic_[1] = perio_y;
   periodic_[2] = perio_z;

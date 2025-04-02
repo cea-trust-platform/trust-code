@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,8 +67,8 @@ public :
 
 protected :
   int nouvelle_matrice_; // Drapeau pour savoir si un stockage ou une factorisation est a refaire
-  int save_matrice_;     // Drapeau pour savoir si un stockage disque est a refaire
-  int return_on_error_ = 0; //drapeau pour savoir si on doit faire exit() ou renvoyer -1 si resoudre_
+  bool save_matrice_ = false;     // Drapeau pour savoir si un stockage disque est a refaire
+  bool return_on_error_ = false; //drapeau pour savoir si on doit faire exit() ou renvoyer -1 si resoudre_
 
   // Pour lecture/stockage des parametres des solveurs:
   Nom chaine_lue_;

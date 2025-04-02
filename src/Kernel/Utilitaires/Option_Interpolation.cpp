@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ Entree& Option_Interpolation::readOn(Entree& is) { return Interprete::readOn(is)
 
 Entree& Option_Interpolation::interpreter(Entree& is)
 {
-  int no_dec = false;
+  bool no_dec = false;
 
   Param param(que_suis_je());
   param.ajouter_flag("sans_dec|without_dec", &no_dec); // XD_ADD_P rien Use remapper even for a parallel calculation

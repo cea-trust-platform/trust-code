@@ -59,7 +59,7 @@ Entree& Modele_turbulence_hyd_base::readOn(Entree& is)
   // Verifications
   // Cas ou Correction_visco_turb_pour_controle_pas_de_temps_parametre est lu sans Correction_visco_turb_pour_controle_pas_de_temps
   if (dt_diff_sur_dt_conv_ != -1)
-    calcul_borne_locale_visco_turb_ = 1;
+    calcul_borne_locale_visco_turb_ = true;
   // Cas ou Correction_visco_turb_pour_controle_pas_de_temps sans Correction_visco_turb_pour_controle_pas_de_temps_parametre
   else if (calcul_borne_locale_visco_turb_)
     dt_diff_sur_dt_conv_ = 1;

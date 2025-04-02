@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,8 @@ public :
 
 protected :
   SolveurSys le_solveur_;
-  int n_resol_,n_reinit_,freq_recalc_,fichier_solveur_non_recree_;
+  int n_resol_,n_reinit_,freq_recalc_;
+  bool fichier_solveur_non_recree_ = false;
   Nom fichier_solveur_;
 };
 

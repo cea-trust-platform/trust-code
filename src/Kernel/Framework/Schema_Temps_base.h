@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -333,8 +333,8 @@ private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
   SFichier progress_;
-  int disable_progress_; // Flag to disable the writing of the .progress file
-  int disable_dt_ev_; // Flag to disable the writing of the .dt_ev file
+  bool disable_progress_ = false; // Flag to disable the writing of the .progress file
+  bool disable_dt_ev_ = false; // Flag to disable the writing of the .dt_ev file
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au shema en temps

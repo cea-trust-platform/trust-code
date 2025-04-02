@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,7 @@
 Implemente_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC,"Loi_Etat_Multi_Gaz_Parfait_QC",Loi_Etat_Multi_GP_base);
 // XD multi_gaz_parfait_QC loi_etat_gaz_parfait_base multi_gaz_parfait_QC -1 Class for perfect gas multi-species mixtures state law used with a quasi-compressible fluid.
 
-Loi_Etat_Multi_GP_QC::Loi_Etat_Multi_GP_QC() : correction_fraction_(0),ignore_check_fraction_(0),
-  Sc_(-1),dtol_fraction_(1.e-6) { }
+Loi_Etat_Multi_GP_QC::Loi_Etat_Multi_GP_QC() : Sc_(-1),dtol_fraction_(1.e-6) { }
 
 Sortie& Loi_Etat_Multi_GP_QC::printOn(Sortie& os) const
 {

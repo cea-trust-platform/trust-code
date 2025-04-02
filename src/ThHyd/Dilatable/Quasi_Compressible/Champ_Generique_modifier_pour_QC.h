@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ public:
 
 protected:
 
-  int diviser_;
+  bool diviser_ = false;
   OBS_PTR(Milieu_base) mon_milieu_;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ Entree& Execute_parallel::interpreter(Entree& is)
   Noms liste_cas;
   ArrOfInt nb_procs;
 
-  int disable_journal = 0;
+  bool disable_journal = false;
 
   Param param(que_suis_je());
   param.ajouter("liste_cas", &liste_cas, Param::REQUIRED); // XD_ADD_P listchaine N datafile1 ... datafileN. datafileX the name of a TRUST data file without the .data extension.

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ protected:
   void prepare_data(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution);
   int resoudre_(const Matrice_Base&, const DoubleVect&, DoubleVect&, int);
 
-  int optimized_;
+  bool optimized_;
   OWN_PTR(Precond_base) le_precond_;
   // Parametre du jdd: veut-on appliquer un preconditionnement diagonal global ?
   // Dans ce cas, on copie la matrice, on multiplie la matrice a gauche et a droite par 1/sqrt(diagonale)
@@ -54,7 +54,7 @@ protected:
   // <=> D * A * X = D * B    (avec D = 1 / sqrt(diagonale))
   // <=> (D * A * D) * Y = D * B, et X = D * Y
   // Propriete: les termes diagonaux de D * A * D sont egaux a 1
-  int precond_diag_;
+  bool precond_diag_;
   // Un tableau avec items virtuels
   DoubleVect tmp_p_avec_items_virt_;
   // Quatre tableaux sans items virtuels (on pourrait mettre des espaces virtuels a tous les vecteurs,

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ private :
   void writeValuesOnBoundary_(const Nom& fname, const std::string& bname, const DoubleTab& pos, const DoubleTab& val) const;
 
   OBS_PTR(Equation_base) eqn_;
-  int binary_file_ = 1;
+  bool binary_file_ = true;
   double dt_ = -123.; //file writing frequency
   Noms fields_names_;
   Noms boundary_names_;

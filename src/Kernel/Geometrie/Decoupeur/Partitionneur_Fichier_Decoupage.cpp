@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@ Implemente_instanciable_sans_constructeur(Partitionneur_Fichier_Decoupage,"Parti
 Partitionneur_Fichier_Decoupage::Partitionneur_Fichier_Decoupage()
 {
   filename_ = "";
-  corriger_partition_ = 0;
 }
 
 /*! @brief Lecture des parametres du partitionneur sur disque.
@@ -37,7 +36,7 @@ Entree& Partitionneur_Fichier_Decoupage::readOn(Entree& is)
 {
   Partitionneur_base::readOn(is);
   Cerr << " filename : " << filename_ << finl;
-  if (corriger_partition_ == 1)
+  if (corriger_partition_)
     Cerr << " corriger_partition => partition will be corrected (periodic + elem0_on_proc0)" << finl;
   return is;
 }
