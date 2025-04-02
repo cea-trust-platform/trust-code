@@ -277,7 +277,6 @@ void tableau_trier_retirer_doublons(IntTab_T<_SIZE_>& tab)
 template int tri_lexicographique_tableau_indirect(const TRUSTTab<int,int>& tab, ArrOfInt_T<int>& index);
 template int tri_lexicographique_tableau_indirect(const TRUSTTab<double,int>& tab, ArrOfInt_T<int>& index);
 template int tri_lexicographique_tableau(TRUSTTab<int,int>& tab);
-template int tri_lexicographique_tableau(TRUSTTab<trustIdType,int>& tab);
 template int tri_lexicographique_tableau(TRUSTTab<double,int>& tab);
 template void tableau_trier_retirer_doublons(IntTab_T<int>& tab);
 template void array_calculer_intersection(TRUSTArray<int,int>& liste1, const TRUSTArray<int,int>& liste2);
@@ -290,6 +289,7 @@ template int tri_lexicographique_tableau_indirect(const TRUSTTab<int,trustIdType
 template int tri_lexicographique_tableau_indirect(const TRUSTTab<trustIdType,trustIdType>& tab, ArrOfInt_T<trustIdType>& index);
 template int tri_lexicographique_tableau_indirect(const TRUSTTab<double,trustIdType>& tab, ArrOfInt_T<trustIdType>& index);
 template int tri_lexicographique_tableau(TRUSTTab<int,trustIdType>& tab);
+template int tri_lexicographique_tableau(TRUSTTab<trustIdType,int>& tab);
 template int tri_lexicographique_tableau(TRUSTTab<trustIdType,trustIdType>& tab);
 template int tri_lexicographique_tableau(TRUSTTab<double,trustIdType>& tab);
 template void tableau_trier_retirer_doublons(IntTab_T<trustIdType>& tab);
