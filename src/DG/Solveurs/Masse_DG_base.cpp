@@ -127,7 +127,7 @@ void Masse_DG_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double
   appliquer_coef(coef);
 
   int current_indice = 0;
-  Matrice_Morse test;
+  //Matrice_Morse test;
 
   if (le_dom_dg_->gram_schmidt())
     {

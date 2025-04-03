@@ -114,9 +114,9 @@ void DG_discretisation::discretiser_champ(const Motcle& directive, const Domaine
   if (nature == multi_scalaire)
     {
       throw;
-      champ->fixer_nature_du_champ(nature);
-      champ->fixer_unites(unites);
-      champ->fixer_noms_compo(noms);
+      //champ->fixer_nature_du_champ(nature);
+      //champ->fixer_unites(unites);
+      //champ->fixer_noms_compo(noms);
     }
 }
 
