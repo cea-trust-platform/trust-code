@@ -136,10 +136,10 @@ CEA Saclay \\ % Your institution for the title page
 \begin{small}
 \begin{columns}[c] 
 \column{.48\textwidth}
-\vspace{-0.5cm}
+%\vspace{-0.5cm}
 \tableofcontents[sections={1-8}, hideallsubsections]
 \column{.5\textwidth} 
-\vspace{-0.5cm}
+\vspace{-1.0cm}
 \tableofcontents[sections={9-16}, hideallsubsections]
 \end{columns}
 \end{small}
@@ -157,9 +157,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -209,16 +209,16 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{{\bf{Flow around an obstacle (2D, VDF)}}} \label{exo1}
+\section{{\bf{Flow around an obstacle (2D, VDF, TRUST)}}} \label{exo1}
 \subsection{Sequential calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -516,9 +516,9 @@ or using "trust -evol" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -710,9 +710,9 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -773,15 +773,15 @@ NB: On CEA Clusters, TRUST is already installed and the procedure of launching c
 
 
 
-\section{{\bf{Heat transfer (2D, VDF/VEF)}}} \label{docond_pb_couple}
+\section{{\bf{Heat transfer (2D, VDF/VEF, TRUST)}}} \label{docond_pb_couple}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -900,7 +900,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \item Run the calculation with:\\
 \textbf{trust docond }
 
-\item Open the IHM:\\
+\item Open the "evol" tool:\\
 \textbf{trust -evol docond }
 
 \item Select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
@@ -956,16 +956,16 @@ The calculation will stop after the current time step and make post-process.
 
 
 
-\section{{\bf{Dilatable flows (2D)}}}
+\section{{\bf{Dilatable flows (2D, TRUST)}}}
 \subsection{Quasi Compressible flow}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1124,9 +1124,9 @@ or \\
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1144,15 +1144,15 @@ If you are interested in the comparison between Quasi Compressible and Weakly Co
 
 \end{frame}
 
-\section{{\bf{Periodic channel flow (3D)}}}
+\section{{\bf{Periodic channel flow (3D, TRUST)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1243,15 +1243,15 @@ You can also see the instructions at the end of the Heat transfer VDF/VEF exerci
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{{\bf{Constituents \& turbulent flow}}}
+\section{{\bf{Constituents \& turbulent flow (TrioCFD)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1362,15 +1362,15 @@ in the directory Formation\_TRUST/yourname. It is also possible to use \textbf{"
 
 
 
-\section{{\bf{Turbulent flow in a curved pipe (3D)}}} \label{prm_para}
+\section{{\bf{Turbulent flow in a curved pipe (3D, TrioCFD)}}} \label{prm_para}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1506,15 +1506,15 @@ Notice that we use \textbf{"triocfd"} command lines, but it is also possible to 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{{\bf{Turbulent flow over a backward-facing step (3D)}}}
+\section{{\bf{Turbulent flow over a backward-facing step (3D, TrioCFD)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1604,15 +1604,15 @@ Outlet: $P_0=0$
 
 
 
-\section{{\bf{Tank filling (2D, single-phase flow)}}}
+\section{{\bf{Tank filling (2D, single-phase flow, TRUST)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1809,15 +1809,15 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 
 
-\section{{\bf{Tank filling (3D, two-phase flow)}}}
+\section{{\bf{Tank filling (3D, two-phase flow, TrioCFD)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -1955,7 +1955,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \column{.45\textwidth}
 \tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -2248,9 +2248,9 @@ Netgen & MG
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -2395,9 +2395,9 @@ Then "Apply and Close"
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -2679,9 +2679,9 @@ or in parallel with:\\
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -2853,9 +2853,9 @@ In order to build meshes using Salom\'e for such a simulation, we should create 
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -2958,9 +2958,9 @@ which allows to export the generated mesh on MED format.
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -3077,9 +3077,9 @@ Point(14)=\{1,0.75,0,lc2\};
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -3170,9 +3170,9 @@ Physical Volume("dom") = \{1\};
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -3339,9 +3339,9 @@ Here is an example of a Jupyter cell for displaying a table.
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
@@ -3531,9 +3531,9 @@ Here is an example of a Jupyter cell for displaying a table.
 \begin{small}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\tableofcontents[sections={1-8},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\tableofcontents[sections={9-16},currentsection, currentsubsection]
 \end{columns}
 \end{small}
 \end{frame}
