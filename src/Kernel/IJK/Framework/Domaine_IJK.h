@@ -48,8 +48,7 @@ class Domaine_IJK : public Domaine_base
   Declare_instanciable_sans_constructeur(Domaine_IJK);
 
 public:
-  /*! @brief Localisation sub class
-   */
+  /*! @brief Localisation sub class. */
   enum Localisation
   {
     ELEM,
@@ -59,14 +58,14 @@ public:
     FACES_K
   };
 
-  /*! @brief status sub class to not compute the same structure twitce when not needed
-   */
+  /*! @brief status sub class to not compute the same structure twitce when not needed. */
   enum grid_status
   {
     DEFAULT,
     INITIALIZED,
     DONE
   };
+
   /*! @brief Returns the face according to the direction
    *
    *  @param direction In IJK, x(0), y(1) or z(2).
@@ -95,12 +94,8 @@ public:
    *         to matc the topology of the cluster/node. ex: 8 cores node/machine => use groups
    *         of size 2x2x2 to minimize extra-node messages.
    *
-   *  @param nproc_i Number of processors in i direction.
-   *  @param nproc_j Number of processors in j direction.
-   *  @param nproc_k Number of processors in k direction.
-   *  @param process_grouping_i 1 by default. Number of processors per subdomain in i direction.
-   *  @param process_grouping_j 1 by default. Number of processors per subdomain in j direction.
-   *  @param process_grouping_k 1 by default. Number of processors per subdomain in k direction.
+   *  @param nproc_i, nproc_j, nproc_k Number of processors in each direction.
+   *  @param process_grouping_i, process_grouping_j, process_grouping_k 1 by default. Number of processors per subdomain in each direction.
    */
   void initialize_splitting(Domaine_IJK& dom,
                             int nproc_i, int nproc_j, int nproc_k,
@@ -116,9 +111,8 @@ public:
    *         dimensions of the mapping array.
    *         All processors do not have to be used!
    *
-   *  @param slice_size_i Contains for each slice in the i direction, the number of cells this slice.
-   *  @param slice_size_j Contains for each slice in the j direction, the number of cells this slice.
-   *  @param slice_size_k Contains for each slice in the k direction, the number of cells this slice.
+   *  @param dom Reference to an IJK domain.
+   *  @param slice_size_i, slice_size_j, slice_size_k Contains for each slice in each direction, the number of cells this slice.
    *  @param processor_mapping Provides the rank of the mpi process that will own this subdomain.
    */
   void initialize_mapping(Domaine_IJK& dom, const ArrOfInt& slice_size_i,
@@ -128,15 +122,9 @@ public:
 
   /*! @brief Initializes class elements given dataset's parameters.
    *
-   *  @param x0 Origin of the whole domain on the x axis.
-   *  @param y0 Origin of the whole domain on the y axis.
-   *  @param z0 Origin of the whole domain on the z axis.
-   *  @param delta_x Array with the sizes of the elements on the x axis.
-   *  @param delta_y Array with the sizes of the elements on the y axis.
-   *  @param delta_z Array with the sizes of the elements on the z axis.
-   *  @param perio_x Periodic flag along x axis.
-   *  @param perio_y Periodic flag along y axis.
-   *  @param perio_z Periodic flag along z axis.
+   *  @param x0, y0, z0 Coordinates of the origin of the whole domain.
+   *  @param delta_x, delta_y, delta_z Arrays with the sizes of the elements on the each axis.
+   *  @param perio_x, perio_y, perio_z Periodic flag along each axis
    */
   void initialize_origin_deltas(double x0, double y0, double z0,
                                 const ArrOfDouble& delta_x,
@@ -152,16 +140,10 @@ public:
    *         Missing features: be able to build a subregion which is the boundary
    *         of another, eg: father is "3D elements", son is "2D faces".
    *
-   *  @param ni Number of elements in direction(0)
-   *  @param nj Number of elements in direction(1)
-   *  @param nk Number of elements in direction(2)
-   *  @param offset_i Offset along x axis for the "son" subregion
-   *  @param offset_j Offset along x axis for the "son" subregion
-   *  @param offset_k Offset along x axis for the "son" subregion
+   *  @param ni, nj, nk Number of elements in each  directions
+   *  @param offset_i, offset_j, offset_j, offset_k  Offset along each axis for the subregion
    *  @param subregion_name Name of the "son" subregion
-   *  @param perio_x Whether if domain is periodic along x axis
-   *  @param perio_y Whether if domain is periodic along y axis
-   *  @param perio_z Whether if domain is periodic along z axis
+   *  @param perio_x, perio_y, perio_z Periodic flag along each axis
    */
   void init_subregion(const Domaine_IJK& src, int ni, int nj, int nk,
                       int offset_i, int offset_j, int offset_k,
@@ -175,9 +157,7 @@ public:
    *         The number of slices in direction i, j , k must match dimensions
    *         0,1 and 2 of the processor_mapping() array.
    *
-   *  @param slice_size_i Contains, for each slice in the x direction, the number of cells in this slice.
-   *  @param slice_size_j Contains, for each slice in the y direction, the number of cells in this slice.
-   *  @param slice_size_k Contains, for each slice in the z direction, the number of cells in this slice.
+   *  @param slice_size_i, slice_size_j, slice_size_k Contains, for each slice in each direction, the number of cells in this slice.
    *  @param processor_mapping Provides the rank of the mpi process that will have this subdomain.
    */
   void initialize_with_mapping(const ArrOfInt& slice_size_i,
@@ -185,13 +165,7 @@ public:
                                const ArrOfInt& slice_size_k,
                                const IntTab& processor_mapping);
 
-  /*! @brief
-   *
-   */
-  //  void discretiser();
-
-  /*! @brief renvoie new(Faces) ! elle est surchargee par Domaine_VDF par ex.
-   */
+  /*! @brief renvoie new(Faces) ! elle est surchargee par Domaine_VDF par ex. */
   Faces *creer_faces();
 
   /*! @brief Returns the number of elements owned by this processor in the given direction
@@ -205,8 +179,7 @@ public:
     return nb_elem_local_[direction];
   }
 
-  /*! @brief Returns the number of element owned by this processor.
-   */
+  /*! @brief Returns the number of element owned by this processor. */
   inline int get_nb_elem_local() const
   {
     assert(Objet_U::dimension == 3);
@@ -262,8 +235,7 @@ public:
     return get_delta(direction).size_array();
   }
 
-  /*! @brief Returns the total (global) number of mesh cells.
-   */
+  /*! @brief Returns the total (global) number of mesh cells. */
   inline int get_nb_elem_tot() const
   {
     assert(Objet_U::dimension == 3);
@@ -285,6 +257,17 @@ public:
    *  @return Number of requested items
    */
   int get_nb_items_global(Localisation loc, int direction) const;
+
+  /*! @brief Independent_index adds a ghost_size to the packed index.
+   * It is similar to the linear_index defined in IJK_Field_local_template, but with
+   * a universal, predefined ghost_size of 256 instead of a field-dependent ghost_size.
+   * Since the ghost_size_ value is larger than any ghost_size expected to be used in
+   * practice, any virtual cell can be represented by the independent index.
+   *
+   *  @param i, j, k Coordinates of the element
+   *  @return An independant index
+   */
+  int get_independent_index(int i, int j, int k) const;
 
   /*! @brief Returns the local offset in requested direction
    *
@@ -388,7 +371,6 @@ public:
 
   /*! @brief Fills the "delta" array with the size of the cells owned by the processor in the requested direction.
    *
-   *
    *  "delta" is redimensionned with the specified number of ghost cells and filled.
    *  If domain is periodic, takes periodic mesh size in ghost cells on first and last subdomain,
    *  if domain is not periodic, copy the size of the first and last cell into ghost cells in the walls.
@@ -440,17 +422,12 @@ public:
 
   /*! @brief Return the global index of the processor according to its position.
    *
-   *  @param slice_i First index of the processor in the global mapping
-   *  @param slice_j Second index of the processor in the global mapping
-   *  @param slice_k Third index of the processor in the global mapping
+   *  @param slice_i, slice_j, slice_k Indexes of the processor in the global mapping
    *  @return return mapping_(slice_i, slice_j, slice_k)
    */
-  inline int get_processor_by_ijk(int slice_i, int slice_j, int slice_k) const
-  {
-    return mapping_(slice_i, slice_j, slice_k);
-  }
+  inline int get_processor_by_ijk(int slice_i, int slice_j, int slice_k) const { return mapping_(slice_i, slice_j, slice_k); }
 
-  /*! Returns the processor associated with slice indices i,j,k  accounting for periodicity
+  /*! @brief Returns the processor associated with slice indices i,j,k  accounting for periodicity
    * e.g. a slice index -1 can refer to the last slice along a periodic direction.
    */
   int periodic_get_processor_by_ijk(int slice_i, int slice_j, int slice_k) const;
@@ -459,40 +436,28 @@ public:
    *
    *  TODO: Not sure about the brief?
    *
-   *  @param i Local index of an element along x axis.
-   *  @param j Local index of an element along y axis.
-   *  @param k Local index of an element along z axis.
-   *  @param In IJK, ELEM, NODES, FACES_I, FACES_J or FACES_K.
-   *
+   *  @param i, j, k Local index of an element along each axis.
+   *  @param loc IJK, ELEM, NODES, FACES_I, FACES_J or FACES_K.
    *  @return A vector with the coordinates of dof
    */
   Vecteur3 get_coords_of_dof(int i, int j, int k, Localisation loc) const;
 
   double get_coord_of_dof_along_dir(int dir, int i, Localisation loc) const;
 
-  /*! independent_index adds a ghost_size to the packed index.
-   * It is similar to the linear_index defined in IJK_Field_local_template, but with
-   * a universal, predefined ghost_size of 256 instead of a field-dependent ghost_size.
-   * Since the ghost_size_ value is larger than any ghost_size expected to be used in
-   * practice, any virtual cell can be represented by the independent index.
-   */
-  int get_independent_index(int i, int j, int k) const;
   Int3 get_ijk_from_independent_index(int independent_index) const;
 
   /*! signed_independent_index: encodes in the sign the phase of the cell in a
    * two-phase flow: positive sign for phase 0, and negative sign for phase 1.
    * With a cut-cell method, this can be used to disambiguate the sub-cell.
    */
-  int get_signed_independent_index(int phase, int i, int j, int k) const;
-  int get_independent_index_from_signed_independent_index(int signed_independent_index) const;
-  int get_phase_from_signed_independent_index(int signed_independent_index) const;
+  inline int get_signed_independent_index(int phase, int i, int j, int k) const { return (phase == 1) ? -1 - get_independent_index(i, j, k) : get_independent_index(i, j, k); }
+  inline int get_independent_index_from_signed_independent_index(int signed_independent_index) const { return (signed_independent_index < 0) ? -1 - signed_independent_index : signed_independent_index; }
+  inline int get_phase_from_signed_independent_index(int signed_independent_index) const { return (signed_independent_index < 0) ? 1 : 0; }
 
-  /*! Check whether the cell (i,j,k) is contained within the specified ghost along any direction.
-   */
+  /*! Check whether the cell (i,j,k) is contained within the specified ghost along any direction. */
   bool within_ghost(int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const;
 
-  /*! Check whether the cell (i,j,k) is contained within the specified ghost along a specific direction.
-   */
+  /*! Check whether the cell (i,j,k) is contained within the specified ghost along a specific direction. */
   bool within_ghost_along_dir(int dir, int i, int j, int k, int negative_ghost_size, int positive_ghost_size) const;
 
   template <int _DIR_>
@@ -515,17 +480,11 @@ public:
    *  @param ijk Vector with the x, y, and z coordinates.
    *  @return The LOCAL index of an element.
    */
-  inline int convert_ijk_cell_to_packed(const FixedVector<int, 3> ijk) const
-  {
-    return convert_ijk_cell_to_packed(ijk[0], ijk[1], ijk[2]);
-  }
+  inline int convert_ijk_cell_to_packed(const FixedVector<int, 3> ijk) const { return convert_ijk_cell_to_packed(ijk[0], ijk[1], ijk[2]); }
 
   /*! @brief With three indices, find the local index of an element
    *
-   *  @param i Local index of an element along x axis.
-   *  @param j Local index of an element along y axis.
-   *  @param k Local index of an element along z axis.
-   *
+   *  @param i, j, k Local index of an element along each axis.
    *  @return The LOCAL index of an element.
    */
   int convert_ijk_cell_to_packed(int i, int j, int k) const;
@@ -543,9 +502,7 @@ public:
    *
    *  The element's coordinates can be outside of this processor's subdomain.
    *
-   *  @param x First coordinate of an item in the mesh.
-   *  @param y Second coordinate of an item in the mesh.
-   *  @param z Third coordinate of an item in the mesh.
+   *  @param x, y, z Coordinates of an item in the mesh.
    *  @param ijk_global The global coordinates of the cell.
    *  @param ijk_local The local coordinates of the cell.
    *  @param ijk_me A sort of 3D flag. Will be [1,1,1] if the element belongs to me.
@@ -589,10 +546,6 @@ public:
     return volume_elem_;
   }
 
-  inline int ft_extension() const { return ft_extension_; }
-
-  void set_extension_from_bulle_param(double vol_bulle, double diam_bulle);
-
 private:
   /*! @brief  Coordinates of all nodes (when cell size is needed, take delta_xyz_ which is more accurate) in directions i, j and k.
    *
@@ -603,6 +556,7 @@ private:
    */
   VECT(ArrOfDouble)
   node_coordinates_xyz_;
+
   /*! @brief Mesh cell sizes for the entire mesh.
    *
    *  The size of each array is equal to the total number of cells in each direction.
@@ -612,16 +566,21 @@ private:
   delta_xyz_;
   /*! Number of processors in each direction */
   FixedVector<int, 3> nproc_per_direction_;
+
   /*! @brief Global processor mapping: for each subdomain, which processor has it (indexed like this: mapping_(i, j, k)) */
   IntTab mapping_;
-  /*! For each direction, offsets of all slices */
+
+  /*! @brief For each direction, offsets of all slices */
   VECT(ArrOfInt)
-  offsets_all_slices_; ///< F
+  offsets_all_slices_;
+
   /*! @brief For each direction, size of all slices */
   VECT(ArrOfInt)
   sizes_all_slices_;
+
   /*! @brief Stores the uniform flag for each direction */
   bool uniform_[3];
+
   /*! @brief Stores the periodic flag for each direction */
   bool periodic_[3];
 
@@ -630,42 +589,35 @@ private:
 
   /*! @brief Where is this processor in the global domain (slice number in each direction, -1 if processor has no data) */
   FixedVector<int, 3> processor_position_;
+
   /*! @brief Number of element in requested direction.
    *   If the current processor has an empty subdomain, the number of elements, nodes, faces is zero.
    */
   FixedVector<int, 3> nb_elem_local_;
+
   /*! @brief Number of nodes in requested direction.
    *   If the current processor has an empty subdomain, the number of elements, nodes, faces is zero.
    */
   FixedVector<int, 3> nb_nodes_local_;
-  /*! indexing is nb_faces_local_[for orientation i][number of faces in direction j] */
+
+  /*! @brief indexing is nb_faces_local_[for orientation i][number of faces in direction j] */
   FixedVector<FixedVector<int, 3>, 3> nb_faces_local_;
-  /*! Index in the global mesh of the first (non ghost) element on this processor, in each direction */
+
+  /*! @brief Index in the global mesh of the first (non ghost) element on this processor, in each direction */
   FixedVector<int, 3> offset_;
+
   /*! @brief MPI ranks of the processors that hold the neighbour domains.
    *   Indexing is neighbour_processors_[previous=0, next=1][direction].
    *   Contains -1 if no neighbour.
    *   Wraps if periodic domain, if there is only one processor in a direction, the neighbour might be myself.
    */
   FixedVector<FixedVector<int, 3>, 2> neighbour_processors_;
-  /*! Volume of each element on this processor */
+
+  /*! @brief Volume of each element on this processor */
   DoubleVect volume_elem_;
-  /*! State of volume_elem_ on this processor */
+
+  /*! @brief State of volume_elem_ on this processor */
   grid_status volume_elem_status_;
 };
-
-inline double Domaine_IJK::get_coord_of_dof_along_dir(int dir, int i, Localisation loc) const
-{
-  int gi = i + offset_[dir];
-  double x = get_node_coordinates(dir)[gi];
-
-  bool loc_equal_dir = (((loc == FACES_I) && (dir == 0)) || ((loc == FACES_J) && (dir == 1)) || ((loc == FACES_K) && (dir == 2)));
-  bool loc_equal_dir_or_nodes = loc_equal_dir || (loc == NODES);
-
-  if (!loc_equal_dir_or_nodes)
-    x += get_delta(dir)[gi] * 0.5;
-
-  return x;
-}
 
 #endif

@@ -24,21 +24,15 @@ class IJK_VDF_converter : public Objet_U
 {
   Declare_instanciable(IJK_VDF_converter);
 public:
-  const Domaine_IJK& get_domaine() const { return domaine_ijk_; }
+  inline const Domaine_IJK& get_domain() const { return ijk_domain_; }
   const VDF_to_IJK& get_vdf_to_ijk(Domaine_IJK::Localisation) const;
-  void nommer(const Nom& n) override
-  {
-    object_name_ = n;
-  }
-  const Nom& le_nom() const override
-  {
-    return object_name_;
-  }
+  inline void nommer(const Nom& n) override { object_name_ = n; }
+  inline const Nom& le_nom() const override { return object_name_; }
   static const char *get_conventional_name();
 protected:
   Nom object_name_;
 
-  Domaine_IJK domaine_ijk_;
+  Domaine_IJK ijk_domain_;
 
   // For faces data:
   VDF_to_IJK vdf_to_ijk_i_;

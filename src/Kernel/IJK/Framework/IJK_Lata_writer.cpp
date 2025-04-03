@@ -53,7 +53,7 @@ void dumplata_header(const char *filename)
 /*! When dumping the IJK coordinates, we do not need 64b, since only the x, y and z steps will be written.
  *  This never exceeds 32b.
  */
-void dumplata_add_geometry(const char *filename, const Domaine_IJK& splitting)
+void dumplata_add_geometry(const char *filename, const Domaine_IJK& domain)
 {
   if (Process::je_suis_maitre())
     {
@@ -69,7 +69,7 @@ void dumplata_add_geometry(const char *filename, const Domaine_IJK& splitting)
       master_file.set_bin(0);
       master_file.ouvrir(basename, ios::app);
       Noms fname(3);
-      const Nom& geomname = splitting.le_nom();
+      const Nom& geomname = domain.le_nom();
       if (geomname == "??")
         {
           Cerr << "Error in  dumplata_header: geometry has no name" << finl;
@@ -80,7 +80,7 @@ void dumplata_add_geometry(const char *filename, const Domaine_IJK& splitting)
           fname[dir] = prefix + geomname + Nom(".coord") + Nom((char)('x'+dir));
           int i;
           binary_file.ouvrir(fname[dir]);
-          const ArrOfDouble& coord = splitting.get_node_coordinates(dir);
+          const ArrOfDouble& coord = domain.get_node_coordinates(dir);
           n = coord.size_array();
           tmp.resize_array(n);
           for (i = 0; i < n; i++)
@@ -89,9 +89,9 @@ void dumplata_add_geometry(const char *filename, const Domaine_IJK& splitting)
           binary_file.close();
         }
       master_file << "Geom " << geomname << " type_elem=HEXAEDRE" << finl;
-      master_file << "Champ SOMMETS_IJK_I " << fname[0] << " geometrie=" << geomname << " size=" << splitting.get_nb_elem_tot(0)+1 << " composantes=1" << finl;
-      master_file << "Champ SOMMETS_IJK_J " << fname[1] << " geometrie=" << geomname << " size=" << splitting.get_nb_elem_tot(1)+1 << " composantes=1" << finl;
-      master_file << "Champ SOMMETS_IJK_K " << fname[2] << " geometrie=" << geomname << " size=" << splitting.get_nb_elem_tot(2)+1 << " composantes=1" << finl;
+      master_file << "Champ SOMMETS_IJK_I " << fname[0] << " geometrie=" << geomname << " size=" << domain.get_nb_elem_tot(0) + 1 << " composantes=1" << finl;
+      master_file << "Champ SOMMETS_IJK_J " << fname[1] << " geometrie=" << geomname << " size=" << domain.get_nb_elem_tot(1) + 1 << " composantes=1" << finl;
+      master_file << "Champ SOMMETS_IJK_K " << fname[2] << " geometrie=" << geomname << " size=" << domain.get_nb_elem_tot(2) + 1 << " composantes=1" << finl;
       master_file.close();
     }
 }

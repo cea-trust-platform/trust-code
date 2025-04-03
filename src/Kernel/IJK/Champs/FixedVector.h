@@ -27,13 +27,15 @@ public:
   FixedVector() {}
   FixedVector(int i, int j, int k) {}
 
-  T &operator[](int i)
+  inline static int size() { return N; }
+
+  T& operator[](int i)
   {
     assert(i >= 0 && i < N);
     return data_[i];
   }
 
-  const T &operator[](int i) const
+  const T& operator[](int i) const
   {
     assert(i >= 0 && i < N);
     return data_[i];
@@ -43,8 +45,6 @@ public:
     for (int i = 0; i < N; i++)
       data_[i].echange_espace_virtuel(data_[i].ghost());
   }
-
-  inline const Domaine_IJK &get_domain() const { return data_[0].get_domain(); }
 
 protected:
   T data_[N];
@@ -59,7 +59,7 @@ inline FixedVector<int, 3>::FixedVector(int i, int j, int k)
 }
 
 template <class T, int N>
-inline FixedVector<T, N> operator-(const FixedVector<T, N> &v1, const FixedVector<T, N> &v2)
+inline FixedVector<T, N> operator-(const FixedVector<T, N>& v1, const FixedVector<T, N>& v2)
 {
   FixedVector<T, N> resu;
   for (int i = 0; i < N; i++)
@@ -68,7 +68,7 @@ inline FixedVector<T, N> operator-(const FixedVector<T, N> &v1, const FixedVecto
 }
 
 template <class T, int N>
-inline FixedVector<T, N> operator+(const FixedVector<T, N> &v1, const FixedVector<T, N> &v2)
+inline FixedVector<T, N> operator+(const FixedVector<T, N>& v1, const FixedVector<T, N>& v2)
 {
   FixedVector<T, N> resu;
   for (int i = 0; i < N; i++)
@@ -77,7 +77,7 @@ inline FixedVector<T, N> operator+(const FixedVector<T, N> &v1, const FixedVecto
 }
 
 template <class T, int N>
-inline FixedVector<T, N> operator*(const FixedVector<T, N> &v1, const FixedVector<T, N> &v2)
+inline FixedVector<T, N> operator*(const FixedVector<T, N>& v1, const FixedVector<T, N>& v2)
 {
   FixedVector<T, N> resu;
   for (int i = 0; i < N; i++)
@@ -86,7 +86,7 @@ inline FixedVector<T, N> operator*(const FixedVector<T, N> &v1, const FixedVecto
 }
 
 template <class T, int N>
-inline FixedVector<T, N> operator*(const FixedVector<T, N> &v1, const T &x)
+inline FixedVector<T, N> operator*(const FixedVector<T, N>& v1, const T& x)
 {
   FixedVector<T, N> resu;
   for (int i = 0; i < N; i++)
@@ -95,7 +95,7 @@ inline FixedVector<T, N> operator*(const FixedVector<T, N> &v1, const T &x)
 }
 
 template <class T, int N>
-inline const FixedVector<T, N> &operator*=(FixedVector<T, N> &v1, const T &x)
+inline const FixedVector<T, N>& operator*=(FixedVector<T, N>& v1, const T& x)
 {
   for (int i = 0; i < N; i++)
     v1[i] *= x;
@@ -107,7 +107,7 @@ inline const FixedVector<T, N> &operator*=(FixedVector<T, N> &v1, const T &x)
 //  /!\ On a fait la surcharge pour un IJK_FT_double : on peut faire le
 //      le prod scal pour un IJK_FT_double du coup
 template <class T, int N>
-inline const T &produit_scalaire(FixedVector<T, N> &v1, const FixedVector<T, N> &v2)
+inline const T& produit_scalaire(FixedVector<T, N>& v1, const FixedVector<T, N>& v2)
 {
   T resu;
   for (int i = 0; i < N; i++)
@@ -116,7 +116,7 @@ inline const T &produit_scalaire(FixedVector<T, N> &v1, const FixedVector<T, N> 
 }
 
 template <class T, int N>
-inline const FixedVector<T, N> &produit_scalaire(FixedVector<T, N> &v1, const FixedVector<T, 1> &v2)
+inline const FixedVector<T, N>& produit_scalaire(FixedVector<T, N>& v1, const FixedVector<T, 1>& v2)
 {
   FixedVector<T, N> resu;
   for (int i = 0; i < N; i++)
@@ -125,7 +125,7 @@ inline const FixedVector<T, N> &produit_scalaire(FixedVector<T, N> &v1, const Fi
 }
 
 template <class T, int N>
-inline const FixedVector<T, N> &produit_scalaire(FixedVector<T, N> &v1, const double v2)
+inline const FixedVector<T, N>& produit_scalaire(FixedVector<T, N>& v1, const double v2)
 {
   FixedVector<T, N> resu;
   for (int i = 0; i < N; i++)
@@ -135,7 +135,7 @@ inline const FixedVector<T, N> &produit_scalaire(FixedVector<T, N> &v1, const do
 ////////////////////////////////////////////////////////////////////////////////
 
 template <class T, int N>
-inline const FixedVector<T, N> &operator-=(FixedVector<T, N> &v1, const FixedVector<T, N> &v2)
+inline const FixedVector<T, N>& operator-=(FixedVector<T, N>& v1, const FixedVector<T, N>& v2)
 {
   for (int i = 0; i < N; i++)
     v1[i] -= v2[i];
@@ -143,7 +143,7 @@ inline const FixedVector<T, N> &operator-=(FixedVector<T, N> &v1, const FixedVec
 }
 
 template <class T, int N>
-inline const FixedVector<T, N> &operator+=(FixedVector<T, N> &v1, const FixedVector<T, N> &v2)
+inline const FixedVector<T, N>& operator+=(FixedVector<T, N>& v1, const FixedVector<T, N>& v2)
 {
   for (int i = 0; i < N; i++)
     v1[i] += v2[i];
@@ -151,7 +151,7 @@ inline const FixedVector<T, N> &operator+=(FixedVector<T, N> &v1, const FixedVec
 }
 
 template <class T, int N, int M>
-inline FixedVector<FixedVector<T, N>, M> operator*(const FixedVector<FixedVector<T, N>, M> &m, const T &v)
+inline FixedVector<FixedVector<T, N>, M> operator*(const FixedVector<FixedVector<T, N>, M>& m, const T& v)
 {
   FixedVector<FixedVector<T, N>, M> resu;
   for (int j = 0; j < M; j++)
@@ -161,8 +161,8 @@ inline FixedVector<FixedVector<T, N>, M> operator*(const FixedVector<FixedVector
 }
 
 template <class T, int N, int M>
-inline FixedVector<FixedVector<T, N>, M> operator+(const FixedVector<FixedVector<T, N>, M> &mm1,
-                                                   const FixedVector<FixedVector<T, N>, M> &mm2)
+inline FixedVector<FixedVector<T, N>, M> operator+(const FixedVector<FixedVector<T, N>, M>& mm1,
+                                                   const FixedVector<FixedVector<T, N>, M>& mm2)
 {
   FixedVector<FixedVector<T, N>, M> resu;
   for (int j = 0; j < M; j++)

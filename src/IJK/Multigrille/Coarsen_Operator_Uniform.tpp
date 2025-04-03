@@ -23,15 +23,14 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
                                                      Grid_Level_Data_template<_TYPE_>& coarse,
                                                      int additional_k_layers)
 {
-  const Domaine_IJK& src_grid_geom = fine.get_domaine();
+  const Domaine_IJK& src_grid_domain = fine.get_domain();
   VECT(ArrOfDouble) coarse_delta(3);
   ArrOfInt nlocal(3);
 
   for (int dir = 0; dir < 3; dir++)
     {
       const int coarsen_factor = coarsen_factors_[dir];
-      const ArrOfDouble& fine_delta = src_grid_geom.get_delta(dir);
-
+      const ArrOfDouble& fine_delta = src_grid_domain.get_delta(dir);
       const int src_n = fine_delta.size_array();
       if (src_n % coarsen_factor != 0)
         {
@@ -40,7 +39,7 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
                << " and cannot be refined by factor " << coarsen_factor << finl;
           Process::exit();
         }
-      nlocal[dir] = fine.get_rho().nb_elem_local(dir);
+      nlocal[dir] = src_grid_domain.get_nb_elem_local(dir);
       if (nlocal[dir] % coarsen_factor != 0)
         {
           Cerr << "Coarsen_Operator_Uniform::initialize_grid_data: local source grid processor has " << nlocal[dir]
@@ -67,34 +66,33 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
         }
     }
 
-  Domaine_IJK grid_geom;
-  grid_geom.initialize_origin_deltas(src_grid_geom.get_origin(0),
-                                     src_grid_geom.get_origin(1),
-                                     src_grid_geom.get_origin(2),
-                                     coarse_delta[0],
-                                     coarse_delta[1],
-                                     coarse_delta[2],
-                                     src_grid_geom.get_periodic_flag(0),
-                                     src_grid_geom.get_periodic_flag(1),
-                                     src_grid_geom.get_periodic_flag(2));
+  Domaine_IJK own_domain;
+  own_domain.initialize_origin_deltas(src_grid_domain.get_origin(0),
+                                      src_grid_domain.get_origin(1),
+                                      src_grid_domain.get_origin(2),
+                                      coarse_delta[0],
+                                      coarse_delta[1],
+                                      coarse_delta[2],
+                                      src_grid_domain.get_periodic_flag(0),
+                                      src_grid_domain.get_periodic_flag(1),
+                                      src_grid_domain.get_periodic_flag(2));
 
-  Domaine_IJK coarse_splitting;
   // Same processor mapping as fine mesh
   IntTab processor_mapping;
-  fine.get_domaine().get_processor_mapping(processor_mapping);
+  src_grid_domain.get_processor_mapping(processor_mapping);
   // Splitting is identical, divide ncells by the coarsening factor
   VECT(ArrOfInt) slice_sizes(3);
   for (int dir = 0; dir < 3; dir++)
     {
-      fine.get_domaine().get_slice_size(dir, Domaine_IJK::ELEM, slice_sizes[dir]);
+      src_grid_domain.get_slice_size(dir, Domaine_IJK::ELEM, slice_sizes[dir]);
       const int n = slice_sizes[dir].size_array();
       for (int i = 0; i < n; i++)
         slice_sizes[dir][i] /= coarsen_factors_[dir];
     }
-  coarse_splitting.initialize_mapping(grid_geom, slice_sizes[0], slice_sizes[1], slice_sizes[2],
-                                      processor_mapping);
+  own_domain.initialize_mapping(own_domain, slice_sizes[0], slice_sizes[1], slice_sizes[2],
+                                processor_mapping);
   const int ghost_domaine_size = fine.get_ghost_size();
-  coarse.initialize(coarse_splitting, ghost_domaine_size, additional_k_layers);
+  coarse.initialize(own_domain, ghost_domaine_size, additional_k_layers);
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
@@ -105,9 +103,9 @@ void Coarsen_Operator_Uniform::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_AR
   static Stat_Counter_Id coarsen_counter_ = statistiques().new_counter(2, "multigrille : uniform coarsen ");
   statistiques().begin_count(coarsen_counter_);
 
-  const int ni2 = coarse.ni();
-  const int nj2 = coarse.nj();
-  const int nk2 = coarse.nk();
+  const int ni2 = coarse.ni() / 2;
+  const int nj2 = coarse.nj() / 2;
+  const int nk2 = coarse.nk() / 2;
 
   _TYPE_ coef = 1;
   if (compute_weighted_average)
@@ -118,19 +116,19 @@ void Coarsen_Operator_Uniform::coarsen_(const IJK_Field_template<_TYPE_,_TYPE_AR
   const int deltaK = 1;
   for (int K = Kstart; K != Kend; K += deltaK)
     {
-      const int k = K*coarsen_factors_[2];
+      const int k = K * coarsen_factors_[2];
       for (int J = 0; J < nj2; J++)
         {
-          const int j = J*coarsen_factors_[1];
+          const int j = J * coarsen_factors_[1];
           for (int I = 0; I < ni2; I++)
             {
-              const int i = I*coarsen_factors_[0];
+              const int i = I * coarsen_factors_[0];
               _TYPE_ sum = 0.;
               for (int ii = 0; ii < coarsen_factors_[0]; ii++)
                 for (int jj = 0; jj < coarsen_factors_[1]; jj++)
                   for (int kk = 0; kk < coarsen_factors_[2]; kk++)
                     sum += fine(i + ii, j + jj, k + kk);
-              coarse(I,J,K) = sum * coef;
+              coarse(I, J, K) = sum * coef;
             }
         }
     }
@@ -153,9 +151,9 @@ void Coarsen_Operator_Uniform::interpolate_sub_shiftk_(const IJK_Field_template<
   static Stat_Counter_Id interpolate_counter_ = statistiques().new_counter(2, "multigrille : interpolate (uniform)");
   statistiques().begin_count(interpolate_counter_);
 
-  const int ni2 = coarse.ni();
-  const int nj2 = coarse.nj();
-  const int nk2 = coarse.nk();
+  const int ni2 = coarse.ni() / 2;
+  const int nj2 = coarse.nj() / 2;
+  const int nk2 = coarse.nk() / 2;
 
   const int Kstart = kshift <= 0 ? 0 : nk2 - 1;
   const int Kend = kshift <= 0 ? nk2 : -1;
@@ -163,13 +161,13 @@ void Coarsen_Operator_Uniform::interpolate_sub_shiftk_(const IJK_Field_template<
 
   for (int K = Kstart; K != Kend; K += deltaK)
     {
-      const int k = K*coarsen_factors_[2];
+      const int k = K * coarsen_factors_[2];
       for (int J = 0; J < nj2; ++J)
         {
-          const int j = J*coarsen_factors_[1];
+          const int j = J * coarsen_factors_[1];
           for (int I = 0; I < ni2; ++I)
             {
-              const int i = I*coarsen_factors_[0];
+              const int i = I * coarsen_factors_[0];
               const _TYPE_ val = coarse(I, J, K);
               for (int ii = 0; ii < coarsen_factors_[0]; ++ii)
                 for (int jj = 0; jj < coarsen_factors_[1]; ++jj)

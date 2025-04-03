@@ -54,8 +54,8 @@ Entree& Parallel_io_parameters::interpreter(Entree& is)
   param.ajouter("block_size_bytes", &bs_bytes); // XD_ADD_P entier File writes will be performed by chunks of this size (in bytes). This parameter will not be taken into account if block_size_megabytes has been defined
   param.ajouter("block_size_megabytes", &bs); // XD_ADD_P entier File writes will be performed by chunks of this size (in megabytes). The size should be a multiple of the GPFS block size or lustre stripping size (typically several megabytes)
   param.ajouter("writing_processes", &n); // XD_ADD_P entier This is the number of processes that will write concurrently to the file system (this must be set according to the capacity of the filesystem, set to 1 on small computers, can be up to 64 or 128 on very large systems).
-  param.ajouter("bench_ijk_splitting_write", &ijk_name_write); // XD_ADD_P chaine Name of the splitting object we want to use to run a parallel write bench  (optional parameter)
-  param.ajouter("bench_ijk_splitting_read", &ijk_name_read); // XD_ADD_P chaine Name of the splitting object we want to use to run a parallel read bench  (optional parameter)
+  param.ajouter("bench_domain_write", &ijk_name_write); // XD_ADD_P chaine Name of the splitting object we want to use to run a parallel write bench  (optional parameter)
+  param.ajouter("bench_domain_read", &ijk_name_read); // XD_ADD_P chaine Name of the splitting object we want to use to run a parallel read bench  (optional parameter)
   param.lire_avec_accolades(is);
 
   if (bs < 0)
@@ -103,15 +103,15 @@ int Parallel_io_parameters::get_nb_writing_processes()
   return nb_writing_processes_;
 }
 
-void Parallel_io_parameters::run_bench_write(const Nom& ijk_splitting_name)
+void Parallel_io_parameters::run_bench_write(const Nom& domain_name)
 {
   // Get the mesh:
-  const Domaine_IJK& splitting = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
+  OBS_PTR(Domaine_IJK) domain = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(domain_name));
   // Build a velocity field and a scalar field:
   IJK_Field_double vx, vy, vz;
-  vx.allocate(splitting, Domaine_IJK::FACES_I,0);
-  vy.allocate(splitting, Domaine_IJK::FACES_J,0);
-  vz.allocate(splitting, Domaine_IJK::FACES_K,0);
+  vx.allocate(domain, Domaine_IJK::FACES_I, 0);
+  vy.allocate(domain, Domaine_IJK::FACES_J, 0);
+  vz.allocate(domain, Domaine_IJK::FACES_K, 0);
 
   set_field_data(vx,Nom("x*0.9+y*0.09*0.001+z*0.009"));
   set_field_data(vy,Nom("1.+x*0.9+y*0.09+z*0.009"));
@@ -126,11 +126,11 @@ void Parallel_io_parameters::run_bench_write(const Nom& ijk_splitting_name)
   dumplata_vector("test.lata", "VELOCITY", vx, vy, vz, 1);
   statistiques().end_count(cnt);
   double t = statistiques().last_time(cnt);
-  double sz = (double) (splitting.get_nb_elem_tot(DIRECTION_I)+1)
-              * (splitting.get_nb_elem_tot(DIRECTION_J)+1)
-              * (splitting.get_nb_elem_tot(DIRECTION_K)+1)
+  double sz = (double) (domain->get_nb_elem_tot(DIRECTION_I) + 1)
+              * (domain->get_nb_elem_tot(DIRECTION_J) + 1)
+              * (domain->get_nb_elem_tot(DIRECTION_K) + 1)
               * 3 * sizeof(float);
-  Nom bw = (t==0)? Nom("infty") : Nom(sz/1024/1024/1024/t);
+  Nom bw = (t == 0)? Nom("infty") : Nom(sz/1024/1024/1024/t);
   Cerr << "Parallel_io_parameters benchmark write: data_size= " << sz/1024/1024/1024
        << " GB. Time= " << t << " s. Bandwidth= "
        << bw << " GB/s.(x3)" << finl;
@@ -157,15 +157,15 @@ double max_val_abs_ijk(const IJK_Field_double& residu,const IJK_Field_double& x)
 }
 
 
-void Parallel_io_parameters::run_bench_read(const Nom& ijk_splitting_name)
+void Parallel_io_parameters::run_bench_read(const Nom& domain_name)
 {
   // Get the mesh:
-  const Domaine_IJK& splitting = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
+  OBS_PTR(Domaine_IJK) domain = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(domain_name));
   // Build a velocity field and a scalar field:
   IJK_Field_double vx, vy, vz;
-  vx.allocate(splitting, Domaine_IJK::FACES_I,0);
-  vy.allocate(splitting, Domaine_IJK::FACES_J,0);
-  vz.allocate(splitting, Domaine_IJK::FACES_K,0);
+  vx.allocate(domain, Domaine_IJK::FACES_I, 0);
+  vy.allocate(domain, Domaine_IJK::FACES_J, 0);
+  vz.allocate(domain, Domaine_IJK::FACES_K, 0);
 
   vx.data() = 1e9;
   vy.data() = 1e9;
@@ -175,24 +175,24 @@ void Parallel_io_parameters::run_bench_read(const Nom& ijk_splitting_name)
   static Stat_Counter_Id cnt = statistiques().new_counter(1, "Parallel_io benchmark_read");
   statistiques().begin_count(cnt);
   lire_dans_lata("test.lata", 1 /* timestep */,
-                 splitting.le_nom(),
+                 domain->le_nom(),
                  "VELOCITY", vx, vy, vz);
   statistiques().end_count(cnt);
 
   double t = statistiques().last_time(cnt);
-  double sz = (double) (splitting.get_nb_elem_tot(DIRECTION_I)+1)
-              * (splitting.get_nb_elem_tot(DIRECTION_J)+1)
-              * (splitting.get_nb_elem_tot(DIRECTION_K)+1)
+  double sz = (double) (domain->get_nb_elem_tot(DIRECTION_I) + 1)
+              * (domain->get_nb_elem_tot(DIRECTION_J) + 1)
+              * (domain->get_nb_elem_tot(DIRECTION_K) + 1)
               * 3 * sizeof(float);
-  Nom bw = (t==0)? Nom("infty") : Nom(sz/1024/1024/1024/t);
+  Nom bw = (t == 0)? Nom("infty") : Nom(sz/1024/1024/1024/t);
   Cerr << "Parallel_io_parameters benchmark read: data_size= " << sz/1024/1024/1024
        << " GB. Time= " << t << " s. Bandwidth= " << bw << " GB/s.(x3)" << finl;
 
   // Check values:
   IJK_Field_double vx2, vy2, vz2;
-  vx2.allocate(splitting, Domaine_IJK::FACES_I,0);
-  vy2.allocate(splitting, Domaine_IJK::FACES_J,0);
-  vz2.allocate(splitting, Domaine_IJK::FACES_K,0);
+  vx2.allocate(domain, Domaine_IJK::FACES_I, 0);
+  vy2.allocate(domain, Domaine_IJK::FACES_J, 0);
+  vz2.allocate(domain, Domaine_IJK::FACES_K, 0);
 
   set_field_data(vx2,Nom("x*0.9+y*0.09*0.001+z*0.009"));
   set_field_data(vy2,Nom("1.+x*0.9+y*0.09+z*0.009"));

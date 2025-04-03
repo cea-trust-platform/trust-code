@@ -36,8 +36,8 @@ void force_zero_on_walls(IJK_Field_double& vz)
 {
   const int nj = vz.nj();
   const int ni = vz.ni();
-  const int kmin = vz.get_domaine().get_offset_local(DIRECTION_K);
-  const int nktot = vz.get_domaine().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
+  const int kmin = vz.get_domain().get_offset_local(DIRECTION_K);
+  const int nktot = vz.get_domain().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
   if (kmin == 0)
     {
       for (int j = 0; j < nj; j++)
@@ -57,25 +57,25 @@ void force_zero_on_walls(IJK_Field_double& vz)
 // Computed as the sum on each face of ("velocity" scalar "normal vector" times "surface of the face")
 void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz, const double constant, IJK_Field_double& resu)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
-  const double delta_x = geom.get_constant_delta(0);
-  const double delta_y = geom.get_constant_delta(1);
+  const Domaine_IJK& domain = vx.get_domain();
+  const double delta_x = domain.get_constant_delta(0);
+  const double delta_y = domain.get_constant_delta(1);
   const int kmax = resu.nk();
   const int imax = resu.ni();
   const int jmax = resu.nj();
-  const int offset = vx.get_domaine().get_offset_local(DIRECTION_K);
-  const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-  for (int k = 0; k < kmax; k++)
+  const int offset = domain.get_offset_local(DIRECTION_K);
+  const ArrOfDouble& delta_z_all = domain.get_delta(DIRECTION_K);
+  for (int k = 0; k < kmax; ++k)
     {
       const double delta_z = delta_z_all[k + offset];
       const double fx = delta_y * delta_z * constant;
       const double fy = delta_x * delta_z * constant;
       const double fz = delta_x * delta_y * constant;
-      for (int j = 0; j < jmax; j++)
+      for (int j = 0; j < jmax; ++j)
         {
-          for (int i = 0; i < imax; i++)
+          for (int i = 0; i < imax; ++i)
             {
-              double x = (vx(i + 1, j, k) - vx(i, j, k)) * fx + (vy(i, j + 1, k) - vy(i, j, k)) * fy + (vz(i, j, k + 1) - vz(i, j, k)) * fz;
+              const double x = (vx(i + 1, j, k) - vx(i, j, k)) * fx + (vy(i, j + 1, k) - vy(i, j, k)) * fy + (vz(i, j, k + 1) - vz(i, j, k)) * fz;
               resu(i, j, k) = x;
             }
         }
@@ -86,14 +86,14 @@ void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Fie
 // without the product with volume or a constant.
 void compute_divergence(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz, IJK_Field_double& resu)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
-  const double delta_x = geom.get_constant_delta(0);
-  const double delta_y = geom.get_constant_delta(1);
+  const Domaine_IJK& domain = vx.get_domain();
+  const double delta_x = domain.get_constant_delta(0);
+  const double delta_y = domain.get_constant_delta(1);
   const int kmax = resu.nk();
   const int imax = resu.ni();
   const int jmax = resu.nj();
-  const int offset = vx.get_domaine().get_offset_local(DIRECTION_K);
-  const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
+  const int offset = domain.get_offset_local(DIRECTION_K);
+  const ArrOfDouble& delta_z_all = domain.get_delta(DIRECTION_K);
   for (int k = 0; k < kmax; k++)
     {
       const double delta_z = delta_z_all[k + offset];
@@ -116,7 +116,7 @@ void compute_divergence(const IJK_Field_double& vx, const IJK_Field_double& vy, 
 // On the walls, don't touch velocity
 void add_gradient_times_constant(const IJK_Field_double& pressure, const double constant, IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
+  const Domaine_IJK& domain = vx.get_domain();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
   for (int k = 0; k < kmax; k++)
     {
@@ -125,7 +125,7 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
         {
           const int jmax = vx.nj();
           const int imax = vx.ni();
-          const double f = constant / geom.get_constant_delta(0);
+          const double f = constant / domain.get_constant_delta(0);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               vx(i, j, k) += (pressure(i, j, k) - pressure(i - 1, j, k)) * f;
@@ -135,18 +135,18 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
         {
           const int jmax = vy.nj();
           const int imax = vy.ni();
-          const double f = constant / geom.get_constant_delta(1);
+          const double f = constant / domain.get_constant_delta(1);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               vy(i, j, k) += (pressure(i, j, k) - pressure(i, j - 1, k)) * f;
         }
       // k component:
       bool on_the_wall = false;
-      const int k_min = vz.get_domaine().get_offset_local(DIRECTION_K);
-      const int nk_tot = vz.get_domaine().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
-      const int offset = vz.get_domaine().get_offset_local(DIRECTION_K);
-      const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k = vz.get_domaine().get_periodic_flag(DIRECTION_K);
+      const int k_min = vz.get_domain().get_offset_local(DIRECTION_K);
+      const int nk_tot = vz.get_domain().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
+      const int offset = vz.get_domain().get_offset_local(DIRECTION_K);
+      const ArrOfDouble& delta_z_all = domain.get_delta(DIRECTION_K);
+      bool perio_k = vz.get_domain().get_periodic_flag(DIRECTION_K);
       if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
       if (k < vz.nk() && (!on_the_wall))
@@ -174,7 +174,7 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
 // On the walls, don't touch velocity
 void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, const IJK_Field_double& rho, const double constant, IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
+  const Domaine_IJK& domain = vx.get_domain();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
   for (int k = 0; k < kmax; k++)
     {
@@ -183,7 +183,7 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
         {
           const int jmax = vx.nj();
           const int imax = vx.ni();
-          const double f = constant / geom.get_constant_delta(0) * 2.;
+          const double f = constant / domain.get_constant_delta(0) * 2.;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               vx(i, j, k) += (pressure(i, j, k) - pressure(i - 1, j, k)) / (rho(i, j, k) + rho(i - 1, j, k)) * f;
@@ -193,18 +193,18 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
         {
           const int jmax = vy.nj();
           const int imax = vy.ni();
-          const double f = constant / geom.get_constant_delta(1) * 2.;
+          const double f = constant / domain.get_constant_delta(1) * 2.;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               vy(i, j, k) += (pressure(i, j, k) - pressure(i, j - 1, k)) / (rho(i, j, k) + rho(i, j - 1, k)) * f;
         }
       // k component:
       bool on_the_wall = false;
-      const int k_min = vz.get_domaine().get_offset_local(DIRECTION_K);
-      const int nk_tot = vz.get_domaine().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
-      const int offset = vz.get_domaine().get_offset_local(DIRECTION_K);
-      const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k = vz.get_domaine().get_periodic_flag(DIRECTION_K);
+      const int k_min = vz.get_domain().get_offset_local(DIRECTION_K);
+      const int nk_tot = vz.get_domain().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
+      const int offset = vz.get_domain().get_offset_local(DIRECTION_K);
+      const ArrOfDouble& delta_z_all = domain.get_delta(DIRECTION_K);
+      bool perio_k = vz.get_domain().get_periodic_flag(DIRECTION_K);
 
       if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
@@ -230,7 +230,7 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
 void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure, const IJK_Field_double& inv_rho, const double constant, IJK_Field_double& vx, IJK_Field_double& vy,
                                                IJK_Field_double& vz)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
+  const Domaine_IJK& domain = vx.get_domain();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
   for (int k = 0; k < kmax; k++)
     {
@@ -239,7 +239,7 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
         {
           const int jmax = vx.nj();
           const int imax = vx.ni();
-          const double f = constant / geom.get_constant_delta(0) * 0.5;
+          const double f = constant / domain.get_constant_delta(0) * 0.5;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               vx(i, j, k) += (pressure(i, j, k) - pressure(i - 1, j, k)) * (inv_rho(i, j, k) + inv_rho(i - 1, j, k)) * f;
@@ -249,18 +249,18 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
         {
           const int jmax = vy.nj();
           const int imax = vy.ni();
-          const double f = constant / geom.get_constant_delta(1) * 0.5;
+          const double f = constant / domain.get_constant_delta(1) * 0.5;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               vy(i, j, k) += (pressure(i, j, k) - pressure(i, j - 1, k)) * (inv_rho(i, j, k) + inv_rho(i, j - 1, k)) * f;
         }
       // k component:
       bool on_the_wall = false;
-      const int k_min = vz.get_domaine().get_offset_local(DIRECTION_K);
-      const int nk_tot = vz.get_domaine().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
-      const int offset = vz.get_domaine().get_offset_local(DIRECTION_K);
-      const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k = vz.get_domaine().get_periodic_flag(DIRECTION_K);
+      const int k_min = vz.get_domain().get_offset_local(DIRECTION_K);
+      const int nk_tot = vz.get_domain().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
+      const int offset = vz.get_domain().get_offset_local(DIRECTION_K);
+      const ArrOfDouble& delta_z_all = domain.get_delta(DIRECTION_K);
+      bool perio_k = vz.get_domain().get_periodic_flag(DIRECTION_K);
 
       if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
@@ -292,7 +292,6 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 //  div(gradient(pressure_)) = 1/dt * div(v_input)
 //
 // input value of pressure_ is used as an initial guess by the solver
-
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
@@ -307,9 +306,8 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
 
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
   if (IJK_Shear_Periodic_helpler::defilement_ == 1)
-    {
-      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-    }
+    pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+
   double divergence_before = 0.;
   if (Option_IJK::CHECK_DIVERGENCE)
     divergence_before = norme_ijk(pressure_rhs);
@@ -341,7 +339,6 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
 //  div(gradient(pressure_)) = 1/dt * div(v_input)
 //
 // input value of pressure_ is used as an initial guess by the solver
-
 void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
@@ -355,11 +352,10 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
-  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
   if (IJK_Shear_Periodic_helpler::defilement_ == 1)
-    {
-      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-    }
+    pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+
   double divergence_before = 0.;
   if (Option_IJK::CHECK_DIVERGENCE)
     divergence_before = norme_ijk(pressure_rhs);
@@ -385,7 +381,6 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
 }
 
 // Methode basee sur 1/rho au lieu de rho :
-
 void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
@@ -398,7 +393,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
   double divergence_before = 0.;
   if (Option_IJK::CHECK_DIVERGENCE)
     divergence_before = norme_ijk(pressure_rhs);
@@ -429,14 +424,12 @@ void forward_euler_update(const IJK_Field_double& dv, IJK_Field_double& v, const
 {
   const int imax = v.ni();
   const int jmax = v.nj();
-  for (int j = 0; j < jmax; j++)
-    {
-      for (int i = 0; i < imax; i++)
-        {
-          double x = dv(i, j, k_layer);
-          v(i, j, k_layer) += x * dt_tot;
-        }
-    }
+  for (int j = 0; j < jmax; ++j)
+    for (int i = 0; i < imax; ++i)
+      {
+        double x = dv(i, j, k_layer);
+        v(i, j, k_layer) += x * dt_tot;
+      }
 }
 
 // Take the provided derivative dv and update F and the unknown v for the Runge Kutta "rk_step"
@@ -517,7 +510,6 @@ void runge_kutta3_update(const DoubleTab& dvi, DoubleTab& G, DoubleTab& l,
   const int nbsom = maillage.nb_sommets();
 
   // Resize du tableau
-
   G.resize(nbsom, 3);
 
   switch(step)
@@ -596,9 +588,9 @@ void runge_kutta3_update_surfacic_fluxes(IJK_Field_double& dv, IJK_Field_double&
     case 0:
       // don't read initial value of F (no performance benefit because write to F causes the
       // processor to fetch the cache line, but we don't wand to use a potentially uninitialized value
-      for (int j = -ghost; j < jmax+ghost; j++)
+      for (int j = -ghost; j < jmax + ghost; ++j)
         {
-          for (int i = -ghost; i < imax+ghost; i++)
+          for (int i = -ghost; i < imax + ghost; ++i)
             {
 
               double x = dv(i, j, k_layer);
@@ -609,9 +601,9 @@ void runge_kutta3_update_surfacic_fluxes(IJK_Field_double& dv, IJK_Field_double&
       break;
     case 1:
       // general case, read and write F
-      for (int j = -ghost; j < jmax+ghost; j++)
+      for (int j = -ghost; j < jmax + ghost; ++j)
         {
-          for (int i = -ghost; i < imax+ghost; i++)
+          for (int i = -ghost; i < imax + ghost; ++i)
             {
               double x = F(i, j, k_layer) * facteurF + dv(i, j, k_layer);
               dv(i, j, k_layer) = x * one_divided_by_Fk;
@@ -621,9 +613,9 @@ void runge_kutta3_update_surfacic_fluxes(IJK_Field_double& dv, IJK_Field_double&
       break;
     case 2:
       // do not write F
-      for (int j = -ghost; j < jmax+ghost; j++)
+      for (int j = -ghost; j < jmax+ghost; ++j)
         {
-          for (int i = -ghost; i < imax+ghost; i++)
+          for (int i = -ghost; i < imax+ghost; ++i)
             {
               double x = F(i, j, k_layer) * facteurF + dv(i, j, k_layer);
               dv(i, j, k_layer) = x * one_divided_by_Fk;
@@ -793,8 +785,8 @@ static void mass_solver_with_inv_rho_DIR(DIRECTION _DIR_, const IJK_Field_double
 double get_channel_control_volume(IJK_Field_double& field, int local_k_layer, const ArrOfDouble_with_ghost& delta_z_local)
 {
   double delta_z;
-  const double delta_x = field.get_domaine().get_constant_delta(0);
-  const double delta_y = field.get_domaine().get_constant_delta(1);
+  const double delta_x = field.get_domain().get_constant_delta(0);
+  const double delta_y = field.get_domain().get_constant_delta(1);
   switch(field.get_localisation())
     {
     case Domaine_IJK::ELEM:
@@ -803,10 +795,10 @@ double get_channel_control_volume(IJK_Field_double& field, int local_k_layer, co
       delta_z = delta_z_local[local_k_layer];
       break;
     case Domaine_IJK::FACES_K:
-      if (!field.get_domaine().get_periodic_flag(DIRECTION_K))
+      if (!field.get_domain().get_periodic_flag(DIRECTION_K))
         {
-          const int global_k_index = local_k_layer + field.get_domaine().get_offset_local(DIRECTION_K);
-          const int last_global_k = field.get_domaine().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K) - 1;
+          const int global_k_index = local_k_layer + field.get_domain().get_offset_local(DIRECTION_K);
+          const int last_global_k = field.get_domain().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K) - 1;
           // We have walls, are we on a wall ?
           if (global_k_index == 0)
             {
@@ -957,20 +949,20 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i, const IJK_F
                                   IJK_Field_double& dudy,
                                   IJK_Field_double& dvdx, IJK_Field_double& dwdy, IJK_Field_double& lambda2)
 {
-  const Domaine_IJK& geom = vitesse_i.get_domaine();
+  const Domaine_IJK& domain = vitesse_i.get_domain();
 
   // Pour detacher de toute classe :
-  const double dx = geom.get_constant_delta(0);
-  const double dy = geom.get_constant_delta(1);
-  const ArrOfDouble& tab_dz = geom.get_delta(2);
+  const double dx = domain.get_constant_delta(0);
+  const double dy = domain.get_constant_delta(1);
+  const ArrOfDouble& tab_dz = domain.get_delta(2);
 
   // Nombre total de mailles en K
-  const int nktot = geom.get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_K);
+  const int nktot = domain.get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_K);
   // Nombre local de mailles :
-  const int imax = geom.get_nb_items_local(Domaine_IJK::ELEM, 0);
-  const int jmax = geom.get_nb_items_local(Domaine_IJK::ELEM, 1);
-  const int kmax = geom.get_nb_items_local(Domaine_IJK::ELEM, 2);
-  const int offset = geom.get_offset_local(DIRECTION_K);
+  const int imax = domain.get_nb_items_local(Domaine_IJK::ELEM, 0);
+  const int jmax = domain.get_nb_items_local(Domaine_IJK::ELEM, 1);
+  const int kmax = domain.get_nb_items_local(Domaine_IJK::ELEM, 2);
+  const int offset = domain.get_offset_local(DIRECTION_K);
   double residue = 0.;
   for (int k = 0; k < kmax; k++)
     {
@@ -1020,7 +1012,7 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i, const IJK_F
               // Formule centree (ordre 2) pour pas variable dans le domaine :
               // grad[1:-1] = (h1/h2*u_pl - h2/h1*u_m + (h2**2-h1**2)/(h1*h2)*u_c) / (h1+h2)
               //
-              if (on_the_first_cell && !(geom.get_periodic_flag(DIRECTION_K)))
+              if (on_the_first_cell && !(domain.get_periodic_flag(DIRECTION_K)))
                 {
                   // de Ux
                   double Ue_mk = 0.;
@@ -1035,7 +1027,7 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i, const IJK_F
                   double Ve_pk = (vitesse_j(i, j, k + 1) + vitesse_j(i, j + 1, k + 1)) * 0.5;
                   dvdz(i, j, k) = (-4 * Ve_mk + 3 * Ve_ck + Ve_pk) / (3 * dz);
                 }
-              else if (on_the_last_cell && !(geom.get_periodic_flag(DIRECTION_K)))
+              else if (on_the_last_cell && !(domain.get_periodic_flag(DIRECTION_K)))
                 {
                   // de Ux
                   double Ue_mk = (vitesse_i(i, j, k - 1) + vitesse_i(i + 1, j, k - 1)) * 0.5;
@@ -1337,7 +1329,7 @@ void update_integral_indicatrice(const IJK_Field_double& indic, const double del
 
 double calculer_v_moyen(const IJK_Field_double& vx)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
+  const Domaine_IJK& domain = vx.get_domain();
   const int ni = vx.ni();
   const int nj = vx.nj();
   const int nk = vx.nk();
@@ -1357,11 +1349,11 @@ double calculer_v_moyen(const IJK_Field_double& vx)
   v_moy = Process::mp_sum(v_moy);
   // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
   // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  const double n_mailles_tot = ((double) domain.get_nb_elem_tot());
   v_moy /= n_mailles_tot;
 #else
-  const int offset = splitting.get_offset_local(DIRECTION_K);
-  const ArrOfDouble& tab_dz=geom.get_delta(DIRECTION_K);
+  const int offset = domain.get_offset_local(DIRECTION_K);
+  const ArrOfDouble& tab_dz = domain.get_delta(DIRECTION_K);
   for (int k = 0; k < nk; k++)
     {
       const double dz = tab_dz[k+offset];
@@ -1377,15 +1369,15 @@ double calculer_v_moyen(const IJK_Field_double& vx)
   v_moy = Process::mp_sum(v_moy);
   // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
   // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const double n_mailles_xy = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1);
-  v_moy /= (n_mailles_xy * geom.get_domain_length(DIRECTION_K) );
+  const double n_mailles_xy = ((double) domain.get_nb_elem_tot(0)) * domain.get_nb_elem_tot(1);
+  v_moy /= (n_mailles_xy * domain.get_domain_length(DIRECTION_K) );
 #endif
   return v_moy;
 }
 
 double calculer_vl_moyen(const IJK_Field_double& vx, const IJK_Field_double& indic)
 {
-  const Domaine_IJK& geom = vx.get_domaine();
+  const Domaine_IJK& domain = vx.get_domain();
   const int ni = vx.ni();
   const int nj = vx.nj();
   const int nk = vx.nk();
@@ -1407,7 +1399,7 @@ double calculer_vl_moyen(const IJK_Field_double& vx, const IJK_Field_double& ind
   indic_moy = Process::mp_sum(indic_moy);
   // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
   // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  const double n_mailles_tot = ((double) domain.get_nb_elem_tot());
   v_moy /= n_mailles_tot;
   indic_moy /= n_mailles_tot;
 
@@ -1454,8 +1446,8 @@ double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_doubl
   rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
   // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
   // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const Domaine_IJK& geom = vx.get_domaine();
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  const Domaine_IJK& domain = vx.get_domain();
+  const double n_mailles_tot = ((double) domain.get_nb_elem_tot());
   rho_cp_u_moy /= n_mailles_tot;
   return rho_cp_u_moy;
 }
@@ -1463,7 +1455,7 @@ double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_doubl
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx, const IJK_Field_double& temperature_adimensionnelle_theta, const IJK_Field_double& cp_rhocp_rhocpinv,
                                                       const IJK_Field_double& rho_field, const double& rho_cp, const int rho_cp_case)
 {
-  const Domaine_IJK& geom = temperature_adimensionnelle_theta.get_domaine();
+  const Domaine_IJK& domain = temperature_adimensionnelle_theta.get_domain();
   double theta_adim_moy = 0;
   double rho_cp_u_moy = 0;
   double rho = 1.;
@@ -1505,7 +1497,7 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
   rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
   theta_adim_moy = Process::mp_sum(theta_adim_moy);
   //Division par le nombre de mailles
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  const double n_mailles_tot = ((double) domain.get_nb_elem_tot());
   rho_cp_u_moy /= n_mailles_tot;
   theta_adim_moy /= n_mailles_tot;
   //valeur adimensionnelle moyenne
@@ -1516,7 +1508,7 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
 double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& cp_rhocp_rhocpinv, const IJK_Field_double& rho_field, const double& rho_cp, const int kmin, const int kmax,
                               const int rho_cp_case)
 {
-  const Domaine_IJK& geom = variable.get_domaine();
+  const Domaine_IJK& domain = variable.get_domain();
   double variable_moy = 0;
   double rho_cp_moy = 0.;
   const int nk = variable.nk();
@@ -1531,7 +1523,7 @@ double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
   //Division par le nombre de mailles sur les 2 plans de bords
-  const double n_mailles_plan_xy_tot = 2. * ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1);
+  const double n_mailles_plan_xy_tot = 2. * ((double) domain.get_nb_elem_tot(0)) * domain.get_nb_elem_tot(1);
   rho_cp_moy /= n_mailles_plan_xy_tot;
   variable_moy /= n_mailles_plan_xy_tot;
   //valeur adimensionnelle moyenne
@@ -1581,7 +1573,7 @@ void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_doubl
 void add_gradient_temperature(const IJK_Field_double& temperature, const double constant, IJK_Field_double& grad_T_x, IJK_Field_double& grad_T_y, IJK_Field_double& grad_T_z,
                               const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda)
 {
-  const Domaine_IJK& geom = grad_T_x.get_domaine();
+  const Domaine_IJK& domain = grad_T_x.get_domain();
   const int kmax = std::max(std::max(grad_T_x.nk(), grad_T_y.nk()), grad_T_z.nk());
   for (int k = 0; k < kmax; k++)
     {
@@ -1590,7 +1582,7 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
         {
           const int jmax = grad_T_x.nj();
           const int imax = grad_T_x.ni();
-          const double f = constant / geom.get_constant_delta(0);
+          const double f = constant / domain.get_constant_delta(0);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               grad_T_x(i, j, k) += (temperature(i, j, k) - temperature(i - 1, j, k)) * f;
@@ -1600,7 +1592,7 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
         {
           const int jmax = grad_T_y.nj();
           const int imax = grad_T_y.ni();
-          const double f = constant / geom.get_constant_delta(1);
+          const double f = constant / domain.get_constant_delta(1);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
               grad_T_y(i, j, k) += (temperature(i, j, k) - temperature(i, j - 1, k)) * f;
@@ -1612,11 +1604,11 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
       int bctype_kmin = boundary.get_bctype_k_min();
       int bctype_kmax = boundary.get_bctype_k_max();
 
-      const int k_min = grad_T_z.get_domaine().get_offset_local(DIRECTION_K);
-      const int nk_tot = grad_T_z.get_domaine().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
-      const int offset = grad_T_z.get_domaine().get_offset_local(DIRECTION_K);
-      const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k = grad_T_z.get_domaine().get_periodic_flag(DIRECTION_K);
+      const int k_min = grad_T_z.get_domain().get_offset_local(DIRECTION_K);
+      const int nk_tot = grad_T_z.get_domain().get_nb_items_global(Domaine_IJK::FACES_K, DIRECTION_K);
+      const int offset = grad_T_z.get_domain().get_offset_local(DIRECTION_K);
+      const ArrOfDouble& delta_z_all = domain.get_delta(DIRECTION_K);
+      const bool perio_k = grad_T_z.get_domain().get_periodic_flag(DIRECTION_K);
       if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
 
@@ -1717,8 +1709,8 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
 
 void force_entry_velocity(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, double v_imposed, const int& dir, const int& compo, const int& stencil)
 {
-  const Domaine_IJK& splitting = select_dir(dir, vx.get_domaine(), vy.get_domaine(), vz.get_domaine());
-  const int offset_ijk = splitting.get_offset_local(dir);
+  const Domaine_IJK& domain = select_dir(dir, vx.get_domain(), vy.get_domain(), vz.get_domain());
+  const int offset_ijk = domain.get_offset_local(dir);
 
   if (offset_ijk > 0)
     return;

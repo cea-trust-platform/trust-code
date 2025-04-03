@@ -28,7 +28,7 @@ void dumplata_header(const char *filename, const IJK_Field_template<_TYPE_,_TYPE
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void dumplata_add_geometry(const char *filename, const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& f);
 
-void dumplata_add_geometry(const char *filename, const Domaine_IJK& splitting);
+void dumplata_add_geometry(const char *filename, const Domaine_IJK& domain);
 
 void dumplata_newtime(const char *filename, double time);
 

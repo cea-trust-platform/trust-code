@@ -58,10 +58,10 @@ Entree& Multigrille_Adrien::readOn(Entree& is)
 
   if (ijkdis_name != Nom())
     {
-      const IJK_VDF_converter& ijkdis = ref_cast(IJK_VDF_converter, Interprete_bloc::objet_global(ijkdis_name));
-      const Domaine_IJK& split = ijkdis.get_domaine();
-
-      initialize(split);
+      const IJK_VDF_converter& ijkdis = ref_cast(IJK_VDF_converter,
+                                                 Interprete_bloc::objet_global(ijkdis_name));
+      const Domaine_IJK& domain = ijkdis.get_domain();
+      initialize(domain);
     }
   return is;
 }
@@ -72,35 +72,32 @@ int Multigrille_Adrien::completer(const Equation_base& eq)
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
   const Nom& ijkdis_name = IJK_VDF_converter::get_conventional_name();
   const IJK_VDF_converter& ijkdis = ref_cast(IJK_VDF_converter, Interprete_bloc::objet_global(ijkdis_name));
-  const Domaine_IJK& split = ijkdis.get_domaine();
-
-  initialize(split);
-
+  const Domaine_IJK& domain = ijkdis.get_domain();
+  initialize(domain);
   return 1;
 }
 
-void Multigrille_Adrien::initialize(const Domaine_IJK& split)
+void Multigrille_Adrien::initialize(const Domaine_IJK& domain)
 {
   if (solver_precision_ == precision_double_)
-    completer_template<double, ArrOfDouble>(split);
+    completer_template<double, ArrOfDouble>(domain);
   else if (solver_precision_ == precision_float_)
-    completer_template<float, ArrOfFloat>(split);
+    completer_template<float, ArrOfFloat>(domain);
   else if (solver_precision_ == precision_mix_)
     {
-      completer_template<float, ArrOfFloat>(split);
-      completer_double_for_residue(split);
+      completer_template<float, ArrOfFloat>(domain);
+      completer_double_for_residue(domain);
     }
 
   IJK_Field_float rho;
+
   if (IJK_Shear_Periodic_helpler::defilement_==1)
     {
-      rho.allocate(split, Domaine_IJK::ELEM, 0, 0 ,1);
+      rho.allocate(domain, Domaine_IJK::ELEM, 0, 0 ,1);
       rho.allocate_shear_BC(2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
     }
   else
-    {
-      rho.allocate(split, Domaine_IJK::ELEM, 0);
-    }
+    rho.allocate(domain, Domaine_IJK::ELEM, 0);
 
   rho.data() = 1.;
   set_rho<float, ArrOfFloat>(rho);
@@ -136,11 +133,11 @@ int Multigrille_Adrien::needed_kshift_for_jacobi(int level) const
   return nsweeps_jacobi_residu(level);
 }
 
-void Multigrille_Adrien::completer_double_for_residue(const Domaine_IJK& splitting)
+void Multigrille_Adrien::completer_double_for_residue(const Domaine_IJK& domain)
 {
   Cerr << "Multigrille_Adrien::completer_double_for_residue" << finl;
   grids_data_double_.dimensionner(1);
-  grids_data_double_[0].initialize(splitting, ghost_size_, nsweeps_jacobi_residu(0));
+  grids_data_double_[0].initialize(domain, ghost_size_, nsweeps_jacobi_residu(0));
 }
 
 double Multigrille_Adrien::multigrille_failure()

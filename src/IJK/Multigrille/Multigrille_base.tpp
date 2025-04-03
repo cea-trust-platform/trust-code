@@ -227,8 +227,8 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
             if (step[grid_level] == 0)
               {
                 Nom dom = Nom("DOM")+Nom(grid_level);
-                Domaine_IJK& geom = ref_cast_non_const(Domaine_IJK,x.get_domaine() );
-                geom.nommer(dom); // On nomme la geom pour pouvoir l'ecrire.
+                Domaine_IJK& domain = ref_cast_non_const(Domaine_IJK,x.get_domain() );
+                domain.nommer(dom); // On nomme la geom pour pouvoir l'ecrire.
                 dumplata_header(lata_name, x /* on passe un champ pour ecrire la geometrie */);
               }
             dumplata_newtime(lata_name,step[grid_level]);
@@ -285,7 +285,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
         if (step[grid_level] == 0)
           {
             Nom dom = Nom("DOM")+Nom(grid_level);
-            x.get_splitting_non_const().get_grid_geometry_non_const().nommer(dom); // On nomme la geom pour pouvoir l'ecrire.
+            x.get_domain().nommer(dom); // On nomme la geom pour pouvoir l'ecrire.
             dumplata_header(lata_name, x /* on passe un champ pour ecrire la geometrie */);
           }
         dumplata_newtime(lata_name,step[grid_level]);
@@ -334,7 +334,6 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
     for (j = 0; j < nj; j++)
       for (i = 0; i < ni; i++)
         x(i,j,k) = (_TYPE_)inco[mat.renum(i,j,k)]; //!!!!!!!!!!!!!!!!!! ToDo WARNING: potentiellement conversion de double en float!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
@@ -727,7 +726,6 @@ void Multigrille_base::resoudre_avec_gmres(IJK_Field_template<_TYPE_,_TYPE_ARRAY
       op_negate(krilov_space[0]);
     }
 }
-
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_base::resoudre_systeme_template(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)

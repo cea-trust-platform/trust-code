@@ -88,7 +88,7 @@ void DebogIJK::compute_signature(const IJK_Field_float& field, ArrOfDouble& sign
     {
       const int n = field.nb_elem_local(dir);
       sig_factors[dir].resize(n, sig_size);
-      const int offset = field.get_domaine().get_offset_local(dir);
+      const int offset = field.get_domain().get_offset_local(dir);
       for (int i = 0; i < n; i++)
         for (int j = 0; j < sig_size; j++)
           sig_factors[dir](i,j) = cos(facteurs[j] * (i+offset));
@@ -186,10 +186,10 @@ void DebogIJK::compute_signature(const IJK_Field_double& field, ArrOfDouble& sig
     {
       const int n = field.nb_elem_local(dir);
       sig_factors[dir].resize(n, sig_size);
-      const int offset = field.get_domaine().get_offset_local(dir);
+      const int offset = field.get_domain().get_offset_local(dir);
       for (int i = 0; i < n; i++)
         for (int j = 0; j < sig_size; j++)
-          sig_factors[dir](i,j) = cos(facteurs[j] * (i+offset));
+          sig_factors[dir](i, j) = cos(facteurs[j] * (i + offset));
     }
 
   const int ni = field.ni();

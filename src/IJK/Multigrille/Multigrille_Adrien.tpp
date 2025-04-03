@@ -26,9 +26,9 @@ template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_Adrien::prepare_secmem_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x) const
 {
   double moyenne = somme_ijk(x);
-  double nb_elem_tot = (double) x.get_domaine().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_I)
-                       * (double) x.get_domaine().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_J)
-                       * (double) x.get_domaine().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_K);
+  double nb_elem_tot = (double) x.get_domain().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_I)
+                       * (double) x.get_domain().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_J)
+                       * (double) x.get_domain().get_nb_items_global(Domaine_IJK::ELEM, DIRECTION_K);
   double val = moyenne / nb_elem_tot;
   const int m = x.data().size_array();
   for (int i = 0; i < m; i++)
@@ -73,7 +73,6 @@ template <typename _TYPE_FUNC_, typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& rho, bool set_coarse_matrix_flag, bool use_coeffs_from_double)
 {
   constexpr bool IS_DOUBLE = std::is_same<_TYPE_FUNC_, double>::value;
-
   // size might be 1 for mixed precision solver if updating the double precision part:
   const int nlevels = get_grid_data_size<_TYPE_FUNC_>();
   const int ghost = get_grid_data<_TYPE_FUNC_>(0).get_rho().ghost();
@@ -91,23 +90,21 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
           for (k = 0; k < nk; k++)
             for (j = 0; j < nj; j++)
               for (i = 0; i < ni; i++)
-                r(i,j,k) = (_TYPE_FUNC_)rho(i,j,k);
+                r(i, j, k) = (_TYPE_FUNC_)rho(i, j, k);
 
           // echange espace virtuel sur rho sans passer par IJK_Field --> mauvais remplissage des coeffs de la matrice pour le shear periodique
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Pousson
-          if (IJK_Shear_Periodic_helpler::defilement_==1)
+          if (IJK_Shear_Periodic_helpler::defilement_ == 1)
             {
               set_grid_data<_TYPE_FUNC_>(l).get_update_rho().get_shear_BC_helpler().set_indicatrice_ghost_zmin_(rho.get_shear_BC_helpler().get_indicatrice_ghost_zmin_());
               set_grid_data<_TYPE_FUNC_>(l).get_update_rho().get_shear_BC_helpler().set_indicatrice_ghost_zmax_(rho.get_shear_BC_helpler().get_indicatrice_ghost_zmax_());
             }
         }
       else
-        coarsen_operators_[l-1]->coarsen(set_grid_data<_TYPE_FUNC_>(l-1).get_rho(),
-                                         set_grid_data<_TYPE_FUNC_>(l).get_update_rho(),
-                                         1 /* compute average, not sum */);
-
+        coarsen_operators_[l - 1]->coarsen(set_grid_data<_TYPE_FUNC_>(l - 1).get_rho(),
+                                           set_grid_data<_TYPE_FUNC_>(l).get_update_rho(),
+                                           1 /* compute average, not sum */);
       set_grid_data<_TYPE_FUNC_>(l).get_update_rho().echange_espace_virtuel(ghost);
-
       // Compute matrix coefficients at faces
       if(IS_DOUBLE)
         grids_data_double_[l].compute_faces_coefficients_from_rho();
@@ -119,7 +116,6 @@ void Multigrille_Adrien::set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_
             grids_data_float_[l].compute_faces_coefficients_from_rho();
         }
     }
-
   // Update coarse problem matrix:
   if (set_coarse_matrix_flag)
     {
@@ -152,7 +148,7 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
           for (k = 0; k < nk; k++)
             for (j = 0; j < nj; j++)
               for (i2 = 0; i2 < ni; i2++)
-                r(i2,j,k) = (_TYPE_FUNC_)rho(i2,j,k);
+                r(i2, j, k) = (_TYPE_FUNC_)rho(i2, j, k);
           // modif pour shear-periodicite, que lechange_espace_virtuel soit bien fait pour rho ou inv_rho dans le solveur de Poisson
           // on ajoute ca pour le shear perio, uniquement sur le premier niveau de multigrille pour l'instant
           if (IJK_Shear_Periodic_helpler::defilement_==1)
@@ -162,11 +158,9 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
             }
         }
       else
-        {
-          coarsen_operators_[i-1]->coarsen(set_grid_data<_TYPE_FUNC_>(i-1).get_rho(),
-                                           set_grid_data<_TYPE_FUNC_>(i).get_update_rho(),
-                                           1 /* compute average, not sum */);
-        }
+        coarsen_operators_[i-1]->coarsen(set_grid_data<_TYPE_FUNC_>(i-1).get_rho(),
+                                         set_grid_data<_TYPE_FUNC_>(i).get_update_rho(),
+                                         1 /* compute average, not sum */);
 
       set_grid_data<_TYPE_FUNC_>(i).get_update_rho().echange_espace_virtuel(ghost);
 
@@ -231,11 +225,7 @@ void Multigrille_Adrien::jacobi_residu_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&
       x.echange_espace_virtuel(nb_passes_to_do);
 
       if (grid_level == 0)
-        {
-          // Place counter here to avoid counting communication time:
-          //statistiques().begin_count(counter);
-          flop_count = 0;
-        }
+        flop_count = 0;
 
       const bool last_pass_is_residue = (nb_passes_done + nb_passes_to_do == n_jacobi_tot + 1);
       Multipass_Jacobi_template<_TYPE_, _TYPE_ARRAY_, SSE_Kernels::GENERIC_STRIDE, SSE_Kernels::GENERIC_STRIDE>(x, *residu, coeffs_face, *secmem, nb_passes_to_do, last_pass_is_residue, relax);
@@ -243,10 +233,7 @@ void Multigrille_Adrien::jacobi_residu_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>&
       nb_passes_done += nb_passes_to_do;
 
       if (grid_level == 0)
-        {
-          //statistiques().end_count(counter, flop_count);
-          flop_count = 0;
-        }
+        flop_count = 0;
     }
   statistiques().end_count(jacobi_residu_counter_, (int)flop_count);
 }
@@ -268,7 +255,7 @@ void Multigrille_Adrien::interpolate_sub_shiftk_(const IJK_Field_template<_TYPE_
 
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Multigrille_Adrien::completer_template(const Domaine_IJK& split)
+void Multigrille_Adrien::completer_template(const Domaine_IJK& domain)
 {
   Cerr << "Multigrille_Adrien::completer_template" << finl;
 
@@ -280,14 +267,13 @@ void Multigrille_Adrien::completer_template(const Domaine_IJK& split)
   else
     grids_data_float_.dimensionner(nb_grids);
 
-  set_grid_data<_TYPE_>(0).initialize(split, ghost_size_, nsweeps_jacobi_residu(0));
+  set_grid_data<_TYPE_>(0).initialize(domain, ghost_size_, nsweeps_jacobi_residu(0));
 
   int i;
   for (i = 0; i < nb_operators; i++)
-    {
-      coarsen_operators_[i]->initialize_grid_data(set_grid_data<_TYPE_>(i), set_grid_data<_TYPE_>(i+1),
-                                                  nsweeps_jacobi_residu(i+1));
-    }
+    coarsen_operators_[i]->initialize_grid_data(set_grid_data<_TYPE_>(i), set_grid_data<_TYPE_>(i + 1),
+                                                nsweeps_jacobi_residu(i + 1));
+
   for (i = 0; i < nb_grids; i++)
     {
       const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& g = get_grid_data<_TYPE_>(i).get_rho();
@@ -299,7 +285,7 @@ void Multigrille_Adrien::completer_template(const Domaine_IJK& split)
 
 // Allocate an array for the grid data
 template <typename _TYPE_, typename _TYPE_ARRAY_>
-void Multigrille_Adrien::alloc_field_( IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& field, int level, bool with_additional_layers) const
+void Multigrille_Adrien::alloc_field_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& field, int level, bool with_additional_layers) const
 {
   if (level < 0 || level > get_grid_data_size<_TYPE_>())
     {
@@ -309,7 +295,7 @@ void Multigrille_Adrien::alloc_field_( IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& 
   int n = 0;
   if (with_additional_layers)
     n = ghost_size_;
-  field.allocate(get_grid_data<_TYPE_>(level).get_domaine(), Domaine_IJK::ELEM, ghost_size_, n);
+  field.allocate(get_grid_data<_TYPE_>(level).get_domain(), Domaine_IJK::ELEM, ghost_size_, n);
 }
 
 

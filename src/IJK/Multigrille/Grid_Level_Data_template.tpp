@@ -30,39 +30,37 @@ Grid_Level_Data_template<_TYPE_>::Grid_Level_Data_template()
 
 // Initialize the data structures (allocate memory and setup temporary storage structures)
 template<typename _TYPE_>
-void Grid_Level_Data_template<_TYPE_>::initialize(const Domaine_IJK& dom, int ghost, int additional_k_layers)
+void Grid_Level_Data_template<_TYPE_>::initialize(const Domaine_IJK& domain, int ghost, int additional_k_layers)
 {
-  domaine_ijk_ = dom;
-  perio_k_= dom.get_periodic_flag(DIRECTION_K);
+  ijk_domain_ = domain;
+  perio_k_= domain.get_periodic_flag(DIRECTION_K);
   ghost_size_ = ghost;
-  if (IJK_Shear_Periodic_helpler::defilement_==1)
+  if (IJK_Shear_Periodic_helpler::defilement_ == 1)
     {
-      ijk_rho_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost, 0 ,1);
+      ijk_rho_.allocate(ijk_domain_, Domaine_IJK::ELEM, ghost, 0, 1);
       ijk_rho_.allocate_shear_BC(2, IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_, IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_);
     }
   else
-    {
-      ijk_rho_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost);
-    }
+    ijk_rho_.allocate(ijk_domain_, Domaine_IJK::ELEM, ghost);
+
   ijk_rho_.data() = 1.;
   // Allocate the array of coefficients at faces with size "elements".
   // Therefore, if the domain is not periodic, at the right end of the domain,
   //  the wall coefficient is stored in a "ghost" cell.
   // This trick allows to have the same stride in j and k for all arrays.
-  ijk_faces_coefficients_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost, 0 /* add.k layers */, 4 /* components */);
+  ijk_faces_coefficients_.allocate(ijk_domain_, Domaine_IJK::ELEM, ghost, 0 /* add.k layers */, 4 /* components */);
   ijk_faces_coefficients_.data() = 1.;
-  ijk_x_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost, additional_k_layers);
+  ijk_x_.allocate(ijk_domain_, Domaine_IJK::ELEM, ghost, additional_k_layers);
   ijk_x_.data() = 0.;
-  ijk_rhs_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost);
+  ijk_rhs_.allocate(ijk_domain_, Domaine_IJK::ELEM, ghost);
   ijk_rhs_.data() = 0.;
-  ijk_residue_.allocate(domaine_ijk_, Domaine_IJK::ELEM, ghost);
+  ijk_residue_.allocate(ijk_domain_, Domaine_IJK::ELEM, ghost);
   ijk_residue_.data() = 0.;
 
   for (int dir = 0; dir < 3; dir++)
-    domaine_ijk_.get_local_mesh_delta(dir, ghost, local_delta_xyz_[dir]);
+    ijk_domain_.get_local_mesh_delta(dir, ghost, local_delta_xyz_[dir]);
   for (int i = 0; i < 3; i++)
-    uniform_[i] = domaine_ijk_.is_uniform(i);
-
+    uniform_[i] = ijk_domain_.is_uniform(i);
 }
 
 // Fill the coeffs_faces field (see ijk_faces_coefficients_) for the requested grid_level
@@ -93,7 +91,7 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_rho()
       {
         Domaine_IJK::Localisation loc = (dir==0)?Domaine_IJK::FACES_I:((dir==1)?Domaine_IJK::FACES_J:Domaine_IJK::FACES_K);
         IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& f = c[dir];
-        f.allocate(domaine_ijk_, loc, 1);
+        f.allocate(ijk_domain_, loc, 1);
         for (int k = 0; k < f.nk(); k++)
           for (int j = 0; j < f.nj(); j++)
             for (int i = 0; i < f.ni(); i++)
@@ -101,16 +99,16 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_rho()
         f.echange_espace_virtuel(1); // to update periodic faces
       }
     IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>> e;
-    e.allocate(domaine_ijk_, Domaine_IJK::ELEM, 0);
+    e.allocate(ijk_domain_, Domaine_IJK::ELEM, 0);
     for (int k = 0; k < e.nk(); k++)
       for (int j = 0; j < e.nj(); j++)
         for (int i = 0; i < e.ni(); i++)
           e(i,j,k)=ijk_faces_coefficients_(i,j,k,3);
     static int step = 0;
-    Nom prefix = Nom("Grid_coefficients_")+Nom(typeid(_TYPE_).name())
-                 +Nom(domaine_ijk_.get_nb_elem_tot(DIRECTION_I))+Nom("_")
-                 + Nom(domaine_ijk_.get_nb_elem_tot(DIRECTION_J))+Nom("_")
-                 + Nom(domaine_ijk_.get_nb_elem_tot(DIRECTION_K));
+    Nom prefix = Nom("Grid_coefficients_") + Nom(typeid(_TYPE_).name())
+                 + Nom(ijk_domain_.get_nb_elem_tot(DIRECTION_I)) + Nom("_")
+                 + Nom(ijk_domain_.get_nb_elem_tot(DIRECTION_J)) + Nom("_")
+                 + Nom(ijk_domain_.get_nb_elem_tot(DIRECTION_K));
 
     dumplata_vector(prefix+Nom("_faces.lata"), "val", c[0],c[1],c[2],step);
     dumplata_scalar(prefix+Nom("_elem.lata"), "val", e,step);
@@ -144,7 +142,7 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_inv_rho()
       {
         Domaine_IJK::Localisation loc = (dir==0)?Domaine_IJK::FACES_I:((dir==1)?Domaine_IJK::FACES_J:Domaine_IJK::FACES_K);
         IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& f = c[dir];
-        f.allocate(domaine_ijk_, loc, 1);
+        f.allocate(ijk_domain_, loc, 1);
         for (int k = 0; k < f.nk(); k++)
           for (int j = 0; j < f.nj(); j++)
             for (int i = 0; i < f.ni(); i++)
@@ -152,16 +150,16 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_inv_rho()
         f.echange_espace_virtuel(1); // to update periodic faces
       }
     IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>> e;
-    e.allocate(domaine_ijk_, Domaine_IJK::ELEM, 0);
+    e.allocate(ijk_domain_, Domaine_IJK::ELEM, 0);
     for (int k = 0; k < e.nk(); k++)
       for (int j = 0; j < e.nj(); j++)
         for (int i = 0; i < e.ni(); i++)
           e(i,j,k)=ijk_faces_coefficients_(i,j,k,3);
     static int step = 0;
-    Nom prefix = Nom("Grid_coefficients_")++Nom(typeid(_TYPE_).name())
-                 +Nom(domaine_ijk_.get_nb_elem_tot(DIRECTION_I))+Nom("_")
-                 + Nom(domaine_ijk_.get_nb_elem_tot(DIRECTION_J))+Nom("_")
-                 + Nom(domaine_ijk_.get_nb_elem_tot(DIRECTION_K));
+    Nom prefix = Nom("Grid_coefficients_") + Nom(typeid(_TYPE_).name())
+                 + Nom(ijk_domain_.get_nb_elem_tot(DIRECTION_I)) + Nom("_")
+                 + Nom(ijk_domain_.get_nb_elem_tot(DIRECTION_J)) + Nom("_")
+                 + Nom(ijk_domain_.get_nb_elem_tot(DIRECTION_K));
 
     dumplata_vector(prefix+Nom("_faces.lata"), "val", c[0],c[1],c[2],step);
     dumplata_scalar(prefix+Nom("_elem.lata"), "val", e,step);
@@ -239,9 +237,9 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_rho_cst_i
       {
         _TYPE_ *coeff = ijk_faces_coefficients_.k_layer(k, 2);
         // Wall boundary condition:
-        const int global_k_pos = k + domaine_ijk_.get_offset_local(DIRECTION_K);
+        const int global_k_pos = k + ijk_domain_.get_offset_local(DIRECTION_K);
         // Number of elements in the z direction (equal to index in k direction of the faces on the wall)
-        const int global_k_size = domaine_ijk_.get_nb_elem_tot(DIRECTION_K);
+        const int global_k_size = ijk_domain_.get_nb_elem_tot(DIRECTION_K);
         // the face that are located on the walls in k direction have position 0 and global_k_size:
         if (!perio_k_ && (global_k_pos <= 0 || global_k_pos >= global_k_size))
           {
@@ -366,9 +364,9 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_inv_rho_c
       {
         _TYPE_ *coeff = ijk_faces_coefficients_.k_layer(k, 2);
         // Wall boundary condition:
-        const int global_k_pos = k + domaine_ijk_.get_offset_local(DIRECTION_K);
+        const int global_k_pos = k + ijk_domain_.get_offset_local(DIRECTION_K);
         // Number of elements in the z direction (equal to index in k direction of the faces on the wall)
-        const int global_k_size = domaine_ijk_.get_nb_elem_tot(DIRECTION_K);
+        const int global_k_size = ijk_domain_.get_nb_elem_tot(DIRECTION_K);
         // the face that are located on the walls in k direction have position 0 and global_k_size:
         if (!perio_k_ && (global_k_pos <= 0 || global_k_pos >= global_k_size))
           {
@@ -511,9 +509,9 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_rho_cst_i
       {
         _TYPE_ *coeff = ijk_faces_coefficients_.k_layer(k, 2);
         // Wall boundary condition:
-        const int global_k_pos = k + domaine_ijk_.get_offset_local(DIRECTION_K);
+        const int global_k_pos = k + ijk_domain_.get_offset_local(DIRECTION_K);
         // Number of elements in the z direction (equal to index in k direction of the faces on the wall)
-        const int global_k_size = domaine_ijk_.get_nb_elem_tot(DIRECTION_K);
+        const int global_k_size = ijk_domain_.get_nb_elem_tot(DIRECTION_K);
         // the face that are located on the walls in k direction have position 0 and global_k_size:
         if (!perio_k_ && (global_k_pos <= 0 || global_k_pos >= global_k_size))
           {
@@ -656,9 +654,9 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_inv_rho_c
       {
         _TYPE_ *coeff = ijk_faces_coefficients_.k_layer(k, 2);
         // Wall boundary condition:
-        const int global_k_pos = k + domaine_ijk_.get_offset_local(DIRECTION_K);
+        const int global_k_pos = k + ijk_domain_.get_offset_local(DIRECTION_K);
         // Number of elements in the z direction (equal to index in k direction of the faces on the wall)
-        const int global_k_size = domaine_ijk_.get_nb_elem_tot(DIRECTION_K);
+        const int global_k_size = ijk_domain_.get_nb_elem_tot(DIRECTION_K);
         // the face that are located on the walls in k direction have position 0 and global_k_size:
         if (!perio_k_ && (global_k_pos <= 0 || global_k_pos >= global_k_size))
           {

@@ -83,7 +83,7 @@ protected:
   template <typename _TYPE_FUNC_, typename _TYPE_, typename _TYPE_ARRAY_>
   void set_rho_template(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& rho, bool set_coarse_matrix, bool use_coeffs_from_double);
 
-  void completer_double_for_residue(const Domaine_IJK& splitting);
+  void completer_double_for_residue(const Domaine_IJK& domain);
 
   inline void jacobi_residu(IJK_Field_float& x,
                             const IJK_Field_float *secmem, /* if null pointer, take secmem = 0 (to compute A*x) */

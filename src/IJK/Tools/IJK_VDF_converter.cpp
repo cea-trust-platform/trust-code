@@ -81,18 +81,18 @@ Entree& IJK_VDF_converter::readOn(Entree& is)
   const Probleme_base& pb = ref_cast(Probleme_base, Interprete_bloc::objet_global(vdf_problem));
   const Domaine_VF& domaine_vdf = ref_cast(Domaine_VF, pb.domaine_dis());
 
-  Domaine_IJK grid_geom;
-  grid_geom.initialize_from_unstructured(domaine_vdf.domaine(),
+  Domaine_IJK grid_domain;
+  grid_domain.initialize_from_unstructured(domaine_vdf.domaine(),
                                          direction_mapping[0], direction_mapping[1], direction_mapping[2],
                                          perio_flag_x, perio_flag_y, perio_flag_z);
 
-  domaine_ijk_.initialize_splitting(grid_geom, splitting[0], splitting[1], splitting[2]);
+  ijk_domain_.initialize_splitting(grid_domain, splitting[0], splitting[1], splitting[2]);
 
-  vdf_to_ijk_i_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::FACES_I, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_j_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::FACES_J, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_k_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::FACES_K, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_elem_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::ELEM, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_nodes_.initialize(domaine_vdf, domaine_ijk_, Domaine_IJK::NODES, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_i_.initialize(domaine_vdf, ijk_domain_, Domaine_IJK::FACES_I, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_j_.initialize(domaine_vdf, ijk_domain_, Domaine_IJK::FACES_J, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_k_.initialize(domaine_vdf, ijk_domain_, Domaine_IJK::FACES_K, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_elem_.initialize(domaine_vdf, ijk_domain_, Domaine_IJK::ELEM, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_nodes_.initialize(domaine_vdf, ijk_domain_, Domaine_IJK::NODES, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
 
   return is;
 }

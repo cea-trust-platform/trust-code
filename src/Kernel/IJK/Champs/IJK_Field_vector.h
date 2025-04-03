@@ -1,17 +1,17 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*****************************************************************************/
+ * Copyright (c) 2025, CEA
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *****************************************************************************/
 #ifndef IJK_Field_vector_included
 #define IJK_Field_vector_included
 
@@ -44,16 +44,18 @@
  *  The class inherits from Field_base and a IJK_Field_vector can thus be named.
  *  It has a default Nature of 'vectoriel'.
  */
-template<class T, int N>
-class IJK_Field_vector : public FixedVector<std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>, N>, public Field_base
+template <class T, int N>
+class IJK_Field_vector : public FixedVector<std::shared_ptr<IJK_Field_template<T, TRUSTArray<T>>>, N>, public Field_base
 {
+
 public:
   // The mess of Objet_U .....
   inline unsigned taille_memoire() const override { throw; }
   inline int duplique() const override
   {
-    IJK_Field_vector* xxx = new  IJK_Field_vector(*this);
-    if(!xxx) Process::exit("Not enough memory ");
+    IJK_Field_vector *xxx = new IJK_Field_vector(*this);
+    if (!xxx)
+      Process::exit("Not enough memory ");
     return xxx->numero();
   }
   Sortie& printOn(Sortie& os) const override { return os; }
@@ -90,30 +92,32 @@ public:
       this->data_[i]->add_synonymous(nam + Nom(compos[i]));
   }
 
+  static int size() { return N; }
+
   Entity& localisation() { return loc_; }
   const Entity& localisation() const { return loc_; }
 
-  IJK_Field_template<T,TRUSTArray<T>>& operator[](int i)
+  IJK_Field_template<T, TRUSTArray<T>>& operator[](int i)
   {
-    assert(i>=0 && i<N);
+    assert(i >= 0 && i < N);
     return *this->data_[i];
   }
 
-  const IJK_Field_template<T,TRUSTArray<T>>& operator[](int i) const
+  const IJK_Field_template<T, TRUSTArray<T>>& operator[](int i) const
   {
-    assert(i>=0 && i<N);
+    assert(i >= 0 && i < N);
     return *this->data_[i];
   }
 
-  std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>& get_ptr(int i)
+  std::shared_ptr<IJK_Field_template<T, TRUSTArray<T>>>& get_ptr(int i)
   {
-    assert(i>=0 && i<N);
+    assert(i >= 0 && i < N);
     return this->data_[i];
   }
 
-  const std::shared_ptr<IJK_Field_template<T,TRUSTArray<T>>>& get_ptr(int i) const
+  const std::shared_ptr<IJK_Field_template<T, TRUSTArray<T>>>& get_ptr(int i) const
   {
-    assert(i>=0 && i<N);
+    assert(i >= 0 && i < N);
     return this->data_[i];
   }
 
@@ -123,16 +127,13 @@ public:
       this->data_[i]->echange_espace_virtuel(this->data_[i]->ghost());
   }
 
-  const Domaine_IJK& get_domaine() const
-  {
-    return this->data_[0]->get_domaine();
-  }
+  inline const Domaine_IJK& get_domain() const { return this->data_[0]->get_domain(); }
 
 private:
   Entity loc_;
 };
 
-template<class T, int N>
+template <class T, int N>
 inline IJK_Field_vector<double, N> operator-(const IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
 {
   IJK_Field_vector<double, N> resu;
@@ -141,7 +142,7 @@ inline IJK_Field_vector<double, N> operator-(const IJK_Field_vector<double, N>& 
   return resu;
 }
 
-template<class T, int N>
+template <class T, int N>
 inline IJK_Field_vector<double, N> operator+(const IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
 {
   IJK_Field_vector<double, N> resu;
@@ -150,7 +151,7 @@ inline IJK_Field_vector<double, N> operator+(const IJK_Field_vector<double, N>& 
   return resu;
 }
 
-template<class T, int N>
+template <class T, int N>
 inline IJK_Field_vector<double, N> operator*(const IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
 {
   IJK_Field_vector<double, N> resu;
@@ -159,8 +160,8 @@ inline IJK_Field_vector<double, N> operator*(const IJK_Field_vector<double, N>& 
   return resu;
 }
 
-template<class T, int N>
-inline IJK_Field_vector<double, N> operator*(const IJK_Field_vector<double, N>& v1, const IJK_Field_template<T,TRUSTArray<T>>& x)
+template <class T, int N>
+inline IJK_Field_vector<double, N> operator*(const IJK_Field_vector<double, N>& v1, const IJK_Field_template<T, TRUSTArray<T>>& x)
 {
   IJK_Field_vector<double, N> resu;
   for (int i = 0; i < N; i++)
@@ -168,24 +169,24 @@ inline IJK_Field_vector<double, N> operator*(const IJK_Field_vector<double, N>& 
   return resu;
 }
 
-template<class T, int N>
-inline const IJK_Field_vector<double, N>& operator*=(IJK_Field_vector<double, N>& v1, const IJK_Field_template<T,TRUSTArray<T>>& x)
+template <class T, int N>
+inline const IJK_Field_vector<double, N>& operator*=(IJK_Field_vector<double, N>& v1, const IJK_Field_template<T, TRUSTArray<T>>& x)
 {
   for (int i = 0; i < N; i++)
     v1[i] *= x;
   return v1;
 }
 
-template<class T, int N>
-inline const IJK_Field_template<T,TRUSTArray<T>>& produit_scalaire(IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
+template <class T, int N>
+inline const IJK_Field_template<T, TRUSTArray<T>>& produit_scalaire(IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
 {
-  IJK_Field_template<T,TRUSTArray<T>> resu;
+  IJK_Field_template<T, TRUSTArray<T>> resu;
   for (int i = 0; i < N; i++)
     resu += v1[i] * v2[i];
   return resu;
 }
 
-template<class T, int N>
+template <class T, int N>
 inline const IJK_Field_vector<double, N>& produit_scalaire(IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, 1>& v2)
 {
   IJK_Field_vector<double, N> resu;
@@ -194,8 +195,7 @@ inline const IJK_Field_vector<double, N>& produit_scalaire(IJK_Field_vector<doub
   return resu;
 }
 
-
-template<class T, int N>
+template <class T, int N>
 inline const IJK_Field_vector<double, N>& produit_scalaire(IJK_Field_vector<double, N>& v1, const double v2)
 {
   IJK_Field_vector<double, N> resu;
@@ -204,8 +204,7 @@ inline const IJK_Field_vector<double, N>& produit_scalaire(IJK_Field_vector<doub
   return resu;
 }
 
-
-template<class T, int N>
+template <class T, int N>
 inline const IJK_Field_vector<double, N>& operator-=(IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
 {
   for (int i = 0; i < N; i++)
@@ -213,7 +212,7 @@ inline const IJK_Field_vector<double, N>& operator-=(IJK_Field_vector<double, N>
   return v1;
 }
 
-template<class T, int N>
+template <class T, int N>
 inline const IJK_Field_vector<double, N>& operator+=(IJK_Field_vector<double, N>& v1, const IJK_Field_vector<double, N>& v2)
 {
   for (int i = 0; i < N; i++)

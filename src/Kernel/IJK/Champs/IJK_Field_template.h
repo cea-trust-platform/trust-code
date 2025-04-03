@@ -57,25 +57,33 @@ public:
     IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
     localisation_(Domaine_IJK::Localisation::ELEM)
   { }
-  void allocate(const Domaine_IJK& d, Domaine_IJK::Localisation l, int ghost_size, int additional_k_layers=0, int nb_compo=1, const Nom& name=Nom());
-  void allocate(const Domaine_IJK& d, Domaine_IJK::Localisation l, int ghost_size, const Nom& name)
-  {
-    allocate(d,l,ghost_size,0,1,name);
-  }
+
+  void allocate(const Domaine_IJK& domain, Domaine_IJK::Localisation l, int ghost_size, int additional_k_layers=0, int nb_compo=1, const Nom& name=Nom());
+  inline void allocate(const Domaine_IJK& domain, Domaine_IJK::Localisation l, int ghost_size, const Nom& name) { allocate(domain, l, ghost_size, 0, 1, name); }
+
+  inline const Domaine_IJK& get_domain() const { return ijk_domain_.valeur(); }
+
+  inline Domaine_IJK::Localisation get_localisation() const { return localisation_; }
+
   void allocate_shear_BC(int monofluide, double rov, double rol, int use_inv_rho_in_pressure_solver=0);
 
   virtual void dumplata_scalar(const char *filename, int step) const;
-
-  const Domaine_IJK& get_domaine() const { return domaine_ref_.valeur(); }
-  Domaine_IJK::Localisation get_localisation() const { return localisation_; }
   void echange_espace_virtuel(int ghost);
+
   //_TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_j, const int send_k);
   _TYPE_ interpolation_for_shear_periodicity_IJK_Field(const int send_j, const int send_k);
-  void interpolation_for_shear_periodicity_I_sig_kappa(const int send_j, const int send_k_zmin, const int send_k_zmax, _TYPE_ Isigkappazmin, _TYPE_ Isigkappazmax);
-  void redistribute_with_shear_domain_ft(const IJK_Field_double& input, double DU_perio, const int ft_extension);
+
+  void interpolation_for_shear_periodicity_I_sig_kappa(const int send_j, const int send_k_zmin,
+                                                       const int send_k_zmax,
+                                                       _TYPE_ Isigkappazmin,
+                                                       _TYPE_ Isigkappazmax);
+
+  void redistribute_with_shear_domain_ft(const IJK_Field_double& input, double DU_perio);
+
   void ajouter_second_membre_shear_perio(IJK_Field_double& resu);
 
   inline IJK_Shear_Periodic_helpler& get_shear_BC_helpler() { return shear_BC_helpler_; }
+
   inline const IJK_Shear_Periodic_helpler& get_shear_BC_helpler() const { return shear_BC_helpler_; }
 
   // TODO : we should overload '=' operator and copy ctor to increase counter in those cases too...
@@ -83,7 +91,7 @@ public:
   static inline int alloc_counter() { return alloc_counter_; }
 
 protected:
-  OBS_PTR(Domaine_IJK) domaine_ref_;
+  OBS_PTR(Domaine_IJK) ijk_domain_;
   Domaine_IJK::Localisation localisation_;
   IJK_Shear_Periodic_helpler shear_BC_helpler_;
 
@@ -94,7 +102,7 @@ protected:
                      int pe_imax_, /* processor to recv from */
                      int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                      int isz, int jsz, int ksz, /* size of block data to send/recv */
-                     double offset_i = 0., double jump_i=0., int nb_ghost=0);
+                     double offset_i = 0., double jump_i = 0., int nb_ghost = 0);
 };
 
 #include <IJK_Field_template.tpp>

@@ -93,7 +93,7 @@ static const DoubleTab& get_items_coords(const Domaine_VF& domaine_vf, Domaine_I
     }
 }
 
-void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& splitting,
+void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& domain,
                             Domaine_IJK::Localisation localisation,
                             int direction_for_x,
                             int direction_for_y,
@@ -103,21 +103,21 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& spl
   const int np = Process::nproc();
   const int moi = Process::me();
 
-  const ArrOfDouble& all_coord_i = splitting.get_node_coordinates(0);
-  const ArrOfDouble& all_coord_j = splitting.get_node_coordinates(1);
-  const ArrOfDouble& all_coord_k = splitting.get_node_coordinates(2);
+  const ArrOfDouble& all_coord_i = domain.get_node_coordinates(0);
+  const ArrOfDouble& all_coord_j = domain.get_node_coordinates(1);
+  const ArrOfDouble& all_coord_k = domain.get_node_coordinates(2);
 
   // For each direction, global position of the first element of each slice
   VECT(ArrOfInt) slice_offsets(3);
   VECT(ArrOfInt) slice_size(3);
   // For each subdomain, on which mpi process is it ?
   IntTab mapping;
-  splitting.get_processor_mapping(mapping);
+  domain.get_processor_mapping(mapping);
 
   for (int i = 0; i < 3; i++)
     {
-      splitting.get_slice_offsets(i, slice_offsets[i]);
-      splitting.get_slice_size(i, localisation, slice_size[i]);
+      domain.get_slice_offsets(i, slice_offsets[i]);
+      domain.get_slice_size(i, localisation, slice_size[i]);
     }
   Schema_Comm sch;
   ArrOfInt all_pe;
@@ -179,7 +179,7 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& spl
       for (int i = 0; i < 3; i++)
         {
           // Wrap for periodic items:
-          if (ijk[i] >= splitting.get_nb_items_global(localisation, i))
+          if (ijk[i] >= domain.get_nb_items_global(localisation, i))
             ijk[i] = 0;
           int idx = slice_offsets[i].size_array()-1;
           while (slice_offsets[i][idx] > ijk[i])
@@ -238,6 +238,6 @@ void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& spl
   pack_lists(to_send, pe_send_, pe_send_data_);
   pack_lists(to_recv, pe_recv_, pe_recv_data_);
 
-  ijk_ni_ = splitting.get_nb_elem_local(0);
-  ijk_nj_ = splitting.get_nb_elem_local(1);
+  ijk_ni_ = domain.get_nb_elem_local(0);
+  ijk_nj_ = domain.get_nb_elem_local(1);
 }

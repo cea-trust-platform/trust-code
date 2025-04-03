@@ -166,19 +166,20 @@ public:
     return data_.addr() + offset_ + (k * this->nb_compo_ + compo) * compo_stride_;
   }
 
-  int ni() const { return ni_; }
-  int nj() const { return nj_; }
-  int nk() const { return nk_; }
-  int nb_elem_local(int dir) const { return (dir==0)?ni_:((dir==1)?nj_:nk_); }
-  int j_stride() const { return j_stride_; }
-  int compo_stride() const { return compo_stride_; }
-  int k_stride() const { return compo_stride_ * this->nb_compo_; }
-  int ghost() const { return ghost_size_; }
-  int k_shift() const { return k_layer_shift_; }
-  int k_shift_max() const { return additional_k_layers_; }
-  int get_allocated_size() const { return allocated_size_; }
-  _TYPE_ARRAY_& data() { return data_; }
-  const _TYPE_ARRAY_& data() const { return data_; }
+  inline int ni() const { return ni_; }
+  inline int nj() const { return nj_; }
+  inline int nk() const { return nk_; }
+  inline int nb_elem_local(int dir) const { return (dir==0)?ni_:((dir==1)?nj_:nk_); }
+  inline int nb_compo() const { return nb_compo_; }
+  inline int j_stride() const { return j_stride_; }
+  inline int compo_stride() const { return compo_stride_; }
+  inline int k_stride() const { return compo_stride_ * this->nb_compo_; }
+  inline int ghost() const { return ghost_size_; }
+  inline int k_shift() const { return k_layer_shift_; }
+  inline int k_shift_max() const { return additional_k_layers_; }
+  inline int get_allocated_size() const { return allocated_size_; }
+  inline _TYPE_ARRAY_& data() { return data_; }
+  inline const _TYPE_ARRAY_& data() const { return data_; }
 protected:
   // local size on this proc: (real itemnb_compo_s) : ni_ nj_ nk_ do not include the ghost size
   int ni_, nj_, nk_, ghost_size_;

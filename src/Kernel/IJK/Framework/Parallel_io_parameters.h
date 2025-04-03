@@ -28,8 +28,8 @@ public:
   static int       get_nb_writing_processes();
 
 protected:
-  static void run_bench_read(const Nom& ijk_splitting);
-  static void run_bench_write(const Nom& ijk_splitting);
+  static void run_bench_read(const Nom& domain);
+  static void run_bench_write(const Nom& domain);
 
   // File writes will be performed by chunks of this size (in bytes)
   // The size should be a multiple of the GPFS block size or lustre stripping size

@@ -26,65 +26,7 @@
 class Redistribute_Field
 {
 public:
-  void initialize(const Domaine_IJK& input,
-                  const Domaine_IJK& output,
-                  const Domaine_IJK::Localisation loc);
-  void initialize(const Domaine_IJK& input,
-                  const Domaine_IJK& output,
-                  const Domaine_IJK::Localisation loc,
-                  const VECT(IntTab) & redistribute_maps);
-  void redistribute(const IJK_Field_double& input_field,
-                    IJK_Field_double& output_field)
-  {
-    redistribute_(input_field, output_field, false);
-  }
-  template<class T, int N>
-  void redistribute(const IJK_Field_vector<T, N>& input_field,
-                    IJK_Field_vector<T, N>& output_field)
-  {
-    for (int i = 0; i < N; i++)
-      redistribute_(input_field[i], output_field[i], false);
-  }
-  void redistribute_add(const IJK_Field_double& input_field,
-                        IJK_Field_double& output_field)
-  {
-    redistribute_(input_field, output_field, true);
-  }
-  template<class T, int N>
-  void redistribute_add(const IJK_Field_vector<T, N>& input_field,
-                        IJK_Field_vector<T, N>& output_field)
-  {
-    for (int i = 0; i < N; i++)
-      redistribute_(input_field[i], output_field[i], true);
-  }
-  void redistribute(const IJK_Field_float& input_field,
-                    IJK_Field_float& output_field)
-  {
-    redistribute_(input_field, output_field, false);
-  }
-  void redistribute_add(const IJK_Field_float& input_field,
-                        IJK_Field_float& output_field)
-  {
-    redistribute_(input_field, output_field, true);
-  }
-protected:
-  void redistribute_(const IJK_Field_double& input_field,
-                     IJK_Field_double& output_field,
-                     bool add);
-  void redistribute_(const IJK_Field_float& input_field,
-                     IJK_Field_float& output_field,
-                     bool add);
-  static void intersect(const int s1, const int n1, int& s2, int& n2, int& s3);
-  void compute_send_blocs(const Domaine_IJK& input,
-                          const Domaine_IJK& output,
-                          const Domaine_IJK::Localisation localisation,
-                          const int dir,
-                          const IntTab& global_index_mapping,
-                          IntTab& send_blocs);
 
-  FixedVector<IntTab, 3> send_blocs_;
-  FixedVector<IntTab, 3> recv_blocs_;
-  Schema_Comm_Vecteurs schema_comm_;
-  int size_buffer_for_me_;
+protected:
 };
 #endif

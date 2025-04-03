@@ -50,7 +50,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
         }
       // for pressure in case of shear periodicity (zmax)--> ghost value reconstructed from Isigkappa and pressure interpolation
-      else if (shear_BC_helpler_.monofluide_variable_==1 && offset <0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 1 && offset < 0.)
         {
           for (int i = 0; i < isz; i++)
             {
@@ -66,7 +66,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             }
         }
       // for pressure in case of shear periodicity (zmin)--> ghost value reconstructed from Isigkappa and pressure interpolation
-      else if (shear_BC_helpler_.monofluide_variable_==1 && offset >0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 1 && offset > 0.)
         {
           for (int i = 0; i < isz; i++)
             {
@@ -82,7 +82,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             }
         }
       // for physical properties in case of shear periodicity (zmax)--> ghost value reconstructed from phase indicator function
-      else if (shear_BC_helpler_.monofluide_variable_==2 && offset <0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 2 && offset < 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -92,7 +92,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
         }
       // for physical properties in case of shear periodicity (zmin)--> ghost value reconstructed from phase indicator function
-      else if (shear_BC_helpler_.monofluide_variable_==2 && offset >0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 2 && offset > 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -137,7 +137,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       *buf_offset=offset;
       *buf_nb_ghost=nb_ghost;
       // for classical variable --> just a copy
-      if (offset==0.)
+      if (offset == 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -145,7 +145,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                 *buf= IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i + is, j + js, k + ks);
         }
       // for pressure in case of shear periodicity (zmax)--> ghost value reconstructed from Isigkappa and pressure interpolation
-      else if (shear_BC_helpler_.monofluide_variable_==1 && offset <0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 1 && offset < 0.)
         {
           for (int i = 0; i < isz; i++)
             {
@@ -161,7 +161,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             }
         }
       // for pressure in case of shear periodicity (zmin)--> ghost value reconstructed from Isigkappa and pressure interpolation
-      else if (shear_BC_helpler_.monofluide_variable_==1 && offset >0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 1 && offset > 0.)
         {
           for (int i = 0; i < isz; i++)
             {
@@ -177,7 +177,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             }
         }
       // for physical properties in case of shear periodicity --> ghost value reconstructed from phase indicator function
-      else if (shear_BC_helpler_.monofluide_variable_==2)
+      else if (shear_BC_helpler_.monofluide_variable_ == 2)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -222,7 +222,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                 dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf;
         }
       // for pressure in case of shear periodicity (zmax)--> ghost value reconstructed from Isigkappa and pressure interpolation
-      else if (shear_BC_helpler_.monofluide_variable_==1 && *buf_offset <0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 1 && *buf_offset < 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -232,7 +232,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                 }
         }
       // for pressure in case of shear periodicity (zmin)--> ghost value reconstructed from Isigkappa and pressure interpolation
-      else if (shear_BC_helpler_.monofluide_variable_==1 && *buf_offset >0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 1 && *buf_offset > 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -243,7 +243,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
         }
       // for physical properties in case of shear periodicity (zmax) --> ghost value reconstructed from phase indicator function
-      else if (shear_BC_helpler_.monofluide_variable_==2 && *buf_offset <0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 2 && *buf_offset < 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -252,7 +252,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
         }
       // for physical properties in case of shear periodicity (zmin) --> ghost value reconstructed from phase indicator function
-      else if (shear_BC_helpler_.monofluide_variable_==2 && *buf_offset >0.)
+      else if (shear_BC_helpler_.monofluide_variable_ == 2 && *buf_offset > 0.)
         {
           for (int i = 0; i < isz; i++)
             for (int k = 0; k < ksz; k++)
@@ -279,25 +279,21 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
   delete[] recv_buffer_nb_ghost;
 }
 
-/*! @brief Exchange data over "ghost" number of cells.
- *
- */
+/*! @brief Exchange data over "ghost" number of cells. */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost)
 {
   statistiques().begin_count(echange_vect_counter_);
   assert(le_ghost <= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost()));
-  const Domaine_IJK& dom = domaine_ref_.valeur();
-  int pe_imin_ = dom.get_neighbour_processor(0, 0);
-  int pe_imax_ = dom.get_neighbour_processor(1, 0);
-  int pe_jmin_ = dom.get_neighbour_processor(0, 1);
-  int pe_jmax_ = dom.get_neighbour_processor(1, 1);
-
-  int pe_kmin_ = dom.get_neighbour_processor(0, 2);
-  int pe_kmax_ = dom.get_neighbour_processor(1, 2);
-  int z_index = dom.get_local_slice_index(2);
+  int pe_imin_ = ijk_domain_->get_neighbour_processor(0, 0);
+  int pe_imax_ = ijk_domain_->get_neighbour_processor(1, 0);
+  int pe_jmin_ = ijk_domain_->get_neighbour_processor(0, 1);
+  int pe_jmax_ = ijk_domain_->get_neighbour_processor(1, 1);
+  int pe_kmin_ = ijk_domain_->get_neighbour_processor(0, 2);
+  int pe_kmax_ = ijk_domain_->get_neighbour_processor(1, 2);
+  int z_index  = ijk_domain_->get_local_slice_index(2);
   int z_index_min = 0;
-  int z_index_max = dom.get_nprocessor_per_direction(2) - 1;
+  int z_index_max = ijk_domain_->get_nprocessor_per_direction(2) - 1;
 
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
@@ -306,7 +302,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   double offset_i = 0.0;
   if (IJK_Shear_Periodic_helpler::defilement_ == 1)
     {
-      double Lx =  dom.get_domain_length(0);
+      double Lx =  ijk_domain_->get_domain_length(0);
       IJK_Shear_Periodic_helpler::Lx_for_shear_perio = Lx;
       double DX = Lx/nii ;
       double Shear_x_time = IJK_Shear_Periodic_helpler::shear_x_time_;
@@ -389,55 +385,49 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodici
 
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft(const IJK_Field_double& input, double DU_perio, const int ft_extension)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft(const IJK_Field_double& input, double DU_perio)
 {
   // To shift the velocity field in FT domain after redistribute operator from NS domain
   // According to the shear periodicity condition
 
   _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
-  Domaine_IJK splitting_ns = input.get_domaine();
-  Domaine_IJK& splitting_ft = domaine_ref_.valeur();
-  double Lx =  splitting_ns.get_domain_length(0);
+  double Lx =  ijk_domain_->get_domain_length(0);
   int ni = input.ni();
-  double DX = Lx/ni ;
+  double DX = Lx / ni ;
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-  int last_global_k = splitting_ns.get_nb_items_global(Domaine_IJK::ELEM, 2)-1;
+  int last_global_k = ijk_domain_->get_nb_items_global(Domaine_IJK::ELEM, 2) - 1;
 
   ArrOfDouble output_tmp;
   output_tmp.resize_array(nii);
   for (int k = 0; k < nkk; k++ )
     {
-      int k_reel = k + splitting_ft.get_offset_local(2) - ft_extension;
-      if (k_reel>=0 && k_reel<= last_global_k)
+      int k_reel = k + ijk_domain_->get_offset_local(2);
+      if (k_reel >= 0 && k_reel <= last_global_k)
         continue;
 
       for (int j = 0; j < njj; j++ )
         {
           for (int i = 0; i < nii; i++ )
             {
-              if (k_reel<0)
+              if (k_reel < 0)
                 {
-                  double istmp = i+IJK_Shear_Periodic_helpler::shear_x_time_/DX;
+                  double istmp = i + IJK_Shear_Periodic_helpler::shear_x_time_/DX;
                   shear_BC_helpler_.prepare_interpolation_for_shear_periodicity((int) round(istmp), istmp, ni);
-                  output_tmp[i]=interpolation_for_shear_periodicity_IJK_Field(j, k)-DU_perio;
+                  output_tmp[i] = interpolation_for_shear_periodicity_IJK_Field(j, k) - DU_perio;
                 }
               else if (k_reel>last_global_k)
                 {
-                  double istmp = i-IJK_Shear_Periodic_helpler::shear_x_time_/DX;
+                  double istmp = i - IJK_Shear_Periodic_helpler::shear_x_time_ / DX;
                   shear_BC_helpler_.prepare_interpolation_for_shear_periodicity((int) round(istmp), istmp, ni);
-                  output_tmp[i]=interpolation_for_shear_periodicity_IJK_Field(j, k)+DU_perio;
+                  output_tmp[i] = interpolation_for_shear_periodicity_IJK_Field(j, k) + DU_perio;
                 }
               else
-                {
-                  output_tmp[i]=IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k);
-                }
+                output_tmp[i] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k);
             }
           for (int i = 0; i < nii; i++ )
-            {
-              dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)]=output_tmp[i];
-            }
+            dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)] = output_tmp[i];
         }
     }
   return;
@@ -450,15 +440,14 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio(IJK_Field_double& resu)
 {
-  if (shear_BC_helpler_.monofluide_variable_==1)
+  if (shear_BC_helpler_.monofluide_variable_ == 1)
     {
-      const Domaine_IJK& geom = domaine_ref_.valeur();
       const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
       const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
       const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-      const double dxk = geom.get_constant_delta(2);
-      const double dxj = geom.get_constant_delta(1);
-      const double dxi = geom.get_constant_delta(0);
+      const double dxk = ijk_domain_->get_constant_delta(2);
+      const double dxj = ijk_domain_->get_constant_delta(1);
+      const double dxi = ijk_domain_->get_constant_delta(0);
       double Shear_x_time = IJK_Shear_Periodic_helpler::shear_x_time_;
       double offset = Shear_x_time/dxi;
 
@@ -470,7 +459,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
       // Le coeff a appliquer est donc dx*dy/dz/rho
 
       double coeff_matrice = dxi * dxj / dxk;
-      int last_global_k = geom.get_nb_items_global(Domaine_IJK::ELEM, 2);
+      int last_global_k = ijk_domain_->get_nb_items_global(Domaine_IJK::ELEM, 2);
 
       // EQUIVALENCE GHOST_MIN_MAX ARRAY AVEC INDICE Z REEL POUR SPLITTING_NS_
       // I_sigma_kappa_ghost_zmin_[0] --> -ghost (derniere maille ghost)
@@ -492,48 +481,42 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
               // I_sigma_kappa interpole en k=nk-1
               // I_sigma_kappa reel en k=-1
               // for k=0 (z_index_min --> + offset)
-              if(geom.get_offset_local(2)==0)
+              if(ijk_domain_->get_offset_local(2) == 0)
                 {
                   double rho_minus_1 = shear_BC_helpler_.Phi_ppty_l_*shear_BC_helpler_.indicatrice_ghost_zmin_(i,j,1)+shear_BC_helpler_.Phi_ppty_v_*(1.-shear_BC_helpler_.indicatrice_ghost_zmin_(i,j,1));
                   double rho_0 = shear_BC_helpler_.Phi_ppty_l_*shear_BC_helpler_.indicatrice_ghost_zmin_(i,j,2)+shear_BC_helpler_.Phi_ppty_v_*(1.-shear_BC_helpler_.indicatrice_ghost_zmin_(i,j,2));
                   double rho;
                   if (shear_BC_helpler_.use_inv_rho_in_pressure_solver_==1.)
-                    {
-                      rho =2./((1./rho_minus_1)+(1./rho_0));
-                    }
+                    rho = 2. / ((1. / rho_minus_1) + (1. / rho_0));
                   else
-                    {
-                      rho =(rho_minus_1+rho_0)/2.;
-                    }
+                    rho = (rho_minus_1 + rho_0) / 2.;
+
                   _TYPE_ interpIsigkappazmin = 0.;
                   _TYPE_ interpIsigkappazmax = 0.;
                   interpolation_for_shear_periodicity_I_sig_kappa(j, 1, 1, interpIsigkappazmin, interpIsigkappazmax);
                   _TYPE_ erreur = interpIsigkappazmax-(_TYPE_)shear_BC_helpler_.I_sig_kappa_zmin_(i , j , 1);
-                  resu(i,j,0)+=(coeff_matrice/rho)*erreur;
+                  resu(i, j, 0) += (coeff_matrice / rho) * erreur;
                 }
 
               // for k=nk-1 --> pression voisine problematique en k=nk (qui renvoie a une interpolation sur k=0)
               // I_sigma_kappa interpole en k=0
               // I_sigma_kappa reel en k=nk
               // for k=nk-1 (z_index_max --> - offset)
-              if(geom.get_offset_local(2)+nk==last_global_k)
+              if(ijk_domain_->get_offset_local(2) + nk == last_global_k)
                 {
                   double rho_nk_plus_1 = shear_BC_helpler_.Phi_ppty_l_*shear_BC_helpler_.indicatrice_ghost_zmax_(i,j,2)+shear_BC_helpler_.Phi_ppty_v_*(1.-shear_BC_helpler_.indicatrice_ghost_zmax_(i,j,2));
                   double rho_nk = shear_BC_helpler_.Phi_ppty_l_*shear_BC_helpler_.indicatrice_ghost_zmax_(i,j,1)+shear_BC_helpler_.Phi_ppty_v_*(1.-shear_BC_helpler_.indicatrice_ghost_zmax_(i,j,1));
                   double rho;
-                  if (shear_BC_helpler_.use_inv_rho_in_pressure_solver_==1.)
-                    {
-                      rho =2./((1./rho_nk_plus_1)+(1./rho_nk));
-                    }
+                  if (shear_BC_helpler_.use_inv_rho_in_pressure_solver_ == 1.)
+                    rho = 2. / ((1. / rho_nk_plus_1) + (1. / rho_nk));
                   else
-                    {
-                      rho =(rho_nk_plus_1+rho_nk)/2.;
-                    }
-                  _TYPE_ interpIsigkappazmin= 0.;
-                  _TYPE_ interpIsigkappazmax= 0.;
+                    rho = (rho_nk_plus_1 + rho_nk) / 2.;
+
+                  _TYPE_ interpIsigkappazmin = 0.;
+                  _TYPE_ interpIsigkappazmax = 0.;
                   interpolation_for_shear_periodicity_I_sig_kappa(j, 2, 2, interpIsigkappazmin, interpIsigkappazmax);
                   _TYPE_ erreur = interpIsigkappazmin-(_TYPE_)shear_BC_helpler_.I_sig_kappa_zmax_(i , j , 2);
-                  resu(i,j,nk-1)+=(coeff_matrice/rho)*erreur;
+                  resu(i, j, nk-1) += (coeff_matrice / rho) * erreur;
                 }
             }
         }
@@ -541,7 +524,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
 }
 
 // Initializes the field and allocates memory
-// geom: reference to the geometry of the IJK mesh and how the mesh is split on processors.
+// domain: reference to the geometry of the IJK mesh and how the mesh is split on processors.
 //   The field stores a reference to this Domaine_IJK object so do not delete it.
 // loc: localisation of the field (elements, nodes, faces in direction i, j, or k)
 //   The number of "real" items in each direction (returned by the ni(), nj() or nk() method) is obtained from
@@ -558,14 +541,19 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
 //   Also, components are not grouped by node but stored by layers in k. nb_compo>1 is essentially used
 //   in the multigrid solver to optimize memory accesses to the components of the matrix.
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const Domaine_IJK& geom, Domaine_IJK::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, const Nom& name)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const Domaine_IJK& domain,
+                                                        Domaine_IJK::Localisation loc,
+                                                        int ghost_size,
+                                                        int additional_k_layers,
+                                                        int ncompo,
+                                                        const Nom& name)
 {
   this->nommer(name);
-  const int ni_local = geom.get_nb_items_local(loc, 0);
-  const int nj_local = geom.get_nb_items_local(loc, 1);
-  const int nk_local = geom.get_nb_items_local(loc, 2);
+  const int ni_local = domain.get_nb_items_local(loc, 0);
+  const int nj_local = domain.get_nb_items_local(loc, 1);
+  const int nk_local = domain.get_nb_items_local(loc, 2);
   IJK_Field_local_template<_TYPE_, _TYPE_ARRAY_>::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
-  domaine_ref_ = geom;
+  ijk_domain_ = domain;
   localisation_ = loc;
   alloc_counter_++;
 }
@@ -573,9 +561,9 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const Domaine_IJK& geom,
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate_shear_BC(int type, double phy_ppty_v, double phy_ppty_l, int use_inv_rho_in_pressure_solver)
 {
-  const int ni_local = this->domaine_ref_->get_nb_items_local(localisation_, 0);
-  const int nj_local = this->domaine_ref_->get_nb_items_local(localisation_, 1);
-  const int nk_local = this->domaine_ref_->get_nb_items_local(localisation_, 2);
+  const int ni_local = this->ijk_domain_->get_nb_items_local(localisation_, 0);
+  const int nj_local = this->ijk_domain_->get_nb_items_local(localisation_, 1);
+  const int nk_local = this->ijk_domain_->get_nb_items_local(localisation_, 2);
   shear_BC_helpler_.allocate(ni_local,  nj_local, nk_local,  this->ghost_size_,  this->nb_compo_,  type,  phy_ppty_v,  phy_ppty_l,  use_inv_rho_in_pressure_solver);
 }
 

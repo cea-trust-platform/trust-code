@@ -23,14 +23,13 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 {
   shear_x_time_=IJK_Shear_Periodic_helpler::shear_x_time_;
   defilement_=IJK_Shear_Periodic_helpler::defilement_;
-  order_interpolation_poisson_solver_=IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_;
-  const Domaine_IJK& splitting = coeffs_face.get_domaine();
+  order_interpolation_poisson_solver_ = IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_;
+  const Domaine_IJK& domain = coeffs_face.get_domain();
 
   int i, j, k;
-  const int ni = splitting.get_nb_elem_local(DIRECTION_I);
-  const int nj = splitting.get_nb_elem_local(DIRECTION_J);
-  const int nk = splitting.get_nb_elem_local(DIRECTION_K);
-
+  const int ni = domain.get_nb_elem_local(DIRECTION_I);
+  const int nj = domain.get_nb_elem_local(DIRECTION_J);
+  const int nk = domain.get_nb_elem_local(DIRECTION_K);
   {
     renum_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
     renum_ = -1; // init a -1
@@ -49,10 +48,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
             int index = count++;
             renum(i,j,k) = index;
           }
-
-
     // initialisation du tableau d'indice
-
     ArrOfInt pe_voisins(6);
 
     VECT(ArrOfInt) items_to_send(6);
@@ -60,13 +56,12 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     VECT(ArrOfInt) blocs_to_recv(6);
     int npe = 0;
 
-    const int pe_imin = splitting.get_neighbour_processor(0 /* left */, DIRECTION_I);
-    const int pe_jmin = splitting.get_neighbour_processor(0 /* left */, DIRECTION_J);
-    const int pe_kmin = splitting.get_neighbour_processor(0 /* left */, DIRECTION_K);
-    const int pe_imax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_I);
-    const int pe_jmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_J);
-    const int pe_kmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_K);
-
+    const int pe_imin = domain.get_neighbour_processor(0 /* left */, DIRECTION_I);
+    const int pe_jmin = domain.get_neighbour_processor(0 /* left */, DIRECTION_J);
+    const int pe_kmin = domain.get_neighbour_processor(0 /* left */, DIRECTION_K);
+    const int pe_imax = domain.get_neighbour_processor(1 /* right */, DIRECTION_I);
+    const int pe_jmax = domain.get_neighbour_processor(1 /* right */, DIRECTION_J);
+    const int pe_kmax = domain.get_neighbour_processor(1 /* right */, DIRECTION_K);
     int pe = pe_kmin;
     if (pe >= 0)
       {
@@ -129,7 +124,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           }
         npe++;
       }
-
     pe = pe_imax;
     if (pe >= 0 && pe != pe_imin)
       {
@@ -138,7 +132,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe]);
         npe++;
       }
-
     pe = pe_jmax;
     if (pe >= 0 && pe != pe_jmin)
       {
@@ -147,7 +140,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe]);
         npe++;
       }
-
     pe = pe_kmax;
     if (pe >= 0 && pe != pe_kmin)
       {
@@ -156,7 +148,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe]);
         npe++;
       }
-
     MD_Vector_std md_std(count /* nb_items_tot */,
                          ni * nj * nk /* nb_items_reels */,
                          pe_voisins,
@@ -164,7 +155,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
                          items_to_recv,
                          blocs_to_recv);
     md_.copy(md_std);
-
   }
 
   {
@@ -175,13 +165,13 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     voisins_virt_.dimensionner(n_reels);
     coeffs_virt_.dimensionner(n_reels);
     int z_index_min = 0;
-    int z_index = splitting.get_local_slice_index(2);
-    int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+    int z_index = domain.get_local_slice_index(2);
+    int z_index_max = domain.get_nprocessor_per_direction(2) - 1;
 
     for (i = 0; i < ni; i++)
       {
 
-        double DX = splitting.get_constant_delta(0);
+        double DX = domain.get_constant_delta(0);
         double istmp = shear_x_time_ /DX;
         int offset2 = (int) round(istmp);
         interpolation_for_shear_periodicity(i , offset2, istmp, ni, 1.);
@@ -189,31 +179,23 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         offset2 = (int) round(istmp);
         interpolation_for_shear_periodicity(i , offset2, istmp, ni, -1.);
 
-
         for (k = 0; k < nk; k++)
           {
             for (j = 0; j < nj; j++)
               {
                 if (z_index==z_index_min && defilement_==1 && k==0)
-                  {
-                    ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), 1.);
-                  }
+                  ajoute_coeff(i, j, k, i, j, k - 1, coeffs_face(i, j, k, 2), 1.);
                 else
-                  {
-                    ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2));
-                  }
+                  ajoute_coeff(i, j, k, i, j, k - 1, coeffs_face(i, j, k, 2));
+
                 ajoute_coeff(i,j,k,i,j-1,k,coeffs_face(i,j,k,1));
                 ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0));
                 ajoute_coeff(i,j,k,i+1,j,k,coeffs_face(i+1,j,k,0));
                 ajoute_coeff(i,j,k,i,j+1,k,coeffs_face(i,j+1,k,1));
-                if (z_index==z_index_max && defilement_==1 && k==nk-1)
-                  {
-                    ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2), -1.);
-                  }
+                if (z_index == z_index_max && defilement_ == 1 && k == nk - 1)
+                  ajoute_coeff(i, j, k, i, j, k + 1, coeffs_face(i, j, k + 1, 2), -1.);
                 else
-                  {
-                    ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2));
-                  }
+                  ajoute_coeff(i, j, k, i, j, k + 1, coeffs_face(i, j, k + 1, 2));
               }
           }
       }
@@ -253,7 +235,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     // carre.imprimer_formatte(Cout);
     // rect.imprimer_formatte(Cout);
   }
-
 }
 
 #endif

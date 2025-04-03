@@ -33,12 +33,10 @@ Entree& IJK_Test_Multigrille::readOn(Entree& s)
 
 Entree& IJK_Test_Multigrille::interpreter(Entree& is)
 {
-  Domaine_IJK split;
-
   Param param(que_suis_je());
-  Nom ijk_splitting_name;
+  Nom ijk_domain_name;
   Nom name_of_dom_;
-  param.ajouter("ijk_splitting", &ijk_splitting_name, Param::REQUIRED);
+  param.ajouter("domain", &ijk_domain_name, Param::REQUIRED);
   param.ajouter("multigrid_solver", &poisson_solver_, Param::REQUIRED);
   param.ajouter("fichier_reprise_rhs", &fichier_reprise_rhs_);
   param.ajouter("fichier_reprise_rho", &fichier_reprise_rho_);
@@ -50,13 +48,13 @@ Entree& IJK_Test_Multigrille::interpreter(Entree& is)
   param.lire_avec_accolades(is);
 
   // Recuperation des donnees de maillage
-  split = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_splitting_name));
+  ijk_domain_ = ref_cast(Domaine_IJK, Interprete_bloc::objet_global(ijk_domain_name));
   static Stat_Counter_Id count0 = statistiques().new_counter(0, "timing_init");
 
   statistiques().begin_count(count0);
-  rho_.allocate(split, Domaine_IJK::ELEM, 0);
-  rhs_.allocate(split, Domaine_IJK::ELEM, 0);
-  resu_.allocate(split, Domaine_IJK::ELEM, 0);
+  rho_.allocate(ijk_domain_, Domaine_IJK::ELEM, 0);
+  rhs_.allocate(ijk_domain_, Domaine_IJK::ELEM, 0);
+  resu_.allocate(ijk_domain_, Domaine_IJK::ELEM, 0);
 
   if (expression_rho_!="??")
     {
@@ -86,7 +84,7 @@ Entree& IJK_Test_Multigrille::interpreter(Entree& is)
   statistiques().end_count(count0);
   double t0 = statistiques().last_time(count0);
   statistiques().begin_count(count0);
-  poisson_solver_.initialize(split);
+  poisson_solver_.initialize(ijk_domain_);
   statistiques().end_count(count0);
   double t0b = statistiques().last_time(count0);
   Cout <<"initialisation time "<<t0<< " "<<t0b<<finl;

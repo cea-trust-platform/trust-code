@@ -21,77 +21,21 @@
 #include <Interprete_bloc.h>
 #include <stat_counters.h>
 
-static void extend_array(const Domaine_IJK& geom1, const int direction, const int ncells, ArrOfDouble& delta, double& origin)
-{
-  delta = geom1.get_delta(direction);
-  origin = geom1.get_origin(direction);
-
-  if (geom1.get_periodic_flag(direction))
-    {
-      // On cree des mailles supplementaires au debut et a la fin,
-      // on decale l'origine vers la "gauche"
-      const int n = delta.size_array(); // nombre de mailles initial
-      delta.resize_array(n + 2 * ncells);
-      int i;
-      // On decale les mailles vers la droite dans delta, de ncells:
-      for (i = n - 1; i >= 0; i--)
-        delta[i + ncells] = delta[i];
-      // On duplique les mailles dont on a besoin:
-      if (n < ncells)
-        {
-          Cerr << "Error in build_extended_splitting, direction " << direction << " extension of " << ncells << " not possible because we only have " << n << " cells in the domain." << finl;
-          Process::exit();
-        }
-      for (i = 0; i < ncells; i++)
-        {
-          // Copie des mailles de droite a gauche:
-          delta[i] = delta[i + n];
-          // Decalage de l'origine:
-          origin -= delta[i];
-          // Copie des mailles de gauche a droite:
-          delta[ncells + i + n] = delta[ncells + i];
-        }
-    }
-}
-
-// split1 : Maillage d'origine sur lequel sont resolues les equations de NS.
-// split2 : Resultat etendu contenant le domaine ou vivent les interfaces.
-// n_cells : Nombre de cellules supplementaires crees de chaque cote.
-//           (doit etre inferieur au nombre de mailles dans le domaine decoupee).
-void build_extended_splitting(const Domaine_IJK& geom1, Domaine_IJK& split2, int n_cells)
-{
-  double origin_x, origin_y, origin_z;
-  ArrOfDouble dx, dy, dz;
-  extend_array(geom1, DIRECTION_I, n_cells, dx, origin_x);
-  extend_array(geom1, DIRECTION_J, n_cells, dy, origin_y);
-  extend_array(geom1, DIRECTION_K, n_cells, dz, origin_z);
-
-  // Le domaine etendu n'est pas periodique: le champ n'est pas continu
-  // entre les bords opposes du domaine etendu.
-  Domaine_IJK geom2;
-  Nom n(geom1.le_nom());
-  geom2.nommer(n + "_EXT");
-  geom2.initialize_origin_deltas(origin_x, origin_y, origin_z, dx, dy, dz, geom1.get_periodic_flag(0), geom1.get_periodic_flag(1), geom1.get_periodic_flag(2));
-  // Construction du decoupage parallele: on utilise les memes parametres
-  // de decoupage que pour le maillage d'origine:
-  split2.initialize_splitting(geom2, geom1.get_nprocessor_per_direction(DIRECTION_I), geom1.get_nprocessor_per_direction(DIRECTION_J), geom1.get_nprocessor_per_direction(DIRECTION_K));
-}
-
-Probleme_base& creer_domaine_vdf(const Domaine_IJK& geom, const Nom& nom_domaine)
+Probleme_base& creer_domaine_ijk(const Domaine_IJK& domain, const Nom& domain_name)
 {
   // On va construire une partie de jdd a faire interpreter:
-  const double x0 = geom.get_origin(DIRECTION_I);
-  const double y0 = geom.get_origin(DIRECTION_J);
-  const double z0 = geom.get_origin(DIRECTION_K);
-  const double lx = geom.get_domain_length(DIRECTION_I);
-  const double ly = geom.get_domain_length(DIRECTION_J);
-  const double lz = geom.get_domain_length(DIRECTION_K);
-  const int nslicek = geom.get_nprocessor_per_direction(DIRECTION_K);
-  const int nslicej = geom.get_nprocessor_per_direction(DIRECTION_J);
-  const int nslicei = geom.get_nprocessor_per_direction(DIRECTION_I);
-  const int ni = geom.get_nb_elem_tot(DIRECTION_I) + 1; // number of nodes
-  const int nj = geom.get_nb_elem_tot(DIRECTION_J) + 1;
-  const int nk = geom.get_nb_elem_tot(DIRECTION_K) + 1;
+  const double x0 = domain.get_origin(DIRECTION_I);
+  const double y0 = domain.get_origin(DIRECTION_J);
+  const double z0 = domain.get_origin(DIRECTION_K);
+  const double lx = domain.get_domain_length(DIRECTION_I);
+  const double ly = domain.get_domain_length(DIRECTION_J);
+  const double lz = domain.get_domain_length(DIRECTION_K);
+  const int nslicek = domain.get_nprocessor_per_direction(DIRECTION_K);
+  const int nslicej = domain.get_nprocessor_per_direction(DIRECTION_J);
+  const int nslicei = domain.get_nprocessor_per_direction(DIRECTION_I);
+  const int ni = domain.get_nb_elem_tot(DIRECTION_I) + 1; // number of nodes
+  const int nj = domain.get_nb_elem_tot(DIRECTION_J) + 1;
+  const int nk = domain.get_nb_elem_tot(DIRECTION_K) + 1;
 
   char fonction_coord_x[300];
   snprintf(fonction_coord_x, 300, "%.16g+x*%.16g", x0, lx);
@@ -102,10 +46,10 @@ Probleme_base& creer_domaine_vdf(const Domaine_IJK& geom, const Nom& nom_domaine
 
   SChaine instructions;
   instructions << "Dimension 3 " << finl;
-  instructions << "Domaine " << nom_domaine << finl;
+  instructions << "Domaine " << domain_name << finl;
   instructions << "MaillerParallel" << finl;
   instructions << "{" << finl;
-  instructions << "  domain " << nom_domaine << finl;
+  instructions << "  domain " << domain_name << finl;
   instructions << "  nb_nodes 3 " << ni << " " << nj << " " << nk << finl;
   instructions << "  splitting 3 " << nslicei << " " << nslicej << " " << nslicek << finl;
   instructions << "  ghost_thickness 1" << finl;
@@ -127,7 +71,7 @@ Probleme_base& creer_domaine_vdf(const Domaine_IJK& geom, const Nom& nom_domaine
     for (int j = 0; j < nslicej; j++)
       for (int i = 0; i < nslicei; i++)
         {
-          int p = geom.get_processor_by_ijk(i, j, k);
+          int p = domain.get_processor_by_ijk(i, j, k);
           map(p, 0) = i;
           map(p, 1) = j;
           map(p, 2) = k;
@@ -137,16 +81,16 @@ Probleme_base& creer_domaine_vdf(const Domaine_IJK& geom, const Nom& nom_domaine
     {
       Cerr << "Error in creer_domaine_vdf: there are unused processors in the ijk splitting" << finl;
     }
-  Nom pb_name = Nom("pb_") + nom_domaine;
+  Nom pb_name = Nom("pb_") + domain_name;
   instructions << map << finl;
   instructions << "}" << finl;
   instructions << "Probleme_FT_Disc_gen " << pb_name << finl;
-  instructions << "Associer " << pb_name << " " << nom_domaine << finl;
-  instructions << "VDF dis" << nom_domaine << finl;
-  instructions << "Schema_Euler_explicite sch" << nom_domaine << " Lire sch" << nom_domaine << " { nb_pas_dt_max 1 }" << finl;
-  instructions << "Associer " << pb_name << " sch" << nom_domaine << finl;
-  instructions << "Discretiser " << pb_name << " dis" << nom_domaine << finl;
-  Cerr << "Interpretation of the following string:" << finl << instructions.get_str();
+  instructions << "Associer " << pb_name << " " << domain_name << finl;
+  instructions << "VDF dis" << domain_name << finl;
+  instructions << "Schema_Euler_explicite sch" << domain_name << " Lire sch" << domain_name << " { nb_pas_dt_max 1 }" << finl;
+  instructions << "Associer " << pb_name << " sch" << domain_name << finl;
+  instructions << "Discretiser " << pb_name << " dis" << domain_name << finl;
+  Cerr << "Interpretation de la chaine suivante:" << finl << instructions.get_str();
 
   EChaine is(instructions.get_str());
   Interprete_bloc::interprete_courant().interpreter_bloc(is, Interprete_bloc::BLOC_EOF, 0 /* flag verifie sans interpreter */);
@@ -167,38 +111,67 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
   const int nj = field.nj();
   const int nk = field.nk();
 
-  const Domaine_IJK& geom = field.get_domaine();
-  const double dx = geom.get_constant_delta(DIRECTION_I);
-  const double dy = geom.get_constant_delta(DIRECTION_J);
-  const double dz = geom.get_constant_delta(DIRECTION_K);
+  const Domaine_IJK& domain = field.get_domain();
+  static const double dx = domain.get_constant_delta(DIRECTION_I);
+  static const double dy = domain.get_constant_delta(DIRECTION_J);
+  static const double dz = domain.get_constant_delta(DIRECTION_K);
   const Domaine_IJK::Localisation loc = field.get_localisation();
   // L'origine est sur un noeud. Donc que la premiere face en I est sur get_origin(DIRECTION_I)
-  double origin_x = geom.get_origin(DIRECTION_I) + ((loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::ELEM) ? (dx * 0.5) : 0.);
-  double origin_y = geom.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
-  double origin_z = geom.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
+  const double origin_x = domain.get_origin(DIRECTION_I) + ((loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::ELEM) ? (dx * 0.5) : 0.);
+  const double origin_y = domain.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
+  const double origin_z = domain.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
   const int nb_coords = coordinates.dimension(0);
+
+  // Is it periodic in this direction ?
+  static const bool PERIO_I = domain.get_periodic_flag(DIRECTION_I);
+  static const bool PERIO_J = domain.get_periodic_flag(DIRECTION_J);
+  static const bool PERIO_K = domain.get_periodic_flag(DIRECTION_K);
+
+  // Length of the domain in this direction
+  static const double LENGTH_I = domain.get_domain_length(DIRECTION_I);
+  static const double LENGTH_J = domain.get_domain_length(DIRECTION_J);
+  static const double LENGTH_K = domain.get_domain_length(DIRECTION_K);
+
+  // NB of element in this direction on the current process
+  static const int OFFSET_I = domain.get_offset_local(DIRECTION_I);
+  static const int OFFSET_J = domain.get_offset_local(DIRECTION_J);
+  static const int OFFSET_K = domain.get_offset_local(DIRECTION_K);
+
+  // NB ELEM LOCAL SUR LE PROC
+  static const int NB_ELEM_LOC_I = domain.get_nb_elem_local(DIRECTION_I);
+  static const int NB_ELEM_LOC_J = domain.get_nb_elem_local(DIRECTION_J);
+  static const int NB_ELEM_LOC_K = domain.get_nb_elem_local(DIRECTION_K);
+
+  // NB Elem global
+  static const int NB_ELEM_I = domain.get_nb_elem_tot(DIRECTION_I);
+  static const int NB_ELEM_J = domain.get_nb_elem_tot(DIRECTION_J);
+  static const int NB_ELEM_K = domain.get_nb_elem_tot(DIRECTION_K);
+
   result.resize_array(nb_coords);
-  for (int idx = 0; idx < nb_coords; idx++)
+  for (int idx = 0; idx < nb_coords; ++idx)
     {
-      const double x = coordinates(idx, 0);
-      const double y = coordinates(idx, 1);
-      const double z = coordinates(idx, 2);
+      const double x = coordinates(idx, 0) < 0 && PERIO_I ? LENGTH_I + coordinates(idx, 0) : coordinates(idx, 0);
+      const double y = coordinates(idx, 1) < 0 && PERIO_J ? LENGTH_J + coordinates(idx, 1) : coordinates(idx, 1);
+      const double z = coordinates(idx, 2) < 0 && PERIO_K ? LENGTH_K + coordinates(idx, 2) : coordinates(idx, 2);
       const double x2 = (x - origin_x) / dx;
       const double y2 = (y - origin_y) / dy;
       const double z2 = (z - origin_z) / dz;
-      const int index_i = (int) (floor(x2)) - geom.get_offset_local(DIRECTION_I);
-      const int index_j = (int) (floor(y2)) - geom.get_offset_local(DIRECTION_J);
-      const int index_k = (int) (floor(z2)) - geom.get_offset_local(DIRECTION_K);
+      const int idx_i_tmp = ((int) (floor(x2)) - OFFSET_I) < -ghost ? ((int) (floor(x2)) - OFFSET_I) + NB_ELEM_I : ((int) (floor(x2)) - OFFSET_I);
+      const int idx_j_tmp = ((int) (floor(y2)) - OFFSET_J) < -ghost ? ((int) (floor(y2)) - OFFSET_J) + NB_ELEM_J : ((int) (floor(y2)) - OFFSET_J);
+      const int idk_k_tmp = ((int) (floor(z2)) - OFFSET_K) < -ghost ? ((int) (floor(z2)) - OFFSET_K) + NB_ELEM_K : ((int) (floor(z2)) - OFFSET_K);
+      const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
+      const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
+      const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
       // Coordonnes barycentriques du points dans la cellule :
-      const double xfact = x2 - floor(x2);
-      const double yfact = y2 - floor(y2);
-      const double zfact = z2 - floor(z2);
+      const double xfact = fma(1., x2, - floor(x2));
+      const double yfact = fma(1., y2, - floor(y2));
+      const double zfact = fma(1., z2, - floor(z2));
 
       // is point in the domain ? (ghost cells ok...)
-      bool ok = (index_i >= -ghost && index_i < ni + ghost - 1) && (index_j >= -ghost && index_j < nj + ghost - 1) && (index_k >= -ghost && index_k < nk + ghost - 1);
+      const bool ok = (index_i >= - ghost && index_i < ni + ghost - 1) && (index_j >= - ghost && index_j < nj + ghost - 1) && (index_k >= - ghost && index_k < nk + ghost - 1);
       if (!ok)
         {
-          if (skip_unknown_points)
+          if (skip_unknown_points) // Should not happen anymore
             {
               result[idx] = value_for_bad_points;
               continue; // go to next point
@@ -212,10 +185,10 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
             }
         }
 
-      double r = (((1. - xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1. - yfact)
-                  + ((1. - xfact) * field(index_i, index_j + 1, index_k) + xfact * field(index_i + 1, index_j + 1, index_k)) * (yfact)) * (1. - zfact)
-                 + (((1. - xfact) * field(index_i, index_j, index_k + 1) + xfact * field(index_i + 1, index_j, index_k + 1)) * (1. - yfact)
-                    + ((1. - xfact) * field(index_i, index_j + 1, index_k + 1) + xfact * field(index_i + 1, index_j + 1, index_k + 1)) * (yfact)) * (zfact);
+      const double r = (((1. - xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1. - yfact)
+                        + ((1. - xfact) * field(index_i, index_j + 1, index_k) + xfact * field(index_i + 1, index_j + 1, index_k)) * (yfact)) * (1. - zfact)
+                       + (((1. - xfact) * field(index_i, index_j, index_k + 1) + xfact * field(index_i + 1, index_j, index_k + 1)) * (1. - yfact)
+                          + ((1. - xfact) * field(index_i, index_j + 1, index_k + 1) + xfact * field(index_i + 1, index_j + 1, index_k + 1)) * (yfact)) * (zfact);
       result[idx] = r;
     }
 }
@@ -238,32 +211,61 @@ static double ijk_interpolate_one_value(const IJK_Field_double& field, const Vec
   const int nj = field.nj();
   const int nk = field.nk();
 
-  const Domaine_IJK& geom = field.get_domaine();
-  const double dx = geom.get_constant_delta(DIRECTION_I);
-  const double dy = geom.get_constant_delta(DIRECTION_J);
-  const double dz = geom.get_constant_delta(DIRECTION_K);
+  const Domaine_IJK& domain = field.get_domain();
+  static const double dx = domain.get_constant_delta(DIRECTION_I);
+  static const double dy = domain.get_constant_delta(DIRECTION_J);
+  static const double dz = domain.get_constant_delta(DIRECTION_K);
   const Domaine_IJK::Localisation loc = field.get_localisation();
   // L'origine est sur un noeud. Donc que la premiere face en I est sur get_origin(DIRECTION_I)
-  double origin_x = geom.get_origin(DIRECTION_I) + ((loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::ELEM) ? (dx * 0.5) : 0.);
-  double origin_y = geom.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
-  double origin_z = geom.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
-  const double x = coordinates[0];
-  const double y = coordinates[1];
-  const double z = coordinates[2];
+  double origin_x = domain.get_origin(DIRECTION_I) + ((loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::ELEM) ? (dx * 0.5) : 0.);
+  double origin_y = domain.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
+  double origin_z = domain.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
+
+  // Is it periodic in this direction ?
+  static const bool PERIO_I = domain.get_periodic_flag(DIRECTION_I);
+  static const bool PERIO_J = domain.get_periodic_flag(DIRECTION_J);
+  static const bool PERIO_K = domain.get_periodic_flag(DIRECTION_K);
+
+  // Length of the domain in this direction
+  static const double LENGTH_I = domain.get_domain_length(DIRECTION_I);
+  static const double LENGTH_J = domain.get_domain_length(DIRECTION_J);
+  static const double LENGTH_K = domain.get_domain_length(DIRECTION_K);
+
+  // NB of element in this direction on the current process
+  static const int OFFSET_I = domain.get_offset_local(DIRECTION_I);
+  static const int OFFSET_J = domain.get_offset_local(DIRECTION_J);
+  static const int OFFSET_K = domain.get_offset_local(DIRECTION_K);
+
+  // NB ELEM LOCAL SUR LE PROC
+  static const int NB_ELEM_LOC_I = domain.get_nb_elem_local(DIRECTION_I);
+  static const int NB_ELEM_LOC_J = domain.get_nb_elem_local(DIRECTION_J);
+  static const int NB_ELEM_LOC_K = domain.get_nb_elem_local(DIRECTION_K);
+
+  // NB Elem global
+  static const int NB_ELEM_I = domain.get_nb_elem_tot(DIRECTION_I);
+  static const int NB_ELEM_J = domain.get_nb_elem_tot(DIRECTION_J);
+  static const int NB_ELEM_K = domain.get_nb_elem_tot(DIRECTION_K);
+
+  const double x = coordinates[0] < 0 && PERIO_I ? LENGTH_I + coordinates[0] : coordinates[0];
+  const double y = coordinates[1] < 0 && PERIO_J ? LENGTH_J + coordinates[1] : coordinates[0];
+  const double z = coordinates[2] < 0 && PERIO_K ? LENGTH_K + coordinates[2] : coordinates[0];
   const double x2 = (x - origin_x) / dx;
   const double y2 = (y - origin_y) / dy;
   const double z2 = (z - origin_z) / dz;
-  const int index_i = (int) (floor(x2)) - geom.get_offset_local(DIRECTION_I);
-  const int index_j = (int) (floor(y2)) - geom.get_offset_local(DIRECTION_J);
-  const int index_k = (int) (floor(z2)) - geom.get_offset_local(DIRECTION_K);
+  const int idx_i_tmp = ((int) (floor(x2)) - OFFSET_I) < -ghost ? ((int) (floor(x2)) - OFFSET_I) + NB_ELEM_I : ((int) (floor(x2)) - OFFSET_I);
+  const int idx_j_tmp = ((int) (floor(y2)) - OFFSET_J) < -ghost ? ((int) (floor(y2)) - OFFSET_J) + NB_ELEM_J : ((int) (floor(y2)) - OFFSET_J);
+  const int idk_k_tmp = ((int) (floor(z2)) - OFFSET_K) < -ghost ? ((int) (floor(z2)) - OFFSET_K) + NB_ELEM_K : ((int) (floor(z2)) - OFFSET_K);
+  const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
+  const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
+  const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
   // Coordonnes barycentriques du points dans la cellule :
-  const double xfact = x2 - floor(x2);
-  const double yfact = y2 - floor(y2);
-  const double zfact = z2 - floor(z2);
+  const double xfact = fma(1., x2, - floor(x2));
+  const double yfact = fma(1., y2, - floor(y2));
+  const double zfact = fma(1., z2, - floor(z2));
 
   // is point in the domain ? (ghost cells ok...)
   bool ok = (index_i >= -ghost && index_i < ni + ghost - 1) && (index_j >= -ghost && index_j < nj + ghost - 1) && (index_k >= -ghost && index_k < nk + ghost - 1);
-  if (!ok)
+  if (!ok) // Should not happen
     {
       if (skip_unknown_points)
         {
@@ -299,14 +301,14 @@ double ijk_interpolate(const IJK_Field_double& field, const Vecteur3& coordinate
 // (used in set_field_data() )
 void build_local_coords(const IJK_Field_double& f, ArrOfDouble& coord_i, ArrOfDouble& coord_j, ArrOfDouble& coord_k)
 {
-  const Domaine_IJK& geom = f.get_domaine();
-  const int i_offset = f.get_domaine().get_offset_local(DIRECTION_I);
-  const int j_offset = f.get_domaine().get_offset_local(DIRECTION_J);
-  const int k_offset = f.get_domaine().get_offset_local(DIRECTION_K);
+  const Domaine_IJK& domain = f.get_domain();
+  const int i_offset = domain.get_offset_local(DIRECTION_I);
+  const int j_offset = domain.get_offset_local(DIRECTION_J);
+  const int k_offset = domain.get_offset_local(DIRECTION_K);
 
-  const ArrOfDouble& nodes_i = geom.get_node_coordinates(0);
-  const ArrOfDouble& nodes_j = geom.get_node_coordinates(1);
-  const ArrOfDouble& nodes_k = geom.get_node_coordinates(2);
+  const ArrOfDouble& nodes_i = domain.get_node_coordinates(0);
+  const ArrOfDouble& nodes_j = domain.get_node_coordinates(1);
+  const ArrOfDouble& nodes_k = domain.get_node_coordinates(2);
   const int ni = f.ni();
   const int nj = f.nj();
   const int nk = f.nk();
@@ -567,7 +569,6 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
     }
   f.echange_espace_virtuel(f.ghost());
 }
-
 
 void complex_to_trig(const double re, const double im, double& modul, double& arg)
 {

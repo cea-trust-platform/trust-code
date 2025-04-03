@@ -30,7 +30,7 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
 {
   if (Process::je_suis_maitre())
     {
-      const Domaine_IJK& splitting = f.get_domaine();
+      const Domaine_IJK& domain = f.get_domain();
       SFichier master_file;
       Nom prefix = Nom(filename) + Nom(".");
       SFichier binary_file;
@@ -42,7 +42,7 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
       master_file.set_bin(0);
       master_file.ouvrir(filename, ios::app);
       Noms fname(3);
-      const Nom& geomname = splitting.le_nom();
+      const Nom& geomname = domain.le_nom();
       if (geomname == "??")
         {
           Cerr << "Error in  dumplata_header: geometry has no name" << finl;
@@ -53,7 +53,7 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
           fname[dir] = prefix + geomname + Nom(".coord") + Nom((char)('x'+dir));
           int i;
           binary_file.ouvrir(fname[dir]);
-          const ArrOfDouble& coord = splitting.get_node_coordinates(dir);
+          const ArrOfDouble& coord = domain.get_node_coordinates(dir);
           n = coord.size_array();
           tmp.resize_array(n);
           for (i = 0; i < n; i++)
@@ -63,11 +63,11 @@ void dumplata_add_geometry(const char *filename, const  IJK_Field_template<_TYPE
         }
       master_file << "Geom " << geomname << " type_elem=HEXAEDRE" << finl;
       master_file << "Champ SOMMETS_IJK_I " << basename(fname[0]) << " geometrie=" << geomname;
-      master_file << " size=" << splitting.get_nb_elem_tot(0)+1 << " composantes=1" << finl;
+      master_file << " size=" << domain.get_nb_elem_tot(0) + 1 << " composantes=1" << finl;
       master_file << "Champ SOMMETS_IJK_J " << basename(fname[1]) << " geometrie=" << geomname;
-      master_file << " size=" << splitting.get_nb_elem_tot(1)+1 << " composantes=1" << finl;
+      master_file << " size=" << domain.get_nb_elem_tot(1) + 1 << " composantes=1" << finl;
       master_file << "Champ SOMMETS_IJK_K " << basename(fname[2]) << " geometrie=" << geomname;
-      master_file << " size=" << splitting.get_nb_elem_tot(2)+1 << " composantes=1" << finl;
+      master_file << " size=" << domain.get_nb_elem_tot(2) + 1 << " composantes=1" << finl;
       master_file.close();
     }
 }
@@ -93,7 +93,7 @@ void dumplata_vector(const char *filename, const char *fieldname,
     {
       SFichier master_file;
       master_file.ouvrir(filename, ios::app);
-      const Nom& geomname = vx.get_domaine().le_nom();
+      const Nom& geomname = vx.get_domain().le_nom();
 
       master_file << "Champ " << fieldname << " " << basename(fd) << " geometrie=" << geomname;
 #ifdef INT_is_64_
@@ -119,7 +119,7 @@ void dumplata_vector_parallele_plan(const char *filename, const char *fieldname,
     {
       SFichier master_file;
       master_file.ouvrir(filename, ios::app);
-      const Nom& geomname = vx.get_domaine().le_nom();
+      const Nom& geomname = vx.get_domain().le_nom();
 
       master_file << "Champ " << fieldname << " " << basename(fd_global) << " geometrie=" << geomname;
 #ifdef INT_is_64_
@@ -156,7 +156,7 @@ void dumplata_scalar(const char *filename, const char *fieldname,
         loc = "ELEM";
       else
         loc = "SOM";
-      const Nom& geomname = f.get_domaine().le_nom();
+      const Nom& geomname = f.get_domain().le_nom();
       master_file << "Champ " << fieldname << " " << basename(fd) << " geometrie=" << geomname;
 #ifdef INT_is_64_
       master_file << " file_offset=6";
@@ -185,7 +185,7 @@ void dumplata_scalar_parallele_plan(const char *filename, const char *fieldname,
         loc = "ELEM";
       else
         loc = "SOM";
-      const Nom& geomname = f.get_domaine().le_nom();
+      const Nom& geomname = f.get_domain().le_nom();
       master_file << "Champ " << fieldname << " " << basename(fd_global) << " geometrie=" << geomname;
 #ifdef INT_is_64_
       master_file << " file_offset=6";
@@ -209,16 +209,16 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
        << " field=" << fieldname
        << " component= " << i_compo << finl;
   Process::barrier(); // to print message before crash
-  const Domaine_IJK& splitting = field.get_domaine();
-  const int offset_j = splitting.get_offset_local(DIRECTION_J);
-  const int offset_k = splitting.get_offset_local(DIRECTION_K);
+  const Domaine_IJK& domain = field.get_domain();
+  const int offset_j = domain.get_offset_local(DIRECTION_J);
+  const int offset_k = domain.get_offset_local(DIRECTION_K);
   const int ni_local = field.ni();
   const int nj_local = field.nj();
   const int nk_local = field.nk();
-  const int slice_i = splitting.get_local_slice_index(DIRECTION_I);
-  const int slice_j = splitting.get_local_slice_index(DIRECTION_J);
-  const int slice_k = splitting.get_local_slice_index(DIRECTION_K);
-  const int n_slices_i = splitting.get_nprocessor_per_direction(DIRECTION_I);
+  const int slice_i = domain.get_local_slice_index(DIRECTION_I);
+  const int slice_j = domain.get_local_slice_index(DIRECTION_J);
+  const int slice_k = domain.get_local_slice_index(DIRECTION_K);
+  const int n_slices_i = domain.get_nprocessor_per_direction(DIRECTION_I);
   // Load data by batches of 32MB.
   const int batch_size = (int)(Parallel_io_parameters::get_max_block_size() / sizeof(_TYPE_));
 
@@ -231,7 +231,7 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
       // For each slice in i, number of field values:
       ArrOfInt ni_per_slice(n_slices_i);
       ArrOfInt slices_offsets_i;
-      splitting.get_slice_offsets(DIRECTION_I, slices_offsets_i);
+      domain.get_slice_offsets(DIRECTION_I, slices_offsets_i);
       // On processors that do not read data on disk, input_n?_tot will be -1:
       int input_ni_tot = -1, input_nj_tot = -1, input_nk_tot = -1;
       int number_of_j_per_batch = -1;
@@ -251,14 +251,14 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
           input_ni_tot = (int)lata_db.get_field(tstep, geometryname, "SOMMETS_IJK_I", "", LataDB::FIRST_AND_CURRENT).size_;
           input_nj_tot = (int)lata_db.get_field(tstep, geometryname, "SOMMETS_IJK_J", "", LataDB::FIRST_AND_CURRENT).size_;
           input_nk_tot = (int)lata_db.get_field(tstep, geometryname, "SOMMETS_IJK_K", "", LataDB::FIRST_AND_CURRENT).size_;
-          if (input_ni_tot-1 != splitting.get_nb_elem_tot(DIRECTION_I)
-              || input_nj_tot-1 != splitting.get_nb_elem_tot(DIRECTION_J)
-              || input_nk_tot-1 != splitting.get_nb_elem_tot(DIRECTION_K))
+          if (input_ni_tot-1 != domain.get_nb_elem_tot(DIRECTION_I)
+              || input_nj_tot-1 != domain.get_nb_elem_tot(DIRECTION_J)
+              || input_nk_tot-1 != domain.get_nb_elem_tot(DIRECTION_K))
             {
               Cerr << "Error: size mismatch. Current grid (number of elements): "
-                   << splitting.get_nb_elem_tot(DIRECTION_I) << " "
-                   << splitting.get_nb_elem_tot(DIRECTION_J) << " "
-                   << splitting.get_nb_elem_tot(DIRECTION_K) << finl;
+                   << domain.get_nb_elem_tot(DIRECTION_I) << " "
+                   << domain.get_nb_elem_tot(DIRECTION_J) << " "
+                   << domain.get_nb_elem_tot(DIRECTION_K) << finl;
               Cerr << "Grid in lata file: "
                    << input_ni_tot-1 << " " << input_nj_tot-1 << " " << input_nk_tot-1 << finl;
               Process::exit();
@@ -275,7 +275,7 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
           ni_per_slice[0] = ni_local;
           for (int islice = 1; islice < n_slices_i; islice++)
             {
-              const int src_process = splitting.get_processor_by_ijk(islice, slice_j, slice_k);
+              const int src_process = domain.get_processor_by_ijk(islice, slice_j, slice_k);
               recevoir(ni_per_slice[islice], src_process, 0 /* mpi channel */);
               envoyer(number_of_j_per_batch, src_process, 0);
             }
@@ -283,7 +283,7 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
       else
         {
           // Send my slice size to processor 0:
-          const int dest_process = splitting.get_processor_by_ijk(0, slice_j, slice_k);
+          const int dest_process = domain.get_processor_by_ijk(0, slice_j, slice_k);
           envoyer(ni_local, dest_process, 0 /* mpi channel */);
           recevoir(number_of_j_per_batch, dest_process, 0);
         }
@@ -330,12 +330,12 @@ void read_lata_parallel_template(const char *filename_with_path, int tstep, cons
                       // Send tmp_dispatch to appropriate process
                       if (islice > 0)
                         {
-                          const int dest_process = splitting.get_processor_by_ijk(islice, slice_j, slice_k);
+                          const int dest_process = domain.get_processor_by_ijk(islice, slice_j, slice_k);
                           envoyer(tmp_dispatch, dest_process, 0 /* mpi channel */);
                         }
                     }
                 }
-              const int src_process = splitting.get_processor_by_ijk(0, slice_j, slice_k);
+              const int src_process = domain.get_processor_by_ijk(0, slice_j, slice_k);
               // Receive tmp_dispatch if not already here:
               if (slice_i > 0)
                 {
@@ -376,11 +376,11 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
     }
   const int master = Process::je_suis_maitre();
   // Collate data on processor 0
-  const Domaine_IJK& splitting = f.get_domaine();
+  const Domaine_IJK& domain = f.get_domain();
   const Domaine_IJK::Localisation loc = f.get_localisation();
-  const int nitot = splitting.get_nb_items_global(loc, DIRECTION_I);
-  const int njtot = splitting.get_nb_items_global(loc, DIRECTION_J);
-  const int nktot = splitting.get_nb_items_global(loc, DIRECTION_K);
+  const int nitot = domain.get_nb_items_global(loc, DIRECTION_I);
+  const int njtot = domain.get_nb_items_global(loc, DIRECTION_J);
+  const int nktot = domain.get_nb_items_global(loc, DIRECTION_K);
 
   Nom path, dbname;
   split_path_filename(filename_with_path, path, dbname);
@@ -453,15 +453,15 @@ void lire_dans_lata(const char *filename_with_path, int tstep, const char *geome
       Cerr << "Error in lire_dans_lata(vx, vy, vz): provided fields have incorrect localisation" << finl;
       Process::exit();
     }
-  const Domaine_IJK& splitting = vx.get_domaine();
+  const Domaine_IJK& domain = vx.get_domain();
   // Collate data on processor 0
   // In lata format, the velocity is written as an array of (vx, vy, vz) vectors.
   // Size of the array is the total number of nodes in the mesh.
   // The velocity associated with a node is the combination of velocities at the faces
   // at the right of the node (in each direction).
-  const int nitot = splitting.get_nb_items_global(Domaine_IJK::ELEM, 0) + 1;
-  const int njtot = splitting.get_nb_items_global(Domaine_IJK::ELEM, 1) + 1;
-  const int nktot = splitting.get_nb_items_global(Domaine_IJK::ELEM, 2) + 1;
+  const int nitot = domain.get_nb_items_global(Domaine_IJK::ELEM, 0) + 1;
+  const int njtot = domain.get_nb_items_global(Domaine_IJK::ELEM, 1) + 1;
+  const int nktot = domain.get_nb_items_global(Domaine_IJK::ELEM, 2) + 1;
 
   const int master = Process::je_suis_maitre();
 

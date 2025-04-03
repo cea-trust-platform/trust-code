@@ -29,7 +29,7 @@ class IJK_Test_Multigrille : public Interprete
 public:
   Entree& interpreter(Entree&) override;
 
-  Domaine_IJK splitting_;
+  OBS_PTR(Domaine_IJK) ijk_domain_;
   IJK_Field_double rho_;
   IJK_Field_double rhs_;
   IJK_Field_double resu_;

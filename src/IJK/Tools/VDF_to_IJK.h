@@ -28,7 +28,7 @@ class Domaine_IJK;
 class VDF_to_IJK
 {
 public:
-  void initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& splitting,
+  void initialize(const Domaine_VF& domaine_vf, const Domaine_IJK& domain,
                   Domaine_IJK::Localisation localisation,
                   int direction_for_x,
                   int direction_for_y,

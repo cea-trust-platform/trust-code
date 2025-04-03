@@ -38,10 +38,10 @@ protected:
 
 public:
   Grid_Level_Data_template();
-  void initialize(const Domaine_IJK&, int ghost, int additional_k_layers);
+  void initialize(const Domaine_IJK& domain, int ghost, int additional_k_layers);
 
-  int get_ghost_size() const { return ghost_size_; }
-  const Domaine_IJK& get_domaine() const { return domaine_ijk_; }
+  inline int get_ghost_size() const { return ghost_size_; }
+  inline const Domaine_IJK& get_domain() const { return ijk_domain_; }
   // Compute the ijk_faces_coefficients from ijk_rho_
   void compute_faces_coefficients_from_rho();
   void compute_faces_coefficients_from_inv_rho();
@@ -50,12 +50,12 @@ public:
   compute_faces_coefficients_from_double_coeffs(const Grid_Level_Data_template<double>&);
 
   // Returns the reference to the rho_field (to fill the data)
-  IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_rho() { return ijk_rho_; }
-  const IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_rho() const { return ijk_rho_; }
-  IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_x() { return ijk_x_; }
-  IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_rhs() { return ijk_rhs_; }
-  IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_residue() { return ijk_residue_; }
-  const IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_faces_coefficients() const { return ijk_faces_coefficients_; }
+  inline IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_rho() { return ijk_rho_; }
+  inline const IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_rho() const { return ijk_rho_; }
+  inline IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_x() { return ijk_x_; }
+  inline IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_rhs() { return ijk_rhs_; }
+  inline IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_residue() { return ijk_residue_; }
+  inline const IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_faces_coefficients() const { return ijk_faces_coefficients_; }
 
 protected:
   void compute_faces_coefficients_from_rho_cst_i_cst_j_cst_k();
@@ -63,8 +63,7 @@ protected:
   void compute_faces_coefficients_from_rho_cst_i_cst_j_var_k();
   void compute_faces_coefficients_from_inv_rho_cst_i_cst_j_var_k();
 
-  //Domaine_IJK grid_geometry_;
-  Domaine_IJK domaine_ijk_;
+  Domaine_IJK ijk_domain_;
   int ghost_size_;
   bool perio_k_ = false;
 
