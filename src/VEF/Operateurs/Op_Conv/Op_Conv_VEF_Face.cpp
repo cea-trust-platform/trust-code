@@ -505,17 +505,18 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           using ScratchPadDouble = Kokkos::View<double*, Kokkos::DefaultExecutionSpace::scratch_memory_space, Kokkos::MemoryTraits<Kokkos::Unmanaged>>;
 
           // scratch memory required for temporary arrays
-          const std::size_t scratch_size = ScratchPadInt::shmem_size(
-                                             4 // face
-                                           ) + ScratchPadDouble::shmem_size(
-                                             3 // vs
-                                             + 12 // vsom
-                                             + 3 // vc
-                                             + (ordre == 3 ? 3 : 0) // xc
-                                             + (ordre == 3 ? 12 : 0) // xsom
-                                             + 3 // centre_fa7
-                                             + 3 // cc
-                                           );
+          const std::size_t scratch_size_int = (
+              4 // face
+              );
+          const std::size_t scratch_size_double = (
+              3 // vs
+              + 12 // vsom
+              + 3 // vc
+              + 3 // xc
+              + 12 // xsom
+              + 3 // centre_fa7
+              + 3 // cc
+              );
 
           // size of a team
           constexpr std::size_t warp_size = 32;
@@ -544,12 +545,15 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   face(face_adj) = fac;
                   if (fac < nb_faces) contrib = 1; // Une face reelle sur l'element virtuel
                 }
-              //
+
               if (contrib)
                 {
+                  // allocate scratch memory once
+                  ScratchPadDouble scratch(teamMember.thread_scratch(0), scratch_size_double);
+
                   int calcul_flux_en_un_point = (ordre != 3) && (ordre == 1 || traitement_pres_bord_v(poly));
                   bool flux_en_un_point = calcul_flux_en_un_point || option_calcul_flux_en_un_point;
-                  ScratchPadDouble vs(teamMember.thread_scratch(0), 3);
+                  auto vs = Kokkos::subview(scratch, Kokkos::pair(0, 2));
                   for (int j = 0; j < dim; j++)
                     {
                       vs(j) = 0; // initialize vs
@@ -558,7 +562,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     }
                   // calcul de la vitesse aux sommets des tetraedres
                   // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
-                  ScratchPadDouble vsom(teamMember.thread_scratch(0), 12);
+                  auto vsom = Kokkos::subview(scratch, Kokkos::pair(3, 14));
                   for (int i = 0; i < nsom; i++)
                     for (int j = 0; j < dim; j++)
                       vsom(i * 3 + j) = vs(j) - dim * vitesse_face_absolue_v(face(i), j) * porosite_face_v(face(i));
@@ -567,14 +571,15 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   rang = rang_elem_non_std_v(poly);
                   True_int itypcl = type_elem_Cl_v(poly);
 
-                  ScratchPadDouble vc(teamMember.thread_scratch(0), 3);
+                  auto vc= Kokkos::subview(scratch, Kokkos::pair(15, 17));
                   calcul_vc_tetra_views(face.data(), vc.data(), vs.data(), vsom.data(), vitesse_v, itypcl, porosite_face_v);
                   // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                  ScratchPadDouble xc;
+                  // declare temporary array for use only when ordre == 3
+                  decltype(Kokkos::subview(scratch, Kokkos::pair(1, 1))) xc;
                   if (ordre == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                     {
-                      xc = ScratchPadDouble(teamMember.thread_scratch(0), 3);
-                      ScratchPadDouble xsom(teamMember.thread_scratch(0), 12);
+                      xc = Kokkos::subview(scratch, Kokkos::pair(18, 20));
+                      auto xsom = Kokkos::subview(scratch, Kokkos::pair(21, 32));
                       for (int i = 0; i < nsom; i++)
                         for (int j = 0; j < dim; j++)
                           xsom(i * 3 + j) = coord_sommets_v(les_elems_v(poly, i), j);
@@ -590,8 +595,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       for (int l = 0; l < dim; l++) vc(l) *= coeff;
                     }
                   // Boucle sur les facettes du polyedre:
-                  ScratchPadDouble centre_fa7(teamMember.thread_scratch(0), 3);
-                  ScratchPadDouble cc(teamMember.thread_scratch(0), 3);
+                  auto centre_fa7 = Kokkos::subview(scratch, Kokkos::pair(33, 35));
+                  auto cc = Kokkos::subview(scratch, Kokkos::pair(36, 38));
                   for (int fa7 = 0; fa7 < nfa7; fa7++)
                     {
                       int num10 = face(KEL_v(0, fa7));
@@ -732,7 +737,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           Kokkos::parallel_for(
             start_gpu_timer(__KERNEL_NAME__),
             TeamPolicy(nb_elem_tot / warp_size + 1, warp_size) // artificial hierarchical parallelism
-            .set_scratch_size(0, Kokkos::PerThread(scratch_size)), // amount of required scratch memory
+            .set_scratch_size(0, Kokkos::PerThread(ScratchPadInt::shmem_size(scratch_size_int) + ScratchPadDouble::shmem_size(scratch_size_double))), // amount of required scratch memory
             kern_conv_aj
           );
           end_gpu_timer(__KERNEL_NAME__);
