@@ -953,6 +953,11 @@ void Sonde::initialiser()
             }
         }
     }
+
+  // See if some positions should be modified (to elem with "grav" for instance)
+  // Should be done before supprime_doublons, because it may create duplicated values.
+  fix_probe_position();
+
   bool supprime_doublons = true; // Nouveaute 1.8.4 (unicite des points de sondes)
   if (mon_post->DeprecatedKeepDuplicatedProbes) supprime_doublons = false; // option a garder car besoin pour P-E de garder les sondes dupliquees en 1.9.3
   ArrOfInt doublon(elem_.size_array());
@@ -985,8 +990,6 @@ void Sonde::initialiser()
       if (doublons)
         Cerr << "We remove " << doublons << " duplicated points from the probe " << nom_ << finl;
     }
-
-  fix_probe_position();
 
   // chaque processeur a regarde s'il avait le point
   // le maitre construit un tableau (prop) determinant qui va donner la valeur au maitre
