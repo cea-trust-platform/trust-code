@@ -31,6 +31,7 @@
 #ifndef __CYGWIN__
 #include <catch_and_trace.h>
 #endif
+#include <cstdlib>
 
 #include <kokkos++.h>
 
@@ -173,13 +174,13 @@ static void init_node_masters(OWN_PTR(Comm_Group) & master)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool check_enabled, bool with_petsc)
 {
-  bool init_kokkos_before_mpi = (getenv("KOKKOS_AFTER_MPI") == nullptr);
   // https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Initialization.html say after !
-  if (init_kokkos_before_mpi)
+  if (!Kokkos::is_initialized())
     {
       // Kokkos initialization
       True_int argc2 = argc;
       Kokkos::initialize(argc2, argv);
+      std::atexit(Kokkos::finalize);
     }
   Nom arguments_info="";
   arguments_info +="Kokkos initialized!\n";
@@ -239,14 +240,6 @@ void mon_main::init_parallel(const int argc, char **argv, bool with_mpi, bool ch
   // however, it is initialized later, as it involves communication operations, which require statistics to be initialized first...
   instantiate_node_mpi(node_group_, node_master_, with_mpi);
 
-  if (!init_kokkos_before_mpi)
-    {
-      // Kokkos initialization
-      True_int argc2 = argc;
-      Kokkos::initialize(argc2, argv);
-      if (Process::je_suis_maitre())
-        Cerr << "Kokkos initialized after MPI !" << finl;
-    }
   if (Process::je_suis_maitre())
     Cerr << "You can run --kokkos-help option." << finl;
 }
@@ -298,7 +291,6 @@ void mon_main::finalize()
         }
     }
 #endif
-  Kokkos::finalize();
 }
 
 void mon_main::dowork(const Nom& nom_du_cas)
@@ -499,5 +491,4 @@ mon_main::~mon_main()
   PE_Groups::finalize();
   groupe_trio_.detach();
   node_group_.detach();
-
 }

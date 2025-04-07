@@ -123,7 +123,7 @@ check_src()
    #######################
    # Verification des exit
    #######################
-   res=`grep "exit(" *.cpp *.h 2>/dev/null | grep -v "exit()" | grep -v "Process"`
+   res=`grep "exit(" *.cpp *.h 2>/dev/null | grep -v "exit()" | grep -v "Process" | grep -v "std::atexit"` 
    if [ "$res" != "" ]
    then
       echo $res

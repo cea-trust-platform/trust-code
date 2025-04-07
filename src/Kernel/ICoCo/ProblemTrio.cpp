@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,23 +41,15 @@
 #include <stat_counters.h>
 #include <Field_base.h>
 
-
 #include <Equation_base.h>
 
+#include <cstdlib>
 
 using ICoCo::Problem;
 using ICoCo::ProblemTrio;
 using ICoCo::TrioField;
 using std::string;
 using std::vector;
-
-
-ProblemTrio::~ProblemTrio()
-{
-  if(p) delete p;
-  p=0;
-  delete (my_params);
-}
 
 ////////////////////////////
 //                        //
@@ -92,6 +84,23 @@ ProblemTrio::ProblemTrio() :
   (*my_params).problem_name="pb";
   //my_params.comm=MPI_COMM_WORLD;
   (*my_params).is_mpi=0;
+
+  // Initialize Kokkos early and only once.
+  if (!Kokkos::is_initialized())
+    {
+      char arg1[10] = "TRUST";
+      char * argv[] = {arg1, nullptr};  // see  https://kokkos.org/kokkos-core-wiki/API/core/initialize_finalize/initialize.html
+      True_int argc = 1;
+      Kokkos::initialize(argc, argv);
+      std::atexit(Kokkos::finalize);
+    }
+}
+
+ProblemTrio::~ProblemTrio()
+{
+  if(p) delete p;  // will call Kokkos::finalize()
+  p=0;
+  delete (my_params);
 }
 
 
@@ -217,12 +226,6 @@ void ProblemTrio::terminate()
     {
       statistiques().dump("Statistiques Resolution", mode_append);
       print_statistics_analyse("Statistiques Resolution", 1);
-    }
-  if(p)
-    {
-      delete p;
-      p=0;
-      // fait dans mon_main maintenant // PE_Groups::finalize();
     }
 }
 
