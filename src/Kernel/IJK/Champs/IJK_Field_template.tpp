@@ -581,7 +581,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate_shear_BC(int type, doubl
 }
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::dumplata_scalar(const char *filename, int step)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::dumplata_scalar(const char *filename, int step) const
 {
   Process::barrier();
   SFichier master_file;

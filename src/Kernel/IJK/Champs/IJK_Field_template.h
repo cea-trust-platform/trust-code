@@ -64,7 +64,7 @@ public:
   }
   void allocate_shear_BC(int monofluide, double rov, double rol, int use_inv_rho_in_pressure_solver=0);
 
-  virtual void dumplata_scalar(const char *filename, int step);
+  virtual void dumplata_scalar(const char *filename, int step) const;
 
   const Domaine_IJK& get_domaine() const { return domaine_ref_.valeur(); }
   Domaine_IJK::Localisation get_localisation() const { return localisation_; }
