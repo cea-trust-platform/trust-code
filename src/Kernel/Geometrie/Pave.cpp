@@ -1324,6 +1324,21 @@ void Pave_32_64<_SIZE_>::lire_noeuds(Entree& is)
     }
   for(i=0; i< this->dimension; i++)
     is >> nb_noeuds_(i);
+
+  // If the user is using 'Pave' instead of 'Pave_64', check no overflow:
+  if (std::is_same<_SIZE_, int>::value)
+    {
+      trustIdType nb_nod = 1;
+      for(int d=0; d < Objet_U::dimension; d++)
+        nb_nod *= nb_noeuds_[d];
+      if(8*nb_nod > std::numeric_limits<int>::max())  // 8* ... because later storage of elem connectivity will require 8 columns
+        {
+          Cerr << "ERROR: Pave: the total number of nodes you specified is bigger than the 32b limit!" << finl;
+          Cerr << "  If this is intended, you should switch to the 64 mode by using the 'Pave_64' (and Domaine_64 etc.) keyword." << finl;
+          Process::exit();
+        }
+    }
+
   if (min_array(nb_noeuds_)<2)
     {
       Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << this->nom_ << "' must be greater than 1." << finl;
