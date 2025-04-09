@@ -69,21 +69,20 @@ Entree& EcritureLectureSpecial::readOn(Entree& is)
   return is;
 }
 // XD ecriturelecturespecial interprete ecriturelecturespecial -1 Class to write or not to write a .xyz file on the disk at the end of the calculation.
-// XD attr type chaine type 0 If set to 0, no xyz file is created. If set to EFichierBin, it uses prior 1.7.0 way of reading xyz files (now LecFicDiffuseBin). If set to EcrFicPartageBin, it uses prior 1.7.0 way of writing xyz files (now EcrFicPartageMPIIO).
+// XD attr type chaine type 0 If set to 0, no xyz file is created. If set to 1 (the default) the .xyz file is written at the end of the computation.
 Entree& EcritureLectureSpecial::interpreter(Entree& is)
 {
   Nom option;
   is >> option;
   if (option=="EFichierBin" || option=="LecFicDiffuseBin" || option=="LecFicPartageMPIIO")
     {
-      Input=option;
-      Cerr << "EcritureLectureSpecial::Input set to " << option << finl;
+      Cerr << "ERROR: EcritureLectureSpecial: - option '" << option << "' is obsolete! You may only specify 0 or 1." <<finl;
+      Process::exit();
     }
   else if (option=="EcrFicPartageMPIIO" || option=="EcrFicPartageBin" || option=="EcrFicPartage")
     {
-      Active=1;
-      Output=option;
-      Cerr << "EcritureLectureSpecial::Output set to " << option << finl;
+      Cerr << "ERROR: EcritureLectureSpecial: - option '" << option << "' is obsolete! You may only specify 0 or 1." <<finl;
+      Process::exit();
     }
   else if (option=="0")
     Active=0;
@@ -91,7 +90,7 @@ Entree& EcritureLectureSpecial::interpreter(Entree& is)
     Active=1;
   else
     {
-      Cerr << "\"EcritureLectureSpecial " << option << "\" is unknown." << finl;
+      Cerr << "ERROR: \"EcritureLectureSpecial " << option << "\" is not recognized." << finl;
       Process::exit();
     }
   Cerr << "EcritureLectureSpecial::Active set to " << Active << finl;
