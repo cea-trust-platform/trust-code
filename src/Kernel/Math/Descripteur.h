@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,8 +28,8 @@ class Descripteur : public Objet_U
 public:
   Descripteur();
 private:
-  int deb_;    // Indice de debut dans le tableau des donnees
-  int nb_;     // Nombre d'elements dans le tableau des donnees
+  trustIdType deb_;    // Indice de debut dans le tableau des donnees
+  trustIdType nb_;     // Nombre d'elements dans le tableau des donnees
   int stride_;
 };
 #endif

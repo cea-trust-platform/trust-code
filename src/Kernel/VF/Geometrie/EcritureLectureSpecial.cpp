@@ -530,7 +530,7 @@ void EcritureLectureSpecial::lecture_special(const Domaine_VF& zvf, Entree& fich
   if (nb_items_seq == 0)
     return;
 
-  int bidon;
+  trustIdType bidon;
   fich >> bidon >> bidon >> bidon >> bidon >> bidon;
 
   trustIdType ntot = lecture_special_part2(zvf, fich, val);
