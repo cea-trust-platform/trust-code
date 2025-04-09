@@ -45,6 +45,11 @@
 using namespace MEDCoupling;
 #endif
 
+#ifdef __APPLE__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif /* __APLE__*/
+
 Implemente_base(Domaine_VF,"Domaine_VF",Domaine_dis_base);
 
 Sortie& Domaine_VF::printOn(Sortie& os) const
