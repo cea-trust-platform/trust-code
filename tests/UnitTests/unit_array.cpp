@@ -162,53 +162,120 @@ TEST(TRUSTArray, Ref_data) {
   delete [] pt_int;
 }
 
-//Conversions
-TEST(TRUSTArray, RefAsSmall) {
-  ArrOfFloat small;
+//
+// Conversion tests
+//
+template<typename _TYPE_>
+void check_ref_as_small()
+{
+  // For arrays
   {
-    BigArrOfFloat big(10);
-    big = 24;
-    big.ref_as_small(small);
-  }
-  // small should outlive big:
-  EXPECT_EQ(small[2], 24.0f);
-  EXPECT_EQ(small.size_array(), 10);
-}
-TEST(TRUSTArray, RefAsBig) {
-  BigArrOfTID big;
-  {
-    ArrOfTID small(10);
-    small = 12;
-    small.ref_as_big(big);
-  }
-  // big should outlive small:
-  EXPECT_EQ(big[2], 12);
-  EXPECT_EQ(big.size_array(), 10);  
-}
-TEST(TRUSTArray, FromTidToInt) {
-  ArrOfInt b;
+    TRUSTArray<_TYPE_, int> small;
     {
-      BigArrOfTID a(10);
-      a = 12;
-      a.from_tid_to_int(b);
+      TRUSTArray<_TYPE_, trustIdType> big(10);
+      big = 24;
+      big.ref_as_small(small);
     }
-    EXPECT_EQ(b[2], 12);
-    EXPECT_EQ(b.size_array(), 10);
-}
-TEST(TRUSTArray, FromTidToIntPreservesLineSize) {
-  IntTab b;
-  { // Line size should be preserved in from_tid_to_int:
-    BigTIDTab a(10, 2);
-    a = 12;
-    a.from_tid_to_int(b);
-    EXPECT_EQ(b(2,1), 12);
-    EXPECT_EQ(b.dimension(0), a.dimension(0));
-    EXPECT_EQ(b.dimension(1), a.dimension(1));
-    EXPECT_EQ(b.line_size(), a.line_size());
+    // small should outlive big:
+    EXPECT_EQ(small.size_array(), 10);
+    EXPECT_EQ(small[2], (_TYPE_)24);
+  }
+
+  // For tabs
+  {
+    TRUSTTab<_TYPE_, int> small;
+    {
+      TRUSTTab<_TYPE_, trustIdType> big(10, 2);
+      big = 25;
+      big.ref_as_small(small);
     }
+    // small should outlive big, and have all correct dimensions!
+    EXPECT_EQ(small.nb_dim(), 2);
+    EXPECT_EQ(small.dimension(0), 10);
+    EXPECT_EQ(small.dimension(1), 2);
+    EXPECT_EQ(small.line_size(), 2);
+    EXPECT_EQ(small(2, 1), (_TYPE_)25);
+  }
 }
 
-//trav
+TEST(TRUSTArray, RefAsSmall) {
+  check_ref_as_small<int>();
+  check_ref_as_small<float>();
+  // Not impl (because never needed):
+//  check_ref_as_small<trustIdType>();
+//  check_ref_as_small<double>();
+}
+
+
+template<typename _TYPE_>
+void check_ref_as_big()
+{
+  // For arrays
+  {
+    TRUSTArray<_TYPE_, trustIdType> big;
+    {
+      TRUSTArray<_TYPE_, int> small(10);
+      small = 12;
+      small.ref_as_big(big);
+    }
+    // big should outlive small:
+    EXPECT_EQ(big.size_array(), 10);
+    EXPECT_EQ(big[2], 12);
+  }
+
+  // For tabs
+  {
+    TRUSTTab<_TYPE_, trustIdType> big;
+    {
+      TRUSTTab<_TYPE_, int> small(10, 2);
+      small = 13;
+      small.ref_as_big(big);
+    }
+    // big should outlive small:
+    EXPECT_EQ(big.nb_dim(), 2);
+    EXPECT_EQ(big.dimension(0), 10);
+    EXPECT_EQ(big.dimension(1), 2);
+    EXPECT_EQ(big.line_size(), 2);
+    EXPECT_EQ(big(2, 1), (_TYPE_)13);
+  }
+}
+
+TEST(TRUSTArray, RefAsBig) {
+  check_ref_as_big<trustIdType>();
+  // Not impl (because never needed):
+//  check_ref_as_big<int>();
+//  check_ref_as_big<float>();
+//  check_ref_as_big<double>();
+}
+
+TEST(TRUSTArray, FromTidToInt) {
+  {
+    ArrOfInt b;
+    {
+      BigArrOfTID a(10);
+      a = 14;
+      a.from_tid_to_int(b);
+    }
+    EXPECT_EQ(b[2], 14);
+    EXPECT_EQ(b.size_array(), 10);
+  }
+  {
+    IntTab b;
+    { // Line size should be preserved in from_tid_to_int:
+      BigTIDTab a(10, 2);
+      a = 15;
+      a.from_tid_to_int(b);
+      EXPECT_EQ(b.dimension(0), a.dimension(0));
+      EXPECT_EQ(b.dimension(1), a.dimension(1));
+      EXPECT_EQ(b.line_size(), a.line_size());
+      EXPECT_EQ(b(2,1), 15);
+    }
+  }
+}
+
+//
+// TRUSTTrav tests
+//
 TEST(TRUSTTrav, ConstructorDefault) {
     IntTrav a;
     EXPECT_EQ(a.get_mem_storage(), STORAGE::TEMP_STORAGE); //Is temp

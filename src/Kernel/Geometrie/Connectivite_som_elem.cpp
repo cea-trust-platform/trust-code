@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,31 @@
 #include <Connectivite_som_elem.h>
 #include <Static_Int_Lists.h>
 #include <TRUSTTabs.h>
+
+namespace
+{
+template <typename _SIZE_>
+void copy_list_internal(const Static_Int_Lists_32_64<_SIZE_>& som_elem, const _SIZE_ sommet,
+                        SmallArrOfTID_T<_SIZE_>& elements)
+{ throw; }
+
+template <>
+void copy_list_internal(const Static_Int_Lists_32_64<int>& som_elem, const int sommet,
+                        SmallArrOfTID_T<int>& elements)
+{
+  som_elem.copy_list_to_array(sommet, elements);
+}
+
+template <>
+void copy_list_internal(const Static_Int_Lists_32_64<trustIdType>& som_elem, const trustIdType sommet,
+                        SmallArrOfTID_T<trustIdType>& elements)
+{
+  BigArrOfTID elem_as_big;
+  elements.ref_as_big(elem_as_big);
+  som_elem.copy_list_to_array(sommet, elem_as_big);
+}
+
+}
 
 /*! @brief construction de la structure som_elem pour le domaine donnee On cree pour chaque sommet i la liste des elements adjacents a ce sommet
  *
@@ -114,9 +139,7 @@ void find_adjacent_elements(const Static_Int_Lists_32_64<_SIZE_>& som_elem,
     // Just need to start with the correct size because copy_list_to_array will resize otherwise:
     int sz = (int)som_elem.get_list_size(sommet);
     elements.resize_array(sz);
-    ArrOfInt_T<_SIZE_> elem_as_big;
-    elements.ref_as_big(elem_as_big);
-    som_elem.copy_list_to_array(sommet, elem_as_big);
+    ::copy_list_internal<_SIZE_>(som_elem, sommet, elements);
   }
   int nb_elem_found = elements.size_array();
   int i_sommet;

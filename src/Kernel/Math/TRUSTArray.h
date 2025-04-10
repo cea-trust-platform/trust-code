@@ -156,7 +156,7 @@ public:
 
   // Conversion method - from a small array (_SIZE_=int) of TID (_TYPE_=trustIdType), return a big one (_SIZE_=long).
   // No data copied! This behaves somewhat like a ref_array:
-  void ref_as_big(TRUSTArray<_TYPE_, _TYPE_>& out) const;
+  void ref_as_big(TRUSTArray<_TYPE_, trustIdType>& out) const;
 
   // The other way around compared to ref_as_big! From big to small. In debug, size limit is checked.
   void ref_as_small(TRUSTArray<_TYPE_, int>& out) const;

@@ -228,6 +228,34 @@ inline void TRUSTVect<_TYPE_,_SIZE_>::ref_array(TRUSTArray<_TYPE_,_SIZE_>& m, _S
   line_size_ = 1;
 }
 
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTVect<_TYPE_,_SIZE_>::from_tid_to_int(TRUSTVect<int, int>& out) const
+{
+  if (md_vector_.non_nul())
+    Process::exit("ERROR: from_tid_to_int() not implemented for parallel vect/tab!!");
+  out.line_size_ = this->line_size_;
+  TRUSTArray<_TYPE_,_SIZE_>::from_tid_to_int(out);
+}
+
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTVect<_TYPE_,_SIZE_>::ref_as_big(TRUSTVect<_TYPE_, trustIdType>& out) const
+{
+  if (md_vector_.non_nul())
+    Process::exit("ERROR: ref_as_big() not implemented for parallel vect/tab!!");
+  out.line_size_ = this->line_size_;
+  TRUSTArray<_TYPE_,_SIZE_>::ref_as_big(out);
+}
+
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTVect<_TYPE_,_SIZE_>::ref_as_small(TRUSTVect<_TYPE_, int>& out) const
+{
+  if (md_vector_.non_nul())
+    Process::exit("ERROR: ref_as_small() not implemented for parallel vect/tab!!");
+  out.line_size_ = this->line_size_;
+  TRUSTArray<_TYPE_,_SIZE_>::ref_as_small(out);
+}
+
+
 //  associe le md_vector au vecteur et initialise l'attribut size_reelle_ (voir methode size_reelle())
 //  Si md_vector est nul, detache simplement le md_vector existant.
 // Precondition: le vecteur doit deja avoir la taille appropriee au nouveau md_vector, c'est a dire md_vector...get_nb_items_tot() * line_size_

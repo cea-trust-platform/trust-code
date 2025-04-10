@@ -109,8 +109,8 @@ protected:
   }
 
 public:
-  // Useful for from_tid_to_int() method implementation.
-  friend TRUSTTab<int, int>;
+  // One instanciation with given template parameter may see all other template versions (useful in ref_as_xxx())
+  template<typename _TYPE2_, typename _SIZE2_> friend class TRUSTTab;
 
   TRUSTTab() : dimension_tot_0_(0)
   {
@@ -199,10 +199,10 @@ public:
 
   inline int nb_dim() const { return this->nb_dim_; }
 
-
-
-  // See same method in TRUSTArray - CAREFUL, this is not an override because arg types are different (tab vs arr)
+  // See same methods in TRUSTArray - CAREFUL, this is not an override because arg types are different (tab vs arr)
   inline void from_tid_to_int(TRUSTTab<int, int>& out) const;
+  inline void ref_as_big(TRUSTTab<_TYPE_, trustIdType>& out) const;
+  inline void ref_as_small(TRUSTTab<_TYPE_, int>& out) const;
 
   inline TRUSTTab& operator=(const TRUSTTab&);
   inline TRUSTTab& operator=(const TRUSTVect<_TYPE_,_SIZE_>&);

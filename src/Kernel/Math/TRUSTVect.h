@@ -74,6 +74,9 @@ public:
 
   using Span_ = tcb::span<_TYPE_>;
 
+  // One instanciation with given template parameter may see all other template versions (useful in ref_as_xxx())
+  template<typename _TYPE2_, typename _SIZE2_> friend class TRUSTVect;
+
   virtual ~TRUSTVect() { }
 
   TRUSTVect() : size_reelle_(0), line_size_(1) { }
@@ -119,6 +122,11 @@ public:
 
   inline virtual const MD_Vector& get_md_vector() const { return md_vector_; }
   inline void resize_tab(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT) override;
+
+  // See same methods as in TRUSTArray - CAREFUL, this is not an override because arg types are different (vect vs arr)
+  inline void from_tid_to_int(TRUSTVect<int, int>& out) const;
+  inline void ref_as_big(TRUSTVect<_TYPE_, trustIdType>& out) const;
+  inline void ref_as_small(TRUSTVect<_TYPE_, int>& out) const;
 
   // Options par defaut choisies pour compatibilite avec la version precedente. Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   inline void abs(Mp_vect_options opt=VECT_ALL_ITEMS) { operator_abs(*this, opt); }
@@ -188,7 +196,6 @@ protected:
   inline void resize_vect_(_SIZE_ n, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
   inline void copy_(const TRUSTVect& v, RESIZE_OPTIONS opt=RESIZE_OPTIONS::COPY_INIT);
 
-private:
   // Un DoubleVect est un ArrOfDouble qui possede eventuellement une structure de tableau distribue. Ce pointeur peut etre nul.
   MD_Vector md_vector_;
 

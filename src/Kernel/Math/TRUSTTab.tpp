@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -166,8 +166,8 @@ inline _SIZE_ TRUSTTab<_TYPE_,_SIZE_>::dimension_tot(int i) const
 /*!
  * See doc in TRUSTArray. This one also deals with multi-dim.
  */
-template<>
-inline void TRUSTTab<trustIdType,trustIdType>::from_tid_to_int(TRUSTTab<int, int>& out) const
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::from_tid_to_int(TRUSTTab<int, int>& out) const
 {
   // Manage multi-dim structure - I could not copy members directly because TRUSTTab<tid,tid>
   // can't see internals of TRUSTTab<int,int> and I could not get the 'friend' clause to work there ...
@@ -180,18 +180,31 @@ inline void TRUSTTab<trustIdType,trustIdType>::from_tid_to_int(TRUSTTab<int, int
     }
   out.resize(sizes);
 
-  // Do the job as if an array:
-  TRUSTArray::from_tid_to_int(out);
+  // Do the job as if a vect:
+  TRUSTVect<_TYPE_,_SIZE_>::from_tid_to_int(out);
 }
 
 template<typename _TYPE_, typename _SIZE_>
-void TRUSTTab<_TYPE_,_SIZE_>::from_tid_to_int(TRUSTTab<int, int>& out) const
+inline void TRUSTTab<_TYPE_,_SIZE_>::ref_as_big(TRUSTTab<_TYPE_, trustIdType>& out) const
 {
-  // Should no be used for anything else than specialisations listed above.
-  assert(false);
-  Process::exit("TRUSTTab<>::from_tid_to_int() should not be used with those current template types.");
+  out.nb_dim_ = this->nb_dim_;
+  out.dimension_tot_0_ = dimension_tot_0_;
+  for(int d=0; d<out.nb_dim_; d++)
+    out.dimensions_[d] = dimensions_[d];
+  TRUSTVect<_TYPE_,_SIZE_>::ref_as_big(out);
 }
 
+template<typename _TYPE_, typename _SIZE_>
+inline void TRUSTTab<_TYPE_,_SIZE_>::ref_as_small(TRUSTTab<_TYPE_, int>& out) const
+{
+  out.nb_dim_ = this->nb_dim_;
+  if(dimension_tot_0_ > std::numeric_limits<int>::max() || dimensions_[0] > std::numeric_limits<int>::max())
+    Process::exit("TRUSTTab<_TYPE_,_SIZE_>::ref_as_small() - initial array is too big to be referenced as 32b-long array!");
+  out.dimension_tot_0_ = static_cast<int>(dimension_tot_0_);
+  for(int d=0; d<out.nb_dim_; d++)
+    out.dimensions_[d] = static_cast<int>(dimensions_[d]);
+  TRUSTVect<_TYPE_,_SIZE_>::ref_as_small(out);
+}
 
 
 //  Adds 1 to dimension_tot(0) and puts a in the added line.

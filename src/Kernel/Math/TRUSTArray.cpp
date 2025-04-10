@@ -237,16 +237,9 @@ void TRUSTArray<_TYPE_, _SIZE_>::ref_conv_helper_(_TAB_& out) const
 }
 
 /*! Conversion methods - from a small array (_SIZE_=int) of TID (_TYPE_=trustIdType), return a big one (_SIZE_=trustIdType).
- * No data copied! This behaves somewhat like a ref_array. Used in LATA stuff notably.
+ * No data copied! This behaves somewhat like a ref_array. Used in LATA stuff notably. Not implemented for _TYPE_=double or float
+ * (because never needed).
  */
-#if INT_is_64_ == 2
-template<>
-void TRUSTArray<int, int>::ref_as_big(TRUSTArray<int, int>& out) const
-{
-  ref_conv_helper_(out);
-}
-#endif
-
 template<>
 void TRUSTArray<trustIdType, int>::ref_as_big(TRUSTArray<trustIdType,trustIdType>& out) const
 {
@@ -254,7 +247,7 @@ void TRUSTArray<trustIdType, int>::ref_as_big(TRUSTArray<trustIdType,trustIdType
 }
 
 template<typename _TYPE_, typename _SIZE_>
-void TRUSTArray<_TYPE_,_SIZE_>::ref_as_big(TRUSTArray<_TYPE_,_TYPE_>& out) const
+void TRUSTArray<_TYPE_,_SIZE_>::ref_as_big(TRUSTArray<_TYPE_,trustIdType>& out) const
 {
   // Should no be used for anything else than specialisations listed above.
   assert(false);
