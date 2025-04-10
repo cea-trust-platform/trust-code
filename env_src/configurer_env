@@ -2439,10 +2439,11 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    # On supprime -DNDEBUG
    Defines=${Defines% -DNDEBUG}
    # On remplace -O? par -g
+   NOOPT="-O0" && [ "$ROCM_ARCH" != "" ] && NOOPT="-O1" # Debug build fails with -O0 on AMD
    F77Flags=`echo $F77Flags | sed "1,$ s?-O[0-9]?-g?g"`
    F77Flags_64b=`echo $F77Flags_64b | sed "1,$ s?-O[0-9]?-g?g"`
    ccFLAGS=`echo $ccFLAGS | sed "1,$ s?-O[0-9]?-g?g"`
-   CppFlags=`echo $CppFlags | sed "1,$ s?-O[0-9]?-g -O0?g"`
+   CppFlags=`echo $CppFlags | sed "1,$ s?-O[0-9]?-g $NOOPT?g"`
    ### Sur gcc >= 11, -g utilise dwarf5 qui empeche addr2line des versions < 2.35.2 de binutils de convertir les adresses des binaires en numero ligne du code source
    [[ $(echo $TRUST_VERSION_GNU | cut -d '.' -f 1) -ge 11 ]] && CppFlags=${CppFlags/-g /-gdwarf-4 }
    ### sur Adastra-gpu avec crayftn, il faut passer -O0 sinon make debug passe pas( _dger_ undefined reference dans dlsode.f)

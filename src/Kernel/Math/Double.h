@@ -93,7 +93,8 @@ inline double norme(int n, const double* const a)
   return F77NAME(DNRM2)(&m, a, &un);
 }
 
-inline int est_egal(double x1, double x2, double eps)
+KOKKOS_INLINE_FUNCTION
+int est_egal(double x1, double x2, double eps)
 {
   double somme = std::fabs(x1)+std::fabs(x2);
   return ( (somme < eps) || (std::fabs(x1-x2) < eps * somme) );
