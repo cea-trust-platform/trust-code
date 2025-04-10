@@ -1055,7 +1055,7 @@ static int findCartIndex(const std::vector<double>& vect, const double value)
     index--; // juste avant !!
 
   return index;
-};
+}
 
 /** Correspondance between TRUST_CMesh nodes and TRUST
  */
