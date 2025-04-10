@@ -299,9 +299,12 @@ void TRUSTArray<trustIdType,trustIdType>::from_tid_to_int(TRUSTArray<int, int>& 
   assert(size_array() < std::numeric_limits<int>::max());
   int sz_int = (int)size_array(); // we may cast!
   out.resize_array_(sz_int);  // the one with '_' skipping the checks, so we can be called from Tab too
-  // All values within int range?
-  assert((   *std::min_element(span_.begin(), span_.end()) > std::numeric_limits<int>::min()  ));
-  assert((   *std::max_element(span_.begin(), span_.end()) < std::numeric_limits<int>::max()  ));
+  if (sz_int)
+    {
+      // All values within int range?
+      assert((   *std::min_element(span_.begin(), span_.end()) > std::numeric_limits<int>::min()  ));
+      assert((   *std::max_element(span_.begin(), span_.end()) < std::numeric_limits<int>::max()  ));
+    }
   // Yes, copy:
   std::copy(span_.begin(), span_.end(), out.span_.begin());
 }
