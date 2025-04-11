@@ -559,10 +559,9 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
     checkpoint_format_ = "pdi";
 
   if ((Motcle(checkpoint_format_) != "binaire") && (Motcle(checkpoint_format_) != "formatte") &&
-      (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "single_hdf") &&
-      (Motcle(checkpoint_format_) != "pdi"))
+      (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "pdi"))
     {
-      Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi." << finl;
+      Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi (which replace single_hdf)." << finl;
       Process::exit();
     }
 
@@ -656,7 +655,7 @@ int Save_Restart::sauver() const
       else
         {
           Cerr << "Error in Probleme_base::sauver() " << finl;
-          Cerr << "The format for the backup file must be either binary or formatted" << finl;
+          Cerr << "The format for the backup file must be either binary or formatted or pdi (which replace single_hdf)" << finl;
           Cerr << "But it is :" << checkpoint_format_ << finl;
           Process::exit();
         }
