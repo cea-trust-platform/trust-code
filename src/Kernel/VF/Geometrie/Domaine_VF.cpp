@@ -896,8 +896,6 @@ void Domaine_VF::build_mc_Cmesh()
   Cerr << "Domaine_VF: Creating a MEDCouplingCMesh object for the domaine_VF '" << que_suis_je() << "' & the domaine '" << domaine().le_nom() << "' ..." << finl;
   mc_Cmesh_ = MEDCouplingCMesh::New("TRUST_CMesh");
 
-  std::vector<double> pt(mesh_dim);
-
   const double eps = Objet_U::precision_geom;
   DAD coo[3], uniq[3];
   for (unsigned d=0; d < (unsigned)mesh_dim; d++)
@@ -1070,7 +1068,6 @@ void Domaine_VF::build_mc_Cmesh_nodesCorrespondence()
   const int nx = (int)mc_Cmesh_x_coords_.size(), ny = (int)mc_Cmesh_y_coords_.size();
 
   mc_Cmesh_nodesCorrespondence_.resize(nb_soms, -1);
-  std::vector<double> coord(mesh_dim);
 
   for (int node = 0; node < nb_soms; ++node)
     {
