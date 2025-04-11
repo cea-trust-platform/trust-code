@@ -113,7 +113,7 @@ if(NOT "$ENV{TRUST_DISABLE_MPI}" STREQUAL "1" AND NOT "$ENV{TRUST_DISABLE_MPI4PY
   add_test(NAME TRUST_swig_mpi
          COMMAND ${CMAKE_COMMAND} -E env
               PYTHONPATH=${CMAKE_BINARY_DIR}:$ENV{PYTHONPATH}
-           mpirun.sh -np 2 ${Python3_EXECUTABLE} test_icoco_comm.py
+           ./test_trusticoco_para.sh
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 endif()
 
@@ -123,3 +123,4 @@ endif()
 ##
 install(TARGETS ${SWIG_MODULE_trusticoco_REAL_NAME} DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/trusticoco.py DESTINATION lib)
+

@@ -1,7 +1,7 @@
 # Conduction 2D #
 # Temperature imposee en entree et en sortie #
 # Paroi du haut adiabatique et paroi du bas symetrie #
-# PARALLEL OK 2 #
+# PARALLEL OK 8 #
 dimension 2
 bidim_axi
 Domaine dom
@@ -9,14 +9,10 @@ Domaine dom
 # BEGIN MESH #
 lire_fichier dom maillage.geom
 
-Sous_zone toto
-Associer toto dom
-Lire toto { Rectangle origine 0.0 0.0 cotes .1 1.0 }
-
 /* Dilate dom 4.75e-3 */
 Transformer dom  x*4.75e-3 y*3.6576
-# END MESH #
 
+# END MESH #
 # BEGIN PARTITION
 Partition dom
 {
@@ -93,7 +89,6 @@ Read pb
             }
             Gauche symetrie
         }
-        sources { puissance_thermique champ_input_P0  {  nb_comp 1 nom pvol probleme pb initial_value 1 0. sous_zone toto }  }
     }
     Post_processing
     {
@@ -117,11 +112,9 @@ Read pb
         {
             temperature som
             temperature elem
-            pvol elem
         }
     }
 }
 end
 resoudre pb
-
 
