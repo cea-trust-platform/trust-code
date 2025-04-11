@@ -23,12 +23,12 @@ class Interprete;
 /*! @brief Classe de base des objets "interprete".
  *
  * Ces objets definissent des actions a realiser lorsqu'on les
- *    rencontre dans le jeu de donnees. L'action est declanchee par
+ *    rencontre dans le jeu de donnees. L'action est declenchee par
  *    un appel a la methode interpreter().
  *    L'interprete peut ensuite lire des parametres supplementaires
  *    dans l'entree pour realiser sa tache. En general, l'interprete
  *    agit sur d'autres objets declares dans le jeu de donnees. Il peut
- *    y acceder par les methodes objet() et est_un_objet_existant().
+ *    y acceder par les methodes objet() et objet_existant().
  *    Voir par exemple la classe Lire ou la classe Associer
  *
  * @sa Interprete_bloc qui lit une serie d'instructions
