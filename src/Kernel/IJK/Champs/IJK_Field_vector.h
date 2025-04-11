@@ -19,6 +19,7 @@
 #include <FixedVector.h>
 #include <IJK_Field.h>
 #include <Field_base.h>
+#include <Noms.h>
 #include <Champ_Generique_base.h> // For Entity
 
 /*! @brief The class IJK_Field_vector is a fixed array of polymorphic IJK fields.
@@ -70,8 +71,15 @@ public:
   {
     Field_base::nommer(nam);
     const char *compos[] = {"_X", "_Y", "_Z"};
+    this->fixer_nb_comp(N);
+    Noms compos2(N);
     for (int i=0; i<N; i++)
-      this->data_[i]->nommer(nam + Nom(compos[i]));
+      {
+        const Nom nom_compo = nam + Nom(compos[i]);
+        compos2[i] = nom_compo;
+        this->data_[i]->nommer(nom_compo);
+      }
+    this->fixer_noms_compo(compos2);
   }
 
   void add_synonymous(const Nom& nam) override

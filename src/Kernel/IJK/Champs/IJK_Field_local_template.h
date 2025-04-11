@@ -49,7 +49,10 @@ protected:
   Entree& readOn(Entree& is) override { return is; }
 
 public:
-  IJK_Field_local_template() : ni_(0), nj_(0), nk_(0), ghost_size_(0), nb_compo_(1), j_stride_(0), compo_stride_(0), offset_(0), k_layer_shift_(0), additional_k_layers_(0), allocated_size_(0) { }
+  IJK_Field_local_template() : Field_base(), ni_(0), nj_(0), nk_(0), ghost_size_(0), j_stride_(0), compo_stride_(0), offset_(0), k_layer_shift_(0), additional_k_layers_(0), allocated_size_(0)
+  {
+    this->fixer_nb_comp(1);
+  }
 
   void allocate(int ni, int nj, int nk, int ghosts, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false);
   void shift_k_origin(int n);
@@ -57,15 +60,15 @@ public:
 
   int linear_index(int i, int j, int k) const
   {
-    assert(nb_compo_ == 1); // otherwise, must specify component
+    assert(this->nb_compo_ == 1); // otherwise, must specify component
     assert(i >= -ghost_size_ && i < ni_ + ghost_size_ && j >= -ghost_size_ && j < nj_ + ghost_size_ && k >= -ghost_size_ && k < nk_ + ghost_size_);
     return offset_ + k * compo_stride_ + j * j_stride_ + i;
   }
 
   int linear_index(int i, int j, int k, int compo) const
   {
-    assert(i >= -ghost_size_ && i < ni_ + ghost_size_ && j >= -ghost_size_ && j < nj_ + ghost_size_ && k >= -ghost_size_ && k < nk_ + ghost_size_ && compo >= 0 && compo < nb_compo_);
-    return offset_ + (k * nb_compo_ + compo) * compo_stride_ + j * j_stride_ + i;
+    assert(i >= -ghost_size_ && i < ni_ + ghost_size_ && j >= -ghost_size_ && j < nj_ + ghost_size_ && k >= -ghost_size_ && k < nk_ + ghost_size_ && compo >= 0 && compo < this->nb_compo_);
+    return offset_ + (k * this->nb_compo_ + compo) * compo_stride_ + j * j_stride_ + i;
   }
 
   // Operator() checks if the requested i,j,k index lies within the valid range [-ghost,n+ghost-1]
@@ -96,7 +99,7 @@ public:
 
   int linear_index_relaxed_test(int i, int j, int k) const
   {
-    assert(nb_compo_ == 1); // otherwise, must specify component
+    assert(this->nb_compo_ == 1); // otherwise, must specify component
     assert(k >= -ghost_size_-k_layer_shift_ && k < nk_ + ghost_size_ + additional_k_layers_ - k_layer_shift_);
     int x = offset_ + k * compo_stride_ + j * j_stride_ + i;
     assert(x >= 0 && x < data_.size_array());
@@ -105,9 +108,9 @@ public:
 
   int linear_index_relaxed_test(int i, int j, int k, int compo) const
   {
-    assert(compo >= 0 && compo < nb_compo_);
+    assert(compo >= 0 && compo < this->nb_compo_);
     assert(k >= -ghost_size_-k_layer_shift_ && k < nk_ + ghost_size_ + additional_k_layers_ - k_layer_shift_);
-    int x = offset_ + (k * nb_compo_ + compo) * compo_stride_ + j * j_stride_ + i;
+    int x = offset_ + (k * this->nb_compo_ + compo) * compo_stride_ + j * j_stride_ + i;
     assert(x >= 0 && x < data_.size_array());
     return x;
   }
@@ -140,37 +143,36 @@ public:
 
   _TYPE_* k_layer(int k)
   {
-    assert(nb_compo_ == 1);
+    assert(this->nb_compo_ == 1);
     assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
     return data_.addr() + offset_ + k * compo_stride_;
   }
   const _TYPE_* k_layer(int k) const
   {
-    assert(nb_compo_ == 1);
+    assert(this->nb_compo_ == 1);
     assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
     return data_.addr() + offset_ + k * compo_stride_;
   }
   _TYPE_* k_layer(int k, int compo)
   {
-    assert(compo >= 0 && compo < nb_compo_);
+    assert(compo >= 0 && compo < this->nb_compo_);
     assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
-    return data_.addr() + offset_ + (k * nb_compo_ + compo) * compo_stride_;
+    return data_.addr() + offset_ + (k * this->nb_compo_ + compo) * compo_stride_;
   }
   const _TYPE_* k_layer(int k, int compo) const
   {
-    assert(compo >= 0 && compo < nb_compo_);
+    assert(compo >= 0 && compo < this->nb_compo_);
     assert(k >= -ghost_size_ && k < nk_ + ghost_size_);
-    return data_.addr() + offset_ + (k * nb_compo_ + compo) * compo_stride_;
+    return data_.addr() + offset_ + (k * this->nb_compo_ + compo) * compo_stride_;
   }
 
   int ni() const { return ni_; }
   int nj() const { return nj_; }
   int nk() const { return nk_; }
   int nb_elem_local(int dir) const { return (dir==0)?ni_:((dir==1)?nj_:nk_); }
-  int nb_compo() const { return nb_compo_; }
   int j_stride() const { return j_stride_; }
   int compo_stride() const { return compo_stride_; }
-  int k_stride() const { return compo_stride_ * nb_compo_; }
+  int k_stride() const { return compo_stride_ * this->nb_compo_; }
   int ghost() const { return ghost_size_; }
   int k_shift() const { return k_layer_shift_; }
   int k_shift_max() const { return additional_k_layers_; }
@@ -178,8 +180,8 @@ public:
   _TYPE_ARRAY_& data() { return data_; }
   const _TYPE_ARRAY_& data() const { return data_; }
 protected:
-  // local size on this proc: (real items) : ni_ nj_ nk_ do not include the ghost size
-  int ni_, nj_, nk_, ghost_size_, nb_compo_;
+  // local size on this proc: (real itemnb_compo_s) : ni_ nj_ nk_ do not include the ghost size
+  int ni_, nj_, nk_, ghost_size_;
   int j_stride_; // how to jump to next j
   int compo_stride_; // how to jump to next component, k_stride is compo_stride_ * nb_compo_
   int offset_; // offset to first non ghost cell

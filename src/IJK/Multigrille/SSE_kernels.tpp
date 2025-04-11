@@ -43,7 +43,7 @@ void fill_dummy(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& tab, int seed)
   const int jmax = tab.nj() + ghost;
   const int kmin = -ghost;
   const int kmax = tab.nk() + ghost;
-  if (tab.nb_compo() == 1)
+  if (tab.nb_comp() == 1)
     {
       for (int k = kmin; k < kmax; k++)
         for (int j = jmin; j < jmax; j++)
@@ -55,7 +55,7 @@ void fill_dummy(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& tab, int seed)
     }
   else
     {
-      const int n = tab.nb_compo();
+      const int n = tab.nb_comp();
       for (int k = kmin; k < kmax; k++)
         for (int compo = 0; compo < n; compo++)
           for (int j = jmin; j < jmax; j++)
@@ -375,7 +375,7 @@ void Multipass_Jacobi_template(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& x,
           // Shift source, result and coefficient data to layer for next pass.
           // Next pass requires one less row so add also "jstride"
           src_ptr = src_ptr - 2 * kstride + jstride;
-          assert(coeffs.nb_compo() == 4);
+          assert(coeffs.nb_comp() == 4);
           coeffs_ptr = coeffs_ptr - kstride * 4 + jstride;
           secmem_ptr = secmem_ptr - kstride + jstride;
         }

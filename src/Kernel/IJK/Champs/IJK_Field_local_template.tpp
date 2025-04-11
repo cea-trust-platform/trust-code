@@ -41,17 +41,17 @@ void IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::allocate(int Ni, int Nj, int
   nj_ = Nj;
   nk_ = Nk;
   ghost_size_ = ghosts;
-  nb_compo_ = nb_compos;
+  this->nb_compo_ = nb_compos;
   j_stride_ = ni_ + 2 * ghosts;
   if (!external_storage || disable_memalign)
     // Align beginning of line on SIMD type...
     while (j_stride_ % Simd_template<_TYPE_>::size() != 0)
       j_stride_++;
   compo_stride_ = j_stride_ * (nj_ + 2 * ghosts);
-  offset_ = ghost_size_ * (1 + j_stride_ + compo_stride_ * nb_compo_);
+  offset_ = ghost_size_ * (1 + j_stride_ + compo_stride_ * this->nb_compo_);
   k_layer_shift_ = 0;
   additional_k_layers_ = additional_k_layers;
-  int sz = (nk_ + 2 * ghosts + additional_k_layers) * compo_stride_ * nb_compo_ + 1;
+  int sz = (nk_ + 2 * ghosts + additional_k_layers) * compo_stride_ * this->nb_compo_ + 1;
   allocated_size_ = sz;
 
   if (!external_storage || disable_memalign)
@@ -87,7 +87,7 @@ void IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::shift_k_origin(int n)
   // Check that the data still fits into the allocated memory block
   assert(k_layer_shift_ >= 0 && k_layer_shift_ <= additional_k_layers_);
 
-  offset_ += compo_stride_ * nb_compo_ * n;
+  offset_ += compo_stride_ * this->nb_compo_ * n;
 }
 
 // Creates a field with nk=1, that points to the data than src(...,...,k_layer) (uses ref_array() to create the reference).
@@ -108,7 +108,7 @@ inline void IJK_Field_local_template<double, ArrOfDouble>::ref_ij(IJK_Field_loca
   nk_ = 1;
   ghost_size_ = src.ghost_size_;
   j_stride_ = src.j_stride_;
-  nb_compo_ = 1;
+  this->nb_compo_ = 1;
   compo_stride_ = 0;
   k_layer_shift_ = 0;
   additional_k_layers_ = 0;
