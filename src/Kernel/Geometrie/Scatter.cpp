@@ -492,9 +492,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       Process::exit();
     }
 
-  static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
+//  static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
 
-  statistiques().begin_count(stats);
+//  statistiques().begin_count(stats);
   ArrOfInt mergedDomaines(Process::nproc());
   mergedDomaines = 0;
   bool domain_not_built = true;
@@ -658,7 +658,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
         }
     }
 
-  statistiques().end_count(stats);
+//  statistiques().end_count(stats);
   barrier();
 }
 
