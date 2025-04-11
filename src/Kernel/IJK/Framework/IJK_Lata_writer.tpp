@@ -96,9 +96,6 @@ void dumplata_vector(const char *filename, const char *fieldname,
       const Nom& geomname = vx.get_domain().le_nom();
 
       master_file << "Champ " << fieldname << " " << basename(fd) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << n << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
     }
   Process::barrier();
@@ -122,9 +119,6 @@ void dumplata_vector_parallele_plan(const char *filename, const char *fieldname,
       const Nom& geomname = vx.get_domain().le_nom();
 
       master_file << "Champ " << fieldname << " " << basename(fd_global) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << n << " localisation=FACES" << " composantes=3" << " nature=vector" << finl;
     }
 }
@@ -158,9 +152,6 @@ void dumplata_scalar(const char *filename, const char *fieldname,
         loc = "SOM";
       const Nom& geomname = f.get_domain().le_nom();
       master_file << "Champ " << fieldname << " " << basename(fd) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << (int)n << " localisation=" << loc << " composantes=1" << finl;
     }
   Process::barrier();
@@ -187,9 +178,6 @@ void dumplata_scalar_parallele_plan(const char *filename, const char *fieldname,
         loc = "SOM";
       const Nom& geomname = f.get_domain().le_nom();
       master_file << "Champ " << fieldname << " " << basename(fd_global) << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << (int)n << " localisation=" << loc << " composantes=1" << finl;
     }
 }
