@@ -56,9 +56,9 @@ int Decouper_multi::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       Decouper decoup;
       decoup.lire(is);
       const Nom& nom = decoup.domaine().le_nom();
-      if (decoupeurs.count(nom.getString())) //decoupeur deja lu
+      if (doms_lus.count(nom.getString())) //decoupeur deja lu
         Process::exit(Nom("Decouper_multi: domain ") + nom + "already read!");
-      else decoupeurs[nom.getString()] = decoup; //sinon, on l'ajoute
+      else decoupeurs.push_back(decoup), doms_lus.insert(nom.getString()); //sinon, on l'ajoute
     }
   else return -1;
   return 0;
@@ -80,9 +80,8 @@ Entree& Decouper_multi::interpreter(Entree& is)
   std::vector<MCAuto<DataArrayDouble>> v_da; //DataArrayDouble de coordonnes
   std::vector<const DataArrayDouble*> v_pda; //et des pointeurs (ppur Aggregate)
   std::vector<int> off = { 0 }; //offset des sommets de chaque domaine dans le tableau aggrege
-  for (auto &&n_d : decoupeurs)
+  for (auto &&dec : decoupeurs)
     {
-      Decouper& dec = n_d.second;
       const Domaine& dom = dec.domaine();
       const DoubleTab& coord = dom.coord_sommets();
       v_dec.push_back(&dec);
@@ -96,6 +95,9 @@ Entree& Decouper_multi::interpreter(Entree& is)
       Partitionneur_base& partitionneur = dec.deriv_partitionneur_.valeur();
       partitionneur.declarer_bords_periodiques(dec.liste_bords_periodiques_);
       partitionneur.construire_partition(dec.elem_part_, dec.nb_parts_tot_);
+      if (dec.nom_fichier_med_ != "?")
+        dec.postraiter_decoupage(dec.nom_fichier_med_);
+
       construire_connectivite_som_elem(dom.nb_som(), dom.les_elems(), v_se.back(), 1);
     }
 

@@ -37,7 +37,8 @@ public:
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
 private:
-  std::map<std::string, Decouper> decoupeurs; //decoupeurs de chaque domaine
+  std::vector<Decouper> decoupeurs; //decoupeurs de chaque domaine
+  std::set<std::string> doms_lus;   //noms des domaines a decouper
   double tolerance = 1e-8; //tolerance geometrique
 };
 
