@@ -1,6 +1,6 @@
 # PARALLEL OK #
 
-EcritureLectureSpecial EcrFicPartage # Enable ASCII .xyz file #
+EcritureLectureSpecial 1
 dimension 3
 Pb_Hydraulique pb
 Domaine dom
