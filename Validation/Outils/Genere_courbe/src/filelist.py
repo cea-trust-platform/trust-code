@@ -234,6 +234,7 @@ class FileAccumulator(object):
         if not cls.active: return
         cls.Append(dir + "/" + case + ".data")
         cls.Append(dir + "/" + case + ".err")
+        cls.Append(dir + "/" + case + ".TU")
         # Commenting those 2 - they might be huge if many timesteps:
         #  cls.Append(dir + "/" + case + ".out")
         #  cls.Append(dir + "/" + case + ".dt_ev")
