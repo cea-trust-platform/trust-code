@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -159,6 +159,15 @@ int Convection_Diffusion_Turbulent::preparer_calcul()
 {
   le_modele_turbulence->preparer_calcul();
   return 1;
+}
+
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Convection_Diffusion_Turbulent::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data = le_modele_turbulence->data_a_sauvegarder();
+  return data;
 }
 
 /*! @brief Simple appel a Modele_turbulence_scal_base::sauvegarder(Sortie&) sur le membre concerne.

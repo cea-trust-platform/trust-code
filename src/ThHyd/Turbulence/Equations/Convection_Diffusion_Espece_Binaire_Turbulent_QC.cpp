@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,17 @@ int Convection_Diffusion_Espece_Binaire_Turbulent_QC::lire_motcle_non_standard(c
     }
   else
     return Convection_Diffusion_Espece_Binaire_QC::lire_motcle_non_standard(mot, is);
+}
+
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Convection_Diffusion_Espece_Binaire_Turbulent_QC::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data = Convection_Diffusion_Espece_Binaire_QC::data_a_sauvegarder();
+  std::vector<YAML_data> turb = Convection_Diffusion_Turbulent::data_a_sauvegarder();
+  data.insert(data.end(), turb.begin(), turb.end());
+  return data;
 }
 
 /*! @brief Sauvegarde sur un flot de sortie, double appel a: Convection_Diffusion_Espece_Binaire_QC::sauvegarder(Sortie& );

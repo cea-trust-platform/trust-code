@@ -214,6 +214,17 @@ int Modele_turbulence_scal_base::preparer_calcul()
   return 1;
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Modele_turbulence_scal_base::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data;
+  if (loipar_.non_nul())
+    data = loipar_->data_a_sauvegarder();
+  return data;
+}
+
 /*! @brief NE FAIT RIEN
  *
  * @param (Sortie&) un flot de sortie

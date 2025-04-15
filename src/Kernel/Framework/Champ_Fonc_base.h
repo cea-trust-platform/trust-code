@@ -18,6 +18,7 @@
 
 #include <Champ_Don_base.h>
 #include <TRUST_Ref.h>
+#include <YAML_data.h>
 
 class Domaine_dis_base;
 class MD_Vector;
@@ -40,6 +41,7 @@ public:
   int sauvegarder(Sortie&) const override;
   inline void set_pdi_name(const Nom& nom) { pdi_name_ = nom; }
   const Nom& get_pdi_name() const;
+  virtual std::vector<YAML_data> data_a_sauvegarder() const;
 
   Champ_base& affecter_(const Champ_base&) override;
   Champ_base& affecter_compo(const Champ_base&, int compo) override;

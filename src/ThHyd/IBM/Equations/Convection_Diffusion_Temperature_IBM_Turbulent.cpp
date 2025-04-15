@@ -54,6 +54,17 @@ int Convection_Diffusion_Temperature_IBM_Turbulent::lire_motcle_non_standard(con
     return Convection_Diffusion_Temperature_IBM::lire_motcle_non_standard(mot, is);
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Convection_Diffusion_Temperature_IBM_Turbulent::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data = Convection_Diffusion_Temperature_IBM::data_a_sauvegarder();
+  std::vector<YAML_data> turb = Convection_Diffusion_Turbulent::data_a_sauvegarder();
+  data.insert(data.end(), turb.begin(), turb.end());
+  return data;
+}
+
 /*! @brief Sauvegarde sur un flot de sortie, double appel a: Convection_Diffusion_Temperature_IBM::sauvegarder(Sortie& );
  *
  *       Convection_Diffusion_Turbulent::sauvegarder(Sortie& );

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,12 @@ void Convection_Diffusion_Espece_Binaire_WC::completer()
 {
   assert(le_fluide->loi_etat()->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_WC");
   Convection_Diffusion_Espece_Binaire_base::completer();
+}
+
+std::vector<YAML_data> Convection_Diffusion_Espece_Binaire_WC::data_a_sauvegarder() const
+{
+  Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
+  return Convection_Diffusion_Fluide_Dilatable_Proto::data_a_sauvegarder(*this,FWC);
 }
 
 int Convection_Diffusion_Espece_Binaire_WC::sauvegarder(Sortie& os) const

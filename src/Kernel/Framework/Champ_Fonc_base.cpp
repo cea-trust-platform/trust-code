@@ -91,6 +91,18 @@ const Nom& Champ_Fonc_base::get_pdi_name() const
     return pdi_name_;
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.
+ */
+std::vector<YAML_data> Champ_Fonc_base::data_a_sauvegarder() const
+{
+  const Nom& name = get_pdi_name();
+  int nb_dim = valeurs().nb_dim();
+  YAML_data d(name.getString(), "double", nb_dim);
+  std::vector<YAML_data> data;
+  data.push_back(d);
+  return data;
+}
+
 /*! @brief Sauvegarde le champ sur un flot de sortie Ecrit le nom, le temps et les valeurs.
  *
  * @param (Sortie& fich) un flot de sortie

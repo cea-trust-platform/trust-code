@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,7 @@ public:
 
 private:
   void completer() override;
+  std::vector<YAML_data> data_a_sauvegarder() const override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   void mettre_a_jour(double) override;

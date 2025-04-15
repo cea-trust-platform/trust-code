@@ -393,6 +393,20 @@ int Modele_turbulence_hyd_base::limpr_ustar(double temps_courant, double temps_p
     }
 }
 
+
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Modele_turbulence_hyd_base::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data;
+  if (loipar_.non_nul())
+    {
+      data = loipar_->data_a_sauvegarder();
+    }
+  return data;
+}
+
 /*! @brief Sauvegarde le modele de turbulence sur un flot de sortie.
  *
  * Sauvegarde le type de l'objet.

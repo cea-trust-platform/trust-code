@@ -20,6 +20,7 @@
 #include <Champs_compris.h>
 #include <Champ_Inc_base.h>
 #include <TRUST_Ref.h>
+#include <YAML_data.h>
 
 class Modele_turbulence_hyd_base;
 class Probleme_base;
@@ -65,6 +66,7 @@ public:
   //OC 01/2006: ajout de la fonctionnalite sauvegarde/reprise : utile pour TBLE pour l'instant.
   int sauvegarder(Sortie&) const override { return 0; }
   int reprendre(Entree&) override { return 0; }
+  virtual std::vector<YAML_data> data_a_sauvegarder() const { return std::vector<YAML_data>(); }
 
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;

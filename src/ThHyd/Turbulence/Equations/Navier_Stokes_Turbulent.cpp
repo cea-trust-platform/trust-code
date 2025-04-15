@@ -249,6 +249,17 @@ bool Navier_Stokes_Turbulent::initTimeStep(double dt)
   return ok;
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Navier_Stokes_Turbulent::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data = Navier_Stokes_std::data_a_sauvegarder();
+  std::vector<YAML_data> mod_turb = le_modele_turbulence->data_a_sauvegarder();
+  data.insert(data.end(), mod_turb.begin(), mod_turb.end());
+  return data;
+}
+
 /*! @brief Sauvegarde l'equation (et son modele de turbulence) sur un flot de sortie.
  *
  * @param (Sortie& os) un flot de sortie

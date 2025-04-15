@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ class Convection_Diffusion_Espece_Fluide_Dilatable_base : public Convection_Diff
 public :
   void discretiser() override;
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const override;
+  std::vector<YAML_data> data_a_sauvegarder() const override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   int preparer_calcul() override;

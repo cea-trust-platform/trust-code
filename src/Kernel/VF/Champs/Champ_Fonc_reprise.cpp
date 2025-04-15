@@ -118,11 +118,6 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   // Cas du K-Epsilon
   if (((Motcle)nom_champ).debute_par("K_EPS"))
     {
-      if(format_rep == "pdi")
-        {
-          Cerr << "Champ_Fonc_reprise Error! Restart with K_EPS not supported yet with PDI format! Please contact TRUST support." << finl;
-          Process::exit();
-        }
       reprend_modele_k_eps=1;
       // cas du k-epsilon realisable
       if (Motcle(nom_champ).finit_par("_REALISABLE"))
@@ -454,7 +449,8 @@ void Champ_Fonc_reprise::read_field_from_file(Entree& jdd, Entree& file, const P
     }
   else if (reprend_modele_k_eps)
     {
-      avancer_fichier(file, nom_ident_champ_keps);
+      if(!pdi_format)
+        avancer_fichier(file, nom_ident_champ_keps);
       le_champ().reprendre(file);
     }
   else

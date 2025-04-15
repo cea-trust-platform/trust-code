@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,6 +60,7 @@ public :
   // E. Saikali : Methodes utiles pour un heritage V
   int sauvegarder_base(Sortie&) const;
   int reprendre_base(Entree&);
+  std::vector<YAML_data> data_a_sauvegarder_base() const;
 
 protected :
 

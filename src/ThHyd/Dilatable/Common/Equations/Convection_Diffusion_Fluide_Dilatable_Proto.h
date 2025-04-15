@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@ class Fluide_Dilatable_base;
 class Champ_Inc_base;
 class Probleme_base;
 class Matrice_Morse;
+class YAML_data;
 class Sortie;
 class Entree;
 
@@ -35,6 +36,7 @@ public:
   // Convection_Diffusion_std parce que on a un heritage V et on va appeler la classe mere de l'autre cote ...
   // Sinon il faut mettre les methodes dans Equation_base... a voir ...
   // [ Vive les classes templates ... dommage !]
+  static std::vector<YAML_data> data_a_sauvegarder(const Convection_Diffusion_std& eq, const Fluide_Dilatable_base& fld);
   static int Sauvegarder_WC(Sortie& os, const Convection_Diffusion_std& eq, const Fluide_Dilatable_base& fld);
   static int Reprendre_WC(Entree& is, double temps,Convection_Diffusion_std& eq, Fluide_Dilatable_base& fld,
                           Champ_Inc_base& inco, Probleme_base& pb);

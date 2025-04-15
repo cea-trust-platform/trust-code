@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 
 #include <Modele_turbulence_hyd_base.h>
 #include <Navier_Stokes_std.h>
+#include <YAML_data.h>
 
 
 /*! @brief classe Navier_Stokes_Turbulent Cette classe represente l'equation de la dynamique pour un fluide
@@ -37,6 +38,7 @@ public:
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline const Champ_Fonc_base& viscosite_turbulente() const { return le_modele_turbulence->viscosite_turbulente(); }
   inline const Modele_turbulence_hyd_base& modele_turbulence() const { return le_modele_turbulence.valeur(); }
+  std::vector<YAML_data> data_a_sauvegarder() const override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   int preparer_calcul() override;

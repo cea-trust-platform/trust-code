@@ -76,6 +76,7 @@ public:
   virtual void imprimer(Sortie&) const;
   void a_faire(Sortie&) const;
   int sauvegarder(Sortie&) const override;
+  virtual std::vector<YAML_data> data_a_sauvegarder() const;
 
   int limpr_ustar(double, double, double, double) const;
   inline double get_Cmu() const { return LeCmu_; }

@@ -49,6 +49,7 @@ public:
   /* XXX Elie Saikali : re-mets ici et pas dans Objet_U */
   int sauvegarder(Sortie& os) const override { return 0; }
   int reprendre(Entree& is) override { return 1; }
+  virtual std::vector<YAML_data> data_a_sauvegarder() const { return std::vector<YAML_data>(); }
 
   inline void associer_modele(const Modele_turbulence_scal_base&);
   virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&)=0;

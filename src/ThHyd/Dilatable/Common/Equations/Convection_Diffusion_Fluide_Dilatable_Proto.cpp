@@ -415,6 +415,20 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
 /*
  * Methodes statiques
  */
+
+std::vector<YAML_data> Convection_Diffusion_Fluide_Dilatable_Proto::data_a_sauvegarder(const Convection_Diffusion_std& eq, const Fluide_Dilatable_base& fld)
+{
+  std::vector<YAML_data> data = eq.data_a_sauvegarder_base();
+
+  Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
+  OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
+  std::string name = eq.probleme().le_nom().getString() + "_Pression_EOS";
+  int nb_dim = p_tab->valeurs().nb_dim();
+  YAML_data pressure(name, "double", nb_dim);
+  data.push_back(pressure);
+  return data;
+}
+
 int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
                                                                 const Convection_Diffusion_std& eq,
                                                                 const Fluide_Dilatable_base& fld)
@@ -423,17 +437,36 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
   bytes += eq.sauvegarder_base(os); // XXX : voir Convection_Diffusion_std
   EcritureLectureSpecial::is_ecriture_special(special,a_faire);
 
-  if (a_faire || TRUST_2_PDI::is_PDI_checkpoint())
+  Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
+  if (a_faire)
     {
-      Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,fld);
       OWN_PTR(Champ_Inc_base) p_tab = FWC.inco_chaleur(); // Initialize with same discretization
-
       p_tab->nommer("Pression_EOS");
       p_tab->valeurs() = FWC.pression_th_tab(); // Use good values
       if (special && Process::is_parallel())
         Cerr << "ATTENTION : For a parallel calculation, the field Pression_EOS is not saved in xyz format ... " << finl;
       else
         bytes += p_tab->sauvegarder(os);
+    }
+  else if (TRUST_2_PDI::is_PDI_checkpoint())
+    {
+      // Different treatment with PDI as the backup will be triggered later, so we can't share a temporary pointer...
+      const DoubleTab& p_th_tab = FWC.pression_th_tab();
+      std::string name = eq.probleme().le_nom().getString() + "_Pression_EOS";
+
+      // Sharing the dimensions of the unknown field with PDI
+      TRUST_2_PDI pdi_interface;
+      pdi_interface.share_TRUSTTab_dimensions(p_th_tab, name, 1 /*write mode*/);
+      // Sharing the unknown field with PDI
+      if( p_th_tab.dimension_tot(0) )
+        pdi_interface.TRUST_start_sharing(name, p_th_tab.addr());
+      else
+        {
+          ArrOfDouble garbage( p_th_tab.nb_dim() );
+          pdi_interface.TRUST_start_sharing(name, garbage.addr());
+        }
+
+      bytes = 8 * p_th_tab.size_array();
     }
 
   return bytes;

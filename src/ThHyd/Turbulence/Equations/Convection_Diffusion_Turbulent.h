@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,6 +42,7 @@ public :
   void completer();
   virtual bool initTimeStep(double dt);
   int preparer_calcul();
+  virtual std::vector<YAML_data> data_a_sauvegarder() const;
   virtual int sauvegarder(Sortie&) const;
   virtual int reprendre(Entree&);
   virtual void mettre_a_jour(double);

@@ -22,6 +22,7 @@
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
+#include <TRUST_2_PDI.h>
 #include <Domaine.h>
 #include <Avanc.h>
 #include <Param.h>
@@ -248,6 +249,17 @@ bool Navier_Stokes_IBM_Turbulent::initTimeStep(double dt)
   return ok;
 }
 
+/*! @brief for PDI IO: retrieve name, type and dimensions of the fields to save/restore
+ *
+ */
+std::vector<YAML_data> Navier_Stokes_IBM_Turbulent::data_a_sauvegarder() const
+{
+  std::vector<YAML_data> data = Navier_Stokes_IBM::data_a_sauvegarder();
+  std::vector<YAML_data> mod_turb = le_modele_turbulence->data_a_sauvegarder();
+  data.insert(data.end(), mod_turb.begin(), mod_turb.end());
+  return data;
+}
+
 /*! @brief Sauvegarde l'equation (et son modele de turbulence) sur un flot de sortie.
  *
  * @param (Sortie& os) un flot de sortie
@@ -272,12 +284,14 @@ int Navier_Stokes_IBM_Turbulent::sauvegarder(Sortie& os) const
 int Navier_Stokes_IBM_Turbulent::reprendre(Entree& is)
 {
   Navier_Stokes_IBM::reprendre(is);
-  double temps = schema_temps().temps_courant();
-  Nom ident_modele(le_modele_turbulence->que_suis_je());
-  ident_modele += probleme().domaine().le_nom();
-  ident_modele += Nom(temps, probleme().reprise_format_temps());
-
-  avancer_fichier(is, ident_modele);
+  if(!TRUST_2_PDI::is_PDI_restart())
+    {
+      double temps = schema_temps().temps_courant();
+      Nom ident_modele(le_modele_turbulence->que_suis_je());
+      ident_modele += probleme().domaine().le_nom();
+      ident_modele += Nom(temps, probleme().reprise_format_temps());
+      avancer_fichier(is, ident_modele);
+    }
   le_modele_turbulence->reprendre(is);
 
   return 1;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -162,3 +162,9 @@ int Convection_Diffusion_std::reprendre_base(Entree& is)
 {
   return Equation_base::reprendre(is);
 }
+
+std::vector<YAML_data> Convection_Diffusion_std::data_a_sauvegarder_base() const
+{
+  return Equation_base::data_a_sauvegarder();
+}
+

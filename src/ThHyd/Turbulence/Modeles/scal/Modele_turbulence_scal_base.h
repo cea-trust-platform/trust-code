@@ -54,6 +54,7 @@ public:
   virtual void completer();
   virtual void associer(const Domaine_dis_base&, const Domaine_Cl_dis_base&);
   void a_faire(Sortie&) const;
+  virtual std::vector<YAML_data> data_a_sauvegarder() const;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   inline Convection_Diffusion_std& equation();

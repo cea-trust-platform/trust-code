@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_hyd_2_eq_base.h>
+#include <TRUST_2_PDI.h>
 #include <TRUSTTrav.h>
 #include <Param.h>
 
@@ -44,6 +45,13 @@ void Modele_turbulence_hyd_2_eq_base::verifie_loi_paroi()
 
 int Modele_turbulence_hyd_2_eq_base::reprendre_generique(Entree& is)
 {
+  if(TRUST_2_PDI::is_PDI_restart())
+    {
+      Cerr <<"Problem in the resumption of Modele_turbulence_hyd_2_eq_base" << finl;
+      Cerr << "PDI format does not require to navigate through file..." << finl;
+      Process::exit();
+    }
+
   double dbidon;
   Nom bidon;
   DoubleTrav tab_bidon;

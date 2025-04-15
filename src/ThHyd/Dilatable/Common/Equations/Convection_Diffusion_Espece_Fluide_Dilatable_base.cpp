@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,6 +68,11 @@ void Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser()
 void Convection_Diffusion_Espece_Fluide_Dilatable_base::calculer_div_u_ou_div_rhou(DoubleTab& Div) const
 {
   Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(Div,*this);
+}
+
+std::vector<YAML_data> Convection_Diffusion_Espece_Fluide_Dilatable_base::data_a_sauvegarder() const
+{
+  return Equation_base::data_a_sauvegarder();
 }
 
 int Convection_Diffusion_Espece_Fluide_Dilatable_base::sauvegarder(Sortie& os) const
