@@ -409,7 +409,7 @@ void Domaine_Poly_base::discretiser()
 
 void Domaine_Poly_base::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
-  Cerr << "Le Domaine_Poly a ete rempli avec succes" << finl;
+  Cerr << "Domaine_Poly has been filled with success" << finl;
   //      calculer_h_carre();
 
   Journal() << "Domaine_Poly_base::Modifier_pour_Cl" << finl;
