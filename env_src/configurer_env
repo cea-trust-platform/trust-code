@@ -950,6 +950,17 @@ then
        echo "       is older than minimum required (3.22); you need to provide at least cmake 3.22 to install TRUST"
        exit -1
     fi
+    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
+    if [ "$PYTHON_TEST_OK" != 1 ]
+    then
+       echo "Warning: Installing without conda - The following (automatically detected)"
+       echo "       $ze_python"
+       echo "       does not contain some required python packages (build or tests may fail):"
+       for import_pkg in `grep import test.py | cut -f 2 -d' '`
+       do
+          $TRUST_ROOT/exec/python/bin/python -c "import $import_pkg"
+       done
+    fi
 fi
 
 # We touch all conda files, otherwise it will be deleted from SCRATCH of clusters (e.g. jean-zay)
