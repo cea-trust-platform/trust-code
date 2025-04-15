@@ -8,7 +8,7 @@
   mu = rho*w*R1*R1/Reynolds = 1*1*0.5*0.5/1 = 0.25 */
 # PARALLEL OK #
 dimension 3
-Pb_Hydraulique pb
+Pb_Hydraulique_ibm pb
 Domaine dom
 EcritureLectureSpecial 0
 
@@ -87,7 +87,7 @@ Lire pb
     }
 
 
-    Navier_Stokes_standard
+    Navier_Stokes_ibm
     {
         projection_initiale 0
         methode_calcul_pression_initiale avec_sources_et_operateurs
@@ -114,7 +114,7 @@ Lire pb
                 {
                     eta 1.E-12
                     local
-                    vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
+                    vitesse_imposee_fonction 3 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
                 interpolation @INTERP_TYPE@
                 {

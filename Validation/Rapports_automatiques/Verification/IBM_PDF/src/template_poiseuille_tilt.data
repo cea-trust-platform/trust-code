@@ -9,7 +9,7 @@
   mu = 1.0 */
 
 dimension 3
-Pb_Hydraulique pb
+Pb_Hydraulique_IBM pb
 Domaine dom
 
 # BEGIN MESH #
@@ -75,7 +75,7 @@ Lire pb
     }
 
 
-    Navier_Stokes_standard
+    Navier_Stokes_IBM
     {
         projection_initiale 0
         postraiter_gradient_pression_sans_masse
