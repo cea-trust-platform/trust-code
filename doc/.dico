@@ -48,6 +48,7 @@
  Champ_Don_base Champ_Don_base Champ_Don_base.h
  Champ_Don_Face_lu Champ_Don_Face_lu Champ_Don_Face_lu.h
  Champ_Don_lu Champ_Don_lu Champ_Don_lu.h
+ Champ_Elem_DG Champ_Elem_DG Champ_Elem_DG.h
  Champ_Elem_PolyMAC Champ_Elem_PolyMAC Champ_Elem_PolyMAC.h
  Champ_Elem_PolyMAC_P0 Champ_Elem_PolyMAC_P0 Champ_Elem_PolyMAC_P0.h
  Champ_Elem_PolyMAC_P0P1NC Champ_Elem_PolyMAC_P0P1NC Champ_Elem_PolyMAC_P0P1NC.h
@@ -57,6 +58,7 @@
  Champ_Face_PolyMAC_P0P1NC Champ_Face_PolyMAC_P0P1NC Champ_Face_PolyMAC_P0P1NC.h
  Champ_Face|Champ_Face_VDF Champ_Face_VDF Champ_Face_VDF.h
  Champ_Fonc_base Champ_Fonc_base Champ_Fonc_base.h
+ Champ_Fonc_Elem_DG Champ_Fonc_Elem_DG Champ_Fonc_Elem_DG.h
  Champ_Fonc_Elem_PolyMAC Champ_Fonc_Elem_PolyMAC Champ_Fonc_Elem_PolyMAC.h
  Champ_Fonc_Elem_PolyMAC_P0_rot Champ_Fonc_Elem_PolyMAC_P0_rot Champ_Fonc_Elem_PolyMAC_P0_rot.h
  Champ_Fonc_Elem_PolyMAC_P0_TC Champ_Fonc_Elem_PolyMAC_P0_TC Champ_Fonc_Elem_PolyMAC_P0_TC.h
@@ -77,6 +79,7 @@
  Champ_Fonc_P0_VEF Champ_Fonc_P0_VEF Champ_Fonc_P0_VEF.h
  Champ_Fonc_P1NC Champ_Fonc_P1NC Champ_Fonc_P1NC.h
  Champ_Fonc_P1_base Champ_Fonc_P1_base Champ_Fonc_P1_base.h
+ Champ_Fonc_P1_DG Champ_Fonc_P1_DG Champ_Fonc_P1_DG.h
  Champ_Fonc_P1_EF Champ_Fonc_P1_EF Champ_Fonc_P1_EF.h
  Champ_Fonc_P1_isoP1Bulle Champ_Fonc_P1_isoP1Bulle Champ_Fonc_P1_isoP1Bulle.h
  Champ_Fonc_P1_MED Champ_Fonc_P1_MED Champ_Fonc_P1_MED.h
@@ -177,6 +180,7 @@
  Champ_som_lu_VDF Champ_som_lu_VDF Champ_som_lu_VDF.h
  Champ_som_lu_VEF Champ_som_lu_VEF Champ_som_lu_VEF.h
  Champ_Som_PolyMAC Champ_Som_PolyMAC Champ_Som_PolyMAC.h
+ Champ_Tabule_lu Champ_Tabule_lu Champ_Tabule_lu.h
  Champ_Tabule_Temps Champ_Tabule_Temps Champ_Tabule_Temps.h
  Champ_Uniforme Champ_Uniforme Champ_Uniforme.h
  Champ_Uniforme_inst Champ_Uniforme_inst Champ_Uniforme_inst.h
@@ -259,6 +263,7 @@
  Decroissance_Radioactive_VEF_P1NC Terme_Source_Decroissance_Radioactive_VEF_Face Terme_Source_Decroissance_Radioactive_VEF_Face.h
  Descripteur Descripteur Descripteur.h
  DescStructure DescStructure DescStructure.h
+ DG DG_discretisation DG_discretisation.h
  Diametre_bulles_champ Diametre_bulles_champ Diametre_bulles_champ.h
  Diametre_bulles_constant Diametre_bulles_constant Diametre_bulles_constant.h
  Diametre_hyd_champ Diametre_hyd_champ Diametre_hyd_champ.h
@@ -287,11 +292,13 @@
  DomaineCutter DomaineCutter_32_64 DomaineCutter.h
  Domaine_base Domaine_base Domaine_base.h
  Domaine_bord Domaine_bord_32_64 Domaine_bord.h
+ Domaine_Cl_DG Domaine_Cl_DG Domaine_Cl_DG.h
  Domaine_Cl_dis_base Domaine_Cl_dis_base Domaine_Cl_dis_base.h
  Domaine_Cl_EF Domaine_Cl_EF Domaine_Cl_EF.h
  Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC.h
  Domaine_Cl_VDF Domaine_Cl_VDF Domaine_Cl_VDF.h
  Domaine_Cl_VEF Domaine_Cl_VEF Domaine_Cl_VEF.h
+ Domaine_DG Domaine_DG Domaine_DG.h
  Domaine_dis_base Domaine_dis_base Domaine_dis_base.h
  Domaine_EF Domaine_EF Domaine_EF.h
  Domaine_EF_axi Domaine_EF_axi Domaine_EF_axi.h
@@ -556,6 +563,8 @@
  Masse_ajoutee_Coef_Constant Masse_ajoutee_Coef_Constant Masse_ajoutee_Coef_Constant.h
  Masse_ajoutee_Wijngaarden Masse_ajoutee_Wijngaarden Masse_ajoutee_Wijngaarden.h
  Masse_ajoutee_Zuber Masse_ajoutee_Zuber Masse_ajoutee_Zuber.h
+ Masse_DG_base Masse_DG_base Masse_DG_base.h
+ Masse_DG_Elem Masse_DG_Elem Masse_DG_Elem.h
  Masse_EF Solveur_Masse_EF Solveur_Masse_EF.h
  Masse_Multiphase Masse_Multiphase Masse_Multiphase.h
  Masse_PolyMAC_base Masse_PolyMAC_base Masse_PolyMAC_base.h
@@ -669,6 +678,7 @@
  Operateur_Grad_base Operateur_Grad_base Operateur_Grad_base.h
  Operateur_Statistique_tps_base Operateur_Statistique_tps_base Operateur_Statistique_tps_base.h
  Option_CGNS Option_CGNS Option_CGNS.h
+ Option_DG Option_DG Option_DG.h
  Option_Interpolation Option_Interpolation Option_Interpolation.h
  Option_PolyMAC Option_PolyMAC Option_PolyMAC.h
  Option_VDF Option_VDF Option_VDF.h
@@ -727,6 +737,8 @@
  Op_Conv_VEF_base Op_Conv_VEF_base Op_Conv_VEF_base.h
  Op_Correlation Op_Correlation Op_Correlation.h
  Op_Curl_VEFPreP1B_P1NC Op_Curl_VEFP1B Op_Curl_VEFP1B.h
+ Op_Diff_DG_base Op_Diff_DG_base Op_Diff_DG_base.h
+ Op_Diff_DG_Elem Op_Diff_DG_Elem Op_Diff_DG_Elem.h
  Op_Diff_EF Op_Diff_EF Op_Diff_EF.h
  Op_Diff_EF_base Op_Diff_EF_base Op_Diff_EF_base.h
  Op_Diff_negligeable Op_Diff_negligeable Op_Diff_negligeable.h
@@ -999,6 +1011,7 @@
  Probleme_Couple Probleme_Couple Probleme_Couple.h
  Probleme_U Probleme_U Probleme_U.h
  Puissance_Thermique_EF Puissance_Thermique_EF Puissance_Thermique_EF.h
+ Puissance_Thermique_Elem_DG Terme_Puissance_Thermique_DG_Elem Terme_Puissance_Thermique_DG_Elem.h
  Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC Terme_Puissance_Thermique_PolyMAC_Elem Terme_Puissance_Thermique_PolyMAC_Elem.h
  Puissance_Thermique_QC_EF Puissance_Thermique_QC_EF Puissance_Thermique_QC_EF.h
  Puissance_Thermique_QC_VDF_P0_VDF Terme_Puissance_Thermique_QC_VDF_Elem Terme_Puissance_Thermique_QC_VDF_Elem.h
@@ -1198,6 +1211,7 @@
  Tayl_Green Tayl_Green Tayl_Green.h
  Temperature_imposee_paroi|Enthalpie_imposee_paroi Temperature_imposee_paroi Temperature_imposee_paroi.h
  Terme_Boussinesq_base Terme_Boussinesq_base Terme_Boussinesq_base.h
+ Terme_Puissance_Thermique_DG_base Terme_Puissance_Thermique_DG_base Terme_Puissance_Thermique_DG_base.h
  Terme_Puissance_Thermique_Echange_Impose_Elem_base Terme_Puissance_Thermique_Echange_Impose_Elem_base Terme_Puissance_Thermique_Echange_Impose_Elem_base.h
  Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC|Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_P0P1NC Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC.h
  terme_puissance_thermique_echange_impose_VDF_P0_VDF Terme_Puissance_Thermique_Echange_Impose_P0_VDF Terme_Puissance_Thermique_Echange_Impose_P0_VDF.h
@@ -1208,6 +1222,7 @@
  Terme_Source_Acceleration Terme_Source_Acceleration Terme_Source_Acceleration.h
  Terme_Source_Canal_perio Terme_Source_Canal_perio Terme_Source_Canal_perio.h
  Terme_Source_Coriolis_base Terme_Source_Coriolis_base Terme_Source_Coriolis_base.h
+ Terme_Source_DG_base Terme_Source_DG_base Terme_Source_DG_base.h
  Terme_Source_EF_base Terme_Source_EF_base Terme_Source_EF_base.h
  Terme_Source_inc_base Terme_Source_inc_base Terme_Source_inc_base.h
  Terme_Source_PolyMAC_base Terme_Source_PolyMAC_base Terme_Source_PolyMAC_base.h
