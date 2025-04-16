@@ -1,7 +1,7 @@
-XX/XX/XX (TRUST) Bug fixed    : Pressure initial conditions couldn't be set in VEF P0
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+16/04/25 (TRUST) Bug fixed    : Pressure initial conditions couldn't be set in VEF P0
 15/04/25 (TRUST) New feature  : New Discontinous Galerkin discretization (order 1-2), limited to conduction 2D for now. It is working with polyedric meshes. Examples are available in Diffusion_DG notebook. 
 14/04/25 (TRUST) Change       : Keyword EcritureLectureSpecial now only supports option 0 or 1, all other former options are now deprecated.
 02/04/25 (TRUST) Bug fix      : PolyMAC_P0 calculations crashed with out of memory. Better memory allocation which leads to performance improvement
