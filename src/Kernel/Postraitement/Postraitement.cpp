@@ -939,8 +939,10 @@ int Postraitement::sauvegarder(Sortie& os) const
               Nom vide;
               const Nom& nom_post = le_nom();
               std::string post_name = (nom_post != "neant") && (nom_post != vide) ? nom_post.getString() + "_" : "";
-              int nb_champs = nb_champs_stat_;
-              double tdeb = tstat_deb_, tend =  tstat_dernier_calcul_;
+
+              int& nb_champs = const_cast<int&>(nb_champs_stat_);
+              double& tdeb = const_cast<double&>(tstat_deb_);
+              double& tend =  const_cast<double&>(tstat_dernier_calcul_);
               std::string name = pb_name + "_" + post_name + "stat_nb_champs";
               pdi_interface.TRUST_start_sharing(name, &nb_champs);
               name = pb_name + "_" + post_name + "stat_tdeb";

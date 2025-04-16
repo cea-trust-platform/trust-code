@@ -1366,3 +1366,29 @@
    ...
 }
 
+##
+## 04/2025 : memory leaks caused by PDI
+##
+{
+   <Paraconf_err_handler>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:PC_errhandler
+   fun:PC_parse_path
+   ...
+}
+
+{
+   <PDI_init>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:PC_make_err
+   fun:PC_sget
+   fun:PC_vget
+   fun:PC_get
+   ...
+   fun:PDI_init
+   ...
+}
