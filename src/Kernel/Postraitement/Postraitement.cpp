@@ -940,15 +940,12 @@ int Postraitement::sauvegarder(Sortie& os) const
               const Nom& nom_post = le_nom();
               std::string post_name = (nom_post != "neant") && (nom_post != vide) ? nom_post.getString() + "_" : "";
 
-              int& nb_champs = const_cast<int&>(nb_champs_stat_);
-              double& tdeb = const_cast<double&>(tstat_deb_);
-              double& tend =  const_cast<double&>(tstat_dernier_calcul_);
               std::string name = pb_name + "_" + post_name + "stat_nb_champs";
-              pdi_interface.TRUST_start_sharing(name, &nb_champs);
+              pdi_interface.TRUST_start_sharing(name, &nb_champs_stat_);
               name = pb_name + "_" + post_name + "stat_tdeb";
-              pdi_interface.TRUST_start_sharing(name, &tdeb);
+              pdi_interface.TRUST_start_sharing(name, &tstat_deb_);
               name = pb_name + "_" + post_name + "stat_tend";
-              pdi_interface.TRUST_start_sharing(name, &tend);
+              pdi_interface.TRUST_start_sharing(name, &tstat_dernier_calcul_);
             }
 
           bytes += champs_post_complet_.sauvegarder(os);

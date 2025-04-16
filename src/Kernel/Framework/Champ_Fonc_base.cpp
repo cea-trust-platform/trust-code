@@ -133,9 +133,7 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
       const Nom& name = get_pdi_name();
       TRUST_2_PDI pdi_interface;
       pdi_interface.share_TRUSTTab_dimensions(valeurs(), name, 1 /*write mode*/);
-
-      DoubleTab& unknwon = const_cast<DoubleTab&>(valeurs());
-      pdi_interface.TRUST_start_sharing(name.getString(), unknwon.addr());
+      pdi_interface.TRUST_start_sharing(name.getString(), valeurs().addr());
     }
   else
     {

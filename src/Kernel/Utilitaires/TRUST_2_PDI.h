@@ -136,33 +136,17 @@ public:
   }
 
   // Method to use to write the data named name and located in data
-  void write(const std::string& name, void *data)
+  void write(const std::string& name, const void *data)
   {
 #ifdef HAS_PDI
     PDI_expose(name.c_str(), data, PDI_OUT);
 #endif
   }
 
-  // Method to use to read all the data contained in the map data at once, with the following structure:
-  // data[name] = pointer to the data
-  // The read will be triggered when the event "event" is called
-  void multiple_reads(const std::string& event, const std::map<std::string,void*>& data)
-  {
-    multiple_IO_(event, data, 0 /* reading */);
-  }
-
-  // Method to use to write all the data contained in the map data at once, with the following structure:
-  // data[name] = pointer to the data
-  // The write will be triggered when the event "event" is called
-  void multiple_writes(const std::string& event, const std::map<std::string,void*>& data)
-  {
-    multiple_IO_(event, data, 1 /* writing */);
-  }
-
   // Method to use to start sharing with PDI the data named name and located in data
   // (while the data is shared, TRUST can not access it)
   // This will not write or read anything unless some event is triggered!
-  void TRUST_start_sharing(const std::string& name, void *data)
+  void TRUST_start_sharing(const std::string& name, const void *data)
   {
 #ifdef HAS_PDI
     PDI_share(name.c_str(), data, PDI_OUT);
@@ -206,8 +190,6 @@ public:
   void prepareRestart(int& last_iteration, double& tinit, int resume_last_time);
 
 private:
-
-  void multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write=0);
 
   // data that are currently shared with PDI
   static std::vector<std::string> shared_data_;

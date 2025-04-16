@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -112,7 +112,7 @@ public :
   inline void set_pression_th(double Pth) { Pth_n_ = Pth_ = Pth; }
   inline int getTraitementPth() const { return traitement_PTh_; }
   inline double pression_th() const { return Pth_; } // Pression thermodynamique
-  inline double& pression_th() { return Pth_; } // Pression thermodynamique
+  inline const double& get_pression_th() const { return Pth_; } // Reference to pression thermodynamique (for PDI, can't share a copy...)
   inline double pression_thn() const { return Pth_n_; } // Pression thermodynamique a l'etape precedente
   inline double pression_th1() const { return Pth1_; } // Pression thermodynamique calculee pour conserver la masse
   inline double calculer_H(double hh) const { return loi_etat_->calculer_H(Pth_,hh); }

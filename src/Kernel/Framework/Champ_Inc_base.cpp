@@ -407,10 +407,8 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
         pdi_interface.share_type(name, que_suis_je());
 
       // Sharing the unknown field with PDI
-      // (const_cast as PDI doesn't deal with const variable)
-      DoubleTab& unknown = const_cast<DoubleTab&>(valeurs());
       if( valeurs().dimension_tot(0) )
-        pdi_interface.TRUST_start_sharing(name.getString(), unknown.addr());
+        pdi_interface.TRUST_start_sharing(name.getString(), valeurs().addr());
       else
         {
           // if the dimension is null in a direction - might happen in parallel - sharing an empty array

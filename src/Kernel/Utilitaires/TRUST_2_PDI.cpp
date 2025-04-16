@@ -20,27 +20,6 @@ int TRUST_2_PDI::PDI_restart_=0;
 int TRUST_2_PDI::PDI_initialized_=0;
 std::vector<std::string> TRUST_2_PDI::shared_data_;
 
-void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::string,void*>& data, int write)
-{
-#ifdef HAS_PDI
-  // we start by sharing all the variables
-  for(auto& d: data)
-    {
-      if(write)
-        PDI_share(d.first.c_str(), d.second, PDI_OUT);
-      else
-        PDI_share(d.first.c_str(), d.second, PDI_INOUT);
-    }
-
-  // we trigger the event to start writing/reading the datas previously shared
-  trigger(event);
-
-  // stop sharing data, starting from the last shared object
-  for (auto it = data.rbegin(); it != data.rend(); ++it)
-    PDI_reclaim(it->first.c_str());
-#endif
-}
-
 /*! @brief Generic method to share the dimensions of a TRUST DoubleTab with PDI
  *
  * @param (const DoubleTab& tab) the array we want to share with PDI
@@ -49,6 +28,7 @@ void TRUST_2_PDI::multiple_IO_(const std::string& event, const std::map<std::str
  */
 void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, const Nom& name, int write)
 {
+#ifdef HAS_PDI
   int nb_dim = tab.nb_dim();
   ArrOfInt dimensions(nb_dim);
   for(int i=0; i< nb_dim; i++)
@@ -63,10 +43,11 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, const Nom& nam
   std::string dim_str = "dim_" + name_str;
   std::string glob_dim_str = "glob_dim_" + name_str;
 
-  std::map<std::string,void*> data_dims;
-  data_dims[dim_str] = dimensions.addr();
-  data_dims[glob_dim_str] = &glob_dim_0;
-  multiple_IO_("dimensions", data_dims, write);
+  if(write)
+    PDI_multi_expose("dimensions", dim_str.c_str(), dimensions.addr(), PDI_OUT, glob_dim_str.c_str(), &glob_dim_0, PDI_OUT, nullptr);
+  else
+    PDI_multi_expose("dimensions", dim_str.c_str(), dimensions.addr(), PDI_INOUT, glob_dim_str.c_str(), &glob_dim_0, PDI_INOUT, nullptr);
+#endif
 }
 
 /*! @brief Generic method to share the type of a TRUST object
@@ -95,15 +76,16 @@ void TRUST_2_PDI::share_type(const Nom& name, const Nom& type)
 void TRUST_2_PDI::get_type(const Nom& name, Nom& type)
 {
 #ifdef HAS_PDI
-  int tmp;
+  int tmp = -1;
   PDI_share("TYPES", &tmp, PDI_INOUT);
 
   // getting size of string first
   std::string size = "size_TYPE_" + name.getString();
-  int sz;
+  int sz = -1;
   PDI_share(size.c_str(), &sz, PDI_INOUT);
   trigger("get_" + size);
   PDI_reclaim(size.c_str());
+  assert(sz>=0);
   type.getString().resize(sz);
 
   // getting string

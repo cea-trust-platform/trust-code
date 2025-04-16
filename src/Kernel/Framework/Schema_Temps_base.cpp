@@ -739,12 +739,10 @@ int Schema_Temps_base::sauvegarder(Sortie& os) const
           i =  nb_sauv_ % nb_sauv_max_;
           i_max = nb_sauv_max_;
         }
-      double t = temps_courant_;
-
       TRUST_2_PDI pdi_interface;
       pdi_interface.TRUST_start_sharing("iter", &i);
       pdi_interface.TRUST_start_sharing("nb_iter_max", &i_max);
-      pdi_interface.TRUST_start_sharing("temps", &t);
+      pdi_interface.TRUST_start_sharing("temps", &temps_courant_);
       if(Process::node_master())
         pdi_interface.trigger("time_scheme");
       pdi_interface.stop_sharing_last_variable(); //temps
