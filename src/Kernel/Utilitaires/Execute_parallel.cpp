@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <LecFicDiffuse_JDD.h>
+#include <DataFile.h>
 #include <Execute_parallel.h>
 #include <Interprete_bloc.h>
 #include <TRUST_Error.h>

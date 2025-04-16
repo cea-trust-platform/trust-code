@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #include <Lire_Fichier.h>
 #include <Interprete_bloc.h>
 #include <EFichierBin.h>
-#include <LecFicDiffuse_JDD.h>
+#include <DataFile.h>
 #include <LecFicDiffuse.h>
 #include <Read_unsupported_ASCII_file_from_ICEM.h>
 
@@ -89,16 +89,34 @@ Entree& Lire_Fichier::interpreter(Entree& is)
   else
     {
       Cerr << "Lire_Fichier: interpreting file " << nom1 << finl;
-      // Not counting lines inside this file
-      LecFicDiffuse_JDD data_file(nom1);
-      data_file.track_lines(false);
-      data_file.set_check_types(1);
+
+	  // store the previous static attributes of the DataFileStream class
+	  // (loading a new datafile will mess-up those attributes)
+	  DataFileStream::Tokens old_tokens = DataFileStream::tokens;
+	  // store the index and not the iterator has copy will occure and the iterator
+	  // will become invalid
+	  size_t old_index = std::distance(DataFileStream::tokens.begin(), DataFileStream::current_token_iterator);
+	  size_t old_skip = DataFileStream::tokens_to_skip;
+
+	  // Load the DataFile
+      DataFile data_file(nom1);
+	  //data_file.track_lines(false);
+	  data_file.set_check_types(1);
+
       // On cree un nouvel interprete. A la fin de la lecture
       // les objets seront detruits.
       Interprete_bloc interp;
       interp.interpreter_bloc(data_file,
                               Interprete_bloc::BLOC_EOF /* fin du bloc a la fin du fichier */,
                               0 /* verifie_sans_interpreter=0 */);
+
+	  // reset the old DataFileStream static attributes
+	  DataFileStream::tokens = old_tokens;
+	  auto it = DataFileStream::tokens.begin();
+      std::advance(it, old_index);
+	  DataFileStream::current_token_iterator = it;
+	  DataFileStream::tokens_to_skip = old_skip;
+
       Cerr << "Lire_Fichier: end of file " << nom1 << finl;
     }
   Cerr << "Lire_Fichier: end of file " << nom1 << finl;

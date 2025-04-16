@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,13 @@ Lec_Diffuse_base& Lec_Diffuse_base::operator=(const Lec_Diffuse_base& )
   Cerr << "Error in Lec_Diffuse_base & operator=(const Lec_Diffuse_base & is)" << finl;
   Process::exit();
   return *this;
+}
+
+
+// read one char from the stream 
+int Lec_Diffuse_base::get(char& character)
+{
+  return get_template<char>(&character, 1);
 }
 
 Entree& Lec_Diffuse_base::operator>>(True_int& ob) { return operator_template<True_int>(ob); }
