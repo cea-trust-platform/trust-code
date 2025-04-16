@@ -232,33 +232,31 @@ DoubleTab& Champ_P1iP1B_implementation::remplir_coord_noeuds(DoubleTab& coord) c
   const Domaine& le_dom=zvef.domaine();
   const Domaine& dom=le_dom;
   const DoubleTab& coord_sommets=dom.coord_sommets();
-  int nbe=zvef.nb_elem_tot();
-  int nbs=zvef.nb_som_tot();
-  int pre=zvef.numero_premier_element();
-  int prs=zvef.numero_premier_sommet();
   int dimension=Objet_U::dimension;
 
   const DoubleTab& xg = zvef.xp();
-
-  int k=pre;
+  int nbe=zvef.get_alphaE() ? zvef.nb_elem_tot() : 0;
+  int nbs=zvef.get_alphaS() ? zvef.nb_som_tot() : 0;
   coord.resize(nbe+nbs,dimension);
-  {
-    for(int i=0; i<nbe; i++)
-      {
-        for(int j=0; j<dimension; j++)
-          coord(k,j)=xg(i,j);
-        k++;
-      }
-  }
-  k=prs;
-  {
-    for(int i=0; i<nbs; i++)
-      {
-        for(int j=0; j<dimension; j++)
-          coord(k,j)=coord_sommets(i,j);
-        k++;
-      }
-  }
+  int k = 0;
+  if (zvef.get_alphaE())
+    {
+      for(int i=0; i<nbe; i++)
+        {
+          for(int j=0; j<dimension; j++)
+            coord(k,j)=xg(i,j);
+          k++;
+        }
+    }
+  if (zvef.get_alphaS())
+    {
+      for(int i=0; i<nbs; i++)
+        {
+          for(int j=0; j<dimension; j++)
+            coord(k,j)=coord_sommets(i,j);
+          k++;
+        }
+    }
   return coord;
 }
 
