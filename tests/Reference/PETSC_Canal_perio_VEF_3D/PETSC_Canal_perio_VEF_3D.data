@@ -79,7 +79,7 @@ Read pb
         convection { muscl }
         diffusion { }
         initial_conditions {
-            vitesse champ_fonc_xyz dom 3 0.5*cos(45/360*(8*atan(1))) 0 -0.5*sin(45/360*(8*atan(1)))
+            vitesse champ_fonc_xyz dom 3 (0.5*cos(45/360*(8*atan(1)))) 0 (-0.5*sin(45/360*(8*atan(1))))
         }
         sources { Canal_perio { bord periox } }
         boundary_conditions {

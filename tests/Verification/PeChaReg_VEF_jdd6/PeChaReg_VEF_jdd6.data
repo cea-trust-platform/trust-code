@@ -21,7 +21,7 @@ Mailler dom
 
     }
 }
-transformer dom x-0.5 y-0.5 z
+transformer dom (x-0.5) (y-0.5) z
 tetraedriser_homogene_fin dom
 
 # marqueur #

@@ -122,7 +122,7 @@ Lire pb_boite
         diffusion  { standard defaut_bar }
         Sources { Canal_perio { bord periox } }
         Sources { Source_qdm_lambdaup { lambda 2. } }
-        conditions_initiales { vitesse champ_fonc_xyz dom_boite 3 3.73024 60.*(1.-rnd(1)) 60.*(1.-rnd(1)) }
+        conditions_initiales { vitesse champ_fonc_xyz dom_boite 3 3.73024 60.*(1.-rand(1.)) 60.*(1.-rand(1.)) }
 
         boundary_conditions {
             periox periodique

@@ -142,14 +142,14 @@ Read pb2
         }
         initial_conditions {
             Temperature champ_fonc_xyz dom_fluide 1
-            (x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x)
+            ((x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x))
         }
     }
     Post_processing
     {
         Definition_champs {
             combinaison_champ Transformation {
-                methode formule expression 1 temperature-((x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)*EXP(-0.9486355639*t)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)*EXP(-0.9486355639*t)+20.00-40.*x))
+                methode formule expression 1 (temperature-((x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)*EXP(-0.9486355639*t)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)*EXP(-0.9486355639*t)+20.00-40.*x)))
                 source refChamp {
                     Pb_Champ pb2 temperature nom_source temperature
                 }
@@ -189,7 +189,7 @@ Read pb1
         diffusion { }
         initial_conditions {
             Temperature champ_fonc_xyz dom_fluide 1
-            (x]0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x)
+            ((x]0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x))
         }
         boundary_conditions {
 

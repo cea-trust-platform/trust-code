@@ -149,14 +149,14 @@ Read pb
         }
         initial_conditions
         {
-            vitesse Champ_fonc_xyz dom  3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+            vitesse Champ_fonc_xyz dom  3 0. ((x>0.5)*(x<1.5)*(-4.0*x*x+8.0*x-3.0)) 0.
         }
         boundary_conditions
         {
             Wall Symetrie
             Postpro Symetrie
             Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1.0
-            Entree frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 0. ((x>0.5)*(x<1.5)*(-4.0*x*x+8.0*x-3.0)) 0.
         }
     }
 
@@ -223,9 +223,9 @@ Read pb
             Wall Symetrie
             Postpro Symetrie
             Sortie frontiere_ouverte t_ext Champ_front_fonc_txyz 1  1.e12
-            Entree frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 (x_GT_0.5)*(x_LT_1.5)*1.00+(x_GT_0.6)*(x_LT_1.4)*1
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 ((x>0.5)*(x<1.5)*1.00+(x>0.6)*(x<1.4)*1)
         }
-        initial_conditions { Temperature champ_fonc_xyz dom 1 (x_GT_0.5)*(x_LT_1.5)*1.0 }
+        initial_conditions { Temperature champ_fonc_xyz dom 1 ((x>0.5)*(x<1.5)*1.0) }
     }
 
     Post_processings

@@ -68,8 +68,8 @@ Read pb
         rho    Champ_uniforme  1 1.0
         /* lambda    Champ_uniforme  1 1.0
           Cp    Champ_uniforme  1 1.0  */
-        lambda Champ_fonc_txyz dom 1   sin(t)*sin(x)+1.5
-        Cp     Champ_fonc_txyz dom 1   sin(t)*sin(x)+2.0
+        lambda Champ_fonc_txyz dom 1   (sin(t)*sin(x)+1.5)
+        Cp     Champ_fonc_txyz dom 1   (sin(t)*sin(x)+2.0)
 
     }
 
@@ -81,7 +81,7 @@ Read pb
 # 			temperature Champ_fonc_xyz dom 1 sin(3.1415926535898*x) #
         }
         sources {
-            Puissance_Thermique champ_fonc_txyz dom 1 (sin(x)*sin(t)+2.0)*(sin(3.1415926535898*x)*cos(t))+3.1415926535898*sin(t)*(3.1415926535898*(sin(x)*sin(t)+1.5)*sin(3.1415926535898*x)-cos(x)*cos(3.1415926535898*x)*sin(t))
+            Puissance_Thermique champ_fonc_txyz dom 1 ((sin(x)*sin(t)+2.0)*(sin(3.1415926535898*x)*cos(t))+3.1415926535898*sin(t)*(3.1415926535898*(sin(x)*sin(t)+1.5)*sin(3.1415926535898*x)-cos(x)*cos(3.1415926535898*x)*sin(t)))
 
             /*      Puissance_Thermique champ_fonc_txyz dom 1 sin(3.1415926535898*x)*((sin(t)*sin(x)+2.0)*cos(t)+3.1415926535898*3.1415926535898*sin(t))  */
         }

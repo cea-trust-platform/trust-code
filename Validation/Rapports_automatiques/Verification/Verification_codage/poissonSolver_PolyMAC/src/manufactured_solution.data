@@ -54,14 +54,14 @@ Read pb
     Conduction
     {
         diffusion { }
-        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 $source_ }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 ($source_) }
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
-            left paroi_flux_impose Champ_Front_fonc_XYZ 1  -$dx_
-            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 $func_
-            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 $func_
-            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   -$dy_
+            left paroi_flux_impose Champ_Front_fonc_XYZ 1  (-$dx_)
+            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 ($func_)
+            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 ($func_)
+            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   (-$dy_)
         }
     }
 
@@ -73,14 +73,14 @@ Read pb
 				Definition_champs
     	    {
 						solution transformation {
-							Localisation $loc_
-							methode formule expression 1 $func_
+							Localisation ($loc_)
+							methode formule expression 1 ($func_)
 						}
     	      
 						erreur transformation
     	      {
-    	          methode formule expression 1 abs(temp-solution)
-								localisation $loc_
+    	          methode formule expression 1 (abs(temp-solution))
+								localisation ($loc_)
 								sources 
 								{
 								refChamp { Pb_champ pb temperature nom_source temp } 
@@ -114,9 +114,9 @@ Read pb
     	    format LATA
     	    fields dt_post 30.
     	    {
-    		      temperature $loc_
-    	        solution $loc_
-    	        erreur $loc_
+    		      temperature ($loc_)
+    	        solution ($loc_)
+    	        erreur ($loc_)
     	    }
 			}
 	}

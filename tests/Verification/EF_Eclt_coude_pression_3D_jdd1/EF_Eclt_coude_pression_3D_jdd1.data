@@ -24,7 +24,7 @@ Mailler dom
     }
 }
 
-transformer dom (1.+x)*cos(0.3141592653589793E1*y/2.) (1.+x)*sin(0.3141592653589793E1*y/2.) z
+transformer dom ((1.+x)*cos(0.3141592653589793E1*y/2.)) ((1.+x)*sin(0.3141592653589793E1*y/2.)) z
 
 EF dis
 

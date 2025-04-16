@@ -78,7 +78,7 @@ Read pb
         diffusion { }
         initial_conditions {
             vitesse Champ_Fonc_XYZ Canal 2
-            tanh(4*y)*(0.95+0.1*rnd(1)) 0.
+            (tanh(4*y)*(0.95+0.1*rand(1.))) 0.
         }
         boundary_conditions {
             Paroi paroi_fixe
@@ -94,7 +94,7 @@ Read pb
             Paroi paroi_adiabatique
             Perio periodique
         }
-        initial_conditions { Temperature Champ_Fonc_XYZ Canal 1 tanh(4*y) }
+        initial_conditions { Temperature Champ_Fonc_XYZ Canal 1 (tanh(4*y)) }
     }
 
     Post_processing

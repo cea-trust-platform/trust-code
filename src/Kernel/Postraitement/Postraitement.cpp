@@ -21,7 +21,7 @@
 #include <EcritureLectureSpecial.h>
 #include <communications_array.h>
 #include <Discretisation_base.h>
-#include <LecFicDiffuse_JDD.h>
+#include <DataFile.h>
 #include <Entree_complete.h>
 #include <Interprete_bloc.h>
 #include <Operateur_base.h>
@@ -394,10 +394,10 @@ static Nom translate_keyword(const Nom& french_keyword)
   return english_keyword;
 }
 
-static EChaineJDD read_and_broadcast_file(const Nom& filename)
+static EChaine read_and_broadcast_file(const Nom& filename)
 {
   // Proc 0 read file and fills its "file_content"
-  LecFicDiffuse_JDD file_stream(filename, ios::in, true);
+  DataFile file_stream(filename, ios::in);
   long unsigned int file_char_number;
   Nom file_content("{ ");
   if (Process::je_suis_maitre())
@@ -415,10 +415,10 @@ static EChaineJDD read_and_broadcast_file(const Nom& filename)
   file_content.getString()[file_char_number+2] = ' ';
   file_content.getString()[file_char_number+3] = '}';
   // We build an EChaine to interpret the file
-  return EChaineJDD(file_content);
+  return EChaine(file_content);
 }
 
-static EChaineJDD get_file_content_for_bloc(const Nom& associated_word, Entree& s, bool with_acco)
+static EChaine get_file_content_for_bloc(const Nom& associated_word, Entree& s, bool with_acco)
 {
   Nom filename;
   if (!with_acco)
@@ -658,8 +658,8 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       if (keyword=="Fields_file")
         {
           Nom associated_word("Fields");
-          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s, expect_acco);
-          lire_champs_a_postraiter(file_content, true);
+          EChaine file_content = get_file_content_for_bloc(associated_word, s, expect_acco);
+          lire_champs_a_postraiter(file_content, expect_acco);
         }
       else
         lire_champs_a_postraiter(s, expect_acco);
@@ -690,7 +690,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       if (keyword=="Statistics_file")
         {
           Nom associated_word("Statistics");
-          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s, expect_acco);
+          EChaine file_content = get_file_content_for_bloc(associated_word, s, expect_acco);
           lire_champs_stat_a_postraiter(file_content);
         }
       else
@@ -790,7 +790,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       if (keyword=="Int_array_file")
         {
-          EChaineJDD file_content = get_file_content_for_bloc(Nom("Int_array"), s, true);
+          EChaine file_content = get_file_content_for_bloc(Nom("Int_array"), s, true);
           lire_tableaux_a_postraiter(file_content);
         }
       else
@@ -813,7 +813,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       if (keyword=="Serial_statistics_file")
         {
-          EChaineJDD file_content = get_file_content_for_bloc(Nom("Serial_statistics"), s, true);
+          EChaine file_content = get_file_content_for_bloc(Nom("Serial_statistics"), s, true);
           lire_champs_stat_a_postraiter(file_content);
         }
       else
@@ -832,7 +832,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   else if (keyword.finit_par("_file"))
     {
       Nom keyword_prefix = keyword.getPrefix("_file");
-      EChaineJDD file_content = get_file_content_for_bloc(keyword_prefix, s, true);
+      EChaine file_content = get_file_content_for_bloc(keyword_prefix, s, true);
       this->lire_motcle_non_standard(keyword_prefix, file_content);
       return 1;
     }

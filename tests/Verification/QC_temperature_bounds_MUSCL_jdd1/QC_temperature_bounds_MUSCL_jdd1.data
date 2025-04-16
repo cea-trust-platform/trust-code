@@ -53,14 +53,14 @@ lire pb
     fluide_quasi_compressible
     {
         gravite champ_uniforme 3 0 -9.81 0
-        mu champ_fonc_fonction pb temperature 1 ((val*0.00109+(1-val)*0.00245)_MAX_0.00109)_MIN_0.00245
+        mu champ_fonc_fonction pb temperature 1 (((val*0.00109+(1-val)*0.00245)max 0.00109)min 0.00245)
         lambda champ_fonc_fonction pb temperature 1 1.77e-6
         pression 1
         loi_etat rhoT_gaz_parfait_QC
         {
             Prandtl 1
             Cp 1
-            rho_T ((T*1064.7+(1-T)*956.54)_MAX_956.54)_MIN_1064.7
+            rho_T (((T*1064.7+(1-T)*956.54)max 956.54) min 1064.7)
         }
         traitement_pth constant
         traitement_rho_gravite standard
@@ -98,7 +98,7 @@ lire pb
         }
         convection		{ MUSCL }
         diffusion		{ }
-        conditions_initiales	{ temperature champ_fonc_xyz dom 1 (x<0)*(1)+(x>0)*(0) }
+        conditions_initiales	{ temperature champ_fonc_xyz dom 1 ((x<0)*(1)+(x>0)*(0)) }
         conditions_limites	{
             Paroi_tube	paroi_adiabatique
             Reservoir_froid	paroi_adiabatique

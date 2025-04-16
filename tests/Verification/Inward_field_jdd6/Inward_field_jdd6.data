@@ -23,7 +23,7 @@ Trianguler_H dom
 /* rotation of angle theta : */
 /* x ->  x cos(theta) + y sin (theta) */
 /* y -> -x sin(theta) + y cos (theta) */
-Transformer dom x*cos(pi/4)+y*sin(pi/4) -x*sin(pi/4)+y*cos(pi/4)
+Transformer dom (x*cos(pi/4)+y*sin(pi/4)) (-x*sin(pi/4)+y*cos(pi/4))
 # END MESH #
 
 # BEGIN PARTITION
@@ -75,8 +75,8 @@ Read pb
         {
             Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
             Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }
-            Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1./sqrt(2) 1./sqrt(2)
-            Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1./sqrt(2) 1./sqrt(2)
+            Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 (-1./sqrt(2)) (1./sqrt(2))
+            Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 (-1./sqrt(2)) (1./sqrt(2))
         }
     }
 
@@ -111,7 +111,7 @@ Read pb
                 # velocity given by Trio on the boundary #
                 velocity_trio Extraction { Domaine boundary_Right nom_frontiere Right methode trace source refChamp { Pb_champ pb vitesse } }
                 # we know what is the vector shape on the boundary #
-                true_vector  Transformation { methode vecteur expression 2 -1./sqrt(2) 1./sqrt(2) localisation Faces }
+                true_vector  Transformation { methode vecteur expression 2 (-1./sqrt(2)) (1./sqrt(2)) localisation Faces }
 
                 # all this stuff is to compute error between velocity_trio and true_vector #
                 true_vector_interp Interpolation { localisation elem  sources_reference { true_vector } }

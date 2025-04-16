@@ -95,7 +95,7 @@ Navier_Stokes_standard
 			max_v Reduction_0D {
 				methode max
 				source Transformation {
-					methode formule expression 1 abs(v)
+					methode formule expression 1 (abs(v))
 					source Transformation { 
 						methode composante numero 1 
 						source refChamp { Pb_champ pb vitesse } 

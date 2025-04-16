@@ -86,7 +86,7 @@ Read pb
             EST paroi_adiabatique
         }
         initial_conditions {
-            temperature champ_fonc_xyz dom 1 cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25)
+            temperature champ_fonc_xyz dom 1 (cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25))
         }
     }
 

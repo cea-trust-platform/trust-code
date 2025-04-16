@@ -104,7 +104,7 @@ Read pb
         Definition_champs
         {
             solution transformation {
-                methode vecteur expression 2 -(-0.02*t*t/2+0.01*t)*(t<0.5)+(t_ge_0.5)*(-0.0025) 0
+                methode vecteur expression 2 (-(-0.02*t*t/2+0.01*t)*(t<0.5)+(t_ge_0.5)*(-0.0025)) 0
                 sources { refchamp { pb_champ pb pression } }
             }
         }

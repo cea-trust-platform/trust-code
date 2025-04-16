@@ -22,7 +22,7 @@ Mailler dom
     }
 }
 
-transformer dom (1.+x)*cos(0.3141592653589793E1*y/2.) (1.+x)*sin(0.3141592653589793E1*y/2.)
+transformer dom ((1.+x)*cos(0.3141592653589793E1*y/2.)) ((1.+x)*sin(0.3141592653589793E1*y/2.))
 
 EF dis
 
@@ -61,17 +61,17 @@ Read pb
         }
         convection { negligeable }
         diffusion { negligeable }
-        sources { source_qdm Champ_Fonc_XYZ dom 2 1000.*(y/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.) 1000.*(-x/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.) }
+        sources { source_qdm Champ_Fonc_XYZ dom 2 (1000.*(y/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.)) (1000.*(-x/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.)) }
         initial_conditions {
-            vitesse Champ_Fonc_XYZ dom 2 10.*(-y) 10.*(x)
+            vitesse Champ_Fonc_XYZ dom 2 (-10.*(y)) (10.*(x))
         }
         boundary_conditions {
             Gauche frontiere_ouverte_vitesse_imposee
-            Champ_Front_Fonc_tXYZ 2 10.*(-y) 10.*(x)
+            Champ_Front_Fonc_tXYZ 2 (-10.*(y)) (10.*(x))
             Droit frontiere_ouverte_vitesse_imposee
-            Champ_Front_Fonc_tXYZ 2 10.*(-y) 10.*(x)
+            Champ_Front_Fonc_tXYZ 2 (-10.*(y)) (10.*(x))
             Bas frontiere_ouverte_vitesse_imposee
-            Champ_Front_Fonc_tXYZ 2 10.*(-y) 10.*(x)
+            Champ_Front_Fonc_tXYZ 2 (-10.*(y)) (10.*(x))
             Haut frontiere_ouverte_pression_imposee
             Champ_Front_Uniforme 1 0.
         }

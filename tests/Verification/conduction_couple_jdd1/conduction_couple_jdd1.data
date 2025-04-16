@@ -142,14 +142,14 @@ Read pb2
             Gauche paroi_contact_fictif  pb1 Gauche 5. 0.1
             Bas Paroi_ADIABATIQUE
         }
-        initial_conditions { Temperature  champ_fonc_xyz dom_fluide 1 (x_ge_0)*(20.00-401.*x)+(x<0)*20.00-40.*x  }
+        initial_conditions { Temperature  champ_fonc_xyz dom_fluide 1 ((x>=0)*(20.00-401.*x)+(x<0)*20.00-40.*x)  }
     }
     Post_processing
     {
 
         Definition_champs {
             combinaison_champ Transformation {
-                methode formule expression 1 temp-((x>0)*(20.00-400.*x)+(x<0)*(28.00-40.*x))
+                methode formule expression 1 (temp-((x>0)*(20.00-400.*x)+(x<0)*(28.00-40.*x)))
                 source refChamp {
                     Pb_Champ pb2 temperature nom_source temp
                 }
@@ -186,7 +186,7 @@ Read pb1
     Conduction
     {
         diffusion { }
-        initial_conditions { Temperature  champ_fonc_xyz dom_fluide 1 (x_ge_0)*(20.00-401.*x)+(x<0)*20.00-40.*x  }
+        initial_conditions { Temperature  champ_fonc_xyz dom_fluide 1 ((x>=0)*(20.00-401.*x)+(x<0)*20.00-40.*x)  }
 
         boundary_conditions {
 
@@ -200,7 +200,7 @@ Read pb1
     {
         Definition_champs {
             combinaison_champ Transformation {
-                methode formule expression 1 temp-((x>0)*(20.00-400.*x)+(x<0)*(28.00-40.*x))
+                methode formule expression 1 (temp-((x>0)*(20.00-400.*x)+(x<0)*(28.00-40.*x)))
                 source refChamp {
                     Pb_Champ pb1 temperature nom_source temp
                 }

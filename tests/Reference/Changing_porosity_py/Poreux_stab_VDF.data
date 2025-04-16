@@ -58,7 +58,7 @@ Read pb
         Cp champ_Uniforme 1 1000
         porosites_champ champ_input_P0_composite
         {
-            initial_field  champ_fonc_xyz dom 1 1-0.5*(x>0.2)*(x<0.8)
+            initial_field  champ_fonc_xyz dom 1 (1-0.5*(x>0.2)*(x<0.8))
             input_field { nom POROSITY_INN nb_comp 1 probleme pb }
         }
 

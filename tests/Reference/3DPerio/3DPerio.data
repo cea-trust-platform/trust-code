@@ -23,8 +23,8 @@ Mailler dom
 }
 Tetraedriser_homogene dom
 Transformer dom
-x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)
-y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x)
+(x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y))
+(y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x))
 z
 Corriger_frontiere_periodique { domaine dom bord paroiY }
 # END MESH #
