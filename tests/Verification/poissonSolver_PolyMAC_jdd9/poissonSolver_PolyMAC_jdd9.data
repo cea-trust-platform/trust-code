@@ -55,14 +55,14 @@ Read pb
     Conduction
     {
         diffusion { }
-        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2*cos(x)*sin(y) }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 (2*cos(x)*sin(y)) }
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
-            left paroi_flux_impose Champ_Front_fonc_XYZ 1  -(-sin(x)*sin(y))
-            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 cos(x)*sin(y)
-            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 cos(x)*sin(y)
-            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   -cos(x)*cos(y)
+            left paroi_flux_impose Champ_Front_fonc_XYZ 1  (-(-sin(x)*sin(y)))
+            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 (cos(x)*sin(y))
+            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 (cos(x)*sin(y))
+            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   (-cos(x)*cos(y))
         }
     }
 
@@ -74,14 +74,14 @@ Read pb
 				Definition_champs
     	    {
 						solution transformation {
-							Localisation FACES
-							methode formule expression 1 cos(x)*sin(y)
+							Localisation (FACES)
+							methode formule expression 1 (cos(x)*sin(y))
 						}
     	      
 						erreur transformation
     	      {
-    	          methode formule expression 1 abs(temp-solution)
-								localisation FACES
+    	          methode formule expression 1 (abs(temp-solution))
+								localisation (FACES)
 								sources 
 								{
 								refChamp { Pb_champ pb temperature nom_source temp } 
@@ -115,9 +115,9 @@ Read pb
     	    format LATA
     	    fields dt_post 30.
     	    {
-    		      temperature FACES
-    	        solution FACES
-    	        erreur FACES
+    		      temperature (FACES)
+    	        solution (FACES)
+    	        erreur (FACES)
     	    }
 			}
 	}

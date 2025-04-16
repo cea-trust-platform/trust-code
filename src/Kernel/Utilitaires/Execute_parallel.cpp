@@ -171,7 +171,7 @@ Entree& Execute_parallel::interpreter(Entree& is)
           {
             // Ouverture du fichier (on cree l'objet LecFicDiffuse a l'interieur
             // de l'accolade pour detruire le fichier avant de sortir du groupe)
-            LecFicDiffuse_JDD data_file(nom_fichier);
+            DataFile data_file(nom_fichier);
             data_file.set_check_types(1);
             // On cree un nouvel interprete. A la fin de la lecture du cas
             // les objets seront detruits.

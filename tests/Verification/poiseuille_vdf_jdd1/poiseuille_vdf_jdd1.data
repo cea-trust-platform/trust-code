@@ -69,8 +69,8 @@ Read pb
     {
         Definition_champs
         {
-            p_exact transformation { methode formule expression 1 100+(100-400)/1*(x-1) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
-            v_exact transformation { methode vecteur expression 2 0.5/2.5*(400-100)/(1)*y*(1-y)+1*y/1 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+            p_exact transformation { methode formule expression 1 (100+(100-400)/1*(x-1)) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+            v_exact transformation { methode vecteur expression 2 (0.5/2.5*(400-100)/(1)*y*(1-y)+1*y/1) 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
         }
         probes
         {

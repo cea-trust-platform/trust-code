@@ -23,7 +23,7 @@ Domaine dom_fluide
 Domaine dom
 
 # BEGIN MESH #
-Read_MED { domaine dom file ./MESH/geom.med }
+Read_MED { domaine dom file MESH/geom.med }
 Mailler tmp
 {
     Pave Cavite1

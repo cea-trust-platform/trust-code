@@ -78,7 +78,7 @@ Read pb
         }
         boundary_conditions {
             Haut paroi_fixe
-            Entree frontiere_ouverte_pression_imposee Champ_Front_fonc_txyz 1 t*(t_le_1)+(t_gt_1)
+            Entree frontiere_ouverte_pression_imposee Champ_Front_fonc_txyz 1 (t*(t<1)+(t>1))
             Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
         }
     }

@@ -61,17 +61,17 @@ Read pb
         }
         convection { negligeable }
         diffusion { negligeable }
-        sources { source_qdm Champ_Fonc_XYZ dom 2 1000.*(y/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.) 1000.*(-x/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.) }
+        sources { source_qdm Champ_Fonc_XYZ dom 2 (1000.*(y/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.)) (1000.*(-x/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.)) }
         initial_conditions {
-            vitesse Champ_Fonc_XYZ dom 2 10.*(-y/sqrt(x*x+y*y)) 10.*(x/sqrt(x*x+y*y))
+            vitesse Champ_Fonc_XYZ dom 2 (10.*(-y/sqrt(x*x+y*y))) (10.*(x/sqrt(x*x+y*y)))
         }
         boundary_conditions {
             Gauche frontiere_ouverte_vitesse_imposee
-            Champ_Front_Fonc_tXYZ 2 10.*(-y/sqrt(x*x+y*y)) 10.*(x/sqrt(x*x+y*y))
+            Champ_Front_Fonc_tXYZ 2 (10.*(-y/sqrt(x*x+y*y))) (10.*(x/sqrt(x*x+y*y)))
             Droit frontiere_ouverte_vitesse_imposee
-            Champ_Front_Fonc_tXYZ 2 10.*(-y/sqrt(x*x+y*y)) 10.*(x/sqrt(x*x+y*y))
+            Champ_Front_Fonc_tXYZ 2 (10.*(-y/sqrt(x*x+y*y))) (10.*(x/sqrt(x*x+y*y)))
             Bas frontiere_ouverte_vitesse_imposee
-            Champ_Front_Fonc_tXYZ 2 (0.) 10.*(1.)
+            Champ_Front_Fonc_tXYZ 2 (0.) (10.*(1.))
             Haut frontiere_ouverte_pression_imposee
             Champ_Front_Uniforme 1 0.
         }

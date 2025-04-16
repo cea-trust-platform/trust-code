@@ -61,8 +61,8 @@ Read pb
     {
         Definition_champs
         {
-            p_exact transformation { methode formule expression 1 $pout+($pout-$pin)/$lx*(x-$lx) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
-            v_exact transformation { methode vecteur expression 2 0.5/$mu*($pin-$pout)/($lx)*y*($ly-y)+$vwall*y/$ly 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+            p_exact transformation { methode formule expression 1 ($pout+($pout-$pin)/$lx*(x-$lx)) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+            v_exact transformation { methode vecteur expression 2 (0.5/$mu*($pin-$pout)/($lx)*y*($ly-y)+$vwall*y/$ly) 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
         }
         probes
         {

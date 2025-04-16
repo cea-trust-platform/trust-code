@@ -93,7 +93,7 @@ Read pb
         {
             Haut paroi_adiabatique
             Bas paroi_adiabatique
-            Gauche frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 10*SIN(t)
+            Gauche frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 (10*SIN(t))
             Droit  frontiere_ouverte T_ext  Champ_Front_Uniforme 1 0.
         }
         initial_conditions { Temperature Champ_fonc_xyz dom 1 0  }

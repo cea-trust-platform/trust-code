@@ -97,7 +97,7 @@ Read pb
     Post_processings
     {
         lata {
-            fichier 2dParoiX
+            fichier 2DParoiX
             format lata
             Probes
             {

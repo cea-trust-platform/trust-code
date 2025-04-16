@@ -83,7 +83,7 @@ Read pb
         convection { EF_stab { } }
         diffusion { negligeable  }
         initial_conditions {
-            vitesse Champ_som_lu_VEF dom 3 1e-8 ./champ_k2_8
+            vitesse Champ_som_lu_VEF dom 3 1e-8 champ_k2_8
 
         }
         boundary_conditions {

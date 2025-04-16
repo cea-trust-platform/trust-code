@@ -78,7 +78,7 @@ Read pb
                 sources
                 {
                     Interpolation { localisation elem nom_source p source refChamp { Pb_champ pb pression_pa } } ,
-                    transformation { methode formule expression 1 $pout+($pout-$pin)/$lx*(x-$lx) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode formule expression 1 ($pout+($pout-$pin)/$lx*(x-$lx)) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
@@ -90,7 +90,7 @@ Read pb
                 sources
                 {
                     Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,
-                    transformation { methode vecteur expression 2 0.5/$mu*($pin-$pout)/($lx)*y*($ly-y)+$vwall*y/$ly 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode vecteur expression 2 (0.5/$mu*($pin-$pout)/($lx)*y*($ly-y)+$vwall*y/$ly) 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_V_max reduction_0D { methode max source transformation { methode norme sources_reference { erreur_V } } }
