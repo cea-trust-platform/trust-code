@@ -84,11 +84,12 @@ Read pb
 
     Post_processing
     {
+        dt_post 1
         Probes
         {
             sonde pression periode 0.01 points 2 0.13 0.105 0.13 0.115
         }
-        fields dt_post 1
+        fields
         {
             pression elem
         }

@@ -415,7 +415,7 @@ void Postraitement::set_param(Param& param)
 //  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
   param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","single_lata","lata_v2","med","med_major","cgns"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
-  param.ajouter("dt_post",&dt_post_ch_, Param::Nature::OPTIONAL); // XD_ADD_P entier Field\'s write frequency (as a time period) - can also be specified after the 'field' keyword.
+  param.ajouter_non_std("dt_post",(this)); // XD_ADD_P chaine Field\'s write frequency (as a time period) - can also be specified after the 'field' keyword.
   param.ajouter("nb_pas_dt_post",&nb_pas_dt_post_, Param::Nature::OPTIONAL); // XD_ADD_P entier Field\'s write frequency (as a number of time steps) - can also be specified after the 'field' keyword.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter_non_std("Sous_domaine|Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sub_domaine on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
@@ -452,8 +452,8 @@ void Postraitement::set_param(Param& param)
 
 // XD champs_posts objet_lecture nul 0 Field\'s write mode.
 // XD   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
-// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
-// XD   attr period chaine period 0 Value of the period which can be like (2.*t).
+// XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 1 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period. it can be specified either here, or at the begining of the postprocessing bloc.
+// XD   attr period chaine period 1 Value of the period which can be like (2.*t).
 // XD   attr champs|fields champs_a_post champs 0 Post-processed fields.
 
 // XD champs_posts_fichier objet_lecture nul 0 Fields read from file.
@@ -527,9 +527,21 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       }
   }
 
+  auto lire_dt = [&]() -> double
+  {
+    Nom expression;
+    s >> expression;
+    fdt_post.setNbVar(1);
+    fdt_post.setString(expression);
+    fdt_post.addVar("t");
+    fdt_post.parseString();
+    return fdt_post.eval();
+  };
+
   Motcle motlu;
   Motcle keyword = mot;
   keyword = translate_keyword(keyword.majuscule());
+
   if (keyword=="Probes")
     {
       Cerr << "Reading of probes" << finl;
@@ -576,13 +588,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
               Cerr << "  -> Set it either after 'field' or directly at the root of the postprocessing block but not both!" << finl;
               Process::exit();
             }
-          Nom expression;
-          s >> expression;
-          fdt_post.setNbVar(1);
-          fdt_post.setString(expression);
-          fdt_post.addVar("t");
-          fdt_post.parseString();
-          dt_post_ch_ = fdt_post.eval();
+          dt_post_ch_ = lire_dt();
           expect_acco = true;
         }
       else if (motlu == "nb_pas_dt_post")
@@ -626,15 +632,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       s >> motlu;
 
       if (motlu == "dt_post")
-        {
-          Nom expression;
-          s >> expression;
-          fdt_post.setNbVar(1);
-          fdt_post.setString(expression);
-          fdt_post.addVar("t");
-          fdt_post.parseString();
-          dt_post_stat_ = fdt_post.eval();
-        }
+        dt_post_stat_ = lire_dt();
       else if (motlu == "nb_pas_dt_post")
         s >> nb_pas_dt_post_;
       else
@@ -785,6 +783,11 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Nom keyword_prefix = keyword.getPrefix("_file");
       EChaineJDD file_content = get_file_content_for_bloc(keyword_prefix, s);
       this->lire_motcle_non_standard(keyword_prefix, file_content);
+      return 1;
+    }
+  else if (keyword=="dt_post")
+    {
+      dt_post_ch_ = lire_dt();
       return 1;
     }
 
