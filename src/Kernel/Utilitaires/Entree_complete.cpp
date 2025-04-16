@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,6 +47,13 @@ Entree& Entree_complete::get_input()
       num_entree_ = 1;
     }
   return *entree2_;
+}
+
+
+// read one char from the stream 
+int Entree_complete::get(char& character)
+{
+  return get_template<char>(&character, 1);
 }
 
 int Entree_complete::get(char* ob, std::streamsize bufsize)
