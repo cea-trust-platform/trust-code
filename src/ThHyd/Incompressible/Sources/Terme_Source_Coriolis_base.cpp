@@ -18,8 +18,8 @@
 #include <Param.h>
 
 Implemente_base(Terme_Source_Coriolis_base,"Terme_Source_Coriolis_base",Source_base);
-// XD coriolis source_base coriolis 0 Keyword for a Coriolis term in hydraulic equation. Warning: Only available in VDF.
-// XD   attr omega chaine omega 0 Value of omega.
+// XD coriolis source_base coriolis 1 Keyword for a Coriolis term in hydraulic equation. Warning: Only available in VDF.
+// XD   attr omega list omega 0 Value of omega.
 
 Sortie& Terme_Source_Coriolis_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
@@ -39,17 +39,18 @@ void Terme_Source_Coriolis_base::set_param(Param& param)
 int Terme_Source_Coriolis_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   int dim_pb=Objet_U::dimension;
+  int sz_lst = -1;
   if (mot ==  Motcle("omega") )
     {
-      is >> dim;
-      if(dim_pb!=dim)
+      is >> sz_lst;
+      if((dim_pb == 2 && sz_lst != 1) || (dim_pb == 3 && sz_lst != 3))
         {
           Cerr << "Error in Terme_Source_Coriolis_base::lire_donnees" << finl;
           Cerr << "Warning ! Dimension of vector after key-word 'omega'" << finl;
-          Cerr << "is not correct : dimension of PB (" << dim_pb << ")!= " << dim << finl;
+          Cerr << "is not correct - it should be 1 in 2D and 3 in 3D."<< finl;
           Process::exit();
         }
-      if (dim == 2)
+      if (sz_lst == 1)
         {
           omega_.resize(1);
           is >> omega_(0);
@@ -57,20 +58,12 @@ int Terme_Source_Coriolis_base::lire_motcle_non_standard(const Motcle& mot, Entr
         }
       else
         {
-          if (dim==3)
-            {
-              omega_.resize(3);
-              is >> omega_(0);
-              is >> omega_(1);
-              is >> omega_(2);
-              return 1;
-            }
-          else
-            {
-              Cerr << "Erreur a la lecture des parametres de Terme_Source_Coriolis_base" << finl;
-              Cerr << "omega est de dimension 2 ou 3 et vous avez entre " << dim << finl;
-              Process::exit();
-            }
+          assert(sz_lst==3);
+          omega_.resize(3);
+          is >> omega_(0);
+          is >> omega_(1);
+          is >> omega_(2);
+          return 1;
         }
     }
   else

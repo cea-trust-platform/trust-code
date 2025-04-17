@@ -71,7 +71,8 @@ Read pb
             negligeable
         }
         diffusion { negligeable }
-        sources { Coriolis { omega 2 5. } }
+        sources { Coriolis { omega 1 5. } }
+        
         initial_conditions {
             vitesse champ_uniforme 2 10. 0.
         }
