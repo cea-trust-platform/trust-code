@@ -418,12 +418,24 @@ static EChaineJDD read_and_broadcast_file(const Nom& filename)
   return EChaineJDD(file_content);
 }
 
-static EChaineJDD get_file_content_for_bloc(const Nom& associated_word, Entree& s)
+static EChaineJDD get_file_content_for_bloc(const Nom& associated_word, Entree& s, bool with_acco)
 {
   Nom filename;
-  Param param2(associated_word + "_files");
-  param2.ajouter("fichier|file",&filename,Param::REQUIRED);
-  param2.lire_avec_accolades_depuis(s);
+  if (!with_acco)
+    {
+      Nom motlu;
+      s >> motlu;
+      if (Motcle(motlu) != "fichier|file") Process::exit("'fichier' or 'file' expected!");
+      s >> filename;
+      s >> motlu;
+      if (motlu != "}") Process::exit("'}' expected!");
+    }
+  else
+    {
+      Param param2(associated_word + "_files");
+      param2.ajouter("fichier|file",&filename,Param::REQUIRED);
+      param2.lire_avec_accolades_depuis(s);
+    }
 
   Cerr << "Reading of "<<associated_word<<" from file "<<filename<< finl;
   return read_and_broadcast_file(filename);
@@ -571,6 +583,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   Motcle motlu;
   Motcle keyword = mot;
   keyword = translate_keyword(keyword.majuscule());
+  bool expect_acco = false;
 
   if (keyword=="Probes")
     {
@@ -596,7 +609,6 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Option opt=DESCRIPTION;
       mon_probleme->get_noms_champs_postraitables(liste_noms,opt);
       s >> motlu;
-      bool expect_acco = false;
       if (motlu == "binaire")
         {
           binaire_=1;
@@ -633,7 +645,6 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
           s >> nb_pas_dt_post_;
           expect_acco = true;
         }
-
       //La methode lire_champs_a_postraiter() va generer auatomatiquement un Champ_Generique_base
       //en fonction des indications du jeu de donnees (ancienne formulation)
 
@@ -643,8 +654,8 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       if (keyword=="Fields_file")
         {
           Nom associated_word("Fields");
-          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
-          lire_champs_a_postraiter(file_content, expect_acco);
+          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s, expect_acco);
+          lire_champs_a_postraiter(file_content, true);
         }
       else
         lire_champs_a_postraiter(s, expect_acco);
@@ -666,6 +677,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
               Process::exit();
             }
           dt_post_ = tmp_dt;
+          expect_acco = true;
         }
 
       //La methode lire_champs_stat_a_postraiter() va generer auatomatiquement un Champ_Generique_base
@@ -674,7 +686,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       if (keyword=="Statistics_file")
         {
           Nom associated_word("Statistics");
-          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s);
+          EChaineJDD file_content = get_file_content_for_bloc(associated_word, s, expect_acco);
           lire_champs_stat_a_postraiter(file_content);
         }
       else
@@ -774,7 +786,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       if (keyword=="Int_array_file")
         {
-          EChaineJDD file_content = get_file_content_for_bloc(Nom("Int_array"), s);
+          EChaineJDD file_content = get_file_content_for_bloc(Nom("Int_array"), s, true);
           lire_tableaux_a_postraiter(file_content);
         }
       else
@@ -797,7 +809,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 
       if (keyword=="Serial_statistics_file")
         {
-          EChaineJDD file_content = get_file_content_for_bloc(Nom("Serial_statistics"), s);
+          EChaineJDD file_content = get_file_content_for_bloc(Nom("Serial_statistics"), s, true);
           lire_champs_stat_a_postraiter(file_content);
         }
       else
@@ -816,7 +828,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   else if (keyword.finit_par("_file"))
     {
       Nom keyword_prefix = keyword.getPrefix("_file");
-      EChaineJDD file_content = get_file_content_for_bloc(keyword_prefix, s);
+      EChaineJDD file_content = get_file_content_for_bloc(keyword_prefix, s, true);
       this->lire_motcle_non_standard(keyword_prefix, file_content);
       return 1;
     }
