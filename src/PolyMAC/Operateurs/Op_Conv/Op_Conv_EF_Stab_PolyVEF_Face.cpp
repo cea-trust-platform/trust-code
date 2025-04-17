@@ -216,9 +216,9 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
       for (i = 0; i < 2; i++)
         for (e = f_e(f, i), n = 0; n < N; n++)
           F_f(f, n) += (!a_r ? 1 : e >= 0 ? (*a_r)(e, n) : a_b(f, n) * r_b(f, n)) *  (1 + (fvf(n) * (i ? -1 : 1) > 0 ? 1 : fvf(n) ? -1 : 0) * alpha) / 2;
-      /* produit par pf * fvf */
+      /* produit par fvf */
       for (n = 0; n < N; n++)
-        F_f(f, n) *= pf(f) * fvf(n);
+        F_f(f, n) *= fvf(n);
       /* faces de bord: contrib a la convection (avec masse ajoutee) si Neumann */
       if (fcl(f, 0) == 1)
         {
@@ -256,7 +256,7 @@ void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                   for (n = 0; n < N; n++)
                     for (m = corr ? 0 : n; m < (corr ? N : n + 1); m++)
                       {
-                        double fac = (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * ((1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2 - (fb == f));
+                        double fac = pf(f) * (k ? -1 : 1) * (masse(n, m) ? masse(n, m) / (a_r ? (*a_r)(e, m) : 1) : 0) * F_fa(m) * ((1 + (F_fa(m) * (l ? -1 : 1) > 0 ? 1 : F_fa(m) ? -1 : 0) * alpha) / 2 - (fb == f));
                         secmem(f, N * d + n) -= fac * inco(fb, N * d + m);
                         if (mat)
                           (*mat)(N * (D * f + d) + n, N * (D * fb + d) + m) += fac;
