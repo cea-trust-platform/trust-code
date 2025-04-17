@@ -128,23 +128,6 @@ int Format_Post_base::preparer_post(const Nom& id_du_domaine,const int est_le_pr
 
 }
 
-int Format_Post_base::test_coherence(const int champs, const int stat, const double dt_ch, const double dt_stat)
-{
-  if (stat && champs && !est_egal(dt_stat,dt_ch))
-    {
-      Cerr << "Error!" << finl;
-      Cerr << "You try to write unknown fields and statistic fields with a different time period (dt_post):" << finl;
-      Cerr << "-----------------------------" << finl;
-      Cerr << "Champs dt_post " << dt_ch << finl;
-      Cerr << "Statistiques dt_post " << dt_stat << finl;
-      Cerr << "-----------------------------" << finl;
-      Cerr << "It is not possible in the same postprocessing block." << finl;
-      Cerr << "Try to use different postprocessing blocks, one for the unknown fields" << finl;
-      Cerr << "and one for the statistic fields." << finl;
-      exit();
-    }
-  return 1;
-}
 
 /*! @brief Ecriture d'un maillage.
  *

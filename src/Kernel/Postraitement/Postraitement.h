@@ -106,10 +106,8 @@ public:
   inline int lpost_stat(double) const;
   inline int ind_post(int nb_pas_dt) { return (nb_pas_dt%nb_pas_dt_post_==0) ? 1 : 0; }
 
-  inline double dt_post_ch() const { return dt_post_ch_; }
+  inline double dt_post() const { return dt_post_; }
   inline Nom nom_fich() const { return nom_fich_; }
-  // int contient_champ_fonc(const Motcle& )
-  inline int lpost_tab(double) const;
   static inline LIST(Nom)& noms_fichiers_sondes() { return noms_fichiers_sondes_; }
   inline int& est_le_premier_postraitement_pour_nom_fich() { return est_le_premier_postraitement_pour_nom_fich_; }
   inline int& est_le_dernier_postraitement_pour_nom_fich() { return est_le_dernier_postraitement_pour_nom_fich_; }
@@ -176,18 +174,15 @@ public:
    * @return -1 if nothing more was written, 1 otherwise.
    */
   virtual int write_extra_mesh() { return -1; }
-  const OBS_PTR(Domaine)& domaine() { return le_domaine; }
+  const OBS_PTR(Domaine)& domaine() { return le_domaine_; }
   int DeprecatedKeepDuplicatedProbes=0; // Ancien format des sondes dans les .son qui autorise les sondes dupliquees
 
 protected:
 
   int est_le_premier_postraitement_pour_nom_fich_, est_le_dernier_postraitement_pour_nom_fich_;
-  double dt_post_ch_ ;          // ecriture des champs sur fichier nom_du_cas.lml tous les dt_post
-  double dt_post_stat_;         // ecriture des statistiques sur fichier nom_du_cas.lml tous les dt_stat
-  double dt_post_tab;           // ecriture des tableaux d'entiers sur fichier nom_du_cas.lml
-
-  int nb_pas_dt_post_;
-  Parser_U fdt_post;
+  double dt_post_;          ///< ecriture des donnees (champs, stats, int_array) tous les dt_post (un temps)
+  int nb_pas_dt_post_;       ///< ecriture des donnees (champs, stats, int_array) tous les dt_post (une periode en nb d'iteration)
+  Parser_U fdt_post_;
 
   Sondes les_sondes_;           // Sondes a traiter
   Sondes_Int les_sondes_int_;   // Sondes pour des tableaux d'entiers
@@ -209,33 +204,31 @@ protected:
   LIST(OBS_PTR(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
   LIST(Nom) noms_tableaux_;
 
-  OWN_PTR(Format_Post_base) format_post;
+  OWN_PTR(Format_Post_base) format_post_;
 
   static LIST(Nom) noms_fichiers_sondes_;
-  int sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_;
-  int binaire, tableaux_demande_;
-  Nom nom_fich_, format, option_para;
+  bool sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_, tableaux_demande_;
+  int binaire_;
+  Nom nom_fich_, format_, option_para_;
   Nom suffix_for_reset_; // Suffix appended to post base name when the method resetTime() was invoked - default to "_AFTER_RESET"
-  double temps_, dernier_temps; // temps du precedent appel a postraiter()
-  static Motcles formats_supportes;
-  OBS_PTR(Domaine) le_domaine;
-  OBS_PTR(Domaine_dis_base) domaine_dis_pour_faces;
-
-private :
+  double temps_, dernier_temps_; // temps du precedent appel a postraiter()
+  static Motcles formats_supportes_;
+  OBS_PTR(Domaine) le_domaine_;
+  OBS_PTR(Domaine_dis_base) domaine_dis_pour_faces_;
 };
 
 
 inline int Postraitement::lpost(double temps_courant, double dt_post) const
 {
   double epsilon = 1.e-8;
-  if (dt_post<=temps_courant - dernier_temps)
+  if (dt_post<=temps_courant - dernier_temps_)
     return 1;
   else
     {
       // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
       double i, j;
       modf(temps_courant/dt_post + epsilon, &i);
-      modf(dernier_temps/dt_post + epsilon, &j);
+      modf(dernier_temps_/dt_post + epsilon, &j);
       return ( i>j );
     }
 }
@@ -249,9 +242,6 @@ inline int Postraitement::lpost(double temps_courant, double dt_post) const
  * @param (double dt) le pas de temps qui vient d'etre accompli
  * @return (int) valeur booleenne, VRAI si le pas de temp et le temps courant fournis indique qu'un postraitement est necessaire, FAUX sinon.
  */
-inline int Postraitement::lpost_champ(double temps_courant) const { return lpost(temps_courant, dt_post_ch_); }
-inline int Postraitement::lpost_stat(double temps_courant) const { return lpost(temps_courant, dt_post_stat_); }
-inline int Postraitement::lpost_tab(double temps_courant) const { return lpost(temps_courant, dt_post_tab); }
 inline int& Postraitement::compteur_champ_stat() { return nb_champs_stat_; }
 inline const double& Postraitement::tstat_deb() const { return tstat_deb_; }
 inline const double& Postraitement::tstat_fin() const { return tstat_fin_; }

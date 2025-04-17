@@ -446,9 +446,9 @@ void Probleme_base::init_postraitements()
               // On verifie au passage que les intervalles de postraitements
               // sont bien les memes pour tout ce qui ecrit dans le meme
               // fichier  .
-              if (post.champs_demande() && autre_post.dt_post_ch() != post.dt_post_ch())
+              if (post.champs_demande() && autre_post.dt_post() != post.dt_post())
                 {
-                  Cerr << "Error, the values of dt_post (" << autre_post.dt_post_ch() << " and " << post.dt_post_ch() << ") of two postprocessing blocks writing in the same file" << nom_fichier
+                  Cerr << "Error, the values of dt_post (" << autre_post.dt_post() << " and " << post.dt_post() << ") of two postprocessing blocks writing in the same file" << nom_fichier
                        << " are different!" << finl;
                   Cerr << "Specify the same dt_post, or use two different files for postprocessing." << finl;
                   exit();
