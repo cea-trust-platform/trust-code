@@ -190,7 +190,7 @@ source_constituant_vortex source_base source_constituant_vortex -1 Special treat
   attr integrale floattant integrale 1 the molar flowrate of injection
   attr debit floattant debit 1 a normalization of the molar flow rate. Advice: keep this value to 1.
 postraitement_ft_lata postraitement_base postraitement_ft_lata 0 not_set
-  attr bloc chaine bloc 0 not_set
+  attr bloc bloc_lecture bloc 0 not_set
 rk3_ft runge_kutta_ordre_3 rk3_ft -1 Keyword for Runge Kutta time scheme for Front_Tracking calculation.
 paroi_ft_disc_deriv objet_lecture paroi_ft_disc_deriv 0 not_set
 paroi_ft_disc_symetrie paroi_ft_disc_deriv symetrie 0 Symetrie condition in the case of two-phase flows
@@ -1508,7 +1508,7 @@ postraitements listobj post_processings -1 un_postraitement 0 Keyword to use sev
 type_postraitement_ft_lata objet_lecture nul 0 not_set
   attr type chaine(into=["postraitement_ft_lata","postraitement_lata"]) type 0 not_set
   attr nom chaine nom 0 Name of the post-processing.
-  attr bloc chaine bloc 0 not_set
+  attr bloc bloc_lecture bloc 0 not_set
 un_postraitement_spec objet_lecture nul 0 An object of post-processing (with type +name).
   attr type_un_post type_un_post type_un_post 1 not_set
   attr type_postraitement_ft_lata type_postraitement_ft_lata type_postraitement_ft_lata 1 not_set

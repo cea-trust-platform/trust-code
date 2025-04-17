@@ -781,7 +781,12 @@ class ListOfBase_Parser(Builtin_Parser):
 
     def parseAndAppendItem(self, stream, lst):
         """ Append an item to the current list. Overriden in ListOfBuiltin_Parser """
+        pos = stream.pos()
         item_val = self._itemParserType.ReadFromTokens(stream)
+        if stream.pos() == pos:
+            pyd_typ = ClassFactory.GetPydFromParser(self._itemParserType)
+            err = self.GenErr(stream, f"Invalid list element! Could not read an element of type '{pyd_typ.__name__}'!")
+            raise TrustifyException(err)
         lst.append(item_val)
 
     def readFromTokensBuiltin_impl(self, stream):
@@ -1318,17 +1323,9 @@ class AbstractChaine_Parser(Builtin_Parser):
             return ret
 
 class Chaine_Parser(AbstractChaine_Parser):
-    """A simple 'chaine' (string) ... but this is tricky. It might be made of several tokens if braces are found.
-    This is the case for 'bloc_lecture' objects for example.
-    See readFromTokens below ..
-    """
+    """ A simple string, one word, no space """
     def __init__(self, pyd_value=None):
         AbstractChaine_Parser.__init__(self, pyd_value)
-        self._isBloc = False     # Whether this chain is a full bloc with '{ }'
-
-    def getFormattedType(self):
-        """ Override """
-        return "string"
 
     @classmethod
     def ParseOneWord(cls, stream):
@@ -1336,62 +1333,76 @@ class Chaine_Parser(AbstractChaine_Parser):
         pars = cls()
         return pars.readFromTokensBuiltin(stream)
 
+    def getFormattedType(self):
+        """ Override """
+        return "string"
+
     def readFromTokensBuiltin_impl(self, stream):
-        """ Reads a 'chaine' : this can be:
-        - either a single token 'toto' (in which case, just take one token)
-        - or a full block, like '{ toto { tata } }' (in which case take all tokens until closed brace)
+        """ Reads a 'chaine' : this can only be a single token 'toto'
+        """
+        tok = stream.probeNextLow()
+        stream.validateNext()
+        lst_rd = stream.lastReadTokens()
+        s = ''.join(lst_rd.low())
+        if s.strip().startswith("{") or s.strip().startswith("}"):
+            err = self.GenErr(stream, f"Misformatted string or block within braces -> '{s}'")
+            raise TrustifyException(err)
+        self._tokens["val"] = lst_rd
+        return s
+
+class Bloc_lecture_Parser(ConstrainBase_Parser):
+    """ Handling of bloc_lecture objects - see readFromTokens below ..
+    """
+    def __init__(self, pyd_value=None):
+        ConstrainBase_Parser.__init__(self, pyd_value)
+
+    def getFormattedType(self):
+        """ Override """
+        return "bloc_lecture"
+
+    @classmethod
+    def ReadFromTokens(cls, stream):
+        """ Reads a 'bloc_lecture' : this is a full block, like '{ toto { tata } }' (all tokens are read until closed brace)
         
-        WARNING: in this last case, the original version (not lower case) of the tokens are kept even
+        WARNING: the original version (not lower case) of the tokens are kept even
         to build the string value of the Chaine. This is because in bloc_lecture (like for PETSc), we
         need to preserve case-sensitivity.
         """
+        # Instanciate a 'Bloc_lecture' pydantic object:
+        val = ClassFactory.GetPydFromParser(cls)()
+        # Attach this parser to it:
+        val._parser = cls()
         tok = stream.probeNextLow()
         withBr = (tok == '{')
-        if not withBr:
-            # Easy just take one token - take its **lower-case** version
+        l = []
+        cls.ConsumeBrace(stream, "{")
+        l.append(stream.lastReadTokens())
+        cnt_brace = 1
+        while cnt_brace != 0:
+            tok = stream.probeNextLow()
+            if tok == '{':
+                cnt_brace += 1
+            if tok == '}':
+                cnt_brace -= 1
+                if cnt_brace == 0: break  # without validating token so that it is consumed by ConsumeBrace()
             stream.validateNext()
-            lst_rd = stream.lastReadTokens()
-            s = ''.join(lst_rd.low())
-            if s.strip().startswith("{") or s.strip().startswith("}"):
-                err = self.GenErr(stream, f"Misformatted string or block within braces -> '{s}'")
-                raise TrustifyException(err)
-            self._isBloc, self._tokens["val"] = False, lst_rd
-        else:
-            # With braces:
-            l = []
-            self.ConsumeBrace(stream, "{")
+            # !!!!!!
+            # !!When reading a full block, keep the upper case version!!
+            # !!!!!!
             l.append(stream.lastReadTokens())
-            cnt_brace = 1
-            while cnt_brace != 0:
-                tok = stream.probeNextLow()
-                if tok == '{':
-                    cnt_brace += 1
-                if tok == '}':
-                    cnt_brace -= 1
-                    if cnt_brace == 0: break  # without validating token so that it is consumed by ConsumeBrace()
-                stream.validateNext()
-                # !!!!!!
-                # !!When reading a full block, keep the upper case version!!
-                # !!!!!!
-                l.append(stream.lastReadTokens())
-            # Read closing brace:
-            self.ConsumeBrace(stream, "}")
-            l.append(stream.lastReadTokens())
-            l2 = TRUSTTokens.Join(l)
-            s = ''.join(l2.orig())  # orig(), not low() see comment above!
-            self._isBloc, self._tokens["val"] = True, l2
-        return s
+        # Read closing brace:
+        cls.ConsumeBrace(stream, "}")
+        l.append(stream.lastReadTokens())
+        l2 = TRUSTTokens.Join(l)
+        s = ''.join(l2.orig())  # orig(), not low() see comment above!
+        # Store final result:
+        val.bloc_lecture = s
+        val._parser._tokens["val"] = l2
+        return val
 
     def toDatasetTokens(self):
-        """ Override - see base class doc.
-        See also WARNING in readFromTokensBuiltin_impl() above. """
-        if self._isBloc:
-            v = self._pyd_value
-            if not v[0] in [" ", "\n", "\t"]:
-                v = f" {v}"
-            return [v]
-        else:
-            return AbstractChaine_Parser.toDatasetTokens(self)
+        """ Override - Just gives back the original read block """
+        return [self._pyd_value.bloc_lecture]
 
 class ChaineConstrained_Parser(AbstractChaine_Parser):
     """ Same as Chaine_Parser, but with constrained string values """

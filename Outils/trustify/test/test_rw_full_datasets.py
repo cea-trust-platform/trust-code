@@ -139,6 +139,32 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # Reset dimension
         self.setDimension(-1)
 
+    def test_bloc_lecture_parsing(self):
+        """ Test parsing of 'bloc_lecture' """
+        # In this specific situation (braces in the string), everything is kept in the resulting value, because we notably
+        # want to remain case-sensitive.
+        from trustify.misc_utilities import TrustifyException
+
+        data_ex = """
+          # with many comments
+            before
+          # 
+          { ta tu { toto } bouh }"""
+        res = self.generic_simple(data_ex, "Bloc_lecture")
+        exp = self.mod.Bloc_lecture()
+        exp.bloc_lecture = data_ex
+        self.assertEqual(exp, res)
+        # Testing writing out
+        s = ''.join(res.toDatasetTokens())
+        self.assertTrue(check_str_equality(s, data_ex).ok)
+        # Misformatted '{' should fail:
+        data_ex = "} toto }"
+        # self.generic_simple(data_ex, "Bloc_lecture")
+        self.assertRaisesRegex(TrustifyException, "Keyword 'bloc_lecture|nul' expected a opening brace", self.generic_simple, data_ex, "Bloc_lecture")
+        data_ex = "   {toto }"
+        # self.generic_simple(data_ex, "Bloc_lecture")
+        self.assertRaisesRegex(TrustifyException, "Keyword 'bloc_lecture|nul' expected a opening brace", self.generic_simple, data_ex, "Bloc_lecture")
+
     def test_bloc_lecture(self):
         """ Testing bloc_lecture via 'solveur_pression' """
         # self.__class__._do_not_regenerate = True
@@ -155,7 +181,7 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(check_str_equality(s, data_ex).ok)
         # Try changing value:
-        res.solveur_pression.option_solveur.bloc_lecture = "{  taDa tudu }"
+        res.solveur_pression.option_solveur.bloc_lecture = " {  taDa tudu }"
         news = """ petsc cholesky {  taDa tudu }"""
         s = ''.join(res.solveur_pression.toDatasetTokens())
         self.assertTrue(check_str_equality(s, news).ok)

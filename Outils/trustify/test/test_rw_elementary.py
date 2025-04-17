@@ -189,33 +189,6 @@ class TestCase(unittest.TestCase, mutil.UnitUtils):
         # Test writing out
         res = ''.join(pars.toDatasetTokens())
         self.assertTrue(check_str_equality(res, data_ex).ok)
-        # Test inner braces in 'Chaine_Parser' (what makes 'bloc_lecture' work!)
-        # In this specific situation (braces in the string), everything is kept in the resulting value, because we notably
-        # want to remain case-sensitive.
-        data_ex = """
-          # with many comments
-            before
-          #
-          { ta tu { toto } bouh }"""
-        stream, val, pars = self.builtin_test(str, data_ex, simplify=False)
-        expec = data_ex  # see comment above
-        self.assertEqual(expec, val)
-        self.assertTrue(stream.eof())
-        # Test writing out
-        res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(check_str_equality(res, data_ex).ok)
-        # Misformatted '{' should fail:
-        data_ex = "} toto }"
-        #self.builtin_test(str, data_ex, simplify=False)
-        self.assertRaisesRegex(TrustifyException, "Misformatted string or block", self.builtin_test, str, data_ex)
-        data_ex = "   {toto }"
-        # self.builtin_test(str, data_ex, simplify=False)
-        self.assertRaisesRegex(TrustifyException, "Misformatted string or block", self.builtin_test, str, data_ex)
-        # When changing the value of a 'bloc lecture' we should always have a space to start with! See explanations in Chaine_Parser.toDatasetTokens()
-        pars._pyd_value = "{ toto }"
-        data_ex = " { toto }"
-        res = ''.join(pars.toDatasetTokens())
-        self.assertTrue(check_str_equality(res, data_ex).ok)
 
     def test_builtin_list(self, fixed=False):
         """ Test parsing simple float list, with user defined size or fixed size """
