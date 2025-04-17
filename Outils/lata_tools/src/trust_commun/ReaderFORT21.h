@@ -25,20 +25,20 @@
 #include <vector>
 
 #ifdef WNT
-  #define file_pos_t __int64
-  #define open_file fopen
-  #define get_file_pos _ftelli64
-  #define set_file_pos _fseeki64
+#define file_pos_t __int64
+#define open_file fopen
+#define get_file_pos _ftelli64
+#define set_file_pos _fseeki64
 #elif defined( __APPLE__)
-  #define set_file_pos fseeko
-  #define open_file fopen
-  #define file_pos_t __int64_t
-  #define get_file_pos ftello
+#define set_file_pos fseeko
+#define open_file fopen
+#define file_pos_t __int64_t
+#define get_file_pos ftello
 #else
-  #define open_file fopen64
-  #define file_pos_t __off64_t
-  #define get_file_pos ftello64
-  #define set_file_pos fseeko64
+#define open_file fopen64
+#define file_pos_t __off64_t
+#define get_file_pos ftello64
+#define set_file_pos fseeko64
 #endif
 
 /*
@@ -49,7 +49,7 @@ static inline int findFromEnd( const std::string& theStr, const std::string& the
     pos = -1;
   return int(pos);
 }
-*/
+ */
 
 static inline int find(const std::string& theStr, const std::string& theWhat)
 {
@@ -99,7 +99,8 @@ public:
     L_ELEM = 0x02,
     L_DUAL = 0x04,
     L_GLOBAL = 0x0F,
-    L_TWALL = 0x10
+    L_TWALL = 0x10,
+    L_ALTERNATE = 0x20
   };
 
 
@@ -119,9 +120,15 @@ public:
 
   //! Destructor
   ~ReaderFORT21();
-
+  //! Set verbosity
+  void setVerbosity(int v) {
+    verbosity_=v;
+  }
   //! Sets the file to parse
   void setFile(const std::string& theName);
+
+  //! Gets the file parsed
+  const std::string getFileName();
 
   //! parses the file
   void parse();
@@ -144,10 +151,10 @@ protected:
   {
   public:
     Field()
-      : myFile(0)
-      , myData(0)
-      , myCapacity(0)
-      , mySize(0)
+    : myFile(0)
+    , myData(0)
+    , myCapacity(0)
+    , mySize(0)
     {
       setPlatform(Windows_Linux_32);
     }
@@ -233,7 +240,8 @@ public:
   {
     MESH_Unknown = 0,  //!< Fictive mesh (port, reactor, circuit)
     MESH_Polygone = 1,   //!< for volum, axial
-    MESH_Hexa   =2  //!< for threed
+    MESH_Hexa   = 2,  //!< for threed
+    MESH_Polyedre = 3   //!< for volum, axial
   };
 
   //! Get meaning of CATHARE variable.
@@ -280,6 +288,8 @@ public:
     CathareType type_of_field_;
     LocalisationField localisation_of_field_;
     file_pos_t offset_rel_stack_;
+    std::vector<file_pos_t> offsets_;
+    std::vector<float> times_;
     int nb_parts_;
   };
 
@@ -288,12 +298,13 @@ private:
   {
   public:
     std::string type_;
-    file_pos_t offset_const_;
+    //file_pos_t offset_const_;
     std::vector<int> index_times_;
     std::vector<file_pos_t> offset_rel_time_;
     std::map<std::string, FieldInfo> ConstFields_;
     std::map<std::string, FieldInfo> VarFields_;
     file_pos_t sizeblock_ = -1;
+    bool stack_var_;
   };
   std::map<std::string, ElementInfo> elements_list_;
   int verbosity_;
@@ -309,13 +320,20 @@ public:
   {
     return Times_glob_;
   }
+  int getNbCells(const std::string& name_stack) const;
   std::vector<double> getTimesStack(const std::string& name_stack) const;
+  std::vector<float> getTimesStack_float(const std::string& name_stack, const std::string& name_field) const;
   // std::vector<int> getTimesIndexStack(const std::string& name_stack) const;
   std::vector<std::string> getElementNames() const;
   std::string getElementType(const std::string& name_stack) const;
   std::vector<std::string> getVarFieldNames(const std::string& name_stack) const;
   template <typename _TYPE_> void getValuesVarField(const std::string& name_stack, const std::string& name_field, std::vector<_TYPE_>& data, const int& id_time_field) const;
+  template <typename _TYPE_> void getValuesVarFieldOnIndex(const std::string& name_stack, const std::string& name_field, std::vector<_TYPE_>& data, const int& id_index) const;
   template <typename _TYPE_> void getInterpolatedValuesVarField(const std::string& name_stack, const std::string& name_field, std::vector<_TYPE_>& data, const int& global_id_time) const;
+  void getInterpolatedValuesVarPos(const std::string& name_stack, const std::string& name_field, std::vector<float>& data) const;
+  int getIndexFromPos(const std::string& name_stack, const std::string& name_field, const float& x, const float& y, const float& z) const;
+  int getIndexFromPos(const std::string& name_stack, const std::string& name_field, const float& pos) const ;
+  int getIndexFromTime(const std::string& name_stack, const double& t, const std::string& method="") const;
 
 
   file_pos_t getOffsetVarField(const std::string& name_stack, const std::string& name_field, const int& id_time_field) const;

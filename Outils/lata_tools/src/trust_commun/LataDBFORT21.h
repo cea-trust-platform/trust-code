@@ -81,7 +81,9 @@ void LataDB::read_master_file_fort21(const char *prefix, const char *filename)
       ReaderFORT21::BasicMesh mesh= parser.getMeshStack(geoms[i]);
 
       if (mesh.type_mesh_!=ReaderFORT21::MESH_Polygone)
-        continue;
+        if (mesh.type_mesh_!=ReaderFORT21::MESH_Polyedre)
+          if (mesh.type_mesh_!=ReaderFORT21::MESH_Hexa)
+            continue;
       Journal(2) << "Adding geom "<<geoms[i]<<std::endl;
       map_basicmeshses[geoms[i]]= mesh;
       //new  ReaderFORT21::BasicMesh; *(map_basicmeshses[geoms[i]])= mesh;
@@ -89,27 +91,31 @@ void LataDB::read_master_file_fort21(const char *prefix, const char *filename)
       int spacedim=mesh.space_dim_;
 
       dom.elem_type_="Polygone";
+      if (mesh.type_mesh_==ReaderFORT21::MESH_Polyedre)
+        dom.elem_type_="Polyedre";
+      if (mesh.type_mesh_==ReaderFORT21::MESH_Hexa)
+        dom.elem_type_="Hexaedre";
       {
-        LataDBField som;
-        som.name_ = "SOMMETS";
-        som.geometry_ = dom.name_;
-        som.filename_ = filename;
-        som.size_=nnodes;
-        som.datatype_ = default_type_float(); // ??
-        som.nb_comp_=spacedim;
+          LataDBField som;
+          som.name_ = "SOMMETS";
+          som.geometry_ = dom.name_;
+          som.filename_ = filename;
+          som.size_=nnodes;
+          som.datatype_ = default_type_float(); // ??
+          som.nb_comp_=spacedim;
 
-        LataDBField elem;
-        elem.name_ = "ELEMENTS";
-        elem.geometry_ = dom.name_;
-        elem.filename_ = filename;
-        elem.size_=ncells;
-        elem.datatype_ = default_type_float(); // ??
+          LataDBField elem;
+          elem.name_ = "ELEMENTS";
+          elem.geometry_ = dom.name_;
+          elem.filename_ = filename;
+          elem.size_=ncells;
+          elem.datatype_ = default_type_float(); // ??
 
-        elem.nb_comp_ = nbcomp;
+          elem.nb_comp_ = nbcomp;
 
-        add(timesteps_.size() - 1, dom);
-        add(timesteps_.size() - 1, som);
-        add(timesteps_.size() - 1, elem);
+          add(timesteps_.size() - 1, dom);
+          add(timesteps_.size() - 1, som);
+          add(timesteps_.size() - 1, elem);
       }
     }
   std::vector<double> times =parser.getTimes();
@@ -127,7 +133,7 @@ void LataDB::read_master_file_fort21(const char *prefix, const char *filename)
       fields= parser.getVarFieldNames(geomname);
       //auto index_t =parser.getTimesIndexStack(geomname);
       auto timesf=parser.getTimesStack(geomname);
-
+      if (times.size()!=timesf.size()) std::cout<<geomname << " soucis " << times.size()<< "  " << timesf.size()<< std::endl;
       const ReaderFORT21::BasicMesh& mesh = (a.second);
 
       for (unsigned int i=0; i<fields.size(); i++)
@@ -157,7 +163,8 @@ void LataDB::read_master_file_fort21(const char *prefix, const char *filename)
             }
           else
             continue;
-          if ((fieldinfo.size()*fieldinfo.nb_parts()==mesh.nb_elems_)||(fieldinfo.size()*fieldinfo.nb_parts()==mesh.nb_elems_+2))
+          //if ((fieldinfo.size()*fieldinfo.nb_parts()==mesh.nb_elems_)||(fieldinfo.size()*fieldinfo.nb_parts()==mesh.nb_elems_+2))
+          if (fieldinfo.localisation_of_field()== ReaderFORT21::L_ELEM)
             {
               som.size_=mesh.nb_elems_;
               if (fieldinfo.nb_parts()>1) som.size_=fieldinfo.size();
@@ -236,6 +243,19 @@ int LataDB::read_data2_fort21_( LataDataFile& f,
       for (int i=0; i<fld.size_; i++)
         for (int j=0; j<fld.nb_comp_; j++)
           (*data2)(i,j)=mesh.connectivity_[fld.nb_comp_*i+j];
+      // hexa connectivity of lata is special...
+      if (mesh.type_mesh_==ReaderFORT21::MESH_Hexa)
+        for (int i=0; i<fld.size_; i++)
+          {
+            trustIdType sa = (*data2)(i,2);
+            (*data2)(i,2)= (*data2)(i,3);
+            (*data2)(i,3)= sa;
+            {
+              trustIdType sa2 = (*data2)(i,6);
+              (*data2)(i,6)= (*data2)(i,7);
+              (*data2)(i,7)= sa2;
+            }
+          }
 
       return 1;
     }
