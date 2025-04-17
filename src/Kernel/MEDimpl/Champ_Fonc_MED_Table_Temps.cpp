@@ -31,7 +31,7 @@ using MEDCoupling::MEDFileFieldMultiTS;
 
 Implemente_instanciable( Champ_Fonc_MED_Table_Temps, "Champ_Fonc_MED_Table_Temps", Champ_Fonc_MED );
 // XD Champ_Fonc_MED_Table_Temps champ_fonc_med Champ_Fonc_MED_Table_Temps -1 Field defined as a fixed spatial shape scaled by a temporal coefficient
-// XD attr table_temps chaine table_temps 1 Table containing the temporal coefficient used to scale the field
+// XD attr table_temps bloc_lecture table_temps 1 Table containing the temporal coefficient used to scale the field
 // XD attr table_temps_lue chaine table_temps_lue 1 Name of the file containing the values of the temporal coefficient used to scale the field
 
 Sortie& Champ_Fonc_MED_Table_Temps::printOn(Sortie& os) const { return Champ_Fonc_MED::printOn(os); }

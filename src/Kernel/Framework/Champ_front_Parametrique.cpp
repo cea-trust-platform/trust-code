@@ -21,7 +21,7 @@
 
 
 Implemente_instanciable(Champ_front_Parametrique,"Champ_front_Parametrique",Champ_front_base);
-// XD Champ_front_Parametrique front_field_base Champ_front_Parametrique 0 Parametric boundary field
+// XD Champ_front_Parametrique front_field_base Champ_front_Parametrique 1 Parametric boundary field
 
 Sortie& Champ_front_Parametrique::printOn(Sortie& os) const
 {

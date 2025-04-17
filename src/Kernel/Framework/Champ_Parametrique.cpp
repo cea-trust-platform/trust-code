@@ -21,7 +21,7 @@
 #include <string>
 
 Implemente_instanciable( Champ_Parametrique, "Champ_Parametrique", Champ_Don_base );
-// XD Champ_Parametrique champ_don_base Champ_Parametrique 0 Parametric field
+// XD Champ_Parametrique champ_don_base Champ_Parametrique 1 Parametric field
 
 Sortie& Champ_Parametrique::printOn(Sortie& os) const { return Champ_Don_base::printOn(os); }
 
