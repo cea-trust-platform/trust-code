@@ -8,9 +8,7 @@ This package can be used with jupyter and stats package.
 
 """
 
-
 import os
-import numpy as np
 import subprocess
 from trustutils.jupyter.filelist import FileAccumulator
 import matplotlib.pyplot as plt
@@ -20,13 +18,14 @@ from .message import GestionMessages
 
 
 def visitTmpFile_(justFile=False):
-    """ Internal ... """
-    file = "tmp_visit.py"
+    """Internal ..."""
+    thefile = "tmp_visit.py"
     if justFile:
-        return file
+        return thefile
     from ..jupyter.run import BUILD_DIRECTORY
 
-    return os.path.join(BUILD_DIRECTORY, file)
+    return os.path.join(BUILD_DIRECTORY, thefile)
+
 
 def setFrame(self, iteration=-1):
     """
@@ -44,7 +43,7 @@ def setFrame(self, iteration=-1):
     """
     self.iteration = str(iteration)
     with open(visitTmpFile_(), "a") as f:
-        if numero == -1:  # last frame
+        if iteration == -1:  # last frame
             f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
         else:
             f.write("SetTimeSliderState(" + str(iteration) + ")\n")
@@ -57,13 +56,13 @@ def saveFile(file, plottype, name, iteration, active=False):
     Save files for testing non-regression.
 
     Parameters
-    --------- 
+    ---------
     file : str
-        The .lata file we want to plot its mesh with visit.  
+        The .lata file we want to plot its mesh with visit.
     plottype : str
         The plot type we want (Pseudocolor, Vector, ...)
     name : str
-        The name of the field.  
+        The name of the field.
     iteration : int
         number of the time frame or iteration
 
@@ -73,7 +72,6 @@ def saveFile(file, plottype, name, iteration, active=False):
 
     """
     if active:
-
         origin = os.getcwd()
         from ..jupyter.run import BUILD_DIRECTORY
 
@@ -81,8 +79,8 @@ def saveFile(file, plottype, name, iteration, active=False):
         os.chdir(path)
 
         FileAccumulator.active = True
-        if plottype=="Mesh" or plottype=="Subset":
-            FileAccumulator.AppendVisuMesh(file,name)
+        if plottype in {"Mesh", "Subset"}:
+            FileAccumulator.AppendVisuMesh(file, name)
             FileAccumulator.WriteToFile("used_files")
         else:
             field, loc, dom = FileAccumulator.ParseDirectName(name)
@@ -99,20 +97,21 @@ def showMesh(filename, mesh="dom"):
     Parameters
     ---------
     filename : str
-        The .lata file we want to plot its mesh with visit.  
+        The .lata file we want to plot its mesh with visit.
     mesh : str
-        name of the mesh (default="dom") 
-            
+        name of the mesh (default="dom")
+
     Returns
     -------
-        a Visit plot 
+        a Visit plot
     """
 
     field = Show(filename=filename, plottype="Mesh", name=mesh, plotmesh=False)
     field.plot()
 
 
-def showField(filename, plottype, name, plotmesh=True, title="", iteration=-1, size=10, max=None, min=None):
+def showField(filename, plottype, name, 
+              plotmesh=True, title="", iteration=-1, size=10, max=None, min=None,):
     """
     Methods to plot a field from a .lata file.
 
@@ -136,61 +135,63 @@ def showField(filename, plottype, name, plotmesh=True, title="", iteration=-1, s
         Maximum value ploted.
     min : float
         Minimum value ploted.
-         
-            
+
+
     Returns
     -------
         a Visit plot
     """
-    field = Show(filename, plottype, name, plotmesh=plotmesh, title=title, iteration=iteration, size=size, max=max, min=min)
+    field = Show(filename, plottype, name, plotmesh=plotmesh,
+                 title=title, iteration=iteration, size=size, max=max, min=min,)
     field.plot()
 
 
 class Show(object):
-    """ 
+    """
     Class Show, which allow to use visit command in a python environment
     """
 
-    def __init__(
-        self, filename="", plottype="", name="", nX=1, nY=1, plotmesh=True, iteration=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
-    ):
+    def __init__(self, filename="", plottype="", name="", nX=1, nY=1, 
+                 plotmesh=True, iteration=-1, empty=False, size=10, title="",
+                 subtitle="", max=None, min=None, active=True, visitLog=False,
+                 verbose=0, show=True):
         """
         Constructeur
 
         Parameters
         ---------
         filename : str
-            The .lata file we want to plot its mesh with visit.  
+            The .lata file we want to plot its mesh with visit.
         plottype : str
             The plottype we want (Pseudocolor, vector, ...)
         name : str
-            The name of the field.  
+            The name of the field.
         plotmesh : bool
-            If true plot the mesh asociate with .lata file (default=True) 
+            If true plot the mesh asociate with .lata file (default=True)
         iteration : int
-            Time frame or iteration of the plot. 
+            Time frame or iteration of the plot.
         empty : bool
-            If True returns a empty plot (default=False) 
+            If True returns a empty plot (default=False)
         size : int
-            Size of the image.  
-        title : str 
-            title of the plot. 
-        subtitle : str 
-            title of the first subplot. 
+            Size of the image.
+        title : str
+            title of the plot.
+        subtitle : str
+            title of the first subplot.
         max : float
-            Maximum value ploted.  
+            Maximum value ploted.
         min : float
-            Minimum value ploted.  
+            Minimum value ploted.
         show : bool
-            Show the image  
+            Show the image
 
         Returns
         -------
-        None      
+        None
         """
         #
         if not empty:
-            if filename == "" or plottype == "" or name == "":
+            if not all([filename, plottype, name]):
                 raise ValueError("Error: A filename, plottype and name are needed!!")
             else:
                 # Remove former PNG files
@@ -237,10 +238,10 @@ class Show(object):
         self.size = size
         # title plot
         self.title = title
-        if (nX==1 and nY==1):
+        if nX == 1 and nY == 1:
             self.subtitle = title
         else:
-            self.subtitle=subtitle
+            self.subtitle = subtitle
         # max/min des valeurs du plot.
         self.max = max
         self.min = min
@@ -255,18 +256,23 @@ class Show(object):
 
         Parameters
         ---------
-        
+
 
         Returns
         -------
-        
+
         """
         # Assure qu'il n'y a pas deja une image,  si oui, il l'efface
         if self.show:
             plt.rc("xtick", labelsize=14)  # Font size
             plt.rc("ytick", labelsize=14)
             plt.rcParams.update({"font.size": 14})
-            self.fig, self.axs = plt.subplots(self.nX, self.nY, figsize=(self.size * self.nY, self.size * self.nX), dpi=300)
+            self.fig, self.axs = plt.subplots(
+                self.nX,
+                self.nY,
+                figsize=(self.size * self.nY, self.size * self.nX),
+                dpi=300,
+            )
             plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
             if self.nX * self.nY != 1:
                 for ax in self.axs.reshape(-1):
@@ -277,47 +283,45 @@ class Show(object):
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
-        s += "  a = AddPlot(%s, %s)\n" % (arg1, arg2)
+        s += f"  a = AddPlot({arg1}, {arg2})\n"
         s += "  if a == 0: exit(-1)\n"
         s += "except Exception as e:\n"
         s += "  print(e)\n"
         s += "  exit(-1)\n"
         if arg3 == -1:  # last frame
-            s += "if (TimeSliderGetNStates() != 1):\n" 
+            s += "if (TimeSliderGetNStates() != 1):\n"
             s += "  SetTimeSliderState(TimeSliderGetNStates()-1)\n"
         else:
-            s += "SetTimeSliderState(%s)\n" % (str(arg3))
+            s += f"SetTimeSliderState({arg3})\n"
         return s
 
     def addPlot(self, coordinates, title=""):
-        """ 
-        
+        """
+
         Methode pour afficher un graphiques.
-        
+
 
         Parameters
         ---------
         coordinates : array int
             Coordinates of plot
-        title : str 
-            title of the plot.  
+        title : str
+            title of the plot.
 
         Returns
         -------
-        
+
         """
         with open(visitTmpFile_(), "w") as f:
             # Option pour les vecteur
-
             f.write("VectorAtts = VectorAttributes()\n")
             f.write("VectorAtts.glyphLocation = VectorAtts.AdaptsToMeshResolution  # AdaptsToMeshResolution, UniformInSpace\n")
             f.write("VectorAtts.useStride = 1\n")
             f.write("SetDefaultPlotOptions(VectorAtts)\n")
 
-        f.close()
-
         if not self.empty:
-            self.addField(filename=self.filename, plottype=self.plottype, name=self.name, plotmesh=self.plotmesh)
+            self.addField(filename=self.filename, plottype=self.plottype,
+                          name=self.name, plotmesh=self.plotmesh,)
 
         if self.show:
             if self.nX == 1 and self.nY == 1:
@@ -335,37 +339,38 @@ class Show(object):
                 try:
                     self.subplot = self.axs[self.coordinates()]
                 except:
-                    print("ERROR with " + self.name + " => the subplot does not exist, inconsistent index")
+                    print(f"ERROR with {self.name} => the subplot does not exist, inconsistent index")
                     return
 
             self.subplot.grid()
-            if title != "":
+            if title:
                 self.subtitle = title
                 self.subplot.set_title(self.subtitle)
-        
-    def addField(self, filename=None, plottype=None, name=None, plotmesh=True, min=None, max=None):
-        """ 
-        
+
+    def addField(self, filename=None, plottype=None, name=None,
+                 plotmesh=True, min=None, max=None):
+        """
+
         Method for adding a Field to a plot.
 
         Parameters
         ---------
         filename : str
-            The .lata file we want to plot its mesh with visit.  
+            The .lata file we want to plot its mesh with visit.
         plottype : str
             The plottype we want (Pseudocolor, vector, ...)
         name : str
             The name of the field.  
         plotmesh : bool
-            If true plot the mesh asociate with .lata file (default=True) 
+            If true plot the mesh asociate with .lata file (default=True)
         min : float
-            Minimum value ploted.  
+            Minimum value ploted.
         max : float
-            Maximum value ploted.  
+            Maximum value ploted.
 
         Returns
         -------
-        
+
         """
         if filename is None:
             filename = self.filename
@@ -378,32 +383,33 @@ class Show(object):
             raise ValueError("Error: need plottype or/and name!!")
 
         with open(visitTmpFile_(), "a") as f:
-            if not filename == None:
+            if filename is not None:
                 f.write("dbs = ('" + filename + "') \n")
                 f.write("ActivateDatabase(dbs) \n")
             if plotmesh and not plottype == "Mesh" and not plottype == "Histogram":
                 mesh = _extractMeshName(plottype, name)
                 f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'", self.iteration))
-            f.write(self._genAddPlot("'" + plottype + "'", "'" + name + "'", self.iteration))
+            f.write(
+                self._genAddPlot("'" + plottype + "'", "'" + name + "'", self.iteration)
+            )
             f.write("DrawPlots() \n")
             # Boucle if pour roter le plot 3d de 30 degre ,selon l'axe x et y (2 rotations).
-            if not min is None:
+            if min is not None:
                 f.write("p=PseudocolorAttributes()\n")
                 f.write("p.minFlag=1\n")
                 f.write("p.min=" + str(min) + "\n")
                 f.write("SetPlotOptions(p)\n")
-            if not max is None:
+            if max is not None:
                 f.write("p=PseudocolorAttributes()\n")
                 f.write("p.maxFlag=1\n")
                 f.write("p.max=" + str(max) + "\n")
                 f.write("SetPlotOptions(p)\n")
-        f.close()
-        
+
         saveFile(filename, plottype, name, self.iteration, active=True)
 
     def visitCommand(self, string):
-        """ 
-        
+        """
+
         Method for adding command lines to the .py file.
         Parameters
         ---------
@@ -412,12 +418,11 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
             f.write(string + "\n")
-        f.close()
-        
+
         from ..jupyter.run import BUILD_DIRECTORY
 
         origin = os.getcwd()
@@ -443,54 +448,67 @@ class Show(object):
         from ..jupyter.run import BUILD_DIRECTORY
 
         import re
+
         name = self.name.replace("/", "_")
         name = name.replace("(", "_")
         name = name.replace(")", "_")
         with open(visitTmpFile_(), "a") as f:
             f.write("# on retire le nom du user sur les images \n")
-            f.write("annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n")
+            f.write(
+                "annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n"
+            )
             # f.write("ResizeWindow(1,160,156) \n")
             f.write("s = SaveWindowAttributes() \n")
-            f.write("s.fileName = '" + self.filename + name + str(self.iteration) + "_' \n")
+            f.write(f"s.fileName = '{self.filename}{name}{str(self.iteration)}_' \n")
             f.write("s.format = s.PNG \n")
             f.write("s.progressive = 1 \n")
             f.write("SetSaveWindowAttributes(s) \n")
-            f.write("SaveWindow()")
-        f.close()
+            f.write("SaveWindow()\n")
+            f.write("exit()")
+
         origin = os.getcwd()
         os.chdir(BUILD_DIRECTORY)
-        outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
+        outp = subprocess.run(f"visit -nowin -cli -s {visitTmpFile_(justFile=True)} 1>> visit.log 2>&1",
+                              shell=True)
 
-        pattern = os.path.join(os.getcwd(), self.filename.split("./")[-1] + name + str(self.iteration) + r"_\d\d\d\d.png")
+        pattern = os.path.join(
+            os.getcwd(),
+            self.filename.split("./")[-1]
+            + name
+            + str(self.iteration)
+            + r"_\d\d\d\d.png",
+        )
         error = 0
+
         for top, dirs, files in os.walk(os.getcwd()):
             for file in files:
-                if (re.search(pattern,os.path.join(top,file))):
-                    error+=1
-        if error==0:
+                if re.search(pattern, os.path.join(top, file)):
+                    error += 1
+
+        if error == 0:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("VisIt execution error!! See tail of the VisIt output below.")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
             self._dumpLogTail()
+
         if self.visitLog:
             self._dumpLogTail()
-        
+
         os.chdir(origin)
 
     def coordinates(self):
         """
 
         Return plot coordinates.
-        
+
         Parameters
-        --------- 
-        
+        ---------
+
         Returns
         -------
         coordonne : array int
             Coordinates
-        
+
         """
         if self.nX == 1 and self.nY == 1:
             return 0
@@ -503,14 +521,14 @@ class Show(object):
         """
 
         Add a photo to the Multiple plot.
-        
+
         Parameters
-        ---------  
+        ---------
 
         Returns
         -------
-        
-        
+
+
         """
         from ..jupyter.run import BUILD_DIRECTORY
 
@@ -525,7 +543,7 @@ class Show(object):
         pth = listFiles[-1]
         # pth = os.path.join(BUILD_DIRECTORY, fName)
         if not os.path.exists(pth):
-            print("Unable to open VisIt image result '%s'!!" % pth)
+            print(f"Unable to open VisIt image result '{pth}'!!")
             return False
         img = mpimg.imread(pth)
 
@@ -555,27 +573,29 @@ class Show(object):
         listcolor = ["red", "green", "blue", "black"]
         if color not in listcolor:
             # from string import join
-            self.gestMsg.ecrire(GestionMessages._ERR, "color expected in %s and not %s" % (listcolor, color))
+            self.gestMsg.ecrire(GestionMessages._ERR,
+                                f"color expected in {listcolor} and not {color}",)
+
         with open(visitTmpFile_(), "a") as f:
-            f.write("red=(255,0,0,255);green=(0,255,0,255);black=(0,0,0,255);blue=(0,0,255,255)\n")
-            f.write("dbs = ('" + sonFile + "')\n")
+            f.write(
+                "red=(255,0,0,255);green=(0,255,0,255);black=(0,0,0,255);blue=(0,0,255,255)\n"
+            )
+            f.write(f"dbs = ('{sonFile}')\n")
             f.write("ActivateDatabase(dbs)\n")
             f.write("AddPlot('Mesh','MESH')\n")
             f.write("DrawPlots()\n")
-        f.close()
         self.meshColor(color)
-        self.visitCommand('MeshAtts.pointSizePixels=%d' %sizePoint)
-        self.visitCommand('SetPlotOptions(MeshAtts)')
+        self.visitCommand(f"MeshAtts.pointSizePixels={sizePoint}")
+        self.visitCommand("SetPlotOptions(MeshAtts)")
 
-    def add(
-        self, filename, plottype, name, xIndice=0, yIndice=0, iteration=-1, title="", plotmesh=True, max=None, min=None,
-    ):
+    def add(self, filename, plottype, name, xIndice=0, yIndice=0,
+            iteration=-1, title="", plotmesh=True, max=None, min=None,):
         """
 
         Add a plot.
-        
+
         Parameters
-        ---------  
+        ---------
         filename : str
             The .lata file we want to plot its mesh with visit.
         plottype : str
@@ -599,7 +619,7 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
         # finalization of the previous subplot
         self.plot(show=False)
@@ -621,13 +641,13 @@ class Show(object):
         """
 
         Visualize the graph.
-        
+
         Parameters
-        ---------  
+        ---------
 
         Returns
         -------
-        
+
         """
         self.executeVisitCmds()
         if self.show:
@@ -638,7 +658,7 @@ class Show(object):
     def addMesh(self, mesh):
         """
 
-        Add another mesh to the Visit Plot. 
+        Add another mesh to the Visit Plot.
 
         Parameters
         ---------
@@ -647,12 +667,11 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'Mesh'", "'%s'" % mesh, self.iteration))
+            f.write(self._genAddPlot("'Mesh'", f"'{mesh}'", self.iteration))
             f.write("DrawPlots() \n")
-        f.close()
 
     def iteration(self, iteration=0):
         """
@@ -666,12 +685,11 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
         self.iteration = str(iteration)
         with open(visitTmpFile_(), "a") as f:
-            f.write("SetTimeSliderState(" + str(iteration) + ")\n")
-        f.close()
+            f.write(f"SetTimeSliderState('{iteration}')\n")
 
     def slice(self, origin=[0, 0, 0], normal=[1, 0, 0], var=None, all=0, type_op="slice"):
         """
@@ -690,12 +708,11 @@ class Show(object):
         -------
         """
 
-
         with open(visitTmpFile_(), "a") as f:
             f.write('AddOperator("Slice",%d)\n' % all)
             f.write("s=SliceAttributes()\n")
             f.write("s.SetOriginType(s.Point)\n")
-            f.write("s.SetOriginPoint(%s,%s,%s)\n" % (origin[0], origin[1], origin[2]))
+            f.write(f"s.SetOriginPoint({origin[0]},{origin[1]},{origin[2]})\n")
             f.write("s.SetAxisType(s.Arbitrary)\n")
             if var == "x":
                 f.write("s.SetNormal(-1,0,0)\ns.SetUpAxis(0,1,0)\n")
@@ -704,14 +721,13 @@ class Show(object):
             elif var == "z":
                 f.write("s.SetNormal(0,0,1)\ns.SetUpAxis(0,1,0)\n")
             else:
-                f.write("s.SetNormal(%s,%s,%s)\n" % (normal[0], normal[1], normal[2]))
+                f.write(f"s.SetNormal({normal[0]},{normal[1]},{normal[2]})\n")
             if type_op == "slice":
                 f.write("s.SetProject2d(0)\n")
             elif type_op == "slice2d":
                 f.write("s.SetProject2d(1)\n")
             f.write("SetOperatorOptions(s,0,%d)\n" % all)
             f.write("DrawPlots() \n")
-        f.close()
 
     def lineout(self, a, b):
         """
@@ -721,19 +737,18 @@ class Show(object):
         Parameters
         ---------
         a : array float
-            The first point of the segment.  
+            The first point of the segment.
         b : array float
-            The last  point of the segment.  
+            The last  point of the segment.
 
 
         Returns
         -------
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write("Lineout((" + str(a[0]) + "," + str(a[1]) + "),(" + str(b[0]) + "," + str(b[1]) + '),("default")) \n')  # ajouter Z
+            f.write(f"Lineout(({a[0]}, {a[1]}),({b[0]}, {b[1]}),('default')) \n")  # ajouter Z
             f.write("DeleteWindow() \n")
-        f.close()
 
     def nextIteration(self):
         """
@@ -741,16 +756,15 @@ class Show(object):
         Advance one time step or iteration.
 
         Parameters
-        --------- 
+        ---------
 
         Returns
         -------
-        
+
         """
         self.iteration = str(int(self.iteration) + 1)
         with open(visitTmpFile_(), "a") as f:
             f.write("TimeSliderNextState()\n")
-        f.close()
 
     def point(self, x, y, z=0):
         """
@@ -768,12 +782,11 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
         self.iteration = str(int(self.iteration) + 1)
         with open(visitTmpFile_(), "a") as f:
             f.write('QueryOverTime("Pick")\n')
-        f.close()
 
     def zoom2D(self, coords=[]):
         """
@@ -787,7 +800,7 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
 
         if len(coords) != 4:
@@ -795,9 +808,8 @@ class Show(object):
 
         with open(visitTmpFile_(), "a") as f:
             f.write("va = GetView2D()\n")
-            f.write("va.SetWindowCoords(%s,%s,%s,%s)\n" % (coords[0], coords[1], coords[2], coords[3]))
+            f.write(f"va.SetWindowCoords({coords[0]},{coords[1]},{coords[2]},{coords[3]})\n")
             f.write("SetView2D(va)\n")
-        f.close()
 
     def zoom3D(self, var=[]):
         """
@@ -818,10 +830,9 @@ class Show(object):
 
         with open(visitTmpFile_(), "a") as f:
             f.write("va = GetView3D()\n")
-            f.write("va.SetImagePan(%s,%s)\n" % (var[0], var[1]))
-            f.write("va.SetImageZoom(%s)\n" % (var[2]))
+            f.write(f"va.SetImagePan({var[0]},{var[1]})\n")
+            f.write(f"va.SetImageZoom({var[2]})\n")
             f.write("SetView3D(va)\n")
-        f.close()
 
     def rotation3D(self, angle=[]):
         """
@@ -838,18 +849,19 @@ class Show(object):
         """
 
         if len(angle) != 3:
-            self.gestMsg.ecrire(GestionMessages._ERR, "3 parameters expected in rotation3D options")
+            self.gestMsg.ecrire(
+                GestionMessages._ERR, "3 parameters expected in rotation3D options"
+            )
 
         with open(visitTmpFile_(), "a") as f:
             f.write("va = GetView3D()\n")
             f.write("va.RotateAxis(1,0)\n")
-            f.write("va.RotateAxis(0," + str(angle[0]) + ")\n")
+            f.write(f"va.RotateAxis(0,{angle[0]})\n")
             f.write("SetView3D(va)\n")
-            f.write("va.RotateAxis(1," + str(angle[1]) + ")\n")
+            f.write(f"va.RotateAxis(1,{angle[1]})\n")
             f.write("SetView3D(va)\n")
-            f.write("va.RotateAxis(2," + str(angle[2]) + ")\n")
+            f.write(f"va.RotateAxis(2,{angle[2]})\n")
             f.write("SetView3D(va)\n")
-        f.close()
 
     def normal3D(self, vector=[]):
         """
@@ -870,9 +882,8 @@ class Show(object):
 
         with open(visitTmpFile_(), "a") as f:
             f.write("va = GetView3D()\n")
-            f.write("va.viewNormal=(%s,%s,%s)\n" % (vector[0], vector[1], vector[2]))
+            f.write(f"va.viewNormal=({vector[0]},{vector[1]},{vector[2]})\n")
             f.write("SetView3D(va)\n")
-        f.close()
 
     def up3D(self, coords=[]):
         """
@@ -889,61 +900,67 @@ class Show(object):
         """
 
         if len(coords) != 3:
-            self.gestMsg.ecrire(GestionMessages._ERR, "3 parameters expected in up3D options")
+            self.gestMsg.ecrire(
+                GestionMessages._ERR, "3 parameters expected in up3D options"
+            )
 
         with open(visitTmpFile_(), "a") as f:
             f.write("va = GetView3D()\n")
-            f.write("va.viewUp=(%s,%s,%s)\n" % (coords[0], coords[1], coords[2]))
+            f.write(f"va.viewUp=({coords[0]},{coords[1]},{coords[2]})\n")
             f.write("SetView3D(va)\n")
-        f.close()
 
     def visuOptions(self, operator=[]):
         """
         To apply visu Options
 
         Parameters
-        --------- 
+        ---------
         list of possible operators:
-           - no_axes: disables the plotting of the axis. 
+           - no_axes: disables the plotting of the axis.
            - no_triad: disables the plotting of the triad
-           - no_bounding_box:  disables the plotting of the bounding box. 
-           - no_databaseinfo: disables the plotting of the info about the database. 
-           - no_legend: disables the plotting of the legend. 
+           - no_bounding_box:  disables the plotting of the bounding box.
+           - no_databaseinfo: disables the plotting of the info about the database.
+           - no_legend: disables the plotting of the legend.
 
         Results
         ------
         """
 
-        list_base = {"no_axes": 0, "no_triad": 0, "no_bounding_box": 0, "no_databaseinfo": 0, "no_legend": 0}
+        list_base = {
+            "no_axes": 0,
+            "no_triad": 0,
+            "no_bounding_box": 0,
+            "no_databaseinfo": 0,
+            "no_legend": 0,
+        }
         lst = list(list_base.keys())
 
         with open(visitTmpFile_(), "a") as f:
             for type_op in operator:
                 if type_op not in lst:
-                    self.gestMsg.ecrire(
-                        GestionMessages._ERR, "Unknown keyword. We expect for an operator parameter, and not: %s . Expected possible keywords: %s" % (type_op, lst),
-                    )
+                    self.gestMsg.ecrire(GestionMessages._ERR,
+                                        f"Unknown keyword. We expect for an operator parameter, and not: {type_op} . Expected possible keywords: {lst}")
                 if type_op == "no_axes":
                     f.write("annotation=GetAnnotationAttributes()\n")
                     f.write("try:\n annotation.GetAxes2D().SetVisible(0)\n")
                     f.write(" annotation.GetAxes3D().SetVisible(0)\n")
                     f.write(" annotation.GetAxes2D().SetVisible(0)\n")
                     f.write("except:\n")
-                    f.write(' print (\"option no_axes incompatible with this version of visit\")\n pass\n')
+                    f.write(' print ("option no_axes incompatible with this version of visit")\n pass\n')
                     f.write("SetAnnotationAttributes(annotation)\n")
                 elif type_op == "no_triad":
                     f.write("annotation=GetAnnotationAttributes()\n")
                     f.write("try:\n annotation.GetAxes2D().SetVisible(0)\n")
                     f.write(" annotation.GetAxes3D().SetTriadFlag(0)\n")
                     f.write("except:\n")
-                    f.write(' print (\"option no_triad incompatible with this version of visit\")\n pass\n')
+                    f.write(' print ("option no_triad incompatible with this version of visit")\n pass\n')
                     f.write("SetAnnotationAttributes(annotation)\n")
                 elif type_op == "no_bounding_box":
                     f.write("annotation=GetAnnotationAttributes()\n")
 
                     f.write("try: annotation.GetAxes3D().SetBboxFlag(0)\n")
                     f.write("except:\n")
-                    f.write(' print (\"option no_boundig_box incompatible with this version of visit\")\n pass\n')
+                    f.write(' print ("option no_boundig_box incompatible with this version of visit")\n pass\n')
                     f.write("SetAnnotationAttributes(annotation)\n")
                 elif type_op == "no_databaseinfo":
                     f.write("annotation=GetAnnotationAttributes()\n")
@@ -954,7 +971,6 @@ class Show(object):
                     f.write("annotation=GetAnnotationAttributes()\n")
                     f.write("annotation.SetLegendInfoFlag(0)\n")
                     f.write("SetAnnotationAttributes(annotation)\n")
-        f.close()
 
     def blackVector(self):
         """
@@ -962,11 +978,12 @@ class Show(object):
         """
 
         with open(visitTmpFile_(), "a") as f:
-            f.write("vb=VectorAttributes()\ntry:\n  SetColorByMagnitude=vb.SetColorByMagnitude\nexcept:\n  SetColorByMagnitude=vb.SetColorByMag\nSetColorByMagnitude(0)\nvb.SetUseLegend(0)\n")
+            f.write(
+                "vb=VectorAttributes()\ntry:\n  SetColorByMagnitude=vb.SetColorByMagnitude\nexcept:\n  SetColorByMagnitude=vb.SetColorByMag\nSetColorByMagnitude(0)\nvb.SetUseLegend(0)\n"
+            )
             f.write("SetPlotOptions(vb)\n")
-        f.close()
 
-    def visuHistogram(self, min, max, numBins):
+    def visuHistogram(self, lmin, lmax, numBins):
         """
         Option of the histogram
 
@@ -979,7 +996,7 @@ class Show(object):
             maximum of x range
         numBins: int
             number of Bins
-            
+
         Results
         ------
 
@@ -988,12 +1005,11 @@ class Show(object):
         with open(visitTmpFile_(), "a") as f:
             f.write("p=HistogramAttributes()\n")
             f.write("p.SetMinFlag(1)\n")
-            f.write("p.SetMin(%s)\n" % min)
+            f.write(f"p.SetMin({lmin})\n")
             f.write("p.SetMaxFlag(1)\n")
-            f.write("p.SetMax(%s)\n" % max)
-            f.write("p.SetNumBins(%s)\n" % numBins)
+            f.write(f"p.SetMax({lmax})\n")
+            f.write(f"p.SetNumBins({numBins})\n")
             f.write("SetPlotOptions(p)\n")
-        f.close()
 
     def meshColor(self, color="red"):
         """
@@ -1001,26 +1017,28 @@ class Show(object):
         Change the Color of the mesh in red.
 
         Parameters
-        --------- 
-        
+        ---------
+
         color: str
             color of the mesh ("red","green", "blue", "black" available)
 
         Returns
         -------
-        
+
         """
         listcolor = ["red", "green", "blue", "black"]
         if color not in listcolor:
             # from string import join
-            self.gestMsg.ecrire(GestionMessages._ERR, "color expected in %s and not %s" % (listcolor, color))
+            self.gestMsg.ecrire(
+                GestionMessages._ERR,
+                f"color expected in {listcolor} and not {color}")
+
         with open(visitTmpFile_(), "a") as f:
             f.write("red=(255,0,0,255);green=(0,255,0,255);black=(0,0,0,255);blue=(0,0,255,255)\n")
             f.write("MeshAtts = MeshAttributes() \n")
             f.write("MeshAtts.SetMeshColorSource(1) \n")
-            f.write("MeshAtts.SetMeshColor(%s) \n" % color)
+            f.write(f"MeshAtts.SetMeshColor({color}) \n")
             f.write("SetPlotOptions(MeshAtts) \n")
-        f.close()
 
     def meshTrans(self):
         """
@@ -1032,14 +1050,15 @@ class Show(object):
 
         Returns
         -------
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
             f.write("MeshAtts = MeshAttributes() \n")
-            f.write("MeshAtts.opaqueColorSource = MeshAtts.Background  # Background, OpaqueCustom \n")
+            f.write(
+                "MeshAtts.opaqueColorSource = MeshAtts.Background  # Background, OpaqueCustom \n"
+            )
             f.write("MeshAtts.opacity = 0.254902 \n")
             f.write("SetPlotOptions(MeshAtts) \n")
-        f.close()
 
     def change(self, nom, atribut):
         """
@@ -1049,14 +1068,14 @@ class Show(object):
         Parameters
         ---------
         nom : str
-            Name of the argument..  
+            Name of the argument..
         atribut : str/int/float
-            The new value of the argument.  
+            The new value of the argument.
 
 
         Returns
         -------
-        
+
         """
         flag = 0
         if nom == "plottype":
@@ -1080,9 +1099,9 @@ class Show(object):
 
 class export_lata_base:
     """
-    
+
     Class to export profile or fields from lata files.
-     
+
     """
 
     def __init__(self, filename, plottype, name, saveFile, frame=-1):
@@ -1093,20 +1112,20 @@ class export_lata_base:
         Parameters
         ---------
         filename : str
-            The .lata file we want to plot its mesh with visit.  
+            The .lata file we want to plot its mesh with visit.
         plottype : str
             The plot type we want. For example, "Pseudocolor".
         name : str
-            The name of the field.   
+            The name of the field.
         saveFile : str
             Path to the new (.curve, .okc, ...) file created
-        frame : int 
+        frame : int
             Current frame selected.
 
         Returns
         -------
         None
-        
+
         """
         self.filename = filename
         self.plottype = plottype
@@ -1119,7 +1138,7 @@ class export_lata_base:
         """
 
         Reset the class
-        
+
         """
 
         # Assure qu'il n'y a pas deja un fichier, si oui, il l'efface
@@ -1127,50 +1146,49 @@ class export_lata_base:
         if os.path.exists(file):
             os.remove(file)
         with open(file, "a") as f:
-            f.write("dbs = ('" + self.filename + "') \n")
+            f.write(f"dbs = ('{self.filename}') \n")
             f.write("ActivateDatabase(dbs) \n")
         self.addPlot(self.plottype, self.name, self.frame)
-        f.close()
 
     def getFrames(self):
         """
 
         CMethod for getting the Frames.
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
             f.write('with open("frames.txt","w") as f:\n')
             f.write("   f.write(str(TimeSliderGetNStates()-1))\n")
             f.write("f.close()\n")
             f.write("sys.exit()\n")
-        f.close()
+
         self.run()
         with open("frames.txt", "r") as f:
             N = f.read()
-        f.close()
+
         os.remove("frames.txt")
         return int(N)
 
     def getDimensions(self):
-        r"""
+        """
 
         Get dimensions of mesh.
-        Warning, it has to launch visit and write the result in a file.  
+        Warning, it has to launch visit and write the result in a file.
 
         """
+        import re
         with open(visitTmpFile_(), "a") as f:
             f.write("SetQueryOutputToString() \n")
             f.write('B = Query("Grid Information") \n')
             f.write('with open("dim.txt","w") as f:\n')
             f.write("   f.write(B) \n")
-            f.write("f.close()\n")
             f.write("sys.exit()\n")
-        f.close()
         self.run()
+
         with open("dim.txt", "r") as f:
             N = f.read()
             res = re.findall(r"[\d]*[.][\d]+|[\d]+", N)[1:]
-        f.close()
+
         os.remove("dim.txt")
         res = [int(r) - 1 for r in res]
         return res
@@ -1192,27 +1210,26 @@ class export_lata_base:
         Returns
         -------
         None
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'%s'" % plottype, "'%s'" % name, iteration))
+            f.write(self._genAddPlot(f"'{plottype}'", f"'{name}'", iteration))
             f.write("DrawPlots() \n")
-        f.close()
-        
+
         saveFile(self.filename, plottype, name, iteration, active=True)
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
-        s += "  a = AddPlot(%s, %s)\n" % (arg1, arg2)
+        s += f"  a = AddPlot({arg1}, {arg2})\n"
         s += "  if a == 0: exit(-1)\n"
         s += "except Exception as e:\n"
         s += "  print(e)\n"
         s += "  exit(-1)\n"
         if arg3 == -1:  # last frame
-            s += "if (TimeSliderGetNStates() != 1):\n" 
+            s += "if (TimeSliderGetNStates() != 1):\n"
             s += "  SetTimeSliderState(TimeSliderGetNStates()-1)\n"
         else:
-            s += "SetTimeSliderState(%s)\n" % (str(arg3))
+            s += f"SetTimeSliderState({arg3})\n"
 
         return s
 
@@ -1228,15 +1245,14 @@ class export_lata_base:
 
         Returns
         -------
-        
+
         """
 
         with open(visitTmpFile_(), "a") as f:
             if iteration == -1:  # last frame
                 f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
             else:
-                f.write("SetTimeSliderState(" + str(iteration) + ")\n")
-        f.close()
+                f.write(f"SetTimeSliderState({iteration})\n")
 
     def lineout(self, a, b):
         """
@@ -1246,24 +1262,23 @@ class export_lata_base:
         Parameters
         ---------
         a : float array
-            First point.  
+            First point.
         b : float array
-            Second point.  
+            Second point.
 
 
         Returns
         -------
         None
-        
+
         """
         dim = len(a)
         with open(visitTmpFile_(), "a") as f:
             if dim == 2:
-                f.write("Lineout((" + str(a[0]) + "," + str(a[1]) + "),(" + str(b[0]) + "," + str(b[1]) + '),("default")) \n')
+                f.write(f"Lineout(({a[0]},{a[1]}),({b[0]},{b[1]}),('default')) \n")
             if dim == 3:
-                f.write("Lineout((" + str(a[0]) + "," + str(a[1]) + "," + str(a[2]) + "),(" + str(b[0]) + "," + str(b[1]) + "," + str(b[2]) + '),("default")) \n')
+                f.write(f"Lineout(({a[0]},{a[1]},{a[2]}),({b[0]},{b[1]},{b[2]}),('default')) \n")
             f.write("SetActiveWindow(2) \n")
-        f.close()
 
     def point(self, x, y, z=0):
         """
@@ -1273,19 +1288,18 @@ class export_lata_base:
         Parameters
         ---------
         x : float
-            x coordenate.  
+            x coordenate.
         y : float
-            y coordenate.  
+            y coordenate.
         z : float
-            z coordenate.   
+            z coordenate.
 
         Returns
         -------
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
             f.write('QueryOverTime("Pick")\n')
-        f.close()
 
     def query(self, start_point, end_point, num_samples=10, mode="Lineout"):
         """
@@ -1295,13 +1309,13 @@ class export_lata_base:
         Parameters
         ---------
         start_point : float array
-            First point 
+            First point
         end_point   : float array
-            Second point 
+            Second point
         num_samples : float array
-            First point 
+            First point
         mode : str
-            Type of section  
+            Type of section
 
 
         Returns
@@ -1313,7 +1327,6 @@ class export_lata_base:
                 s = 'Query("{0}", end_point={1}, num_samples={2}, start_point={3}, use_sampling=0, vars=( "{4}"))\n'
                 f.write(s.format(mode, end_point, num_samples, start_point, self.name))
                 f.write("SetActiveWindow(2) \n")
-            f.close()
 
     def maximum(self, file="Max", iteration=-1):
         """
@@ -1338,7 +1351,6 @@ class export_lata_base:
             f.write("f.write(str(GetQueryOutputValue())) \n")
             f.write("f.close() \n")
             f.write("print(GetQueryOutputValue())\n")
-
             f.write("""sys.exit()""")
         self.run()
 
@@ -1365,7 +1377,6 @@ class export_lata_base:
             f.write("f.write(str(GetQueryOutputValue())) \n")
             f.write("f.close() \n")
             f.write("print(GetQueryOutputValue())\n")
-
             f.write("""sys.exit()""")
         self.run()
 
@@ -1373,7 +1384,7 @@ class export_lata_base:
         """
 
         Export and saves the .curve file
-        
+
         """
         with open(visitTmpFile_(), "a") as f:
             f.write("dbAtts = ExportDBAttributes() \n")
@@ -1382,7 +1393,7 @@ class export_lata_base:
             f.write('dbAtts.variables = ("default", "vec") \n')
             f.write("ExportDatabase(dbAtts) \n")
             f.write("sys.exit()")
-        f.close()
+
         self.run()
 
     def run(self):
@@ -1395,7 +1406,10 @@ class export_lata_base:
 
         origin = os.getcwd()
         os.chdir(BUILD_DIRECTORY)
-        outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
+        outp = subprocess.run(
+            f"visit -nowin -cli -s {visitTmpFile_(justFile=True)} 1>> visit.log 2>&1",
+            shell=True,
+        )
         os.chdir(origin)
 
 def _extractMeshName(plottype, name):
