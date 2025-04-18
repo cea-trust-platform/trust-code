@@ -16,7 +16,6 @@ invalid_parenthesis_in_expression_2
 invalid_reserved_keyword_1
 invalid_reserved_keyword_2
 invalid_reserved_keyword_3
-list_tests.txt
 macro_in_expression
 string_literal_in_expression
 unclosed_curly_bracket
