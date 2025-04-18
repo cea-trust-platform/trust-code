@@ -1,3 +1,4 @@
+XX/XX/24 (TRUST) GPU          : Several VEF source terms ported (constituant and puissance_thermique for incompressible/quasi-compressible flows)
 XX/XX/24 (TRUST) GPU          : Change AmgX C-AMG defaults (selector from PMIS to HMIS and strength threshold from 0.25 to 0.8) to have more robust/faster multi-GPU solver
 XX/XX/24 (TRUST) GPU          : MI300A partition on Adastra supported with ./configure -rocm=gfx942
 XX/XX/24 (TRUST) GPU          : H100 partition on JeanZay supported with ./configure -cuda=cc90

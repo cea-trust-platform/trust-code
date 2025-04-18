@@ -721,7 +721,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                                );
 
               // size of a team
-              constexpr std::size_t warp_size = 32;
+              constexpr int warp_size = 32;
 
               auto kern_conv_aj = KOKKOS_LAMBDA (TeamMember const& teamMember)
               {

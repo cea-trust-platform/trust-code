@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,13 +19,12 @@
 void Eval_Puiss_Th_VEF_Face::completer()
 {
   Evaluateur_Source_VEF_Face::completer();
-  face_voisins.ref(le_dom->face_voisins());
-  volumes.ref(ref_cast(Domaine_VEF,le_dom.valeur()).volumes());
+  tab_volumes.ref(ref_cast(Domaine_VEF,le_dom.valeur()).volumes());
   nb_faces_elem = le_dom->domaine().nb_faces_elem();
 }
 
 void Eval_Puiss_Th_VEF_Face::associer_champs(const Champ_Don_base& Q)
 {
   la_puissance = Q;
-  puissance.ref(Q.valeurs());
+  tab_puissance.ref(Q.valeurs());
 }

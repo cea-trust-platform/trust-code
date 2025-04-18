@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,4 +62,23 @@ inline void Eval_Forchheimer_VEF_Face::calculer_terme_source(int num_face, Type_
     }
 }
 
+class Eval_Forchheimer_VEF_Face_View: public Eval_Forchheimer_VEF_Face
+{
+public:
+  void set(const Eval_Forchheimer_VEF_Face& eval) const
+  {
+  };
+  KOKKOS_INLINE_FUNCTION
+  void calculer_terme_source_standard_view(int num_face, DoubleArrView source) const
+  {
+    Process::Kokkos_exit("Not coded!");
+  };
+  KOKKOS_INLINE_FUNCTION
+  void calculer_terme_source_non_standard_view(int num_face, DoubleArrView source) const
+  {
+    Process::Kokkos_exit("Not coded!");
+  };
+private:
+  // Views
+};
 #endif /* Eval_Forchheimer_VEF_Face_included */

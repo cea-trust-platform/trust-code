@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,10 +28,13 @@ public:
 
   template <typename Type_Double>
   void calculer_terme_source_standard(const int , Type_Double&  ) const { Process::exit("Evaluateur_Source_VEF_Face::calculer_terme_source_standard must be overloaded !!"); }
-
   template <typename Type_Double>
   void calculer_terme_source_non_standard(const int , Type_Double&  ) const { Process::exit("Evaluateur_Source_VEF_Face::calculer_terme_source_non_standard must be overloaded !!"); }
 
+  // Provisoire: to incrementally port different evaluators:
+  virtual bool has_view() const { return false; }
+  void calculer_terme_source_standard_view(const int , DoubleArrView ) const { Process::Kokkos_exit("Evaluateur_Source_VEF_Face::calculer_terme_source_standard must be overloaded !!"); }
+  void calculer_terme_source_non_standard_view(const int , DoubleArrView ) const { Process::Kokkos_exit("Evaluateur_Source_VEF_Face::calculer_terme_source_non_standard must be overloaded !!"); }
 protected:
   DoubleVect volumes_entrelaces_Cl;
   IntTab face_voisins;

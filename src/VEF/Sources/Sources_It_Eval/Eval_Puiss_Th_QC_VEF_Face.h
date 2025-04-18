@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,72 +30,74 @@ public:
   void associer_puissance(const Champ_Don_base&);
   void mettre_a_jour() override { }
 
-  template<typename Type_Double>
-  inline void calculer_terme_source_standard(const int, Type_Double&) const;
-
-  template<typename Type_Double>
-  inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
-
 protected:
   OBS_PTR(Champ_Don_base) la_puissance;
-  DoubleTab puissance;
-  IntTab face_voisins;
-  DoubleVect volumes;
-  int nb_faces_elem = -100;
+  DoubleTab tab_puissance;
+  DoubleVect tab_volumes;
+  mutable int nb_faces_elem = 0;
 };
 
-template<typename Type_Double>
-inline void Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard(const int num_face, Type_Double& source) const
+class Eval_Puiss_Th_QC_VEF_Face_View: public Eval_Puiss_Th_QC_VEF_Face
 {
-  const int size = source.size_array();
-  if (size > 1) Process::exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard not available for multi-inco !");
+public:
+  virtual bool has_view() const override { return true; }
+  void set(const Eval_Puiss_Th_QC_VEF_Face_View& eval) const
+  {
+    nb_faces_elem = eval.nb_faces_elem;
+    if (eval.tab_puissance.nb_dim() == 1)
+      puissance_vect_ = static_cast<const ArrOfDouble&>(eval.tab_puissance).view_ro();
+    else
+      puissance_ = eval.tab_puissance.view_ro();
+    volumes_ = eval.tab_volumes.view_ro();
+    face_voisins_ = eval.face_voisins.view_ro();
+    volumes_entrelaces_ = eval.volumes_entrelaces.view_ro();
+    volumes_entrelaces_Cl_ = eval.volumes_entrelaces_Cl.view_ro();
+    porosite_surf_ = eval.porosite_surf.view_ro();
+  };
+  KOKKOS_INLINE_FUNCTION
+  void calculer_terme_source_standard_view(int num_face, DoubleArrView source) const
+  {
+    const int size = (int)source.size();
+    if (size > 1) Process::Kokkos_exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_standard not available for multi-inco !");
 
-  if (sub_type(Champ_Uniforme, la_puissance.valeur()))
-    for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces[num_face] * porosite_surf[num_face];
-  else
-    {
-      double P0, P1;
-      int elem0 = face_voisins(num_face, 0), elem1 = face_voisins(num_face, 1);
-      double V0 = volumes(elem0), V1 = volumes(elem1);
-      if (puissance.nb_dim() == 1)
-        {
-          P0 = puissance(elem0);
-          P1 = puissance(elem1);
-        }
-      else
-        {
-          P0 = puissance(elem0, 0);
-          P1 = puissance(elem1, 0);
-        }
-      for (int i = 0; i < size; i++) source[i] = ((P0 * V0 + P1 * V1) / nb_faces_elem) * porosite_surf[num_face];
-    }
-}
+    if (puissance_.extent(0)==1)
+      for (int i = 0; i < size; i++) source[i] = puissance_(0, 0) * volumes_entrelaces_[num_face] * porosite_surf_[num_face];
+    else
+      {
+        int elem0 = face_voisins_(num_face, 0), elem1 = face_voisins_(num_face, 1);
+        double V0 = volumes_(elem0), V1 = volumes_(elem1);
+        bool vect = puissance_vect_.size()>0;
+        double P0 = vect ? puissance_vect_(elem0) : puissance_(elem0, 0);
+        double P1 = vect ? puissance_vect_(elem1) : puissance_(elem1, 0);
+        for (int i = 0; i < size; i++) source[i] = ((P0 * V0 + P1 * V1) / nb_faces_elem) * porosite_surf_[num_face];
+      }
+  }
+  KOKKOS_INLINE_FUNCTION
+  void calculer_terme_source_non_standard_view(int num_face, DoubleArrView source) const
+  {
+    const int size = (int)source.size();
+    if (size > 1) Process::Kokkos_exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard not available for multi-inco !");
 
-template<typename Type_Double>
-inline void Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard(int num_face, Type_Double& source) const
-{
-  const int size = source.size_array();
-  if (size > 1) Process::exit("Eval_Puiss_Th_QC_VEF_Face::calculer_terme_source_non_standard not available for multi-inco !");
-
-  if (sub_type(Champ_Uniforme, la_puissance.valeur()))
-    for (int i = 0; i < size; i++) source[i] = puissance(0, 0) * volumes_entrelaces_Cl[num_face] * porosite_surf(num_face);
-  else
-    {
-      double P0, P1;
-      int elem0 = face_voisins(num_face, 0), elem1 = face_voisins(num_face, 1);
-      double V0 = volumes(elem0), V1 = (elem1 != -1 ? volumes(elem1) : 0);
-      if (puissance.nb_dim() == 1)
-        {
-          P0 = puissance(elem0);
-          P1 = (elem1 != -1 ? puissance(elem1) : 0);
-        }
-      else
-        {
-          P0 = puissance(elem0, 0);
-          P1 = (elem1 != -1 ? puissance(elem1, 0) : 0);
-        }
-      for (int i = 0; i < size; i++) source[i] = ((P0 * V0 + P1 * V1) / nb_faces_elem) * porosite_surf[num_face];
-    }
-}
-
+    if (puissance_.extent(0)==1)
+      for (int i = 0; i < size; i++) source[i] = puissance_(0, 0) * volumes_entrelaces_Cl_[num_face] * porosite_surf_(num_face);
+    else
+      {
+        int elem0 = face_voisins_(num_face, 0), elem1 = face_voisins_(num_face, 1);
+        double V0 = volumes_(elem0), V1 = (elem1 != -1 ? volumes_(elem1) : 0);
+        bool vect = puissance_vect_.size()>0;
+        double P0 = vect ? puissance_vect_(elem0) : puissance_(elem0, 0);
+        double P1 = (elem1 != -1 ? (vect ? puissance_vect_(elem1) : puissance_(elem1, 0)) : 0);
+        for (int i = 0; i < size; i++) source[i] = ((P0 * V0 + P1 * V1) / nb_faces_elem) * porosite_surf_[num_face];
+      }
+  }
+private:
+  // Views
+  mutable CDoubleTabView puissance_;
+  mutable CDoubleArrView puissance_vect_;
+  mutable CDoubleArrView volumes_;
+  mutable CIntTabView face_voisins_;
+  mutable CDoubleArrView volumes_entrelaces_;
+  mutable CDoubleArrView volumes_entrelaces_Cl_;
+  mutable CDoubleArrView porosite_surf_;
+};
 #endif /* Eval_Puiss_Th_QC_VEF_Face_included */

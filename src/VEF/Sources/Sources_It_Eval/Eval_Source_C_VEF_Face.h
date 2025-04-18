@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,49 +30,72 @@ public:
   void associer_champs(const Champ_Don_base&);
   void mettre_a_jour() override { }
 
-  template<typename Type_Double>
-  inline void calculer_terme_source_standard(const int, Type_Double&) const;
-
-  template<typename Type_Double>
-  inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
-
 protected:
   OBS_PTR(Champ_Don_base) la_source_constituant;
   DoubleTab source_constituant;
-  IntTab face_voisins;
   DoubleVect volumes;
-  int nb_faces_elem = -1;
+  mutable int nb_faces_elem = 0;
 };
 
-template<typename Type_Double>
-inline void Eval_Source_C_VEF_Face::calculer_terme_source_standard(int num_face, Type_Double& source) const
+class Eval_Source_C_VEF_Face_View: public Eval_Source_C_VEF_Face
 {
-  const int size = source.size_array();
+public:
+  virtual bool has_view() const override { return true; }
+  void set(const Eval_Source_C_VEF_Face_View& eval) const
+  {
+    nb_faces_elem = eval.nb_faces_elem;
+    source_constituant_ = eval.source_constituant.view_ro();
+    volumes_ = eval.volumes.view_ro();
+    face_voisins_ = eval.face_voisins.view_ro();
+    volumes_entrelaces_ = eval.volumes_entrelaces.view_ro();
+    volumes_entrelaces_Cl_ = eval.volumes_entrelaces_Cl.view_ro();
+    porosite_surf_ = eval.porosite_surf.view_ro();
+  };
+  KOKKOS_INLINE_FUNCTION
+  void calculer_terme_source_standard_view(int num_face, DoubleArrView source) const
+  {
+    const int size = (int)source.size();
 
-  if (sub_type(Champ_Uniforme, la_source_constituant.valeur()))
-    for (int i = 0; i < size; i++) source[i] = source_constituant(0, i) * volumes_entrelaces[num_face] * porosite_surf[num_face];
-  else
-    for (int i = 0; i < size; i++)
-      source[i] = (source_constituant(face_voisins(num_face, 0), i) * volumes(face_voisins(num_face, 0)) + source_constituant(face_voisins(num_face, 1), i) * volumes(face_voisins(num_face, 1)))
-                  / nb_faces_elem * porosite_surf[num_face];
-}
+    if (source_constituant_.extent(0)==1)
+      for (int i = 0; i < size; i++) source[i] = source_constituant_(0, i) * volumes_entrelaces_[num_face] * porosite_surf_[num_face];
+    else
+      {
+        int elem0 = face_voisins_(num_face, 0);
+        int elem1 = face_voisins_(num_face, 1);
+        for (int i = 0; i < size; i++)
+          {
+            source[i] = (source_constituant_(elem0, i) * volumes_(elem0) +
+                         source_constituant_(elem1, i) * volumes_(elem1))
+                        / nb_faces_elem * porosite_surf_[num_face];
+          }
+      }
+  };
+  KOKKOS_INLINE_FUNCTION
+  void calculer_terme_source_non_standard_view(int num_face, DoubleArrView source) const
+  {
+    const int size = (int)source.size();
 
-template<typename Type_Double>
-inline void Eval_Source_C_VEF_Face::calculer_terme_source_non_standard(int num_face, Type_Double& source) const
-{
-  const int size = source.size_array();
-
-  if (sub_type(Champ_Uniforme, la_source_constituant.valeur()))
-    for (int i = 0; i < size; i++) source[i] = source_constituant(0, i) * volumes_entrelaces_Cl[num_face] * porosite_surf[num_face];
-  else
-    {
-      for (int i = 0; i < size; i++)
-        if (face_voisins(num_face, 1) != -1)
-          source[i] = (source_constituant(face_voisins(num_face, 0), i) * volumes(face_voisins(num_face, 0)) + source_constituant(face_voisins(num_face, 1), i) * volumes(face_voisins(num_face, 1)))
-                      / nb_faces_elem * porosite_surf[num_face];
-        else
-          source[i] = source_constituant(face_voisins(num_face, 0), i) * volumes(face_voisins(num_face, 0)) * porosite_surf[num_face] / nb_faces_elem;
-    }
-}
-
+    if (source_constituant_.extent(0)==1)
+      for (int i = 0; i < size; i++) source[i] = source_constituant_(0, i) * volumes_entrelaces_Cl_[num_face] * porosite_surf_[num_face];
+    else
+      {
+        int elem0 = face_voisins_(num_face, 0);
+        int elem1 = face_voisins_(num_face, 1);
+        for (int i = 0; i < size; i++)
+          if (elem1 != -1)
+            source[i] = (source_constituant_(elem0, i) * volumes_(elem0) + source_constituant_(elem1, i) * volumes_(elem1))
+                        / nb_faces_elem * porosite_surf_[num_face];
+          else
+            source[i] = source_constituant_(elem0, i) * volumes_(elem0) * porosite_surf_[num_face] / nb_faces_elem;
+      }
+  };
+private:
+  // Views
+  mutable CDoubleTabView source_constituant_;
+  mutable CDoubleArrView volumes_;
+  mutable CIntTabView face_voisins_;
+  mutable CDoubleArrView volumes_entrelaces_;
+  mutable CDoubleArrView volumes_entrelaces_Cl_;
+  mutable CDoubleArrView porosite_surf_;
+};
 #endif /* Eval_Source_C_VEF_Face_included */

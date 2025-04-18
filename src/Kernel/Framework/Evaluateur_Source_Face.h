@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,6 @@ public:
 
   template <typename Type_Double>
   void calculer_terme_source_bord(const int , Type_Double& ) const { Process::exit("Evaluateur_Source_Face::calculer_terme_source_bord must be overloaded !!"); }
-
 protected:
   IntVect orientation; // orientations des faces
   DoubleVect volumes_entrelaces, porosite_surf; // porosites surfaciques
