@@ -507,6 +507,7 @@ class ConstrainBase_Parser(BaseCommon_Parser):
         from trustify.trust_parser import TRUSTEndOfStreamException
         cls = self.__class__
 
+        pos_0 = stream.pos()
         invert_attr_syno, ca, nams = cls._InvertAttrSyno(), cls._GetAttributeList(), cls.GetAllTrustNames()
         cls.Dbg(f"@FUNC@   attribute list is '{ca}'")
         attr_idx = 0
@@ -747,7 +748,7 @@ class ListOfBase_Parser(Builtin_Parser):
         nams = cls.GetAllTrustNames()
         tok = stream.probeNextLow()
         if tok != ',':
-            err = cls.GenErr(stream, f"Keyword '{nams}' expected a comma (',') to separate list items")
+            err = cls.GenErr(stream, f"Keyword '{nams}' expected a comma (',') to separate list items, but '{tok}' was read")
             raise TrustifyException(err)
         stream.validateNext()
 
@@ -781,12 +782,17 @@ class ListOfBase_Parser(Builtin_Parser):
 
     def parseAndAppendItem(self, stream, lst):
         """ Append an item to the current list. Overriden in ListOfBuiltin_Parser """
-        pos = stream.pos()
+        pos_0 = stream.pos()
         item_val = self._itemParserType.ReadFromTokens(stream)
-        if stream.pos() == pos:
-            pyd_typ = ClassFactory.GetPydFromParser(self._itemParserType)
-            err = self.GenErr(stream, f"Invalid list element! Could not read an element of type '{pyd_typ.__name__}'!")
+        # We should have parsed at least one thing!
+        # If the stream has not advanced, we were not able to read anything in the item object.
+        # This is a rare case, but might happen with keyword w/o brace, and only made of optional args (e.g. 'un_postraitement_spec')
+        if stream.pos() == pos_0:
+            pyd_typ = ClassFactory.GetPydFromParser(self.__class__)
+            w = stream.probeNextLow()
+            err = self.GenErr(stream, f"Could not read object of type '{pyd_typ.__name__}' inside list! Word '{w}' was unexpected!")
             raise TrustifyException(err)
+
         lst.append(item_val)
 
     def readFromTokensBuiltin_impl(self, stream):

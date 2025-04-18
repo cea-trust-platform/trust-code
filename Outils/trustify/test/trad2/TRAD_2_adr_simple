@@ -51,3 +51,8 @@ list_list_nom listobj nul 1 list_un_pb 1 pour les groupes
 
 bidon2 toto_base bidon2 1 To test a list of list as attr
   attr nested list_list_nom nested 0 bla list of lists used as attr 
+
+bidon3 objet_u bidon3 0 Objet sans acco avec que du optionnel
+  attr ze_int entier ze_int 1 not_set
+
+list_bidon3 listobj list_bidon3 1 bidon3 1 List of objects with only optional attributes.

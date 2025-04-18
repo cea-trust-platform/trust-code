@@ -484,6 +484,32 @@ gravite  uniform_field 2 28.0 32.0   }   , coucou {
         s = ''.join(res.toDatasetTokens())
         self.assertTrue(check_str_equality(s, data_ex).ok)
 
+    def test_list_opt(self):
+        """ List of objects having only optional attributes. If an item was incorrect, this was looping
+        indefinitely since errors on keywords with only optional attributes were not properly diagnosed.
+        See code in ConstrainBase_Parser::_readFromTokens_no_braces()
+        """
+        from typing import List, Annotated
+        data_ex = """{ 25 ,  64 }"""
+        self.generate_python_and_import("simple")
+        self.mod = self._TRUG["simple"]
+        B = self.mod.Bidon3
+        stream, val, pars = self.builtin_test(Annotated[List[B], "list_bidon3"], data_ex, simplify=False)
+        b1, b2 = B(), B()
+        b1.ze_int, b2.ze_int = 25, 64
+        expec = [b1, b2]
+        self.assertEqual(expec, val)
+        self.assertTrue(stream.eof())
+
+        # Test writing out:
+        res = ''.join(pars.toDatasetTokens())
+        self.assertTrue(check_str_equality(res, data_ex).ok)
+
+        ## Now the faulty behavior that was looping forever in some cases:
+        data_ex = """{ chaine }"""
+        # stream, val, pars = self.builtin_test(Annotated[List[B], "list_bidon3"], data_ex, simplify=False)
+        self.assertRaisesRegex(TrustifyException, "Could not read object of type 'List_bidon3' inside list! Word 'chaine' was unexpected", self.builtin_test, Annotated[List[B], "list_bidon3"], data_ex)
+
     def test_synonyms(self):
         """ Test synonyms """
         data_ex = """
