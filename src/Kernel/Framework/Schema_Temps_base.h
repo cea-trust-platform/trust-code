@@ -65,7 +65,8 @@ class Param;
 
 class Schema_Temps_base : public Objet_U
 {
-  Declare_base_sans_constructeur(Schema_Temps_base);
+  Declare_base(Schema_Temps_base);
+
 public :
   virtual void initialize();
   virtual void terminate() ;
@@ -96,7 +97,6 @@ public :
   //                                     //
   /////////////////////////////////////////
 
-  Schema_Temps_base();
   inline void nommer(const Nom&) override;
   inline const Nom& le_nom() const override;
   virtual int faire_un_pas_de_temps_eqn_base(Equation_base&) =0;
@@ -105,11 +105,7 @@ public :
   int sauvegarder(Sortie& ) const override;
   int reprendre(Entree& ) override ;
   virtual int mettre_a_jour();
-  // pour empecher ancienne methode
-  virtual void mettre_a_jour_dt(double toto)
-  {
-    abort();
-  }
+  virtual void mettre_a_jour_dt(double toto)  { abort();  }
   virtual void mettre_a_jour_dt_stab();
 
   inline double pas_de_temps() const;
@@ -140,45 +136,20 @@ public :
   inline int temps_final_atteint() const;
   inline int nb_pas_dt_max_atteint() const;
   inline int temps_cpu_max_atteint() const;
-  inline int stationnaire_atteint() const
-  {
-    assert(stationnaire_atteint_!=-1);
-    return stationnaire_atteint_;
-  }
-  inline int stationnaire_atteint_safe() const { return stationnaire_atteint_; }
+  inline int stationnaire_atteint() const { return stationnaire_atteint_;  }
   int stop_lu() const;
   inline int diffusion_implicite() const;
-  inline double seuil_diffusion_implicite() const
-  {
-    return seuil_diff_impl_;
-  }        // Seuil pour implicitation de la diffusion par GC
-  inline int impr_diffusion_implicite() const
-  {
-    return impr_diff_impl_;
-  }        // Impression ou non de GC implicitation
-  inline int impr_extremums() const
-  {
-    return impr_extremums_;
-  }
-  inline int niter_max_diffusion_implicite() const
-  {
-    return niter_max_diff_impl_;
-  } // Iterations maximale pour GC implicitation
-
-  inline int no_conv_subiteration_diffusion_implicite() const
-  {
-    return no_conv_subiteration_diff_impl_;
-  }
-  inline int no_error_if_not_converged_diffusion_implicite() const
-  {
-    return no_error_if_not_converged_diff_impl_;
-  }
+  inline double seuil_diffusion_implicite() const { return seuil_diff_impl_; }
+  inline int impr_diffusion_implicite() const { return impr_diff_impl_; }
+  inline int impr_extremums() const { return impr_extremums_; }
+  inline int niter_max_diffusion_implicite() const { return niter_max_diff_impl_;  }
+  inline int no_conv_subiteration_diffusion_implicite() const { return no_conv_subiteration_diff_impl_;  }
+  inline int no_error_if_not_converged_diffusion_implicite() const { return no_error_if_not_converged_diff_impl_; }
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_nb_pas_dt_max(Entree&);
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
   virtual Entree& lire_temps_cpu_max(Entree&);
   virtual Entree& lire_residuals(Entree&);
-  virtual Entree& lire_facsec(Entree&);
 
   virtual void completer() =0;
 
@@ -187,20 +158,14 @@ public :
   inline double temps_sauv() const ;
   inline int nb_sauv_max() const;
   inline double temps_impr() const ;
-  inline int precision_impr() const
-  {
-    return precision_impr_;
-  }
+  inline int precision_impr() const { return precision_impr_; }
   inline int wcol() const
   {
     // largeur minimale des colonnes des fichiers .out
     // precision_impr_ + 9 car : -1.000e+150 on ajoute la longueur de "-1." et de "e+150" plus un espace
     return precision_impr_ + 9;
   }
-  inline int gnuplot_header() const
-  {
-    return gnuplot_header_;
-  }
+  inline int gnuplot_header() const { return gnuplot_header_; }
   inline double seuil_statio() const ;
   inline int nb_pas_dt_max() const ;
   inline int nb_pas_dt() const ;
@@ -230,8 +195,8 @@ public :
   inline double& set_seuil_statio() { return seuil_statio_; }
   inline int& set_stationnaire_atteint()
   {
-    if (stationnaire_atteint_==-1)
-      stationnaire_atteint_=1;
+    if (stationnaire_atteint_ == -1)
+      stationnaire_atteint_ = 1;
     return stationnaire_atteint_;
   }
   inline void set_stationnaires_atteints(bool flag) { stationnaires_atteints_=flag; }
@@ -239,9 +204,9 @@ public :
   inline double& set_seuil_diffusion_implicite() { return seuil_diff_impl_; }
   inline int& set_niter_max_diffusion_implicite() { return niter_max_diff_impl_; }
   inline double& set_mode_dt_start() { return mode_dt_start_; }
-  inline int& set_indice_tps_final_atteint() { return ind_tps_final_atteint; }
-  inline int& set_indice_nb_pas_dt_max_atteint() { return ind_nb_pas_dt_max_atteint; }
-  inline int& set_lu() { return lu_; }
+  inline bool& set_indice_tps_final_atteint() { return ind_tps_final_atteint; }
+  inline bool& set_indice_nb_pas_dt_max_atteint() { return ind_nb_pas_dt_max_atteint; }
+  inline bool& set_lu() { return lu_; }
   inline const double& residu() const { return residu_ ; }
   inline double& residu() { return residu_ ; }
   inline const Nom& norm_residu() const { return norm_residu_ ; }
@@ -279,62 +244,62 @@ public :
 protected :
   OBS_PTR(Probleme_base) mon_probleme;
   Nom nom_;
-  double dt_;                                // Pas de temps de calcul
-  DoubleTab dt_locaux_;                     // Local time steps: Vector of size nb faces of the mesh
+  double dt_ = 0.0;                         ///< Pas de temps de calcul
+  DoubleTab dt_locaux_;                     ///< Local time steps: Vector of size nb faces of the mesh
 
   double temps_courant_ = -100.;
   double temps_precedent_ = -100.;
-  double dt_failed_ = -100.;  //si on a rate un pas de temps, sa valeur
-  double dt_gf_;
-  double tinit_;
-  double tmax_;
-  double tcpumax_;
-  int nb_pas_dt_;
-  int nb_pas_dt_max_;
-  mutable int nb_impr_;
-  double dt_min_;                        // Pas de temps min fixe par l'utilisateur
-  mutable double dt_max_;                // Pas de temps max fixe par l'utilisateur
-  Nom dt_max_str_;                       //reglage de dt_max comme une fonction du temps
-  mutable Parser_U dt_max_fn_;           //Parser_U associe
-  double dt_stab_=-100.;                // Pas de temps de stabilite
-  mutable double facsec_;
-  double seuil_statio_;
-  int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
+  double dt_failed_ = -100.;            ///< Si on a rate un pas de temps, sa valeur
+  double dt_gf_ = DMAXFLOAT;
+  double tinit_ = -DMAXFLOAT;
+  double tmax_ = 1.e30;
+  double tcpumax_ = 1.e30;
+  int nb_pas_dt_ = 0;
+  int nb_pas_dt_max_ = std::numeric_limits<int>::max();
+  mutable int nb_impr_ = 0;
+  double dt_min_ = 1.e-16;               ///< Pas de temps min fixe par l'utilisateur
+  mutable double dt_max_ = 1.e30;        ///< Pas de temps max fixe par l'utilisateur
+  Nom dt_max_str_;                       ///< reglage de dt_max comme une fonction du temps
+  mutable Parser_U dt_max_fn_;           ///< Parser_U associe
+  double dt_stab_=-100.;                 ///<  Pas de temps de stabilite
+  mutable double facsec_ = 1.;
+  double seuil_statio_ = 1.e-12;
+  int seuil_statio_relatif_deconseille_ = 0; ///< Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
   Nom norm_residu_;
-  double dt_sauv_;
-  mutable int nb_sauv_;                 // how many checkpoints have we performed so far?
-  int nb_sauv_max_;                     // max number of checkpoints that will be performed (useful for PDI backup file)
-  double limite_cpu_sans_sauvegarde_;
-  double periode_cpu_sans_sauvegarde_;
-  double temps_cpu_ecoule_;
-  double dt_impr_;                        // Pas de temps d'impression
-  int precision_impr_;                // Nombre de chiffres significatifs impression
-  double mode_dt_start_;                // mode calcul du pas de temps de depart
-  double residu_;        // Residu
-  double residu_old_slope_;
-  double cumul_slope_;
-  int gnuplot_header_;
+  double dt_sauv_ = 1.e30;
+  mutable int nb_sauv_ = 0;              ///< how many checkpoints have we performed so far?
+  int nb_sauv_max_ = 10;                 ///< Max number of checkpoints that will be performed (useful for PDI backup file)
+  double limite_cpu_sans_sauvegarde_ = 23 * 3600;  ///< Par defaut 23 heures;
+  double periode_cpu_sans_sauvegarde_ = 23 * 3600;  ///< Par defaut 23 heures;
+  double temps_cpu_ecoule_ = 0;
+  double dt_impr_ = 1.e30;            ///< Pas de temps d'impression
+  int precision_impr_ = 8;            ///< Nombre de chiffres significatifs impression
+  double mode_dt_start_ = -2;         ///< Mode calcul du pas de temps de depart - contient un double si option dt_init
+  double residu_ = 0;
+  double residu_old_slope_ = -1000;
+  double cumul_slope_ = 1e-20;
+  int gnuplot_header_ = 0;
 
-  int ind_tps_final_atteint;
-  int ind_nb_pas_dt_max_atteint;
-  int ind_temps_cpu_max_atteint;
-  int lu_;
-  int ind_diff_impl_ ;
-  double seuil_diff_impl_;
-  int impr_diff_impl_;
-  int impr_extremums_;
-  int niter_max_diff_impl_;
-  int no_conv_subiteration_diff_impl_;
-  int no_error_if_not_converged_diff_impl_;
-  int schema_impr_;                  // 1 si le schema a le droit d'imprimer dans le .out et dt_ev
-  int file_allocation_;                // 1 = allocation espace disque (par defaut), 0 sinon
+  bool ind_tps_final_atteint = false;
+  bool ind_nb_pas_dt_max_atteint = false;
+  bool ind_temps_cpu_max_atteint = false;
+  bool lu_ = false;
+  int ind_diff_impl_ = 0;
+  double seuil_diff_impl_ = 1.e-6;   ///<  Seuil pour implicitation de la diffusion par GC
+  int impr_diff_impl_ = 0;
+  int impr_extremums_ = 0;
+  int niter_max_diff_impl_ = 1000;      ///< Iterations maximale pour GC implicitation - Above 1000 iterations, diffusion implicit algorithm may be diverging
+  int no_conv_subiteration_diff_impl_ = 0;
+  int no_error_if_not_converged_diff_impl_ = 0;
+  int schema_impr_ = -1;                  // 1 si le schema a le droit d'imprimer dans le .out et dt_ev
+  int file_allocation_ = 0;                // 1 = allocation espace disque (par defaut), 0 sinon
   int max_length_cl_ = -10;
 private:
-  int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
-  bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
+  int stationnaire_atteint_ = 0;          ///< Stationary reached by the problem using this scheme
+  int stationnaires_atteints_ = 0;       ///< Stationary reached by the calculation (means all the problems reach stationary)
   SFichier progress_;
-  bool disable_progress_ = false; // Flag to disable the writing of the .progress file
-  bool disable_dt_ev_ = false; // Flag to disable the writing of the .dt_ev file
+  int disable_progress_ = 0;              ///< Flag to disable the writing of the .progress file
+  int disable_dt_ev_ = 0;                 ///< Flag to disable the writing of the .dt_ev file
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au shema en temps

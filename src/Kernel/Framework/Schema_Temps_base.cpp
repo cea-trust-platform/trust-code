@@ -42,6 +42,16 @@ Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U)
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
 /* Attributes further down in the cpp: */
 
+/*! @brief Constructeur par defaut d'un schema en temps.
+ *
+ * Initialise differents membres de la classe.
+ *
+ */
+Schema_Temps_base::Schema_Temps_base() :
+  norm_residu_("max")
+{
+}
+
 void Schema_Temps_base::initialize()
 {
   nb_impr_= 0;
@@ -57,15 +67,15 @@ void Schema_Temps_base::initialize()
   write_dt_ev(init);
   write_progress(init);
 
-  if ((nb_pas_dt_==0) && ( ((mode_dt_start_==0) && est_egal(tinit_,0.)) || (mode_dt_start_==-1)) )
+  if ( nb_pas_dt_ == 0 && ( ( mode_dt_start_ == 0. && est_egal(tinit_,0.)) || mode_dt_start_ == -1.) )
     {
       //On divise par facsec_ car multiplication par facsec_ dans corriger_dt_calcule()
       //quel que soit le mode d initialisation de dt_
       dt_=dt_min_/facsec_;
     }
-  else if (mode_dt_start_>0)
+  else if (mode_dt_start_ > 0.)
     {
-      dt_=mode_dt_start_/facsec_;
+      dt_ = mode_dt_start_ / facsec_;
     }
   else
     {
@@ -258,7 +268,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "dt_sauv",&dt_sauv_); // XD_ADD_P double Save time step value (1e30s by default). Every dt_sauv, fields are saved in the .sauv file. The file contains all the information saved over time. If this instruction is not entered, results are saved only upon calculation completion. To disable the writing of the .sauv files, you must specify 0. Note that dt_sauv is in terms of physical time (not cpu time).
   param.ajouter( "nb_sauv_max",&nb_sauv_max_); // XD_ADD_P entier Maximum number of timesteps that will be stored in backup file (10 by default). This value is only useful when doing a complete backup of the calculation with parallel PDI (as it needs to allocate the proper amount of dataspace in advance). If this number is reached (ie we already stored the data of nb_sauv_max timesteps in the file), the next checkpoints will overwrite the first ones
   param.ajouter( "dt_impr",&dt_impr_); // XD_ADD_P double Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
-  param.ajouter_non_std( "facsec",(this)); // XD_ADD_P chaine Value assigned to the safety factor for the time step (1. by default). It can also be a function of time. The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
+  param.ajouter_non_std("facsec",(this)); // XD_ADD_P chaine Value assigned to the safety factor for the time step (1. by default). It can also be a function of time. The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
   param.ajouter( "seuil_statio",&seuil_statio_); // XD_ADD_P double Value of the convergence threshold (1e-12 by default). Problems using this type of time scheme converge when the derivatives dGi/dt NL1 of all the unknown transported values Gi have a combined absolute value less than this value. This is the keyword used to set the permanent rating threshold.
   param.ajouter_non_std("residuals", (this));    // XD_ADD_P residuals To specify how the residuals will be computed (default max norm, possible to choose L2-norm instead).
   param.ajouter( "diffusion_implicite",&ind_diff_impl_); // XD_ADD_P entier Keyword to make the diffusive term in the Navier-Stokes equations implicit (in this case, it should be set to 1). The stability time step is then only based on the convection time step (dt=facsec*dt_convection). Thus, in some circumstances, an important gain is achieved with respect to the time step (large diffusion with respect to convection on tightened meshes). Caution: It is however recommended that the user avoids exceeding the convection time step by selecting a too large facsec value. Start with a facsec value of 1 and then increase it gradually if you wish to accelerate calculation. In addition, for a natural convection calculation with a zero initial velocity, in the first time step, the convection time is infinite and therefore dt=facsec*dt_max.
@@ -355,7 +365,7 @@ Entree& Schema_Temps_base::readOn(Entree& is)
     }
   temps_courant_=tinit_;
   temps_precedent_=tinit_;
-  lu_=1;
+  lu_=true;
   if (dt_sauv_ <= 0.)
     Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
   else
@@ -391,12 +401,12 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         case 1:
         case 2:
           {
-            mode_dt_start_=-rang2;
+            mode_dt_start_ = (double)(-rang2);
             break;
           }
         case 3:
           {
-            is >>mode_dt_start_;
+            is >> mode_dt_start_;
             break;
           }
         default:
@@ -419,7 +429,7 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   else if (mot == "residuals")
     lire_residuals(is);
   else if(mot == "facsec")
-    lire_facsec(is);
+    is >> facsec_;
   else
     retval = -1;
 
@@ -484,60 +494,6 @@ Entree& Schema_Temps_base::lire_residuals(Entree& is)
       is >> m;
     }
   return is;
-}
-
-
-Entree& Schema_Temps_base::lire_facsec(Entree& is)
-{
-  is >> facsec_;
-  return is;
-}
-
-/*! @brief Constructeur par defaut d'un schema en temps.
- *
- * Initialise differents membres de la classe.
- *
- */
-Schema_Temps_base::Schema_Temps_base()
-{
-  lu_=0;
-  dt_ = 0;
-  tinit_ = -DMAXFLOAT;
-  dt_min_ = 1.e-16;
-  dt_sauv_ = dt_impr_ = tmax_ = dt_max_ = tcpumax_ = 1.e30;
-  nb_sauv_= 0;
-  nb_sauv_max_ = 10;
-  periode_cpu_sans_sauvegarde_ = 23 * 3600; // Par defaut 23 heures
-  limite_cpu_sans_sauvegarde_ = periode_cpu_sans_sauvegarde_;
-  temps_cpu_ecoule_ = 0;
-  precision_impr_ = 8;
-  stationnaire_atteint_=0;
-  stationnaires_atteints_=0;
-  residu_=0;
-  mode_dt_start_=-2; // Nouveau 1.5.6 : desormais le premier pas de temps est calcule et ne vaut donc plus dt_min (par defaut, donc est equivalent a dt_start dt_calc)
-  nb_pas_dt_ = 0;
-  nb_impr_ = 0;
-  nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
-  seuil_statio_ = 1.e-12;
-  seuil_statio_relatif_deconseille_ = 0;
-  norm_residu_ = "max";
-  facsec_ = 1.;
-  ind_tps_final_atteint=0;
-  ind_nb_pas_dt_max_atteint=0;
-  ind_temps_cpu_max_atteint=0;
-  ind_diff_impl_=0 ;
-  seuil_diff_impl_=1.e-6 ;
-  impr_diff_impl_=0;
-  impr_extremums_=0;
-  no_conv_subiteration_diff_impl_=0;
-  no_error_if_not_converged_diff_impl_=0;
-  niter_max_diff_impl_ = 1000; // Above 100 iterations, diffusion implicit algorithm is may be diverging
-  schema_impr_=-1;
-  file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
-  residu_old_slope_=-1000;
-  cumul_slope_=1e-20;
-  gnuplot_header_ = 0;
-  dt_gf_ = DMAXFLOAT;
 }
 
 

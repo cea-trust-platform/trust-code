@@ -52,7 +52,7 @@ Read sch
     dt_impr 0.000001
     dt_sauv 100
     seuil_statio 1.e-6
-    facsec 20+exp(100*t)
+    facsec_func 20+exp(100*t)
     facsec_max 100
     Solveur
     Piso

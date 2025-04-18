@@ -1058,15 +1058,15 @@ int Probleme_base::postraiter(int force)
       //On les met donc a jour ici
 
       const int nb_pas_dt_max = sch.nb_pas_dt_max();
-      int& indice_nb_pas_dt = sch.set_indice_nb_pas_dt_max_atteint();
-      int& indice_tps_final = sch.set_indice_tps_final_atteint();
+      bool& indice_nb_pas_dt = sch.set_indice_nb_pas_dt_max_atteint();
+      bool& indice_tps_final = sch.set_indice_tps_final_atteint();
       const double t_init = sch.temps_init();
       const double t_max = sch.temps_max();
 
       //Test pour eviter de repeter le postraitement a l instant initial
       //Cela evite un plantage dans le cas d un postraitement au format meshtv
 
-      if (!((indice_nb_pas_dt) && (nb_pas_dt_max == 0)) && (!((indice_tps_final) && (est_egal(t_init, t_max)))))
+      if (!(indice_nb_pas_dt && nb_pas_dt_max == 0) && !(indice_tps_final && est_egal(t_init, t_max)))
         {
           for (int i = 0; i < nombre_d_equations(); i++)
             equation(i).sources().mettre_a_jour(schema_temps().temps_courant());
@@ -1074,9 +1074,9 @@ int Probleme_base::postraiter(int force)
           les_postraitements_.mettre_a_jour(schema_temps().temps_courant());
           les_postraitements_.postraiter();
           if (nb_pas_dt_max == 0)
-            indice_nb_pas_dt = 1;
+            indice_nb_pas_dt = true;
           if (est_egal(t_init, t_max))
-            indice_tps_final = 1;
+            indice_tps_final = true;
         }
     }
   else

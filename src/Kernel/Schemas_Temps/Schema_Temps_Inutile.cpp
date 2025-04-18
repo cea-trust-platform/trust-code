@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,4 +18,4 @@
 Implemente_instanciable(Schema_Temps_Inutile,"Schema_Temps_Inutile",Schema_Temps_base);
 
 Sortie& Schema_Temps_Inutile::printOn(Sortie& s) const { return s; }
-Entree& Schema_Temps_Inutile::readOn(Entree& s) { lu_=1; return s; }
+Entree& Schema_Temps_Inutile::readOn(Entree& s) { lu_=true; return s; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,8 +69,8 @@ public :
   int reprendre(Entree& ) override;
   inline void completer() override { }
   int resolution_monolithique(const Nom& nom) const;
-  Entree& lire_facsec(Entree&) override;
-  void lire_facsec_func(Nom&);
+  Entree& lire_facsec_expert(Entree&);
+  void lire_facsec_func(Entree&);
   void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_);
 
 protected:
