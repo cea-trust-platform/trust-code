@@ -93,7 +93,7 @@ Entree& Lire_Fichier::interpreter(Entree& is)
 	  // store the previous static attributes of the DataFileStream class
 	  // (loading a new datafile will mess-up those attributes)
 	  DataFileStream::Tokens old_tokens = DataFileStream::tokens;
-	  // store the index and not the iterator has copy will occure and the iterator
+	  // store the index and not the iterator as copy of the tokens list will occure and the iterator
 	  // will become invalid
 	  size_t old_index = std::distance(DataFileStream::tokens.begin(), DataFileStream::current_token_iterator);
 	  size_t old_skip = DataFileStream::tokens_to_skip;
