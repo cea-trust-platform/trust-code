@@ -481,6 +481,9 @@ void Postraitement::set_param(Param& param)
 }
 
 
+// XD bloc_fichier objet_lecture bloc_fichier 1 Block containing the name of the file
+// XD   attr fichier chaine file 0 File name
+
 // XD sondes_fichier objet_lecture nul 1 Keyword to read probes from a file
 // XD   attr fichier|file chaine file 0 name of file
 // XD definition_champs_fichier objet_lecture nul 1 Keyword to read definition_champs from a file
@@ -501,7 +504,7 @@ void Postraitement::set_param(Param& param)
 // XD   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
 // XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 1 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
 // XD   attr period chaine period 1 Value of the period which can be like (2.*t).
-// XD   attr fichier chaine file 0 name of file
+// XD   attr fichier bloc_fichier file 0 name of file
 
 // XD stats_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiques}}
 // XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 1 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
@@ -511,7 +514,7 @@ void Postraitement::set_param(Param& param)
 // XD stats_posts_fichier objet_lecture nul 0 Statistics read from file.. \input{{statistiques}}
 // XD   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
 // XD   attr period chaine period 0 Value of the period which can be like (2.*t).
-// XD   attr fichier chaine file 0 name of file
+// XD   attr fichier bloc_fichier file 0 name of file
 
 // XD stats_serie_posts objet_lecture nul 0 This keyword is used to set the statistics. Average on dt_integr time interval is post-processed every dt_integr seconds. \input{{statistiquesseries}}
 // XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
@@ -521,10 +524,11 @@ void Postraitement::set_param(Param& param)
 // XD stats_serie_posts_fichier objet_lecture nul 0 This keyword is used to set the statistics read from a file. Average on dt_integr time interval is post-processed every dt_integr seconds. \input{{statistiquesseries}}
 // XD   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
 // XD   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
-// XD   attr fichier chaine file 0 name of file
+// XD   attr fichier bloc_fichier file 0 name of file
 
 // XD stat_post_deriv objet_lecture stat_post_deriv 0 not_set
 // XD list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
+
 
 
 // XD stat_post_t_deb stat_post_deriv t_deb 0 Start of integration time
