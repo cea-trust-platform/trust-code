@@ -29,7 +29,7 @@ Domaine dom_solide
 Domaine dom_fluide
 Domaine dom
 
-Read_MED { domaine dom file ./MESH/geom.med }
+Read_MED { domaine dom file MESH/geom.med }
 Mailler dom_solide
 {
     Pave Cavite1
@@ -81,7 +81,7 @@ Domaine_64 dom_solide2
 Domaine_64 dom_fluide2
 Domaine_64 dom2
 
-Read_MED_64 { domaine dom2 file ./MESH/geom.med }
+Read_MED_64 { domaine dom2 file MESH/geom.med }
 Mailler_64 dom_solide2
 {
     Pave_64 Cavite1

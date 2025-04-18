@@ -44,7 +44,8 @@ Read sch
 Associate pb dom
 Associate pb sch
 Discretize pb dis
-EcritureLectureSpecial 1
+# Test old way to read .xyz file with EFichierBin #
+EcritureLectureSpecial EFichierBin
 Read pb
 {
 
@@ -93,6 +94,6 @@ Read pb
     reprise xyz old.xyz
 }
 # Test old way to write .xyz with EcrFicPartageBin #
-EcritureLectureSpecial 1
+EcritureLectureSpecial EcrFicPartageBin
 Solve pb
 End

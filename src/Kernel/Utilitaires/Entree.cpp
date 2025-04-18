@@ -86,6 +86,18 @@ Entree& Entree::operator=(Entree& is)
   return *this;
 }
 
+// read one char from the stream 
+int Entree::get(char& character)
+{
+  assert(istream_!=0);
+  (*istream_).get(character);
+  if (!error_handle(istream_->fail()))
+    character = '\0';
+
+  return (!istream_->fail());
+}
+
+
 /*! @brief Lecture d'une chaine dans ostream_ bufsize est la taille du buffer alloue pour ob (y compris
  *
  *   le caractere 0 final).

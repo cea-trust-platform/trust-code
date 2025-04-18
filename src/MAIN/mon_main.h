@@ -51,7 +51,7 @@ private:
 
   Nom log_directory_;
   bool trio_began_mpi_;
-  bool apply_verification_;
+  bool check_obsolete_keywords_;
   bool disable_stop_;
   OWN_PTR(Comm_Group) groupe_trio_;
   OWN_PTR(Comm_Group) node_group_;

@@ -80,7 +80,7 @@ Read pb
 
     solide {
         rho Champ_Uniforme 1 2
-        lambda champ_fonc_fonction pb temperature 1 (0.01*(val_LE_7.0)+0.001*(val_GT_7.0))
+        lambda champ_fonc_fonction pb temperature 1 (0.01*(val<=7.0)+0.001*(val>7.0))
         Cp Champ_Uniforme 1 0.5
     }
 
@@ -88,7 +88,7 @@ Read pb
     {
         diffusion { }
         initial_conditions {
-            temperature Champ_fonc_xyz Mesh_dom 1 (((x-0)*(x-0)+(y-0)*(y-0))_LT_0.04)*20.
+            temperature Champ_fonc_xyz Mesh_dom 1 ((((x-0)*(x-0)+(y-0)*(y-0))<0.04)*20.)
         }
         boundary_conditions {
             Bords_Z paroi_adiabatique
@@ -97,7 +97,7 @@ Read pb
 
         correction_variable_initiale 1
         sources {
-            puissance_thermique champ_fonc_fonction pb temperature 1 (1*(val_GT_7.)) ,
+            puissance_thermique champ_fonc_fonction pb temperature 1 (1*(val>7.)) ,
             Source_PDF
             {
                 aire Champ_Fonc_MED {
@@ -121,7 +121,7 @@ Read pb
                     eta 1.0e-10
                     bilan_PDF 0
                     # variable_imposee_data champ_uniforme 1 7. #
-                    variable_imposee_fonction 1 (((x*x)+(y*y))_LE_(0.5*0.5))*7.0
+                    variable_imposee_fonction 1 ((((x*x)+(y*y))<=(0.5*0.5))*7.0)
                 }
                 interpolation Interpolation_IBM_element_fluide
                 {

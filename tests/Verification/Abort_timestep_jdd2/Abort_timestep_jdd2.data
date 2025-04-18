@@ -166,8 +166,8 @@ Read pb1
         }
         sources {
             Perte_Charge_isotrope {
-                diam_hydr champ_fonc_txyz dom_fluid 1 1.4-1.3908*(y]1)*(y[3)
-                lambda 4*((16/Re)$(0.079/(Re^0.25))$0.003)
+                diam_hydr champ_fonc_txyz dom_fluid 1 (1.4-1.3908*(y>=1)*(y<=3))
+                lambda (4*((16/Re) max (0.079/(Re^0.25)) max 0.003))
             }
 
         }
@@ -191,7 +191,7 @@ Read pb1
 
         sources
         {
-            Puissance_thermique champ_fonc_xyz dom_fluid 1 2400e6*2/3./10./(3*3.1416*0.7*0.7)*0.6/1.8*1.53*(y]1)*(y[3)
+            Puissance_thermique champ_fonc_xyz dom_fluid 1 (2400e6*2/3./10./(3*3.1416*0.7*0.7)*0.6/1.8*1.53*(y>=1)*(y<=3))
         }
 
 

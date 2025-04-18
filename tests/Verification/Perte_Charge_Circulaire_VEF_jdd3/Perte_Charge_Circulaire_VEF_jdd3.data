@@ -105,8 +105,8 @@ Read pb {
             Perte_charge_circulaire {
                 diam_hydr champ_uniforme 1 0.01
                 diam_hydr_ortho champ_uniforme 1 0.02
-                lambda 96/Re_tot*0+1.*(Re_long)^(-0.25)
-                lambda_ortho 96/Re_tot*0+2.*(Re_ortho)^(-0.27)
+                lambda (96/Re_tot*0+1.*(Re_long)^(-0.25))
+                lambda_ortho (96/Re_tot*0+2.*(Re_ortho)^(-0.27))
                 sous_zone zone1
                 direction champ_uniforme 2 1 0
             }

@@ -79,7 +79,7 @@ Read pb
         boundary_conditions {
             Haut paroi_fixe
             Bas paroi_fixe
-            Gauche frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2  5*y*(1-y)-cos(y) 0.
+            Gauche frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2  (5*y*(1-y)-cos(y)) 0.
             Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
         }
     }

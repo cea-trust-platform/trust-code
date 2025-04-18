@@ -73,7 +73,7 @@ Read pb
             Acceleration { option entrainement_seul omega Champ_fonc_t 3 0 0 1 domegadt champ_fonc_t 3 0 0 0 centre_rotation champ_fonc_t 3 0 0 -1.5 }
         }
         initial_conditions {
-            vitesse Champ_Fonc_xyz dom 3 cos(x) sin(y) cos(x)*sin(y)
+            vitesse Champ_Fonc_xyz dom 3 (cos(x)) (sin(y)) (cos(x)*sin(y))
         }
         boundary_conditions {
             Surfa 		symetrie
