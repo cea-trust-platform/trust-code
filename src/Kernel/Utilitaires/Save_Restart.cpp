@@ -321,7 +321,10 @@ void Save_Restart::lire_pdi_sauvegarde_reprise(Entree& is, Motcle& motlu, Nom& r
         }
     }
   else
-    restart_file_name = nom;
+    {
+      Cerr << "[Save_Restart] lire_pdi_sauvegarde_reprise :: " << motlu << " is not understood. Expected { :" << finl;
+      Process::exit();
+    }
 }
 
 
@@ -335,16 +338,16 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
   EcritureLectureSpecial::mode_lec = 0;
   Motcle format_rep;
   is >> format_rep;
-  if ((format_rep != "formatte") && (format_rep != "binaire") && (format_rep != "xyz") && (format_rep != "single_hdf") && (format_rep != "pdi"))
+  if ((format_rep != "formatte") && (format_rep != "binaire") && (format_rep != "xyz") && (format_rep != "single_hdf") && (format_rep != "pdi") && (format_rep != "pdi_expert"))
     {
-      Cerr << "Restarting calculation... : keyword " << format_rep << " not understood. Waiting for:" << finl << motlu << " formatte|binaire|xyz|single_hdf|pdi Filename" << finl;
+      Cerr << "Restarting calculation... : keyword " << format_rep << " not understood. Waiting for:" << finl << motlu << " formatte|binaire|xyz|single_hdf|pdi|pdi_expert Filename" << finl;
       Process::exit();
     }
 
   // XXX Elie Saikali : for polymac => only .sauv files are possible
   if (pb_base_->discretisation().is_polymac_p0() && format_rep != "binaire")
     {
-      Cerr << "Error in Probleme_base::" << __func__ << " !! " << finl;
+      Cerr << "Error in Save_Restart::" << __func__ << " !! " << finl;
       Cerr << "Only the binary format is currently supported to resume a simulation with the discretization " << pb_base_->discretisation().que_suis_je() << " ! " << finl;
       Cerr << "Please update your data file and use a .sauv file !" << finl;
       Process::exit();
@@ -352,8 +355,11 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
 
   // Read the filename:
   Nom nom_yaml;
-  if( format_rep == "pdi" )
-    lire_pdi_sauvegarde_reprise(is, motlu, restart_filename_, nom_yaml);
+  if( format_rep == "pdi_expert" )
+    {
+      lire_pdi_sauvegarde_reprise(is, motlu, restart_filename_, nom_yaml);
+      format_rep = "pdi";
+    }
   else
     is >> restart_filename_;
   // Force reprise hdf au dela d'un certain nombre de rangs MPI:
@@ -507,15 +513,18 @@ void Save_Restart::lire_sauvegarde(Entree& is, Motcle& motlu)
   is >> checkpoint_format_;
   if ((Motcle(checkpoint_format_) != "binaire") && (Motcle(checkpoint_format_) != "formatte") &&
       (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "single_hdf") &&
-      (Motcle(checkpoint_format_) != "pdi") )
+      (Motcle(checkpoint_format_) != "pdi") && (Motcle(checkpoint_format_) != "pdi_expert")  )
     {
       checkpoint_filename_ = checkpoint_format_;
       checkpoint_format_ = "binaire";
     }
   else
     {
-      if( Motcle(checkpoint_format_) == "pdi" )
-        lire_pdi_sauvegarde_reprise(is, motlu, checkpoint_filename_, yaml_fname_);
+      if( Motcle(checkpoint_format_) == "pdi_expert" )
+        {
+          lire_pdi_sauvegarde_reprise(is, motlu, checkpoint_filename_, yaml_fname_);
+          checkpoint_format_ = "pdi";
+        }
       else
         is >> checkpoint_filename_;
     }
@@ -546,7 +555,7 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
         break;
       else
         {
-          Cerr << "Error in Probleme_base::lire_donnees" << finl;
+          Cerr << "Error in Save_Restart::lire_sauvegarde_reprise" << finl;
           Cerr << "We expected } instead of " << motlu << " to mark the end of the data set" << finl;
           Process::exit();
         }
@@ -561,7 +570,7 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
   if ((Motcle(checkpoint_format_) != "binaire") && (Motcle(checkpoint_format_) != "formatte") &&
       (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "pdi"))
     {
-      Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi (which replace single_hdf)." << finl;
+      Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi/pdi_expert (which replace single_hdf)." << finl;
       Process::exit();
     }
 
@@ -654,8 +663,8 @@ int Save_Restart::sauver() const
         }
       else
         {
-          Cerr << "Error in Probleme_base::sauver() " << finl;
-          Cerr << "The format for the backup file must be either binary or formatted or pdi (which replace single_hdf)" << finl;
+          Cerr << "Error in Save_Restart::sauver() " << finl;
+          Cerr << "The format for the backup file must be either binary or formatted or pdi/pdi_expert (which replace single_hdf)" << finl;
           Cerr << "But it is :" << checkpoint_format_ << finl;
           Process::exit();
         }

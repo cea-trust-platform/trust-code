@@ -34,10 +34,10 @@ Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 // XD  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
 // XD  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
 // XD  attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
-// XD  attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when resuming the calculation.
-// XD  attr sauvegarde_simple format_file sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
-// XD  attr reprise format_file reprise 1 Keyword to resume a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to resume a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be resumed, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
-//  XD  attr resume_last_time format_file resume_last_time 1 Keyword to resume a calculation based on the name_file file, resume the calculation at the last time found in the file (tinit is set to last time of saved files).
+// XD  attr sauvegarde format_file_base sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when resuming the calculation.
+// XD  attr sauvegarde_simple format_file_base sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
+// XD  attr reprise format_file_base reprise 1 Keyword to resume a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to resume a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be resumed, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
+//  XD  attr resume_last_time format_file_base resume_last_time 1 Keyword to resume a calculation based on the name_file file, resume the calculation at the last time found in the file (tinit is set to last time of saved files).
 //  XD ref domaine domaine
 //  XD ref scheme schema_temps_base
 //  XD ref loi1 loi_fermeture_base
@@ -62,9 +62,17 @@ Implemente_base_sans_destructeur(Probleme_base,"Probleme_base",Probleme_U);
 // XD attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
 // XD attr is_multi_scalar rien is_multi_scalar_diffusion 1 Flag to activate the multi_scalar diffusion operator
 
-// XD format_file objet_lecture nul 0 Format of the file
-// XD attr format chaine(into=["binaire","formatte","xyz","single_hdf","pdi"]) format 1 Type of file (the file format).
-// XD attr name_file chaine name_file 0 Name of file.
+// XD format_file_base objet_lecture nul 0 Format of the file
+// XD   attr checkpoint_fname chaine checkpoint_fname 0 Name of file.
+
+// XD binaire format_file_base binaire -1 Format of the file - binary version
+// XD formatte format_file_base formatte -1 Format of the file - formatte version
+// XD xyz format_file_base xyz -1 Format of the file - xyz version
+// XD single_hdf format_file_base single_hdf -1 Format of the file - single_hdf version
+// XD pdi format_file_base pdi -1 Format of the file - pdi version
+
+// XD pdi_expert format_file_base pdi_expert 1 Format of the file - PDI expert version
+// XD   attr yaml_fname chaine yaml_fname 0 YAML file name
 
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
