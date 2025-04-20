@@ -1966,7 +1966,7 @@ int Champ_P1NC_implementation::remplir_coord_noeuds_et_polys(DoubleTab& position
   const IntTab& face_voisins=zvef.face_voisins();
   int nb_faces=zvef.nb_faces();
   polys.resize(nb_faces);
-
+  ToDo_Kokkos("critical");
   for(int i= 0; i< nb_faces; i++)
     {
       polys(i)=face_voisins(i, 0);
