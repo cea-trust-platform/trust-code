@@ -118,7 +118,7 @@ inline void end_gpu_timer(const std::string& str, int onDevice=1, int bytes=-1) 
           if (bytes == -1)
             {
               if (!str.empty())
-                printf("%s %7.3f ms [%s] %15s\n", clock.c_str(), ms, onDevice ? "Device" : "Host", str.c_str());
+                printf("%s %7.3f ms [%s %15s\n", clock.c_str(), ms, onDevice ? "Device]" : "Host]  ", str.c_str());
             }
           else
             {

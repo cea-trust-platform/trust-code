@@ -311,8 +311,8 @@ void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       Kokkos::deep_copy(device_view, host_view);
       statistiques().end_count(gpu_copytodevice_counter_, bytes);
       std::stringstream message;
-      message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "]";
-      end_gpu_timer(message.str(), bytes);
+      message << "Copy to device " << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
+      end_gpu_timer(message.str(), 0, bytes);
     }
 #endif
 }
@@ -324,7 +324,7 @@ _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName
   // non-const array will be modified on device:
   _TYPE_ *tab_addr = mapToDevice_(tab, DataLocation::Device, arrayName);
   return tab_addr;
-}
+}:
 
 // ToDo OpenMP: rename copy -> update or map ?
 // Copy non-const array to host from device
@@ -355,7 +355,7 @@ void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName)
       statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
       std::stringstream message;
       message << "Copy from device" << arrayName << " [" << ptrToString(ptr) << "] " << size << " items ";
-      end_gpu_timer(message.str(), bytes);
+      end_gpu_timer(message.str(), 0, bytes);
       if (clock_on) printf("\n");
       if (DeviceMemory::warning(size)) // Warning for large array only:
         ToDo_Kokkos("D2H update of large array! Add a breakpoint to find the reason if not IO.");
