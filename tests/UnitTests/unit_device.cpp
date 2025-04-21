@@ -34,7 +34,7 @@ TEST(DeviceTest, KokkosReductionBug) {
     DoubleTab a(2);
     a(0) = 1;
     a(1) = 2;
-    mapToDevice(a, "a");
+    mapToDevice(a);
     double mp = mp_norme_vect(a);
     double sol = sqrt(Process::nproc() * 5);
     if (mp != sol)
@@ -79,7 +79,7 @@ TEST(DeviceTest, AccessMethod0)
   int N = 10;
   DoubleTab inco(N);
   inco = 1;
-  mapToDevice(inco, "inco"); // copy
+  mapToDevice(inco); // copy
   EXPECT_EQ(inco.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(inco.ref_count(), 1);
 
@@ -119,7 +119,7 @@ TEST(DeviceTest, AccessMethod1)
   int N = 10;
   DoubleTab inco(N);
   inco = 1;
-  mapToDevice(inco, "inco");
+  mapToDevice(inco);
   EXPECT_EQ(inco.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(inco.ref_count(), 1);
 
@@ -154,7 +154,7 @@ TEST(DeviceTest, UpdateOnDevice0)
   int N = 10;
   DoubleTab inco(N);
   inco = 1;
-  mapToDevice(inco, "inco");
+  mapToDevice(inco);
   EXPECT_EQ(inco.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(inco.ref_count(), 1);
 
@@ -225,8 +225,8 @@ TEST(DeviceTest, OperationsArrOfDouble)
   ArrOfDouble a(10), b(10);
   a = 1;
   b = 2;
-  mapToDevice(a, "a");
-  mapToDevice(b, "b");
+  mapToDevice(a);
+  mapToDevice(b);
 
   // Opérations réalisées sur le device
   b+=a; // TRUSTArray& operator+=(const TRUSTArray& y) sur le device
@@ -238,7 +238,7 @@ TEST(DeviceTest, OperationsArrOfDouble)
   const ArrOfDouble& const_b = b;
 
   // Retour sur le host pour vérifier le résultat
-  copyFromDevice(b, "b");
+  copyFromDevice(b);
   EXPECT_EQ(const_b[0], 3);
 }
 
@@ -253,7 +253,7 @@ TEST(DeviceTest, allocateOnDevice)
   // Constructeur par copie : la copie doit être faite sur le device
   DoubleTab b(a);
   EXPECT_EQ(b.get_data_location(), DataLocation::Device);
-  copyFromDevice(b, "b");
+  copyFromDevice(b);
   const ArrOfDouble& const_b = b;
   EXPECT_EQ(const_b[0], 1);
   EXPECT_EQ(const_b[b.size() - 1], 1);
@@ -263,12 +263,12 @@ TEST(DeviceTest, copyFromDevice)
 {
   DoubleTab a(10);
   a = 1;
-  mapToDevice(a, "a"); // a est sur le device
+  mapToDevice(a); // a est sur le device
   DoubleTab b;
   b = a; // copie de a sur le device
   EXPECT_EQ(b.get_data_location(), DataLocation::Device);
   const ArrOfDouble& const_b = b;
-  copyFromDevice(b, "b");
+  copyFromDevice(b);
   EXPECT_EQ(const_b[0], 1);
   EXPECT_EQ(const_b[b.size() - 1], 1);
 }
@@ -280,9 +280,9 @@ TEST(DeviceTest, OperatorTest)
   const ArrOfDouble& const_b = b;
   a = 1;
   b = 10;
-  mapToDevice(a, "a");
+  mapToDevice(a);
   EXPECT_EQ(a.get_data_location(), DataLocation::HostDevice);
-  mapToDevice(b, "b");
+  mapToDevice(b);
   EXPECT_EQ(b.get_data_location(), DataLocation::HostDevice);
 
   a = b;  // Injection de a par copie sur device (a devient 10)
@@ -293,8 +293,8 @@ TEST(DeviceTest, OperatorTest)
   EXPECT_EQ(b.get_data_location(), DataLocation::Device);
 
   // Retour sur host pour vérification
-  copyFromDevice(a, "a");
-  copyFromDevice(b, "b");
+  copyFromDevice(a);
+  copyFromDevice(b);
   EXPECT_EQ(a.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(b.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(const_a[0], 20);
@@ -308,7 +308,7 @@ TEST(DeviceTest, DeviceDoubleTrav0)
   int N = 10;
   DoubleTrav a(10 * N);
   a = 1;
-  mapToDevice(a, "a"); // copie sur le device
+  mapToDevice(a); // copie sur le device
   EXPECT_EQ(a.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(a.ref_count(), 1);
   DeviceMemory::printMemoryMap();
@@ -373,7 +373,7 @@ TEST(DeviceTest, RefArrayTest)
   int N = 10;
   DoubleTab a(N);
   a = 1;
-  mapToDevice(a, "a");
+  mapToDevice(a);
   EXPECT_EQ(a.get_data_location(), DataLocation::HostDevice);
   DoubleTab b;
   b.ref_array(a);
@@ -387,7 +387,7 @@ TEST(DeviceTest, RefTabChunkTest)
   a = 1;
   DoubleTab b;
   b.ref_tab(a, 0, N); // référence partielle sur a
-  mapToDevice(b, "b");
+  mapToDevice(b);
   EXPECT_EQ(b.get_data_location(), DataLocation::HostDevice);
   EXPECT_EQ(a.get_data_location(), DataLocation::HostDevice);
 
@@ -414,7 +414,7 @@ TEST(DeviceTest, HostPointerTest)
     {
       DoubleTab b;
       b.ref_array(a);
-      mapToDevice(b, "b");
+      mapToDevice(b);
       EXPECT_EQ(a.data(), b.data());
       EXPECT_EQ(b.get_data_location(), DataLocation::HostDevice);
       EXPECT_EQ(a.get_data_location(), DataLocation::HostDevice);

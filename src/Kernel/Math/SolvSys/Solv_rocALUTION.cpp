@@ -746,7 +746,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   //e.Clear();
   if (nb_iter>1) first_solve_ = false;
   Cout << "[rocALUTION] Time to get solution: " << (rocalution_time() - tick) / 1e6 << finl;
-  if (solutionOnDevice) mapToDevice(x,"Send x back to device after rocALUTION");
+  if (solutionOnDevice) mapToDevice(x);
   return nb_iter;
 #else
   Process::exit("Sorry, rocALUTION solvers not available with this build.");

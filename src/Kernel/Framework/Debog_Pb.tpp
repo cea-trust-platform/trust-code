@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,7 +105,7 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
     {
       // Force la copie sur le host:
       arr.set_data_location(DataLocation::Device);
-      copyFromDevice(arr, "(Debog forced)");
+      copyFromDevice(arr);
       assert(arr.get_data_location()==DataLocation::HostDevice);
       // Comparaison avec array:
       int size = arr.size_array();
@@ -117,7 +117,7 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
           }
     }
   else
-    copyFromDevice(arr, "(Debog)"); // Copie sur le host si Device
+    copyFromDevice(arr); // Copie sur le host si Device
 
   static constexpr bool IS_DOUBLE = std::is_same<_TYPE_,double>::value;
   Nom identificateur;

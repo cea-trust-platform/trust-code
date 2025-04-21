@@ -152,12 +152,12 @@ inline const _TYPE_* addrOnDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab)
 }
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
+extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??")
+inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab)
 {
-  return allocateOnDevice(const_cast<TRUSTArray<_TYPE_,_SIZE_>&>(tab), arrayName);
+  return allocateOnDevice(const_cast<TRUSTArray<_TYPE_,_SIZE_>&>(tab));
 }
 
 template <typename _TYPE_>
@@ -170,30 +170,30 @@ template <typename _TYPE_, typename _SIZE_=int>
 extern void deleteOnDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
+extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation, std::string arrayName);
+extern _TYPE_* mapToDevice_(TRUSTArray<_TYPE_,_SIZE_>& tab, DataLocation nextLocation);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
+extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
+extern void copyFromDevice(TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab, std::string arrayName="??");
+extern void copyFromDevice(const TRUSTArray<_TYPE_,_SIZE_>& tab);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
+extern _TYPE_* allocateOnDevice(_TYPE_* ptr, _SIZE_ size);
 
 template <typename _TYPE_, typename _SIZE_=int>
 extern void deleteOnDevice(_TYPE_* ptr, _SIZE_ size);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern void copyToDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
+extern void copyToDevice(_TYPE_* ptr, _SIZE_ size);
 
 template <typename _TYPE_, typename _SIZE_=int>
-extern void copyFromDevice(_TYPE_* ptr, _SIZE_ size, std::string arrayName="??");
+extern void copyFromDevice(_TYPE_* ptr, _SIZE_ size);
 
 #endif

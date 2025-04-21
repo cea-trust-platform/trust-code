@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -291,9 +291,9 @@ void Fluide_Dilatable_base::update_rho_cp(double temps)
   if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
-      mapToDevice(ch_rho_->valeurs(), "rho");
-      mapToDevice(ch_rho_Cp_elem_->valeurs(), "rho_cp_elem_");
-      mapToDevice(ch_rho_Cp_comme_T_->valeurs(), "rho_cp_comme_T_");
+      mapToDevice(ch_rho_->valeurs());
+      mapToDevice(ch_rho_Cp_elem_->valeurs());
+      mapToDevice(ch_rho_Cp_comme_T_->valeurs());
     }
   ch_rho_Cp_comme_T_->changer_temps(temps);
   ch_rho_Cp_comme_T_->changer_temps(temps);
@@ -426,9 +426,9 @@ int Fluide_Dilatable_base::initialiser(const double temps)
   if (equation_.size() && (*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
     {
       // ToDo_Kokkos deplacer tout cela dans Milieu_base::initialiser ?
-      mapToDevice(ch_rho_->valeurs(), "rho");
-      mapToDevice(ch_rho_Cp_elem_->valeurs(), "rho_cp_elem_");
-      mapToDevice(ch_rho_Cp_comme_T_->valeurs(), "rho_cp_comme_T_");
+      mapToDevice(ch_rho_->valeurs());
+      mapToDevice(ch_rho_Cp_elem_->valeurs());
+      mapToDevice(ch_rho_Cp_comme_T_->valeurs());
     }
   return 1;
 }

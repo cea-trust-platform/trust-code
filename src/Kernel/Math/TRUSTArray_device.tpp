@@ -25,7 +25,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost() const
 {
 #if defined(TRUST_USE_GPU) && !defined(TRUST_USE_UVM)
   if (get_data_location()==DataLocation::Device)
-    copyFromDevice(*this, "const detected with ensureDataOnHost()");
+    copyFromDevice(*this);
 #endif
 }
 
@@ -36,7 +36,7 @@ inline void TRUSTArray<_TYPE_,_SIZE_>::ensureDataOnHost()
   const DataLocation& loc = get_data_location();
   if (loc==DataLocation::Host || loc==DataLocation::HostOnly || loc==DataLocation::PartialHostDevice) return;
   else if (loc==DataLocation::Device)
-    copyFromDevice(*this, "non-const detected with ensureDataOnHost()");
+    copyFromDevice(*this);
   // On va modifier le tableau (non const) sur le host:
   set_data_location(DataLocation::Host);
 #endif

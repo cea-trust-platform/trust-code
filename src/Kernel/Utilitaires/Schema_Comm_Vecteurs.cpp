@@ -69,7 +69,7 @@ void Schema_Comm_Vecteurs_Static_Data::init(int min_buf_size, bool bufferOnDevic
       // Allocate buffer_base_ on device:
       if (buffer_base_device_size_>0)
         deleteOnDevice(buffer_base_, buffer_base_device_size_);
-      allocateOnDevice(buffer_base_, min_buf_size, "buffer_base_");
+      allocateOnDevice(buffer_base_, min_buf_size);
       buffer_base_device_size_ = min_buf_size;
     }
 }
@@ -240,7 +240,7 @@ void Schema_Comm_Vecteurs::exchange()
   if (bufferOnDevice_)
     {
       if (!use_gpu_aware_mpi_)
-        copyFromDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_"); // Copy buffer to host for MPI communication
+        copyFromDevice(sdata_.buffer_base_, min_buf_size_); // Copy buffer to host for MPI communication
       else
         {
           // Communication between devices. Use device buffer:
@@ -291,7 +291,7 @@ void Schema_Comm_Vecteurs::exchange()
   status_ = EXCHANGED;
 
   // Copy buffer to device after MPI recv if GPU-Aware MPI is not enabled:
-  if (bufferOnDevice_ && !use_gpu_aware_mpi_) copyToDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_");
+  if (bufferOnDevice_ && !use_gpu_aware_mpi_) copyToDevice(sdata_.buffer_base_, min_buf_size_);
 }
 
 void Schema_Comm_Vecteurs::end_comm()

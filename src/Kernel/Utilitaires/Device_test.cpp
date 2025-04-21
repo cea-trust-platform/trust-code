@@ -36,7 +36,7 @@ void self_test()
       DoubleTab a(2);
       a(0) = 1;
       a(1) = 2;
-      mapToDevice(a, "a");
+      mapToDevice(a);
       double mp = mp_norme_vect(a);
       double sol = sqrt(Process::nproc() * 5);
       if (mp != sol)
@@ -86,7 +86,7 @@ void self_test()
   // Teste les methodes d'acces sur le device:
   DoubleTab inco(N);
   inco = 1;
-  mapToDevice(inco, "inco"); // copy
+  mapToDevice(inco); // copy
   assert(inco.get_data_location() == DataLocation::HostDevice);
   assert(inco.ref_count() == 1);
   {
@@ -207,8 +207,8 @@ void self_test()
     ArrOfDouble a(10), b(10);
     a=1;
     b=2;
-    mapToDevice(a, "a");
-    mapToDevice(b, "b");
+    mapToDevice(a);
+    mapToDevice(b);
     b+=a; // TRUSTArray& operator+=(const TRUSTArray& y) sur le device
     b+=3; // TRUSTArray& operator+=(const _TYPE_ dy)
     b-=2; // TRUSTArray& operator-=(const _TYPE_ dy)
@@ -221,7 +221,7 @@ void self_test()
     const ArrOfDouble& const_b = b;
     // Operations sur le device:
     // Retour sur le host pour verifier le resultat
-    copyFromDevice(b, "b");
+    copyFromDevice(b);
     assert(const_b[0] == 3);
   }
 
@@ -234,7 +234,7 @@ void self_test()
     assert(a.get_data_location() == DataLocation::Device);
     DoubleTab b(a); // b doit etre aussi alloue sur le device et la copie faite sur le device
     assert(b.get_data_location() == DataLocation::Device);
-    copyFromDevice(b, "b");
+    copyFromDevice(b);
     const ArrOfDouble& const_b = b;
     assert(const_b[0] == 1);
     assert(const_b[b.size() - 1] == 1);
@@ -243,12 +243,12 @@ void self_test()
     // Copies de tableau:
     DoubleTab a(10);
     a=1;
-    mapToDevice(a, "a"); // a sur le device
+    mapToDevice(a); // a sur le device
     DoubleTab b;
     b = a; // b doit etre aussi alloue/rempli sur le device par copie de a:
     assert(b.get_data_location() == DataLocation::Device);
     const ArrOfDouble& const_b = b;
-    copyFromDevice(b, "b");
+    copyFromDevice(b);
     assert(const_b[0] == 1);
     assert(const_b[b.size() - 1] == 1);
   }
@@ -259,9 +259,9 @@ void self_test()
     const ArrOfDouble& const_b = b;
     a=1;
     b=10;
-    mapToDevice(a,"a");
+    mapToDevice(a);
     assert(a.get_data_location() == DataLocation::HostDevice);
-    mapToDevice(b, "b");
+    mapToDevice(b);
     assert(b.get_data_location() == DataLocation::HostDevice);
     a=b;  // TRUSTArray<_TYPE_>::inject_array(v) faite sur le device (a=10)
     assert(a.get_data_location() == DataLocation::Device);
@@ -270,8 +270,8 @@ void self_test()
     b-=a; // operator_vect_vect_generic(SUB_) faite sur le device (b=-10)
     assert(b.get_data_location() == DataLocation::Device);
     // Retour sur le host pour verifier les resultats
-    copyFromDevice(a,"a");
-    copyFromDevice(b,"b");
+    copyFromDevice(a);
+    copyFromDevice(b);
     assert(a.get_data_location() == DataLocation::HostDevice);
     assert(b.get_data_location() == DataLocation::HostDevice);
     assert(const_a[0] == 20);
@@ -283,7 +283,7 @@ void self_test()
   {
     DoubleTrav a(10*N);
     a = 1;
-    mapToDevice(a, "a"); // copy
+    mapToDevice(a); // copy
     assert(a.get_data_location() == DataLocation::HostDevice);
     assert(a.ref_count() == 1);
     DeviceMemory::printMemoryMap();
@@ -339,7 +339,7 @@ void self_test()
   {
     DoubleTab a(N);
     a=1;
-    mapToDevice(a, "a"); // Sur le device
+    mapToDevice(a); // Sur le device
     assert(a.get_data_location()==DataLocation::HostDevice);
     DoubleTab b;
     b.ref_array(a);
@@ -351,7 +351,7 @@ void self_test()
     a=1;
     DoubleTab b;
     b.ref_tab(a, 0, N); // reference partielle sur a
-    mapToDevice(b, "b"); // Sur le device
+    mapToDevice(b); // Sur le device
     assert(b.get_data_location()==DataLocation::HostDevice); // b doit etre sur le device
     assert(a.get_data_location()==DataLocation::HostDevice); // a doit etre sur le device
 
@@ -374,7 +374,7 @@ void self_test()
     {
       DoubleTab b;
       b.ref_array(a);
-      mapToDevice(b, "b"); // Sur le device
+      mapToDevice(b); // Sur le device
       assert(a.data()==b.data());
       assert(b.get_data_location() == DataLocation::HostDevice);
       assert(a.get_data_location() == DataLocation::HostDevice); // a est considere sur le device egalement
