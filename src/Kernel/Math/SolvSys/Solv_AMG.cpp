@@ -70,7 +70,11 @@ Entree& Solv_AMG::readOn(Entree& is)
       else if (motcle=="RTOL") is >> rtol;
       else if (motcle=="ATOL") is >> atol;
       else if (motcle=="IMPR") impr = true;
-      else options_petsc+=motcle;
+      else
+        {
+          options_petsc+=motcle;
+          options_petsc+=" ";
+        }
       is >> motcle;
     }
   // We select the more efficient/robust one:

@@ -2105,7 +2105,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         check_residual = true; // En debug uniquement car verification faite sur CPU ce qui est dommage en prod...
       }
 #endif
-  if (check_residual)
+  if (check_residual && !MatricePetsc_ /* Matrice_Petsc::ajouter_multvect() not implemented bouh */)
     {
       DoubleVect test(secmem);
       test*=-1;
@@ -2415,6 +2415,9 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
   // Je n'arrive pas a faire marcher le stockage symetrique avec le preconditionneur PCEISENSTAT
   // qui est interessant car necessite 2 fois moins d'operations que le SSOR
   if (type_pc_==PCEISENSTAT) mataij_=1;
+
+  // Reading a Matrix with Hypre (ToDo test if mataij=1 for Hypre is not better, cause here 2 matrix seqsbaij and seqaij)
+  if (read_matrix_ && type_pc_==PCHYPRE) mataij_=1;
 
   // Dans le cas de SUPERLU_DIST pour Cholesky, je n'arrive pas a faire marcher le stockage
   // symetrique donc l'utilisation de SUPERLU_DIST n'est pas encore optimale en RAM...
