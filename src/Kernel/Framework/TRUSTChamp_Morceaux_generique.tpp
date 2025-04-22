@@ -116,24 +116,30 @@ DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_compo(const Double
  * @param (DoubleTab& val) le tableau des valeurs du champ aux points specifies
  */
 template<Champ_Morceaux_Type _TYPE_>
-DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems(const DoubleTab&, const IntVect& les_polys, DoubleTab& val) const
+DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems(const DoubleTab&, const IntVect& polys, DoubleTab& tab_val) const
 {
-  if (val.nb_dim() == 2)
+  if (tab_val.nb_dim() == 2)
     {
-      assert((val.dimension(0) == les_polys.size()) || (val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
+      assert((tab_val.dimension(0) == polys.size()) || (tab_val.dimension_tot(0) == polys.size()));
+      assert(tab_val.dimension(1) == nb_compo_);
     }
   else erreur_champ_(__func__); // (val.nb_dim() > 2)
 
-  const DoubleTab& ch = valeurs();
-  val = 0.;
-  int p;
+  tab_val = 0.;
+  CDoubleTabView ch = valeurs().view_ro();
+  CIntArrView les_polys = polys.view_ro();
+  DoubleTabView val = tab_val.view_rw();
+  int nb_compo = nb_compo_;
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), les_polys.size(), KOKKOS_LAMBDA(const int rang_poly)
+  {
+    int p = les_polys(rang_poly);
+    if (p != -1)
+      for (int n = 0; n < nb_compo; n++)
+        val(rang_poly, n) = ch(p, n);
+  });
+  end_gpu_timer(__KERNEL_NAME__);
 
-  for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
-    if ((p = les_polys(rang_poly)) != -1)
-      for (int n = 0; n < nb_compo_; n++) val(rang_poly, n) = ch(p, n);
-
-  return val;
+  return tab_val;
 }
 
 /*! @brief Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees, en indiquant que les points de calculs sont situes dans les elements indiques.
@@ -149,7 +155,7 @@ DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems_compo(const 
   assert(val.size_totale() >= les_polys.size());
   int le_poly;
   const DoubleTab& ch = valeurs();
-
+  ToDo_Kokkos("critical");
   for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
     {
       le_poly = les_polys(rang_poly);
@@ -171,27 +177,36 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
     }
   else
     {
-      const IntTab& les_elems = mon_domaine->les_elems();
-      const int nb_som_elem = mon_domaine->nb_som_elem();
 
       OWN_PTR(Champ_base) espace_stockage;
       const Champ_base *ch = !ref_pb.non_nul() ? nullptr : ref_pb->has_champ(nom_champ_parametre_) ? &ref_pb->get_champ(nom_champ_parametre_) : &ref_pb->get_champ_post(nom_champ_parametre_).get_champ(espace_stockage);
-
+      ToDo_Kokkos("critical");
+      const int nb_som_elem = mon_domaine->nb_som_elem();
+      bool pb = ref_pb.non_nul();
+      const DoubleTab& tab_ch = ch->valeurs();
+      const DoubleTab& coord = mon_domaine->les_sommets();
+      const IntTab& les_elems = mon_domaine->les_elems();
+      int dim = dimension;
       DoubleTab& tab = valeurs();
-
+      const int nb_comp = tab.dimension(1);
       for (int i = 0; i < mon_domaine->nb_elem_tot(); i++)
         {
           /* xs : coordonnees du poly par barycentre des sommets -> pas top */
           double xs[3] = {0,};
           int nb_som = 0, s, r;
           for (int j = 0; j < nb_som_elem && (s = les_elems(i, j)) >= 0; j++)
-            for (r = 0, nb_som++; r < dimension; r++) xs[r] += mon_domaine->coord(s, r);
-
-          for (r = 0; r < dimension; r++) xs[r] /= nb_som;
+            {
+              for (r = 0, nb_som++; r < dim; r++)
+                {
+                  xs[r] += coord(s, r);
+                }
+            }
+          for (r = 0; r < dim; r++)
+            xs[r] /= nb_som;
 
           /* calcul de chaque composante */
-          double val = ch ? ch->valeurs()(i, 0) : 0;
-          for (int k = 0; k < tab.dimension(1); k++)
+          double val = ch ? tab_ch(i, 0) : 0;
+          for (int k = 0; k < nb_comp; k++)
             {
               Parser_U& psr = parser[parser_idx(i, k)];
               psr.setVar("x", xs[0]);
@@ -199,7 +214,7 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
               psr.setVar("z", xs[2]);
               psr.setVar("t", time);
 
-              if (ref_pb.non_nul()) psr.setVar("val", val);
+              if (pb) psr.setVar("val", val);
               tab(i, k) = psr.eval();
             }
         }

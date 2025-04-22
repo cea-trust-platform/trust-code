@@ -83,10 +83,6 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
   int nb_bords=domaine_VEF.nb_front_Cl();
   const int premiere_face_int=domaine_VEF.premiere_face_int();
 
-  // On dimensionne et initialise le tableau des bilans de flux:
-  if (tab_flux_bords.size_array()==0) tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
-  tab_flux_bords=0.;
-
   {
     CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
     CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
@@ -270,7 +266,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& tab_inconnue,
                || sub_type(Symetrie,la_cl.valeur())
                || sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
-          DoubleArrView flux_bords = static_cast<ArrOfDouble&>(tab_flux_bords).view_rw();
+          DoubleArrView flux_bords = static_cast<ArrOfDouble&>(tab_flux_bords).view_wo();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int face)
           {
             flux_bords(face) = 0.;
@@ -288,10 +284,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                                              int nb_comp) const
 {
   assert(nb_comp==dimension);
-
-  // On dimensionne et initialise le tableau des bilans de flux:
-  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nb_comp);
-  tab_flux_bords=0.;
 
   // Construction du tableau grad_ si necessaire
   if(!grad_.get_md_vector().non_nul())
@@ -376,8 +368,12 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl->frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
-          for (int face=ndeb; face<nfin; face++)
-            tab_flux_bords(face,0) = 0.;
+          DoubleTabView flux_bords = tab_flux_bords.view_wo();
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA(const int face)
+          {
+            flux_bords(face, 0) = 0.;
+          });
+          end_gpu_timer(__KERNEL_NAME__);
         }
     }
 }
@@ -400,9 +396,6 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   //DoubleVect n(Objet_U::dimension);
   //DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
-  // On dimensionne et initialise le tableau des bilans de flux:
-  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nb_comp);
-  tab_flux_bords=0.;
   assert(nb_comp>1);
   int nb_bords=domaine_VEF.nb_front_Cl();
   int ind_face;
@@ -626,6 +619,11 @@ DoubleTab& Op_Diff_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
 
   const Champ_base& inco = equation().inconnue();
   const Nature_du_champ nature_champ = inco.nature_du_champ();
+
+  // On dimensionne et initialise le tableau des bilans de flux:
+  if (flux_bords_.size_array()!=domaine_VEF.nb_faces_bord()) flux_bords_.resize(domaine_VEF.nb_faces_bord(),nature_champ==scalaire ? 1 : nb_comp);
+  flux_bords_=0.;
+
   if(nature_champ==scalaire)
     ajouter_cas_scalaire(inconnue, resu, flux_bords_, nu, domaine_Cl_VEF, domaine_VEF);
   else if (nature_champ==vectoriel)

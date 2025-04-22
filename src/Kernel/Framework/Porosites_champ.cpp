@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
  */
 const DoubleTab& modif_par_porosite_si_flag(const DoubleTab& org, DoubleTab& res, int flag, const DoubleVect& porosite)
 {
+  mapToDevice(porosite); // Copy porosity onto device cause rarely used in Operators so local_min_abs_vect() was generally done on CPU !
   // Switch mp_min_vect to local_min_abs_vect to avoid mp_min call during the calculation of operators (convection, diffusion,...)
   if ((flag == 0) || (local_min_abs_vect(porosite) == 1))
     res.ref(org);

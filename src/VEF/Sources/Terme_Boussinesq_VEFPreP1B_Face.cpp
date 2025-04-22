@@ -66,45 +66,48 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
 
   // On remplit les Poids et les coord_bary :
   double Poids = 1./(dim+1);
-  DoubleTrav tab_coord_bary(nbpts,dim+1); // lambda_i des points
-  if(dim==2)
+  if (tab_coord_bary_.dimension(0)!=nbpts)
     {
-      tab_coord_bary(0,0)=0.5;
-      tab_coord_bary(0,1)=0.;
-      tab_coord_bary(0,2)=0.5;
+      tab_coord_bary_.resize(nbpts, dim + 1); // lambda_i des points
+      if (dim == 2)
+        {
+          tab_coord_bary_(0, 0) = 0.5;
+          tab_coord_bary_(0, 1) = 0.;
+          tab_coord_bary_(0, 2) = 0.5;
 
-      tab_coord_bary(1,0)=0.;
-      tab_coord_bary(1,1)=0.5;
-      tab_coord_bary(1,2)=0.5;
+          tab_coord_bary_(1, 0) = 0.;
+          tab_coord_bary_(1, 1) = 0.5;
+          tab_coord_bary_(1, 2) = 0.5;
 
-      tab_coord_bary(2,0)=0.5;
-      tab_coord_bary(2,1)=0.5;
-      tab_coord_bary(2,2)=0.;
-    }
-  else if(dim==3)
-    {
-      double a = 0.5854101966249685;
-      double b = 0.1381966011250105;
+          tab_coord_bary_(2, 0) = 0.5;
+          tab_coord_bary_(2, 1) = 0.5;
+          tab_coord_bary_(2, 2) = 0.;
+        }
+      else if (dim == 3)
+        {
+          double a = 0.5854101966249685;
+          double b = 0.1381966011250105;
 
-      tab_coord_bary(0,0)=a;
-      tab_coord_bary(0,1)=b;
-      tab_coord_bary(0,2)=b;
-      tab_coord_bary(0,3)=b;
+          tab_coord_bary_(0, 0) = a;
+          tab_coord_bary_(0, 1) = b;
+          tab_coord_bary_(0, 2) = b;
+          tab_coord_bary_(0, 3) = b;
 
-      tab_coord_bary(1,0)=b;
-      tab_coord_bary(1,1)=a;
-      tab_coord_bary(1,2)=b;
-      tab_coord_bary(1,3)=b;
+          tab_coord_bary_(1, 0) = b;
+          tab_coord_bary_(1, 1) = a;
+          tab_coord_bary_(1, 2) = b;
+          tab_coord_bary_(1, 3) = b;
 
-      tab_coord_bary(2,1)=b;
-      tab_coord_bary(2,0)=b;
-      tab_coord_bary(2,2)=a;
-      tab_coord_bary(2,3)=b;
+          tab_coord_bary_(2, 1) = b;
+          tab_coord_bary_(2, 0) = b;
+          tab_coord_bary_(2, 2) = a;
+          tab_coord_bary_(2, 3) = b;
 
-      tab_coord_bary(3,2)=b;
-      tab_coord_bary(3,0)=b;
-      tab_coord_bary(3,1)=b;
-      tab_coord_bary(3,3)=a;
+          tab_coord_bary_(3, 2) = b;
+          tab_coord_bary_(3, 0) = b;
+          tab_coord_bary_(3, 1) = b;
+          tab_coord_bary_(3, 3) = a;
+        }
     }
 
   const Champ_Inc_base& le_scalaire = equation_scalaire().inconnue();
@@ -114,7 +117,7 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& tab_resu) const
   IntTrav tab_les_polygones(nb_elem_tot * nbpts);
   DoubleTrav tab_les_positions(nb_elem_tot * nbpts, dim);
 
-  CDoubleTabView coord_bary = tab_coord_bary.view_ro();
+  CDoubleTabView coord_bary = tab_coord_bary_.view_ro();
   CIntTabView elem_sommets = domaine_VEF.domaine().les_elems().view_ro();
   CDoubleTabView coord_sommets = domaine_VEF.domaine().les_sommets().view_ro();
   IntArrView les_polygones = static_cast<ArrOfInt&>(tab_les_polygones).view_wo();

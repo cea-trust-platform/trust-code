@@ -1437,11 +1437,15 @@ valeur_aux_elems(const DoubleTab& positions,
                  DoubleTab& val) const
 {
   if (les_polys.size() == 0) return val;
+  const Domaine_VEF& domaine_VEF = domaine_vef();
+#ifdef TRUST_USE_GPU
+  if (les_polys.size()==domaine_VEF.nb_elem())
+    Cerr << "Warning, Champ_P1NC_implementation::valeur_aux_elems(...) called whereas call to Champ_P1NC_implementation::valeur_aux_centres_de_gravite(...) could be more efficient!" << finl;
+#endif
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
   const DoubleTab& ch = cha.valeurs();
 
-  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine& domaine_geom = get_domaine_geom();
   const DoubleTab& coord = domaine_geom.coord_sommets();
   const IntTab& sommet_poly = domaine_geom.les_elems();

@@ -569,7 +569,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
       Process::exit();
     }
   DoubleTravs sources_val(nb_sources);
-  IntVect nb_comps(nb_sources);
+  IntTrav nb_comps(nb_sources);
   Noms nom_source(nb_sources);
   int dim_compo = 2*dimension;
   Noms compo(dim_compo);
@@ -611,6 +611,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
             {
               sources_val[so].resize(nb_pos,nb_compso);
               if (directive == "CHAMP_FACE") source_so.valeur_aux_faces(sources_val[so]);
+              else if (directive == "CHAMP_ELEM" && nb_pos==domaine_dis.domaine().nb_elem()) source_so.valeur_aux_centres_de_gravite(domaine_dis.domaine(), sources_val[so]);
               else source_so.valeur_aux(positions,sources_val[so]);
             }
         }
@@ -678,7 +679,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           CDoubleTabView face_normales = zvf.face_normales().view_ro();
           CDoubleArrView surface = zvf.face_surfaces().view_ro();
           CDoubleTabView pos = positions.view_ro();
-          CIntArrView nb_comp_sources = nb_comps.view_ro();
+          CIntArrView nb_comp_sources = static_cast<const ArrOfInt&>(nb_comps).view_ro();
           DoubleArrView valeurs = static_cast<ArrOfDouble&>(valeurs_espace).view_wo();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
           {
@@ -817,7 +818,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(OWN_PTR(Champ_base)&
           for (int so=0; so<nb_sources; so++)
             sources[so] = sources_val[so].view_ro();
           CDoubleTabView pos = positions.view_ro();
-          CIntArrView nb_comp_sources = nb_comps.view_ro();
+          CIntArrView nb_comp_sources = static_cast<const ArrOfInt&>(nb_comps).view_ro();
           DoubleTabView valeurs = valeurs_espace.view_wo();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_pos, KOKKOS_LAMBDA(const int i)
           {

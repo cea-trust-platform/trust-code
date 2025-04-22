@@ -89,12 +89,11 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
 
   assert(resu.nb_dim() < 3);
   int ncomp = resu.line_size();
-
-  DoubleVect& bilan = so_base->bilan();
-  bilan.resize(ncomp);
-  bilan = 0;
   int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
-  tab_coef_.resize(nb_faces_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
+  DoubleVect& bilan = so_base->bilan();
+  if (bilan.size_array()!=ncomp) bilan.resize(ncomp);
+  bilan = 0;
+  if (tab_coef_.size_array()!=nb_faces_tot) tab_coef_.resize(nb_faces_tot, RESIZE_OPTIONS::NOCOPY_NOINIT);
   tab_coef_ = 1;
   if (equation_divisee_par_rho())
     {
