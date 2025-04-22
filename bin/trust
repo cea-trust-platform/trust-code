@@ -1188,9 +1188,9 @@ then
       then
          [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" = "" ] && echo "Error, binary $exec not linked correctly for MPICH_GPU_SUPPORT_ENABLED=1 !" && exit -1
          echo "export MPICH_GPU_SUPPORT_ENABLED=1" >> $GPU_DIRECT
-         # More variables for adastra to fiabilize GPU communications (it works with 128xMI250, not necessay on 100xMI300) tips from adastra support:
+         # More variables for adastra to fiabilize GPU communications tips from adastra support:
          # Move into HOST files ?
-	 [ $ROCM_ARCH = gfx90a ] && echo "# Some flags to enable if issues on MI250:
+	 [ $HOST = adastra ] && echo "# Some flags to enable if issues MI250/MI300:
 export MPICH_ASYNC_PROGRESS=1
 export FI_CXI_RX_MATCH_MODE=software
 export FI_CXI_REQ_BUF_SIZE=12582912
