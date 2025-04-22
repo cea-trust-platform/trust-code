@@ -365,7 +365,7 @@ Objet_a_lire::Nature convert_nature(Param::Nature nat)
     return Objet_a_lire::OPTIONAL;
 }
 
-void Param::ajouter(const char *mot, int *quoi, Param::Nature nat) //int opt)
+void Param::ajouter(const char *mot, int *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
@@ -373,7 +373,7 @@ void Param::ajouter(const char *mot, int *quoi, Param::Nature nat) //int opt)
 }
 
 #if INT_is_64_ == 2
-void Param::ajouter(const char *mot, trustIdType *quoi, Param::Nature nat) //int opt)
+void Param::ajouter(const char *mot, trustIdType *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
@@ -381,13 +381,13 @@ void Param::ajouter(const char *mot, trustIdType *quoi, Param::Nature nat) //int
 }
 #endif
 
-void Param::ajouter(const char *mot, double *quoi, Param::Nature nat) //int opt)
+void Param::ajouter(const char *mot, double *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
   obj.set_double(quoi);
 }
-void Param::ajouter(const char *mot, Objet_U *quoi, Param::Nature nat) //int opt)
+void Param::ajouter(const char *mot, Objet_U *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
@@ -402,32 +402,32 @@ Param& Param::ajouter_param(const char *mot, Param::Nature nat)
   name += obj.get_name();
   return obj.create_param(name);
 }
-void Param::ajouter_arr_size_predefinie(const char *mot, ArrOfInt *quoi, Param::Nature nat) //int opt)
+void Param::ajouter_arr_size_predefinie(const char *mot, ArrOfInt *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
   obj.set_arrofint(quoi);
 }
-void Param::ajouter_arr_size_predefinie(const char *mot, ArrOfDouble *quoi, Param::Nature nat) //int opt)
+void Param::ajouter_arr_size_predefinie(const char *mot, ArrOfDouble *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
   obj.set_arrofdouble(quoi);
 }
 
-void Param::ajouter_flag(const char *mot, int *quoi, Param::Nature nat) //int opt)
+void Param::ajouter_flag(const char *mot, int *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
   obj.set_flag(quoi);
 }
-void Param::ajouter_flag(const char *mot, bool *quoi, Param::Nature nat) //int opt)
+void Param::ajouter_flag(const char *mot, bool *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
   obj.set_flag(quoi);
 }
-void Param::ajouter_non_std(const char *mot, Objet_U *quoi, Param::Nature nat) //int opt)
+void Param::ajouter_non_std(const char *mot, Objet_U *quoi, Param::Nature nat)
 {
   Objet_a_lire& obj = create_or_get_objet_a_lire(mot);
   obj.set_nature(convert_nature(nat));
