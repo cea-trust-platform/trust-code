@@ -159,9 +159,9 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
       const int idx_i_tmp = ((int) (floor(x2)) - OFFSET_I) < -ghost ? ((int) (floor(x2)) - OFFSET_I) + NB_ELEM_I : ((int) (floor(x2)) - OFFSET_I);
       const int idx_j_tmp = ((int) (floor(y2)) - OFFSET_J) < -ghost ? ((int) (floor(y2)) - OFFSET_J) + NB_ELEM_J : ((int) (floor(y2)) - OFFSET_J);
       const int idk_k_tmp = ((int) (floor(z2)) - OFFSET_K) < -ghost ? ((int) (floor(z2)) - OFFSET_K) + NB_ELEM_K : ((int) (floor(z2)) - OFFSET_K);
-      const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
-      const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
-      const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
+      const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost - 1? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
+      const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost - 1? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
+      const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost - 1? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
       // Coordonnes barycentriques du points dans la cellule :
       const double xfact = fma(1., x2, - floor(x2));
       const double yfact = fma(1., y2, - floor(y2));
@@ -171,18 +171,23 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
       const bool ok = (index_i >= - ghost && index_i < ni + ghost - 1) && (index_j >= - ghost && index_j < nj + ghost - 1) && (index_k >= - ghost && index_k < nk + ghost - 1);
       if (!ok)
         {
-          if (skip_unknown_points) // Should not happen anymore
-            {
-              result[idx] = value_for_bad_points;
-              continue; // go to next point
-            }
-          else
-            {
+          // if (skip_unknown_points) // Should not happen anymore
+          //   {
+          //     result[idx] = value_for_bad_points;
+          //     continue; // go to next point
+          //   }
+          // else
+          //   {
               // Error!
+              Cerr<<"For x : "<<-ghost<<" "<<ni + ghost - 1<<", index i = "<<index_i<<finl;
+              Cerr<<idx_i_tmp - NB_ELEM_I<<" "<<idx_i_tmp<<finl;
+              Cerr<<NB_ELEM_LOC_I<<" "<<NB_ELEM_I<<finl;
+              Cerr<<"For y : "<<-ghost<<" "<<nj + ghost - 1<<", index j = "<<index_j<<finl;
+              Cerr<<"For z : "<<-ghost<<" "<<nk + ghost - 1<<", index k = "<<index_k<<finl;
               Cerr << "Error in ijk_interpolate_implementation: request interpolation of point " << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me()
                    << finl;
               Process::exit();
-            }
+            // }
         }
 
       const double r = (((1. - xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1. - yfact)
@@ -255,9 +260,9 @@ static double ijk_interpolate_one_value(const IJK_Field_double& field, const Vec
   const int idx_i_tmp = ((int) (floor(x2)) - OFFSET_I) < -ghost ? ((int) (floor(x2)) - OFFSET_I) + NB_ELEM_I : ((int) (floor(x2)) - OFFSET_I);
   const int idx_j_tmp = ((int) (floor(y2)) - OFFSET_J) < -ghost ? ((int) (floor(y2)) - OFFSET_J) + NB_ELEM_J : ((int) (floor(y2)) - OFFSET_J);
   const int idk_k_tmp = ((int) (floor(z2)) - OFFSET_K) < -ghost ? ((int) (floor(z2)) - OFFSET_K) + NB_ELEM_K : ((int) (floor(z2)) - OFFSET_K);
-  const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
-  const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
-  const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
+  const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost - 1 ? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
+  const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost - 1 ? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
+  const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost - 1 ? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
   // Coordonnes barycentriques du points dans la cellule :
   const double xfact = fma(1., x2, - floor(x2));
   const double yfact = fma(1., y2, - floor(y2));
