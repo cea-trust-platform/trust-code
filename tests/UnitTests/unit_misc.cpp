@@ -23,7 +23,7 @@
 #include <Motcle.h>
 #include <map>
 
-//Nom and Motcle as key to std::map:
+//Nom as key to std::map:
 TEST(Misc, NomMap) {
     std::map<Nom, int> my_map;
     my_map["toto"] = 3;
@@ -31,10 +31,14 @@ TEST(Misc, NomMap) {
 
     EXPECT_EQ(b, 3);
 
-    // Same thing with Motcle but we can ignore case:
-    std::map<Motcle, int> my_map2;
-    my_map["toto"] = 3;
-    const int b2 = my_map.at("ToTo"); // was throwing !! because no operator '<' on Nom
+}
+//Motcle as key to std::map:
+TEST(Misc, MotCleMap) {
 
-    EXPECT_EQ(b2, 3);
+    // Same thing with Motcle but we can ignore case:
+    std::map<Motcle, int> my_map;
+    my_map["toto"] = 3;
+    const int b = my_map.at("ToTo"); // was throwing !! because no operator '<' on Nom
+
+    EXPECT_EQ(b, 3);
 }
