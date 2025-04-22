@@ -18,6 +18,7 @@
 
 #include <Frontiere.h>
 
+// XD Domaine_base objet_u Domaine_base -1 base for most domains
 Implemente_base_sans_constructeur(Domaine_base,"Domaine_base",Objet_U);
 
 Sortie& Domaine_base::printOn(Sortie& s) const

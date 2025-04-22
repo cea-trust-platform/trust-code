@@ -5,10 +5,10 @@ Domaine_IJK grid_geom
 
 Lire grid_geom
 {
-  nbelem 432 13 27
-  size_dom 1. 1. 1.
-  perio 1 1 0
-  nproc 2 2 2
+  nbelem 432 13 27 
+  size_dom 1. 1. 1. 
+  perio 1 1 0 
+  nproc 2 2 2 
 }
 
 # Default behaviour will write by only 1 proc if test is run on np<24) # 

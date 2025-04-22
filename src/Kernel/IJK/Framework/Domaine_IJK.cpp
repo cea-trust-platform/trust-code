@@ -19,7 +19,14 @@
 
 #define print_vect(x) (Nom("[") + Nom(x[0]) + Nom(" ") + Nom(x[1]) + Nom(" ") + Nom(x[2]) + Nom("]"))
 
+
+// XD Domaine_IJK Domaine_base domaine_ijk -1 domain for IJK simulation (used in TrioCFD)
 Implemente_instanciable_sans_constructeur(Domaine_IJK, "Domaine_IJK", Domaine_base);
+
+// XD attr nbelem listentierf nbelem 0 Number of elements in each direction  (integers, 2 or 3 values depending on dimension)
+// XD attr size_dom listf size_dom 0 Domain size in each direction  (floats, 2 or 3 values depending on dimension)
+// XD attr perio listentierf perio 0 Is the direction periodic ? (0 or 1, 2 or 3 values depending on dimension)
+// XD attr nproc listentierf nproc 0 Number of procs in each direction (integers, 2 or 3 values depending on dimension)
 
 Domaine_IJK::Domaine_IJK()
 {
