@@ -1,7 +1,7 @@
-XX/XX/24 (TRUST) CI           : Result comparison is not done anymore (make check|ctest) for test cases with header "# lance_test N ecarts #" except on the reference PC
 -------------------------------------------------------------
 Developer notes version 1.9.6_beta : Changes since version 1.9.5 :
 -------------------------------------------------------------
+16/04/24 (TRUST) CI           : Result comparison is not done anymore (make check|ctest) for test cases with header "# lance_test N ecarts #" except on the reference PC
 15/04/25 (TRUST) New feature  : Create reshape function to modify the dimensions of a TRUSTTab, the total size of the array must remain the same
 03/04/25 (TRUST) Baltiks      : In addition to optimized $TRUST_MEDCOUPLING_ROOT/env.sh, new debug environment $TRUST_MEDCOUPLING_ROOT/env_debug.sh is available if medcoupling debug mode enabled (./configure -enable-mc-debug)
 03/04/25 (TRUST) Baltiks      : New Makefile targets "make swig_optim, swig_debug, swig_semi_optim, swig ctest" for baltiks (if $project_directory/share/swig/CMakeLists.txt exists) to build/test icoco_python
