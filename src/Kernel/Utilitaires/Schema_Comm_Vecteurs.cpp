@@ -87,7 +87,8 @@ Schema_Comm_Vecteurs_Static_Data::~Schema_Comm_Vecteurs_Static_Data()
 Schema_Comm_Vecteurs::Schema_Comm_Vecteurs()
 {
   status_ = RESET;
-  use_gpu_aware_mpi_ = getenv("TRUST_USE_MPI_GPU_AWARE") != nullptr;
+  const char* env_var = getenv("TRUST_USE_MPI_GPU_AWARE");
+  use_gpu_aware_mpi_ = env_var != nullptr && std::stoi(env_var) == 1;
   if (use_gpu_aware_mpi_)
     {
 #ifdef CRAY_MPICH_VER
