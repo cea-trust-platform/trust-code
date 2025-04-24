@@ -842,7 +842,7 @@ int ReaderFORT21::getIndexFromPos(const std::string& name_stack, const std::stri
   const ElementInfo& eleminfo = getElementInfo(name_stack);
   auto fieldinfo =getVarFieldInfo(name_stack, name_field);
   auto loc= fieldinfo.localisation_of_field();
-  if ((loc == ReaderFORT21::LocalisationField::L_GLOBAL))
+  if (loc == ReaderFORT21::LocalisationField::L_GLOBAL)
     return 0;
   std::vector<float> xv,yv,zv;
   if  ((eleminfo.type_ == "TROIDRAV")|| (eleminfo.type_ == "WAL3DRAV"))
@@ -888,7 +888,7 @@ int ReaderFORT21::getIndexFromPos(const std::string& name_stack, const std::stri
 {
   const ElementInfo& eleminfo = getElementInfo(name_stack);
   auto loc =getVarFieldInfo(name_stack, name_field).localisation_of_field();
-  if ((loc == ReaderFORT21::LocalisationField::L_GLOBAL))
+  if (loc == ReaderFORT21::LocalisationField::L_GLOBAL)
     return 0;
   if  ((eleminfo.type_ == "AXIALRAV")|| (eleminfo.type_ == "WALAXRAV"))
     {
