@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,6 +58,8 @@ protected :
   int nbModes_ = -10; // nombres d'interlles de la discretisation en kappa
   double KeOverKmin_= 0.;
   double ratioCutoffWavenumber_= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
+
+  int ecriture_ = 0;
 
   // Quantités auxiliaires aux valeurs constantes durant la simulation
   ArrOfDouble timeScale_; // echelle temporelle de turbulence ; aura la longueur nb_face ; utilise pour correlation temporelle

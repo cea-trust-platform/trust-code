@@ -22,6 +22,7 @@
 #include <Fluide_base.h>
 #include <Domaine_VF.h>
 #include <Frontiere.h>
+#include <SFichier.h>
 #include <random>
 #include <string>
 
@@ -62,7 +63,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
       exit();
     }
   Motcle motlu;
-  int nbmots = 7;
+  int nbmots = 8;
   Motcles les_mots(nbmots);
 
   les_mots[0] = "moyenne";
@@ -72,6 +73,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
   les_mots[4] = "KeOverKmin";
   les_mots[5] = "ratioCutoffWavenumber";
   les_mots[6] = "dir_fluct";
+  les_mots[7] = "ecriture";
 
   is >> motlu;
   if (motlu != "{")
@@ -134,6 +136,12 @@ Entree& Champ_front_synt::readOn(Entree& is)
               }
             break;
           }
+        case 7:
+          {
+            cpt++;
+            is >> ecriture_;
+            break;
+          }
         default:
           {
             if (motlu == "p")
@@ -188,6 +196,8 @@ double Champ_front_synt::energy_spectrum_(const double& kappa, const double& tke
  */
 int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 {
+  Nom nom_fichier("vitesse_bord_synt.txt");
+
   if (!Ch_front_var_instationnaire_dep::initialiser(tps, inco))
     return 0;
 
@@ -202,12 +212,27 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
   const Faces& tabFaces = front.frontiere().faces();
   tabFaces.calculer_centres_gravite(centreGrav_);                  ////// CALCUL DE centreGrav_ //////
 
+  if (bool(ecriture_) and !Process::me())
+    {
+      SFichier fiche_vals(nom_fichier);
+      fiche_vals << "# Temps ";
+
+      for (int i = 0; i < nb_face_; i++)
+        fiche_vals << "\t face_" << i << "\t face_" << i << "\t face_" << i;
+      fiche_vals << finl;
+
+      fiche_vals << "# CentreGrav ";
+      for (int i = 0; i < nb_face_; i++)
+        fiche_vals << "\t " << centreGrav_(i, 0) << "\t " << centreGrav_(i, 1) << "\t " << centreGrav_(i, 2);
+      fiche_vals << finl;
+    }
+
   ////// INITIALISATION DES CHAMPS LUS //////
-  moyenne_->associer_fr_dis_base(la_frontiere_dis.valeur());
+  moyenne_->associer_fr_dis_base(la_frontiere_dis);
   moyenne_->initialiser(tps, inco);
-  turbKinEn_->associer_fr_dis_base(la_frontiere_dis.valeur());
+  turbKinEn_->associer_fr_dis_base(la_frontiere_dis);
   turbKinEn_->initialiser(tps, inco);
-  turbDissRate_->associer_fr_dis_base(la_frontiere_dis.valeur());
+  turbDissRate_->associer_fr_dis_base(la_frontiere_dis);
   turbDissRate_->initialiser(tps, inco);
 
   ////// CALCUL DES QUANTITES AUXILIAIRES CONSTANTES EN TEMPS: timeScale_, kappa_center_, amplitude_, ncM_ //////
@@ -218,7 +243,7 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
   // recuperation de la viscosite cinematique
   const Equation_base& equ = ref_inco_.valeur().equation();
   const Milieu_base& mil = equ.milieu();
-  const double visc = ref_cast(Fluide_base,mil).viscosite_cinematique().valeurs()(0, 0); // const ???
+  const double visc = ref_cast(Fluide_base,mil).viscosite_cinematique().valeurs()(0, 0); //
 
   // Echelles turbuelence et nombres d'ondes
 
@@ -262,7 +287,7 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
   const double dmin = sqrt(sum_aire / mp_sum(nb_face_)); // const ???
   //
   const double kappa_delta = (M_PI / dmin) * ratioCutoffWavenumber_; // nombre d'onde characteristique de la plus petite echelle du maillage
-  const double kappa_max = std::min(mp_min_vect(kappa_eta), kappa_delta); // plus grand nombre d'onde
+  const double kappa_max = kappa_delta; // plus grand nombre d'onde
   if (kappa_max <= kappa_min)
     {
       Cerr << "Error: kappa_max(=" << kappa_max << ") <= kappa_min(=" << kappa_min << ")" << finl;
@@ -271,10 +296,12 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
     }
 
   //// kappa_node
-  const double delta_kappa = pow(kappa_max / kappa_min, 1. / nbModes_); // repartition logarithmique des modes // const ???
+  const double delta_kappa = pow(kappa_max / kappa_min, 1. / nbModes_); // repartition logarithmique des modes //
   kappa_node(0) = kappa_min;
   for (int n = 1; n < nbModes_ + 1; n++)
-    kappa_node(n) = kappa_node(n - 1) * delta_kappa;
+    {
+      kappa_node(n) = kappa_node(n - 1) * delta_kappa;
+    }
 
   for (int n = 0; n < nbModes_; n++)
     {
@@ -286,8 +313,12 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
   // Amplitudes
   amplitude_.resize(nb_face_, nbModes_);
   for (int i = 0; i < nb_face_; i++)
-    for (int n = 0; n < nbModes_; n++)
-      amplitude_(i, n) = sqrt(dkn(n) * energy_spectrum_(kappa_center_(n), turbKinEn_->valeurs()(ncK * i), kappa_e(i), kappa_eta(i)));            ////// CALCUL DE amplitude_ //////
+    {
+      for (int n = 0; n < nbModes_; n++)
+        {
+          amplitude_(i, n) = sqrt(dkn(n) * energy_spectrum_(kappa_center_(n), turbKinEn_->valeurs()(ncK * i), kappa_e(i), kappa_eta(i)));            ////// CALCUL DE amplitude_ //////
+        }
+    }
 
   // Pour une raison obscure le mettre_a_jour est necessaire pour pouvoir utiliser un schema en temps explicite.
   // Sinon div(U)=0 n'est meme pas respecte.
@@ -382,8 +413,21 @@ void Champ_front_synt::mettre_a_jour(double temps)
       tab(i, 0) = moy(0) + dir_fluct_(0) * (a * (tab_avant(i, 0) - moy(0)) + b * turb(0));
       tab(i, 1) = moy(1) + dir_fluct_(1) * (a * (tab_avant(i, 1) - moy(1)) + b * turb(1));
       tab(i, 2) = moy(2) + dir_fluct_(2) * (a * (tab_avant(i, 2) - moy(2)) + b * turb(2));
-
     }
   tab.echange_espace_virtuel();
+
+  if (bool(ecriture_) and !Process::me())
+    {
+      Nom nom_fichier("vitesse_bord_synt.txt");
+      SFichier fiche_vals(nom_fichier, ios::app);
+      fiche_vals.setf(ios::scientific);
+      fiche_vals << temps;
+
+      for (int i = 0; i < nb_face_; i++)
+        fiche_vals << "\t" << tab(i, 0) << "\t " << tab(i, 1) << "\t " << tab(i, 2);
+
+      fiche_vals << finl;
+    }
+
   temps_d_avant_ = temps;
 }
