@@ -293,7 +293,8 @@ int Modele_turbulence_hyd_base::preparer_calcul()
                 }
             }
         }
-  loipar_->imprimer_premiere_ligne_ustar(boundaries_, boundaries_list_, nom_fichier_);
+  if (nom_fichier_!="")
+    loipar_->imprimer_premiere_ligne_ustar(boundaries_, boundaries_list_, nom_fichier_);
   return res;
 }
 

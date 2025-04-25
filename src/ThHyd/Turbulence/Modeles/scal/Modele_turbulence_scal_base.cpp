@@ -210,7 +210,8 @@ int Modele_turbulence_scal_base::preparer_calcul()
   if (loipar_.non_nul())
     loipar_->init_lois_paroi();
   mettre_a_jour(0.);
-  loipar_->imprimer_premiere_ligne_nusselt(boundaries_, boundaries_list_, nom_fichier_);
+  if (nom_fichier_!="")
+    loipar_->imprimer_premiere_ligne_nusselt(boundaries_, boundaries_list_, nom_fichier_);
   return 1;
 }
 
