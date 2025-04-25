@@ -8,7 +8,7 @@
 * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LoSS OF USE, DATA, OR PROFITS;
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
@@ -842,7 +842,7 @@ int ReaderFORT21::getIndexFromPos(const std::string& name_stack, const std::stri
   const ElementInfo& eleminfo = getElementInfo(name_stack);
   auto fieldinfo =getVarFieldInfo(name_stack, name_field);
   auto loc= fieldinfo.localisation_of_field();
-  if ((loc == ReaderFORT21::LocalisationField::L_GLOBAL))
+  if (loc == ReaderFORT21::LocalisationField::L_GLOBAL)
     return 0;
   std::vector<float> xv,yv,zv;
   if  ((eleminfo.type_ == "TROIDRAV")|| (eleminfo.type_ == "WAL3DRAV"))
@@ -888,7 +888,7 @@ int ReaderFORT21::getIndexFromPos(const std::string& name_stack, const std::stri
 {
   const ElementInfo& eleminfo = getElementInfo(name_stack);
   auto loc =getVarFieldInfo(name_stack, name_field).localisation_of_field();
-  if ((loc == ReaderFORT21::LocalisationField::L_GLOBAL))
+  if (loc == ReaderFORT21::LocalisationField::L_GLOBAL)
     return 0;
   if  ((eleminfo.type_ == "AXIALRAV")|| (eleminfo.type_ == "WALAXRAV"))
     {
