@@ -21,6 +21,7 @@ Implemente_instanciable(Option_IJK, "Option_IJK", Interprete);
 
 int Option_IJK::CHECK_DIVERGENCE = 0;
 int Option_IJK::DISABLE_DIPHASIQUE = 0;
+int Option_IJK::CORRECTION_PARCOURS_THOMAS = 0;
 
 Sortie& Option_IJK::printOn(Sortie& os) const { return Interprete::printOn(os); }
 Entree& Option_IJK::readOn(Entree& is) { return Interprete::readOn(is); }
@@ -30,6 +31,7 @@ Entree& Option_IJK::interpreter(Entree& is)
   Param param(que_suis_je());
   param.ajouter_flag("check_divergence", &CHECK_DIVERGENCE); // XD_ADD_P rien Flag to compute and print the value of div(u) after each pressure-correction
   param.ajouter_flag("disable_diphasique", &DISABLE_DIPHASIQUE); // XD_ADD_P rien Disable all calculations related to interfaces (phase properties, interfacial force, ... )
+  param.ajouter_flag("correction_parcours_thomas", &CORRECTION_PARCOURS_THOMAS); // XD_ADD_P rien Flag to fix parcours when vertex are exactly on the faces of the elements.
   param.lire_avec_accolades_depuis(is);
   return is;
 }

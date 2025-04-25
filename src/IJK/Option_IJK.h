@@ -23,7 +23,7 @@ class Option_IJK: public Interprete
   Declare_instanciable(Option_IJK);
 public:
   Entree& interpreter(Entree&) override;
-  static int CHECK_DIVERGENCE, DISABLE_DIPHASIQUE;
+  static int CHECK_DIVERGENCE, DISABLE_DIPHASIQUE, CORRECTION_PARCOURS_THOMAS;
 };
 
 #endif /* Option_IJK_included */
