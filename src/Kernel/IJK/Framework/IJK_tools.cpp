@@ -178,16 +178,16 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
           //   }
           // else
           //   {
-              // Error!
-              Cerr<<"For x : "<<-ghost<<" "<<ni + ghost - 1<<", index i = "<<index_i<<finl;
-              Cerr<<idx_i_tmp - NB_ELEM_I<<" "<<idx_i_tmp<<finl;
-              Cerr<<NB_ELEM_LOC_I<<" "<<NB_ELEM_I<<finl;
-              Cerr<<"For y : "<<-ghost<<" "<<nj + ghost - 1<<", index j = "<<index_j<<finl;
-              Cerr<<"For z : "<<-ghost<<" "<<nk + ghost - 1<<", index k = "<<index_k<<finl;
-              Cerr << "Error in ijk_interpolate_implementation: request interpolation of point " << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me()
-                   << finl;
-              Process::exit();
-            // }
+          // Error!
+          Cerr<<"For x : "<<-ghost<<" "<<ni + ghost - 1<<", index i = "<<index_i<<finl;
+          Cerr<<idx_i_tmp - NB_ELEM_I<<" "<<idx_i_tmp<<finl;
+          Cerr<<NB_ELEM_LOC_I<<" "<<NB_ELEM_I<<finl;
+          Cerr<<"For y : "<<-ghost<<" "<<nj + ghost - 1<<", index j = "<<index_j<<finl;
+          Cerr<<"For z : "<<-ghost<<" "<<nk + ghost - 1<<", index k = "<<index_k<<finl;
+          Cerr << "Error in ijk_interpolate_implementation: request interpolation of point " << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me()
+               << finl;
+          Process::exit();
+          // }
         }
 
       const double r = (((1. - xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1. - yfact)

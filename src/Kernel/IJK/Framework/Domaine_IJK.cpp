@@ -218,6 +218,7 @@ Entree& Domaine_IJK::readOn(Entree& is)
 
   initialize_splitting(*this, nprocs[0], nprocs[1], nprocs[2], groups[0], groups[1], groups[2]);
   update_volume_elem();
+  update_centre_elem();
   return is;
 }
 
@@ -1268,6 +1269,59 @@ void Domaine_IJK::update_volume_elem()
       Process::exit();
       return;
     }
+}
+
+void Domaine_IJK::update_centre_elem()
+{
+  // resize of centre_elem_
+  const int nx = get_nb_elem_local(0);
+  assert(nx > 0);
+  const int ny = get_nb_elem_local(1);
+  assert(ny > 0);
+  const int nz = Objet_U::dimension == 3 ? get_nb_elem_local(2) : 0;
+  assert(nz > 0);
+  const int nsize = Objet_U::dimension == 3 ? nx * ny * nz : nx * ny;
+
+  if(Objet_U::dimension == 2)
+    {
+      centre_elem_.resize(0, 2);
+      for(int j = 0; j < ny; ++j)
+        for(int i = 0; i < nx; ++i)
+          {
+            const double size_x = delta_xyz_[0][i];
+            const double min_x = node_coordinates_xyz_[0][i];
+            const double size_y = delta_xyz_[1][j];
+            const double min_y = node_coordinates_xyz_[1][j];
+            const double center_x = min_x + size_x * 0.5;
+            const double center_y = min_y + size_y * 0.5;
+            centre_elem_.append_line(center_x, center_y);
+          }
+    }
+  else if (Objet_U::dimension == 3)
+    {
+      centre_elem_.resize(0, 3);
+      for(int k = 0; k < nz; ++k)
+        for(int j = 0; j < ny; ++j)
+          for(int i = 0; i < nx; ++i)
+            {
+              const double size_x = delta_xyz_[0][i];
+              const double min_x = node_coordinates_xyz_[0][i];
+              const double size_y = delta_xyz_[1][j];
+              const double min_y = node_coordinates_xyz_[1][j];
+              const double size_z = delta_xyz_[2][k];
+              const double min_z = node_coordinates_xyz_[2][k];
+              const double center_x = min_x + size_x * 0.5;
+              const double center_y = min_y + size_y * 0.5;
+              const double center_z = min_z + size_z * 0.5;
+              centre_elem_.append_line(center_x, center_y, center_z);
+            }
+    }
+  else
+    {
+      assert(0);
+      Process::exit("Error in Domaine_IJK::update_centre_elem, dimension of the problem invalid.");
+    }
+  assert(centre_elem_.dimension(0) == nsize);
 }
 
 /*! Check whether the cell (i,j,k) is contained within the specified ghost along any direction. */

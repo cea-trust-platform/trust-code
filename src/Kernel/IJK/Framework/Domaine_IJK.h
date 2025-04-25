@@ -537,6 +537,11 @@ public:
    */
   void update_volume_elem();
 
+  /*! @brief Updates centre_elem_ */
+  void update_centre_elem();
+
+  inline const DoubleTab& get_centre_elem() const { return centre_elem_; }
+
   /*! @brief Returns volume_elem_ */
   inline const DoubleVect& get_volume_elem() const
   {
@@ -615,6 +620,9 @@ private:
 
   /*! @brief Volume of each element on this processor */
   DoubleVect volume_elem_;
+
+  /*! @brief Corods of the center of each element on this processor */
+  DoubleTab centre_elem_;
 
   /*! @brief State of volume_elem_ on this processor */
   grid_status volume_elem_status_;
