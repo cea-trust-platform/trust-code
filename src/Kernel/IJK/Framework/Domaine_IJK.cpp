@@ -1279,8 +1279,6 @@ void Domaine_IJK::update_centre_elem()
   const int ny = get_nb_elem_local(1);
   assert(ny > 0);
   const int nz = Objet_U::dimension == 3 ? get_nb_elem_local(2) : 0;
-  assert(nz > 0);
-  const int nsize = Objet_U::dimension == 3 ? nx * ny * nz : nx * ny;
 
   if(Objet_U::dimension == 2)
     {
