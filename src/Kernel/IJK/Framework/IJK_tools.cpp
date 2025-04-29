@@ -39,7 +39,7 @@ static void extend_array(const Domaine_IJK& geom1, const int direction, const in
       // On duplique les mailles dont on a besoin:
       if (n < ncells)
         {
-          Cerr << "Erreur dans build_extended_splitting, direction " << direction << " extension de " << ncells << " impossible car seulement " << n << " mailles dans le domaine" << finl;
+          Cerr << "Error in build_extended_splitting, direction " << direction << " extension of " << ncells << " not possible because we only have " << n << " cells in the domain." << finl;
           Process::exit();
         }
       for (i = 0; i < ncells; i++)
@@ -146,7 +146,7 @@ Probleme_base& creer_domaine_vdf(const Domaine_IJK& geom, const Nom& nom_domaine
   instructions << "Schema_Euler_explicite sch" << nom_domaine << " Lire sch" << nom_domaine << " { nb_pas_dt_max 1 }" << finl;
   instructions << "Associer " << pb_name << " sch" << nom_domaine << finl;
   instructions << "Discretiser " << pb_name << " dis" << nom_domaine << finl;
-  Cerr << "Interpretation de la chaine suivante:" << finl << instructions.get_str();
+  Cerr << "Interpretation of the following string:" << finl << instructions.get_str();
 
   EChaine is(instructions.get_str());
   Interprete_bloc::interprete_courant().interpreter_bloc(is, Interprete_bloc::BLOC_EOF, 0 /* flag verifie sans interpreter */);

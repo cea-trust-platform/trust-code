@@ -41,7 +41,6 @@
  Canal_RANS_LES_VDF_Face Terme_Source_Canal_RANS_LES_VDF_Face Terme_Source_Canal_RANS_LES_VDF_Face.h
  Canal_RANS_LES_VDF_P0_VDF Terme_Source_Canal_RANS_LES_VDF_Elem Terme_Source_Canal_RANS_LES_VDF_Elem.h
  Carman_Kozeny ModPerm_Carman_Kozeny Source_Permeabilite_VDF.h
- Champs_compris Champs_compris Champs_compris.h
  Champs_Fonc Champs_Fonc Champs_Fonc.h
  Champ_base Champ_base Champ_base.h
  Champ_Composite Champ_Composite Champ_Composite.h
@@ -302,6 +301,7 @@
  Domaine_dis_base Domaine_dis_base Domaine_dis_base.h
  Domaine_EF Domaine_EF Domaine_EF.h
  Domaine_EF_axi Domaine_EF_axi Domaine_EF_axi.h
+ Domaine_IJK Domaine_IJK Domaine_IJK.h
  Domaine_PolyMAC Domaine_PolyMAC Domaine_PolyMAC.h
  Domaine_PolyMAC_P0 Domaine_PolyMAC_P0 Domaine_PolyMAC_P0.h
  Domaine_PolyMAC_P0P1NC Domaine_PolyMAC_P0P1NC Domaine_PolyMAC_P0P1NC.h
@@ -473,12 +473,12 @@
  Hexa_VEF Hexa_VEF Hexa_VEF.h
  h_conv_Champ_P1NC h_conv_Champ_P1NC h_conv_Champ_P1NC.h
  ICE ICE SETS.h
- IJK_discretization IJK_discretization IJK_discretization.h
+ IJK IJK_discretisation IJK_discretisation.h
  IJK_Field_tools IJK_Field_tools IJK_Field_tools.h
  IJK_Grid_Geometry IJK_Grid_Geometry IJK_Grid_Geometry.h
  IJK_Lata_Swap_JK IJK_Lata_Swap_JK IJK_Lata_Swap_JK.h
- IJK_Splitting IJK_Splitting IJK_Splitting.h
  IJK_Test_Multigrille IJK_Test_Multigrille IJK_Test_Multigrille.h
+ IJK_VDF_converter IJK_VDF_converter IJK_VDF_converter.h
  ILU ILU_SP ILU_SP.h
  Implicite Implicite Piso.h
  Imprimer_flux Imprimer_flux Imprimer_flux.h
@@ -680,6 +680,7 @@
  Operateur_Statistique_tps_base Operateur_Statistique_tps_base Operateur_Statistique_tps_base.h
  Option_CGNS Option_CGNS Option_CGNS.h
  Option_DG Option_DG Option_DG.h
+ Option_IJK Option_IJK Option_IJK.h
  Option_Interpolation Option_Interpolation Option_Interpolation.h
  Option_PolyMAC Option_PolyMAC Option_PolyMAC.h
  Option_VDF Option_VDF Option_VDF.h

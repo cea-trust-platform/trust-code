@@ -81,7 +81,7 @@ Entree& Domaine_IJK::readOn(Entree& is)
   IntTab nprocs(dim);
   nprocs = -1;
 
-  Param param(que_suis_je());
+  //Param param(que_suis_je());
   perio_flags = 0;
 
   Motcle motlu;

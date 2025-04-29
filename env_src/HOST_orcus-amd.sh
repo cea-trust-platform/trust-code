@@ -86,14 +86,14 @@ define_soumission_batch()
    # test   	40		1 heure		40
    # visu	20		18 heures
    # 1jour      30              1 jour
-   # 2jour      20              2 jours
-   # 7jour      15              7 jours
-   # 14jour     10              14 jours
+   # 2jours      20              2 jours
+   # 7jours      15              7 jours
+   # 14jours     10              14 jours
    # dev        80              20 minutes
    # debug      70              4 heures
    if [ "$prod" = 1 ] || [ "$NB_PROCS" -gt 40 ]
    then
-      qos=2jour && cpu=2880
+      qos=2jours && cpu=2880
       [ "$gpu" != 1 ] && node=1 # exclusif uniquement sur cpu
    else
       qos=test	&& cpu=60   && node=0 
