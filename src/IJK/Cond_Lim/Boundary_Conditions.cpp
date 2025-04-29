@@ -18,12 +18,6 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Boundary_Conditions,"Boundary_Conditions",Objet_U);
-double IJK_Shear_Periodic_helpler::shear_x_time_=0.;
-double IJK_Shear_Periodic_helpler::Lx_for_shear_perio=0.;
-int IJK_Shear_Periodic_helpler::defilement_=0;
-int IJK_Shear_Periodic_helpler::order_interpolation_poisson_solver_=0;
-double IJK_Shear_Periodic_helpler::rho_vap_ref_for_poisson_=0;
-double IJK_Shear_Periodic_helpler::rho_liq_ref_for_poisson_=0;
 
 Boundary_Conditions::Boundary_Conditions()
 {
