@@ -35,12 +35,10 @@ class Fluide_MUSIG : public Fluide_base
 {
   Declare_instanciable( Fluide_MUSIG ) ;
 public :
-  //inline DoubleTab& get_Diametres() { return diametres_; }
   inline const DoubleTab& get_Diametres() const { return diametres_; }
 
   inline const int& get_NbSubPhase() const { return nbSubPhases_; }
 
-  //inline OWN_PTR(Fluide_base)& get_Fluide() { return fluide_; }
   inline const OWN_PTR(Fluide_base)& get_Fluide() const { return fluide_; }
 
   int initialiser(const double temps) override;

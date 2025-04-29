@@ -33,9 +33,11 @@ public :
 private :
   std::vector<Fluide_MUSIG> fluidesMUSIG_;
 
-  // Pour toutes les phases, on sauvegarde un tableau de 3 int :
-  // numero de phases pour le milieu | numero de FluideMUSIG (-1 si pas FluideMUSIG) | index de la phase dans fluideMUSIG.
-  std::vector<std::vector<int>> indexMilieuToIndexFluide_; // il y a sans doute mieux
+  /*! For each phase, a 3 int array is stored
+   *
+   * phase index for the media / index of FluideMUSIG (-1 if not FluideMUSIG) /index of the phase in fluideMUSIG.
+   */
+  std::vector<std::vector<int>> indexMilieuToIndexFluide_; // could be change for something better
 };
 
 #endif /* Milieu_MUSIG_included */

@@ -45,9 +45,9 @@ Entree& Diametre_bulles_musig::readOn(Entree& is)
 
   champs_compris_.ajoute_champ(diametres_);
 
-  // Print des informations des diametres de la methode MUSIG (phase dispersee)
-  // Pas obligatoire mais permet de verifier les donnees sur les diametres
-  if (je_suis_maitre())
+  // Print information regarding diameters of the MUSIG method (dispersed phase)
+  // Not mandatory but enable to verify diameter values
+  if (Process::je_suis_maitre())
     {
       for (int k = 0; k < N; k++)
         {
@@ -55,8 +55,7 @@ Entree& Diametre_bulles_musig::readOn(Entree& is)
           if (milMusig->has_dispersed_liquid(k)) cout << " Liquide_Dispersee - Classe N° " << k << " diametre Inf=" << milMusig->get_Diameter_Inf(k) << " diametre Sup=" << milMusig->get_Diameter_Sup(k) << " diametre Sauter=" << milMusig->get_Diameter_Sauter(k) << endl;
         }
     }
-
-  // Stockage des diametres de Sauter (phase dispersee)
+  // Store diameters of Sauter (dispersed phase)
   DoubleTab& tab_diametres = diametres_->valeurs();
   for (int i = 0; i < tab_diametres.dimension_tot(0); i++)
     for (int k = 0; k < N; k++)
@@ -74,7 +73,7 @@ bool Diametre_bulles_musig::has_champ(const Motcle& nom, OBS_PTR(Champ_base) &re
   if (nom == "diametre_bulles")
     return champs_compris_.has_champ(nom, ref_champ);
 
-  return false; /* rien trouve */
+  return false; /* nothing found */
 }
 
 bool Diametre_bulles_musig::has_champ(const Motcle& nom) const
@@ -82,7 +81,7 @@ bool Diametre_bulles_musig::has_champ(const Motcle& nom) const
   if (nom == "diametre_bulles")
     return true;
 
-  return false; /* rien trouve */
+  return false; /* nothing found */
 }
 
 const Champ_base& Diametre_bulles_musig::get_champ(const Motcle& nom) const

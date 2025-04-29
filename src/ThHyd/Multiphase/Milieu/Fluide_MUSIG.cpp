@@ -65,16 +65,16 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
         {
           is >> nbSubPhases_;
         }
-      else if(Motcle(mot) == "DIAMETRES" || Motcle(mot) == "DIAMETERS") // Definition du parametre diametres
+      else if(Motcle(mot) == "DIAMETRES" || Motcle(mot) == "DIAMETERS") // Definition of the parameter diameters
         {
-          if (nbSubPhases_ < 0) // on verifie que le nombre de sous phases est deja defini
+          if (nbSubPhases_ < 0) // Check that the number of underlying phases is defined
             {
               Cerr << "Fluide_MUSIG : you need to define nbPhases before " << mot  << finl;
               Process::exit();
             }
 
           double dMin=-1, dMax=-1;
-          int repartionType=0; //repartitionType sauvegarde la loi de repartition des diametre (lineaire =0; logarithme =1);
+          int repartionType=0; ///< save the repartition law of the diameters (0=linear,1=logarithmic)
           is >> mot;
           if (mot != "{")
             {
@@ -105,17 +105,15 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
               Cerr << "You need to define dMin and dMax with 0 < dMin < dMax " << mot << finl;
               Process::exit();
             }
-          //Stockage dans diametres_
+          //Storing of diameters
           diametres_.resize(nbSubPhases_+1);
           for( int i =0; i<nbSubPhases_+1; i++)
             {
-              if(repartionType == 0) //lineaire
+              if(repartionType == 0) // linear
                 {
-                  // Cout << "definitions of diameters" << finl;
                   diametres_[i] = dMin + i*(dMax-dMin)/(nbSubPhases_);
-                  // Cout << "End of definitions of diameters" << finl;
                 }
-              else if(repartionType == 1) //logarithmique
+              else if(repartionType == 1) //logarithmic
                 {
                   double lnDiameter = log(dMin)+i*(log(dMax)-log(dMin))/(nbSubPhases_);
                   diametres_[i] = exp(lnDiameter);
@@ -148,7 +146,7 @@ Entree& Fluide_MUSIG::readOn( Entree& is )
   return is;
 }
 
-int Fluide_MUSIG::initialiser(const double temps) // Cette surcharge est probablement pas necessaire
+int Fluide_MUSIG::initialiser(const double temps) // This overload might not be necessary
 {
   return 1;
 }

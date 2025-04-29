@@ -19,7 +19,7 @@
 #include <Correlation_base.h>
 #include <Champ_Fonc_base.h>
 
-/*! @brief classe Diametre_bulles_musig Contient les diamétres de Sauter du champ de bulles/gouttes (phase dispersée) pour l'algorithme de style MUSIG
+/*! @brief classe Diametre_bulles_musig Contains the Sauter diameters of the bubble/droplet field (dispersed phase) for the MUSIG-style algorithm.
  *
  *
  *
