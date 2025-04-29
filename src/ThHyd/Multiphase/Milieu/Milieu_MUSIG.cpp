@@ -23,7 +23,7 @@ Sortie& Milieu_MUSIG::printOn(Sortie& os) const { return Objet_U::printOn(os); }
 Entree& Milieu_MUSIG::readOn( Entree& is )
 {
   int i = 0;
-  std::vector<std::pair<std::string, int>> especes; // string pour phase_nom. int : 0 pour liquide et 1 pour gaz
+  std::vector<std::pair<std::string, int>> especes; // string for phase_nom. int : 0 for liquid and 1 for gas
   Nom mot;
   is >> mot;
   if (mot != "{")
@@ -46,7 +46,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
           Cerr << que_suis_je() << " : gravity should not be defined in Pb_Multiphase ! Use source_qdm if you want gravity in QDM equation !" << finl;
           Process::exit();
         }
-      else if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // on ajout les phases
+      else if (!mot.debute_par("saturation") && !mot.debute_par("interface")) // add phases
         {
           Nom nomPhase(mot);
 
@@ -85,10 +85,10 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
                   subFluide->set_id_composite(i++);
                   subFluide->nommer(nomPhase);
                   fluides_.push_back(subFluide);
-                  std::vector<int> lineIndex;
-                  lineIndex.push_back((int)fluides_.size()-1);
-                  lineIndex.push_back((int)fluidesMUSIG_.size());
-                  lineIndex.push_back(k);
+                  std::array<int,3> lineIndex;
+                  lineIndex[0]=(int)fluides_.size()-1;
+                  lineIndex[1]=(int)fluidesMUSIG_.size();
+                  lineIndex[2]=k;
                   indexMilieuToIndexFluide_.push_back(lineIndex);
                   especes.push_back(check_fluid_name(subFluide->le_nom()));
 
@@ -122,17 +122,16 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
               fluide->set_id_composite(i++);
               fluide->nommer(nomPhase); // XXX
               fluides_.push_back(fluide);
-
-              std::vector<int> lineIndex;
-              lineIndex.push_back((int)fluides_.size()-1);
-              lineIndex.push_back(-1);
-              lineIndex.push_back(-1);
+              std::array<int,3> lineIndex;
+              lineIndex[0]=(int)fluides_.size()-1;
+              lineIndex[1]=-1;
+              lineIndex[2]=-1;
               indexMilieuToIndexFluide_.push_back(lineIndex);
               especes.push_back(check_fluid_name(fluide->le_nom()));
             }
 
         }
-      else if (mot.debute_par("saturation")) // on ajout la saturation
+      else if (mot.debute_par("saturation")) // add saturation
         {
           has_saturation_ = true;
           Cerr << "Milieu_composite : ajout la saturation " << mot << " ... " << finl;
@@ -153,7 +152,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
       Process::exit();
     }
 
-  // Traitement pour les interfaces
+  // Interface treatment
   const int N = (int)fluides_.size();
   for (int n = 0; n < N; n++)
     {
@@ -168,7 +167,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
               Cerr << "Interface between fluid " << n << " : " << fluides_[n]->le_nom() << " and " << m << " : " << fluides_[m]->le_nom() << finl;
               inter.push_back(&ref_cast(Interface_base, has_saturation_ ? sat_lu_.valeur() : inter_lu_.valeur()));
               const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : nullptr;
-              if (sat && sat->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
+              if (sat && sat->get_Pref() > 0) // for an EOS of the type:  e = e0 + cp * (T - T0)
                 {
                   const double hn = pn ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
                                hm = pm ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
@@ -186,7 +185,7 @@ Entree& Milieu_MUSIG::readOn( Entree& is )
 
 double Milieu_MUSIG::get_Diameter_Inf(int iPhaseMilieu) const
 {
-  std::vector<int> index = indexMilieuToIndexFluide_[iPhaseMilieu];
+  std::array<int,3> index = indexMilieuToIndexFluide_[iPhaseMilieu];
   double diametre = -1;
   if(index[2] < 0)
     {
@@ -229,7 +228,7 @@ double Milieu_MUSIG::get_Diameter_Inf(int iPhaseMilieu) const
 
 double Milieu_MUSIG::get_Diameter_Sup(int iPhaseMilieu) const
 {
-  std::vector<int> index = indexMilieuToIndexFluide_[iPhaseMilieu];
+  std::array<int,3> index = indexMilieuToIndexFluide_[iPhaseMilieu];
   double diametre = -1;
   if(index[2] < 0)
     {

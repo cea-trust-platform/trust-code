@@ -37,7 +37,7 @@ private :
    *
    * phase index for the media / index of FluideMUSIG (-1 if not FluideMUSIG) /index of the phase in fluideMUSIG.
    */
-  std::vector<std::vector<int>> indexMilieuToIndexFluide_; // could be change for something better
+  std::vector<std::array<int,3>> indexMilieuToIndexFluide_; // could be change for something better
 };
 
 #endif /* Milieu_MUSIG_included */
