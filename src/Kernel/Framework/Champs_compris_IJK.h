@@ -42,7 +42,7 @@ public :
 private:
   void switch_field(const Nom& field_name, const Nom& prefix);
   void switch_vector_field(const Nom& field_name, const Nom& prefix);
-  static constexpr std::array COMPOS = {"_X", "_Y", "_Z"};
+  static constexpr std::array<const char*,3> COMPOS = {"_X", "_Y", "_Z"};
 
   std::unordered_map<std::string, OBS_PTR(IJK_Field_vector3_double)> liste_champs_vecto_;
 };
