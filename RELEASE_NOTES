@@ -1,11 +1,11 @@
-XX/XX/24 (TRUST) GPU          : Several VEF source terms ported (constituant and puissance_thermique for incompressible/quasi-compressible flows)
-XX/XX/24 (TRUST) GPU          : Change AmgX C-AMG defaults (selector from PMIS to HMIS and strength threshold from 0.25 to 0.8) to have more robust/faster multi-GPU solver
-XX/XX/24 (TRUST) GPU          : MI300A partition on Adastra supported with ./configure -rocm=gfx942
-XX/XX/24 (TRUST) GPU          : H100 partition on JeanZay supported with ./configure -cuda=cc90
-XX/XX/24 (TRUST) GPU          : Read_matrix option of PETSc GPU solvers fixed in order to reduce MPI communications onto VEF meshes. See AMG_L1 test case
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+25/04/25 (TRUST) GPU          : Several VEF source terms ported (constituant and puissance_thermique for incompressible/quasi-compressible flows)
+25/04/25 (TRUST) GPU          : Change AmgX C-AMG defaults (selector from PMIS to HMIS and strength threshold from 0.25 to 0.8) to have more robust/faster multi-GPU solver
+25/04/25 (TRUST) GPU          : MI300A partition on Adastra supported with ./configure -rocm=gfx942
+25/04/25 (TRUST) GPU          : H100 partition on JeanZay supported with ./configure -cuda=cc90
+25/04/25 (TRUST) GPU          : Read_matrix option of PETSc GPU solvers fixed in order to reduce MPI communications onto VEF meshes. See AMG_L1 test case
 16/04/25 (TRUST) Bug fixed    : Pressure initial conditions couldn't be set in VEF P0
 15/04/25 (TRUST) New feature  : New Discontinous Galerkin discretization (order 1-2), limited to conduction 2D for now. It is working with polyedric meshes. Examples are available in Diffusion_DG notebook. 
 14/04/25 (TRUST) Change       : Keyword EcritureLectureSpecial now only supports option 0 or 1, all other former options are now deprecated.
