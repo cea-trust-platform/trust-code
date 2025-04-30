@@ -1319,7 +1319,6 @@ void Domaine_IJK::update_centre_elem()
       assert(0);
       Process::exit("Error in Domaine_IJK::update_centre_elem, dimension of the problem invalid.");
     }
-  assert(centre_elem_.dimension(0) == nsize);
 }
 
 /*! Check whether the cell (i,j,k) is contained within the specified ghost along any direction. */
