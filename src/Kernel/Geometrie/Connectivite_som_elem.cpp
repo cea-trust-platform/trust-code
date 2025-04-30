@@ -29,7 +29,7 @@ void copy_list_internal(const Static_Int_Lists_32_64<int>& som_elem, const int s
 {
   som_elem.copy_list_to_array(sommet, elements);
 }
-
+#if INT_is_64_ == 2
 template <>
 void copy_list_internal(const Static_Int_Lists_32_64<trustIdType>& som_elem, const trustIdType sommet,
                         SmallArrOfTID_T<trustIdType>& elements)
@@ -38,7 +38,7 @@ void copy_list_internal(const Static_Int_Lists_32_64<trustIdType>& som_elem, con
   elements.ref_as_big(elem_as_big);
   som_elem.copy_list_to_array(sommet, elem_as_big);
 }
-
+#endif
 }
 
 /*! @brief construction de la structure som_elem pour le domaine donnee On cree pour chaque sommet i la liste des elements adjacents a ce sommet
