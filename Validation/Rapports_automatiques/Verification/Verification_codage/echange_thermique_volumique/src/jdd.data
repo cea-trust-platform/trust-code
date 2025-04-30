@@ -1,0 +1,295 @@
+# PARALLEL OK #
+dimension 2
+pb_thermohydraulique pbt1
+pb_thermohydraulique pbt2
+pb_conduction pbc
+Domaine dom1
+Domaine dom2
+Domaine domc
+
+# BEGIN MESH #
+Mailler dom1
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 51
+        Longueurs 0.5 2
+    }
+    {
+        bord gauche X = 0    0 <= Y <= 2
+        bord haut   Y = 2    0 <= X <= 0.5
+        bord bas    Y = 0    0 <= X <= 0.5
+        bord droite X = 0.5  0 <= Y <= 2
+    }
+}
+sous_zone HX
+Associate HX dom1
+Read HX { fonction_sous_zone y<1 }
+Create_domain_from_sub_domain
+{
+    domaine_final dom2
+    par_sous_dom HX
+    domaine_init dom1
+}
+Create_domain_from_sub_domain
+{
+    domaine_final domc
+    par_sous_dom HX
+    domaine_init dom1
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper_multi
+{
+    domaine dom1
+    {
+        partitionneur metis { nb_parts 2 }
+        nb_parts_tot 2
+        Larg_joint 2
+        Nom_Zones dom1
+    }
+    domaine dom2
+    {
+        partitionneur metis { nb_parts 2 }
+        nb_parts_tot 2
+        Larg_joint 2
+        Nom_Zones dom2
+    }
+    domaine domc
+    {
+        partitionneur metis { nb_parts 2 }
+        nb_parts_tot 2
+        Larg_joint 2
+        Nom_Zones domc
+    }
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom1.Zones dom1
+sous_zone HX
+Associate HX dom1
+Read HX { fonction_sous_zone y<1 }
+Scatter dom2.Zones dom2
+Scatter domc.Zones domc
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+    dt_max 0.1
+    facsec 1e30
+    facsec_max 1e30
+    seuil_statio 1e-6
+    dt_impr 1e-10
+    resolution_monolithique { -hydraulique thermique }
+    solveur implicite
+    {
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+$dis dis
+
+associate pbt1 dom1
+associate pbt2 dom2
+associate pbc domc
+probleme_couple pb
+Associate pb pbt1
+Associate pb pbt2
+Associate pb pbc
+Associate pb sch
+Discretize pb dis
+
+Read pbt1
+{
+    fluide_incompressible
+    {
+        rho      champ_uniforme 1 2000.0
+        cp       champ_uniforme 1 3075.0
+        lambda   champ_uniforme 1 0.5
+        mu       champ_uniforme 1 1e-3
+        beta_th  champ_uniforme 1 1e-4
+        porosites_champ champ_uniforme_morceaux dom1 1
+        {
+            defaut 1
+            HX     $phi1
+        }
+        diametre_hyd_champ champ_uniforme_morceaux dom1 1
+        {
+            defaut 0.5
+            HX     $dh1
+        }
+    }
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { quiet }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions { vitesse champ_uniforme 2 0 0 }
+        boundary_conditions
+        {
+            bas     frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0 1
+            gauche  symetrie
+            droite  symetrie
+            haut    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+        }
+    }
+    convection_diffusion_temperature
+    {
+        convection  { amont }
+        diffusion   { }
+        initial_conditions { temperature champ_uniforme 1 500 }
+        boundary_conditions
+        {
+            bas     frontiere_ouverte_temperature_imposee champ_front_uniforme 1 500
+            gauche  paroi_adiabatique
+            droite  paroi_adiabatique
+            haut    frontiere_ouverte T_ext champ_front_uniforme 1 500
+        }
+        sources
+        {
+            echange_thermique_volumique
+            {
+                nom hx_prim
+                aire_interfaciale Champ_Uniforme_Morceaux dom1 1
+                {
+                    defaut 0
+                    HX     $ai1
+                }
+                flux_parietal Nusselt { formula (0.0021*Re^1.053*Pr^0.606)_MAX_(5+0.025*(Re*Pr)^0.8) }
+            }
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            TPRIM grav temperature periode 1e8 segment 500 0.25 0 0.25 2
+        }
+        format lml
+        fields dt_post 1
+        {
+            temperature      elem
+        }
+    }
+}
+
+Read pbc
+{
+    solide
+    {
+        rho      champ_uniforme 1 7850.0
+        cp       champ_uniforme 1 500.0
+        lambda   champ_uniforme 1 50.0
+        porosites_champ champ_uniforme 1 $phic
+    }
+    conduction
+    {
+        diffusion   { }
+        initial_conditions { temperature champ_uniforme 1 500 }
+        boundary_conditions
+        {
+            bas     paroi_adiabatique
+            gauche  paroi_adiabatique
+            droite  paroi_adiabatique
+            Couture_0    paroi_adiabatique
+        }
+        sources
+        {
+            echange_thermique_volumique
+            {
+                nom hx_prim
+                aire_interfaciale Champ_Uniforme 1 $ai1
+            } ,
+            echange_thermique_volumique
+            {
+                nom hx_sec
+                aire_interfaciale Champ_Uniforme 1 $ai2
+                epaisseur_conduction Champ_Uniforme 1 $epaisseur_acier
+            }
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            TSOL grav temperature periode 1e8 segment 500 0.25 0 0.25 1
+        }
+        format lml
+        fields dt_post 1
+        {
+            temperature      elem
+        }
+    }
+}
+
+Read pbt2
+{
+    fluide_incompressible
+    {
+        rho      champ_uniforme 1 2000.0
+        cp       champ_uniforme 1 3075.0
+        lambda   champ_uniforme 1 0.5
+        mu       champ_uniforme 1 1e-3
+        beta_th  champ_uniforme 1 1e-4
+        porosites_champ champ_uniforme 1 $phi2
+        diametre_hyd_champ champ_uniforme 1 $dh2
+    }
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { quiet }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions { vitesse champ_uniforme 2 0 0 }
+        boundary_conditions
+        {
+            bas     frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            gauche  symetrie
+            droite  symetrie
+            Couture_0 frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0 -1
+        }
+    }
+    convection_diffusion_temperature
+    {
+        convection  { amont }
+        diffusion   { }
+        initial_conditions { temperature champ_uniforme 1 200 }
+        boundary_conditions
+        {
+            bas     frontiere_ouverte T_ext champ_front_uniforme 1 200
+            gauche  paroi_adiabatique
+            droite  paroi_adiabatique
+            Couture_0    frontiere_ouverte_temperature_imposee champ_front_uniforme 1 200
+        }
+        sources
+        {
+            echange_thermique_volumique
+            {
+                nom hx_sec
+                aire_interfaciale Champ_Uniforme 1 $ai2
+                flux_parietal Nusselt { formula (0.0021*Re^1.053*Pr^0.606)_MAX_(5+0.025*(Re*Pr)^0.8) }
+            }
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            TSEC grav temperature periode 1e8 segment 500 0.25 0 0.25 1
+        }
+        format lml
+        fields dt_post 1
+        {
+            temperature      elem
+        }
+    }
+}
+
+Solve pb
+End
