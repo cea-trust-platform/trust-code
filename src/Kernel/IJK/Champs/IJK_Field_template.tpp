@@ -26,7 +26,6 @@
 #include <IJK_Striped_Writer.h>
 #include <Parallel_io_parameters.h>
 
-
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* processor to send to */
                                                              int is, int js, int ks, /* ijk coordinates of first data to send */
@@ -598,7 +597,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::dumplata_scalar(const char *filen
       else
         loc = "SOM";
       const Nom& geomname = get_domaine().le_nom();
-      master_file << "Champ " << this->le_nom() << " " << basename(fd) << " geometrie=" << geomname;
+
+      Nom path, base_name;
+      split_path_filename(fd, path, base_name);
+      master_file << "Champ " << this->le_nom() << " "<< base_name << " geometrie=" << geomname;
 #ifdef INT_is_64_
       master_file << " file_offset=6";
 #endif
