@@ -151,7 +151,7 @@ public:
    *  @param perio_y Whether if domain is periodic along y axis
    *  @param perio_z Whether if domain is periodic along z axis
    */
-  void init_subregion(int ni, int nj, int nk,
+  void init_subregion(const Domaine_IJK& src, int ni, int nj, int nk,
                       int offset_i, int offset_j, int offset_k,
                       const Nom& subregion,
                       bool perio_x = false, bool perio_y = false, bool perio_z = false);

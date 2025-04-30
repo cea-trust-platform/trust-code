@@ -699,7 +699,7 @@ void Domaine_IJK::initialize_origin_deltas(double x0, double y0, double z0,
  *  @param perio_y Whether if domain is periodic along y axis
  *  @param perio_z Whether if domain is periodic along z axis
  */
-void Domaine_IJK::init_subregion(int ni, int nj, int nk,
+void Domaine_IJK::init_subregion(const Domaine_IJK& src, int ni, int nj, int nk,
                                  int offset_i, int offset_j, int offset_k,
                                  const Nom& subregion_name,
                                  bool perio_x, bool perio_y, bool perio_z )
@@ -711,17 +711,17 @@ void Domaine_IJK::init_subregion(int ni, int nj, int nk,
      et que le decoupage en processeurs ne peut etre fait qu'en I et J, et que la localisation est toujours
      ELEM
    */
-  assert(nproc_per_direction_[0] == 1 || (ni == get_nb_elem_tot(0) && offset_i == 0));
-  assert(nproc_per_direction_[1] == 1 || (nj == get_nb_elem_tot(1) && offset_j == 0));
-  assert(nproc_per_direction_[2] == 1 || (nk == get_nb_elem_tot(2) && offset_k == 0));
+  assert(src.nproc_per_direction_[0] == 1 || (ni == src.get_nb_elem_tot(0) && offset_i == 0));
+  assert(src.nproc_per_direction_[1] == 1 || (nj == src.get_nb_elem_tot(1) && offset_j == 0));
+  assert(src.nproc_per_direction_[2] == 1 || (nk == src.get_nb_elem_tot(2) && offset_k == 0));
 
   // La construction de la geometrie ne necessite pas les prerequis: c'est general
-  double x0 = get_node_coordinates(0)[offset_i];
-  double y0 = get_node_coordinates(1)[offset_j];
-  double z0 = get_node_coordinates(2)[offset_k];
-  ArrOfDouble dx0 = get_delta(0);
-  ArrOfDouble dy0 = get_delta(1);
-  ArrOfDouble dz0 = get_delta(2);
+  double x0 = src.get_node_coordinates(0)[offset_i];
+  double y0 = src.get_node_coordinates(1)[offset_j];
+  double z0 = src.get_node_coordinates(2)[offset_k];
+  ArrOfDouble dx0 = src.get_delta(0);
+  ArrOfDouble dy0 = src.get_delta(1);
+  ArrOfDouble dz0 = src.get_delta(2);
   ArrOfDouble dx, dy, dz;
   dx.ref_array(dx0, offset_i, ni);
   dy.ref_array(dy0, offset_j, nj);
@@ -731,9 +731,9 @@ void Domaine_IJK::init_subregion(int ni, int nj, int nk,
   nommer(subregion_name);
   // Pour le decoupage, on recopie:
 
-  int nproc_i = nproc_per_direction_[0];
-  int nproc_j = nproc_per_direction_[1];
-  int nproc_k = nproc_per_direction_[2];
+  int nproc_i = src.nproc_per_direction_[0];
+  int nproc_j = src.nproc_per_direction_[1];
+  int nproc_k = src.nproc_per_direction_[2];
   initialize_splitting(*this, nproc_i, nproc_j, nproc_k);
 }
 
