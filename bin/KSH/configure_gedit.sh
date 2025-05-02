@@ -22,7 +22,10 @@ fi
 
 # Command to check which version of libgtksourceview exists
 if [ "`ldconfig -p 1>/dev/null 2>&1 ; echo $?`" = 0 ] ; then
-  if [ "`eval ldconfig -p | grep libgtksourceview-4 2>/dev/null`" != "" ]
+  if [ -d /usr/share/libgedit-gtksourceview-300 ]
+  then
+    path=~/.local/share/libgedit-gtksourceview-300
+  elif [ "`eval ldconfig -p | grep libgtksourceview-4 2>/dev/null`" != "" ]
   then
      path=~/.local/share/gtksourceview-4
   elif [ "`eval ldconfig -p | grep libgtksourceview-3 2>/dev/null`" != "" ]
