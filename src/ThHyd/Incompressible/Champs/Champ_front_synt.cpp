@@ -23,6 +23,7 @@
 #include <Domaine_VF.h>
 #include <Frontiere.h>
 #include <SFichier.h>
+#include <Param.h>
 #include <random>
 #include <string>
 
@@ -54,133 +55,65 @@ Sortie& Champ_front_synt::printOn(Sortie& os) const
  */
 Entree& Champ_front_synt::readOn(Entree& is)
 {
-
-  int dim = lire_dimension(is, que_suis_je());
-  if (dim != 3)
+  dim_ = lire_dimension(is, que_suis_je());
+  if (dim_ != 3)
     {
       Cerr << "Error while reading Champ_front_synt:" << finl;
       Cerr << "The dimension must be equal to 3 to use Champ_front_synt" << finl;
-      exit();
+      Process::exit();
     }
-  Motcle motlu;
-  int nbmots = 8;
-  Motcles les_mots(nbmots);
 
-  les_mots[0] = "moyenne";
-  les_mots[1] = "turbKinEn";
-  les_mots[2] = "turbDissRate";
-  les_mots[3] = "nbModes";
-  les_mots[4] = "KeOverKmin";
-  les_mots[5] = "ratioCutoffWavenumber";
-  les_mots[6] = "dir_fluct";
-  les_mots[7] = "ecriture";
+  Param param(que_suis_je());
+  param.ajouter("moyenne", &moyenne_, Param::REQUIRED);
+  param.ajouter("turbKinEn", &turbKinEn_, Param::REQUIRED);
+  param.ajouter("turbDissRate", &turbDissRate_, Param::REQUIRED);
+  param.ajouter("nbModes", &nbModes_, Param::REQUIRED);
+  param.ajouter("KeOverKmin", &KeOverKmin_, Param::REQUIRED);
+  param.ajouter("ratioCutoffWavenumber", &ratioCutoffWavenumber_, Param::REQUIRED);
+  param.ajouter("ecriture", &ecriture_, Param::REQUIRED);
+  param.ajouter_non_std("dir_fluct", (this), Param::REQUIRED);
+  // deprecated options. TODO FIXME should remove ?
+  param.ajouter_non_std("p", (this));
+  param.ajouter_non_std("timeScale|lenghtScale", (this));
+  param.lire_avec_accolades_depuis(is);
 
-  is >> motlu;
-  if (motlu != "{")
-    {
-      Cerr << "Error while reading Champ_front_synt:" << finl;
-      Cerr << "We expected a { instead of " << motlu << finl;
-      exit();
-    }
-  int cpt = 0;
-  is >> motlu;
-  while (motlu != "}")
-    {
-      int rang = les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0:
-          {
-            cpt++;
-            is >> moyenne_;
-            break;
-          }
-        case 1:
-          {
-            cpt++;
-            is >> turbKinEn_;
-            break;
-          }
-        case 2:
-          {
-            cpt++;
-            is >> turbDissRate_;
-            break;
-          }
-        case 3:
-          {
-            cpt++;
-            is >> nbModes_;
-            break;
-          }
-        case 4:
-          {
-            cpt++;
-            is >> KeOverKmin_;
-            break;
-          }
-        case 5:
-          {
-            cpt++;
-            is >> ratioCutoffWavenumber_;
-            break;
-          }
-        case 6:
-          {
-            cpt++;
-            dir_fluct_.resize(dim);
-            fixer_nb_comp(dim);
-            for (int i = 0; i < dim; i++)
-              {
-                is >> dir_fluct_(i);
-              }
-            break;
-          }
-        case 7:
-          {
-            cpt++;
-            is >> ecriture_;
-            break;
-          }
-        default:
-          {
-            if (motlu == "p")
-              {
-                Cerr << "Error while reading Champ_front_synt:" << finl;
-                Cerr << "  Parameter " << motlu << " has been renamed to KeOverKmin since TRUST v1.9.0" << finl;
-                Cerr << "  Update your datafile." << finl;
-              }
-            if (motlu == "timeScale" or motlu == "lenghtScale")
-              {
-                Cerr << "Error while reading Champ_front_synt:" << finl;
-                Cerr << "  'lenghtScale' and 'timeScale' are not parameters anymore ; they are estimated internally based on turbKinEn and turbDissRate." << finl;
-                Cerr << "  Update your datafile." << finl;
-              }
-            else
-              {
-                Cerr << "Error while reading Champ_front_synt:" << finl;
-                Cerr << "  " << motlu << "is not understood." << finl;
-                Cerr << "  We are expecting a parameter among " << les_mots << finl;
-              }
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-  if (cpt != nbmots)
-    {
-      Cerr << "Error while reading Champ_front_synt: wrong number of parameters" << finl;
-      Cerr << "You should specify all these parameters: " << les_mots << finl;
-      exit();
-    }
   if (nbModes_ == 0 || KeOverKmin_ == 0 || ratioCutoffWavenumber_ == 0)
     {
       Cerr << "Error while reading Champ_front_synt" << finl;
       Cerr << "There is at least one parameter among: nbModes, turbKinEn, ratioCutoffWavenumber, set to 0" << finl;
-      exit();
+      Process::exit();
     }
 
   return is;
+}
+
+int Champ_front_synt::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  int retval = -1;
+  if (mot == "dir_fluct")
+    {
+      dir_fluct_.resize(dim_);
+      fixer_nb_comp(dim_);
+      for (int i = 0; i < dim_; i++)
+        is >> dir_fluct_(i);
+      retval = 1;
+    }
+  else if (mot == "p")
+    {
+      Cerr << "Error while reading Champ_front_synt:" << finl;
+      Cerr << "  Parameter " << mot << " has been renamed to KeOverKmin since TRUST v1.9.0" << finl;
+      Cerr << "  Update your datafile." << finl;
+      Process::exit();
+    }
+  else if (mot == "timeScale" || mot == "lenghtScale")
+    {
+      Cerr << "Error while reading Champ_front_synt:" << finl;
+      Cerr << "  'lenghtScale' and 'timeScale' are not parameters anymore ; they are estimated internally based on turbKinEn and turbDissRate." << finl;
+      Cerr << "  Update your datafile." << finl;
+      Process::exit();
+    }
+
+  return retval;
 }
 
 /*! @brief Choix du spectre (isotropique) local

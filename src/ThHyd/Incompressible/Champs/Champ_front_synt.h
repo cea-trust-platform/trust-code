@@ -32,7 +32,7 @@ class Champ_front_synt : public Ch_front_var_instationnaire_dep
   Declare_instanciable(Champ_front_synt);
 
 public:
-
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int initialiser(double temps, const Champ_Inc_base& inco) override;
   Champ_front_base& affecter_(const Champ_front_base& ch) override;
   void mettre_a_jour(double temps) override;
@@ -59,7 +59,7 @@ protected :
   double KeOverKmin_= 0.;
   double ratioCutoffWavenumber_= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
 
-  int ecriture_ = 0;
+  int ecriture_ = 0, dim_ = -123;
 
   // Quantités auxiliaires aux valeurs constantes durant la simulation
   ArrOfDouble timeScale_; // echelle temporelle de turbulence ; aura la longueur nb_face ; utilise pour correlation temporelle
