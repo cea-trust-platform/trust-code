@@ -5,7 +5,7 @@ HDF5=$(TRUST_HDF5_ROOT)/lib/libhdf5.a
 
 all : $(PDI)
 
-$(PDI) : $(HDF5) $(PDI_ARCHIVE) makefile install.sh
+$(PDI) : $(HDF5) $(PDI_ARCHIVE) makefile install.sh hdf5_err_handler.patch
 	make clean
 	@./install.sh $(PDI_ARCHIVE)
 
