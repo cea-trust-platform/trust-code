@@ -129,8 +129,6 @@ double Champ_front_synt::energy_spectrum_(const double& kappa, const double& tke
  */
 int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 {
-  Nom nom_fichier("vitesse_bord_synt.txt");
-
   if (!Ch_front_var_instationnaire_dep::initialiser(tps, inco))
     return 0;
 
@@ -145,19 +143,71 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
   const Faces& tabFaces = front.frontiere().faces();
   tabFaces.calculer_centres_gravite(centreGrav_);                  ////// CALCUL DE centreGrav_ //////
 
-  if (bool(ecriture_) and !Process::me())
+  if (bool(ecriture_) )
     {
-      SFichier fiche_vals(nom_fichier);
-      fiche_vals << "# Temps ";
+      nom_fichier_ = nom_du_cas();
+      nom_fichier_ += "_vitesse_bord_synt.txt";
 
-      for (int i = 0; i < nb_face_; i++)
-        fiche_vals << "\t face_" << i << "\t face_" << i << "\t face_" << i;
-      fiche_vals << finl;
+      int nb_face_com = nb_face_;
+      envoyer(nb_face_com, Process::me(), 0, Process::me()); // pour Proc maitre
 
-      fiche_vals << "# CentreGrav ";
-      for (int i = 0; i < nb_face_; i++)
-        fiche_vals << "\t " << centreGrav_(i, 0) << "\t " << centreGrav_(i, 1) << "\t " << centreGrav_(i, 2);
-      fiche_vals << finl;
+      if (Process::je_suis_maitre())
+        {
+          SFichier fiche_vals(nom_fichier_);
+          fiche_vals << "# Temps ";
+
+          for (int p = 0; p < Process::nproc(); p++)
+            {
+              recevoir(nb_face_com, p, 0, p);
+
+              for (int i = 0; i < nb_face_com; i++)
+                fiche_vals << "\t face_" << i << "_" << p
+                           << "\t face_" << i << "_" << p
+                           << "\t face_" << i<< "_" << p;
+
+            }
+          fiche_vals << finl;
+        }
+
+      // XXX Elie Saikali : Nota bene
+      // pour centreGrav_, on ne doit pas passer par les buffers car l'op sortie fonctionne pas en //
+      //          envoyer(centreGrav_com, Process::me(), 0, Process::me()); // ce truc pas possible
+
+      auto span_vu = centreGrav_.get_span();
+
+      if (Process::nproc() > 1 && Process::me()) // pas maitre
+        {
+          int taille = span_vu.size();
+          MPI_Send(&taille, 1, MPI_INT, 0, 100, MPI_COMM_WORLD);
+          MPI_Send(span_vu.data(), taille, MPI_DOUBLE, 0, 101, MPI_COMM_WORLD);
+        }
+      else // maitre !
+        {
+          SFichier fiche_vals(nom_fichier_, ios::app);
+
+          // on commence par l'info sur proc 0
+          fiche_vals << "# CentreGrav ";
+          for (int i = 0; i < nb_face_; i++)
+            fiche_vals << "\t " << centreGrav_(i, 0)
+                       << "\t " << centreGrav_(i, 1)
+                       << "\t " << centreGrav_(i, 2);
+
+          if (Process::nproc() > 1)
+            for (int p = 1; p < Process::nproc(); p++)
+              {
+                int taille = 0;
+
+                MPI_Recv(&taille, 1, MPI_INT, p, 100, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                std::vector<double> buffer(taille);
+                MPI_Recv(buffer.data(), taille, MPI_DOUBLE, p, 101, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                for (int i = 0; i < taille; i++)
+                  fiche_vals << "\t " << buffer[i];
+              }
+
+          fiche_vals << finl;
+        }
     }
 
   ////// INITIALISATION DES CHAMPS LUS //////
@@ -349,17 +399,43 @@ void Champ_front_synt::mettre_a_jour(double temps)
     }
   tab.echange_espace_virtuel();
 
-  if (bool(ecriture_) and !Process::me())
+  if (bool(ecriture_))
     {
-      Nom nom_fichier("vitesse_bord_synt.txt");
-      SFichier fiche_vals(nom_fichier, ios::app);
-      fiche_vals.setf(ios::scientific);
-      fiche_vals << temps;
+      auto span_vu = tab.get_span();
+      if (Process::nproc() > 1 && Process::me()) // pas maitre
+        {
+          int taille = span_vu.size();
+          MPI_Send(&taille, 1, MPI_INT, 0, 100, MPI_COMM_WORLD);
+          MPI_Send(span_vu.data(), taille, MPI_DOUBLE, 0, 101, MPI_COMM_WORLD);
+        }
+      else // maitre !
+        {
+          SFichier fiche_vals(nom_fichier_, ios::app);
+          fiche_vals.setf(ios::scientific);
+          fiche_vals << temps;
 
-      for (int i = 0; i < nb_face_; i++)
-        fiche_vals << "\t" << tab(i, 0) << "\t " << tab(i, 1) << "\t " << tab(i, 2);
+          // on commence par l'info sur proc 0
+          for (int i = 0; i < nb_face_; i++)
+            fiche_vals << "\t " << tab(i, 0)
+                       << "\t " << tab(i, 1)
+                       << "\t " << tab(i, 2);
 
-      fiche_vals << finl;
+          if (Process::nproc() > 1)
+            for (int p = 1; p < Process::nproc(); p++)
+              {
+                int taille = 0;
+
+                MPI_Recv(&taille, 1, MPI_INT, p, 100, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                std::vector<double> buffer(taille);
+                MPI_Recv(buffer.data(), taille, MPI_DOUBLE, p, 101, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                for (int i = 0; i < taille; i++)
+                  fiche_vals << "\t " << buffer[i];
+              }
+
+          fiche_vals << finl;
+        }
     }
 
   temps_d_avant_ = temps;

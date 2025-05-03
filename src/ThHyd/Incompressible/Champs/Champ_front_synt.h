@@ -58,7 +58,7 @@ protected :
   int nbModes_ = -10; // nombres d'interlles de la discretisation en kappa
   double KeOverKmin_= 0.;
   double ratioCutoffWavenumber_= 0.; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
-
+  Nom nom_fichier_;
   int ecriture_ = 0, dim_ = -123;
 
   // Quantités auxiliaires aux valeurs constantes durant la simulation
