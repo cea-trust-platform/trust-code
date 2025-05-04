@@ -108,16 +108,35 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
   DoubleArrView valeurs;
   if (ok_post_src_ch) valeurs = static_cast<DoubleVect&>((*post_src_ch).valeurs()).view_wo();
 
-  // Handle uniform case ... such a pain:
-  const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces, KOKKOS_LAMBDA(const int i_face)
-  {
-    for (int ncomp = 0; ncomp < val_flux0_line_sz; ncomp++)
-      view_val_flux(i_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i_face, ncomp);
-  });
-  end_gpu_timer(__KERNEL_NAME__);
+  /*
+   * XXX Elie Saikali mai 2025 : soucis avec ICoCo ...
+   * Attention : val_flux a dimension de nb_faces or val_flux0 a dimension de nb_faces du bord nom_bord_ ...
+   * faut bien remplir les bonnes faces ...
+   * On commence par remplir val_flux seulement pour les bonnes faces ...
+   * TODO FIXME utilise Source_Masse_Fluide_Dilatable_base::fill_val_flux_tab ...
+   */
 
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
+    {
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
 
+      if (le_bord.le_nom() == nom_bord_)
+        {
+          // Handle uniform case ... such a pain:
+          const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
+          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+          {
+            for (int ncomp = 0; ncomp < val_flux0_line_sz; ncomp++)
+              view_val_flux(num_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(num_face - ndeb, ncomp);
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+        }
+    }
+
+  // Maintennat on regarde resu ...
   for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
@@ -149,7 +168,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_eq_espece(const Convection_Diffu
               YY += Y(elem_faces(elem, j));
 
             YY /= elem_faces_line_size;
-            double srcmass = -(YY * view_val_flux(num_face - ndeb, 0) * surface_elem) / rho(num_face);
+            double srcmass = -(YY * view_val_flux(num_face, 0) * surface_elem) / rho(num_face);
             if (is_expl)
               srcmass /= volumes_entrelaces(num_face); // on divise par volume (pas de solveur masse dans l'equation ...)
             view_resu(num_face) += srcmass;
@@ -177,18 +196,38 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
 
   const int nb_faces = zp1b.nb_faces();
   const int val_flux0_line_sz = ch_front_source_->valeurs().line_size();
-  DoubleTrav tab_val_flux(zp1b.nb_faces(), 1);
+  DoubleTrav tab_val_flux(nb_faces, 1);
 
-  // Handle uniform case ... such a pain:
-  const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
   CDoubleTabView val_flux0 = ch_front_source_->valeurs().view_ro();
   DoubleTabView val_flux = tab_val_flux.view_rw();
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_faces, KOKKOS_LAMBDA(const int i_face)
-  {
-    for (int ncomp = 0; ncomp < val_flux0_line_sz; ncomp++)
-      val_flux(i_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i_face, ncomp);
-  });
-  end_gpu_timer(__KERNEL_NAME__);
+
+  /*
+    * XXX Elie Saikali mai 2025 : soucis avec ICoCo ...
+    * Attention : val_flux a dimension de nb_faces or val_flux0 a dimension de nb_faces du bord nom_bord_ ...
+    * faut bien remplir les bonnes faces ...
+    * On commence par remplir val_flux seulement pour les bonnes faces ...
+    * TODO FIXME utilise Source_Masse_Fluide_Dilatable_base::fill_val_flux_tab ...
+    */
+
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
+    {
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+
+      if (le_bord.le_nom() == nom_bord_)
+        {
+          // Handle uniform case ... such a pain:
+          const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
+          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
+          {
+            for (int ncomp = 0; ncomp < val_flux0_line_sz; ncomp++)
+              val_flux(num_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(num_face - ndeb, ncomp);
+          });
+          end_gpu_timer(__KERNEL_NAME__);
+        }
+    }
   /*
    * Attention : ici resu est comme la Pression => P0 et P1 ... Pa peut etre
    * Le flux est aux faces
@@ -219,7 +258,7 @@ void Source_Masse_Fluide_Dilatable_VEF::ajouter_projection(const Fluide_Dilatabl
             const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
             int elem = elem1 == -1 ? elem2 : elem1;
             const double surf = face_surfaces(num_face);
-            flux_faces(num_face) = val_flux(num_face - ndeb, 0) * surf / volumes(elem); // TODO multiple elements!! units val_flux(num_face-ndeb,0) *surf [kg.s-1] => gives [kg.m-3.s-1]
+            flux_faces(num_face) = val_flux(num_face, 0) * surf / volumes(elem); // TODO multiple elements!! units val_flux(num_face-ndeb,0) *surf [kg.s-1] => gives [kg.m-3.s-1]
           });
           end_gpu_timer(__KERNEL_NAME__);
         }

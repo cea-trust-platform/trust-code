@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,8 @@ public :
   virtual void associer_domaine_cl(const Domaine_Cl_dis_base&);
 
   inline int nb_comp() { return ncomp_; }
+
+  void fill_val_flux_tab(DoubleTrav& val_flux) const;
 
   // methodes virtuelles pures
   virtual void ajouter_eq_espece(const Convection_Diffusion_Fluide_Dilatable_base& eqn, const Fluide_Dilatable_base& fluide, const bool is_expl, DoubleVect& resu) const = 0;

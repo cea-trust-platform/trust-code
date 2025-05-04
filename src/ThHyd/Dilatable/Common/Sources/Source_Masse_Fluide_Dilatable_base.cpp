@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Source_Masse_Fluide_Dilatable_base.h>
+#include <Champ_front_uniforme.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <Domaine_VF.h>
@@ -99,4 +100,31 @@ void Source_Masse_Fluide_Dilatable_base::changer_temps_futur(double temps, int i
 void Source_Masse_Fluide_Dilatable_base::set_temps_defaut(double temps)
 {
   ch_front_source_->set_temps_defaut(temps);
+}
+
+void Source_Masse_Fluide_Dilatable_base::fill_val_flux_tab(DoubleTrav& val_flux) const
+{
+  const DoubleTab& val_flux0 = ch_front_source_->valeurs();
+  /*
+   * XXX Elie Saikali mai 2025 : soucis avec ICoCo ...
+   * Attention : val_flux a dimension de nb_faces or val_flux0 a dimension de nb_faces du bord nom_bord_ ...
+   * faut bien remplir les bonnes faces ...
+   * On commence par remplir val_flux seulement pour les bonnes faces ...
+   */
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
+    {
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+
+      if (le_bord.le_nom() == nom_bord_)
+        {
+          // Handle uniform case ... such a pain:
+          const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
+          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+          for (int num_face = ndeb; num_face < nfin; num_face++)
+            for (int ncomp = 0; ncomp < val_flux0.line_size(); ncomp++)
+              val_flux(num_face, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(num_face - ndeb, ncomp);
+        }
+    }
 }

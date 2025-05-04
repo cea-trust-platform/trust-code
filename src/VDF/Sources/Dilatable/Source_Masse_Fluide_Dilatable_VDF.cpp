@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,6 @@
 #include <Convection_Diffusion_Fluide_Dilatable_base.h>
 #include <Source_Masse_Fluide_Dilatable_VDF.h>
 #include <Fluide_Weakly_Compressible.h>
-#include <Champ_front_uniforme.h>
 #include <TRUSTTrav.h>
 #include <Domaine_VF.h>
 
@@ -81,23 +80,20 @@ Entree& Source_Masse_Fluide_Dilatable_VDF::readOn(Entree& is) { return Source_Ma
 void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffusion_Fluide_Dilatable_base& eqn, const Fluide_Dilatable_base& fluide, const bool is_expl, DoubleVect& resu) const
 {
   assert(sub_type(Fluide_Weakly_Compressible,fluide));
-  const DoubleTab& Y = eqn.inconnue().valeurs(),
-                   &rho = fluide.masse_volumique().valeurs(),
-                    &val_flux0 = ch_front_source_->valeurs();
+  const DoubleTab& Y = eqn.inconnue().valeurs(), &rho = fluide.masse_volumique().valeurs();
+
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
   const IntTab& face_voisins = zvf.face_voisins();
-  DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
   Champ_Don_base * post_src_ch = fluide.has_source_masse_espece_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_espece() : nullptr;
 
-  // Handle uniform case ... such a pain:
-  const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
-  for (int i = 0; i < zvf.nb_faces(); i++)
-    for (int ncomp = 0; ncomp < val_flux0.line_size(); ncomp++)
-      val_flux(i, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i, ncomp);
+  // On commence par remplir val_flux seulement pour les bonnes faces ...
+  DoubleTrav val_flux(zvf.nb_faces(), 1);
+  fill_val_flux_tab(val_flux);
 
+  // Maintennat on regarde resu ...
   for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
@@ -111,7 +107,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_eq_espece(const Convection_Diffu
               const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
               int elem = elem1 == -1 ? elem2 : elem1;
               const double surface_elem = zvf.face_surfaces(num_face);
-              double srcmass = -(Y(elem) * val_flux(num_face - ndeb, 0) * surface_elem) / rho(elem);
+              double srcmass = -(Y(elem) * val_flux(num_face, 0) * surface_elem) / rho(elem);
               if (is_expl)
                 srcmass /= zvf.volumes(elem); // on divise par volume (pas de solveur masse dans l'equation ...)
               resu(elem) += srcmass;
@@ -133,18 +129,15 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
   const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
   const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
   const IntTab& face_voisins = zvf.face_voisins();
-  const DoubleTab& val_flux0 = ch_front_source_->valeurs();
-  DoubleTrav val_flux(zvf.nb_faces(), 1);
 
   // pour post
   Champ_Don_base* post_src_ch = fluide.has_source_masse_projection_champ() ? &ref_cast_non_const(Fluide_Dilatable_base, fluide).source_masse_projection() : nullptr;
 
-  // Handle uniform case ... such a pain:
-  const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
-  for (int i = 0; i < zvf.nb_faces(); i++)
-    for (int ncomp = 0; ncomp < val_flux0.line_size(); ncomp++)
-      val_flux(i, 0) += is_uniforme ? val_flux0(0, ncomp) : val_flux0(i, ncomp);
+  // On commence par remplir val_flux seulement pour les bonnes faces ...
+  DoubleTrav val_flux(zvf.nb_faces(), 1);
+  fill_val_flux_tab(val_flux);
 
+  // Maintennat on regarde resu ...
   for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
@@ -159,7 +152,7 @@ void Source_Masse_Fluide_Dilatable_VDF::ajouter_projection(const Fluide_Dilatabl
               const int elem1 = face_voisins(num_face, 0), elem2 = face_voisins(num_face, 1);
               int elem = elem1 == -1 ? elem2 : elem1;
               const double surf = zvf.face_surfaces(num_face);
-              const double source_per_dv = val_flux(num_face - ndeb, 0) * surf / zvf.volumes(elem);  // TODO multiple elements!! units [kg.s-1] / zvf.volumes(elem)
+              const double source_per_dv = val_flux(num_face, 0) * surf / zvf.volumes(elem);  // TODO multiple elements!! units [kg.s-1] / zvf.volumes(elem)
               resu(elem) -= source_per_dv;  // in [kg.m-3.s-1]
 
               if (post_src_ch)
