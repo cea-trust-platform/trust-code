@@ -1,4 +1,5 @@
 #!/bin/bash
+
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
 mot=liste_cas_nr
@@ -25,6 +26,9 @@ else
     # Some notebooks invoke local Python scripts, so amend PYTHONPATH temporarily:
     src_dir=`readlink -f $(dirname $ze_file)`/src
     PYTHONPATH=$src_dir:$PYTHONPATH
+    # Make sure the pipe fails when invoking get_nr_cases_jup.py if the script itself fails: 
+    set -e
+    set -o pipefail
     # env JUPYTER_RUN_OPTIONS="$*" python $DIR/get_nr_cases_jup.py $ze_file
     env JUPYTER_RUN_OPTIONS="$*" python $DIR/get_nr_cases_jup.py $ze_file 2>/dev/null | grep "@@@CAS_NR_JY@@@" | cut -d' ' -f2
   else

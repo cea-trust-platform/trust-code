@@ -445,7 +445,13 @@ add_test_case_from_validation()
                [ ! -d  $FICHE_ROOT/src ] && echo "Error: $prm is an orphan notebook (no src folder). Please delete it or finalize your validation form" && exit -1
             fi
             TMP_BUILD=`mktemp_ -d`
+            # $TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr $prm -dest $TMP_BUILD
             jeux=`$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr $prm -dest $TMP_BUILD`
+            if [ ! $? -eq 0 ]; then
+               echo "Could not get the list of NR test cases from the validation form $prm." 
+               echo "Check that the syntax in the form is correct, and that the form runs properly!" 
+               exit -1 
+            fi
             if [ ! -d $TMP_BUILD/build ]
             then
                echo "Error during the build of the form $FICHE_ROOT"; exit -1
