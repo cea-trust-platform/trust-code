@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.6_beta : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
+05/05/25 (TRUST) New feature  : Convection/Diffusion contributions for all species are added to a seperate .out file when using the mass source term in a weakly-compressible simulation.
 05/05/25 (TRUST) New feature  : Integration of the IMUSIG algorithm from Baltik SCONE considering a constant Sauter diameter per class
 25/04/25 (TRUST) GPU          : Several VEF source terms ported (constituant and puissance_thermique for incompressible/quasi-compressible flows)
 25/04/25 (TRUST) GPU          : Change AmgX C-AMG defaults (selector from PMIS to HMIS and strength threshold from 0.25 to 0.8) to have more robust/faster multi-GPU solver
