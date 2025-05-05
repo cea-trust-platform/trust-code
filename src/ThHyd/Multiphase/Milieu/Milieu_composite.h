@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,12 +61,15 @@ public :
   const Fluide_base& get_fluid(const int i) const;
   inline const Noms& noms_phases() const { return noms_phases_; }
 
+  inline bool are_fluid_properties_initialised() const { return fluid_properties_initialised_; }
+
 protected :
   OWN_PTR(Champ_Don_base) rho_m_, h_m_;
   Noms noms_phases_;
   double t_init_ = -1.;
   bool has_saturation_ = false, has_interface_ = false;
   bool res_en_T_ = true; // par defaut resolution en T
+  bool fluid_properties_initialised_ = false;
   std::vector<std::vector<Interface_base *>> tab_interface_;
   std::vector<OWN_PTR(Fluide_base)> fluides_;
   OWN_PTR(Interface_base) sat_lu_, inter_lu_;

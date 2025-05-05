@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -209,6 +209,7 @@ int Milieu_composite::initialiser(const double temps)
 void Milieu_composite::preparer_calcul()
 {
   mettre_a_jour(t_init_);
+  fluid_properties_initialised_ = true;
 }
 
 void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
