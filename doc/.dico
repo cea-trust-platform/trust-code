@@ -265,6 +265,7 @@
  DG DG_discretisation DG_discretisation.h
  Diametre_bulles_champ Diametre_bulles_champ Diametre_bulles_champ.h
  Diametre_bulles_constant Diametre_bulles_constant Diametre_bulles_constant.h
+ Diametre_bulles_musig Diametre_bulles_musig Diametre_bulles_musig.h
  Diametre_hyd_champ Diametre_hyd_champ Diametre_hyd_champ.h
  Dilate Dilate Dilate.h
  Dimension Dimension Dimension.h
