@@ -53,7 +53,7 @@ public :
 
 protected :
   int ncomp_ = -1;
-  Nom nom_bord_;
+  Nom nom_bord_, file_out_;
   OWN_PTR(Champ_front_base) ch_front_source_;
   OBS_PTR(Domaine_Cl_dis_base) domaine_cl_dis_;
 };

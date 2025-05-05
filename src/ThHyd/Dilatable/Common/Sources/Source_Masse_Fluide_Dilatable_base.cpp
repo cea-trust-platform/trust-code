@@ -16,8 +16,10 @@
 #include <Source_Masse_Fluide_Dilatable_base.h>
 #include <Champ_front_uniforme.h>
 #include <Schema_Temps_base.h>
+#include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Domaine_VF.h>
+#include <SFichier.h>
 #include <Param.h>
 
 Implemente_base(Source_Masse_Fluide_Dilatable_base, "Source_Masse_Fluide_Dilatable_base", Objet_U);
@@ -85,11 +87,74 @@ void Source_Masse_Fluide_Dilatable_base::completer()
   ch_front_source_->initialiser(tps, domaine_cl_dis_->inconnue());
 
   ncomp_ = ch_front_source_->valeurs().line_size();
+
+  file_out_ = nom_du_cas();
+  file_out_ += "_source_Masse_flux_";
+  file_out_ += domaine_cl_dis_->equation().probleme().le_nom();
+  file_out_ += ".out";
+
+  Cerr << "Source_Masse_Fluide_Dilatable_base => File " << file_out_ << " created ..." << finl;
+
+  if (je_suis_maitre())
+    {
+      SFichier fic(file_out_);
+      fic << "# Convective and Diffusive mass source flux at the " << nom_bord_ << " boundary" << finl;
+      fic << "# Time";
+
+      for (int i = 0; i < ncomp_; i++)
+        fic << " \t Convective_flux_species_" << i << " \t Diffusive_flux_species_" << i;
+
+      fic << finl;
+    }
 }
 
 void Source_Masse_Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
   //ch_front_source_->avancer(temps);
+
+  double sum_conv = 0.;
+  std::vector<double> sum_diff_vect(ncomp_);
+  const DoubleTab& val_flux0 = ch_front_source_->valeurs();
+
+  const Domaine_Cl_dis_base& zclb = domaine_cl_dis_.valeur();
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, zclb.domaine_dis());
+
+  for (int n_bord = 0; n_bord < domaine_cl_dis_->nb_cond_lim(); n_bord++)
+    {
+      const Cond_lim& la_cl = domaine_cl_dis_->les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
+
+      if (le_bord.le_nom() == nom_bord_)
+        {
+          // Handle uniform case ... such a pain:
+          const int is_uniforme = sub_type(Champ_front_uniforme, ch_front_source_.valeur());
+          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+          for (int i = 0; i < ncomp_; i++)
+            {
+              double sum_diff = 0.;
+              for (int f = ndeb; f < nfin; f++)
+                {
+                  const double surf = zvf.face_surfaces(f);
+                  sum_diff += is_uniforme ? val_flux0(0, i) * surf : val_flux0(f - ndeb, i) * surf;
+                }
+
+              sum_diff_vect[i] = Process::mp_sum(sum_diff);
+            }
+        }
+    }
+
+  if (je_suis_maitre())
+    {
+      SFichier fic(file_out_, ios::app);
+      fic.setf(ios::scientific);
+      fic << temps;
+
+      for (int i = 0; i < ncomp_; i++)
+        fic << " \t " << sum_conv << " \t " << sum_diff_vect[i];
+
+      fic << finl;
+    }
 }
 
 void Source_Masse_Fluide_Dilatable_base::changer_temps_futur(double temps, int i)
