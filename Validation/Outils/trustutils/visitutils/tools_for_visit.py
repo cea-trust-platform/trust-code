@@ -108,11 +108,11 @@ def showMesh(filename, mesh="dom"):
         a Visit plot 
     """
 
-    field = Show(filename=filename, plottype="Mesh", name=mesh, mesh=mesh, plotmesh=False)
+    field = Show(filename=filename, plottype="Mesh", name=mesh, plotmesh=False)
     field.plot()
 
 
-def showField(filename, plottype, name, mesh="dom", plotmesh=True, title="", iteration=-1, size=10, max=None, min=None):
+def showField(filename, plottype, name, plotmesh=True, title="", iteration=-1, size=10, max=None, min=None):
     """
     Methods to plot a field from a .lata file.
 
@@ -123,9 +123,7 @@ def showField(filename, plottype, name, mesh="dom", plotmesh=True, title="", ite
     plottype : str
         The plottype we want (Pseudocolor, vector, ...)
     name : str
-        The name of the field.
-    mesh : str
-        The name of the mesh (default="dom")
+        The name of the field with localisation and name of the mesh such as read in VisIt.
     plotmesh : bool
         display the mesh (default=True)
     title : str
@@ -144,7 +142,7 @@ def showField(filename, plottype, name, mesh="dom", plotmesh=True, title="", ite
     -------
         a Visit plot
     """
-    field = Show(filename, plottype, name, mesh=mesh, plotmesh=plotmesh, title=title, iteration=iteration, size=size, max=max, min=min)
+    field = Show(filename, plottype, name, plotmesh=plotmesh, title=title, iteration=iteration, size=size, max=max, min=min)
     field.plot()
 
 
@@ -154,7 +152,7 @@ class Show(object):
     """
 
     def __init__(
-        self, filename="", plottype="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, iteration=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
+        self, filename="", plottype="", name="", nX=1, nY=1, plotmesh=True, iteration=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
     ):
         """
         Constructeur
@@ -167,8 +165,6 @@ class Show(object):
             The plottype we want (Pseudocolor, vector, ...)
         name : str
             The name of the field.  
-        mesh : str
-            The name of the mesh (default="dom")   
         plotmesh : bool
             If true plot the mesh asociate with .lata file (default=True) 
         iteration : int
@@ -221,7 +217,8 @@ class Show(object):
         # Mesh(if true il la visualise)
         self.plotmesh = plotmesh
         # Mesh
-        self.mesh = mesh
+        if not empty:
+            self.mesh = _extractMeshName(plottype, name)
         # Coordinates
         self.xIndice = 0
         self.yIndice = 0
@@ -320,7 +317,7 @@ class Show(object):
         f.close()
 
         if not self.empty:
-            self.addField(filename=self.filename, plottype=self.plottype, name=self.name, mesh=self.mesh, plotmesh=self.plotmesh)
+            self.addField(filename=self.filename, plottype=self.plottype, name=self.name, plotmesh=self.plotmesh)
 
         if self.show:
             if self.nX == 1 and self.nY == 1:
@@ -346,7 +343,7 @@ class Show(object):
                 self.subtitle = title
                 self.subplot.set_title(self.subtitle)
         
-    def addField(self, filename=None, plottype=None, name=None, mesh=None, plotmesh=True, min=None, max=None):
+    def addField(self, filename=None, plottype=None, name=None, plotmesh=True, min=None, max=None):
         """ 
         
         Method for adding a Field to a plot.
@@ -359,8 +356,6 @@ class Show(object):
             The plottype we want (Pseudocolor, vector, ...)
         name : str
             The name of the field.  
-        mesh : str
-            The name of the mesh.  
         plotmesh : bool
             If true plot the mesh asociate with .lata file (default=True) 
         min : float
@@ -386,7 +381,8 @@ class Show(object):
             if not filename == None:
                 f.write("dbs = ('" + filename + "') \n")
                 f.write("ActivateDatabase(dbs) \n")
-            if not mesh is None and plotmesh and not plottype == "Mesh" and not plottype == "Histogram":
+            if plotmesh and not plottype == "Mesh" and not plottype == "Histogram":
+                mesh = _extractMeshName(plottype, name)
                 f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'", self.iteration))
             f.write(self._genAddPlot("'" + plottype + "'", "'" + name + "'", self.iteration))
             f.write("DrawPlots() \n")
@@ -572,7 +568,7 @@ class Show(object):
         self.visitCommand('SetPlotOptions(MeshAtts)')
 
     def add(
-        self, filename, plottype, name, xIndice=0, yIndice=0, iteration=-1, mesh="dom", title="", plotmesh=True, max=None, min=None,
+        self, filename, plottype, name, xIndice=0, yIndice=0, iteration=-1, title="", plotmesh=True, max=None, min=None,
     ):
         """
 
@@ -585,13 +581,11 @@ class Show(object):
         plottype : str
             The plottype we want (Pseudocolor, vector, ...)
         name : str
-            The name of the field.
+            The name of the field associated to its localization and mesh such as in VisIt.
         xIndice : int
             Indice of the x axe.
         yIndice : int
             Indice of the y axe.
-        mesh : str
-            The name of the mesh (default="dom")
         plotmesh : bool
             If true plot the mesh asociate with .lata file.
         iteration : int
@@ -616,7 +610,6 @@ class Show(object):
         self.plottype = plottype
         self.name = name
         self.iteration = iteration
-        self.mesh = mesh
         self.plotmesh = plotmesh
         self.subtitle = title
         self.max = max
@@ -1404,3 +1397,23 @@ class export_lata_base:
         os.chdir(BUILD_DIRECTORY)
         outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
         os.chdir(origin)
+
+def _extractMeshName(plottype, name):
+    import re
+    if (plottype == "Mesh"):
+        return name
+    elif (plottype == "Subset"):
+        pattern = r'(blocks)\((\S+)\)'
+        match = re.search(pattern, name)
+        if match:
+            return match.group(2)
+        else:
+            raise ValueError("Error: Names of the Subset must be in the format blocks($mesh)")
+    else:
+        pattern = r'(FACES|ELEM|SOM)_(\S+)'
+        match = re.search(pattern, name)
+        if match:
+            return match.group(2)
+        else:
+            raise ValueError("Error: Names of the localisation and mesh must be integrated in the field name")
+
