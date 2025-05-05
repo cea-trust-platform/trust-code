@@ -27,6 +27,9 @@ def extract_cases(book):
              # for now, skip shell code lines:
              if loc.strip().startswith("!"):
                continue
+             # skip also display of plot: 
+             if "plot(" in loc: 
+               continue
              if ".runCases(" in loc:
                done = True
                s += re.sub(r"^(.*).runCases\([^\)]*\)(.*)$", "\\1.extractNRCases()\\2", loc)
