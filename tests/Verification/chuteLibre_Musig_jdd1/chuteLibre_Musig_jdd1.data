@@ -8,7 +8,7 @@ Mailler dom
         Pave rectangle
         {
         Origine 0.0 0.0
-        Nombre_de_Noeuds $Nx $Ny
+        Nombre_de_Noeuds 51 51
         Longueurs 4.5 5.0
         facteurs 1.0 1.0
         }
@@ -44,6 +44,7 @@ Read sch
         # Time step #
           # Initial time [s] #
 	tinit .0
+	nb_pas_dt_max 3
           # Min time step #
 	dt_min 1.e-8
           # Max time step #
@@ -102,7 +103,7 @@ Read pb
     Correlations
     {
         diametre_bulles musig { diametre 0.0 }
-	frottement_interfacial bulles_constant { coeff_derive $Coeff }
+	frottement_interfacial bulles_constant { coeff_derive 440.0 }
     }
 
     QDM_Multiphase
@@ -195,7 +196,7 @@ Read pb
 			sonde_vitesse_liquide grav vitesse_liquide_dispersee_eau_0 periode 0.05 segment 111 0.15 0.0 0.15 5.0
 		}
 		
-        Format lata 
+        Format lml 
         fields dt_post 0.05
         {
             vitesse_gaz_continu_air elem
