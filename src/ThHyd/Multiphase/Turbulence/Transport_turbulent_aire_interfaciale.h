@@ -15,8 +15,9 @@
 
 #ifndef Transport_turbulent_aire_interfaciale_included
 #define Transport_turbulent_aire_interfaciale_included
-#include <TRUSTTab.h>
+
 #include <Transport_turbulent_base.h>
+#include <TRUSTTab.h>
 
 /*! @brief classe Transport_turbulent_aire_interfaciale Transport turbulent de type aire_interfaciale:
  *
@@ -35,6 +36,11 @@ public:
   }
   void modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const override;
 
+
+private :
+  int n_g2=-1 ;
+  double cst_diff = 0.236 ; //2sqrt(2)/6*1/2 - ng2 : 2sqrt(2)/6*7/4
 };
 
-#endif
+#endif /* Transport_turbulent_aire_interfaciale_included */
+

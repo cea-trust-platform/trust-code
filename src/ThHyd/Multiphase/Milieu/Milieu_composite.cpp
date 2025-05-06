@@ -145,7 +145,20 @@ std::pair<std::string, int> Milieu_composite::check_fluid_name(const Nom& name)
   int phase = name.debute_par("gaz");
   Nom espece = phase ? name.getSuffix("gaz_") : name.getSuffix("liquide_");
 
-  return std::make_pair(espece.getString(), phase);
+  // Suppression des suffixes "_group1" et "_group2" pour iate 2 groups
+  std::string nomjdd = espece.getString();
+  std::string suffix1 = "_group1";
+  std::string suffix2 = "_group2";
+  if (nomjdd.size() >= suffix1.size() && nomjdd.compare(nomjdd.size() - suffix1.size(), suffix1.size(), suffix1) == 0)
+    {
+      nomjdd.erase(nomjdd.size() - suffix1.size(), suffix1.size());
+    }
+  else if (nomjdd.size() >= suffix2.size() && nomjdd.compare(nomjdd.size() - suffix2.size(), suffix2.size(), suffix2) == 0)
+    {
+      nomjdd.erase(nomjdd.size() - suffix2.size(), suffix2.size());
+    }
+
+  return std::make_pair(nomjdd, phase);
 }
 
 bool Milieu_composite::has_interface(int k, int l) const

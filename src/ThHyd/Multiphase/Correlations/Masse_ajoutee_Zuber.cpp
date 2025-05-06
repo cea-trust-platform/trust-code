@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ void Masse_ajoutee_Zuber::ajouter(const double *alpha, const double *rho, Double
   for (k = 0; k < N; k++)
     if (n_l != k)
       {
-        double coeff_loc = beta * ( 1 + 2*alpha[k]) / std::max(1 - alpha[k], 1.e-3);
+        double coeff_loc = beta * ( 1. + 2.*alpha[k]) / std::max(1. - alpha[k], 1.e-3);
         a_r(k,  k ) += std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
         a_r(k, n_l) -= std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
         a_r(n_l,n_l)+= std::min(coeff_loc * rho[n_l] * alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l]) ;
@@ -63,11 +63,22 @@ void Masse_ajoutee_Zuber::ajouter_inj(const double *flux_alpha, const double *al
   for (int k = 0; k < N; k++)
     if (n_l != k)
       {
-        double coeff_loc = beta * ( 1 + 2*alpha[k]) / std::max( alpha[n_l], 1.e-4 );
+        double coeff_loc = beta * ( 1. + 2.*alpha[k]) / std::max( alpha[n_l], 1.e-4 );
         double flux_ma = (alpha[k] < 1.e-4) ? coeff_loc * rho[n_l] * flux_alpha[k] : std::min(coeff_loc * rho[n_l] * flux_alpha[k], limiter_liquid_ * rho[n_l] * alpha[n_l] * flux_alpha[k] / alpha[k]) ;
         f_a_r(k,  k ) += inj_ajoutee_gaz_ * flux_ma ;
         f_a_r(k, n_l) -= 0.;
         f_a_r(n_l,n_l)+= 0.;
         f_a_r(n_l, k) -= inj_ajoutee_liquide_ * flux_ma ; //beta * rho[n_l] * flux_alpha[k];
+      }
+}
+
+void Masse_ajoutee_Zuber::coeff(const DoubleTab& alpha, const DoubleTab& rho, DoubleTab& coeff) const
+{
+  int k, N = coeff.dimension(0);
+  for (k = 0; k < N; k++)
+    if (n_l != k)
+      {
+        double coeff_loc = beta * ( 1. + 2.*alpha[k]) / std::max(1. - alpha[k], 1.e-3); ;
+        coeff(k) = (alpha[k]>1.e-6) ? std::min(coeff_loc, limiter_liquid_ * alpha[n_l] /  alpha[k]) : coeff_loc ;
       }
 }

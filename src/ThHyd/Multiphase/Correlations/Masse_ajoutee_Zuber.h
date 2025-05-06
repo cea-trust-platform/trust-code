@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ class Masse_ajoutee_Zuber : public Masse_ajoutee_base
 public:
   void ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const override;
   void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const override;
+  void coeff(const DoubleTab& alpha, const DoubleTab& rho, DoubleTab& coeff) const override;
 
 protected:
   double beta = 0.5;

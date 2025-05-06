@@ -51,6 +51,7 @@ private:
   OBS_PTR(Correlation_base) correlation_; //correlation donnant le coeff de flux interfacial
   int is_turb_ = 0;
   double dv_min = -1.;
+  double mod2grp = -1. ;
 };
 
 #endif /* Source_Flux_interfacial_base_included */

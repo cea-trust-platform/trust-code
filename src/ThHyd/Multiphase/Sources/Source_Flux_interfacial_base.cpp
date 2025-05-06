@@ -44,6 +44,11 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
   const bool res_en_T = pbm.resolution_en_T();
   if (!res_en_T) Process::exit("Source_Flux_interfacial_base::readOn NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
 
+  for (int n = 0; n < pbm.nb_phases(); n++)
+    {
+      if ((( pbm.nom_phase(n).finit_par("group1"))) || (( pbm.nom_phase(n).finit_par("group2"))))  mod2grp = 1.;
+    }
+
   correlation_ = pbm.get_correlation("flux_interfacial");
 
   dv_min = ref_cast(Flux_interfacial_base, correlation_.valeur()).dv_min();
@@ -356,42 +361,45 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
                           (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * hc * sgn * x;
                 }
               else if (sub_type(Aire_interfaciale, equation())) //eq d'aire interfaciale ; looks like the mass equation ; not a conservation equation !
-                if (k==0) // k est la phase porteuse
-                  if (alpha(e, l) > alpha_min) // if the phase l is present
-                    {
-                      secmem(e, l) += vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G ;
-                      if (n_lim < 0) /* G par limite thermique */
+                if (0.> mod2grp)
+                  {
+                    if (k==0) // k est la phase porteuse
+                      if (alpha(e, l) > alpha_min) // if the phase l is present
                         {
-                          if (Ma)   //derivees en alpha
+                          secmem(e, l) += vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G ;
+                          if (n_lim < 0) /* G par limite thermique */
                             {
-                              (*Ma)(N * e + l , N * e + l) -= vol * 2./3. * inco(e, l) / (-alpha(e, l)*alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G;
-                              for (n = 0; n < N; n++) (*Ma)(N * e + l , N * e + n) -=
-                                  vol * 2./3. * inco(e, l) / (alpha(e, l)              * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * da_G(n);
+                              if (Ma)   //derivees en alpha
+                                {
+                                  (*Ma)(N * e + l , N * e + l) -= vol * 2./3. * inco(e, l) / (-alpha(e, l)*alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G;
+                                  for (n = 0; n < N; n++) (*Ma)(N * e + l , N * e + n) -=
+                                      vol * 2./3. * inco(e, l) / (alpha(e, l)              * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * da_G(n);
+                                }
+                              if (Mt)   //derivees en T
+                                {
+                                  if (pch_rho) (*Mt)(N * e + l , N * e + l) -=
+                                      vol * 2./3. * inco(e, l) / alpha(e, l)*-pch_rho->derivees().at("temperature")(e, l)/((*pch_rho).valeurs()(e, l)*(*pch_rho).valeurs()(e, l)) * G;
+                                  for (n = 0; n < N; n++) (*Mt)(N * e + l , N * e + n) -=
+                                      vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * dT_G(n);
+                                }
+                              if (Mp)  //derivees en p
+                                {
+                                  if (pch_rho) (*Mp)(N * e + l , e) -=
+                                      vol * 2./3. * inco(e, l) / alpha(e, l)*-pch_rho->derivees().at("pression")(e, l)/((*pch_rho).valeurs()(e, l)*(*pch_rho).valeurs()(e, l)) * G;
+                                  for (n = 0; n < N; n++) (*Mp)(N * e + l , N * e + n) -=
+                                      vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * dP_G;
+                                }
+                              if (Mai) //derivees en ai
+                                {
+                                  (*Mai)(N * e + l , N * e + l) -= vol * 2./3. / (alpha(e, l)* (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G;
+                                } // dAi_G a ajouter
                             }
-                          if (Mt)   //derivees en T
-                            {
-                              if (pch_rho) (*Mt)(N * e + l , N * e + l) -=
-                                  vol * 2./3. * inco(e, l) / alpha(e, l)*-pch_rho->derivees().at("temperature")(e, l)/((*pch_rho).valeurs()(e, l)*(*pch_rho).valeurs()(e, l)) * G;
-                              for (n = 0; n < N; n++) (*Mt)(N * e + l , N * e + n) -=
-                                  vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * dT_G(n);
-                            }
-                          if (Mp)  //derivees en p
-                            {
-                              if (pch_rho) (*Mp)(N * e + l , e) -=
-                                  vol * 2./3. * inco(e, l) / alpha(e, l)*-pch_rho->derivees().at("pression")(e, l)/((*pch_rho).valeurs()(e, l)*(*pch_rho).valeurs()(e, l)) * G;
-                              for (n = 0; n < N; n++) (*Mp)(N * e + l , N * e + n) -=
-                                  vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * dP_G;
-                            }
-                          if (Mai) //derivees en ai
-                            {
-                              (*Mai)(N * e + l , N * e + l) -= vol * 2./3. / (alpha(e, l)* (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G;
-                            } // dAi_G a ajouter
+                          else for (auto &s_d : vec_m) /* G par evanescence */
+                              for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
+                                for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
+                                  (*s_d[1])(N * e + l , col) -= 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * sgn * x;
                         }
-                      else for (auto &s_d : vec_m) /* G par evanescence */
-                          for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
-                            for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
-                              (*s_d[1])(N * e + l , col) -= 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * sgn * x;
-                    }
+                  }
             }
           else if (sub_type(Energie_Multiphase, equation())) /* pas de saturation : echanges d'energie seulement */
             {

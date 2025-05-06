@@ -56,7 +56,11 @@ protected :
   OBS_PTR(Fluide_base) le_fluide_;
 
   bool has_diff_turb_ = false;
-  int n_l_=-1 ; // Number of the liquid phase (the one where no IA is stored)
+  int n_l=-1 ; // Number of the liquid phase (the one where no IA is stored)
+  int n_g1=-1 ;
+  int n_g2=-1 ;
+  const double g = 9.81 ;
 };
 
 #endif /* Aire_interfaciale_included */
+

@@ -58,10 +58,9 @@ Entree& Frottement_interfacial_bulles_constant::readOn(Entree& is)
 
 void Frottement_interfacial_bulles_constant::completer()
 {
-  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : nullptr;
-  if ((r_bulle_<0.) && (!pbm->has_champ("diametre_bulles"))) Process::exit(que_suis_je() + " : there must be a bubble diameter defined in the problem or a bubble radius defined in the force !");
+  //const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, pb_.valeur()) ? &ref_cast(Pb_Multiphase, pb_.valeur()) : nullptr;
+  //if ((r_bulle_<0.) && (!pbm->has_champ("diametre_bulles"))) Process::exit(que_suis_je() + " : there must be a bubble diameter defined in the problem or a bubble radius defined in the force !");
 }
-
 
 void Frottement_interfacial_bulles_constant::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                          const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,

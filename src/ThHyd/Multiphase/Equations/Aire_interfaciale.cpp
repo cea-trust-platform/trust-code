@@ -37,6 +37,14 @@
 #include <Debog.h>
 #include <SETS.h>
 
+#include <EChaine.h>
+#include <Neumann_paroi.h>
+#include <Scalaire_impose_paroi.h>
+#include <Echange_global_impose.h>
+#include <Milieu_composite.h>
+#include <math.h>
+
+
 Implemente_instanciable(Aire_interfaciale,"Aire_interfaciale|Interfacial_area",Convection_Diffusion_std);
 
 Sortie& Aire_interfaciale::printOn(Sortie& is) const
@@ -58,11 +66,15 @@ Entree& Aire_interfaciale::readOn(Entree& is)
 
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, probleme()) ? &ref_cast(Pb_Multiphase, probleme()) : nullptr;
 
-
   if (!pbm || pbm->nb_phases() == 1) Process::exit(que_suis_je() + " : not needed for single-phase flow!");
-  for (int n = 0; n < pbm->nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
-    if (pbm->nom_phase(n).debute_par("liquide") && (n_l_ < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l_ = n;
-  if (n_l_ < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+
+  for (int n = 0; n < pbm->nb_phases(); n++)  //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
+    {
+      if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
+      if (( pbm->nom_phase(n).finit_par("group1")))  n_g1 = n;
+      if (( pbm->nom_phase(n).finit_par("group2")))  n_g2 = n;
+    }
+  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
   if (pbm->has_correlation("diametre_bulles")) Process::exit(que_suis_je() + " : the interfacial area equation sets bubble diameter, there cannot be an exterior correlation !");
 
@@ -227,17 +239,63 @@ void Aire_interfaciale::mettre_a_jour(double temps)
 {
   Convection_Diffusion_std::mettre_a_jour(temps);
 
-  int i, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases();
+  int i, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases(), Np = probleme().get_champ("pression").valeurs().line_size();
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, probleme());
 
-  const DoubleTab& alpha = probleme().get_champ("alpha").passe(), &a_i = inconnue().passe();
+  const DoubleTab& alpha = probleme().get_champ("alpha").passe();
+  const DoubleTab& a_i = inconnue().passe();
+  const DoubleTab& rho_p   = milieu().masse_volumique().passe();
+  const DoubleTab& temp_p  = pbm.equation_energie().inconnue().passe();
+  const DoubleTab& press_p = ref_cast(QDM_Multiphase,pbm.equation_qdm()).pression().passe();
   DoubleTab& d_b = diametre_bulles_->valeurs();
+  double D_crit = 0.011;
+  int cR = (rho_p.dimension_tot(0) == 1);
+  const Milieu_composite& milc = ref_cast(Milieu_composite, milieu());
 
   diametre_bulles_->mettre_a_jour(temps);
 
-  for (n = 0; n < N; n++)
-    for (i = 0; i < d_b.dimension_tot(0); i++)
-      if (n != n_l_)
-        d_b(i, n) = std::max(1.e-8, ((a_i(i, n)>1.e-6) ? 6 * alpha(i, n)/a_i(i, n) : 0));
 
-  for (i = 0; i < d_b.dimension_tot(0); i++) d_b(i, n_l_) = 0;
+  const double void_fraction_threshold = 1e-5; // small void fraction is ignored to avoid numerical problems with group 2
+  const double interfacial_area_threshold = 1e-5; //ai is replaced by this value if too small
+  const double min_diameter = 1e-5; // diameter is replaced by this value if too small
+  for (n = 0; n < N; n++)
+    {
+      for (i = 0; i < d_b.dimension_tot(0); i++)
+        {
+          if (n != n_l)
+            {
+              if (a_i(i, n)<=interfacial_area_threshold)
+                d_b(i, n) = min_diameter;
+              else
+                d_b(i, n) = std::max(min_diameter, 6 * alpha(i, n)/a_i(i, n) );
+            }
+
+          if ( 0. < n_g1 )
+            {
+              if(milc.has_interface(n_g1, n_l))
+                {
+                  Interface_base& sat = milc.get_interface(n_l, n_g1);
+                  D_crit = 4. * std::sqrt(sat.sigma(temp_p(i,n_l), press_p(i,n_l * (Np > 1))) / g / (rho_p(!cR * i, n_l)-rho_p(!cR * i, n_g1)));
+                }
+              else if (milc.has_saturation(n_g1, n_l))
+                {
+                  Saturation_base& z_sat = milc.get_saturation(n_g1,  n_l);
+                  DoubleTab& sig = z_sat.get_sigma_tab();
+                  D_crit = 4. * std::sqrt(sig(i) / g / (rho_p(!cR * i, n_l)-rho_p(!cR * i, n_g1)));
+                }
+              if (n==n_g1)
+                {
+                  d_b(i, n_g1) = std::min(std::max(d_b(i, n_g1),min_diameter),D_crit);
+                }
+              if (n==n_g2)
+                {
+                  d_b(i, n_g2) = (alpha(i, n_g2)>void_fraction_threshold) ? std::min(std::max(d_b(i, n_g2),D_crit),10.*D_crit) : D_crit ;
+                }
+            }
+        }
+    }
+
+  for (i = 0; i < d_b.dimension_tot(0); i++) d_b(i, n_l) = 0.;
+
 }
+

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,5 +69,17 @@ void Masse_ajoutee_Wijngaarden::ajouter_inj(const double *flux_alpha, const doub
         f_a_r(k, n_l) -= 0. ;
         f_a_r(n_l,n_l)+= 0. ;
         f_a_r(n_l, k) -= inj_ajoutee_liquide_ * flux_ma ;
+      }
+}
+
+
+void Masse_ajoutee_Wijngaarden::coeff(const DoubleTab& alpha, const DoubleTab& rho, DoubleTab& coeff) const
+{
+  int k, N = coeff.dimension(0);
+  for (k = 0; k < N; k++)
+    if (n_l != k)
+      {
+        double coeff_loc = beta * ( 1 + 2.78*alpha[k]) ;
+        coeff(k) = (alpha[k]>1.e-6) ? std::min(coeff_loc, limiter_liquid_ * alpha[n_l] /  alpha[k]) : coeff_loc ;
       }
 }

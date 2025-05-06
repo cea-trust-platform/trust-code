@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,3 +80,17 @@ void Masse_ajoutee_Coef_Constant::ajouter_inj(const double *flux_alpha, const do
         f_a_r(n_l, k) -= inj_ajoutee_liquide_ * flux_ma ; //beta * rho[n_l] * flux_alpha[k];
       }
 }
+
+void Masse_ajoutee_Coef_Constant::coeff( const DoubleTab& alpha, const DoubleTab& rho, DoubleTab& coeff) const
+{
+  int k, N = coeff.dimension(0);
+  for (k = 0; k < N; k++)
+    if (n_l != k)
+      {
+        coeff(k) = (alpha[k]>1.e-6) ? std::min(beta, limiter_liquid_ * alpha[n_l] /  alpha[k]) : beta ;
+      }
+}
+
+
+
+

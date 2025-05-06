@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,7 @@ public:
   virtual void ajouter(const double *alpha, const double *rho, DoubleTab& a_r  ) const = 0;
   virtual void coefficient(const double *alpha, const double *rho, DoubleTab& coeff) const {Process::exit(que_suis_je() + " : you must define a coefficient function for added mass !");};
   virtual void ajouter_inj(const double *flux_alpha, const double *alpha, const double *rho, DoubleTab& f_a_r) const = 0;
+  virtual void coeff(const DoubleTab& alpha, const DoubleTab& rho, DoubleTab& coeff) const  = 0 ;
 
 protected:
   double limiter_liquid_ = 0.5 ; // Maximum percentage of the liquid that can be entrained by the bubbles

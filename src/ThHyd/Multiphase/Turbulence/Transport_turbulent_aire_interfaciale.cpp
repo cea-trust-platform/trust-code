@@ -14,11 +14,12 @@
 *****************************************************************************/
 
 #include <Transport_turbulent_aire_interfaciale.h>
-#include <Param.h>
-#include <Probleme_base.h>
-
 #include <Pb_Multiphase.h>
 #include <TRUSTTrav.h>
+#include <Param.h>
+
+// Isao Kataoka, Kenji Yoshida, Masanori Naitoh, Hidetoshi Okada, Tadashi Morii, Modeling of turbulent transport term of interfacial area concentration in gas–liquid two-phase flow,
+// Nuclear Engineering and Design, Volume 253, 2012, Pages 322-330, https://doi.org/10.1016/j.nucengdes.2011.08.062.
 
 Implemente_instanciable(Transport_turbulent_aire_interfaciale, "Transport_turbulent_aire_interfaciale", Transport_turbulent_base);
 // XD type_diffusion_turbulente_multiphase_aire_interfaciale type_diffusion_turbulente_multiphase_deriv aire_interfaciale 1 not_set
@@ -30,33 +31,32 @@ Sortie& Transport_turbulent_aire_interfaciale::printOn(Sortie& os) const
 
 Entree& Transport_turbulent_aire_interfaciale::readOn(Entree& is)
 {
+  Param param(que_suis_je());
+  param.ajouter("CstDiff", &cst_diff);// XD_ADD_P floattant Kataoka diffusion model constant. By default it is se to 0.236.
+  param.ajouter("ng2", &n_g2); // XD_ADD_P flag not_set
+  param.lire_avec_accolades_depuis(is);
   return is;
 }
 
 // Modifier_nu modifie mu : alpha et rho font partie du terme
 void Transport_turbulent_aire_interfaciale::modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const
 {
-  const DoubleTab& rho = eq.milieu().masse_volumique().passe();
-  int  nl = nu.dimension(0), N = nu.dimension(1), D = dimension;
-
-  //viscosite cinematique turbulente
-  DoubleTrav nu_t(nl, N);
-  visc_turb.eddy_viscosity(nu_t); /* on a nu turb */
+  const DoubleTab& d_b_p = eq.probleme().get_champ("diametre_bulles").passe(),
+                   *k_turb = (eq.probleme().has_champ("k")) ? &eq.probleme().get_champ("k").passe() : nullptr ;
+  const int  nl = nu.dimension(0), N = nu.dimension(1), D = dimension;
 
   if (nu.nb_dim() == 2)
     for (int i = 0; i < nl; i++)
-      {
-        for (int n = 0; n < 1; n++) //isotrope
-          nu(i, n) = rho(i, n) * nu_t(i, n) / 0.405;
-      }
+      for (int n = 0; n < 1; n++) //isotrope
+        nu(i, n) = (n == n_g2) ? 0.825 * d_b_p(i,n) * std::sqrt((*k_turb)(i,n)) :  cst_diff * d_b_p(i,n) * std::sqrt((*k_turb)(i,n));
   else if (nu.nb_dim() == 3)
     for (int i = 0; i < nl; i++)
       for (int n = 0; n < N; n++)
         for (int d = 0; d < D; d++) //anisotrope diagonal
-          nu(i, n, d) = rho(i, n) * nu_t(i, n) / 0.405;
+          nu(i, n, d) = (n == n_g2) ? 0.825 * d_b_p(i,n) * std::sqrt((*k_turb)(i,n)) : cst_diff * d_b_p(i,n) * std::sqrt((*k_turb)(i,n));
   else
     for (int i = 0; i < nl; i++)
       for (int n = 0; n < N; n++)
         for (int d = 0; d < D; d++) //anisotrope complet
-          nu(i, n, d, d) = rho(i, n) * nu_t(i, n) / 0.405;
+          nu(i, n, d, d) = (n == n_g2) ? 0.825 * d_b_p(i,n) * std::sqrt((*k_turb)(i,n)) : cst_diff * d_b_p(i,n) * std::sqrt((*k_turb)(i,n));
 }
