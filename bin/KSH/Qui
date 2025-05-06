@@ -34,7 +34,7 @@ export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
 for f in $*
 do
   f2=" "$f
-  list_m=`grep " "$f $list_methodes | sed "s/$f2/$f/"| $TRUST_Awk 'BEGIN{print("python -c \"from Couv import test;")}{printf("test(#%s#);", $0)} END{print("\"")}'| sed s/#/\'/g`
+  list_m=`grep " "$f $list_methodes | grep -v "::{lambda"  | sed "s/$f2/$f/"| $TRUST_Awk 'BEGIN{print("python -c \"from Couv import test;")}{printf("test(#%s#);", $0)} END{print("\"")}'| sed s/#/\'/g`
   #echo $list_m
   eval $list_m
 done > $TRUST_TMP/out
