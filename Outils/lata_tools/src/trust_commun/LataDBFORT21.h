@@ -96,26 +96,26 @@ void LataDB::read_master_file_fort21(const char *prefix, const char *filename)
       if (mesh.type_mesh_==ReaderFORT21::MESH_Hexa)
         dom.elem_type_="Hexaedre";
       {
-          LataDBField som;
-          som.name_ = "SOMMETS";
-          som.geometry_ = dom.name_;
-          som.filename_ = filename;
-          som.size_=nnodes;
-          som.datatype_ = default_type_float(); // ??
-          som.nb_comp_=spacedim;
+        LataDBField som;
+        som.name_ = "SOMMETS";
+        som.geometry_ = dom.name_;
+        som.filename_ = filename;
+        som.size_=nnodes;
+        som.datatype_ = default_type_float(); // ??
+        som.nb_comp_=spacedim;
 
-          LataDBField elem;
-          elem.name_ = "ELEMENTS";
-          elem.geometry_ = dom.name_;
-          elem.filename_ = filename;
-          elem.size_=ncells;
-          elem.datatype_ = default_type_float(); // ??
+        LataDBField elem;
+        elem.name_ = "ELEMENTS";
+        elem.geometry_ = dom.name_;
+        elem.filename_ = filename;
+        elem.size_=ncells;
+        elem.datatype_ = default_type_float(); // ??
 
-          elem.nb_comp_ = nbcomp;
+        elem.nb_comp_ = nbcomp;
 
-          add(timesteps_.size() - 1, dom);
-          add(timesteps_.size() - 1, som);
-          add(timesteps_.size() - 1, elem);
+        add(timesteps_.size() - 1, dom);
+        add(timesteps_.size() - 1, som);
+        add(timesteps_.size() - 1, elem);
       }
     }
   std::vector<double> times =parser.getTimes();
@@ -123,7 +123,7 @@ void LataDB::read_master_file_fort21(const char *prefix, const char *filename)
     {
 
       LataDBTimestep& tt =
-          timesteps_.add(LataDBTimestep());
+        timesteps_.add(LataDBTimestep());
       tt.time_ = t;
     }
   for (auto a: map_basicmeshses)

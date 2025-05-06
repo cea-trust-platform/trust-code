@@ -121,7 +121,8 @@ public:
   //! Destructor
   ~ReaderFORT21();
   //! Set verbosity
-  void setVerbosity(int v) {
+  void setVerbosity(int v)
+  {
     verbosity_=v;
   }
   //! Sets the file to parse
@@ -151,10 +152,10 @@ protected:
   {
   public:
     Field()
-    : myFile(0)
-    , myData(0)
-    , myCapacity(0)
-    , mySize(0)
+      : myFile(0)
+      , myData(0)
+      , myCapacity(0)
+      , mySize(0)
     {
       setPlatform(Windows_Linux_32);
     }

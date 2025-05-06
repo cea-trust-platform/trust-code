@@ -95,8 +95,8 @@ struct tbuff
   int Lo;
   int Hi;
   tbuff()
-  : Lo(0)
-  , Hi(0)
+    : Lo(0)
+    , Hi(0)
   {
   }
 };
@@ -235,14 +235,14 @@ inline static double ToReal(const tbuff theBuff, const int theSize, const bool t
 #if defined(__APPLE__)
           if (!isnan(aResult) && !isinf(aResult))
 #else
-            // Verification performed for Linux platform only because isnan method works
-            // with float and double on this platform. On WNT _isnan method works with double
-            // argument only. In this case assignement NAN float calue to double leads exception.
-            // To avoid this GUITHARE mask floating point exceptions.
-            if (!__isnanf(aResult) && !__isinf(aResult))
+          // Verification performed for Linux platform only because isnan method works
+          // with float and double on this platform. On WNT _isnan method works with double
+          // argument only. In this case assignement NAN float calue to double leads exception.
+          // To avoid this GUITHARE mask floating point exceptions.
+          if (!__isnanf(aResult) && !__isinf(aResult))
 #endif
 #endif
-              aRes = aResult;
+            aRes = aResult;
         }
     }
   else
@@ -411,11 +411,12 @@ void ReaderFORT21::fix_bad_times()
   for (; i<getTimes().size(); i++)
     {
       double t = getTimes()[i];
-      if (t==told) {
+      if (t==told)
+        {
           //std::cout <<"t == told == " << t<<std::endl;
           repair=true;
           break;
-      }
+        }
       told=t;
     }
   if (repair)
@@ -651,12 +652,14 @@ template <typename _TYPE_> void ReaderFORT21::getValuesVarField(const std::strin
    */
   if (fieldinfo.type_of_field()== T_INT)
     {
-      if(!std::is_same<_TYPE_, int>::value) {
+      if(!std::is_same<_TYPE_, int>::value)
+        {
           std::vector<int> data2 ;
           getValuesVarField(name_stack,name_field, data2,id_time_field);
           size_t n= data2.size();
           data.resize(n);
-          if(std::is_same<_TYPE_, float>::value) {
+          if(std::is_same<_TYPE_, float>::value)
+            {
               float* datab = (float*)(&(data[0]));
               for (unsigned int c= 0; c<n; c++)
                 {
@@ -665,16 +668,17 @@ template <typename _TYPE_> void ReaderFORT21::getValuesVarField(const std::strin
               if (verbosity_>3)
                 std::cerr<<"field int, data no conversion to float " << name_field<< " "<< id_time_field<<std::endl;
               return;
-          }
+            }
           else
             throw std::invalid_argument("field int , data no");
-      }
+        }
     }
   else if (fieldinfo.type_of_field()== T_REAL)
     {
-      if(!std::is_same<_TYPE_, float>::value) {
+      if(!std::is_same<_TYPE_, float>::value)
+        {
           throw std::invalid_argument("field float , data no");
-      }
+        }
     }
   else
     throw std::invalid_argument("field type not implemented");
@@ -856,15 +860,16 @@ int ReaderFORT21::getIndexFromPos(const std::string& name_stack, const std::stri
         }
       else
         {
-          try {
+          try
+            {
               getValuesConstField(name_stack,  "ZVW",  zv) ;
               getValuesConstField(name_stack,  "YVW", yv);
               getValuesConstField(name_stack,  "XVW",  xv) ;
-          }
+            }
           catch(...)
-          {
+            {
               throw std::invalid_argument("error in getIndexFromPos for wall");
-          }
+            }
         }
       int nx=int(xv.size())-1;
       int ny=int(yv.size())-1;
@@ -959,7 +964,8 @@ void ReaderFORT21::getInterpolatedValuesVarField(const std::string& name_stack, 
   if (global_id_time >= int(Times_glob_.size()))
     throw std::invalid_argument("invalid index time in getInterpolatedValuesVarField "+ name_field);
   double global_time = Times_glob_[global_id_time];
-  std::vector<double>::iterator it = std::find_if(stak_times.begin(),stak_times.end(),[global_time](double b) {
+  std::vector<double>::iterator it = std::find_if(stak_times.begin(),stak_times.end(),[global_time](double b)
+  {
     return global_time<=b;
   });
   int index = int( std::distance(stak_times.begin(), it));
@@ -982,15 +988,17 @@ template <typename _TYPE_> void ReaderFORT21::getValuesConstField(const std::str
    */
   if (fieldinfo.type_of_field()== T_INT)
     {
-      if(!std::is_same<_TYPE_, int>::value) {
+      if(!std::is_same<_TYPE_, int>::value)
+        {
           throw std::invalid_argument("field int , data no");
-      }
+        }
     }
   else if (fieldinfo.type_of_field()== T_REAL)
     {
-      if(!std::is_same<_TYPE_, float>::value) {
+      if(!std::is_same<_TYPE_, float>::value)
+        {
           throw std::invalid_argument("field float , data no");
-      }
+        }
     }
   else
     throw std::invalid_argument("field type not implemented");
@@ -1277,9 +1285,9 @@ bool ReaderFORT21::readDesStack(bool theSkip)
       offsetelem = aPos0;
       eleminfo.offset_rel_time_.push_back(aPos0 - offset_a_time_[current_index_time]);
       /*
-    for (auto& search=element_sizeblock_.find(anAsciiName); search != element_sizeblock_.end();search++)
-    {
-     set_file_pos(myField.getFile() , search->second-(decpos),SEEK_CUR);
+      for (auto& search=element_sizeblock_.find(anAsciiName); search != element_sizeblock_.end();search++)
+      {
+      set_file_pos(myField.getFile() , search->second-(decpos),SEEK_CUR);
         //file_pos_t aPos1 = get_file_pos( myField.getFile() );
        */
       if (eleminfo.sizeblock_ != -1)
@@ -1361,9 +1369,9 @@ bool ReaderFORT21::readDesStack(bool theSkip)
           if (theSkip)
             continue;
           /*
-      // provisoire pour guithare slt
-      if ( catType != T_INT && catType != T_REAL)
-        continue;
+          // provisoire pour guithare slt
+          if ( catType != T_INT && catType != T_REAL)
+          continue;
            */
 
 
@@ -1425,15 +1433,15 @@ bool ReaderFORT21::readDesStack(bool theSkip)
                 }
             }
           /*
-      if (fieldinfo.type_of_field_==T_INT)
-      {
-        aQName+="_INT";
-      }
+          if (fieldinfo.type_of_field_==T_INT)
+          {
+          aQName+="_INT";
+          }
            */
           //aQName+=add;
           /*
-      if (nbPnt == 0)
-        throw std::invalid_argument(aQName+" is size null ?");
+          if (nbPnt == 0)
+          throw std::invalid_argument(aQName+" is size null ?");
            */
           fieldinfo.size_ = nbPnt;
           fieldinfo.nb_parts_=1;
@@ -1571,14 +1579,14 @@ bool ReaderFORT21::Field::read(int theSize)
 }
 
 ReaderFORT21::BasicMesh::BasicMesh()
-: type_mesh_(MESH_Unknown)
-, mesh_dim_(0)
-, space_dim_(0)
-, nbnodes_(0)
-, nodes_per_elem_(0)
-, nb_elems_(0)
-, connectivity_(0)
-, coords_(0)
+  : type_mesh_(MESH_Unknown)
+  , mesh_dim_(0)
+  , space_dim_(0)
+  , nbnodes_(0)
+  , nodes_per_elem_(0)
+  , nb_elems_(0)
+  , connectivity_(0)
+  , coords_(0)
 {
 }
 
@@ -1756,8 +1764,8 @@ ReaderFORT21::BasicMesh ReaderFORT21::getMeshStack(const std::string& name_stack
             if (std::abs(ds_x * ds_x + ds_y * ds_y - (zv[ele+1] - zv[ele]) * (zv[ele+1] - zv[ele])) > 1e-5)
               {
                 std::cout << "Soucis coherence..." << ds_x * ds_x + ds_y * ds_y << " " << (zv[ele+1] - zv[ele]) * (zv[ele+1] - zv[ele])
-                        << " "<<std::abs(ds_x * ds_x + ds_y * ds_y - (zv[ele+1] - zv[ele]) * (zv[ele+1] - zv[ele]))
-                        << std::endl;
+                          << " "<<std::abs(ds_x * ds_x + ds_y * ds_y - (zv[ele+1] - zv[ele]) * (zv[ele+1] - zv[ele]))
+                          << std::endl;
                 //abort();
               }
           }
@@ -1808,15 +1816,17 @@ ReaderFORT21::BasicMesh ReaderFORT21::getMeshStack(const std::string& name_stack
         {
           std::string ris("RAYON");
           ris+=std::to_string(nr);
-          try {
+          try
+            {
               getValuesConstField(name_stack,  ris,R);
               ri.push_back(R);
               nr++;
 
-          }
-          catch(...) {
+            }
+          catch(...)
+            {
               break;
-          }
+            }
         }
       nr--;
       std::vector<int> iwhyd;
@@ -1859,9 +1869,9 @@ ReaderFORT21::BasicMesh ReaderFORT21::getMeshStack(const std::string& name_stack
         for (int i=0; i<4; i++)
           elements_(c,i)=4*c+i;
       }
-    }
-    else
-    {
+      }
+      else
+      {
        */
       {
         int NT=(nr-1)*ncellhyd;
@@ -1896,7 +1906,7 @@ ReaderFORT21::BasicMesh ReaderFORT21::getMeshStack(const std::string& name_stack
 
     }
   else if ((eleminfo.type_ == "TROIDRAV")
-      || (eleminfo.type_ == "WAL3DRAV"))
+           || (eleminfo.type_ == "WAL3DRAV"))
     {
       std::vector<float> tabx,taby,tabz;
       if  (eleminfo.type_ == "WAL3DRAV")
@@ -1914,11 +1924,12 @@ ReaderFORT21::BasicMesh ReaderFORT21::getMeshStack(const std::string& name_stack
           tabz.resize(nz+1);
           tabz[nz]=tabz[nz-1]+1;
         }
-      else {
+      else
+        {
           getValuesConstField(name_stack,  "XV",tabx);
           getValuesConstField(name_stack,  "YV",taby);
           getValuesConstField(name_stack,  "ZV",tabz);
-      }
+        }
       int nx=int(tabx.size())-1;
       int ny=int(taby.size())-1;
       int nz=int(tabz.size())-1;
