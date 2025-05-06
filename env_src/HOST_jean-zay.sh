@@ -11,7 +11,7 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    # Initialisation de l environnement module $MODULE_PATH si pas disponible:
-   module -v 2>/dev/null || echo $echo "source /etc/profile" >> $env
+   module -v 1>/dev/null 2>&1 || echo $echo "source /etc/profile" >> $env
    #
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
@@ -84,8 +84,10 @@ define_soumission_batch()
       # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html#les_qos_disponibles
       q="" && [ $arch != v100 ] && q="_"$arch
       qos=qos_gpu$q-t3 && cpu=1200 && [ "$prod" != 1 ] && [ $NB_PROCS -le 32 ] && qos=qos_gpu$q-dev && cpu=120 
-      [ "`id | grep aih`" != "" ] && project="aih@$arch" # GENDEN
-      [ "`id | grep hbx`" != "" ] && project="hbx@$arch" # eDARI
+      for project in cpx aih hbx # Hackathon GENDEN eDARI 
+      do
+	 [ "`id | grep $project`" != "" ] && project="$project@$arch" && break
+      done
    else
       ntasks=40 # number of cores max
       queue=cpu_p1
