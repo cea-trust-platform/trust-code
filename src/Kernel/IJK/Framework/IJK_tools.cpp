@@ -171,11 +171,11 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
       const bool ok = (index_i >= - ghost && index_i < ni + ghost - 1) && (index_j >= - ghost && index_j < nj + ghost - 1) && (index_k >= - ghost && index_k < nk + ghost - 1);
       if (!ok)
         {
-          // if (skip_unknown_points) // Should not happen anymore
-          //   {
-          //     result[idx] = value_for_bad_points;
-          //     continue; // go to next point
-          //   }
+          if (skip_unknown_points) // Should not happen anymore
+            {
+              result[idx] = value_for_bad_points;
+              continue; // go to next point
+            }
           // else
           //   {
           // Error!
@@ -183,6 +183,8 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
           Cerr<<idx_i_tmp - NB_ELEM_I<<" "<<idx_i_tmp<<finl;
           Cerr<<NB_ELEM_LOC_I<<" "<<NB_ELEM_I<<finl;
           Cerr<<"For y : "<<-ghost<<" "<<nj + ghost - 1<<", index j = "<<index_j<<finl;
+          Cerr<<((int) (floor(y2)) - OFFSET_J)<<" "<<idx_j_tmp<<finl;
+          Cerr<<"y2 = "<<y2<<", y = "<<y<<", OFFSET_J = "<<OFFSET_J<<", dy =  "<<dy<<", origin_y = "<<origin_y<<finl;
           Cerr<<"For z : "<<-ghost<<" "<<nk + ghost - 1<<", index k = "<<index_k<<finl;
           Cerr << "Error in ijk_interpolate_implementation: request interpolation of point " << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me()
                << finl;
