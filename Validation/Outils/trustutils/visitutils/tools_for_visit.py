@@ -1315,26 +1315,26 @@ class export_lata_base:
                 f.write("SetActiveWindow(2) \n")
             f.close()
 
-    def maximum(self, name="Max", iteration=-1):
+    def maximum(self, file="Max", iteration=-1):
         """
 
         Extract Max of data from a .lata file
 
         Parameters
         --------- 
-        name : str
-            It tells if we should return the max or the min. 
+        file : str
+            Name of the file (concatenate with saveFile) to register the max value. 
         iteration : int
-            Moment we calcule the max/min.. 
+            number of the time frame or iteration (default=-1)
 
         Returns
         -------
         None
         """
-        self.setFrame(iteration=-1)
+        self.setFrame(iteration=iteration)
         with open(visitTmpFile_(), "a") as f:
             f.write('Query("Max", use_actual_data=1) \n')
-            f.write('f=open("' + name + self.saveFile + '","w") \n')
+            f.write('f=open("' + file + self.saveFile + '","w") \n')
             f.write("f.write(str(GetQueryOutputValue())) \n")
             f.write("f.close() \n")
             f.write("print(GetQueryOutputValue())\n")
@@ -1342,26 +1342,26 @@ class export_lata_base:
             f.write("""sys.exit()""")
         self.run()
 
-    def minimum(self, name="Min", iteration=-1):
+    def minimum(self, file="Min", iteration=-1):
         """
 
-        Extract Max of data from a .lata file
+        Extract Min of data from a .lata file
 
         Parameters
         ---------
-        name : str
-            It tells if we should return the max or the min. 
+        file : str
+            Name of the file (concatenate with saveFile) to register the min value. 
         iteration : int
-            Moment we calcule the max/min.. 
+            number of the time frame or iteration (default=-1)
 
         Returns
         -------
         None
         """
-        self.setFrame(iteration=-1)
+        self.setFrame(iteration=iteration)
         with open(visitTmpFile_(), "a") as f:
             f.write('Query("Min", use_actual_data=1) \n')
-            f.write('f=open("' + name + self.saveFile + '","w") \n')
+            f.write('f=open("' + file + self.saveFile + '","w") \n')
             f.write("f.write(str(GetQueryOutputValue())) \n")
             f.write("f.close() \n")
             f.write("print(GetQueryOutputValue())\n")
