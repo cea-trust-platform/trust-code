@@ -188,50 +188,59 @@ void calculer_gradientP1NC_3D(const DoubleTab& tab_variable, const Domaine_VEF& 
   const DoubleVect& tab_inverse_volumes = domaine_VEF.inverse_volumes();
   const ArrOfInt& tab_est_face_bord = domaine_VEF.est_face_bord();
 
+  int dimension = Objet_U::dimension;
+  const int nb_comp = tab_variable.line_size();
+
   CDoubleTabView face_normales = tab_face_normales.view_ro();
   CIntTabView face_voisins = tab_face_voisins.view_ro();
   CDoubleArrView inverse_volumes = tab_inverse_volumes.view_ro();
   CDoubleTabView variable = tab_variable.view_ro();
   CIntArrView est_face_bord = tab_est_face_bord.view_ro();
   DoubleTabView3 gradient_elem = tab_gradient_elem.view_rw<3>();
-
   const int nb_faces_tot = domaine_VEF.nb_faces_tot();
-  const int nb_elem = domaine_VEF.nb_elem_tot();
-
-  int dimension = Objet_U::dimension;
-  const int nb_comp = tab_variable.line_size();
-
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       nb_faces_tot,
-                       KOKKOS_LAMBDA (int fac)
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {nb_faces_tot,2}), KOKKOS_LAMBDA (const int fac, const int j)
   {
     int type_face = est_face_bord(fac);
     // type_face 2 periodique
-    double coef = (type_face == 2 ? 0.5 : 1);
-    for (int j=0; j<2; j++)
+    int elem = face_voisins(fac, j);
+    if (elem >= 0)
       {
-        int elem = face_voisins(fac, j);
-        if (elem >= 0)
-          {
-            for (int icomp = 0; icomp < nb_comp; icomp++)
-              for (int i = 0; i < dimension; i++)
-                {
-                  double grad = coef * face_normales(fac, i) * variable(fac, icomp);
-                  Kokkos::atomic_add(&gradient_elem(elem, icomp, i), grad);
-                }
-            coef*=-1;
-          }
+        double coef = (type_face == 2 ? 0.5 : 1) * inverse_volumes(elem) * (j==0 ? 1 : -1);
+        for (int icomp = 0; icomp < nb_comp; icomp++)
+          for (int i = 0; i < dimension; i++)
+            {
+              double grad = coef * face_normales(fac, i) * variable(fac, icomp);
+              Kokkos::atomic_add(&gradient_elem(elem, icomp, i), grad);
+            }
       }
   });
-  end_gpu_timer(__KERNEL_NAME__);
-
-  // Division par le volume de l'element
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                       range_3D({0,0,0}, {nb_elem,nb_comp,dimension}),
-                       KOKKOS_LAMBDA (int elem, int icomp, int i)
-  {
-    gradient_elem(elem, icomp, i) *= inverse_volumes(elem);
-  });
+  // PL: example whare looping on cells rather on faces to avoid atomic is a bad idea (it's 4 times slower...)
+  // Cause: there is less parallelism (nb_faces_tot ~ 2*nb_elem_tot) in this loop
+  // So you can use MDRangePolicy(int elem, int iface) but atomic_add will be back and you will get lower performance
+  // Better on vect nb_comp=3, slower on scalar nb_comp=1, because of MDRangePolicy inconsistancy
+  /*
+    const IntTab& tab_elem_faces = domaine_VEF.elem_faces();
+    int nb_elem_tot = domaine_VEF.nb_elem_tot();
+    int nb_faces_elem = tab_elem_faces.dimension(1);
+    CIntTabView elem_faces = tab_elem_faces.view_ro();
+    Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA (int elem)
+    {
+      for (int iface=0; iface<nb_faces_elem; iface++)
+        {
+          int fac = elem_faces(elem, iface);
+          int type_face = est_face_bord(fac);
+          // type_face 2 periodique
+          double coef = (type_face == 2 ? 0.5 : 1) * inverse_volumes(elem);
+          coef *= (elem == face_voisins(fac, 0) ? 1 : -1);
+          for (int icomp = 0; icomp < nb_comp; icomp++)
+            for (int i = 0; i < dimension; i++)
+              {
+                double grad = coef * face_normales(fac, i) * variable(fac, icomp);
+                gradient_elem(elem, icomp, i) += grad;
+              }
+        }
+    });
+    */
   end_gpu_timer(__KERNEL_NAME__);
 }
 
