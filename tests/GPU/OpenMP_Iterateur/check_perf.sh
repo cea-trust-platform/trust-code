@@ -50,6 +50,7 @@ run()
       trust $nsys PAR_$jdd $np 1>$PAR_jdd.out_err 2>&1
       check PAR_$jdd $gpu"x$np"
    fi
+   echo
 }
 # Liste des machines:
 if [ "$1" = -nsys ]
@@ -59,8 +60,9 @@ else
    HOST=${HOST%.intra.cea.fr}
    [ "$TRUST_USE_CUDA" = 1 ] && GPU_ARCH=_cc$TRUST_CUDA_CC
    [ "$TRUST_USE_ROCM" = 1 ] && GPU_ARCH=_$ROCM_ARCH
-   run $HOST$GPU_ARCH
-   # Multi-gpu:
+   # Mono-GPU:
+   run $HOST$GPU_ARCH 1 OpenMP_Iterateur && run $HOST$GPU_ARCH
+   # Multi-GPU:
    unset CUDA_VISIBLE_DEVICES
    [ $HOST = is157091 ]     && run $HOST$GPU_ARCH 2
    [ "`hostname`" = petra ] && run $HOST$GPU_ARCH 2
