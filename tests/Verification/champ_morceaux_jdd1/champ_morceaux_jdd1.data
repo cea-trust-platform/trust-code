@@ -1,0 +1,95 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+read_med { file mesh.med domain dom }
+Read_file dom_ssz.geo ;
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+    ecrire_decoupage dom.txt
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones    dom
+Read_file dom_ssz_par.geo ;
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    tmax 3
+    facsec 1e30
+    dt_max 1
+    seuil_statio -1
+    solveur implicite { solveur petsc cli { } }
+}
+
+VDF dis
+
+associate pb dom
+associate pb sch
+discretize pb dis
+
+Read pb
+{
+
+    fluide_incompressible {
+        rho      champ_uniforme 1  2000.0
+        cp       champ_uniforme 1  3075.0
+        beta_th  champ_uniforme 1  1e-3
+        mu       champ_uniforme 1  1e-3
+        lambda   champ_morceaux pb
+        {
+            defaut champ_uniforme 1 1
+            z1     champ_fonc_med { file mesh.med field linear_field domain dom last_time use_existing_domain }
+            z2     champ_tabule_temps 1 { 2  1 2  5 10 }
+            z3     champ_fonc_txyz dom 1 10*x+t # champ_fonc_fonction pb temperature 1 20 #
+        }
+    }
+
+
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { vitesse champ_uniforme 2 0 0 }
+        boundary_conditions { bord paroi_fixe }
+    }
+
+    convection_diffusion_temperature
+    {
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { temperature champ_uniforme 1 0 }
+        boundary_conditions
+        { bord paroi_adiabatique }
+    }
+
+    Post_processing
+    {
+        probes { lambda grav conductivite periode 1e-6 segment 500 0 0.5 1 0.5 }
+        format lml
+        fields dt_post 1e8
+        {
+            conductivite        elem
+            temperature elem
+        }
+    }
+}
+
+Solve pb
+End
