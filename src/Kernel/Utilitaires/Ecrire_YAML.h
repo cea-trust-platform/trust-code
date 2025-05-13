@@ -79,12 +79,16 @@ public:
     new_pb.pb = pb_base;
 
     // if we're in parallel, we need to index the checkpoint filename with the node id
-    int with_ext = file_name.find(".");
-    if(Process::is_parallel() && with_ext >= 0)
+    if(Process::is_parallel())
       {
-        std::string suffix = file_name.getString().substr(with_ext+1);
-        std::string prefix = file_name.getString().substr(0,with_ext);
-        new_pb.filename =  prefix + "_${nodeId}." + suffix;
+        const std::string& fname = file_name.getString();
+        std::size_t relative_path = fname.find_last_of("/");
+        std::string path = relative_path != std::string::npos ? fname.substr(0,relative_path+1) : "";
+        std::string basename = relative_path != std::string::npos ? fname.substr(relative_path+1) : fname;
+        std::size_t with_ext = basename.find(".");
+        std::string suffix = with_ext != std::string::npos ? basename.substr(with_ext) : "";
+        std::string prefix = with_ext != std::string::npos ? basename.substr(0,with_ext) : basename;
+        new_pb.filename =  path + prefix + "_${nodeId}" + suffix;
       }
     else
       new_pb.filename = file_name;
