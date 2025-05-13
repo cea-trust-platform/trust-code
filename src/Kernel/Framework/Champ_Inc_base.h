@@ -25,6 +25,7 @@
 #include <TRUST_Ref.h>
 #include <MorEqn.h>
 #include <Roue.h>
+#include <Motcle.h>
 
 class Frontiere_dis_base;
 class Domaine_dis_base;
@@ -163,7 +164,7 @@ public:
   void PDI_save_type(bool b) { PDI_save_type_ = b; }
   virtual std::vector<YAML_data> data_a_sauvegarder() const;
   Nom get_PDI_dname() const;
-  void set_PDI_dname(const Nom& name) { PDI_dname_ = name; }
+  void set_PDI_dname(const Nom& name) { PDI_dname_ = (Motcle)name; }
 
 protected:
   // Par defaut on initialise les valeurs a zero

@@ -19,10 +19,12 @@
 #include <Champ_Don_base.h>
 #include <TRUST_Ref.h>
 #include <YAML_data.h>
+#include <Motcle.h>
 
 class Domaine_dis_base;
 class MD_Vector;
 class Domaine_VF;
+
 #include <Domaine_forward.h>
 
 /*! @brief classe Champ_Fonc_base Classe de base des champs qui sont fonction d'une grandeur calculee
@@ -39,8 +41,8 @@ public:
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
-  inline void set_pdi_name(const Nom& nom) { pdi_name_ = nom; }
-  const Nom& get_pdi_name() const;
+  inline void set_pdi_name(const Nom& nom) { pdi_name_ = (Motcle)nom; }
+  Nom get_pdi_name() const;
   virtual std::vector<YAML_data> data_a_sauvegarder() const;
 
   Champ_base& affecter_(const Champ_base&) override;

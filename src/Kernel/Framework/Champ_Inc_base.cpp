@@ -352,7 +352,7 @@ Nom Champ_Inc_base::get_PDI_dname() const
           Process::exit();
         }
     }
-  return name;
+  return (Motcle)name;
 }
 
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.

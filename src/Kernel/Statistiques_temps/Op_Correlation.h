@@ -125,9 +125,9 @@ inline void Op_Correlation::associer(const Domaine_dis_base& une_zdis, const Cha
  */
 inline std::vector<YAML_data> Op_Correlation::data_a_sauvegarder() const
 {
-  const std::string& name = integrale_tps_ab_.le_champ_calcule().get_pdi_name().getString();
+  const Nom& name = integrale_tps_ab_.le_champ_calcule().get_pdi_name();
   int nb_dim = integrale_tps_ab_.le_champ_calcule().valeurs().nb_dim();
-  YAML_data d(name, "double", nb_dim);
+  YAML_data d(name.getString(), "double", nb_dim);
   std::vector<YAML_data> data;
   data.push_back(d);
   return data;

@@ -152,16 +152,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   nb_compo_ = ch_inc.nb_comp();
 
   // creation des identifiants pdi (necessaire pour l'initialisation de PDI)
-  Nom nom_champ_pdi =pb.le_nom() + "_";
-  if (reprend_champ_moyen)
-    {
-      nom_champ_pdi += "Moyenne_";
-      nom_champ_pdi += Motcle(nom_champ_inc) + "_";
-      nom_champ_pdi += Motcle("NATIF_");
-      nom_champ_pdi += Motcle(pb.domaine().le_nom());
-    }
-  else
-    nom_champ_pdi += nom_champ_inc;
+  Nom nom_champ_pdi = Motcle(pb.le_nom()) + "_" + Motcle(nom_champ);
 
   statistiques().begin_count(temporary_counter_);
 

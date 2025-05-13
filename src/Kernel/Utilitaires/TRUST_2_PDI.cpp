@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <TRUST_2_PDI.h>
+#include <Motcle.h>
 
 int TRUST_2_PDI::PDI_checkpoint_=0;
 int TRUST_2_PDI::PDI_restart_=0;
@@ -57,10 +58,11 @@ void TRUST_2_PDI::share_TRUSTTab_dimensions(const DoubleTab& tab, const Nom& nam
  */
 void TRUST_2_PDI::share_type(const Nom& name, const Nom& type)
 {
-  std::string tname = "TYPE_" + name.getString();
+  Nom uname = Motcle(name);
+  std::string tname = "TYPE_" + uname.getString();
   char* t = const_cast<char*>(type.getChar());
 
-  std::string size = "size_TYPE_" + name.getString();
+  std::string size = "size_TYPE_" + uname.getString();
   int sz = type.longueur();
 
   // here we expose the data, so that PDI can keep a copy of it without having to share it later
@@ -78,9 +80,9 @@ void TRUST_2_PDI::get_type(const Nom& name, Nom& type)
 #ifdef HAS_PDI
   int tmp = -1;
   PDI_share("TYPES", &tmp, PDI_INOUT);
-
+  Nom uname = Motcle(name);
   // getting size of string first
-  std::string size = "size_TYPE_" + name.getString();
+  std::string size = "size_TYPE_" + uname.getString();
   int sz = -1;
   PDI_share(size.c_str(), &sz, PDI_INOUT);
   trigger("get_" + size);
@@ -89,7 +91,7 @@ void TRUST_2_PDI::get_type(const Nom& name, Nom& type)
   type.getString().resize(sz);
 
   // getting string
-  std::string tname = "TYPE_" + name.getString();
+  std::string tname = "TYPE_" + uname.getString();
   char* t = const_cast<char*>(type.getChar());
   PDI_share(tname.c_str(), t, PDI_INOUT);
   trigger("get_" + tname);

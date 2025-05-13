@@ -83,12 +83,10 @@ void Champ_Fonc_base::creer_tableau_distribue(const MD_Vector& md, RESIZE_OPTION
 }
 
 
-const Nom& Champ_Fonc_base::get_pdi_name() const
+Nom Champ_Fonc_base::get_pdi_name() const
 {
-  if(pdi_name_ == "??")
-    return nom_;
-  else
-    return pdi_name_;
+  Nom name = pdi_name_ == "??" ? (Motcle)nom_ : (Motcle)pdi_name_;
+  return name;
 }
 
 /*! @brief for PDI IO: retrieve name, type and dimensions of the field to save/restore.
