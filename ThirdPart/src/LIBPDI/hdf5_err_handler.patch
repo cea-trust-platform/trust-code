@@ -54,16 +54,3 @@ index 4caf5e4..55b8754 100644
  	}
  };
  
-diff --git a/pdi/include/pdi/pdi_fwd.h b/pdi/include/pdi/pdi_fwd.h
---- a/pdi/include/pdi/pdi_fwd.h
-+++ b/pdi/include/pdi/pdi_fwd.h
-@@ -31,7 +31,7 @@
- #define PDI_PDI_FWD_H_
- 
- #include <memory>
--
-+#include <cstdint>
- #include <pdi.h>
- 
- namespace PDI {
-

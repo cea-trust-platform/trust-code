@@ -45,6 +45,8 @@ echo "@@@ Patching to compile with static HDF5 from TRUST ..."
 sed -i 's/set(HDF5_USE_STATIC_LIBRARIES OFF)/set(HDF5_USE_STATIC_LIBRARIES ON)/' plugins/decl_hdf5/CMakeLists.txt
 echo "@@@ Patching to dynamically swicth to correct API version ..."
 patch -p1 < $curr_dir/hdf5_err_handler.patch  || exit -1
+echo "@@@ Patching for clang 20 on fedora 42 ..."
+sed -i 's/#include <pdi.h>/#include <cstdint>\n#include <pdi.h>/' pdi/include/pdi/pdi_fwd.h
 
 mkdir -p build
 cd build
