@@ -17,9 +17,18 @@ else
     # Some notebooks invoke local Python scripts, so amend PYTHONPATH temporarily:
     src_dir=`readlink -f $(dirname $ze_file)`/src
     PYTHONPATH=$src_dir:$PYTHONPATH
+
     env JUPYTER_RUN_OPTIONS="$*" python $DIR/get_nr_cases_jup.py $ze_file 2>/dev/null | grep "@@@CAS_NR_JY@@@" | wc -l
+
+    if [ "${PIPESTATUS[0]}" != "0" ]; then
+       # error in the Python
+       exit -1
+    fi
+
   else
+
     echo "Something wrong ... neither PRM nor Jupyter in this folder, NR cases should be removed"
-    #exit -1
+    exit -1
+
   fi
 fi

@@ -27,10 +27,15 @@ else
     src_dir=`readlink -f $(dirname $ze_file)`/src
     PYTHONPATH=$src_dir:$PYTHONPATH
     # Make sure the pipe fails when invoking get_nr_cases_jup.py if the script itself fails: 
-    set -e
-    set -o pipefail
+
     # env JUPYTER_RUN_OPTIONS="$*" python $DIR/get_nr_cases_jup.py $ze_file
     env JUPYTER_RUN_OPTIONS="$*" python $DIR/get_nr_cases_jup.py $ze_file 2>/dev/null | grep "@@@CAS_NR_JY@@@" | cut -d' ' -f2
+
+    if [ "${PIPESTATUS[0]}" != "0" ]; then
+        # An error happened while running the Python
+        exit -1
+    fi
+
   else
     echo "Something wrong ..."
     exit -1

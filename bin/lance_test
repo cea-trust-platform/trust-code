@@ -374,6 +374,13 @@ add_test_case_from_validation()
                   if [ ! -f ${Rapports_auto_root}/$FICHE_ROOT/.form.md5sum ]
                   then
                      nombre_cas_test_fiche2=`(cd ${Rapports_auto_root}/$FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_nb_cas_nr . -dest $TMP_BUILD)`
+                     if [ ! $? -eq 0 ]; then
+                         echo ""
+                         echo ""
+                         echo "ERROR: Could not get the list of NR test cases from the validation form: $FICHE_ROOT" 
+                         echo "Check that the syntax in the form is correct, and that the form runs properly!" 
+                         exit -1 
+                     fi 
                   fi
                fi
                #echo $FICHE" "$nombre_cas_test_fiche1" "$nombre_cas_test_fiche2 # DEBUG
@@ -448,7 +455,7 @@ add_test_case_from_validation()
             # $TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr $prm -dest $TMP_BUILD
             jeux=`$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr $prm -dest $TMP_BUILD`
             if [ ! $? -eq 0 ]; then
-               echo "Could not get the list of NR test cases from the validation form $prm." 
+               echo "ERROR: Could not get the list of NR test cases from the validation form $prm." 
                echo "Check that the syntax in the form is correct, and that the form runs properly!" 
                exit -1 
             fi
