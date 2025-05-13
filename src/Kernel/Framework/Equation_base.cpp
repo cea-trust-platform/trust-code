@@ -1539,11 +1539,8 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       int nmax = le_schema_en_temps->niter_max_diffusion_implicite();
 
       DoubleTrav p(solution);
-      p = 0;
-      DoubleTrav phiB(p); // la partie Bord de l'operateur.
-      phiB = 0;
+      DoubleTrav moins_phiB(p); // la partie Bord de l'operateur.
       DoubleTrav resu(p);
-      resu = 0;
       DoubleTrav merk(solution);
       merk = solution;
       double aCKN = 1; // Crank - Nicholson -> 0.5
@@ -1642,15 +1639,15 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           }
         }
       // On utilise p pour calculer phiB :
-      operateur(0).ajouter(p, phiB);
+      operateur(0).ajouter(p, moins_phiB);
       if (marq_tot)
         {
           for (int i = 0; i < size_s; i++)
             if (marq[i])
-              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, phiB);
+              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, moins_phiB);
         }
       statistiques().begin_count(diffusion_implicite_counter_);
-      solveur_masse->appliquer(phiB);
+      moins_phiB*=-1;
       // phiB *= aCKN;  // Crank - Nicholson
       // fait maintenant avant l'appel
       //solveur_masse->appliquer(secmem);
@@ -1714,20 +1711,21 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (initial_residual > seuil)
         seuil = seuil_diffusion_implicite * initial_residual;
 
-      double residual = seuil; // Il est mieux d'utiliser cette valeur pour entrer dans la boucle car seuil peut etre tres grand si le calcul diverge avant
+      double residual = seuil;
       double prodrz_old = mp_prodscal(residu, z);
       DoubleTrav pp(p);
       int niter = 0;
       if (initial_residual != 0)
-        while ((residual >= seuil) && (niter++ <= nmax))
+        while (niter++ <= nmax)
           {
-            resu = 0.;
+            resu = moins_phiB; // On retire la contribution des bords.
 
             p.echange_espace_virtuel();
 
             // Stop the counter during diffusive operator:
             statistiques().end_count(diffusion_implicite_counter_, 0, 0);
             operateur(0).ajouter(p, resu);
+            statistiques().begin_count(diffusion_implicite_counter_);
 
             if (marq_tot)
               {
@@ -1735,24 +1733,21 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
                   if (marq[i])
                     ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, resu);
               }
-            statistiques().begin_count(diffusion_implicite_counter_);
             solveur_masse->appliquer(resu);
-            //resu *= aCKN ;  // Crank - Nicholson
             resu.echange_espace_virtuel();
 
-            resu -= phiB;// On retire la contribution des bords.
-            resu *= -aCKN;
+            if (aCKN!=1) resu *= aCKN; // Crank - Nicholson
             if (size_terme_mul)
               {
                 for (int i = 0; i < size_terme_mul; i++)
                   pp(i) = p(i) * terme_mul(i);
-                resu.ajoute(1. / dt, pp, VECT_REAL_ITEMS);
+                resu.ajoute(-1. / dt, pp, VECT_REAL_ITEMS);
               }
             else
-              resu.ajoute(1. / dt, p, VECT_REAL_ITEMS);
+              resu.ajoute(-1. / dt, p, VECT_REAL_ITEMS);
             double alfa = prodrz_old / mp_prodscal(resu, p);
             // Inutile de faire un echange espace virtuel:
-            solution.ajoute(alfa, p, VECT_REAL_ITEMS);
+            solution.ajoute(-alfa, p, VECT_REAL_ITEMS);
             residu.ajoute(alfa, resu, VECT_REAL_ITEMS);
 
             if (precond_diag)
@@ -1763,22 +1758,27 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             if (le_schema_en_temps->impr_diffusion_implicite())
               Cout << "Iteration n=" << niter << " Residu(n)/Residu(0)=" << residual / initial_residual << finl;
 
-            double prodrz_new = mp_prodscal(residu, z);
-            p *= (prodrz_new / prodrz_old);
-            p -= z;
-            prodrz_old = prodrz_new;
-            // On previent si convergence anormalement longue sur de tres gros cas
-            if (niter == 100)
+            if (residual<seuil)
+              break;
+            else
               {
-                Cout
-                    << "Already 100 iterations of the conjugate gradient solver used for diffusion implicited algorithm."
-                    << finl;
-                Cout
-                    << "The calculation is diverging, may be because of incorrect initial and/or boundary conditions for the equation "
-                    << que_suis_je() << finl;
-                Cout
-                    << "You may also try to stop the calculation and rerun it with a lower facsec, say 0.9 or may be less: 0.5."
-                    << finl;
+                double prodrz_new = mp_prodscal(residu, z);
+                p *= (prodrz_new / prodrz_old);
+                p -= z;
+                prodrz_old = prodrz_new;
+                // On previent si convergence anormalement longue sur de tres gros cas
+                if (niter == 100)
+                  {
+                    Cout
+                        << "Already 100 iterations of the conjugate gradient solver used for diffusion implicited algorithm."
+                        << finl;
+                    Cout
+                        << "The calculation is diverging, may be because of incorrect initial and/or boundary conditions for the equation "
+                        << que_suis_je() << finl;
+                    Cout
+                        << "You may also try to stop the calculation and rerun it with a lower facsec, say 0.9 or may be less: 0.5."
+                        << finl;
+                  }
               }
           }
       if ((le_schema_en_temps->no_error_if_not_converged_diffusion_implicite() == 0) && (niter > nmax))
