@@ -389,7 +389,11 @@ void Save_Restart::lire_reprise(Entree& is, Motcle& motlu)
   else if(format_rep == "single_hdf")
     {
       // !! DEPRECATED HDF5 FILE !!
+      Cerr << "==============================================================================" << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << "WARNING::you are using a deprecated backup file format. Please switch to PDI." << finl;
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "==============================================================================" << finl;
       LecFicDiffuse test;
       if (!test.ouvrir(restart_filename_))
         {
@@ -526,7 +530,17 @@ void Save_Restart::lire_sauvegarde(Entree& is, Motcle& motlu)
           checkpoint_format_ = "pdi";
         }
       else
-        is >> checkpoint_filename_;
+        {
+          if( Motcle(checkpoint_format_) == "single_hdf" )
+            {
+              Cerr << "==============================================================================" << finl;
+              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+              Cerr << "WARNING::you are using a deprecated backup file format. Please switch to PDI." << finl;
+              Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+              Cerr << "==============================================================================" << finl;
+            }
+          is >> checkpoint_filename_;
+        }
     }
 }
 
@@ -568,9 +582,10 @@ void Save_Restart::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
     checkpoint_format_ = "pdi";
 
   if ((Motcle(checkpoint_format_) != "binaire") && (Motcle(checkpoint_format_) != "formatte") &&
-      (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "pdi"))
+      (Motcle(checkpoint_format_) != "xyz") && (Motcle(checkpoint_format_) != "pdi") &&
+      (Motcle(checkpoint_format_) != "single_hdf"))
     {
-      Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi/pdi_expert (which replace single_hdf)." << finl;
+      Cerr << "Error of backup format ! We expected formatte, binaire, xyz, or pdi/pdi_expert (which replace single_hdf). single_hdf format is still available but is deprecated, please use pdi instead." << finl;
       Process::exit();
     }
 
@@ -635,7 +650,7 @@ int Save_Restart::sauver() const
           ficsauv_created_ = true;
         }
     }
-  else if (!ficsauv_.non_nul())
+  else if (!ficsauv_.non_nul() && !osauv_hdf_)
     {
       // Si le fichier de sauvegarde n'a pas ete ouvert alors on cree le fichier de sauvegarde:
       if (Motcle(checkpoint_format_) == "formatte")
@@ -661,10 +676,12 @@ int Save_Restart::sauver() const
           ficsauv_.typer(EcritureLectureSpecial::get_Output());
           ficsauv_->ouvrir(checkpoint_filename_);
         }
+      else if (Motcle(checkpoint_format_) == "single_hdf")
+        osauv_hdf_ = new Sortie_Brute;
       else
         {
           Cerr << "Error in Save_Restart::sauver() " << finl;
-          Cerr << "The format for the backup file must be either binary or formatted or pdi/pdi_expert (which replace single_hdf)" << finl;
+          Cerr << "The format for the backup file must be either binary or formatted or pdi/pdi_expert (which replace single_hdf). single_hdf is still available but is deprecated, please use pdi instead." << finl;
           Cerr << "But it is :" << checkpoint_format_ << finl;
           Process::exit();
         }
@@ -674,6 +691,8 @@ int Save_Restart::sauver() const
           if (Process::je_suis_maitre())
             ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
         }
+      else if ((Motcle(checkpoint_format_) == "single_hdf"))
+        *osauv_hdf_ << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
       else
         ficsauv_.valeur() << "format_sauvegarde:" << finl << version_format_sauvegarde() << finl;
     }
@@ -706,6 +725,8 @@ int Save_Restart::sauver() const
         }
       pdi_interface.stop_sharing();
     }
+  else if (Motcle(checkpoint_format_) == "single_hdf")
+    bytes = pb_base_->sauvegarder(*osauv_hdf_);
   else
     bytes = pb_base_->sauvegarder(ficsauv_.valeur());
   EcritureLectureSpecial::mode_ecr = -1;
@@ -720,6 +741,16 @@ int Save_Restart::sauver() const
             ficsauv_.valeur() << Nom("fin");
           (ficsauv_.valeur()).flush();
           (ficsauv_.valeur()).syncfile();
+        }
+      else if (Motcle(checkpoint_format_) == "single_hdf")
+        {
+          *osauv_hdf_ << Nom("fin");
+          FichierHDFPar fic_hdf;
+          fic_hdf.create(checkpoint_filename_);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
+          fic_hdf.close();
+          delete osauv_hdf_;
+          osauv_hdf_ = 0;
         }
       else
         {
@@ -737,7 +768,7 @@ void Save_Restart::finir()
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
   if(Motcle(checkpoint_format_) == "pdi" && TRUST_2_PDI::is_PDI_initialized())
     TRUST_2_PDI::finalize();
-  else  if (!simple_restart_ && ficsauv_.non_nul())
+  else  if (!simple_restart_ && (ficsauv_.non_nul() || osauv_hdf_) )
     {
       if (Motcle(checkpoint_format_) == "xyz")
         {
@@ -745,6 +776,16 @@ void Save_Restart::finir()
             ficsauv_.valeur() << Nom("fin");
           (ficsauv_.valeur()).flush();
           (ficsauv_.valeur()).syncfile();
+        }
+      else if (Motcle(checkpoint_format_) == "single_hdf")
+        {
+          *osauv_hdf_ << Nom("fin");
+          FichierHDFPar fic_hdf;
+          fic_hdf.create(checkpoint_filename_);
+          fic_hdf.create_and_fill_dataset_MW("/sauv", *osauv_hdf_);
+          fic_hdf.close();
+          delete osauv_hdf_;
+          osauv_hdf_ = 0;
         }
       else
         {

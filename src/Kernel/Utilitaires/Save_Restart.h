@@ -66,6 +66,8 @@ private:
 
   mutable OWN_PTR(Sortie_Fichier_base) ficsauv_;
 
+  mutable Sortie_Brute* osauv_hdf_ = nullptr; // !! DEPRECATED !! TO DELETE !!
+
   Nom checkpoint_filename_;  // Name of the file for save
   Nom restart_filename_;  // Name of the file for restart
   Nom checkpoint_format_;     // Format for the save restart
