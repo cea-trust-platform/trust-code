@@ -356,7 +356,7 @@ add_test_case_from_validation()
             if [ $ok = 1 ]
             then
                TMP_BUILD=`mktemp_ -d`
-               nombre_cas_test_fiche1=`\ls | grep $FICHE"_jdd" 2>/dev/null | wc -l`
+               nombre_cas_test_fiche1=`\ls | grep "^"$FICHE"_jdd" 2>/dev/null | wc -l`
                FICHE_ROOT=`$TRUST_Awk -F/build '{print $1}' $cas_test/lien_fiche_validation`
                FICHE_ROOT=${FICHE_ROOT%/}
                nombre_cas_test_fiche2=0
