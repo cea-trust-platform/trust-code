@@ -1,0 +1,86 @@
+# PARALLEL OK #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_MED {
+    domain dom
+    file ../../fluid_non_uniforme.med
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+$opts
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max  0.1
+    facsec 10
+    tmax 100
+    seuil_statio 1e-10
+    solveur implicite { solveur petsc cholesky { } }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 2.5
+        rho Champ_Uniforme 1 1000
+        porosites_champ champ_fonc_xyz dom 1 1-0.5*(z>1.98)*(z<4.1)
+    }
+
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 1. }
+        boundary_conditions
+        {
+            top    frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5
+            bottom  frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0. 1.
+            other  symetrie
+        }
+    }
+
+    Post_processing
+    {
+    	probes
+        {
+            V grav vitesse     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 5
+            P grav pression_pa periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 5
+        }
+        Format med
+        fields dt_post 0
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
+}
+Solve pb
+End
