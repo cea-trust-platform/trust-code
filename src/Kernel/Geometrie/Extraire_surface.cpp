@@ -35,7 +35,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
   Nom nom_domaine_surfacique;
   Nom expr_elements("1"),expr_faces("1");
   bool avec_les_bords;
-  Noms noms_des_bords;
+  Noms noms_des_bords, groupes_faces;
   Param param(que_suis_je());
   param.ajouter("domaine",&nom_domaine_surfacique,Param::REQUIRED); // XD_ADD_P ref_domaine Domain in which faces are saved
   param.ajouter("probleme",&nom_pb,Param::REQUIRED); // XD_ADD_P ref_Pb_base Problem from which faces should be extracted
@@ -43,6 +43,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
   param.ajouter("condition_faces",&expr_faces); // XD_ADD_P chaine not_set
   param.ajouter_flag("avec_les_bords",&avec_les_bords); // XD_ADD_P rien not_set
   param.ajouter("avec_certains_bords",&noms_des_bords); // XD_ADD_P listchaine not_set
+  param.ajouter("groupes_faces",&groupes_faces); // XD_ADD_P listchaine not_set
   param.lire_avec_accolades_depuis(is);
 
   associer_domaine(nom_domaine_surfacique);
@@ -67,7 +68,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
   const Domaine_VF& domaine_vf=ref_cast(Domaine_VF,pb.domaine_dis());
   const Domaine& domaine_volumique = domaine_vf.domaine();
 
-  extraire_surface(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);
+  extraire_surface(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords, groupes_faces);
 
   return is;
 }
@@ -76,12 +77,12 @@ void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const A
 
 // Extraction d'une ou plusieurs frontieres du domaine volumique selon certaines conditions
 
-void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, bool avec_les_bords, const Noms& noms_des_bords)
+void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, bool avec_les_bords, const Noms& noms_des_bords, const Noms& groupes_faces)
 {
-  extraire_surface_without_cleaning(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);
+  extraire_surface_without_cleaning(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,domaine_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords, groupes_faces);
   NettoieNoeuds::nettoie(domaine_surfacique);
 }
-void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, bool avec_les_bords, const Noms& noms_des_bords)
+void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, bool avec_les_bords, const Noms& noms_des_bords, const Noms& groupes_faces)
 {
   domaine_surfacique.nommer(nom_domaine_surfacique);
   Parser_U condition_elements,condition_faces;
@@ -190,7 +191,6 @@ void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfac
           for (int f=deb; f<fin; f++)
             face_bord_int[f]=1;
         }
-
     }
 
   // on marque toutes les faces que l'on veut mettre dans le domaine
@@ -221,6 +221,14 @@ void Extraire_surface::extraire_surface_without_cleaning(Domaine& domaine_surfac
                   }
             }
         }
+    }
+
+  for (auto && nom : groupes_faces)
+    {
+      const ArrOfInt& arr = domaine_vf.domaine().groupe_faces(nom).get_indices_faces();
+      for (int i = 0; i < arr.size_array(); i++)
+        if (marq[arr[i]] != 1)
+          marq[arr[i]] = 1, nb_t++;
     }
 
   ArrOfDouble point0b(3),point1b(3),point2b(3);
