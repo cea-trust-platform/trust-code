@@ -374,7 +374,7 @@ void Process::exit(const Nom& message ,int i)
           PE_Groups::finalize();
         }
     }
-  Kokkos::finalize();
+  // Kokkos::finalize();
   // On force exit();
   if (i==0) i=-1;
   ::exit(i); //Seul ::exit utilise dans le code jusqu'a 01/23. second ajoute car appel recursif a Process::exit si droits ecriture dossier etude manquants
