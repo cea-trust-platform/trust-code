@@ -481,7 +481,7 @@ void Postraitement::set_param(Param& param)
 }
 
 
-// XD bloc_fichier objet_lecture bloc_fichier 1 Block containing the name of the file
+// XD bloc_fichier objet_lecture nul 1 Block containing the name of the file
 // XD   attr fichier chaine file 0 File name
 
 // XD sondes_fichier objet_lecture nul 1 Keyword to read probes from a file
