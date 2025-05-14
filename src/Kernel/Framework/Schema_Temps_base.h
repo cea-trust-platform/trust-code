@@ -136,7 +136,12 @@ public :
   inline int temps_final_atteint() const;
   inline int nb_pas_dt_max_atteint() const;
   inline int temps_cpu_max_atteint() const;
-  inline int stationnaire_atteint() const { return stationnaire_atteint_;  }
+  inline int stationnaire_atteint() const
+  {
+    assert(stationnaire_atteint_ != -1);
+    return stationnaire_atteint_;
+  }
+  inline int stationnaire_atteint_safe() const { return stationnaire_atteint_; }
   int stop_lu() const;
   inline int diffusion_implicite() const;
   inline double seuil_diffusion_implicite() const { return seuil_diff_impl_; }
