@@ -35,10 +35,10 @@ public :
   Entree& interpreter_(Entree&) override;
   static void extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique,
                                const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces,
-                               bool avec_les_bords, const Noms& noms_des_bords) ;
+                               bool avec_les_bords, const Noms& noms_des_bords, const Noms& groupes_faces) ;
   static void extraire_surface_without_cleaning(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique,
                                                 const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces,
-                                                bool avec_les_bords, const Noms& noms_des_bords);
+                                                bool avec_les_bords, const Noms& noms_des_bords, const Noms& groupes_faces);
 
 };
 
