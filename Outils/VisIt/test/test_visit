@@ -80,7 +80,7 @@ then
    options=-nowin && $TRUST_ROOT/Outils/VisIt/check_visit 1>/dev/null 2>&1 && options=$options" -win"
    for option in $options
    do
-      for FORMAT in LATA_VEF LATA_VDF MED
+      for FORMAT in LATA_VEF LATA_VDF MED CGNS
       do
       rm -f visit0000.png;echo 1 > err
       ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s $FORMAT.py 1>$FORMAT.log 2>&1;[ -f visit0000.png ] && echo 0 > err) &
