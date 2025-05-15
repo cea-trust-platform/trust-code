@@ -47,6 +47,11 @@ echo "@@@ Patching to dynamically swicth to correct API version ..."
 patch -p1 < $curr_dir/hdf5_err_handler.patch  || exit -1
 echo "@@@ Patching for clang 20 on fedora 42 ..."
 sed -i 's/#include <pdi.h>/#include <cstdint>\n#include <pdi.h>/' pdi/include/pdi/pdi_fwd.h
+# Two patches to find all libs when doing ldd $exec_optim => otherwise we get not found for libyaml.so and libspdlog.so (seen on Ubuntu)
+echo "@@@ Patching to find shared libs (ldd libpdi.so does not find libparaconf.so and libspdlog.so)"
+sed -i '/generate_export_header/a set_target_properties(PDI_C PROPERTIES LINK_FLAGS "-Wl,-rpath,$ORIGIN:${CMAKE_INSTALL_PREFIX}/lib")' pdi/CMakeLists.txt
+sed -i '/generate_export_header/a set_target_properties(paraconf PROPERTIES LINK_FLAGS "-Wl,-rpath,$ORIGIN:${CMAKE_INSTALL_PREFIX}/lib")' vendor/paraconf-1.0.0/paraconf/CMakeLists.txt
+
 
 mkdir -p build
 cd build
@@ -61,7 +66,12 @@ else
 fi
 
 # configuration (we use the hdf5 of TRUST)
-options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_DECL_NETCDF_PLUGIN=OFF -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF -DUSE_yaml=EMBEDDED"
+options="-DBUILD_BENCHMARKING=OFF -DBUILD_FORTRAN=OFF -DBUILD_DECL_NETCDF_PLUGIN=OFF"
+options=$options" -DBUILD_NETCDF_PARALLEL=OFF -DBUILD_TEST_PLUGIN=OFF -DBUILD_TESTING=OFF -DUSE_yaml=EMBEDDED"
+
+# ND: force install in lib directory instead of lib64. If you want to set lib64 instead of lib, you should fix patches
+# in this script for pdi/CMakeLists.txt and vendor/paraconf-1.0.0/paraconf/CMakeLists.txt
+options=$options" -DCMAKE_INSTALL_LIBDIR=lib -DINSTALL_PDIPLUGINDIR=$install_dir/lib"
 
 [ "$TRUST_DISABLE_MPI" = 1 ] &&  options="$options -DBUILD_MPI_PLUGIN=OFF -DBUILD_HDF5_PARALLEL=OFF"
 
@@ -69,7 +79,7 @@ if [ "$debug_mode" != "0" ]; then
    options="$options -DCMAKE_BUILD_TYPE=Debug"
 fi
 
-env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir -DINSTALL_PDIPLUGINDIR=$plugin_install_dir $options
+env CC=$CC FC=$FC cmake .. -DCMAKE_PREFIX_PATH=$TRUST_HDF5_ROOT -DCMAKE_INSTALL_PREFIX=$install_dir $options
 
 # make & install
 $TRUST_MAKE
