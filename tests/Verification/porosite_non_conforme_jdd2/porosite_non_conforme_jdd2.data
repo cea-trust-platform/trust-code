@@ -6,7 +6,7 @@ Domaine dom
 # BEGIN MESH #
 Read_MED {
     domain dom
-    file ../../fluid_non_uniforme.med
+    file fluid_non_uniforme.med
 }
 # END MESH #
 
@@ -25,13 +25,14 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 
-$opts
-$dis dis
+option_polymac { maillage_vdf }
+PolyMAC_P0 dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     dt_max  0.1
     facsec 10
     tmax 100
