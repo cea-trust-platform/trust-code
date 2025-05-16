@@ -70,7 +70,7 @@ Read pb
 
     Post_processing
     {
-    	probes
+        probes
         {
             V grav vitesse     periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 5
             P grav pression_pa periode 1e-6 segment 1000 0.05 0.05 0   0.05 0.05 5
@@ -81,13 +81,16 @@ Read pb
             vitesse elem
         }
     }
-    Post_processing
+    Post_processings
     {
-        Format med
-        fields dt_post 0
-        {
-            pression_pa elem
-            vitesse elem
+        post_med {
+            Format med
+            fichier jdd
+            fields dt_post 0
+            {
+                pression_pa elem
+                vitesse elem
+            }
         }
     }
 
