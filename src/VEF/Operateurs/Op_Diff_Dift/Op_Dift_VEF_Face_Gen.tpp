@@ -40,8 +40,6 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
 
       const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
       const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
-      const int nbr_comp = tab_resu.line_size(), nb_elem = domaine_VEF.nb_elem();
-      assert(nbr_comp > 1);
 
       // Construction du tableau grad_ si necessaire
       if (!grad_.get_md_vector().non_nul())
@@ -66,30 +64,30 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& tab_inconnue
       Re_ = 0.;
 
       bool flag = z_class->get_modele_turbulence().calcul_tenseur_Re(tab_nu_turb, grad_, Re_);
+      const int nbr_comp = tab_resu.line_size();
+      assert(nbr_comp > 1);
       CDoubleTabView nu_turb = tab_nu_turb.view_ro();
       DoubleTabView3 Re = Re_.view_rw<3>();
       if (flag)
         {
           Cerr << "On utilise une diffusion turbulente non lineaire dans NS" << finl;
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                               Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
-                                 const int elem)
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {domaine_VEF.nb_elem(),nbr_comp}), KOKKOS_LAMBDA(const int elem, const int i)
           {
-            for (int i = 0; i < nbr_comp; i++)
-              for (int j = 0; j < nbr_comp; j++)
-                Re(elem, i, j) *= nu_turb(elem, 0);
+//            for (int i = 0; i < nbr_comp; i++)
+            for (int j = 0; j < nbr_comp; j++)
+              Re(elem, i, j) *= nu_turb(elem, 0);
           });
         }
       else
         {
           CDoubleTabView3 grad = grad_.view_ro<3>();
-          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__),
-                               Kokkos::RangePolicy<>(0, nb_elem), KOKKOS_LAMBDA(
-                                 const int elem)
+          // PL: range_3D plus lent que range_2D...
+          //Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_3D({0,0,0}, {nb_elem,nbr_comp,nbr_comp}), KOKKOS_LAMBDA(const int elem, const int i, const int j)
+          Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), range_2D({0,0}, {domaine_VEF.nb_elem(),nbr_comp}), KOKKOS_LAMBDA(const int elem, const int i)
           {
-            for (int i = 0; i < nbr_comp; i++)
-              for (int j = 0; j < nbr_comp; j++)
-                Re(elem, i, j) = nu_turb(elem,0) * (grad(elem, i, j) + grad(elem, j, i));
+//          for (int i = 0; i < nbr_comp; i++)
+            for (int j = 0; j < nbr_comp; j++)
+              Re(elem, i, j) = nu_turb(elem,0) * (grad(elem, i, j) + grad(elem, j, i));
           });
         }
       end_gpu_timer(__KERNEL_NAME__);
@@ -858,7 +856,6 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
   CIntTabView face_voisins = domaine_VEF.face_voisins().view_ro();
   CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
   CDoubleTabView face_normale = domaine_VEF.face_normales().view_ro();
-  CDoubleArrView volumes = domaine_VEF.volumes().view_ro();
   CDoubleArrView inverse_volumes = domaine_VEF.inverse_volumes().view_ro();
   CDoubleArrView porosite_eventuelle = tab_porosite_eventuelle.view_ro();
   CDoubleTabView nu = tab_nu.view_ro();
@@ -876,91 +873,82 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& tab
       assert(matrice_morse != nullptr);
       matrice.set(*matrice_morse);
     }
-  // ToDo Kokkos: Attention le collapse des boucles ci-dessous est catastrophique *3-7 plus lent. Pourquoi ?
-  //Kokkos::MDRangePolicy<Kokkos::Rank<2>> policy({premiere_face_int, 0}, {nb_faces, 2});
-  Kokkos::RangePolicy<> policy(premiere_face_int, nb_faces);
-  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(
-                         const int num_face)
-                       // const int num_face, const int kk)
+  Kokkos::MDRangePolicy<Kokkos::Rank<2>> policy({premiere_face_int, 0}, {nb_faces, 2});
+  Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), policy, KOKKOS_LAMBDA(const int num_face, const int kk)
   {
-    for (int kk = 0; kk < 2; kk++)
+    int elem = face_voisins(num_face, kk);
+    for (int i0 = 0; i0 < nb_faces_elem; i0++)
       {
-        int elem = face_voisins(num_face, kk);
-        double volume_elem = volumes(elem);
-        for (int i0 = 0; i0 < nb_faces_elem; i0++)
+        int j = elem_faces(elem, i0);
+        if (j > num_face)
           {
-            int j = elem_faces(elem, i0);
-            if (j > num_face)
+            int contrib = 1;
+            if (j >= nb_faces) // C'est une face virtuelle
               {
-                int contrib = 1;
-                if (j >= nb_faces) // C'est une face virtuelle
+                const int el1 = face_voisins(j, 0), el2 = face_voisins(j, 1);
+                if ((el1 == -1) || (el2 == -1))
+                  contrib = 0;
+              }
+
+            if (contrib)
+              {
+                double tmp = 0.;
+                // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                if (!is_EXPLICIT && is_VECT)
                   {
-                    const int el1 = face_voisins(j, 0), el2 = face_voisins(j, 1);
-                    if ((el1 == -1) || (el2 == -1))
-                      contrib = 0;
+                    int orientation = 1;
+                    if ((elem == face_voisins(j, kk)) ||
+                        (face_voisins(num_face, 1 - kk) == face_voisins(j, 1 - kk)))
+                      orientation = -1;
+                    tmp = orientation * nu_turb(elem,0) * inverse_volumes(elem);
                   }
-
-                if (contrib)
+                for (int nc = 0; nc < nb_comp; nc++)
                   {
-                    double tmp = 0.;
-                    // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
-                    if (!is_EXPLICIT && is_VECT)
-                      {
-                        int orientation = 1;
-                        if ((elem == face_voisins(j, kk)) ||
-                            (face_voisins(num_face, 1 - kk) == face_voisins(j, 1 - kk)))
-                          orientation = -1;
+                    double d_nu = nu(elem, (is_VECT || is_RANS) ? 0 : nc) + nu_turb(elem, (is_RANS ? nc : 0));
+                    double valA = z_class->viscA(num_face, j, elem, d_nu, face_voisins, face_normale, inverse_volumes);
 
-                        tmp = orientation * nu_turb(elem,0) / volume_elem;
+                    if (is_STAB && valA < 0.) valA = 0.;
+
+                    if (is_EXPLICIT)
+                      {
+                        const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face, nc);
+                        Kokkos::atomic_add(&resu(num_face, nc), flux);
+                        if (j < nb_faces) // On traite les faces reelles
+                          Kokkos::atomic_sub(&resu(j, nc), flux);
                       }
-                    for (int nc = 0; nc < nb_comp; nc++)
+                    else     // METHODE IMPLICITE
                       {
-                        double d_nu = nu(elem, (is_VECT || is_RANS) ? 0 : nc) + nu_turb(elem, (is_RANS ? nc : 0));
-                        double valA = z_class->viscA(num_face, j, elem, d_nu, face_voisins, face_normale, inverse_volumes);
-
-                        if (is_STAB && valA < 0.) valA = 0.;
-
-                        if (is_EXPLICIT)
+                        double contrib_num_face = valA * porosite_eventuelle(num_face);
+                        double contrib_j = valA * porosite_eventuelle(j);
+                        const int n0 = num_face * nb_comp + nc, j0 = j * nb_comp + nc;
+                        matrice.atomic_add(n0, n0, contrib_num_face);
+                        matrice.atomic_add(n0, j0, -contrib_j);
+                        if (j < nb_faces) // On traite les faces reelles
                           {
-                            const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face, nc);
-                            Kokkos::atomic_add(&resu(num_face, nc), flux);
-                            if (j < nb_faces) // On traite les faces reelles
-                              Kokkos::atomic_sub(&resu(j, nc), flux);
+                            matrice.atomic_add(j0, n0, -contrib_num_face);
+                            matrice.atomic_add(j0, j0, contrib_j);
                           }
-                        else     // METHODE IMPLICITE
+
+                        // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                        if (is_VECT)
                           {
-                            double contrib_num_face = valA * porosite_eventuelle(num_face);
-                            double contrib_j = valA * porosite_eventuelle(j);
-                            const int n0 = num_face * nb_comp + nc, j0 = j * nb_comp + nc;
-                            matrice.atomic_add(n0, n0, contrib_num_face);
-                            matrice.atomic_add(n0, j0, -contrib_j);
-                            if (j < nb_faces) // On traite les faces reelles
+                            double poro_num_face = porosite_eventuelle(num_face);
+                            double poro_j = porosite_eventuelle(j);
+                            double face_normale_num_face = face_normale(num_face, nc);
+                            double face_normale_j = face_normale(j, nc);
+                            for (int nc2 = 0; nc2 < nb_comp; nc2++)
                               {
-                                matrice.atomic_add(j0, n0, -contrib_num_face);
-                                matrice.atomic_add(j0, j0, contrib_j);
-                              }
+                                const int n1 = num_face * nb_comp + nc2;
+                                const int j1 = j * nb_comp + nc2;
+                                double coeff_s = is_STAB ? 0. : tmp * face_normale(num_face, nc2) * face_normale_j;
 
-                            // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
-                            if (is_VECT)
-                              {
-                                double poro_num_face = porosite_eventuelle(num_face);
-                                double poro_j = porosite_eventuelle(j);
-                                double face_normale_num_face = face_normale(num_face, nc);
-                                double face_normale_j = face_normale(j, nc);
-                                for (int nc2 = 0; nc2 < nb_comp; nc2++)
+                                matrice.atomic_add(n0, n1, coeff_s * poro_num_face);
+                                matrice.atomic_add(n0, j1, -coeff_s * poro_j);
+                                if (j < nb_faces) // On traite les faces reelles
                                   {
-                                    const int n1 = num_face * nb_comp + nc2;
-                                    const int j1 = j * nb_comp + nc2;
-                                    double coeff_s = is_STAB ? 0. : tmp * face_normale(num_face, nc2) * face_normale_j;
-
-                                    matrice.atomic_add(n0, n1, coeff_s * poro_num_face);
-                                    matrice.atomic_add(n0, j1, -coeff_s * poro_j);
-                                    if (j < nb_faces) // On traite les faces reelles
-                                      {
-                                        double coeff_s2 = is_STAB ? 0. : tmp * face_normale_num_face * face_normale(j, nc2);
-                                        matrice.atomic_add(j0, n1, -coeff_s2 * poro_num_face);
-                                        matrice.atomic_add(j0, j1, coeff_s2 * poro_j);
-                                      }
+                                    double coeff_s2 = is_STAB ? 0. : tmp * face_normale_num_face * face_normale(j, nc2);
+                                    matrice.atomic_add(j0, n1, -coeff_s2 * poro_num_face);
+                                    matrice.atomic_add(j0, j1, coeff_s2 * poro_j);
                                   }
                               }
                           }
