@@ -1745,7 +1745,7 @@ fi
 if [ "$TRUST_USE_COOLPROP" != 0 ]
 then
    echo "Installing coolprop python's package ..."
-   $TRUST_ROOT/exec/python/bin/pip install coolprop
+   $TRUST_ROOT/exec/python/bin/pip install coolprop==6.6.0
 fi
 
 InstallPipPkgs=0
