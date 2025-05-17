@@ -499,7 +499,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           DoubleTabView resu_v = resu.view_rw();
           DoubleTabView flux_b_v = flux_b.view_rw();
 
-          const int dim = Objet_U::dimension;
+          //const int dim = Objet_U::dimension;
+          const int dim = 3; // Help compiler: +16% speed-up ! Not the same effect if setting nsom=4 and nfac=4 for a Tetra
           const int nb_som_facette = dim;
           const bool isMuscl = type_op_boucle == muscl;
           const bool isAmont = type_op_boucle == amont;
