@@ -1673,7 +1673,7 @@ void Op_Conv_VEF_Face::remplir_fluent() const
   if (nom_elem=="Tetra_VEF")
     {
       assert(dimension==3);
-      int dim = dimension;
+      int dim = 3;
       CIntArrView rang_elem_non_std = domaine_VEF.rang_elem_non_std().view_ro();
       CIntTabView elem_faces = domaine_VEF.elem_faces().view_ro();
       CDoubleTabView3 facette_normales = domaine_VEF.facette_normales().view_ro<3>();
@@ -1685,19 +1685,14 @@ void Op_Conv_VEF_Face::remplir_fluent() const
       CIntArrView type_elem_Cl = type_elem_Cl_.view_ro();
       DoubleArrView fluent = fluent_.view_rw();
       // boucle sur les polys
-      // Warning MDRangePolicy slowdown here on GPU...
-      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, KOKKOS_LAMBDA(const int poly)
+      auto kernel = KOKKOS_LAMBDA(const int poly)
       {
-        int face[4] {};
-        double vs[3] {};
-        double vc[3] {};
-        double cc[3] {};
-        double vsom[12] {};
-
         // calcul des numeros des faces du polyedre
+        int face[4];
         for (int face_adj = 0; face_adj < nfac; face_adj++)
           face[face_adj] = elem_faces(poly, face_adj);
 
+        double vs[3];
         for (int j = 0; j < dim; j++)
           {
             vs[j] = 0;
@@ -1706,12 +1701,14 @@ void Op_Conv_VEF_Face::remplir_fluent() const
           }
 
         // calcul de la vitesse aux sommets des tetradres
+        double vsom[12];
         for (int i = 0; i < 4; i++)
           for (int j = 0; j < 3; j++)
             vsom[i * 3 + j] = (vs[j] - 3 * vitesse_face(face[i], j) * porosite_face(face[i]));
 
         int itypcl = type_elem_Cl(poly);
         // calcul de vc (a l'intersection des 3 facettes) vc vs vsom proportionnelles a la prosite
+        double vc[3];
         calcul_vc_tetra_views(face, vc, vs, vsom, vitesse_face, itypcl, porosite_face);
         if (marq == 0)
           {
@@ -1730,27 +1727,22 @@ void Op_Conv_VEF_Face::remplir_fluent() const
           {
             int num1 = face[KEL(0, fa7)];
             int num2 = face[KEL(1, fa7)];
-            // normales aux facettes
-            for (int i = 0; i < dim; i++)
-              {
-                int elem = (rang == -1 ? poly : rang);
-                cc[i] = rang == -1 ? facette_normales(elem, fa7, i) : normales_facettes_Cl(elem, fa7, i);
-              }
-
             // On applique le schema de convection a chaque sommet de la facette
             double psc_c = 0, psc_s = 0, psc_s2 = 0;
             for (int i = 0; i < dim; i++)
               {
-                psc_c  += vc[i] * cc[i];
-                psc_s  += vsom[KEL(2, fa7) * dim + i] * cc[i];
-                psc_s2 += vsom[KEL(3, fa7) * dim + i] * cc[i];
+                double cc = rang == -1 ? facette_normales(poly, fa7, i) : normales_facettes_Cl(rang, fa7, i);
+                psc_c  += vc[i] * cc;
+                psc_s  += vsom[KEL(2, fa7) * dim + i] * cc;
+                psc_s2 += vsom[KEL(3, fa7) * dim + i] * cc;
               }
             double psc_m = (psc_c + psc_s + psc_s2) / dim;
 
             int num = (psc_m >= 0 ? num2 : num1);
             Kokkos::atomic_add(&fluent[num], std::abs(psc_m));
           } // fin de la boucle sur les facettes
-      }); // fin de la boucle
+      };
+      Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), nb_elem_tot, kernel);
       end_gpu_timer(__KERNEL_NAME__);
     }
   else
