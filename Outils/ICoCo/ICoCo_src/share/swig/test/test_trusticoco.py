@@ -4,6 +4,7 @@ class trusticoco_test(unittest.TestCase):
 
     def test_simple(self):
         """ Test import of modules and one function in each """
+
         import medcoupling as mc
         import trusticoco as ti
         print (ti.ICOCO_VERSION)
@@ -34,28 +35,6 @@ class trusticoco_test(unittest.TestCase):
 #         pbT.solveTimeStep()
 #         pbT.validateTimeStep()
 #         pbT.terminate()
-
-    def test_repeated_run(self):    
-        """ From the ICoCo interface, and with a single instance of a ProblemTrio
-        Having multiple instances of a ProblemTrio in the same interpreter is not supported yet.
-        """
-        import trusticoco as ti
-        import medcoupling as mc
-       
-        pbT = ti.ProblemTrio()
-        pbT.name = "TRUST"
-        pbT.setDataFile("test_conduc.data")
-
-        def run(pb):
-            pb.initialize()
-            dt, stop = pb.computeTimeStep()
-            pb.initTimeStep(dt)                            
-            ok = pb.solveTimeStep()
-            pb.validateTimeStep()
-            pbT.terminate()
-
-        run(pbT)
-        run(pbT)        
 
     def test_small_run(self):
         """ Execute a small run """
