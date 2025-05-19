@@ -518,7 +518,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 int rang = rang_elem_non_std_v(poly);
                 int contrib = 0;
                 // calcul des numeros des faces du polyedre
-                int face[4] {};
+                int face[4];
                 for (int face_adj = 0; face_adj < nfac; face_adj++)
                   {
                     int fac = elem_faces_v(poly, face_adj);
@@ -530,13 +530,16 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   {
                     int calcul_flux_en_un_point = (ordre != 3) && (ordre == 1 || traitement_pres_bord_v(poly));
                     bool flux_en_un_point = calcul_flux_en_un_point || option_calcul_flux_en_un_point;
-                    double vs[3] {0.0};
+                    double vs[3];
                     for (int j = 0; j < dim; j++)
-                      for (int i = 0; i < nfac; i++)
-                        vs[j] += vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
+                      {
+                        vs[j] = 0;
+                        for (int i = 0; i < nfac; i++)
+                          vs[j] += vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
+                      }
                     // calcul de la vitesse aux sommets des tetraedres
                     // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
-                    double vsom[12] {};
+                    double vsom[12];
                     for (int i = 0; i < nsom; i++)
                       for (int j = 0; j < dim; j++)
                         vsom[i * 3 + j] = vs[j] - dim * vitesse_face_absolue_v(face[i], j) * porosite_face_v(face[i]);
@@ -545,13 +548,13 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     rang = rang_elem_non_std_v(poly);
                     True_int itypcl = type_elem_Cl_v(poly);
 
-                    double vc[3] {};
+                    double vc[3];
                     calcul_vc_tetra_views(face, vc, vs, vsom, vitesse_v, itypcl, porosite_face_v);
                     // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-                    double xc[3] {};
+                    double xc[3];
                     if (ordre == 3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                       {
-                        double xsom[12] {};
+                        double xsom[12];
                         for (int i = 0; i < nsom; i++)
                           for (int j = 0; j < dim; j++)
                             xsom[i * 3 + j] = coord_sommets_v(les_elems_v(poly, i), j);
@@ -567,8 +570,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                         for (int l = 0; l < dim; l++) vc[l] *= coeff;
                       }
                     // Boucle sur les facettes du polyedre:
-                    double centre_fa7[3] {};
-                    double cc[3] {};
+                    double centre_fa7[3];
+                    double cc[3];
 #ifndef TRUST_USE_GPU
                     for (int fa7 = 0; fa7 < nfa7; fa7++)
 #endif
