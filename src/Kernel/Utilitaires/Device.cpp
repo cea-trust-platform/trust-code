@@ -29,6 +29,7 @@
 
 bool init_device_ = false;
 bool clock_on = false;
+bool fence = true;
 double clock_start;
 int timer_counter=0;
 #ifdef TRUST_USE_GPU
@@ -68,7 +69,8 @@ void init_device()
 {
   if (init_device_) return;
   init_device_ = true;
-  if (getenv("TRUST_CLOCK_ON")!= nullptr) clock_on = true;
+  if (getenv("TRUST_CLOCK_ON")!=nullptr) clock_on = true;
+  if (getenv("TRUST_DISABLE_FENCE")!=nullptr) fence = false;
   Process::imprimer_ram_totale(); // Impression avant copie des donnees sur GPU
 }
 #endif
@@ -494,5 +496,75 @@ template void copyFromDevice<float, trustIdType>(const TRUSTArray<float,trustIdT
 template void copyFromDevice<double, trustIdType>(const TRUSTArray<double,trustIdType>& tab);
 
 
+// Timers GPU (avec possibilite de desactiver avec if (timer) dans certains Kernels critiques sur CPU):
+std::string start_gpu_timer(std::string str, int bytes)
+{
+#ifdef TRUST_USE_GPU
+  if (init_device_)
+    {
+      timer_counter++;
+#ifndef NDEBUG
+      if (timer_counter>1)
+        Cerr << "[Kokkos] timer_counter=" << timer_counter << " : start_gpu_timer() not closed by end_gpu_timer() !" << finl;
+      //Process::exit("Error, start_gpu_timer() not closed by end_gpu_timer() !");
+#endif
+      if (clock_on) clock_start = Statistiques::get_time_now();
+      if (bytes == -1) statistiques().begin_count(gpu_kernel_counter_, false);
+#ifdef TRUST_USE_CUDA
+      if (!str.empty()) nvtxRangePush(str.c_str());
+#endif
+    }
+#endif
+  return str;
+}
+
+void end_gpu_timer(const std::string& str, int onDevice, int bytes) // Return in [ms]
+{
+#ifdef TRUST_USE_GPU
+  if (init_device_)
+    {
+      timer_counter--;
+#ifndef NDEBUG
+      if (timer_counter!=0)
+        Cerr << "[Kokkos] timer_counter=" << timer_counter << " : end_gpu_timer() not opened by start_gpu_timer() !" << finl;
+      //Process::exit("Error, start_gpu_timer() not closed by end_gpu_timer() !");
+#endif
+      if (onDevice)
+        {
+#ifdef TRUST_USE_UVM
+          cudaDeviceSynchronize();
+#endif
+#ifdef KOKKOS
+          if (fence) Kokkos::fence();  // Barrier for real time
+#endif
+        }
+      if (bytes == -1) statistiques().end_count(gpu_kernel_counter_, 0, onDevice, false);
+      if (clock_on) // Affichage
+        {
+          std::string clock(Process::is_parallel() ? "[clock]#" + std::to_string(Process::me()) : "[clock]  ");
+          double ms = 1000 * (Statistiques::get_time_now() - clock_start);
+          if (bytes == -1)
+            {
+              if (!str.empty())
+                printf("%s %7.3f ms [%s %15s\n", clock.c_str(), ms, onDevice ? "Device]" : "Host]  ", str.c_str());
+            }
+          else
+            {
+              double mo = (double) bytes / 1024 / 1024;
+              if (ms == 0 || bytes == 0)
+                printf("%s            [Data]   %15s\n", clock.c_str(), str.c_str());
+              else
+                printf("%s %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", clock.c_str(), ms, str.c_str(),
+                       long(bytes), mo / ms);
+              //printf("%s %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(mo), mo/ms);
+            }
+          fflush(stdout);
+        }
+#ifdef TRUST_USE_CUDA
+      if (!str.empty()) nvtxRangePop();
+#endif
+    }
+#endif
+}
 #endif
 
