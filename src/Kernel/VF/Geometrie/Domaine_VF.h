@@ -278,6 +278,8 @@ private:
   void build_mc_Cmesh_nodesCorrespondence();
   void build_mc_Cmesh_correspondence(bool withFace);
 
+  void reorder_faces_morton(IntTab& sort_key);
+
   template <typename TYPE>
   TYPE Cmesh_error(const char * nom_funct) const
   {

@@ -37,6 +37,9 @@
 #include <utility>
 #include <set>
 
+#include <Array_tools.h>
+#include <ZCurve.h>
+
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
@@ -117,16 +120,58 @@ void Domaine_VF::reordonner(Faces&)
 {
 }
 
-void Domaine_VF::renumeroter(Faces& les_faces)
+void Domaine_VF::reorder_faces_morton(IntTab& sort_key)
 {
 
+  Cerr << "****************************************************************" << finl;
+  Cerr << "[Reordering] mesh items (**faces**) to improve data locality ..." << finl;
+
+  // first sort to put all special faces first:
+  tri_lexicographique_tableau(sort_key);
+
+  int nb_fac = sort_key.dimension(0);
+  int nb_fac_non_std = nb_fac - nb_faces_std_;
+
+  std::vector<PointZC> faces;
+  PointZC p0;
+  // skip non std face (the ones that should remain at the begining
+  for (int i=nb_fac_non_std; i<nb_fac; i++)
+    {
+      int idx = sort_key(i, 1) % nb_fac;
+      p0.x = xv_(idx, 0);
+      p0.y = xv_(idx, 1);
+      p0.z = Objet_U::dimension == 3 ? xv_(idx, 2) : 0;
+      p0.id = i-nb_fac_non_std;
+      faces.push_back(p0);
+    }
+
+  Cerr << "[Reordering] Apply Morton SFC algorithm to build renum on faces ..." << finl;
+  ArrOfInt renum_fac(nb_faces_std_);
+
+  ZCurve::Morton_sfc_pierre(faces, renum_fac);
+
+  // apply renumbering to the end of sort_key
+  auto sort_key2(sort_key);
+  for (int i = nb_fac_non_std; i < sort_key.dimension(0); i++)
+    {
+      int j = i-nb_fac_non_std;
+      int renum_idx = renum_fac[j];
+      sort_key(i, 0) = sort_key2(renum_idx+nb_fac_non_std,0);
+    }
+
+  Cerr << "[Reordering] Ordering faces done!" << finl;
+}
+
+void Domaine_VF::renumeroter(Faces& les_faces)
+{
   // Construction du tableau de renumerotation des faces. Ce tableau,
   // une fois trie dans l'ordre croissant donne l'ordre des faces dans
   // le domaine_VF. La cle de tri est construite de sorte a pouvoir retrouver
   // l'indice de la face a partir de la cle par la formule :
   //  indice_face = cle % nb_faces
   const int nbfaces = les_faces.nb_faces();
-  ArrOfInt sort_key(nbfaces);
+  // ArrOfInt sort_key(nbfaces);
+  IntTab sort_key(nbfaces, 2);
 
   {
     nb_faces_std_ = 0;
@@ -137,9 +182,12 @@ void Domaine_VF::renumeroter(Faces& les_faces)
     // On place en premier les faces de bord:
     int i_face;
     for (i_face = 0; i_face < nb_faces_front; i_face++)
-      // Si la face est au bord, elle doit etre placee au debut
-      // (en fait elle ne doit pas etre renumerotee)
-      sort_key[i_face] = i_face;
+      {
+        // Si la face est au bord, elle doit etre placee au debut
+        // (en fait elle ne doit pas etre renumerotee)
+        sort_key(i_face, 0) = i_face;
+        sort_key(i_face, 1) = i_face;
+      }
 
     for (i_face=nb_faces_front; i_face < nbfaces; i_face++)
       {
@@ -151,24 +199,33 @@ void Domaine_VF::renumeroter(Faces& les_faces)
           {
             // Si la face est voisine d'un element non standard, elle
             // doit etre classee juste apres les faces de bord:
-            sort_key[i_face] = i_face;
+            sort_key(i_face, 0) = i_face;
+            sort_key(i_face, 1) = i_face;
           }
         else
           {
             // Face standard : a la fin du tableau
-            sort_key[i_face] = i_face + nbfaces;
+            sort_key(i_face, 0) = i_face + nbfaces;
+            sort_key(i_face, 1) = i_face;
             nb_faces_std_++;
           }
       }
 
-    sort_key.ordonne_array();
-
-    // On transforme a nouveau la cle en numero de face:
-    for (i_face = 0; i_face < nbfaces; i_face++)
+    // Applying Morton scheme on faces too:
+    if (getenv("TRUST_MESH_REORDERING") != nullptr)
       {
-        const int key = sort_key[i_face] % nbfaces;
-        sort_key[i_face] = key;
+        les_faces.calculer_centres_gravite(xv_);
+        reorder_faces_morton(sort_key);
       }
+    else
+      tri_lexicographique_tableau(sort_key);
+
+//    // On transforme a nouveau la cle en numero de face:
+//    for (i_face = 0; i_face < nbfaces; i_face++)
+//      {
+//        const int key = sort_key(i_face, 1) % nbfaces;
+//        sort_key(i_face, 1) = key;
+//      }
   }
   // On reordonne les faces:
   {
@@ -177,7 +234,7 @@ void Domaine_VF::renumeroter(Faces& les_faces)
     const int nb_som_faces = faces_sommets.dimension(1);
     for (int i = 0; i < nbfaces; i++)
       {
-        const int old_i = sort_key[i];
+        const int old_i = sort_key(i, 1);
         for (int j = 0; j < nb_som_faces; j++)
           faces_sommets(i, j) = old_tab(old_i, j);
       }
@@ -188,7 +245,7 @@ void Domaine_VF::renumeroter(Faces& les_faces)
     IntTab old_tab(faces_voisins);
     for (int i = 0; i < nbfaces; i++)
       {
-        const int old_i = sort_key[i];
+        const int old_i = sort_key(i, 1);
         faces_voisins(i, 0) = old_tab(old_i, 0);
         faces_voisins(i, 1) = old_tab(old_i, 1);
       }
@@ -199,7 +256,7 @@ void Domaine_VF::renumeroter(Faces& les_faces)
   {
     for (int i = 0; i < nbfaces; i++)
       {
-        const int j = sort_key[i];
+        const int j = sort_key(i, 1);
         reverse_index[j] = i;
       }
   }

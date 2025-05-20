@@ -40,6 +40,8 @@
 #include <MD_Vector_seq.h>
 #include <Statistiques.h>
 
+#include <ZCurve.h>
+
 Implemente_instanciable_sans_constructeur_32_64( Domaine_32_64, "Domaine", Domaine_base );
 // XD domaine objet_u domaine -1 Keyword to create a domain.
 
@@ -1490,94 +1492,36 @@ void Domaine_32_64<_SIZE_>::reordering()
   for (int_t i = 0; i < renum_elems.size_array(); i++)
     renum_elems(i) = i;
 
-  bool test = false;
-  if (test)
-    {
-      // Dumb reordering to test:
-      renum_nodes(1) = 0;
-      renum_nodes(0) = 1;
-      renum_elems(1) = 3;
-      renum_elems(3) = 1;
-    }
-  else
-    {
-      struct Point
+  std::vector<PointZC> nodes, cells;
+  auto fill = [](auto &points, const auto &coord)
+  {
+    PointZC p;
+    for (int_t i=0; i<coord.dimension(0); i++)
       {
-        double x, y, z;
-        int_t id;
-        uint64_t morton;
-      };
-      std::vector<Point> nodes, cells;
-      auto fill = [](auto &points, const auto &coord)
-      {
-        Point p;
-        for (int_t i=0; i<coord.dimension(0); i++)
-          {
-            p.x = coord(i, 0);
-            p.y = coord(i, 1);
-            p.z = dimension == 3 ? coord(i, 2) : 0;
-            p.id = i;
-            points.push_back(p);
-          }
-      };
-      fill(nodes, sommets_);
-      DoubleTab_t xp;
-      calculer_centres_gravite(xp);
-      fill(cells, xp);
+        p.x = coord(i, 0);
+        p.y = coord(i, 1);
+        p.z = dimension == 3 ? coord(i, 2) : 0;
+        p.id = i;
+        points.push_back(p);
+      }
+  };
+  fill(nodes, sommets_);
+  DoubleTab_t xp;
+  calculer_centres_gravite(xp);
+  fill(cells, xp);
 
-      // To compute renum:
-      // Morton SFC (easy to code but not perfect)
-      // or Hilbert SFC (perfect but complex) through ArboX
-      // or reverse RCM (ideal for sparse matrix to reduce bandwith but SFC methods do well) through Metis
-      auto morton_sfc = [](auto &points, auto &renum)
-      {
-        double xmin = std::numeric_limits<double>::max();
-        double xmax = -xmin;
-        double ymin = std::numeric_limits<double>::max();
-        double ymax = -ymin;
-        double zmin = std::numeric_limits<double>::max();
-        double zmax = -zmin;
-        for (auto &p: points)
-          {
-            xmin = std::min(p.x, xmin);
-            xmax = std::max(p.x, xmax);
-            ymin = std::min(p.y, ymin);
-            ymax = std::max(p.y, ymax);
-            zmin = std::min(p.z, zmin);
-            zmax = std::max(p.z, zmax);
-          }
-        // Convert floating-point coordinates to integers:
-        for (auto &p: points)
-          {
-            // Scale coordinates to fit within the 64-bit range
-            uint64_t range = 1e12; //std::numeric_limits<uint64_t>::max();
-            uint32_t scaledX = static_cast<uint32_t>((p.x - xmin) / (xmax - xmin) * (double)range);
-            uint32_t scaledY = static_cast<uint32_t>((p.y - ymin) / (ymax - ymin) * (double)range);
-            uint32_t scaledZ = dimension==3 ? static_cast<uint32_t>((p.z - zmin) / (zmax - zmin) * (double)range) : 0;
-            uint64_t morton = 0;
-            for (uint64_t i = 0; i < sizeof(uint32_t) * 8; ++i)
-              {
-                if (dimension==3)
-                  morton |= ((scaledX & (1ULL << i)) << (2 * i)) |
-                            ((scaledY & (1ULL << i)) << (2 * i + 1)) |
-                            ((scaledZ & (1ULL << i)) << (2 * i + 2));
-                else
-                  morton |= (scaledX & (1ULL << i)) << i |
-                            (scaledY & (1ULL << i)) << (i + 1);
-              }
-            p.morton = morton;
-          }
-        // Sort nodes, cells, and faces using their computed Morton codes.
-        std::sort(points.begin(), points.end(), [](const Point &a, const Point &b) { return a.morton < b.morton; });
-        // Build renum
-        int_t i = 0;
-        for (auto &p : points)
-          renum(p.id) = i++;
-      };
-      Cerr << "[Reordering] Apply Morton SFC algorithm to build renum on nodes then cells ..." << finl;
-      morton_sfc(nodes, renum_nodes);
-      morton_sfc(cells, renum_elems);
-    }
+  // To compute renum:
+  // Morton SFC (easy to code but not perfect)
+  // or Hilbert SFC (perfect but complex) through ArboX
+  // or reverse RCM (ideal for sparse matrix to reduce bandwith but SFC methods do well) through Metis
+  Cerr << "[Reordering] Apply Morton SFC algorithm to build renum on nodes then cells ..." << finl;
+  ZCurve_32_64<_SIZE_>::Morton_sfc_v2(nodes, renum_nodes);
+
+  Cerr << "####################################" << finl;
+  Cerr << "####################################" << finl;
+  Cerr << "####################################" << finl;
+
+  ZCurve_32_64<_SIZE_>::Morton_sfc_v2(cells, renum_elems);
 
   // Renum utilities:
   auto renum_Tab_indices = [] (auto& tab, const auto& renum)
@@ -1603,16 +1547,19 @@ void Domaine_32_64<_SIZE_>::reordering()
   };
 
   // Create test with non uniform value and compute a reduced
-  Cerr << "Provisoire " << sommets_ << finl;
+//  Cerr << "Provisoire " << sommets_ << finl;
+  ZCurve_32_64<_SIZE_>::Dump_to_file(sommets_, "som_before.txt");
   renum_Tab_indices(sommets_, renum_nodes);
-  Cerr << "Provisoire " << sommets_ << finl;
+  ZCurve_32_64<_SIZE_>::Dump_to_file(sommets_, "som_after.txt");
+
+//  Cerr << "Provisoire " << sommets_ << finl;
   //Cerr << renum_som_perio_ << finl; ToDo Why ?
   //renum_Vect_values(renum_som_perio_, renum_nodes);
   //Cerr << renum_som_perio_ << finl;
-  Cerr << "Provisoire " << mes_elems_ << finl;
+//  Cerr << "Provisoire " << mes_elems_ << finl;
   renum_Tab_indices(mes_elems_, renum_elems);
   renum_Tab_values(mes_elems_, renum_nodes);
-  Cerr << "Provisoire " << mes_elems_ << finl;
+//  Cerr << "Provisoire " << mes_elems_ << finl;
   if (aretes_som_.size_array()!=0)
     {
       Process::exit("Reordering not supported yet.");
@@ -1641,12 +1588,12 @@ void Domaine_32_64<_SIZE_>::reordering()
       // ToDo communiquer avec les process voisins Voir Raffiner_isotrope_parallele::interpreter
     }
   Scatter::init_sequential_domain(*this);
-  int_t nodes=0, elems=0;
+  int_t nnodes=0, nelems=0;
   for (int i=0; i<renum_nodes.size_array(); i++)
-    if (renum_nodes(i)!=i) nodes++;
+    if (renum_nodes(i)!=i) nnodes++;
   for (int i=0; i<renum_elems.size_array(); i++)
-    if (renum_elems(i)!=i) elems++;
-  Cerr << "[Reordering] " << nodes << " nodes and " << elems << " cells were permuted." << finl;
+    if (renum_elems(i)!=i) nelems++;
+  Cerr << "[Reordering] " << nnodes << " nodes and " << nelems << " cells were permuted." << finl;
   Cerr << "****************************************************************" << finl;
 }
 
