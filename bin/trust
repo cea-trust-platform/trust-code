@@ -902,7 +902,7 @@ then
    # Detect ncu location:
    ncu=`ls $CUDA_ROOT/../compilers/bin/ncu 2>/dev/null | tail -1`
    export PATH=`dirname $ncu`:$PATH
-   nsight="ncu --target-processes all --set full --nvtx --kernel-name-base=demangled -k regex:$kernel -f -o $NOM.qdrep.ncu-rep"
+   nsight="ncu --target-processes all --import-source yes --set full --nvtx --kernel-name-base=demangled -k regex:$kernel -f -o $NOM.qdrep.ncu-rep"
    echo $nsight
 elif [ "$CS" = 1 ]
 then
