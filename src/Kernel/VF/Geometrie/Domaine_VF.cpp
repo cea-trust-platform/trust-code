@@ -148,7 +148,7 @@ void Domaine_VF::reorder_faces_morton(IntTab& sort_key)
   Cerr << "[Reordering] Apply Morton SFC algorithm to build renum on faces ..." << finl;
   ArrOfInt renum_fac(nb_faces_std_);
 
-  ZCurve::Morton_sfc_pierre(faces, renum_fac);
+  ZCurve::Morton_sfc_v2(faces, renum_fac);
 
   // apply renumbering to the end of sort_key
   auto sort_key2(sort_key);
@@ -159,6 +159,8 @@ void Domaine_VF::reorder_faces_morton(IntTab& sort_key)
       sort_key(i, 0) = sort_key2(renum_idx+nb_fac_non_std,0);
     }
 
+  // Sort again to use this new ordering
+  tri_lexicographique_tableau(sort_key);
   Cerr << "[Reordering] Ordering faces done!" << finl;
 }
 
@@ -214,6 +216,7 @@ void Domaine_VF::renumeroter(Faces& les_faces)
     // Applying Morton scheme on faces too:
     if (getenv("TRUST_MESH_REORDERING") != nullptr)
       {
+        Cerr << "@@@@@ Nb of non-std faces put at the begining: " << nbfaces-nb_faces_std_ << "\n";
         les_faces.calculer_centres_gravite(xv_);
         reorder_faces_morton(sort_key);
       }
@@ -400,6 +403,7 @@ void Domaine_VF::discretiser()
 
     // Changement a la v1.5.7 beta: xv_ a maintenant un descripteur parallele: dimension(0)=nb_faces
     les_faces.calculer_centres_gravite(xv_);
+    ZCurve::Dump_to_file(xv_, "faces_after.txt");
 
     // Calcul des volumes
     ledomaine.calculer_volumes(volumes_, inverse_volumes_);

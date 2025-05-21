@@ -1508,6 +1508,7 @@ void Domaine_32_64<_SIZE_>::reordering()
   fill(nodes, sommets_);
   DoubleTab_t xp;
   calculer_centres_gravite(xp);
+  ZCurve_32_64<_SIZE_>::Dump_to_file(xp, "cell_before.txt");
   fill(cells, xp);
 
   // To compute renum:
@@ -1593,6 +1594,10 @@ void Domaine_32_64<_SIZE_>::reordering()
     if (renum_nodes(i)!=i) nnodes++;
   for (int i=0; i<renum_elems.size_array(); i++)
     if (renum_elems(i)!=i) nelems++;
+
+  calculer_centres_gravite(xp);
+  ZCurve_32_64<_SIZE_>::Dump_to_file(xp, "cell_after.txt");
+
   Cerr << "[Reordering] " << nnodes << " nodes and " << nelems << " cells were permuted." << finl;
   Cerr << "****************************************************************" << finl;
 }
