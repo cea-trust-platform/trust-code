@@ -882,6 +882,7 @@ then
    nsys=`ls $CUDA_ROOT/../compilers/bin/nsys 2>/dev/null | tail -1`
    export PATH=`dirname $nsys`:$PATH
    trace="--stats=true "
+   trace=$trace" --cuda-graph-trace node "
    trace=$trace"--trace=cuda,nvtx" && [ $NB_PROCS -gt 1 ] && trace=$trace",mpi --mpi-impl=`basename $MPI_ROOT`"
    # Droit elevation disponible:
    sudo -n ls 1>/dev/null 2>&1
