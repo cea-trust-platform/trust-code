@@ -343,7 +343,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_faces_interne(const DoubleTa
         }
       else
         {
-          if (nu_1(i,ori) == 0.0 && nu_1(j,ori) == 0.0) heq = 0.;
+          if (nu_1(i,ori) == 0.0 || nu_1(j,ori) == 0.0) heq = 0.;
           else
             {
               assert(nu_1(i,ori) != 0.0 && nu_1(j,ori) != 0.0);
@@ -562,7 +562,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_faces_interne(const int fa
         }
       else
         {
-          if (nu_1(i,ori) == 0.0 && nu_2(j,ori) == 0.0) heq = 0.;
+          if (nu_1(i,ori) == 0.0 || nu_2(j,ori) == 0.0) heq = 0.;
           else
             {
               assert(nu_1(i,ori) != 0.0 && nu_2(j,ori) != 0.0);
