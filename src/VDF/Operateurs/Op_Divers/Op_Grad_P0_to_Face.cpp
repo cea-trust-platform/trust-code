@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 #include <Op_Grad_P0_to_Face.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_homogene.h>
+#include <Champ_front_var.h>
 #include <Domaine_Cl_VDF.h>
 #include <Neumann_paroi.h>
 #include <Statistiques.h>
@@ -50,80 +51,90 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   const DoubleVect& face_surfaces = zvdf.face_surfaces();
   const DoubleTab& xv = zvdf.xv();
 
-  double dist;
-  int n0, n1, ori, N = inco.line_size(), k;
+
+  int N = inco.line_size();
 
   // Boucle sur les bords pour traiter les conditions aux limites
   for (int n_bord = 0; n_bord < zvdf.nb_front_Cl(); n_bord++)
-    for (k = 0; k < N; k++)
+    for (int k = 0; k < N; k++)
       {
         const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
         const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+        const bool is_champ_front_var = sub_type(Champ_front_var, la_cl->champ_front());
 
         if (sub_type(Periodique, la_cl.valeur())) // Correction periodicite
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              n0 = face_voisins(num_face, 0), n1 = face_voisins(num_face, 1);
-              dist = volume_entrelaces(num_face) / face_surfaces(num_face);
+              const int n0 = face_voisins(num_face, 0), n1 = face_voisins(num_face, 1);
+              const double dist = volume_entrelaces(num_face) / face_surfaces(num_face);
               secmem(num_face, k) -= (inco(n1, k) - inco(n0, k)) / dist;
             }
         else if (sub_type(Dirichlet, la_cl.valeur())) // Cas CL Dirichlet
-          for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
-            {
-              n0 = face_voisins(num_face, 0);
-              if (n0 < 0)
-                n0 = face_voisins(num_face, 1);
-              ori = orientation(num_face);
-              secmem(num_face, k) -= (inco(n0, k) - ref_cast(Dirichlet, la_cl.valeur()).val_imp(num_face_cl, k)) / (xp(n0, ori) - xv(num_face, ori));
-            }
+          {
+            const Dirichlet& cl = ref_cast(Dirichlet, la_cl.valeur());
+            // XXX Elie Saikali : on calcule pas si champ_front_var n'est pas initialise (donc a la condition initiale)
+            if (!is_champ_front_var || (is_champ_front_var && cl.champ_front().get_temps_defaut() > -1.))
+              for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
+                {
+                  int n0 = face_voisins(num_face, 0);
+                  if (n0 < 0)
+                    n0 = face_voisins(num_face, 1);
+                  const int ori = orientation(num_face);
+                  secmem(num_face, k) -= (inco(n0, k) - cl.val_imp(num_face_cl, k)) / (xp(n0, ori) - xv(num_face, ori));
+                }
+          }
         else if (sub_type(Dirichlet_homogene, la_cl.valeur())) // Cas Dirichlet homogene, i.e. valeur nulle a la paroi
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              n0 = face_voisins(num_face, 0);
+              int n0 = face_voisins(num_face, 0);
               if (n0 < 0)
                 n0 = face_voisins(num_face, 1);
-              ori = orientation(num_face);
+              const int ori = orientation(num_face);
               secmem(num_face, k) -= inco(n0, k) / (xp(n0, ori) - xv(num_face, ori));
             }
         else if (sub_type(Echange_impose_base, la_cl.valeur())) // Cas Echange_impose_base
           {
-            if (ref_cast(Echange_impose_base, la_cl.valeur()).has_h_imp_grad())
+            const Echange_impose_base& cl = ref_cast(Echange_impose_base, la_cl.valeur());
+            if (cl.has_h_imp_grad())
               for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
                 {
-                  n0 = face_voisins(num_face, 0);
+                  int n0 = face_voisins(num_face, 0);
                   if (n0 < 0)
                     n0 = face_voisins(num_face, 1);
                   if (face_voisins(num_face, 0) >= 0)
-                    secmem(num_face, k) -= (inco(n0, k) - ref_cast(Echange_impose_base, la_cl.valeur()).T_ext(num_face_cl, k))
-                                           * ref_cast(Echange_impose_base, la_cl.valeur()).h_imp_grad(num_face_cl, k); // Si bien oriente
+                    secmem(num_face, k) -= (inco(n0, k) - cl.T_ext(num_face_cl, k)) * cl.h_imp_grad(num_face_cl, k); // Si bien oriente
                   else
-                    secmem(num_face, k) += (inco(n0, k) - ref_cast(Echange_impose_base, la_cl.valeur()).T_ext(num_face_cl, k))
-                                           * ref_cast(Echange_impose_base, la_cl.valeur()).h_imp_grad(num_face_cl, k); // Si oriente a envers
+                    secmem(num_face, k) += (inco(n0, k) - cl.T_ext(num_face_cl, k)) * cl.h_imp_grad(num_face_cl, k); // Si oriente a envers
                 }
             else { /* Do nothing */ }
           }
         else if (sub_type(Neumann_paroi, la_cl.valeur())) // Cas Neumann_paroi
-          for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
-            {
-              if (face_voisins(num_face, 0) >= 0)
-                secmem(num_face, k) -= ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k); // Si bien oriente
-              else
-                secmem(num_face, k) += ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k); // Si oriente a envers
-            }
+          {
+            const Neumann_paroi& cl = ref_cast(Neumann_paroi, la_cl.valeur());
+            // XXX Elie Saikali : on calcule pas si champ_front_var n'est pas initialise (donc a la condition initiale)
+            if (!is_champ_front_var || (is_champ_front_var && cl.champ_front().get_temps_defaut() > -1.))
+              for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
+                {
+                  if (face_voisins(num_face, 0) >= 0)
+                    secmem(num_face, k) -= cl.flux_impose(num_face_cl, k); // Si bien oriente
+                  else
+                    secmem(num_face, k) += cl.flux_impose(num_face_cl, k); // Si oriente a envers
+                }
+          }
         else if (!sub_type(Neumann_homogene, la_cl.valeur())) // En Neumann homogene, i.e. symetrie, la derivee a la face est nulle => on fait rien
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              n0 = face_voisins(num_face, 0);
+              int n0 = face_voisins(num_face, 0);
               if (n0 < 0)
                 n0 = face_voisins(num_face, 1);
 
-              ori = orientation(num_face);
+              const int ori = orientation(num_face);
               int face_opposee = zvdf.elem_faces(n0, ori);
               if (face_opposee == num_face)
                 face_opposee = zvdf.elem_faces(n0, ori + dimension);
 
-              n1 = face_voisins(face_opposee, 0);
+              int n1 = face_voisins(face_opposee, 0);
               if ((n1 < 0) || ((n1 == n0) && face_voisins(face_opposee, 1) >= 0))
                 n1 = face_voisins(face_opposee, 1);
 
@@ -134,9 +145,9 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
 
   // Boucle sur les faces internes
   for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
-    for (k = 0; k < N; k++)
+    for (int k = 0; k < N; k++)
       {
-        n0 = face_voisins(num_face, 0), n1 = face_voisins(num_face, 1), ori = orientation(num_face);
+        const int n0 = face_voisins(num_face, 0), n1 = face_voisins(num_face, 1), ori = orientation(num_face);
         secmem(num_face, k) -= (inco(n1, k) - inco(n0, k)) / (xp(n1, ori) - xp(n0, ori));
       }
 
