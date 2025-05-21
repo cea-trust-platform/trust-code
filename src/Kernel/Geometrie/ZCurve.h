@@ -20,7 +20,8 @@
 
 struct PointZC
 {
-  double x, y, z;
+  double x, y;
+  double z = 0.0;
   trustIdType id;
   uint64_t morton;
 };

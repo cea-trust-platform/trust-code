@@ -84,22 +84,38 @@ void ZCurve_32_64<_SIZE_>::Morton_sfc_v2(std::vector<PointZC>& points, ArrOfInt_
 template<>
 void ZCurve_32_64<int>::Morton_sfc_v2(std::vector<PointZC>& inputPoints, ArrOfInt& renum)
 {
+  constexpr unsigned int NB_BITS_2D = 32;
+  constexpr unsigned int NB_BITS_3D = 21;  // Nb of bits for the quantization of each coordinate - 21*3=63 < 64 -> will fit in uint64_t
+  constexpr uint32_t MAX_VAL_2D = std::numeric_limits<uint32_t>::max(); // binary: 11111...11
+  constexpr uint32_t MAX_VAL_3D = (1 << NB_BITS_3D) - 1; // binary: 00...0011...11 (eleven 0 and 21 ones)
+
+  const int dim = Objet_U::dimension;
+
   // Compute Morton code
-  auto mortonCode = [](uint32_t x, uint32_t y) -> uint64_t
+  auto mortonCode = [&](uint32_t x, uint32_t y, uint32_t z) -> uint64_t
   {
     uint64_t result = 0;
-    uint64_t xx=x, yy=y;
-    for (int i = 0; i < 32; i++)
-      {
-        result |= (xx & (1ULL << i)) << i;
-        result |= (yy & (1ULL << i)) << (i+1);
-      }
+    uint64_t xx=x, yy=y, zz=z;
+    if (dim == 2)
+      for (unsigned i = 0; i < NB_BITS_2D; i++)
+        {
+          result |= (xx & (1ULL << i)) << i;
+          result |= (yy & (1ULL << i)) << (i+1);
+        }
+    else // dim 3
+      for (unsigned i = 0; i < NB_BITS_3D; i++)
+        {
+          result |= (xx & (1ULL << i)) << (2*i);
+          result |= (yy & (1ULL << i)) << (2*i+1);
+          result |= (zz & (1ULL << i)) << (2*i+2);
+        }
     return result;
   };
 
   // Find bounding box
   double minX = inputPoints[0].x, maxX = inputPoints[0].x;
   double minY = inputPoints[0].y, maxY = inputPoints[0].y;
+  double minZ = inputPoints[0].z, maxZ = inputPoints[0].z;
 
   for (const auto& p : inputPoints)
     {
@@ -107,12 +123,17 @@ void ZCurve_32_64<int>::Morton_sfc_v2(std::vector<PointZC>& inputPoints, ArrOfIn
       if (p.x > maxX) maxX = p.x;
       if (p.y < minY) minY = p.y;
       if (p.y > maxY) maxY = p.y;
+      if (Objet_U::dimension == 3)
+        {
+          if (p.z < minZ) minZ = p.z;
+          if (p.z > maxZ) maxZ = p.z;
+        }
     }
 
   // Quantization function
   auto quantize = [&](double value, double minVal, double maxVal) -> uint32_t
   {
-    constexpr uint32_t MAX_VAL = std::numeric_limits<uint32_t>::max();
+    const uint32_t MAX_VAL = dim == 2 ? MAX_VAL_2D : MAX_VAL_3D;
     double normalized = (value - minVal) / (maxVal - minVal);
     normalized = std::clamp(normalized, 0.0, 1.0);
     return static_cast<uint32_t>(std::round(normalized * MAX_VAL));
@@ -132,8 +153,14 @@ void ZCurve_32_64<int>::Morton_sfc_v2(std::vector<PointZC>& inputPoints, ArrOfIn
     uint32_t  ax = quantize(inputPoints[a].x, minX, maxX),
               ay = quantize(inputPoints[a].y, minY, maxY),
               bx = quantize(inputPoints[b].x, minX, maxX),
-              by = quantize(inputPoints[b].y, minY, maxY);
-    return mortonCode(ax, ay) < mortonCode(bx, by);
+              by = quantize(inputPoints[b].y, minY, maxY),
+              az = 0.0, bz = 0.0;
+    if (dim == 3)
+      {
+        az = quantize(inputPoints[a].z, minZ, maxZ);
+        bz = quantize(inputPoints[b].z, minZ, maxZ);
+      }
+    return mortonCode(ax, ay, az) < mortonCode(bx, by, bz);
   });
 
   /*
@@ -172,7 +199,12 @@ void ZCurve_32_64<_SIZE_>::Dump_to_file(const DoubleTab_t& points, const std::st
     throw std::runtime_error("Failed to open file: " + filename);
 
   for (int i = 0; i < points.dimension(0); i++)
-    outFile << points(i, 0) << " " << points(i, 1) << "\n";
+    {
+      outFile << points(i, 0) << " " << points(i, 1);
+      if (Objet_U::dimension == 3)
+        outFile << " " << points(i, 2);
+      outFile << "\n";
+    }
 
   outFile.close();
 }
