@@ -38,6 +38,10 @@ struct ZCurve_32_64
   static void Morton_sfc_v2(std::vector<PointZC>& points, ArrOfInt_t& renum);
 
   static void Dump_to_file(const DoubleTab_t& points, const std::string& filename);
+
+private:
+  static uint64_t MortonCode(uint32_t x, uint32_t y, uint32_t z);
+  static uint64_t HilbertCode(uint32_t x, uint32_t y, uint32_t z);
 };
 
 using ZCurve = ZCurve_32_64<int>;

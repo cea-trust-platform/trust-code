@@ -22,6 +22,32 @@
 #include <bitset>
 #include <fstream>
 
+namespace
+{
+constexpr unsigned int NB_BITS_2D = 32;
+constexpr unsigned int NB_BITS_3D = 21;  // Nb of bits for the quantization of each coordinate - 21*3=63 < 64 -> will fit in uint64_t
+
+constexpr uint32_t MAX_VAL_2D = std::numeric_limits<uint32_t>::max(); // binary: 11111...11 (32 times)
+constexpr uint32_t MAX_VAL_3D = (1 << NB_BITS_3D) - 1; // binary: 00...0011...11 (eleven 0 and 21 ones)
+
+enum CUBE_PERM {ID, U, U_INV, R, R_INV, F, F_INV};
+
+using cube_pos_t = std::array<int8_t, 3>; // 3 signed integers representing the orientation of the unit x,y,z trihedron
+
+using ar8_t = std::array<uint8_t, 8>;
+
+const ar8_t unit_hilbert = { 0,7,3,4,1,6,2,5 };  // initial indexing of the unit Hilbert 3D curve
+
+//// Cube permutations
+//const ar8_t up =     { 1,3,0,2,5,7,4,6 };  // up permutation (Rubik's style)
+//const ar8_t up_inv = { 2,0,3,1,6,4,7,5 };  // inverse up permutation (Rubik's style)
+//const ar8_t rp =     { 2,3,6,7,0,1,4,5 };  // right perm
+//const ar8_t rp_inv = { 4,5,0,1,6,7,2,3 };  // inverse right perm
+//const ar8_t fp =     { 1,5,3,7,0,4,2,6 };  // front perm
+//const ar8_t fp_inv = { 4,0,6,2,5,1,7,3 };  // inverse front perm
+
+}
+
 template<typename _SIZE_>
 void ZCurve_32_64<_SIZE_>::Morton_sfc_pierre(std::vector<PointZC>& points, ArrOfInt_t& renum)
 {
@@ -76,6 +102,175 @@ void ZCurve_32_64<int>::Morton_sfc_pierre(std::vector<PointZC>& points, ArrOfInt
 }
 
 template<typename _SIZE_>
+uint64_t ZCurve_32_64<_SIZE_>::MortonCode(uint32_t x, uint32_t y, uint32_t z)
+{
+  uint64_t result = 0;
+  uint64_t xx=x, yy=y, zz=z;
+  if (Objet_U::dimension == 2)
+    for (unsigned i = 0; i < ::NB_BITS_2D; i++)
+      {
+        result |= (xx & (1ULL << i)) << i;
+        result |= (yy & (1ULL << i)) << (i+1);
+      }
+  else // dim 3
+    for (unsigned i = 0; i < ::NB_BITS_3D; i++)
+      {
+        result |= (xx & (1ULL << i)) << (2*i);
+        result |= (yy & (1ULL << i)) << (2*i+1);
+        result |= (zz & (1ULL << i)) << (2*i+2);
+      }
+  return result;
+}
+
+template<typename _SIZE_>
+uint64_t ZCurve_32_64<_SIZE_>::HilbertCode(uint32_t x, uint32_t y, uint32_t z)
+{
+  uint64_t result = 0;
+  uint64_t mort = ZCurve_32_64<_SIZE_>::MortonCode(x,y,z);
+  if (Objet_U::dimension == 2)
+    {
+      const uint8_t ud[4] = {0, 3, 1, 2};  // up - down
+      const uint8_t rl[4] = {3, 2, 0, 1};  // right - left
+      unsigned int orient = 0; // 0: up, 1: right, 2: down, 3:left
+      bool flip = false;
+      for(int i = NB_BITS_2D-1; i >= 0; i--)
+        {
+          result <<= 2;
+          uint64_t two_bits = (mort >> (2*i)) & 0b11;
+          uint8_t new_two_bits = 0b00;
+          switch(orient)
+            {
+            case 0:  // up
+              new_two_bits = ud[two_bits];
+              break;
+            case 1:  // right
+              new_two_bits = rl[two_bits];
+              break;
+            case 2:  // down
+              new_two_bits = ud[3-two_bits];
+              break;
+            case 3:  // left
+              new_two_bits = rl[3-two_bits];
+              break;
+            default:
+              throw;
+            }
+          result |= flip ? (0b11 - new_two_bits) : new_two_bits;
+          // Rotate:
+          if (new_two_bits == 0b00) { orient = (orient+1) % 4; flip = !flip; }
+          if (new_two_bits == 0b11) { orient = (orient+3) % 4; flip = !flip; }
+        }
+      return result;
+    }
+  else // dim 3
+    {
+      // Based on the nice images found there:
+      //   https://pypi.org/project/numpy-hilbert-curve/
+
+      // Compute p1 . p2 --- mathematical definition : (p1.p2)(x) = p1(p2(x)) = res(x)
+      auto compose = [](const cube_pos_t& p1, const cube_pos_t& p2) -> cube_pos_t
+      {
+        cube_pos_t res;
+        for (int i = 0; i < 3; i++)
+          {
+            uint8_t idx = std::abs(p1[i])-1;
+            int8_t sig = p1[i] > 0 ? 1 : -1;
+            res[i] = p2[idx]*sig;
+          }
+        return res;
+      };
+
+      auto apply_perm = [](const cube_pos_t& perm, const uint64_t& cod) -> uint8_t
+      {
+        std::array<uint8_t, 3> cod2;  // x,y,z
+        cod2[0] = (uint8_t)(cod & 0b001);
+        cod2[1] = (uint8_t)((cod & 0b010) >> 1);
+        cod2[2] = (uint8_t)((cod & 0b100) >> 2);
+
+        std::array<uint8_t, 3> res;
+
+        for(int i=0; i < 3; i++)
+          {
+            int8_t v = perm[i];
+            uint8_t idx = std::abs(v)-1;
+            int8_t mask = (v < 0) ? 0b1 : 0b0;
+            res[idx] = cod2[i] ^ mask; // XOR
+          }
+        return (res[0] | (res[1] << 1) | (res[2] << 2));
+      };
+
+      cube_pos_t curr_perm = {1,2,3};   // 1 represents X axis, 2 the Y axis, 3 the Z axis.
+      // U R -> {2,-1,3} {1,3,-2} -> {2,3,1}
+
+//      uint8_t tst = apply_perm({1,3,-2}, 0b010); // -> 0b000
+//      std::cout << std::bitset<8>(tst) << "\n";
+//      tst = apply_perm({1,3,-2}, 0b101);  // -> 0b111
+//      std::cout << std::bitset<8>(tst) << "\n";
+//      tst = apply_perm({1,3,-2}, 0b110); // -> 0b010
+//      std::cout << std::bitset<8>(tst) << "\n";
+
+////      curr_perm = compose(curr_perm, {2,-1,3});
+//      std::cout << "YOOOOO\n";
+//      std::cout << (int)curr_perm[0] << " "<< (int)curr_perm[1] << " "<< (int)curr_perm[2] << " \n";
+
+      bool flip = false;
+      for(int i = NB_BITS_3D-1; i >= 0; i--)
+        {
+          result <<= 3;
+          uint64_t three_bits = (mort >> (3*i)) & 0b111;
+          // Apply current permutation to pos
+          uint64_t new_three_bits = apply_perm(curr_perm, three_bits);
+
+          // Apply Hilbert ordering:
+          new_three_bits = unit_hilbert[new_three_bits];
+
+          uint64_t orig3b = new_three_bits;
+
+          if(flip)
+            new_three_bits = new_three_bits ^ 0b111;
+
+          result |= new_three_bits;
+          if (i==0) break;
+
+          // Prepare cube position for next level at depth N+1:
+          switch(orig3b)
+            {
+            case 0: // U R -> {2,-1,3} {1,3,-2} -> {2,3,1}
+              curr_perm = compose(curr_perm, {2,3,1});
+              break;
+            case 7: // U' R -> {-2,1,3} {1,3,-2} -> {-2,3,-1}
+              curr_perm = compose(curr_perm, {-2,3,-1});
+              break;
+            case 3: // F' flip
+              curr_perm = compose(curr_perm, {-3,2,1});
+              flip = !flip;
+              break;
+            case 4: // F flip
+              curr_perm = compose(curr_perm, {3,2,-1});
+              flip = !flip;
+              break;
+            case 1: // U flip
+              curr_perm = compose(curr_perm, {2,-1,3});
+              flip = !flip;
+              break;
+            case 6: // U' flip
+              curr_perm = compose(curr_perm, {-2,1,3});
+              flip = !flip;
+              break;
+            case 2: // nothing to do!
+              break;
+            case 5: // nothing to do!
+              break;
+            default:
+              throw;
+            }
+        }
+      return result;
+    }
+}
+
+
+template<typename _SIZE_>
 void ZCurve_32_64<_SIZE_>::Morton_sfc_v2(std::vector<PointZC>& points, ArrOfInt_t& renum)
 {
   throw ; // TODO
@@ -84,33 +279,7 @@ void ZCurve_32_64<_SIZE_>::Morton_sfc_v2(std::vector<PointZC>& points, ArrOfInt_
 template<>
 void ZCurve_32_64<int>::Morton_sfc_v2(std::vector<PointZC>& inputPoints, ArrOfInt& renum)
 {
-  constexpr unsigned int NB_BITS_2D = 32;
-  constexpr unsigned int NB_BITS_3D = 21;  // Nb of bits for the quantization of each coordinate - 21*3=63 < 64 -> will fit in uint64_t
-  constexpr uint32_t MAX_VAL_2D = std::numeric_limits<uint32_t>::max(); // binary: 11111...11
-  constexpr uint32_t MAX_VAL_3D = (1 << NB_BITS_3D) - 1; // binary: 00...0011...11 (eleven 0 and 21 ones)
-
   const int dim = Objet_U::dimension;
-
-  // Compute Morton code
-  auto mortonCode = [&](uint32_t x, uint32_t y, uint32_t z) -> uint64_t
-  {
-    uint64_t result = 0;
-    uint64_t xx=x, yy=y, zz=z;
-    if (dim == 2)
-      for (unsigned i = 0; i < NB_BITS_2D; i++)
-        {
-          result |= (xx & (1ULL << i)) << i;
-          result |= (yy & (1ULL << i)) << (i+1);
-        }
-    else // dim 3
-      for (unsigned i = 0; i < NB_BITS_3D; i++)
-        {
-          result |= (xx & (1ULL << i)) << (2*i);
-          result |= (yy & (1ULL << i)) << (2*i+1);
-          result |= (zz & (1ULL << i)) << (2*i+2);
-        }
-    return result;
-  };
 
   // Find bounding box
   double minX = inputPoints[0].x, maxX = inputPoints[0].x;
@@ -147,21 +316,48 @@ void ZCurve_32_64<int>::Morton_sfc_v2(std::vector<PointZC>& inputPoints, ArrOfIn
   if (renum.size_array() != (int)inputPoints.size())
     Process::exit("pb with sizes!!");
 
-  // Sort indices based on Morton code comparison
-  std::sort(tmp_renum.begin(), tmp_renum.end(), [&](int a, int b)
-  {
-    uint32_t  ax = quantize(inputPoints[a].x, minX, maxX),
-              ay = quantize(inputPoints[a].y, minY, maxY),
-              bx = quantize(inputPoints[b].x, minX, maxX),
-              by = quantize(inputPoints[b].y, minY, maxY),
-              az = 0.0, bz = 0.0;
-    if (dim == 3)
+  int ordering_type = atoi(getenv("TRUST_MESH_REORDERING")); // should never be null ptr if we're here
+
+  if (ordering_type == 1) // Morton
+    {
+      Cerr << "  Using MORTON algorithm ..." << finl;
+
+      // Sort indices based on Morton code comparison
+      std::sort(tmp_renum.begin(), tmp_renum.end(), [&](int a, int b)
       {
-        az = quantize(inputPoints[a].z, minZ, maxZ);
-        bz = quantize(inputPoints[b].z, minZ, maxZ);
-      }
-    return mortonCode(ax, ay, az) < mortonCode(bx, by, bz);
-  });
+        uint32_t  ax = quantize(inputPoints[a].x, minX, maxX),
+                  ay = quantize(inputPoints[a].y, minY, maxY),
+                  bx = quantize(inputPoints[b].x, minX, maxX),
+                  by = quantize(inputPoints[b].y, minY, maxY),
+                  az = 0.0, bz = 0.0;
+        if (dim == 3)
+          {
+            az = quantize(inputPoints[a].z, minZ, maxZ);
+            bz = quantize(inputPoints[b].z, minZ, maxZ);
+          }
+        return MortonCode(ax, ay, az) < MortonCode(bx, by, bz);
+      });
+    }
+  else   // Hilbert
+    {
+      Cerr << "  Using HILBERT algorithm ..." << finl;
+
+      // Sort indices based on Hilbert code comparison
+      std::sort(tmp_renum.begin(), tmp_renum.end(), [&](int a, int b)
+      {
+        uint32_t  ax = quantize(inputPoints[a].x, minX, maxX),
+                  ay = quantize(inputPoints[a].y, minY, maxY),
+                  bx = quantize(inputPoints[b].x, minX, maxX),
+                  by = quantize(inputPoints[b].y, minY, maxY),
+                  az = 0.0, bz = 0.0;
+        if (dim == 3)
+          {
+            az = quantize(inputPoints[a].z, minZ, maxZ);
+            bz = quantize(inputPoints[b].z, minZ, maxZ);
+          }
+        return HilbertCode(ax, ay, az) < HilbertCode(bx, by, bz);
+      });
+    }
 
   /*
     Cerr <<  "BEFORE SORT " << finl;
