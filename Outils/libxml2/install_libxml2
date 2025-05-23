@@ -10,17 +10,16 @@ then
    exit 1
 fi
 
-# install path depends on whether miniforge installed or not
+# install path do not depend on whether miniforge installed or not
 # xml2 could be a dependency for some baltiks
 if [ "$TRUST_WITHOUT_CONDA" = 0 ]
 then
    export LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
    cmake=$TRUST_ROOT/exec/python/bin/cmake
-   XML_INSTALL_DIR=$TRUST_ROOT/exec/utils/libxml2
 else
    cmake=cmake
-   XML_INSTALL_DIR=$TRUST_ROOT/exec/python
 fi
+XML_INSTALL_DIR=$TRUST_ROOT/exec/utils/libxml2
 
 # Compile libxml2 from sources in a minimal fashion
 
