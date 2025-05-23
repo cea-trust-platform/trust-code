@@ -457,6 +457,8 @@ do
    elif [ "$1" = "-ncu" ]
    then
       NCU=1 && shift && kernel=$1
+      # Kill MPS else possible NaN:
+      ps -ef | awk '/\-[m]ps\-/ {print $2}' | xargs kill -9
    elif [ "$1" = "-cs" ]
    then
       CS=1;shift;CS_OPTION=$1
