@@ -39,6 +39,8 @@ public:
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
   void completer() override;
   void mettre_a_jour(double t) override;
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
 
 protected:
 

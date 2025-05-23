@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <EcritureLectureSpecial.h>
 #include <DP_Impose_VEF_Face.h>
 #include <Champ_Don_base.h>
 #include <Equation_base.h>
@@ -22,6 +23,7 @@
 #include <Array_tools.h>
 #include <Milieu_base.h>
 #include <Domaine_VEF.h>
+#include <Avanc.h>
 #include <cfloat>
 
 Implemente_instanciable(DP_Impose_VEF_Face, "DP_Impose_VEF_P1NC", Perte_Charge_VEF_Face);
@@ -62,6 +64,32 @@ void DP_Impose_VEF_Face::completer()
 {
   Perte_Charge_VEF_Face::completer();
   bilan().resize(3 + !regul_);
+}
+
+int DP_Impose_VEF_Face::sauvegarder(Sortie& os) const
+{
+  int a_faire, special;
+  EcritureLectureSpecial::is_ecriture_special(special, a_faire);
+  if (a_faire)
+    {
+      double temps = equation().inconnue().temps();
+      Nom ident_reg = Nom("fac_regul") + equation().probleme().le_nom() + identifiant_ + Nom(temps, "%e");
+      os << ident_reg << finl;
+      os << "constante" << finl;
+      os << fac_regul_;
+      os << flush;
+      Cerr << "Saving fac_regul at time : " << Nom(temps, "%e")  << " with value " << fac_regul_ << finl;
+    }
+  return 8;//un double
+}
+
+int DP_Impose_VEF_Face::reprendre(Entree& is)
+{
+  Nom ident_reg = Nom("fac_regul") + equation().probleme().le_nom() + identifiant_ + Nom(equation().schema_temps().temps_courant(), equation().probleme().reprise_format_temps());
+  avancer_fichier(is, ident_reg);
+  is >> fac_regul_;
+  Cerr << "Resuming with the value fac_regul = " << fac_regul_ << finl;
+  return 1;
 }
 
 void DP_Impose_VEF_Face::remplir_num_faces(Entree& s)
