@@ -14,9 +14,11 @@
 *****************************************************************************/
 
 #include <Multiplicateur_diphasique_base.h>
+#include <EcritureLectureSpecial.h>
 #include <Fluide_Incompressible.h>
 #include <Perte_Charge_Gen.h>
 #include <Pb_Multiphase.h>
+#include <Avanc.h>
 #include <Param.h>
 
 Implemente_base(Perte_Charge_Gen, "Perte_Charge_Gen", Source_base);
@@ -50,6 +52,32 @@ void Perte_Charge_Gen::set_param(Param& param)
   param.ajouter_non_std("sous_domaine|sous_zone", (this));
   param.ajouter("implicite", &implicite_);
   param.ajouter_non_std("regul", (this));
+}
+
+int Perte_Charge_Gen::sauvegarder(Sortie& os) const
+{
+  int a_faire, special;
+  EcritureLectureSpecial::is_ecriture_special(special, a_faire);
+  if (a_faire)
+    {
+      double temps = equation().inconnue().temps();
+      Nom ident_k = Nom("K") + equation().probleme().le_nom() + identifiant_ + Nom(temps, "%e");
+      os << ident_k << finl;
+      os << "constante" << finl;
+      os << K_;
+      os << flush;
+      Cerr << "Saving K at time : " << Nom(temps, "%e")  << " with value " << K_ << finl;
+    }
+  return 8;//un double
+}
+
+int Perte_Charge_Gen::reprendre(Entree& is)
+{
+  Nom ident_k = Nom("K") + equation().probleme().le_nom() + identifiant_ + Nom(equation().schema_temps().temps_courant(), equation().probleme().reprise_format_temps());
+  avancer_fichier(is, ident_k);
+  is >> K_;
+  Cerr << "Resuming with the value K = " << K_ << finl;
+  return 1;
 }
 
 int Perte_Charge_Gen::lire_motcle_non_standard(const Motcle& mot, Entree& is)

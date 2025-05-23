@@ -424,15 +424,19 @@ Entree& Equation_base::lire_cl(Entree& is)
   return is;
 }
 
-/*! @brief On sauvegarde l'inconnue de l'equation sur un flot de sortie.
+/*! @brief On sauvegarde l'inconnue, puis les sources sur un flot de sortie.
  *
  * @param (Sortie& os)
  * @return (int) le code de retour de Champ_Inc::sauvegarder()
  */
 int Equation_base::sauvegarder(Sortie& os) const
 {
-  return inconnue().sauvegarder(os);
+  int ret = inconnue().sauvegarder(os);
+  for (int i = 0; i < les_sources.size(); i++)
+    ret += les_sources(i)->sauvegarder(os);
+  return ret;
 }
+
 
 /*! @brief for PDI IO: retrieve name, type and dimensions of the data to save/restore.
  * This has to be overrode for all the equations that either:
@@ -469,8 +473,10 @@ int Equation_base::reprendre(Entree& fich)
       field_tag += Nom(temps,probleme().reprise_format_temps());
       avancer_fichier(fich, field_tag);
     }
-  inconnue().reprendre(fich);
-  return 1;
+  int ret = inconnue().reprendre(fich);
+  for (int i = 0; i < les_sources.size(); i++)
+    ret = ret && les_sources(i)->reprendre(fich);
+  return ret;
 }
 
 /*! @brief Demande au schema en temps si il faut effectuer une impression.
