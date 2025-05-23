@@ -40,6 +40,8 @@ public:
   void mettre_a_jour(double temps) override;
   void check_multiphase_compatibility() const override { }
   void completer() override;
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
 
 protected:
   IntVect sgn;

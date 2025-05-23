@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,8 @@ public:
   void mettre_a_jour(double temps) override;
   void completer() override;
   DoubleTab& ajouter(DoubleTab& resu) const override { return Source_base::ajouter(resu); }
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
 
 protected:
   IntVect sgn;
