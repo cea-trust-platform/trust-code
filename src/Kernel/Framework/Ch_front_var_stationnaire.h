@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ class Ch_front_var_stationnaire : public Champ_front_var
   Declare_base(Ch_front_var_stationnaire);
 
 public :
+  bool has_valeurs_au_temps(double temps) const override ;
   DoubleTab& valeurs_au_temps(double temps) override;
   const DoubleTab& valeurs_au_temps(double temps) const override;
   int avancer(double temps) override;

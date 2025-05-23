@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,7 @@ class Champ_front_var_instationnaire : public Champ_front_var
 public:
   void fixer_nb_valeurs_temporelles(int nb_cases) override;
   int initialiser(double temps, const Champ_Inc_base& inco) override;
+  bool has_valeurs_au_temps(double temps) const override ;
   DoubleTab& valeurs_au_temps(double temps) override;
   const DoubleTab& valeurs_au_temps(double temps) const override;
   int avancer(double temps) override;

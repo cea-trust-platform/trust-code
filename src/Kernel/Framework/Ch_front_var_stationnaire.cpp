@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,13 @@ Entree& Ch_front_var_stationnaire::readOn(Entree& s)
 Champ_front_base& Ch_front_var_stationnaire::affecter_(const Champ_front_base& ch)
 {
   return *this;
+}
+
+bool Ch_front_var_stationnaire::has_valeurs_au_temps(double temps) const
+{
+  if (les_valeurs->valeurs().size() > 0)
+    return true;
+  else return false;
 }
 
 /*! @brief Renvoie les valeurs sans s'occuper du temps puisque le champ est stationnaire.

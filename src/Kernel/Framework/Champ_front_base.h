@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,6 +83,7 @@ public:
   using Champ_Proto::valeurs;
   inline virtual DoubleTab& valeurs() override;
   inline virtual const DoubleTab& valeurs() const override;
+  virtual bool has_valeurs_au_temps(double temps) const { return true; }
   virtual DoubleTab& valeurs_au_temps(double temps)=0;
   virtual const DoubleTab& valeurs_au_temps(double temps) const = 0;
   virtual const Frontiere_dis_base& frontiere_dis() const;

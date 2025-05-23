@@ -18,7 +18,6 @@
 #include <Op_Grad_P0_to_Face.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_homogene.h>
-#include <Champ_front_var.h>
 #include <Domaine_Cl_VDF.h>
 #include <Neumann_paroi.h>
 #include <Statistiques.h>
@@ -61,7 +60,6 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
         const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
         const Front_VF& le_bord = ref_cast(Front_VF, la_cl->frontiere_dis());
         const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
-        const bool is_champ_front_var = sub_type(Champ_front_var, la_cl->champ_front());
 
         if (sub_type(Periodique, la_cl.valeur())) // Correction periodicite
           for (int num_face = ndeb; num_face < nfin; num_face++)
@@ -73,8 +71,8 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
         else if (sub_type(Dirichlet, la_cl.valeur())) // Cas CL Dirichlet
           {
             const Dirichlet& cl = ref_cast(Dirichlet, la_cl.valeur());
-            // XXX Elie Saikali : on calcule pas si champ_front_var n'est pas initialise (donc a la condition initiale)
-            if (!is_champ_front_var || (is_champ_front_var && cl.champ_front().get_temps_defaut() > -1.))
+            // XXX Elie Saikali : on calcule pas si champ_front_var n'est pas initialise
+            if (cl.champ_front().has_valeurs_au_temps(cl.champ_front().get_temps_defaut()))
               for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
                 {
                   int n0 = face_voisins(num_face, 0);
@@ -112,8 +110,8 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
         else if (sub_type(Neumann_paroi, la_cl.valeur())) // Cas Neumann_paroi
           {
             const Neumann_paroi& cl = ref_cast(Neumann_paroi, la_cl.valeur());
-            // XXX Elie Saikali : on calcule pas si champ_front_var n'est pas initialise (donc a la condition initiale)
-            if (!is_champ_front_var || (is_champ_front_var && cl.champ_front().get_temps_defaut() > -1.))
+            // XXX Elie Saikali : on calcule pas si champ_front_var n'est pas initialise
+            if (cl.champ_front().has_valeurs_au_temps(cl.champ_front().get_temps_defaut()))
               for (int num_face = ndeb, num_face_cl = 0; num_face < nfin; num_face++, num_face_cl++)
                 {
                   if (face_voisins(num_face, 0) >= 0)

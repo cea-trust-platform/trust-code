@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Champ_front_vide : public Champ_front_base
   Declare_instanciable(Champ_front_vide);
 
 public:
-
+  bool has_valeurs_au_temps(double temps) const override { return false; }
   DoubleTab& valeurs_au_temps(double temps) override { Process::exit("Impossible d'appeler les valeurs d'un champ_fronc_vide"); return les_valeurs->valeurs();};
   const DoubleTab& valeurs_au_temps(double temps) const override { Process::exit("Impossible d'appeler les valeurs d'un champ_fronc_vide"); return les_valeurs->valeurs();};
   int avancer(double temps) override {return 1;};
