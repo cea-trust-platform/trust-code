@@ -1,4 +1,5 @@
 # Test Read_matrix option #
+# VALGRIND NOT #
 # PARALLEL OK 9 #
 
 dimension 3
