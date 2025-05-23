@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,6 +60,8 @@ public:
   virtual void associer_champ_rho(const Champ_base& champ_rho);
   virtual int a_pour_Champ_Fonc(const Motcle& mot, OBS_PTR(Champ_base) &ch_ref) const;
   virtual void contribuer_jacobienne(Matrice_Bloc&, int) const { }
+  virtual int    reprendre(Entree& ) override { return 1; }
+  virtual int    sauvegarder(Sortie& ) const override { return 0; }
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
   virtual int has_interface_blocs() const { return 0; }
