@@ -405,8 +405,8 @@ void ZCurve_32_64<_SIZE_>::Dump_to_file(const DoubleTab_t& points, const std::st
   outFile.close();
 }
 
-template class ZCurve_32_64<int>;
+template struct ZCurve_32_64<int>;
 #if INT_is_64_ == 2
-template class ZCurve_32_64<trustIdType>;
+template struct ZCurve_32_64<trustIdType>;
 #endif
 
