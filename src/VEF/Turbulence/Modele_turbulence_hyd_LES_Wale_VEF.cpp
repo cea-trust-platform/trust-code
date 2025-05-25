@@ -76,8 +76,8 @@ Champ_Fonc_base& Modele_turbulence_hyd_LES_Wale_VEF::calculer_viscosite_turbulen
                        nb_elem,
                        KOKKOS_LAMBDA (int elem)
   {
-    double gij2[3][3] {};
-    double sd[3][3] {};
+    double gij2[3][3];
+    double sd[3][3];
 
     // Calcul du terme gij2.
     for (int i = 0; i < dim; i++)

@@ -352,12 +352,16 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
                        range_1D(0, nb_elem_tot),
                        KOKKOS_LAMBDA (const int elem)
   {
-    double sigma[3] = {0, 0, 0};
-    for (int indice = 0; indice < nfe; indice++)
+    double sigma[3];
+    for (int comp = 0; comp < dim; comp++)
       {
-        int face = elem_faces(elem,indice);
-        for (int comp = 0; comp < dim; comp++)
-          sigma[comp] += vit(face,comp);
+        double s = 0;
+        for (int indice = 0; indice < nfe; indice++)
+          {
+            int face = elem_faces(elem, indice);
+            s += vit(face, comp);
+          }
+        sigma[comp] = s;
       }
 
     double coeff_som = 1. / (dim * (dim + 1));
@@ -380,17 +384,13 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& tab_vit, DoubleTab& 
 
     for (int indice = 0; indice < nfe; indice++)
       {
-        int som = som_v(elem,indice);
         int face = elem_faces(elem,indice);
-
-        int signe = 1;
-        if (elem != face_voisins(face,0))
-          signe = -1;
-
         double psc = 0;
         for (int comp = 0; comp < dim; comp++)
           psc += sigma[comp] * face_normales(face,comp);
 
+        int som = som_v(elem,indice);
+        int signe = (elem != face_voisins(face,0) ? -1 : 1);
         Kokkos::atomic_add(&div(som), signe * coeff_som * psc);
       }
   });

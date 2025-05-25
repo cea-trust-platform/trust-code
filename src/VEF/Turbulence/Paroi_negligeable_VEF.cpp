@@ -262,8 +262,8 @@ int Paroi_negligeable_VEF::calculer_hyd(DoubleTab& tab_nu_t, DoubleTab& tab_k)
               DoubleArrView tab_u_star = tab_u_star_.view_rw();
               Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
               {
-                int num[3] {};
-                double val[3] {};
+                int num[3];
+                double val[3];
                 int elem = face_voisins(num_face, 0);
                 int fac = 0;
                 for (int i = 0; i < dim; i++)

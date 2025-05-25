@@ -473,8 +473,6 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
           end_gpu_timer(__KERNEL_NAME__);
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int num_face)
           {
-            int num[3] {};
-            double val[3] {};
             int elem = face_voisins(num_face, 0);
             if (yplus_already_computed)
               {
@@ -483,6 +481,7 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
               }
             else
               {
+                int num[3];
                 bool ok = false;
                 for (int i = 0; i < dim; i++)
                   {
@@ -496,6 +495,7 @@ void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect&
 
                 double dist = distance(dim, num_face, elem, xp, xv, face_normale);
                 dist *= (dim + 1.) / dim; // pour se ramener a distance paroi / milieu de num[0]-num[1]
+                double val[3];
                 double norm_v = norm_vit1_lp(dim, vit, num_face, nfac, num, face_normale, val);
                 double d_visco = l_unif ? visco0:visco[elem];
 
@@ -848,7 +848,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& tab_gij, const DoubleTab& 
           DoubleTabView3 gij = tab_gij.view_rw<3>();
           Kokkos::parallel_for(start_gpu_timer(__KERNEL_NAME__), Kokkos::RangePolicy<>(ndeb, nfin), KOKKOS_LAMBDA (const int fac)
           {
-            double P[3][3] {};
+            double P[3][3];
             int num1 = face_voisins(fac, 0);
             // definition des vecteurs unitaires constituant le repere local
             // stockes dans la matrice de passage P

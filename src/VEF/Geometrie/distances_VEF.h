@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,7 @@ double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
                  double* val)
 {
   // fac numero de la face a paroi fixe
-  double r[3] {};
+  double r[3];
   double norme = 0;
   for (int i=0; i<dim; i++)
     {
@@ -140,7 +140,7 @@ double norm_vit1(int dim, CDoubleTabView vit, int fac, int nfac, const int* num,
   for(int i = 0; i < dim; i++)
     r[i] /= norme;
 
-  double v[3] {};
+  double v[3];
   for (int i=0; i<dim; i++)
     {
       v[i] = 0;
@@ -171,27 +171,24 @@ double norm_vit1_lp(int dim, CDoubleTabView vit, int fac, int nfac, const int* n
                     double* val)
 {
   // fac numero de la face a paroi fixe
-  double r[3] {};
+  double r[3];
   double norme = 0;
-  double c[] = {1., 1., 1.};
-  double c_sum = 0;
   for (int i=0; i<dim; i++)
     {
       r[i] = face_normale(fac, i);
       norme += r[i] * r[i];
-      c_sum += c[i];
     }
   norme = sqrt(norme);
   for(int i = 0; i < dim; i++)
     r[i] /= norme;
 
-  double v[3] {};
+  double v[3];
   for (int i=0; i<dim; i++)
     {
       v[i] = 0;
       for (int j = 0; j < dim; j++)
-        v[i] += c[i] * vit(num[j], i);
-      v[i] /= c_sum;
+        v[i] += vit(num[j], i);
+      v[i] /= dim;
     }
 
   double sum_carre=0;
