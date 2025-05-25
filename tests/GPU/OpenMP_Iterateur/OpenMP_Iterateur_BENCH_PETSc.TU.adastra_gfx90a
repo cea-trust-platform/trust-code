@@ -1,33 +1,33 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       12.6557
+Temps total                       17.7097
 
 Statistiques de resolution du probleme
 
-Temps total                       2.08298
+Temps total                       1.77753
 
 
 Timesteps                         10
-Secondes / pas de temps           0.20829
-Dont solveurs Ax=B                0.073134 35% (1 appel/pas de temps)
-Dont mettre_a_jour                0.005579  2% (1 appel/pas de temps)
-Dont operateurs convection        0.052243 25% (1 appel/pas de temps)
-Dont operateurs diffusion         0.032743 15% (1 appel/pas de temps)
-Dont operateurs gradient          0.025307 12% (2 appels/pas de temps)
-Dont operateurs divergence        0.006168  2% (2 appels/pas de temps)
-Dont operations postraitement     0.002866  1% (1 appel/pas de temps)
-Dont calcul dt                    0.007188  3% (2 appels/pas de temps)
-Dont calcul divers                0.003061  1% (0 appels/pas de temps)
+Secondes / pas de temps           0.177745
+Dont solveurs Ax=B                0.073236 41% (1 appel/pas de temps)
+Dont mettre_a_jour                0.005480  3% (1 appel/pas de temps)
+Dont operateurs convection        0.037232 20% (1 appel/pas de temps)
+Dont operateurs diffusion         0.016086  9% (1 appel/pas de temps)
+Dont operateurs gradient          0.025291 14% (2 appels/pas de temps)
+Dont operateurs divergence        0.006196  3% (2 appels/pas de temps)
+Dont operations postraitement     0.003874  2% (1 appel/pas de temps)
+Dont calcul dt                    0.007314  4% (2 appels/pas de temps)
+Dont calcul divers                0.003034  1% (0 appels/pas de temps)
 Nb solveur / pas de temps         1
-Secondes / solveur                0.073134
+Secondes / solveur                0.0732365
 Iterations / solveur              13.8
 GPU statistics per time step (experimental):
-Libraries : 0.072940 s 35.0%  1.0 calls
-Kernels   : 0.130788 s 62.8% 93.1 calls
-Copy H2D  : 0.000623 s  0.3%  8.2 calls 16.6 GB/s
-Copy D2H  : 0.000336 s  0.2%  4.0 calls 18.4 GB/s
+Libraries : 0.073056 s 41.1%  1.0 calls
+Kernels   : 0.099293 s 55.9% 91.1 calls
+Copy H2D  : 0.000632 s  0.4%  8.2 calls 16.3 GB/s
+Copy D2H  : 0.000337 s  0.2%  4.0 calls 18.4 GB/s
 Alloc/Free: 0.000052 s  0.0%  0.9 calls
-GPU: 97.8% Copy H<->D: 0.4% Alloc/Free: 0% Comm: 0% CPU & Others: 1.7%
+GPU: 96.9% Copy H<->D: 0.5% Alloc/Free: 0% Comm: 0% CPU & Others: 2.4%
 I/O:
 
 Timesteps = number of time steps
@@ -46,5 +46,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.143662
+Temps total                       0.141284
 
