@@ -111,6 +111,8 @@ then
                   [ "$TRUST_ARCH_CC" = "linux_icpc" ] && intel=`dirname $intel`
                   intel=`realpath $intel`
                   intel_sys_path=`cat $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h | sed "s/ /\n/g" | grep $intel | sed "s/-L//g" | tr '\n' ' '`
+                  # vu sur is234617 avec intel25: pas de chemin vers intel-compilers/lib dans petscmachineinfo.h
+                  [ "$intel_sys_path" = "" ] && intel_sys_path=`cat $TRUST_ENV/make.$TRUST_ARCH_CC$OPT | sed "s/ /\n/g" | grep $intel | sed "s/-L//g" | tr '\n' ' '`
                   SYSLIBS_P=$SYSLIBS_P" "$intel_sys_path
                fi
             done

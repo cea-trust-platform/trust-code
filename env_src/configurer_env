@@ -2008,6 +2008,7 @@ case $TRUST_ARCH_CC in
 	do
 	   [ -d $LIB_INTEL/../../$lib ] && LIB_INTEL2=`echo $LIB_INTEL | sed -e 's;/bin;/'$lib';g'` && [ -d $LIB_INTEL2 ] && LIB_INTEL=$LIB_INTEL2
         done
+        [ "`basename $LIB_INTEL`" = "bin" ] && [ -d $LIB_INTEL/../lib ] && LIB_INTEL=`echo $LIB_INTEL | sed -e 's;/bin;/lib;g'`
 	#SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -lstdc++ -liomp5"
 	SYSLIBS="-L$LIB_INTEL -lifcore -lirc -lsvml -limf -liomp5"
 	F77Flags="$flag_optim -fPIC"
