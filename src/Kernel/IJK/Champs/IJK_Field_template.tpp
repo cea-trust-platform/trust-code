@@ -584,7 +584,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::dumplata_scalar(const char *filen
         loc = "ELEM";
       else
         loc = "SOM";
-      const Nom& geomname = get_domaine().le_nom();
+      const Nom& geomname = get_domain().le_nom();
 
       Nom path, base_name;
       split_path_filename(fd, path, base_name);

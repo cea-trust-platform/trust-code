@@ -83,8 +83,8 @@ Entree& IJK_VDF_converter::readOn(Entree& is)
 
   Domaine_IJK grid_domain;
   grid_domain.initialize_from_unstructured(domaine_vdf.domaine(),
-                                         direction_mapping[0], direction_mapping[1], direction_mapping[2],
-                                         perio_flag_x, perio_flag_y, perio_flag_z);
+                                           direction_mapping[0], direction_mapping[1], direction_mapping[2],
+                                           perio_flag_x, perio_flag_y, perio_flag_z);
 
   ijk_domain_.initialize_splitting(grid_domain, splitting[0], splitting[1], splitting[2]);
 
