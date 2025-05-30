@@ -362,54 +362,32 @@ template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int face, const int, const Dirichlet_entree_fluide& la_cl, Type_Double& aii, Type_Double& ajj) const
 {
   assert (aii.size_array() == ajj.size_array());
-  const int i = elem_(face,0), j = elem_(face,1),
-            ncomp = DERIVED_T::IS_MULTI_SCALAR_DIFF ? static_cast<int>(std::sqrt(aii.size_array())) : aii.size_array();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
 
   const double dist = Dist_norm_bord(face);
 
   for (int k = 0; k < ncomp; k++)
-    if (DERIVED_T::IS_MULTI_SCALAR_DIFF)
-      {
-        for (int l = 0; l < ncomp; l++)
-          {
-            const int ori = ncomp * k + l;
-            aii[ori] = (i != -1) ? porosite(face) * nu_1(i, ori) * surface(face) / dist : 0.;
-            ajj[ori] = (i != -1) ? 0. : porosite(face) * nu_1(j, ori) * surface(face) / dist;
-          }
-      }
-    else
-      {
-        const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-        aii[k] = (i != -1) ? porosite(face) * nu_1(i, ori) * surface(face) / dist : 0.;
-        ajj[k] = (i != -1) ? 0. : porosite(face) * nu_1(j, ori) * surface(face) / dist;
-      }
+    {
+      const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
+      aii[k] = (i != -1) ? porosite(face) * nu_1(i, ori) * surface(face) / dist : 0.;
+      ajj[k] = (i != -1) ? 0. : porosite(face) * nu_1(j, ori) * surface(face) / dist;
+    }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int face, const int, const Scalaire_impose_paroi& la_cl, Type_Double& aii, Type_Double& ajj) const
 {
   assert (aii.size_array() == ajj.size_array());
-  const int i = elem_(face,0), j = elem_(face,1),
-            ncomp = DERIVED_T::IS_MULTI_SCALAR_DIFF ? static_cast<int>(std::sqrt(aii.size_array())) : aii.size_array();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
 
   const double dist = Dist_norm_bord(face);
 
   for (int k = 0; k < ncomp; k++)
-    if (DERIVED_T::IS_MULTI_SCALAR_DIFF)
-      {
-        for (int l = 0; l < ncomp; l++)
-          {
-            const int ori = ncomp * k + l;
-            aii[ori] = (i != -1) ? porosite(face) * nu_1(i, ori) * surface(face) / dist : 0.;
-            ajj[ori] = (i != -1) ? 0. : porosite(face) * nu_1(j, ori) * surface(face) / dist;
-          }
-      }
-    else
-      {
-        const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-        aii[k] = (i != -1) ? porosite(face) * nu_1(i, ori) * surface(face) / dist : 0.;
-        ajj[k] = (i != -1) ? 0. : porosite(face) * nu_1(j, ori) * surface(face) / dist;
-      }
+    {
+      const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
+      aii[k] = (i != -1) ? porosite(face) * nu_1(i, ori) * surface(face) / dist : 0.;
+      ajj[k] = (i != -1) ? 0. : porosite(face) * nu_1(j, ori) * surface(face) / dist;
+    }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
@@ -481,95 +459,52 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const DoubleTab& inco
 {
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite) : La C.L fournit h_imp ; il faut calculer e/diffusivite
   assert (aii.size_array() == ajj.size_array());
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = DERIVED_T::IS_MULTI_SCALAR_DIFF ? int(sqrt(aii.size_array())) : aii.size_array();
-  double e, heq, h_total_inv;
+  const int ncomp = aii.size_array();
+  const bool s = (elem_(face, 0) > -1);
+  const int i = s ? elem_(face, 0) : elem_(face, 1);
+  double e;
 
-  if (DERIVED_T::IS_MODIF_DEQ) e = ind_Fluctu_Term() == 1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
+  if (DERIVED_T::IS_MODIF_DEQ) e = (ind_Fluctu_Term() == 1) ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
   else e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) : Dist_norm_bord_externe_(face);
 
   const bool is_internal = sub_type(Echange_interne_impose, la_cl), is_radiatif = la_cl.has_emissivite();
 
-  if (i != -1)
-    for (int k = 0; k < ncomp; k++)
-      for (int l = (DERIVED_T::IS_MULTI_SCALAR_DIFF ? 0 : k); l < (DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp : k + 1); l++)
+  for (int k = 0; k < ncomp; k++)
+    {
+      const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
+      const double h_imp = la_cl.h_imp(face - num1, k);
+      double heq = 0.0;
+      if (nu_2(i, ori) != 0.0 && h_imp != 0.0)
         {
-          const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
-          const double h_imp = la_cl.h_imp(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
-          if (nu_2(i, ori) == 0.0 || h_imp == 0.0)
-            heq = 0.0;
-          else
-            {
-              h_total_inv = 1.0 / h_imp + e / nu_2(i, ori);
-              heq = 1.0 / h_total_inv;
-            }
-          aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = heq * surface(face);
-          ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = is_internal ? heq * surface(face) : 0.;
-
-          if (is_radiatif)
-            {
-              const double eps = la_cl.emissivite(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
-              const double T = inco(i, l);
-              aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] += 4 * COEFF_STEFAN_BOLTZMANN * eps * T * T * T * surface(face);
-            }
+          const double h_total_inv = 1.0 / h_imp + e / nu_2(i, ori);
+          heq = 1.0 / h_total_inv;
         }
-  else
-    for (int k = 0; k < ncomp; k++)
-      for (int l = (DERIVED_T::IS_MULTI_SCALAR_DIFF ? 0 : k); l < (DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp : k + 1); l++)
+      aii[k] = (is_internal ||  s ? heq : 0.) * surface(face);
+      ajj[k] = (is_internal || !s ? heq : 0.) * surface(face);
+
+      if (is_radiatif)
         {
-          const int ori = DERIVED_T::IS_MULTI_SCALAR_DIFF ? (ncomp * k + l) : (DERIVED_T::IS_ANISO ? orientation(face) : k);
-          const double h_imp = la_cl.h_imp(face - num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
-          if (nu_2(j, ori) == 0.0 || h_imp == 0.0)
-            heq = 0.0;
-          else
-            {
-              h_total_inv = 1.0 / h_imp + e / nu_2(j, ori);
-              heq = 1.0 / h_total_inv;
-            }
-          ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = heq * surface(face);
-          aii[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] = is_internal ? heq * surface(face) : 0.;
-
-          if (is_radiatif)
-            {
-              const double eps = la_cl.emissivite(face-num1, DERIVED_T::IS_MULTI_SCALAR_DIFF ? ori : k);
-              const double T = inco(j, l);
-              ajj[DERIVED_T::IS_MULTI_SCALAR_DIFF ? ncomp * k + l : k] += 4 * COEFF_STEFAN_BOLTZMANN * eps * T * T * T * surface(face);
-            }
+          const double eps = la_cl.emissivite(face - num1, k);
+          const double T = inco(i, k);
+          if (s) aii[k] += 4 * COEFF_STEFAN_BOLTZMANN * eps * T * T * T * surface(face);
+          else   ajj[k] += 4 * COEFF_STEFAN_BOLTZMANN * eps * T * T * T * surface(face);
         }
+    }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_faces_interne(const int face, Type_Double& aii, Type_Double& ajj ) const
 {
   assert (aii.size_array() == ajj.size_array());
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = DERIVED_T::IS_MULTI_SCALAR_DIFF ? int(sqrt(aii.size_array())) : aii.size_array();
-  double heq, d0 = Dist_face_elem0(face,i), d1 = Dist_face_elem1(face,j);
+  const int i = elem_(face, 0), j = elem_(face, 1), ncomp = aii.size_array();
+  const double d0 = Dist_face_elem0(face, i), d1 = Dist_face_elem1(face, j);
   for (int k = 0; k < ncomp; k++)
     {
       const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-      if (DERIVED_T::IS_RANS)
-        {
-          heq = compute_heq(d0,i,d1,j,ori);
-          aii[k] = ajj[k] = heq*surface(face)*porosite(face); // On peut faire ca !
-        }
-      else if (DERIVED_T::IS_MULTI_SCALAR_DIFF)
-        {
-          for (int l = 0; l < ncomp; l++)
-            {
-              heq = compute_heq(d0, i, d1, j, ncomp * k + l);
-              aii[ncomp * k + l] = heq * surface(face) * porosite(face);
-              ajj[ncomp * k + l] = heq * surface(face) * porosite(face);
-            }
-        }
-      else
-        {
-          if (nu_1(i,ori) == 0.0 || nu_2(j,ori) == 0.0) heq = 0.;
-          else
-            {
-              assert(nu_1(i,ori) != 0.0 && nu_2(j,ori) != 0.0);
-              heq = compute_heq(d0,i,d1,j,ori);
-            }
-          aii[k] = ajj[k] = heq*surface(face)*porosite(face); // On peut faire ca !
-        }
+      double heq = 0.0;
+      if (nu_1(i, ori) != 0.0 && nu_2(j, ori) != 0.0)
+        heq = compute_heq(d0, i, d1, j, ori);
+      aii[k] = ajj[k] = heq*surface(face) * porosite(face);
     }
 }
 
