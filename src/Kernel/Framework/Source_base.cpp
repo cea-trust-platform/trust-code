@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,6 +95,8 @@ void Source_base::completer()
   // Initialize the bilan_ array:
   bilan_.resize(eqn.inconnue().nb_comp());
   bilan_=0;
+  for (auto& itr : col_names_)
+    col_width_ = std::max(col_width_, itr.longueur());
 }
 
 /*! @brief Cette methode (ou la methode de la classe derivee) est appelee par Sources::associer_champ_rho pour chaque source de la liste
