@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -596,7 +596,8 @@ void Assembleur_P_VDF::modifier_secmem_vitesse_imposee(const Entree_fluide_vites
       if (champ_front.instationnaire())
         {
           const DoubleTab& tab_gpoint = champ_front.derivee_en_temps();
-          bool ch_unif = (tab_gpoint.nb_dim()==1);
+          int nb_dim = tab_gpoint.nb_dim();
+          bool ch_unif = (tab_gpoint.nb_dim()==1 || tab_gpoint.dimension(0)==1);
           const int nb_faces = frontiere_vf.nb_faces();
           const int num_premiere_face = frontiere_vf.num_premiere_face();
           for (int i = 0; i < nb_faces; i++)
@@ -611,7 +612,7 @@ void Assembleur_P_VDF::modifier_secmem_vitesse_imposee(const Entree_fluide_vites
               // Numero de l'element adjacent a la face de bord
               const int elem = elem0 + elem1 + 1;
               const int ori = le_dom.orientation(num_face);
-              const double gpoint = ch_unif ? tab_gpoint(ori) : tab_gpoint(i, ori);
+              const double gpoint = nb_dim==1 ? tab_gpoint(ori) : tab_gpoint(ch_unif ? 0 : i, ori);
 
               secmem[elem] += signe * surface * gpoint;
             }
