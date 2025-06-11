@@ -13,59 +13,63 @@
 *
 *****************************************************************************/
 
-#ifndef Perte_Charge_Isotrope_PolyMAC_Face_included
-#define Perte_Charge_Isotrope_PolyMAC_Face_included
+#ifndef PDC_PolyMAC_impl_included
+#define PDC_PolyMAC_impl_included
 
-#include <Perte_Charge_PolyVEF_P0.h>
-#include <PDC_PolyMAC_impl.h>
+#include <TRUSTTabs_forward.h>
+#include <Champ_Don_base.h>
+#include <TRUST_Deriv.h>
+#include <Parser_U.h>
 
-//!  Perte de charge isotrope (proportionnelle a -u )
-/**
- du/dt = - lambda(Re,x,y,z,t) * u * ||u|| / 2 Dh
+class Param;
 
- Lecture des arguments :
+/// \cond DO_NOT_DOCUMENT
+class PDC_PolyMAC_impl
+{};
+/// \endcond
 
- Perte_Charge_Isotrope_PolyMAC_Face diametre_hydraulique {
- lambda expression(Re,x,y,z,t)
- diam_hydr champ_don
- [sous_domaine nom]
- }
- */
-
-class Perte_Charge_Isotrope_PolyMAC_Face: public Perte_Charge_PolyMAC, public PDC_Isotrope_PolyMAC
+/////////////////////////////////////////////////
+class PDC_Anisotrope_PolyMAC
 {
-  Declare_instanciable(Perte_Charge_Isotrope_PolyMAC_Face);
-public:
-  void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
+protected:
+  int lire_motcle_non_standard_impl(const Motcle&, Entree&);
 
+  //! Implemente le calcul effectif de la perte de charge pour un lieu donne
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+
+  mutable Parser_U lambda_ortho;
+  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
+};
+
+/////////////////////////////////////////////////
+class PDC_Circulaire_PolyMAC
+{
+protected:
+  int lire_motcle_non_standard_impl(const Motcle&, Entree&);
+
+  //! Implemente le calcul effectif de la perte de charge pour un lieu donne
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+
+  OWN_PTR(Champ_Don_base) diam_hydr_ortho, v; //!< Vecteur directeur de la perte de charge.
+  mutable Parser_U lambda_ortho;
+  mutable DoubleVect v_valeur;
+};
+
+/////////////////////////////////////////////////
+class PDC_Directionnelle_PolyMAC
+{
 protected:
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&) const override;
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
+
+  OWN_PTR(Champ_Don_base) v; //!< Vecteur directeur de la perte de charge.
 };
 
 /////////////////////////////////////////////////
-
-class Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_PolyMAC_P0P1NC, public PDC_Isotrope_PolyMAC
+class PDC_Isotrope_PolyMAC
 {
-  Declare_instanciable(Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face);
-
-public:
-  void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
-
 protected:
-  void coeffs_perte_charge(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&) const override;
+  void coeffs_perte_charge_impl(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&, Parser_U&) const;
 };
 
-/////////////////////////////////////////////////
-
-class Perte_Charge_Isotrope_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0, public PDC_Isotrope_PolyMAC
-{
-  Declare_instanciable(Perte_Charge_Isotrope_PolyVEF_P0_Face);
-public:
-  void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
-
-protected:
-  void coeffs_perte_charge(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&) const override;
-};
-
-#endif /* Perte_Charge_Isotrope_PolyMAC_Face_included */
+#endif /* PDC_PolyMAC_impl_included */
