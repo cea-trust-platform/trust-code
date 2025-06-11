@@ -16,7 +16,7 @@
 #ifndef Perte_Charge_Gen_included
 #define Perte_Charge_Gen_included
 
-#include <Terme_Source_Qdm.h>
+#include <Perte_Charge_Singuliere.h>
 #include <Domaine_forward.h>
 #include <Champ_Don_base.h>
 #include <Source_base.h>
@@ -29,7 +29,7 @@ class Champ_Inc_base;
 class Fluide_base;
 class Param;
 
-class Perte_Charge_Gen : public Source_base, public Terme_Source_Qdm
+class Perte_Charge_Gen : public Source_base, public Perte_Charge_Singuliere
 {
   Declare_base(Perte_Charge_Gen);
 public:
@@ -38,6 +38,7 @@ public:
 
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
   void completer() override;
+  void mettre_a_jour(double t) override;
 
 protected:
 
@@ -88,6 +89,8 @@ protected:
   int implicite_ = 1;
 
   mutable Parser_U lambda;
+
+  IntVect num_faces, sgn; //if the pressure drop is regulated
 };
 
 #endif /* Perte_Charge_Gen_included */

@@ -42,6 +42,22 @@ extern void convert_to(const char *s, double& ob);
 // XD  attr regul bloc_lecture regul 1 option to have adjustable K with flowrate target  NL2 { K0 valeur_initiale_de_k deb debit_cible eps intervalle_variation_mutiplicatif}.
 // XD  attr surface bloc_lecture surface 0 Three syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }. NL2 For polymac { Surface surface_name Orientation champ_uniforme }
 
+Entree& Perte_Charge_Singuliere::lire_regul(Entree& is)
+{
+  regul_ = 1;
+  Nom eps_str, deb_str;
+  Param param("regul");
+  param.ajouter("K0", &K_, Param::REQUIRED);
+  param.ajouter("deb", &deb_str, Param::REQUIRED);
+  param.ajouter("eps", &eps_str, Param::REQUIRED);
+  param.lire_avec_accolades(is);
+  deb_cible_.setNbVar(1), eps_.setNbVar(1);
+  deb_cible_.setString(deb_str), eps_.setString(eps_str);
+  deb_cible_.addVar("t"), eps_.addVar("t");
+  deb_cible_.parseString(), eps_.parseString();
+  return is;
+}
+
 Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
 {
   Motcle motlu;
@@ -80,19 +96,7 @@ Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
     }
   is >> motlu;
   if (motlu == "regul")
-    {
-      regul_ = 1;
-      Nom eps_str, deb_str;
-      Param param("regul");
-      param.ajouter("K0", &K_, Param::REQUIRED);
-      param.ajouter("deb", &deb_str, Param::REQUIRED);
-      param.ajouter("eps", &eps_str, Param::REQUIRED);
-      param.lire_avec_accolades(is);
-      deb_cible_.setNbVar(1), eps_.setNbVar(1);
-      deb_cible_.setString(deb_str), eps_.setString(eps_str);
-      deb_cible_.addVar("t"), eps_.addVar("t");
-      deb_cible_.parseString(), eps_.parseString();
-    }
+    lire_regul(is);
   else if (motlu == "coeff")
     {
       is >> motlu;
@@ -111,7 +115,7 @@ Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
 }
 
 void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domaine,
-                                            const Domaine_dis_base& domaine_dis, IntVect& les_faces, IntVect& sgn)
+                                            const Domaine_dis_base& domaine_dis, IntVect& les_faces, IntVect& sgn, int lire_derniere_accolade)
 {
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   const IntTab& elem_faces = zvf.elem_faces();
@@ -150,9 +154,9 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       /* Subdomaine algorithm */
       algo=0;
       Nom direction=method, egal;
-      if (  ((direction=="X") && (direction_perte_charge()!=0))
-            || ((direction=="Y") && (direction_perte_charge()!=1))
-            || ((direction=="Z") && (direction_perte_charge()!=2)))
+      if (direction_perte_charge() >= 0 && (((direction=="X") && (direction_perte_charge()!=0))
+                                            || ((direction=="Y") && (direction_perte_charge()!=1))
+                                            || ((direction=="Z") && (direction_perte_charge()!=2))))
         {
           Nom dir,sect;
           if (direction_perte_charge() == 0)
@@ -226,11 +230,14 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       Cerr << "On attendait le mot cle" << acc_fermee << " a la place de " << motlu << finl;
       Process::exit();
     }
-  is >> motlu;
-  if (motlu != acc_fermee)
+  if (lire_derniere_accolade)
     {
-      Cerr << "On attendait le mot cle" << acc_fermee << " a la place de " << motlu << finl;
-      Process::exit();
+      is >> motlu;
+      if (motlu != acc_fermee)
+        {
+          Cerr << "On attendait le mot cle" << acc_fermee << " a la place de " << motlu << finl;
+          Process::exit();
+        }
     }
   /* Found faces */
   int compteur=0;
@@ -239,13 +246,14 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
     {
       /* Subdomaine algorithm */
       const Sous_Domaine& ssz = le_domaine.ss_domaine(nom_ss_domaine);
+      int coord = method == "X" ? 0 : method == "Y" ? 1 : 2;
       for (int poly=0; poly<ssz.nb_elem_tot(); poly++)
         {
           for (int j=0; j<nfe; j++)
             {
               int numfa = elem_faces(ssz(poly),j);
               // numfa might be negative in case of polyhedron where number of faces for an elem varies (padding)
-              if (numfa >= 0 && est_egal(xv(numfa,direction_perte_charge()),position) )
+              if (numfa >= 0 && est_egal(xv(numfa,coord),position) )
                 {
                   bool trouve=0;
                   for (int i=0; i<compteur; i++)
