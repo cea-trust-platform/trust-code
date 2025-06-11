@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #ifndef Perte_Charge_Isotrope_PolyMAC_Face_included
 #define Perte_Charge_Isotrope_PolyMAC_Face_included
 
-#include <Perte_Charge_PolyVEF_P0.h>
+#include <Perte_Charge_PolyMAC_P0P1NC.h>
 #include <PDC_PolyMAC_impl.h>
 
 //!  Perte de charge isotrope (proportionnelle a -u )
@@ -49,18 +49,6 @@ class Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_PolyMAC_P0P
 {
   Declare_instanciable(Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face);
 
-public:
-  void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
-
-protected:
-  void coeffs_perte_charge(const DoubleVect&, const DoubleVect&, double, double, double, double, double, double&, double&, double&, DoubleVect&) const override;
-};
-
-/////////////////////////////////////////////////
-
-class Perte_Charge_Isotrope_PolyVEF_P0_Face: public Perte_Charge_PolyVEF_P0, public PDC_Isotrope_PolyMAC
-{
-  Declare_instanciable(Perte_Charge_Isotrope_PolyVEF_P0_Face);
 public:
   void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
 

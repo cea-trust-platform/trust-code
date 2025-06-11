@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,45 +89,6 @@ int Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::lire_motcle_non_standard(const 
 void Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
                                                                       double dh, double nu, double reynolds, double& coeff_ortho,
                                                                       double& coeff_long, double& u_l, DoubleVect& v_valeur) const
-{
-  coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
-}
-
-/////////////////////////////////////////////////
-
-Implemente_instanciable(Perte_Charge_Anisotrope_PolyVEF_P0_Face, "Perte_Charge_Anisotrope_Face_PolyVEF_P0", Perte_Charge_PolyVEF_P0);
-
-Sortie& Perte_Charge_Anisotrope_PolyVEF_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-
-Entree& Perte_Charge_Anisotrope_PolyVEF_P0_Face::readOn(Entree& s)
-{
-  Perte_Charge_PolyVEF_P0::readOn(s);
-  if (v->nb_comp() != dimension)
-    {
-      Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
-      Process::exit();
-    }
-  return s;
-}
-
-void Perte_Charge_Anisotrope_PolyVEF_P0_Face::set_param(Param& param)
-{
-  Perte_Charge_PolyVEF_P0::set_param(param);
-  param.ajouter_non_std("lambda_ortho", (this), Param::REQUIRED);
-  param.ajouter("direction", &v, Param::REQUIRED);
-}
-
-int Perte_Charge_Anisotrope_PolyVEF_P0_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  if (mot == "lambda_ortho")
-    return lire_motcle_non_standard_impl(mot, is);
-  else
-    return Perte_Charge_PolyVEF_P0::lire_motcle_non_standard(mot, is);
-}
-
-void Perte_Charge_Anisotrope_PolyVEF_P0_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
-                                                                  double dh, double nu, double reynolds, double& coeff_ortho,
-                                                                  double& coeff_long, double& u_l, DoubleVect& v_valeur) const
 {
   coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
 }
