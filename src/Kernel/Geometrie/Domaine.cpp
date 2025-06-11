@@ -1364,14 +1364,14 @@ void Domaine_32_64<_SZ_>::build_mc_mesh(bool virt) const
 
 
 template<typename _SZ_>
-void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain) const
+void Domaine_32_64<_SZ_>::prepare_rmp_with(const Domaine_32_64& other_domain, bool virt) const
 {
 #ifdef MEDCOUPLING_
   using namespace MEDCoupling;
 
   // Retrieve mesh upfront to possibly build them if they were not already:
   get_mc_mesh();
-  const MEDCouplingUMesh* oth_msh = other_domain.get_mc_mesh(true);
+  const MEDCouplingUMesh* oth_msh = other_domain.get_mc_mesh(virt);
 
   Cerr << "Building remapper between " << le_nom() << " (" << (int)mc_mesh_->getSpaceDimension() << "D) mesh with " << (int)mc_mesh_->getNumberOfCells()
        << " cells and " << other_domain.le_nom() << " (" << (int)oth_msh->getSpaceDimension() << "D) mesh with "
@@ -1414,10 +1414,10 @@ void Domaine_32_64<_SIZE_>::prepare_dec_with(const Domaine_32_64& other_domain, 
 #ifdef MEDCOUPLING_
 
 template <typename _SIZE_>
-MEDCoupling::MEDCouplingRemapper* Domaine_32_64<_SIZE_>::get_remapper(const Domaine_32_64& other_domain) const
+MEDCoupling::MEDCouplingRemapper* Domaine_32_64<_SIZE_>::get_remapper(const Domaine_32_64& other_domain, bool virt) const
 {
   if (!rmps.count(&other_domain))
-    prepare_rmp_with(other_domain);
+    prepare_rmp_with(other_domain, virt);
   return &rmps.at(&other_domain);
 }
 

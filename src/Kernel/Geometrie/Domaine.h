@@ -337,7 +337,7 @@ public:
   inline const MEDCouplingUMesh* get_mc_mesh(bool virt = false) const;
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  { mc_mesh_ = m;    }
   // remapper with other domains
-  MEDCouplingRemapper* get_remapper(const Domaine_32_64& other_dom) const;
+  MEDCouplingRemapper* get_remapper(const Domaine_32_64& other_dom, bool virt=false) const;
   // DEC with other domains
 #ifdef MPI_
   OverlapDEC* get_dec(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc) const;
@@ -426,7 +426,7 @@ protected:
 #endif
 
 private:
-  void prepare_rmp_with(const Domaine_32_64& other_dom) const;
+  void prepare_rmp_with(const Domaine_32_64& other_dom, bool virt) const;
   void prepare_dec_with(const Domaine_32_64& other_dom, MEDCouplingFieldDouble *dist, MEDCouplingFieldDouble *loc) const;
 
   template<typename _BORD_TYP_>
