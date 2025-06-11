@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,16 +14,12 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Anisotrope_PolyMAC_Face.h>
-#include <Equation_base.h>
 #include <Motcle.h>
 #include <Param.h>
 
 Implemente_instanciable(Perte_Charge_Anisotrope_PolyMAC_Face, "Perte_Charge_Anisotrope_Face_PolyMAC", Perte_Charge_PolyMAC);
-Implemente_instanciable(Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face, "Perte_Charge_Anisotrope_Face_PolyMAC_P0P1NC|Perte_Charge_Anisotrope_Face_PolyMAC_P0", Perte_Charge_Anisotrope_PolyMAC_Face);
 
 Sortie& Perte_Charge_Anisotrope_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-Sortie& Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
-Entree& Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::readOn(Entree& s) { return Perte_Charge_Anisotrope_PolyMAC_Face::readOn(s); }
 
 Entree& Perte_Charge_Anisotrope_PolyMAC_Face::readOn(Entree& s)
 {
@@ -46,69 +42,53 @@ void Perte_Charge_Anisotrope_PolyMAC_Face::set_param(Param& param)
 int Perte_Charge_Anisotrope_PolyMAC_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if (mot == "lambda_ortho")
-    {
-      Nom tmp;
-      is >> tmp;
-      Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
-      lambda_ortho.setNbVar(2 + dimension);
-      lambda_ortho.setString(tmp);
-      lambda_ortho.addVar("Re");
-      lambda_ortho.addVar("t");
-      lambda_ortho.addVar("x");
-      if (dimension > 1)
-        lambda_ortho.addVar("y");
-      if (dimension > 2)
-        lambda_ortho.addVar("z");
-      lambda_ortho.parseString();
-      Cerr << " Ok" << finl;
-      return 1;
-    }
+    return lire_motcle_non_standard_impl(mot, is);
   else
     return Perte_Charge_PolyMAC::lire_motcle_non_standard(mot, is);
 }
 
-void Perte_Charge_Anisotrope_PolyMAC_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho,
+void Perte_Charge_Anisotrope_PolyMAC_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
+                                                               double dh, double nu, double reynolds, double& coeff_ortho,
                                                                double& coeff_long, double& u_l, DoubleVect& v_valeur) const
 {
+  coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
+}
 
-  // Calcul de lambda
-  lambda.setVar(0, reynolds);
-  lambda.setVar(1, t);
-  lambda.setVar(2, pos[0]);
-  if (dimension > 1)
-    lambda.setVar(3, pos[1]);
-  if (dimension > 2)
-    lambda.setVar(4, pos[2]);
+/////////////////////////////////////////////////
 
-  // Calcul de lambda_ortho
-  lambda_ortho.setVar(0, reynolds);
-  lambda_ortho.setVar(1, t);
-  lambda_ortho.setVar(2, pos[0]);
-  if (dimension > 1)
-    lambda_ortho.setVar(3, pos[1]);
-  if (dimension > 2)
-    lambda_ortho.setVar(4, pos[2]);
-  double l_ortho = lambda_ortho.eval(); // Pour ne pas evaluer 2 fois le parser
+Implemente_instanciable(Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face, "Perte_Charge_Anisotrope_Face_PolyMAC_P0P1NC|Perte_Charge_Anisotrope_Face_PolyMAC_P0", Perte_Charge_PolyMAC_P0P1NC);
 
-  // Calcul de v et ||v||^2
-  //  DoubleVect v_valeur(dimension);
-  double vcarre = 0;
-  v->valeur_a(pos, v_valeur);
-  for (int dim = 0; dim < dimension; dim++)
-    vcarre += v_valeur[dim] * v_valeur[dim];
-  v_valeur /= sqrt(vcarre);
-  // Calcul de u.v
-  double scal = 0;
-  for (int dim = 0; dim < dimension; dim++)
-    scal += u[dim] * v_valeur[dim];
+Sortie& Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-  // Calcul du resultat
-  /*
-   for (int dim=0;dim<dimension;dim++)
-   p_charge[dim] = -l_ortho*norme_u/2./dh*u[dim]
-   -(lambda.eval()-l_ortho)*scal*v_valeur[dim]*norme_u/2./dh;
-   */
-  coeff_ortho = l_ortho * norme_u / 2. / dh;
-  coeff_long = lambda.eval() * norme_u / 2. / dh;
-  u_l = scal;
+Entree& Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::readOn(Entree& s)
+{
+  Perte_Charge_PolyMAC_P0P1NC::readOn(s);
+  if (v->nb_comp() != dimension)
+    {
+      Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
+      Process::exit();
+    }
+  return s;
+}
+
+void Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::set_param(Param& param)
+{
+  Perte_Charge_PolyMAC_P0P1NC::set_param(param);
+  param.ajouter_non_std("lambda_ortho", (this), Param::REQUIRED);
+  param.ajouter("direction", &v, Param::REQUIRED);
+}
+
+int Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot == "lambda_ortho")
+    return lire_motcle_non_standard_impl(mot, is);
+  else
+    return Perte_Charge_PolyMAC_P0P1NC::lire_motcle_non_standard(mot, is);
+}
+
+void Perte_Charge_Anisotrope_PolyMAC_P0P1NC_Face::coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u,
+                                                                      double dh, double nu, double reynolds, double& coeff_ortho,
+                                                                      double& coeff_long, double& u_l, DoubleVect& v_valeur) const
+{
+  coeffs_perte_charge_impl(u, pos, t, norme_u, dh, nu, reynolds, coeff_ortho, coeff_long, u_l, v_valeur, lambda);
 }
