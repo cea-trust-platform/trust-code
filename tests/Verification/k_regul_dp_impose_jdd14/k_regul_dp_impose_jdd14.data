@@ -35,9 +35,10 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 3
+	nb_pas_dt_max 150
     dt_max 1e-2
     dt_impr 1e-10
+    # NB_PAS_DT_MAX 150 #
     seuil_statio 1e-6
     solveur ice
     {
