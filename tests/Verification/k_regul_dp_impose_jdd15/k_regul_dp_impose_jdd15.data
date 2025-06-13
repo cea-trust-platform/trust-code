@@ -1,0 +1,94 @@
+# PARALLEL OK #
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Read_MED
+{
+    convertalltopoly
+    domain dom
+    file mesh.med
+    mesh mesh
+    include_additional_face_groups 2 surf1 surf2
+}
+regroupebord dom wall { wall iwall iwall_dup }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC_P0P1NC dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 20
+    facsec 1e30
+    dt_max  0.1
+    # NB_PAS_DT_MAX 20 #
+    seuil_statio 1e-6
+    tmax 30
+    dt_impr 1e-10
+    solveur implicite { solveur petsc cholesky { } }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 2.5
+        rho Champ_Uniforme 1 1000
+    }
+
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
+        boundary_conditions { wall symetrie }
+        sources
+        {
+            DP_Impose { dp_regul { DP0 50*(1_min_(0_max_(20-t))) deb 5 eps (t>1)*(t<20) } surface { face_group surf2 orientation Champ_Uniforme 3 0 0 -1 } }
+        }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            p1 grav pression_pa periode 1e-6 point 1 0.3 0.1 0.4
+            p2 grav pression_pa periode 1e-6 point 1 0.3 0.1 0.6
+        }
+
+        Format Lata
+        fields dt_post 1e5
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End
+
