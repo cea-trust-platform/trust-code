@@ -589,9 +589,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::dumplata_scalar(const char *filen
       Nom path, base_name;
       split_path_filename(fd, path, base_name);
       master_file << "Champ " << this->le_nom() << " "<< base_name << " geometrie=" << geomname;
-#ifdef INT_is_64_
-      master_file << " file_offset=6";
-#endif
       master_file << " size=" << (int)n << " localisation=" << loc << " composantes=1" << finl;
     }
   Process::barrier();
