@@ -94,7 +94,6 @@ public :
   inline double carre_pas_maille(int i) const { return h_carre_(i); }
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
-  inline int oriente_normale(int face_opp, int elem2)const;
 
   virtual void calculer_h_carre();
 
@@ -151,13 +150,6 @@ protected:
   DoubleVect longueur_aretes_; //longueur des aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
 };
-
-inline int Domaine_Poly_base::oriente_normale(int face_opp, int elem2) const
-{
-  if(face_voisins(face_opp,0)==elem2)
-    return 1;
-  else return -1;
-}
 
 /* equivalent du dist_norm_bord du VDF */
 inline double Domaine_Poly_base::dist_norm_bord(int f) const

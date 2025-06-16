@@ -98,9 +98,6 @@ void Domaine_PolyMAC::calculer_h_carre()
 
 void Domaine_PolyMAC::calculer_volumes_entrelaces()
 {
-  creer_tableau_faces(volumes_entrelaces_);
-  volumes_entrelaces_dir_.resize(nb_faces(), 2);
-  creer_tableau_faces(volumes_entrelaces_dir_);
   const DoubleVect& fs = face_surfaces();
 
   for (int num_face=0; num_face<nb_faces(); num_face++)
