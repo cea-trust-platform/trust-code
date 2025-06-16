@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,6 @@ public:
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
 
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
-  inline int oriente_normale(int face_opp, int elem2) const;
   void calculer_volumes_entrelaces();
   void calculer_volumes_sommets(const Domaine_Cl_dis_base& zcl);
   virtual void calculer_IPhi(const Domaine_Cl_dis_base& zcl);
@@ -112,13 +111,5 @@ private:
   Sortie& ecrit(Sortie& os) const;
   IntVect orientation_;
 };
-
-inline int Domaine_EF::oriente_normale(int face_opp, int elem2) const
-{
-  if (face_voisins(face_opp, 0) == elem2)
-    return 1;
-  else
-    return -1;
-}
 
 #endif /* Domaine_EF_included */

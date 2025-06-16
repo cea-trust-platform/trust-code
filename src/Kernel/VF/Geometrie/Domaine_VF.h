@@ -187,6 +187,7 @@ public :
 
   void build_mc_face_mesh() const;
   void build_mc_dual_mesh() const;
+  inline int oriente_normale(int f, int e) const { return (face_voisins(f, 0) == e) ? 1 : -1; }
 
 #ifdef MEDCOUPLING_
   inline const MEDCouplingUMesh* get_mc_face_mesh() const;

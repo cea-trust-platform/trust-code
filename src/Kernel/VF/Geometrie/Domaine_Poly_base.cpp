@@ -392,6 +392,8 @@ void Domaine_Poly_base::discretiser()
 
   detecter_faces_non_planes();
 
+  creer_tableau_faces(volumes_entrelaces_);
+  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
   calculer_volumes_entrelaces();
 
   /* ordre canonique dans elem_faces_ */
