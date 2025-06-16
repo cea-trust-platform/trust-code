@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,7 +86,6 @@ public:
   inline const DoubleTab& facette_normales() const { return facette_normales_; }
   inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
   inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
-  inline int oriente_normale(int face_opp, int elem2) const { return (face_voisins(face_opp, 0) == elem2) ? 1 : -1; }
 
   inline double volume_au_sommet(int som) const { return volumes_som[som]; }
   inline const DoubleVect& volume_aux_sommets() const { return volumes_som; }
