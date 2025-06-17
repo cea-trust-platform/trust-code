@@ -112,34 +112,60 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
   const int nk = field.nk();
 
   const Domaine_IJK& domain = field.get_domain();
-  const double dx = domain.get_constant_delta(DIRECTION_I);
-  const double dy = domain.get_constant_delta(DIRECTION_J);
-  const double dz = domain.get_constant_delta(DIRECTION_K);
+  static const double dx = domain.get_constant_delta(DIRECTION_I);
+  static const double dy = domain.get_constant_delta(DIRECTION_J);
+  static const double dz = domain.get_constant_delta(DIRECTION_K);
   const Domaine_IJK::Localisation loc = field.get_localisation();
   // L'origine est sur un noeud. Donc que la premiere face en I est sur get_origin(DIRECTION_I)
-  double origin_x = domain.get_origin(DIRECTION_I) + ((loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::ELEM) ? (dx * 0.5) : 0.);
-  double origin_y = domain.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
-  double origin_z = domain.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
+  const double origin_x = domain.get_origin(DIRECTION_I) + ((loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::ELEM) ? (dx * 0.5) : 0.);
+  const double origin_y = domain.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
+  const double origin_z = domain.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
   const int nb_coords = coordinates.dimension(0);
+
+  // Is it periodic in this direction ?
+  static const bool PERIO_I = domain.get_periodic_flag(DIRECTION_I);
+  static const bool PERIO_J = domain.get_periodic_flag(DIRECTION_J);
+  static const bool PERIO_K = domain.get_periodic_flag(DIRECTION_K);
+
+  // Length of the domain in this direction
+  static const double LENGTH_I = domain.get_domain_length(DIRECTION_I);
+  static const double LENGTH_J = domain.get_domain_length(DIRECTION_J);
+  static const double LENGTH_K = domain.get_domain_length(DIRECTION_K);
+
+  // NB of element in this direction on the current process
+  static const int OFFSET_I = domain.get_offset_local(DIRECTION_I);
+  static const int OFFSET_J = domain.get_offset_local(DIRECTION_J);
+  static const int OFFSET_K = domain.get_offset_local(DIRECTION_K);
+
+  // NB ELEM LOCAL SUR LE PROC
+  static const int NB_ELEM_LOC_I = domain.get_nb_elem_local(DIRECTION_I);
+  static const int NB_ELEM_LOC_J = domain.get_nb_elem_local(DIRECTION_J);
+  static const int NB_ELEM_LOC_K = domain.get_nb_elem_local(DIRECTION_K);
+
+  // NB Elem global
+  static const int NB_ELEM_I = domain.get_nb_elem_tot(DIRECTION_I);
+  static const int NB_ELEM_J = domain.get_nb_elem_tot(DIRECTION_J);
+  static const int NB_ELEM_K = domain.get_nb_elem_tot(DIRECTION_K);
+
   result.resize_array(nb_coords);
-  for (int idx = 0; idx < nb_coords; idx++)
+  for (int idx = 0; idx < nb_coords; ++idx)
     {
-      const double x = coordinates(idx, 0);
-      const double y = coordinates(idx, 1);
-      const double z = coordinates(idx, 2);
+      const double x = coordinates(idx, 0) < origin_x && PERIO_I ? LENGTH_I + coordinates(idx, 0) : coordinates(idx, 0);
+      const double y = coordinates(idx, 1) < origin_y && PERIO_J ? LENGTH_J + coordinates(idx, 1) : coordinates(idx, 1);
+      const double z = coordinates(idx, 2) < origin_z && PERIO_K ? LENGTH_K + coordinates(idx, 2) : coordinates(idx, 2);
       const double x2 = (x - origin_x) / dx;
       const double y2 = (y - origin_y) / dy;
       const double z2 = (z - origin_z) / dz;
-
+      const int idx_i_tmp = ((int) (floor(x2)) - OFFSET_I) < -ghost ? ((int) (floor(x2)) - OFFSET_I) + NB_ELEM_I : ((int) (floor(x2)) - OFFSET_I);
+      const int idx_j_tmp = ((int) (floor(y2)) - OFFSET_J) < -ghost ? ((int) (floor(y2)) - OFFSET_J) + NB_ELEM_J : ((int) (floor(y2)) - OFFSET_J);
+      const int idk_k_tmp = ((int) (floor(z2)) - OFFSET_K) < -ghost ? ((int) (floor(z2)) - OFFSET_K) + NB_ELEM_K : ((int) (floor(z2)) - OFFSET_K);
+      const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost - 1? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
+      const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost - 1? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
+      const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost - 1? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
       // Coordonnes barycentriques du points dans la cellule :
-      const double xfact = x2 - floor(x2);
-      const double yfact = y2 - floor(y2);
-      const double zfact = z2 - floor(z2);
-
-      // Determining the local index of the element in the IJK domain.
-      const int index_i = domain.get_i_along_dir_perio(DIRECTION_I, x, Domaine_IJK::ELEM);
-      const int index_j = domain.get_i_along_dir_perio(DIRECTION_J, y, Domaine_IJK::ELEM);
-      const int index_k = domain.get_i_along_dir_perio(DIRECTION_K, z, Domaine_IJK::ELEM);
+      const double xfact = fma(1., x2, - floor(x2));
+      const double yfact = fma(1., y2, - floor(y2));
+      const double zfact = fma(1., z2, - floor(z2));
       // is point in the domain ? (ghost cells ok...)
       const bool ok = (index_i >= - ghost && index_i < ni + ghost - 1) && (index_j >= - ghost && index_j < nj + ghost - 1) && (index_k >= - ghost && index_k < nk + ghost - 1);
       if (!ok)
@@ -194,22 +220,47 @@ static double ijk_interpolate_one_value(const IJK_Field_double& field, const Vec
   double origin_y = domain.get_origin(DIRECTION_J) + ((loc == Domaine_IJK::FACES_K || loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::ELEM) ? (dy * 0.5) : 0.);
   double origin_z = domain.get_origin(DIRECTION_K) + ((loc == Domaine_IJK::FACES_I || loc == Domaine_IJK::FACES_J || loc == Domaine_IJK::ELEM) ? (dz * 0.5) : 0.);
 
-  const double x = coordinates[0];
-  const double y = coordinates[1];
-  const double z = coordinates[2];
+  // Is it periodic in this direction ?
+  static const bool PERIO_I = domain.get_periodic_flag(DIRECTION_I);
+  static const bool PERIO_J = domain.get_periodic_flag(DIRECTION_J);
+  static const bool PERIO_K = domain.get_periodic_flag(DIRECTION_K);
+
+  // Length of the domain in this direction
+  static const double LENGTH_I = domain.get_domain_length(DIRECTION_I);
+  static const double LENGTH_J = domain.get_domain_length(DIRECTION_J);
+  static const double LENGTH_K = domain.get_domain_length(DIRECTION_K);
+
+  // NB of element in this direction on the current process
+  static const int OFFSET_I = domain.get_offset_local(DIRECTION_I);
+  static const int OFFSET_J = domain.get_offset_local(DIRECTION_J);
+  static const int OFFSET_K = domain.get_offset_local(DIRECTION_K);
+
+  // NB ELEM LOCAL SUR LE PROC
+  static const int NB_ELEM_LOC_I = domain.get_nb_elem_local(DIRECTION_I);
+  static const int NB_ELEM_LOC_J = domain.get_nb_elem_local(DIRECTION_J);
+  static const int NB_ELEM_LOC_K = domain.get_nb_elem_local(DIRECTION_K);
+
+  // NB Elem global
+  static const int NB_ELEM_I = domain.get_nb_elem_tot(DIRECTION_I);
+  static const int NB_ELEM_J = domain.get_nb_elem_tot(DIRECTION_J);
+  static const int NB_ELEM_K = domain.get_nb_elem_tot(DIRECTION_K);
+
+  const double x = coordinates[0] < origin_x && PERIO_I ? LENGTH_I + coordinates[0] : coordinates[0];
+  const double y = coordinates[1] < origin_y && PERIO_J ? LENGTH_J + coordinates[1] : coordinates[1];
+  const double z = coordinates[2] < origin_z && PERIO_K ? LENGTH_K + coordinates[2] : coordinates[2];
   const double x2 = (x - origin_x) / dx;
   const double y2 = (y - origin_y) / dy;
   const double z2 = (z - origin_z) / dz;
-
+  const int idx_i_tmp = ((int) (floor(x2)) - OFFSET_I) < -ghost ? ((int) (floor(x2)) - OFFSET_I) + NB_ELEM_I : ((int) (floor(x2)) - OFFSET_I);
+  const int idx_j_tmp = ((int) (floor(y2)) - OFFSET_J) < -ghost ? ((int) (floor(y2)) - OFFSET_J) + NB_ELEM_J : ((int) (floor(y2)) - OFFSET_J);
+  const int idk_k_tmp = ((int) (floor(z2)) - OFFSET_K) < -ghost ? ((int) (floor(z2)) - OFFSET_K) + NB_ELEM_K : ((int) (floor(z2)) - OFFSET_K);
+  const int index_i = idx_i_tmp >= NB_ELEM_LOC_I + ghost - 1 ? idx_i_tmp - NB_ELEM_I : idx_i_tmp;
+  const int index_j = idx_j_tmp >= NB_ELEM_LOC_J + ghost - 1 ? idx_j_tmp - NB_ELEM_J : idx_j_tmp;
+  const int index_k = idk_k_tmp >= NB_ELEM_LOC_K + ghost - 1 ? idk_k_tmp - NB_ELEM_K : idk_k_tmp;
   // Coordonnes barycentriques du points dans la cellule :
-  const double xfact = x2 - floor(x2);
-  const double yfact = y2 - floor(y2);
-  const double zfact = z2 - floor(z2);
-
-  // Determining the local index of the element in the IJK domain.
-  const int index_i = domain.get_i_along_dir_perio(DIRECTION_I, x, Domaine_IJK::ELEM);
-  const int index_j = domain.get_i_along_dir_perio(DIRECTION_J, y, Domaine_IJK::ELEM);
-  const int index_k = domain.get_i_along_dir_perio(DIRECTION_K, z, Domaine_IJK::ELEM);
+  const double xfact = fma(1., x2, - floor(x2));
+  const double yfact = fma(1., y2, - floor(y2));
+  const double zfact = fma(1., z2, - floor(z2));
 
   // is point in the domain ? (ghost cells ok...)
   bool ok = (index_i >= -ghost && index_i < ni + ghost - 1) && (index_j >= -ghost && index_j < nj + ghost - 1) && (index_k >= -ghost && index_k < nk + ghost - 1);
