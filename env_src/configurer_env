@@ -356,8 +356,11 @@ print_OS()
 ########################################################
 print_GNU_VERSION()
 {
-   # Verifie que le compilateur est bien GNU:
-   [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'
+  if $TRUST_CC_BASE --version 2>&1 | grep -qi "gcc"; then
+    $TRUST_CC_BASE -dumpfullversion 2>/dev/null || $TRUST_CC_BASE -dumpversion
+  else
+    return 0
+  fi
 }
 
 ########################################################
@@ -1868,7 +1871,7 @@ SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
-  linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc*) TRUST_SUPPORTED=1
+  linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc*|darwin_g++*) TRUST_SUPPORTED=1
 	[ "$TRUST_STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=530 && ver<=1420) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	[ "$TRUST_STDCPP" = c++17 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=820 && ver<=1420) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
@@ -1882,7 +1885,7 @@ case $TRUST_ARCH_CC in
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
 	CppFlags="-O3 $FPIC $PTHREAD -std=$TRUST_STDCPP -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
-	[ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>4)}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wshadow -Werror" # Uniquement si gcc>=5
+   [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>4)}'`" = 1 ] && { [ "$TRUST_ARCH_CC" = linux_g++ ] || [ "$TRUST_ARCH_CC" = darwin_g++ ]; } && CppFlags=$CppFlags" -Wshadow -Werror" # Uniquement si gcc>=5
 	[ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1==12)}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wno-use-after-free" # Uniquement si gcc12 (Erreur Kokkos sinon)
 	CppFlags=$CppFlags" -fno-math-errno" # Operations mathematiques optimisees sans ecarts crees (vient de F5)
 	( [ "$TRUST_INT64" != 1 ] || [ "$TRUST_INT64_NEW" = 1 ] ) && CppFlags=$CppFlags" -Wconversion"
