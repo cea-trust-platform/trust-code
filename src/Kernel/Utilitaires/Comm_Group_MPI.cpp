@@ -842,7 +842,7 @@ void Comm_Group_MPI::internal_collective(const int *x, int *resu, int nx, const 
   for (int i = 0; i < nx; i++)
     {
       int j = (nop < 0) ? 0 : i;
-      trustIdType xx = x[i], resu2;
+      trustIdType xx = x[i], resu2 = 0;
       if (op[j] != COLL_PARTIAL_SUM)
         mp_collective_op(&xx, &resu2, 1, op[j]);
       else
