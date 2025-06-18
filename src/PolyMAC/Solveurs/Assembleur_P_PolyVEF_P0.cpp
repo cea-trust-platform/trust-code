@@ -55,7 +55,7 @@ int  Assembleur_P_PolyVEF_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   const DoubleTab& fgrad_c = grad.fgrad_c, &nf = dom.face_normales();
   const IntTab& f_e = dom.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e, &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face();
-  int i, j, e, eb, f, fb, ne = dom.nb_elem(), ne_tot = dom.nb_elem_tot(), nfb_tot = dom.nb_faces_bord_tot(), d, D = dimension;
+  int i, j, e, eb, f, fb = -1, ne = dom.nb_elem(), ne_tot = dom.nb_elem_tot(), nfb_tot = dom.nb_faces_bord_tot(), d, D = dimension;
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;

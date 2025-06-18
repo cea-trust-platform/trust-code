@@ -153,7 +153,7 @@ void Echange_contact_PolyMAC_P0P1NC::init_fs_dist() const
 
   for (i = 0; i < nf_tot; i++) //remplissage de f_dist : face distante si coincidence, -1 sinon
     {
-      f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face(f_idx->getIJ(i, 0)) : -1;
+      f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face((int)f_idx->getIJ(i, 0)) : -1;
       double d2 = o_f >= 0 ? domaine.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
       if (d2 < 1e-12)
         f_dist(i) = o_f;
