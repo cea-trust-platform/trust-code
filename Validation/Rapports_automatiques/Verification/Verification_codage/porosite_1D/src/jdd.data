@@ -84,13 +84,13 @@ Read pb
         {
             P_ex transformation
             {
-                methode formule expression 1 1e5+(z>1)*(z<2)*500*(1-1/0.5^2) localisation elem nom_source sol source refChamp { Pb_champ pb pression }
+                methode formule expression 1 (1e5+(z>1)*(z<2)*500*(1-1/0.5^2)) localisation elem nom_source sol source refChamp { Pb_champ pb pression }
             }
 
             /* aux elems */
             V_ex transformation
             {
-                methode vecteur expression 3 0 0 1+(z>1)*(z<2) nom_source sol source refChamp { Pb_champ pb pression }
+                methode vecteur expression 3 0 0 (1+(z>1)*(z<2)) nom_source sol source refChamp { Pb_champ pb pression }
             }
         }
         probes

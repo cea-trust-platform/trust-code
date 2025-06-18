@@ -26,6 +26,10 @@
 #include <kokkos++.h>
 #endif
 
+
+// flag to ask Process::exit to not print the last token
+#define DONT_PRINT_TOKEN 7
+
 class Objet_U;
 class Nom;
 class Sortie;

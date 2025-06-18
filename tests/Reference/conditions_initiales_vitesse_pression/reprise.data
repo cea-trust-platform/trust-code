@@ -60,8 +60,8 @@ read  pb_fluide
         convection  { amont }
         diffusion   { }
         initial_conditions  {
-            vitesse  champ_fonc_reprise  binaire  ./TRUST_backup.sauv pb_fluide vitesse  last_time
-            pression champ_fonc_reprise  binaire  ./TRUST_backup.sauv pb_fluide pression last_time
+            vitesse  champ_fonc_reprise  binaire  TRUST_backup.sauv pb_fluide vitesse  last_time
+            pression champ_fonc_reprise  binaire  TRUST_backup.sauv pb_fluide pression last_time
         }
         boundary_conditions
         {

@@ -74,7 +74,7 @@ Read pb
         convection { Centre }
         diffusion {  }
         initial_conditions {
-            vitesse Champ_som_lu_VDF dom 3 1e-8 ./champ_k2_8
+            vitesse Champ_som_lu_VDF dom 3 1e-8 champ_k2_8
         }
         boundary_conditions {
             periox periodique

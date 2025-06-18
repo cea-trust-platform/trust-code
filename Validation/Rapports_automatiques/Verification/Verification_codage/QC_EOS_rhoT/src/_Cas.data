@@ -94,8 +94,8 @@ Lire pb
         Sources
         {
             source_qdm champ_fonc_xyz dom 2
-            (_SOURCE1_)/(_RHO_)
-            (_SOURCE2_)/(_RHO_) ,
+            ((_SOURCE1_)/(_RHO_))
+            ((_SOURCE2_)/(_RHO_)) ,
             canal_perio { bord periox debit_impose _DEBITX_ } ,
             canal_perio { bord perioy debit_impose _DEBITY_ }
         }
@@ -132,7 +132,7 @@ Lire pb
                         sources	{
                             # u-uex #
                             transformation	{
-                                methode formule expression 1 (u-uex)/(_REFU_)
+                                methode formule expression 1 ((u-uex)/(_REFU_))
                                 nom_source u_uex
                                 localisation _LOC_
                                 sources	{
@@ -155,7 +155,7 @@ Lire pb
                 methode L2_norm
                 source transformation
                 {
-                    methode formule expression 1 (p-pmoy-pex)/(_REFP_)
+                    methode formule expression 1 ((p-pmoy-pex)/(_REFP_))
                     localisation elem
                     sources
                     {

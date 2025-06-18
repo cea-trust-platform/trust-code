@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <mon_main.h>
-#include <LecFicDiffuse_JDD.h>
+#include <DataFile.h>
 #include <TClearable.h> // To clear caches before exiting, notably Domaine_dis_cache
 #include <instancie_appel.h>
 #include <SFichier.h>
@@ -40,12 +40,12 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, bool journal_master, Nom log_directory, bool apply_verification, bool disable_stop)
+mon_main::mon_main(int verbose_level, bool journal_master, Nom log_directory, bool check_obsolete_keywords, bool disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
   log_directory_ = log_directory;
-  apply_verification_ = apply_verification;
+  check_obsolete_keywords_ = check_obsolete_keywords;
   // Creation d'un journal temporaire qui ecrit dans Cerr
   init_journal_file(verbose_level, 0 /* filename = 0 => Cerr */, 0 /* append */);
   trio_began_mpi_=false;
@@ -436,23 +436,12 @@ void mon_main::dowork(const Nom& nom_du_cas)
         SFichier es("convert_jdd");
       }
     #endif */
-    // La verfication est faite maintenant dans LecFicDiffuse_JDD
-    // mias je garde les lignes au cas ou
-    if (0)
-      {
-        Cerr << "MAIN: Checking data file for matching { and }" << finl;
-        {
-          LecFicDiffuse_JDD verifie_entree(nomentree, ios::in, apply_verification_);
-          interprete_principal_.interpreter_bloc(verifie_entree,
-                                                 Interprete_bloc::FIN /* on attend FIN a la fin */,
-                                                 1 /* verifie_sans_interpreter */);
-        }
-      }
+    // syntax is checked during the loading of DataFile
     Cerr << "MAIN: Reading and executing data file" << finl;
     {
-      LecFicDiffuse_JDD lit_entree(nomentree, ios::in, apply_verification_);
-      lit_entree.set_check_types(1);
-      interprete_principal_.interpreter_bloc(lit_entree,
+      DataFile data_file(nomentree, ios::in, check_obsolete_keywords_);
+      data_file.set_check_types(1);
+      interprete_principal_.interpreter_bloc(data_file,
                                              Interprete_bloc::FIN /* on attend FIN a la fin */,
                                              0 /* interprete pour de vrai */);
     }

@@ -90,7 +90,7 @@ Read pb
                         }
                         nom_source pmp
                     } ,
-                    transformation { methode formule expression 1 (x*x+y*y)/2-1/3 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode formule expression 1 ((x*x+y*y)/2-1/3) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_P_max reduction_0D { methode l2_norm sources_reference { erreur_P } }
@@ -98,7 +98,7 @@ Read pb
             /* aux elems */
             erreur_V transformation
             {
-                methode formule expression 1 abs(v-sol)
+                methode formule expression 1 (abs(v-sol))
                 sources
                 {
                     Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,

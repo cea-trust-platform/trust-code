@@ -21,10 +21,10 @@ Mailler dom
 
     }
 }
-transformer dom x-0.5 y-0.5 z
+transformer dom (x-0.5) (y-0.5) z
 tetraedriser_homogene_fin dom
 
-transformer dom (x+y)/sqrt(2) (x-y)/sqrt(2) z transformer dom x (y+z)/sqrt(2) (y-z)/sqrt(2) transformer dom  (x+z)/sqrt(2) y (x-z)/sqrt(2)
+transformer dom ((x+y)/sqrt(2)) ((x-y)/sqrt(2)) z transformer dom x ((y+z)/sqrt(2)) ((y-z)/sqrt(2)) transformer dom  ((x+z)/sqrt(2)) y ((x-z)/sqrt(2))
 
 Sous_zone zone_tout
 Associate zone_tout dom

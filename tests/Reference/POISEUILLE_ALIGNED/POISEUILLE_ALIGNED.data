@@ -115,7 +115,7 @@ Read pb
         diffusion { option { grad_u_transpose_partout 1 } }
         initial_conditions
         {
-            vitesse Champ_fonc_xyz dom  3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+            vitesse Champ_fonc_xyz dom  3 0. ((x>0.5)*(x<1.5)*(-4.0*x*x+8.0*x-3.0)) 0.
         }
         sources
         {
@@ -175,7 +175,7 @@ Read pb
             Wall Symetrie
             Postpro Symetrie
             Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1.0
-            Entree frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 0. (x_GT_0.5)*(x_LT_1.5)*(-4.0*x*x+8.0*x-3.0) 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 0. ((x>0.5)*(x<1.5)*(-4.0*x*x+8.0*x-3.0)) 0.
         }
     }
 

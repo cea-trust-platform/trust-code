@@ -17,7 +17,7 @@ sed -i "s/vitesseX periode 100/vitesseX periode 2.1/" Champ_front_xyz_debit_4.da
 sed -i "s/vitesseY periode 100/vitesseY periode 2.1/" Champ_front_xyz_debit_4.data
 
 # chap 4 : cas 2 VEF 2D inclined
-sed "s/ENTREE/champ\_front\_fonc\_xyz 2 0*(y<0.5)-0.25*(y_GE_0.5)*(y_LT_1)-0.75*(y_GE_1)*(y_LT_1.5)-0.5*(y_GE_1.5)*(y_LT_2) 2/; s/VALUE/champ\_front\_uniforme 1 2.5/; s/VDF/VEFPreP1B/; s/10 5 0.1 5 2/20 5 0.01 6. 2/g" Champ_front_xyz_debit.data > Champ_front_xyz_debit_2.data
+sed "s/ENTREE/champ\_front\_fonc\_xyz 2 0*(y<0.5)-0.25*(y>=0.5)*(y<1)-0.75*(y>=1)*(y<1.5)-0.5*(y>=1.5)*(y<2) 2/; s/VALUE/champ\_front\_uniforme 1 2.5/; s/VDF/VEFPreP1B/; s/10 5 0.1 5 2/20 5 0.01 6. 2/g" Champ_front_xyz_debit.data > Champ_front_xyz_debit_2.data
 sed -i "23a transformer dom x+0.5*y y" Champ_front_xyz_debit_2.data
 sed -i "24a trianguler_h dom" Champ_front_xyz_debit_2.data
 sed -i "25a raffiner_isotrope dom" Champ_front_xyz_debit_2.data

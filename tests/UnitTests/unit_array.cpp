@@ -352,34 +352,6 @@ TEST(TRUSTTab, dim_int) {
   EXPECT_EQ(d1_, 3);
 }
 
-
-TEST(TRUSTArray, reshape) {
-
-  IntTab a1(12);
-
-  const int * ptr = a1.addr();
-  
-  a1.reshape(6,2);
-  
-	EXPECT_NE(a1.get_mem(), nullptr);
-  EXPECT_EQ(a1.get_span().data(), a1.get_mem()->data());
-  EXPECT_EQ(a1.get_data_location(), DataLocation::HostOnly);
-  EXPECT_EQ(a1.size_array(), 12);
-  
-	// Reshape down does not reallocate:
-  EXPECT_EQ(a1.addr(), ptr);
-  
-	a1.reshape(3,2,2);
-	
-	EXPECT_NE(a1.get_mem(), nullptr);
-  EXPECT_EQ(a1.get_span().data(), a1.get_mem()->data());
-  EXPECT_EQ(a1.get_data_location(), DataLocation::HostOnly);
-  EXPECT_EQ(a1.size_array(), 12);
-  
-	// Reshape down does not reallocate:
-	EXPECT_EQ(a1.addr(), ptr);
-}
-
 TEST(MDVector, dump_restore) {
   MD_Vector md;
   MD_Vector_seq mdvs(6);

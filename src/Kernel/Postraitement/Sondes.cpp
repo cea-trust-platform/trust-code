@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <LecFicDiffuse_JDD.h>
+
 #include <Postraitement.h>
 #include <Sondes.h>
 

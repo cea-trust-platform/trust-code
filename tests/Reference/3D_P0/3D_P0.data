@@ -22,7 +22,7 @@ Mailler dom
     }
 }
 Tetraedriser_homogene dom
-Transformer dom x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y) y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x) z
+Transformer dom (x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)) (y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x)) z
 Corriger_frontiere_periodique { domaine dom bord paroiY }
 # END MESH #
 
@@ -87,7 +87,6 @@ Read pb
         initial_conditions
         {
             vitesse Champ_fonc_xyz dom 3  0.  0. 0.
-	    pression champ_uniforme 1 0.
         }
         boundary_conditions
         {

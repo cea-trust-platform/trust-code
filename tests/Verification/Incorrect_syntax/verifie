@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# verify if the tests in list_tests all failed
+for file in $(cat list_tests.txt)
+do
+  trust ${file} 1>${file}.out 2>${file}.err
+  status=$?
+  if [ $status -eq 0 ]
+      then
+      echo Test case ${file} should have produced an error. 
+      exit 1
+  fi
+done
+
+exit 0

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,26 +13,29 @@
 *
 *****************************************************************************/
 
-#ifndef EChaineJDD_included
-#define EChaineJDD_included
+#ifndef DataFileStream_included
+#define DataFileStream_included
 
 #include <Entree.h>
+#include <DataFileToken.h>
 #include <sstream>
+
 using std::istringstream;
 
 /*! @brief
  * Same as EChaine except here the input string comes from a datafile.
- * Keeps a track of the lines that have been read in the datafile so far,
- * so in case of a TRUST crash, we can get the line in the datafile where the error occured
+ * Keeps a track of tokens that have been read in the datafile so far,
+ * so in case of a TRUST crash, we can get information in the datafile where the error occured
  */
-class EChaineJDD : public Entree
+class DataFileStream : public Entree
 {
 public:
+	using Tokens = std::list<DataFileToken>;
 
-  EChaineJDD();
-  EChaineJDD(const char* str);
-  ~EChaineJDD() override;
-  void init(const char *str);
+  DataFileStream();
+  DataFileStream(const std::string& string, const Tokens& tokens_);
+  ~DataFileStream() override;
+  void init(const std::string& string, const Tokens& tokens_);
 
   using Entree::operator>>;
   using Entree::get;
@@ -40,13 +43,19 @@ public:
   Entree& operator>>(double& ob) override;
   int get(char *ob, std::streamsize bufsize) override;
 
-  void set_track_lines(bool b) { track_lines_ = b ;}
+  // store the list of tokens and store an iterator to the last read token
+  static Tokens tokens;
+  static Tokens::iterator current_token_iterator;
 
-  static int file_cur_line_;
+  // also store a static bool to know if we are reading the first word or not (to correctly initialize the current_token_iterator)
+  static bool first_token_readed;
+
+  // also store the number of tokens to skip when reading a literal string that contain
+  // space characters
+  static size_t tokens_to_skip;
 
 protected:
   istringstream* istrstream_;
-  bool track_lines_;
 
   template <typename _TYPE_>
   Entree& operator_template(_TYPE_& ob);
@@ -54,7 +63,7 @@ protected:
 
 
 template <typename _TYPE_>
-Entree& EChaineJDD::operator_template(_TYPE_& ob)
+Entree& DataFileStream::operator_template(_TYPE_& ob)
 {
   assert(istrstream_!=0);
   char buffer[100];
@@ -65,5 +74,3 @@ Entree& EChaineJDD::operator_template(_TYPE_& ob)
 }
 
 #endif
-
-

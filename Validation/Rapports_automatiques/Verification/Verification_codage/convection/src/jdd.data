@@ -52,13 +52,13 @@ Lire pb
         convection { amont }
         diffusion { negligeable }
         conditions_initiales {
-            vitesse champ_fonc_xyz dom 2 (cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
-            (cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
+            vitesse champ_fonc_xyz dom 2 ((cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y))
+            ((cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y))
         }
         conditions_limites
         {
-            left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 (cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
-            (cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)
+            left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 ((cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y))
+            ((cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y))
             right frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
             down  $cl_down
             up    $cl_up
@@ -71,8 +71,8 @@ Lire pb
         {
             vx transformation { methode composante numero 0 localisation elem source refchamp { pb_champ pb vitesse } }
             vy transformation { methode composante numero 1 localisation elem source refchamp { pb_champ pb vitesse } }
-            erreur_v_x    transformation { methode formule expression 1 vx-((cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)) sources_reference { vx } }
-            erreur_v_y    transformation { methode formule expression 1 vy-((cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y)) sources_reference { vy } }
+            erreur_v_x    transformation { methode formule expression 1 (vx-((cos($theta)+sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y))) sources_reference { vx } }
+            erreur_v_y    transformation { methode formule expression 1 (vy-((cos($theta)-sin($theta))*exp((cos($theta)-sin($theta))*x-(sin($theta)+cos($theta))*y))) sources_reference { vy } }
             erreur_mx Reduction_0d { methode max sources_reference { erreur_v_x } }
             erreur_my Reduction_0d { methode max sources_reference { erreur_v_y } }
             erreur_Lx Reduction_0d { methode L2_norm sources_reference { erreur_v_x } }

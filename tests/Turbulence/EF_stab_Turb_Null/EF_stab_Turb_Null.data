@@ -80,7 +80,7 @@ Lire pb
 
     Navier_Stokes_Turbulent
     {
-        equation_non_resolue t<10000000
+        equation_non_resolue (t<10000000)
         solveur_pression petsc cholesky { }
         solveur_bar GCP
         {
@@ -115,7 +115,7 @@ Lire pb
         }
         conditions_initiales {
             Temperature Champ_Fonc_xyz dom 1
-            (x>0.4)*(x<0.6)*(y>0.4)*(y<0.6)
+            ((x>0.4)*(x<0.6)*(y>0.4)*(y<0.6))
         }
 
         modele_turbulence null { }

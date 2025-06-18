@@ -102,7 +102,7 @@ Read pb
             DROIT  Paroi_temperature_imposee 	Champ_Front_Uniforme 1 323.15
             GAUCH  Paroi_flux_impose 		Champ_front_Uniforme 1 400.
         }
-        initial_conditions { Temperature Champ_fonc_xyz dom_fluide 1 538.911933+((323.150000-538.911933)/0.02)*((SQRT(x^2+y^2))-0.01) }
+        initial_conditions { Temperature Champ_fonc_xyz dom_fluide 1 (538.911933+((323.150000-538.911933)/0.02)*((SQRT(x^2+y^2))-0.01)) }
     }
     Post_processing
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2024, CEA
+* Copyright (c) 2025, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,6 +75,7 @@ public:
   // final
   virtual Entree& operator>>(Objet_U& ob) final;
 
+  virtual int get(char& character);
   virtual int get(True_int *ob, std::streamsize n);
   virtual int get(long *ob, std::streamsize n);
   virtual int get(long long *ob, std::streamsize n);

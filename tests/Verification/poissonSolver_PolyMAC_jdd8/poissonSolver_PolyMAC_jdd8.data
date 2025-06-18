@@ -55,14 +55,14 @@ Read pb
     Conduction
     {
         diffusion { }
-        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 -(12*x^2+4*y-42+4*x+12*y^2-26) }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 (-(12*x^2+4*y-42+4*x+12*y^2-26)) }
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
-            left paroi_flux_impose Champ_Front_fonc_XYZ 1  -(4*x^3+4*x*y-42*x+2*y^2-14)
-            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 ((x^2+y-11)^2+(x+y^2-7)^2)
-            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 ((x^2+y-11)^2+(x+y^2-7)^2)
-            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   -(-22+2*x^2-26*y+4*x*y+4*y^3)
+            left paroi_flux_impose Champ_Front_fonc_XYZ 1  (-(4*x^3+4*x*y-42*x+2*y^2-14))
+            right  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 (((x^2+y-11)^2+(x+y^2-7)^2))
+            up  paroi_temperature_imposee Champ_Front_fonc_XYZ 1 (((x^2+y-11)^2+(x+y^2-7)^2))
+            down  paroi_flux_impose Champ_Front_fonc_XYZ 1   (-(-22+2*x^2-26*y+4*x*y+4*y^3))
         }
     }
 
@@ -74,14 +74,14 @@ Read pb
 				Definition_champs
     	    {
 						solution transformation {
-							Localisation elem
-							methode formule expression 1 ((x^2+y-11)^2+(x+y^2-7)^2)
+							Localisation (elem)
+							methode formule expression 1 (((x^2+y-11)^2+(x+y^2-7)^2))
 						}
     	      
 						erreur transformation
     	      {
-    	          methode formule expression 1 abs(temp-solution)
-								localisation elem
+    	          methode formule expression 1 (abs(temp-solution))
+								localisation (elem)
 								sources 
 								{
 								refChamp { Pb_champ pb temperature nom_source temp } 
@@ -115,9 +115,9 @@ Read pb
     	    format LATA
     	    fields dt_post 30.
     	    {
-    		      temperature elem
-    	        solution elem
-    	        erreur elem
+    		      temperature (elem)
+    	        solution (elem)
+    	        erreur (elem)
     	    }
 			}
 	}

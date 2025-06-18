@@ -29,7 +29,7 @@
 #include <unistd.h> // sleep() pour certaines machines
 #include <SChaine.h>
 #include <FichierHDFPar.h>
-#include <EChaineJDD.h>
+#include <DataFileStream.h>
 #include <DeviceMemory.h>
 #include <kokkos++.h>
 
@@ -58,6 +58,7 @@ static int        cerr_to_journal_ = 0;
 extern Stat_Counter_Id mpi_allreduce_counter_;
 int Process::exception_sur_exit=0;
 int Process::multiple_files=5120; // Valeur modifiable avec la variable d'environnement TRUST_MultipleFiles
+
 bool Process::force_single_file(const int ranks, const Nom& filename)
 {
   char* theValue = getenv("TRUST_MultipleFiles");
@@ -286,11 +287,21 @@ void Process::Kokkos_exit(const char* str)
  */
 void Process::exit(int i)
 {
+  // display the last readed token from the input data file
+  // don't print the token if int is 1
+  if (i != DONT_PRINT_TOKEN &&
+      DataFileStream::tokens.size() > 0 &&
+	  DataFileStream::current_token_iterator != DataFileStream::tokens.end()) {
+
+    DataFileStream::current_token_iterator->print_as_error("Error triggered while reading this token.");
+  }
+
+  // print the TRUST error message
   Nom message="=========================================\nTRUST has caused an error and will stop.\nUnexpected error during TRUST calculation.";
-  std::string jddLine = "\nError triggered at line " + std::to_string(EChaineJDD::file_cur_line_) + " in " + Objet_U::nom_du_cas().getString() + ".data";
-  message+=jddLine;
+
   exit(message,i);
 }
+
 void Process::exit(const Nom& message ,int i)
 {
   if (exception_sur_exit == 2)

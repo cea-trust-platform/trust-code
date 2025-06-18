@@ -31,7 +31,7 @@ Sous_domaine milieu
 Associate milieu hexaedre
 Read milieu
 {
-    fonction_sous_zone ((z>0.25)_and_(z<0.75))
+    fonction_sous_zone ((z>0.25)&&(z<0.75))
 }
 Sous_domaine sous_domaine_milieu
 Associate sous_domaine_milieu hexaedre

@@ -107,7 +107,7 @@ Read pb
             Bas  Paroi
         }
         initial_conditions {
-            concentration champ_fonc_xyz dom 1 (x-y[0)
+            concentration champ_fonc_xyz dom 1 ((x-y)<=0)
         }
     }
 

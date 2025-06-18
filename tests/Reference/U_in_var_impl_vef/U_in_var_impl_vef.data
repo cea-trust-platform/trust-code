@@ -85,7 +85,7 @@ Read pb
         }
         boundary_conditions {
             Haut symetrie
-            Entree frontiere_ouverte_vitesse_imposee Champ_Front_fonc_txyz 2 t*(t_LE_100)+(t_GT_100)*100 0
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_fonc_txyz 2 (t*(t<=100)+(t>100)*100) 0
             Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
         }
     }

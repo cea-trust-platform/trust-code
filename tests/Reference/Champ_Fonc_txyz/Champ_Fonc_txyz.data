@@ -91,7 +91,7 @@ Read pb
         diffusion { }
         convection { quick }
         sources {
-            Puissance_Thermique Champ_fonc_txyz dom 1 t*((x-0.5)^2+(y-0.5)^2<0.3*0.3)*100
+            Puissance_Thermique Champ_fonc_txyz dom 1 (t*((x-0.5)^2+(y-0.5)^2<0.3*0.3)*100)
         }
         boundary_conditions
         {

@@ -59,7 +59,7 @@ Read pb
         diffusion  { }
         sources
         {
-            source_qdm champ_fonc_xyz dom 3 -36*pi*pi*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) 0 0
+            source_qdm champ_fonc_xyz dom 3 (-36*pi*pi*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)) 0 0
         }
         initial_conditions
         {
@@ -67,7 +67,7 @@ Read pb
         }
         boundary_conditions
         {
-            boundary frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 -2*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*cos(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*sin(2*pi*y)*cos(2*pi*z)
+            boundary frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 (-2*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)) (sin(2*pi*x)*cos(2*pi*y)*sin(2*pi*z)) (sin(2*pi*x)*sin(2*pi*y)*cos(2*pi*z))
         }
     }
 
@@ -77,7 +77,7 @@ Read pb
         {
             p_moins_pmoy transformation
             {
-                methode formule expression 1 p-pmoy
+                methode formule expression 1 (p-pmoy)
                 sources
                 {
                     refChamp { Pb_champ pb pression_pa nom_source p } ,
@@ -86,12 +86,12 @@ Read pb
             }
             erreur_P transformation
             {
-                methode formule expression 1 abs(pmp-sol)
+                methode formule expression 1 (abs(pmp-sol))
                 sources
                 {
                     transformation
                     {
-                        methode formule expression 1 p-pmoy
+                        methode formule expression 1 (p-pmoy)
                         sources
                         {
                             refChamp { Pb_champ pb pression_pa nom_source p } ,
@@ -99,7 +99,7 @@ Read pb
                         }
                         nom_source pmp
                     } ,
-                    transformation { methode formule expression 1 -6*pi*sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode formule expression 1 (-6*pi*sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_P_max reduction_0D { methode l2_norm sources_reference { erreur_P } }
@@ -107,11 +107,11 @@ Read pb
             /* aux elems */
             erreur_V transformation
             {
-                methode formule expression 1 abs(v-sol)
+                methode formule expression 1 (abs(v-sol))
                 sources
                 {
                     Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,
-                    transformation { methode vecteur expression 3 -2*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*cos(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*sin(2*pi*y)*cos(2*pi*z) nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode vecteur expression 3 (-2*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)) (sin(2*pi*x)*cos(2*pi*y)*sin(2*pi*z)) (sin(2*pi*x)*sin(2*pi*y)*cos(2*pi*z)) nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_V_max reduction_0D { methode l2_norm source transformation { methode norme sources_reference { erreur_V } } }
