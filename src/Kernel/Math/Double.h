@@ -97,7 +97,7 @@ KOKKOS_INLINE_FUNCTION
 int est_egal(double x1, double x2, double eps)
 {
   double somme = std::fabs(x1)+std::fabs(x2);
-  return ( (somme < eps) || (std::fabs(x1-x2) < eps * somme) );
+  return ( (somme < eps) || (std::fabs(x1-x2) <= eps * somme) );
 }
 
 inline int est_egal(double x1, double x2) { return est_egal(x1,x2,Objet_U::precision_geom); }
@@ -109,7 +109,7 @@ inline int est_different(double x1, double x2) { return !est_egal(x1,x2); }
 inline int inf_ou_egal(double x1, double x2, double eps)
 {
   double somme=std::fabs(x1)+std::fabs(x2);
-  return ( (somme < eps) || (x1 < x2 + eps * somme));
+  return ( (somme < eps) || (x1 <= x2 + eps * somme));
 }
 
 inline int inf_ou_egal(double x1, double x2) { return inf_ou_egal(x1,x2,Objet_U::precision_geom); }
