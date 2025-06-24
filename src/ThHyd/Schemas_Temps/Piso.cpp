@@ -155,6 +155,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   gradient->calculer(pression,gradP);
   if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
     {
+      first_special_treatment(eqn, eqnNS, current, dt, resu);
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
       if (eqnNS.discretisation().is_polymac_family())
         matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
