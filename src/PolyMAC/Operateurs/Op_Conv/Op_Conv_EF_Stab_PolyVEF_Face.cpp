@@ -184,12 +184,18 @@ void Op_Conv_EF_Stab_PolyVEF_Face::dimensionner_blocs(matrices_t matrices, const
 
 // ajoute la contribution de la convection au second membre resu
 // renvoie resu
+
 void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  ajouter_blocs_gen(matrices, secmem, equation().inconnue().passe(), semi_impl);
+}
+
+void Op_Conv_EF_Stab_PolyVEF_Face::ajouter_blocs_gen(matrices_t matrices, DoubleTab& secmem, const DoubleTab& vit, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const IntTab& f_e = dom.face_voisins(), &e_f = dom.elem_faces(), &fcl = ch.fcl();
-  const DoubleTab& vit = ch.passe(), &nf = dom.face_normales();
+  const DoubleTab& nf = dom.face_normales();
   const DoubleVect& pf = porosite_f;
 
   /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
