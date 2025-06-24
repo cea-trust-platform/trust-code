@@ -522,7 +522,8 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current,
           for (auto &&nom : noms)
             if (nom != "vitesse" && nom != "pression")
               ordre.back().insert( { { nom, 0 } });
-          if (!(ok = eliminer(ordre, "pression", mats_, sec, A_p_, b_p)))
+          ok = mp_min(eliminer(ordre, "pression", mats_, sec, A_p_, b_p));
+          if (!ok)
             {
               Cerr << "Echec de l'elimination!";
               break; //si l'elimination echoue, on sort
