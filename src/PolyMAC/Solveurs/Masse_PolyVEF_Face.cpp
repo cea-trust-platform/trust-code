@@ -176,7 +176,7 @@ void Masse_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
             for (n = 0; n < N; n++)
               secmem(f, N * d + n) = masse(n, n) * ((fcl(f, 0) == 3 ? ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) : 0) - resoudre_en_increments * inco(f, N * d + n));
           for (auto &&kv : matrices)
-            if (kv.second->nb_colonnes())
+            if (kv.second != nullptr && kv.second->nb_colonnes())
               for (i = N * D * f, d = 0; d < D; d++)
                 for (n = 0; n < N; n++, i++)
                   for (j = kv.second->get_tab1()(i) - 1; j < kv.second->get_tab1()(i + 1) - 1; j++)

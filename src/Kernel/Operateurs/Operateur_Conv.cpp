@@ -50,7 +50,7 @@ Entree& Operateur_Conv::readOn(Entree& is)
       exit();
     }
 
-  if(mon_equation->le_nom().contient("ALE") && (valeur().que_suis_je() != "Op_Conv_ALE_VEF" && valeur().que_suis_je() != "Op_Conv_ALE_PolyMAC_P0_Face"))
+  if(mon_equation->le_nom().contient("ALE") && (valeur().que_suis_je() != "Op_Conv_ALE_VEF" && valeur().que_suis_je() != "Op_Conv_ALE_PolyVEF_P0P1_Face"))
     {
       Cerr<<" You should use the ALE convection operator within the Navier_Stokes_standard_ALE/Navier_Stokes_Turbulent_ALE equation "<<finl;
       Cerr<<" Exemple:  convection { ALE { muscl } }  "<<finl;
