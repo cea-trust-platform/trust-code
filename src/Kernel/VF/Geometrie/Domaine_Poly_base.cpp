@@ -529,37 +529,10 @@ void Domaine_Poly_base::discretiser_aretes()
       domaine().creer_aretes();
       md_vector_aretes_ = domaine().aretes_som().get_md_vector();
 
-      /* ordre canonique dans aretes_som */
-      IntTab& a_s = domaine().set_aretes_som(), &e_a = domaine().set_elem_aretes();
-      const DoubleTab& xs = domaine().coord_sommets();
-      std::map<std::array<double, 3>, int> xv_fsa;
-      for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
-        {
-          for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
-          for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
-        }
-
-      //remplissage de som_aretes
-      som_arete.resize(domaine().nb_som_tot());
-      for (int i = 0; i < a_s.dimension_tot(0); i++)
-        for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
-
       //remplissage de xa (CGs des aretes), de ta_ (vecteur tangent aux aretes) et de longueur_arete_ (longueurs des aretes)
       xa_.resize(0, 3), ta_.resize(0, 3);
       creer_tableau_aretes(xa_), creer_tableau_aretes(ta_), creer_tableau_aretes(longueur_aretes_);
-      for (int i = 0, k; i < domaine().nb_aretes_tot(); i++)
-        {
-          int s1 = a_s(i, 0), s2 = a_s(i, 1);
-          longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
-          for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
-        }
-
-      /* ordre canonique dans elem_aretes_ */
-      for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
-        {
-          for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
-          for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
-        }
+      calculer_infos_aretes();
     }
 
   //MD_vector pour Champ_Elem_PolyMAC_P0P1NC (elems + faces)
@@ -851,4 +824,37 @@ const DoubleTab& Domaine_Poly_base::pvol_som(const DoubleVect& porosite_elem) co
       pvol_som_(e_s(e, i)) += porosite_elem(e) * v_es(j);
   pvol_som_.echange_espace_virtuel();
   return pvol_som_;
+}
+
+void Domaine_Poly_base::calculer_infos_aretes()
+{
+  if (dimension < 3) return;
+  /* ordre canonique dans aretes_som */
+  IntTab& a_s = domaine().set_aretes_som(), &e_a = domaine().set_elem_aretes();
+  const DoubleTab& xs = domaine().coord_sommets();
+  std::map<std::array<double, 3>, int> xv_fsa;
+  for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
+    {
+      for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
+      for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
+    }
+
+  //remplissage de som_aretes
+  som_arete.resize(domaine().nb_som_tot());
+  for (int i = 0; i < a_s.dimension_tot(0); i++)
+    for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
+
+  for (int i = 0, k; i < domaine().nb_aretes_tot(); i++)
+    {
+      int s1 = a_s(i, 0), s2 = a_s(i, 1);
+      longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
+      for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
+    }
+
+  /* ordre canonique dans elem_aretes_ */
+  for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
+    {
+      for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
+      for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
+    }
 }
