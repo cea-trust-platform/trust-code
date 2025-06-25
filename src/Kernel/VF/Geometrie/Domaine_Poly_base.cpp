@@ -794,7 +794,7 @@ const IntTab& Domaine_Poly_base::elem_arete_d() const
 
 const DoubleTab& Domaine_Poly_base::vol_elem_som() const
 {
-  // if (vol_elem_som_.size()) return vol_elem_som_; //deja fait
+  if (vol_elem_som_.size()) return vol_elem_som_; //deja fait
   const IntTab& es_d = elem_som_d(), &e_f = elem_faces(), &f_s = face_sommets(), &e_s = domaine().les_elems();
   const DoubleTab& xs = domaine().coord_sommets();
   DoubleTab& vol = vol_elem_som_;
@@ -815,7 +815,7 @@ const DoubleTab& Domaine_Poly_base::vol_elem_som() const
 
 const DoubleTab& Domaine_Poly_base::pvol_som(const DoubleVect& porosite_elem) const
 {
-  // if (pvol_som_.size()) return pvol_som_; //deja fait
+  if (pvol_som_.size()) return pvol_som_; //deja fait
   const IntTab& es_d = elem_som_d(), &e_s = domaine().les_elems();
   const DoubleTab& v_es = vol_elem_som();
   domaine().creer_tableau_sommets(pvol_som_);
