@@ -117,11 +117,17 @@ void Op_Conv_EF_Stab_PolyVEF_Face::completer()
 
 double Op_Conv_EF_Stab_PolyVEF_Face::calculer_dt_stab() const
 {
+  const DoubleTab& vit = vitesse_->valeurs();
+  return calculer_dt_stab_gen(vit);
+}
+
+double Op_Conv_EF_Stab_PolyVEF_Face::calculer_dt_stab_gen(const DoubleTab& vit) const
+{
   double dt = 1e10;
   const Domaine_Poly_base& dom = le_dom_poly_.valeur();
   const Champ_Face_PolyVEF& ch = ref_cast(Champ_Face_PolyVEF, equation().inconnue());
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = dom.volumes_entrelaces();
-  const DoubleTab& vit = vitesse_->valeurs(), &vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales(),
+  const DoubleTab& vfd = dom.volumes_entrelaces_dir(), &nf = dom.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const IntTab& e_f = dom.elem_faces(), &f_e = dom.face_voisins(), &fcl = ch.fcl();
   int i, j, k, e, f, d, D = dimension, n, N = vit.line_size() / D;
