@@ -136,6 +136,8 @@ public :
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
   void calculer_infos_aretes();
+  void fill_normales();
+  void recalculer_xv();
 
 protected:
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage

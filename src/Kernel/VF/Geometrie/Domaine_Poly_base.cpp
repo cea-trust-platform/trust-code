@@ -311,91 +311,11 @@ void Domaine_Poly_base::discretiser()
         }
     }
 
-  int num_face;
+  face_normales_.resize(0, dimension);
+  creer_tableau_faces(face_normales_);
+  fill_normales();
 
-
-  // On remplit le tableau face_normales_;
-  //  Attention : le tableau face_voisins n'est pas exactement un
-  //  tableau distribue. Une face n'a pas ses deux voisins dans le
-  //  meme ordre sur tous les processeurs qui possedent la face.
-  //  Donc la normale a la face peut changer de direction d'un
-  //  processeur a l'autre, y compris pour les faces de joint.
-  {
-    const int n = nb_faces();
-    face_normales_.resize(n, dimension);
-    // const Domaine & dom = domaine();
-    //    Scatter::creer_tableau_distribue(dom, JOINT_ITEM::FACE, face_normales_);
-    creer_tableau_faces(face_normales_);
-    const IntTab& face_som = face_sommets();
-    IntTab& face_vois = face_voisins();
-    const IntTab& elem_face = elem_faces();
-    const int n_tot = nb_faces_tot();
-    for (num_face = 0; num_face < n_tot; num_face++)
-      {
-        type_elem_->normale(num_face,
-                            face_normales_,
-                            face_som, face_vois, elem_face, domaine_geom);
-      }
-
-    DoubleTab old(face_normales_);
-    face_normales_.echange_espace_virtuel();
-    for (num_face = 0; num_face < n_tot; num_face++)
-      {
-        int id=1;
-        for (int d=0; d<dimension; d++)
-          if (!est_egal(old(num_face,d),face_normales_(num_face,d)))
-            {
-              id=0;
-              if (!est_egal(old(num_face,d),-face_normales_(num_face,d)))
-                {
-                  Cerr<<"pb in faces_normales" <<finl;
-                  Process::exit();
-                }
-            }
-        if (id==0)
-          {
-            // on a change le sens de la normale, on inverse elem1 elem2
-            std::swap(face_vois(num_face,0),face_vois(num_face,1));
-          }
-      }
-  }
-
-  /* recalcul de xv pour avoir les vrais CG des faces */
-  const DoubleTab& coords = domaine().coord_sommets();
-  for (int face = 0; dimension == 3 && face < nb_faces(); face++)
-    {
-      double xs[3] = { 0, }, S = 0;
-      for (int k = 0; k < face_sommets_.dimension(1); k++)
-        if (face_sommets_(face, k) >= 0)
-          {
-            int s0 = face_sommets_(face, 0), s1 = face_sommets_(face, k),
-                s2 = k + 1 < face_sommets_.dimension(1) && face_sommets_(face, k + 1) >= 0 ? face_sommets_(face, k +1) : s0;
-            double s = 0;
-            for (int r = 0; r < 3; r++)
-              for (int i = 0; i < 2; i++)
-                s += (i ? -1 : 1) * face_normales_(face, r) * (coords(s2, (r + 1 +  i) % 3) - coords(s0, (r + 1 +  i) % 3))
-                     * (coords(s1, (r + 1 + !i) % 3) - coords(s0, (r + 1 + !i) % 3));
-            for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
-            S += s;
-          }
-      if (S == 0 && sub_type(Hexa_poly,type_elem_.valeur()))
-        {
-          Cerr << "===============================" << finl;
-          Cerr << "Error in your mesh for " << que_suis_je() << "!" << finl;
-          Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
-          Cerr << "Polyedriser " << domaine().le_nom() << finl;
-          Process::exit();
-        }
-      for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
-    }
-  xv_.echange_espace_virtuel();
-
-  detecter_faces_non_planes();
-
-  creer_tableau_faces(volumes_entrelaces_);
-  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
-  calculer_volumes_entrelaces();
-
+  recalculer_xv();
   /* ordre canonique dans elem_faces_ */
   std::map<std::array<double, 3>, int> xv_fsa;
   for (int e = 0, i, j, f; e < nb_elem_tot(); e++)
@@ -404,10 +324,54 @@ void Domaine_Poly_base::discretiser()
         xv_fsa[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
       for (auto &&c_f : xv_fsa) elem_faces_(e, j) = c_f.second, j++;
     }
+  detecter_faces_non_planes();
+
+  creer_tableau_faces(volumes_entrelaces_);
+  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
+  calculer_volumes_entrelaces();
+
 
   //calculer_h_carre();
 }
 
+void Domaine_Poly_base::fill_normales()
+{
+  // On remplit le tableau face_normales_;
+  //  Attention : le tableau face_voisins n'est pas exactement un
+  //  tableau distribue. Une face n'a pas ses deux voisins dans le
+  //  meme ordre sur tous les processeurs qui possedent la face.
+  //  Donc la normale a la face peut changer de direction d'un
+  //  processeur a l'autre, y compris pour les faces de joint.
+
+  const IntTab& face_som = face_sommets();
+  IntTab& face_vois = face_voisins();
+  const IntTab& elem_face = elem_faces();
+  const int nf = nb_faces();
+  for (int f = 0; f < nf; f++)
+    type_elem_->normale(f, face_normales_, face_som, face_vois, elem_face, domaine());
+
+  face_normales_.echange_espace_virtuel();
+  //   DoubleTab old(face_normales_);
+  // for (int f = 0; f < nf_tot; f++)
+  //   {
+  //     int id=1;
+  //     for (int d = 0; d < dimension; d++)
+  //       if (!est_egal(old(f,d),face_normales_(f,d)))
+  //         {
+  //           id=0;
+  //           if (!est_egal(old(f, d), -face_normales_(f, d)))
+  //             {
+  //               Cerr << "pb in faces_normales" << finl;
+  //               Process::exit();
+  //             }
+  //         }
+  //     if (id == 0)
+  //       {
+  //         // on a change le sens de la normale, on inverse elem1 elem2
+  //         std::swap(face_vois(f, 0), face_vois(f, 1));
+  //       }
+  //   }
+}
 
 void Domaine_Poly_base::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
@@ -857,4 +821,39 @@ void Domaine_Poly_base::calculer_infos_aretes()
       for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
       for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
     }
+}
+
+void Domaine_Poly_base::recalculer_xv()
+{
+  if (dimension < 3) return;
+  /* recalcul de xv pour avoir les vrais CG des faces */
+  const DoubleTab& coords = domaine().coord_sommets();
+  for (int face = 0; face < nb_faces(); face++)
+    {
+      double xs[3] = { 0, }, S = 0;
+      for (int k = 0; k < face_sommets_.dimension(1); k++)
+        if (face_sommets_(face, k) >= 0)
+          {
+            int s0 = face_sommets_(face, 0), s1 = face_sommets_(face, k),
+                s2 = k + 1 < face_sommets_.dimension(1) && face_sommets_(face, k + 1) >= 0 ? face_sommets_(face, k +1) : s0;
+            double s = 0;
+            for (int r = 0; r < 3; r++)
+              for (int i = 0; i < 2; i++)
+                s += (i ? -1 : 1) * face_normales_(face, r) * (coords(s2, (r + 1 +  i) % 3) - coords(s0, (r + 1 +  i) % 3))
+                     * (coords(s1, (r + 1 + !i) % 3) - coords(s0, (r + 1 + !i) % 3));
+            for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
+            S += s;
+          }
+      if (S == 0 && sub_type(Hexa_poly,type_elem_.valeur()))
+        {
+          Cerr << "===============================" << finl;
+          Cerr << "Error in your mesh for " << que_suis_je() << "!" << finl;
+          Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
+          Cerr << "Polyedriser " << domaine().le_nom() << finl;
+          Process::exit();
+        }
+      for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
+    }
+  xv_.echange_espace_virtuel();
+
 }
