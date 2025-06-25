@@ -155,6 +155,7 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
   DoubleTrav w2, lw2, tw2(N); //matrice w2, sommes par ligne et totale
 
+  flux_bords_ = 0.0;
   for (e = 0; e < dom.nb_elem_tot(); e++)
     {
       //si e n'a aucune face reelle, rien a faire
@@ -176,6 +177,7 @@ void Op_Diff_PolyVEF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   {
                     double fac = w2(i, j, n) - lw2(i, n) * lw2(j, n) / tw2(n);
                     secmem(f, nd) -= fac * inco(fb, nd);
+                    if (f < dom.premiere_face_int()) flux_bords_(f, nd) += fac * inco(fb, nd); //flux aux faces de bord
                     if (mat)
                       (*mat)(ND * f + nd, ND * fb + nd) += fac;
                   }
