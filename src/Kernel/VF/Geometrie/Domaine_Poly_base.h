@@ -140,6 +140,8 @@ public :
   void recalculer_xv();
 
 protected:
+  void verifier_type_elem() const;
+
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   OWN_PTR(Elem_poly_base) type_elem_;                  // type de l'element de discretisation

@@ -227,39 +227,9 @@ void Domaine_Poly_base::typer_elem(Domaine& domaine_geom)
   Cerr << "Elem_poly => type retenu : " << type_elem_->que_suis_je() << finl;
 }
 
-void Domaine_Poly_base::discretiser()
+void Domaine_Poly_base::verifier_type_elem() const
 {
-
-  Domaine& domaine_geom=domaine();
-  typer_elem(domaine_geom);
-  Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  Domaine_VF::discretiser();
-
-  // Correction du tableau facevoisins:
-  //  A l'issue de Domaine_VF::discretiser(), les elements voisins 0 et 1 d'une
-  //  face sont les memes sur tous les processeurs qui possedent la face.
-  //  Si la face est virtuelle et qu'un des deux elements voisins n'est
-  //  pas connu (il n'est pas dans l'epaisseur du joint), l'element voisin
-  //  vaut -1. Cela peut etre un voisin 0 ou un voisin 1.
-  //  On corrige les faces virtuelles pour que, si un element voisin n'est
-  //  pas connu, alors il est voisin1. Le voisin0 est donc toujours valide.
-  {
-    IntTab& face_vois = face_voisins();
-    const int debut = nb_faces();
-    const int fin   = nb_faces_tot();
-    for (int i = debut; i < fin; i++)
-      {
-        if (face_voisins(i, 0) == -1)
-          {
-            face_vois(i, 0) = face_vois(i, 1);
-            face_vois(i, 1) = -1;
-          }
-      }
-  }
-
-  // Verification de la coherence entre l'element geometrique et
-  //l'elemnt de discretisation
-
+  const Elem_geom_base& elem_geom = domaine().type_elem().valeur();
 
   if (sub_type(Segment_poly,type_elem_.valeur()))
     {
@@ -310,12 +280,43 @@ void Domaine_Poly_base::discretiser()
           Process::exit();
         }
     }
+}
+
+void Domaine_Poly_base::discretiser()
+{
+  typer_elem(domaine());
+  verifier_type_elem();
+  Domaine_VF::discretiser();
+
+  // Correction du tableau facevoisins:
+  //  A l'issue de Domaine_VF::discretiser(), les elements voisins 0 et 1 d'une
+  //  face sont les memes sur tous les processeurs qui possedent la face.
+  //  Si la face est virtuelle et qu'un des deux elements voisins n'est
+  //  pas connu (il n'est pas dans l'epaisseur du joint), l'element voisin
+  //  vaut -1. Cela peut etre un voisin 0 ou un voisin 1.
+  //  On corrige les faces virtuelles pour que, si un element voisin n'est
+  //  pas connu, alors il est voisin1. Le voisin0 est donc toujours valide.
+  IntTab& face_vois = face_voisins();
+  const int debut = nb_faces();
+  const int fin = nb_faces_tot();
+  for (int i = debut; i < fin; i++)
+    if (face_voisins(i, 0) == -1)
+      {
+        face_vois(i, 0) = face_vois(i, 1);
+        face_vois(i, 1) = -1;
+      }
 
   face_normales_.resize(0, dimension);
   creer_tableau_faces(face_normales_);
   fill_normales();
 
   recalculer_xv();
+  detecter_faces_non_planes();
+
+  creer_tableau_faces(volumes_entrelaces_);
+  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
+  calculer_volumes_entrelaces();
+
   /* ordre canonique dans elem_faces_ */
   std::map<std::array<double, 3>, int> xv_fsa;
   for (int e = 0, i, j, f; e < nb_elem_tot(); e++)
@@ -324,13 +325,6 @@ void Domaine_Poly_base::discretiser()
         xv_fsa[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
       for (auto &&c_f : xv_fsa) elem_faces_(e, j) = c_f.second, j++;
     }
-  detecter_faces_non_planes();
-
-  creer_tableau_faces(volumes_entrelaces_);
-  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
-  calculer_volumes_entrelaces();
-
-
   //calculer_h_carre();
 }
 
