@@ -15,8 +15,8 @@ Lire grid_geom
 Parallel_io_parameters
 {
   block_size_megabytes 0
-  bench_ijk_splitting_write grid_geom
-  bench_ijk_splitting_read grid_geom
+  bench_domain_write grid_geom
+  bench_domain_read grid_geom
 }
 
 system "cp test.lata.1.VELOCITY test.lata.1.VELOCITY.reference" 
@@ -24,8 +24,8 @@ Parallel_io_parameters
 {
   block_size_bytes 2048
   writing_processes 2
-  bench_ijk_splitting_write grid_geom 
-  bench_ijk_splitting_read grid_geom
+  bench_domain_write grid_geom 
+  bench_domain_read grid_geom
 }
 Fin
 
