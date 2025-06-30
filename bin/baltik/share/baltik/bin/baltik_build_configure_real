@@ -77,7 +77,8 @@ chmod +x configure
 chmod +w README.BALTIK
 if [ "$execute" = 1 ]
 then
-   ./configure && exit $?
+   ./configure
+   exit $?
 else
    echo "You can now run ./configure. (baltik_build_configure -execute : build ./configure and run it)"
 fi
