@@ -473,11 +473,6 @@ source $TRUST_ROOT/env_TRUST.sh
 # Message de detection :
 [ ${#TRUST_CC} = 0 ] && echo "Warning : this script did not find C++ compiler : you CANNOT compile TRUST" | tee -a $LOG
 [ ${#TRUST_F77} = 0 ] && echo "Warning : this script did not find fortran compiler : you CANNOT compile TRUST" | tee -a $LOG
-[ ${#TRUST_EDITOR} = 0 ] && echo "Warning : this script did not find some editor : you CANNOT edit data files" | tee -a $LOG
-[ ${#TRUST_WEBBROWSER} = 0 ] && echo "Warning : this script did not find some browser : you CANNOT use the Graphical User Interface" | tee -a $LOG
-[ ${#TRUST_MD} = 0 ] && echo "Warning : this script did not find the command makedepend : you CANNOT modify TRUST" | tee -a $LOG
-
-
 
 ################################################
 # Tests des executables TRUST livres #
@@ -575,7 +570,8 @@ done
 ##################
 clear 
 echo | tee -a $LOG
-grep BUILD_ $LOG
+grep BUILD_EXEC $LOG
+grep BUILD_TOOLS $LOG
 echo "***************" | tee -a $LOG
 echo "END OF INSTALL." | tee -a $LOG
 echo "***************" | tee -a $LOG

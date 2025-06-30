@@ -453,7 +453,7 @@ do
    #ROOT=$version/$MODULE
    ROOT=$TRUST_ROOT # only TRUST in modules
    cd $ROOT
-   [ $MODULE = TRUST ] && code=TRUST && exec=$ROOT/exec/TRUST$COMM$OPT && source env_TRUST.sh
+   [ $MODULE = TRUST ] && code=TRUST && exec=$ROOT/exec/TRUST$COMM$OPT && source env_TRUST.sh  1>/dev/null 2>&1
 # Nettoyage
    [ ! $SHARE_LIBS ] && rm -f $ROOT/lib/lib*.s?
    rm -f $ROOT/compile_*
@@ -494,7 +494,7 @@ do
       [ -d TRUST_moved ] && rm -rf TRUST_moved
       mv TRUST TRUST_moved
       cd TRUST_moved
-      source env_TRUST.sh
+      source env_TRUST.sh 1>/dev/null 2>&1
       rm -rf ../TRUST  # il reste exec/python/var/cache/fontconfig/*.cache*
       ROOT=$version/TRUST_moved
       PERF=$ROOT/PERF_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD
@@ -1243,7 +1243,7 @@ then
    rm -rf TRUST  # necessaire car il reste exec/python/var/cache/fontconfig/*.cache*
    mv TRUST_moved TRUST
    cd TRUST
-   source env_TRUST.sh
+   source env_TRUST.sh 1>/dev/null 2>&1
 fi
 
 if [ "${HOST_BUILD#petra}" != "$HOST_BUILD" ]

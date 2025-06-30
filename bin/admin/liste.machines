@@ -9,7 +9,7 @@ linux	rsync_ssh   tache	is246434.intra.cea.fr		-all 		 -ICoCo -TrioCFD -GENEPI3 
 linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 	-ICoCo -FLICA5 			-semi_opt 				-coolprop -eos 				# Fedora 32	Bat 451 LGLS titania bureau TMA
 linux	rsync_ssh	tache	is234634-clang.intra.cea.fr	-all 		-FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit   								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux   rsync_ssh   tache   is157083-clang.intra.cea.fr 		-all	   -ICoCo -TrioCFD -FLICA5 	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 38 GF 
-linux   rsync_ssh   tache   is234637-clang.intra.cea.fr 		-all	   -ICoCo -TrioCFD -FLICA5	 		   		-clang  	 -force_latest_mpich -without-pdflatex -without-visit -disable-plot2d -disable-gmsh   					# Fedora 40 GA 
+linux   rsync_ssh   tache   is234637-clang.intra.cea.fr 		-all	   -FLICA5	 		   		-clang  	 -force_latest_mpich -without-pdflatex -without-visit -disable-plot2d -disable-gmsh   					# Fedora 40 GA 
 linux   rsync_ssh   tache   is245205-clang.intra.cea.fr 		-all	   -ICoCo -TrioCFD -FLICA5 	 		   		-clang  	 -force_latest_mpich -without-pdflatex  					# Fedora 41 GA
 linux	rsync_ssh   tache	is246434-clang.intra.cea.fr		-all 		-ICoCo  -TrioCFD -GENEPI3 -STT -PEMFC -FLICA5 -C3D -TRUST_NK -SIDES -SCORPIO -TrioMC -MATHYS      	-clang   				-force_latest_mpich -without-pdflatex -without-visit   	# Debian testing MF
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
@@ -36,7 +36,7 @@ linux   rsync_ssh	tache	is248238-gpu.intra.cea.fr 		-all	 	-TrioCFD -semi_opt  	
 linux   rsync_ssh	tache	is158963-gpu.intra.cea.fr 		-all	 	-TrioCFD              	 		-gcc12 -cuda -without-pdflatex -without-visit     # Ubuntu 24.04 titania
 linux   rsync_ssh   tache   is246524-gpu.intra.cea.fr  		-all	-benchmark	-TrioCFD			-rocm -without-pdflatex -without-visit     # PC Pierre titania 
 linux   rsync_ssh   tache   is247793-gpu.intra.cea.fr  		-limited 	-benchmark -ICoCo -TrioCFD				-rocm -force_latest_mpich -without-pdflatex -without-visit     # PC Guillaume titania 
-linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-ICoCo -TrioCFD   		-ctest_mode_valgrind 		 		     -without-pdflatex			# Redhat 9 serveur rackable pour validation TrioCFD titania
+linux	rsync_ssh	tache	desactive_pegasi2.intra.cea.fr	  	-ICoCo -TrioCFD -FLICA5    		-ctest_mode_valgrind 		 		     -without-pdflatex			# Redhat 9 serveur rackable pour validation TrioCFD titania
 linux	ssh_pass	cible	rhodia8-4.intra.cea.fr	  	-all  		-ICoCo -GENEPI3 -TrioCFD -FLICA5   	 		      -without-pdflatex  			# Redhat 8.4 serveur rackable titania
 linux	ssh_pass	tache	rhodia8-4-woconda.intra.cea.fr  		-ICoCo -FLICA5 -C3D    	 		     -without-conda -alternative-cmake -without-pdflatex  			# Redhat 8.4 serveur rackable titania
 linux	rsync_ssh	tache	is158963-woconda.intra.cea.fr  		-ICoCo -FLICA5 -C3D    	 		     -without-conda -without-pdflatex  			# Ubuntu 24 serveur rackable titania
@@ -44,7 +44,7 @@ linux	rsync_ssh	tache	unitas20-coolprop-eos.intra.cea.fr		-all 		-TrioCFD -FLICA
 linux	rsync_ssh	tache	is248238-coolprop-eos.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD    	 		      -coolprop -eos210 -without-pdflatex  			# Ubuntu 24 titania 
 linux	rsync_ssh	tache	is246145.intra.cea.fr		-all	 -TrioCFD  -GENEPI3 -FLICA5 -MPCube   						 -platform -without-pdflatex -force_provided_mpich -gcc8    					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is154727.intra.cea.fr		-all		-ICoCo 						-check-valgrind -without-pdflatex								# UB 22 titania 	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-MPCube -TrioCFD  -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -STT -PEMFC -TrioMC -MATHYS  			-force_latest_mpich -without-pdflatex -disable-mpi4py    	                					# Debian 12 titania	Bat 451 LGLS	bureau Gilles
+linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-ICoCo -TrioCFD  			-force_latest_mpich -without-pdflatex -disable-mpi4py    	                					# Debian 12 titania	Bat 451 LGLS	bureau Gilles
 linux	rsync_ssh	non	is247785-c3d.intra.cea.fr	-all 			-GENEPI3 -C3D 						-for-c3d -disable-valgrind 						# Fedora 40	Bat 451 LMES titania 	
 linux	rsync_ssh	tache	is233137.intra.cea.fr		 		-ICoCo -TrioCFD -GENEPI3 -C3D -MPCube -FLICA5 -TRUST_NK -SIDES -SCORPIO -TrioMC -MATHYS    -g 						 			  						# Ubuntu 22 pilote	Bat 451 LMSF titania 	bureau Michel
 linux	rsync_ssh	non	is247785-minimal.intra.cea.fr		-all		-C3D 							-disable-optionals								# Fedora 40 titania 	Bat 454	LMES	CC
@@ -65,6 +65,6 @@ linux   rsync_ssh	non	is232973-gui.intra.cea.fr 		-all		-ICoCo -TrioCFD  -GENEPI
 linux   rsync_ssh	tache	is210376-tmpnoexe.intra.cea.fr 		-all	-gcov 		-ICoCo    	 		   								# Fedora 34 titania tmp no exec
 linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		-prof    		-remote_install_TRUST_kernel_only 						# Ub22 mode formation titania 
 linux   ssh_pass	tache	is231762.intra.cea.fr 		-all	   -ICoCo -MPCube -TrioCFD -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -STT -PEMFC -TrioMC -MATHYS   	 	   			-without-pdflatex					# Rocky 9.2 GA
-linux   rsync_ssh   tache   is234637.intra.cea.fr 		-all	   -MPCube -TrioCFD -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -STT -PEMFC -C3D -TrioMC -MATHYS   	 		   			-disable-plot2d -disable-gmsh   					# Fedora 40 GA titania
+linux   rsync_ssh   tache   is234637.intra.cea.fr 		-all	   -TrioCFD -SIDES -GENEPI3 -FLICA5 -PEMFC -C3D -MATHYS   	 		   			-disable-plot2d -disable-gmsh   					# Fedora 40 GA titania
 linux	rsync_ssh	cible	is248238-int32.intra.cea.fr	-all  	-ICoCo -GENEPI3 -TrioCFD -MPCube -TRUST_NK -SIDES -SCORPIO -TrioMC -MATHYS    	  		      -build_32_bit -without-pdflatex  			# Ubuntu 24 
 linux	rsync_ssh	tache	is158963.intra.cea.fr	-all  		-GENEPI3 -TrioCFD -MPCube -TRUST_NK -SIDES -SCORPIO -TrioMC -MATHYS -FLICA5 	  		       -without-pdflatex  			# Ubuntu 24 

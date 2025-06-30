@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.9.7_beta : Enhancements, modifications and corrected bugs since version 1.9.6 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.9.6 : Enhancements, modifications and corrected bugs since version 1.9.5 :
 --------------------------------------------------------------------------------------------------
 06/05/25 (TRUST) Keyword      : Schema_Euler_Explicite: advanced 'facsec' usage (with options facsec_ini, etc.) is now accessible through attribute 'facsec_expert'. facsec as a parser expression accessible with 'facsec_func'.
