@@ -263,6 +263,23 @@ add_test_case_from_validation()
             do
                [ ! -f $cas_test/lien_fiche_validation ] && ok=0 && echo "lien_fiche_validation manquant..."
                [ ! -f $cas_test/$cas_test.lml.gz ]      && ok=0 && echo "Fichier $cas_test.lml.gz manquant... Effacer le repertoire `pwd`/$cas_test"
+               #########################################
+               # Verification de la taille du cas test #
+               #########################################
+               check_size_lml $cas_test
+               if [ "$err" != 0 ]
+               then
+                  msg="\n -> The validation form $FICHE_ROOT generates test cases with huge size...\n"
+                  msg_warning="\n-----------------------------Advice--------------------------------------\n"
+                  msg_warning+="You can skip the validation form or a part of its test cases : \n"
+                  msg_warning+="- To skip the validation form, add a file skip_prm into '$FICHE_ROOT' or '$FICHE_ROOT/src'\n"
+                  msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in '$FICHE_ROOT/src'\n"
+                  msg_warning+="- To build no test cases, add a file fiche_exclu_nr into '$FICHE_ROOT/src'\n"
+                  msg_warning+="--------------------------------------------------------------------------\n"
+                  echo $cas_test
+                  #echo $ECHO_OPTS $msg $msg_warning
+                  #return 255
+               fi
                #####################################################################################
                # Verification de la localisation de la fiche de validation pointee par le cas test #
                #####################################################################################
@@ -377,7 +394,7 @@ add_test_case_from_validation()
                      if [ ! $? -eq 0 ]; then
                          echo ""
                          echo ""
-                         echo "ERROR: Could not get the list of NR test cases from the validation form: $FICHE_ROOT" 
+                         echo "ERROR: Could not get the number of NR test cases from the validation form: $FICHE_ROOT" 
                          echo "Check that the syntax in the form is correct, and that the form runs properly!" 
                          exit -1 
                      fi 
