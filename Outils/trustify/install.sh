@@ -42,7 +42,7 @@ if [ "$from_TRUST" = "1" ]; then
     echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     echo "@@@ Installing trustify Python module"
     echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-    pip install .. --prefix $install_dir
+    pip install .. --prefix $install_dir --no-build-isolation
     echo "OK"
 else
     echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
