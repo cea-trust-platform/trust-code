@@ -1565,7 +1565,7 @@ void LataDB::read_master_file(const char *prefix, const char *filename)
           field.filename_ = n;
           Journal(verb_level+1) << " filename=" << n << endl;
 
-          if ((field.name_ == "INTERFACES" || field.name_ == "PARTICULES") && old_style_lata_)
+          if ((field.name_.debute_par("INTERFACES") || field.name_ == "PARTICULES") && old_style_lata_)
             {
               // This is the old dirty syntax for moving meshes
 
@@ -1878,7 +1878,7 @@ void LataDB::read_data2_(LataDataFile& f, const LataDBField& fld,
   Size_t size_in_file = fld.size_;
   int nb_comp_in_file = fld.nb_comp_;
   // int old_lata_hack = 0;
-  if (old_style_lata_ && (Motcle(fld.geometry_) != "INTERFACES") && (Motcle(fld.geometry_) != "PARTICULES"))
+  if (old_style_lata_ && (! Motcle(fld.geometry_).debute_par("INTERFACES")) && (Motcle(fld.geometry_) != "PARTICULES"))
     {
       const LataDBField& som = get_field(0, fld.geometry_, "SOMMETS", "*");
       if (som.nb_comp_ == 2)
