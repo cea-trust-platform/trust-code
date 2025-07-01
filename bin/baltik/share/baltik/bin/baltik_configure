@@ -292,7 +292,7 @@ echo "Verify prerequies"
 [ "$includes_add" = "" ] && includes_add=""
 [ "$librairies_add" = "" ] && librairies_add=""
 cmake_flags="SET(libdeps \"\") %%"
-cmake_flags="$cmake_flags %% set(OLD_CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}) %% list(APPEND CMAKE_LIBRARY_PATH \$ENV{TRUST_ROOT}/exec/python/lib) %% %%"
+cmake_flags="$cmake_flags %% set(OLD_CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}) %% list(APPEND CMAKE_LIBRARY_PATH \$ENV{TRUST_ROOT}/exec/utils/libxml2/lib \$ENV{TRUST_ROOT}/exec/python/lib) %% %%"
 
 # extraction de la dependance kernel
 kernel_name=`extract_field "$project_description" kernel`

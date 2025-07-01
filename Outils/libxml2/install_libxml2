@@ -50,7 +50,7 @@ src_dir=${archive%.tar.gz}
 cd $src_dir
 mkdir -p BUILD
 cd BUILD
-$cmake .. $options -DCMAKE_INSTALL_PREFIX=$XML_INSTALL_DIR -DCMAKE_C_COMPILER=$TRUST_cc_BASE || exit -1
+$cmake .. $options -DCMAKE_INSTALL_PREFIX=$XML_INSTALL_DIR -DCMAKE_C_COMPILER=$TRUST_cc_BASE -DCMAKE_INSTALL_LIBDIR=lib || exit -1
 make install || exit -1
 
 if [ "$TRUST_WITHOUT_CONDA" = 0 ]
