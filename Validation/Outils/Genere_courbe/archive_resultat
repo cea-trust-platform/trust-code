@@ -60,10 +60,13 @@ fi
 ## Main
 ##
 echo "ARCHIVE: Copying necessary files ..."
-cp build/version_utilisee build/temps_total build/used_files preserve
+cp build/used_files preserve
 cp -r src/* preserve
-cp build/$base_prm preserve   # In F5 for example, the PRM itself is generated from a Python script ...
-cp -r build/.tmp preserve  # Mandatory for "make validation"
+if ! $is_jupyter; then
+    cp build/version_utilisee build/temps_total preserve
+    cp build/$base_prm preserve   # In F5 for example, the PRM itself is generated from a Python script ...
+    cp -r build/.tmp preserve  # Mandatory for "make validation"
+fi
 chmod -R +w preserve
 cd build 
 for f in `cat used_files`; do

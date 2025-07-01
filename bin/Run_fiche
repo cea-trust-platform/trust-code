@@ -18,6 +18,7 @@ help()
    echo "-create                        : Build a minimal .ipynb with data files found in the src directory."
    echo "-xpdf                          : Open the PDF report file at the end of the build."
    echo "-compare_pdf pdf_path          : Compare the produced rapport.pdf with a pdf file. Run_fiche should be run using -export_pdf or -parallel_run mode in addition to this option."
+   echo "-archive                       : Build a preserve.tgz file containing all the needed files from the build directory to compare later, PDF reports each other."
    echo
    echo "For .prm validation forms:"
    echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
@@ -39,7 +40,7 @@ help()
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
    echo "-compare_pdf pdf_path          : Compare the produced rapport.pdf with a pdf file."
    echo "-compare path_build            : Build one PDF report which compares results from the default build directory and several ones specified by one or more -compare option."
-   echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other."
+   echo "-archive                       : Build a preserve.tgz file containing all the needed files from the build directory to compare later, PDF reports each other."
    echo "-save                          : If the build is processed remotely on a cluster, save the previous build in a different directory."
    echo "-create_prm                    : Build a minimal .prm with data files found in the src directory."
    echo "-convert_prm                   : Convert .prm file in jupyter notebook"
@@ -84,6 +85,7 @@ export_tex=false
 coverage=false
 parallel=false
 post_run=false
+archive=false
 # Changement par defaut, on utilise visit -np 2 si dispo
 if [ "`echo $MPI_ROOT`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
 then
@@ -239,6 +241,7 @@ do
    elif [ "$1" = -archive ]
    then
       options=$options" -archive"
+      archive=true
       shift
    elif [ "$1" = -save ]
    then
@@ -334,6 +337,9 @@ then
       then
           echo "Error: Run_fiche does not accept -post_run for Jupyter's notebook validation forms!"
           exit 255
+      elif $archive
+      then
+          bash $TRUST_ROOT/Validation/Outils/Genere_courbe/archive_resultat $prm
       elif $export_pdf
       then
           opt_jy="--execute"
