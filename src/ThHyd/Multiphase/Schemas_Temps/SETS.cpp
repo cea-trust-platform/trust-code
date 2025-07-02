@@ -661,7 +661,7 @@ void SETS::iterer_NS(Equation_base& eqn, DoubleTab& current,
       for (auto &&n_i : inco)
         n_i.second->futur() = n_i.second->valeurs() = n_i.second->passe();
       if (err_a_sum > crit_conv_["alpha"])
-        Cerr << que_suis_je() + ": pressure solver inaccuracy detected (requested precision " << Nom(crit_conv_["alpha"]) << " , achieved precision " << Nom(err_a_sum) + " )" << finl;
+        Cerr << que_suis_je() + ": pressure solver inaccuracy detected (requested precision " << crit_conv_["alpha"] << " , achieved precision " << err_a_sum << " )" << finl;
       ok = 0;
     }
   return;
