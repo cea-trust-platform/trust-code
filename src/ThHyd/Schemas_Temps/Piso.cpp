@@ -111,271 +111,23 @@ void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * m
 //Sortie Un+1 = U***_k ; Pn+1 = P**_k
 //n designe une etape temporelle
 
-void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
-                     double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge, int& ok)
+void Piso::iterer_NS(Equation_base& eqn, DoubleTab& current, DoubleTab& pressure,
+                     double dt, Matrice_Morse& A, double /*seuil_resol*/, DoubleTrav& secmem, int nb_ite, int& converge, int& ok)
 {
   converge = 1;
-  if (nb_ite>1) return;
-  Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
-  const bool is_NS_IBM = sub_type(Navier_Stokes_IBM, eqnNS);
-
+  if (nb_ite > 1) return;
+  Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std, eqn);
   if (eqnNS.discretisation().que_suis_je() == "PolyMAC")
-    return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice, ok);
+    return iterer_NS_PolyMAC(eqnNS, current, pressure, dt, A, ok);
 
-  Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
-  SolveurSys& le_solveur_ = param_eqn.solveur();
+  DoubleTrav gradP(current), resu(current), deltaP(pressure), correction_en_vitesse(current);
 
-  DoubleTrav gradP(current);
-  DoubleTrav correction_en_pression(pression);
-  DoubleTrav resu(current);
-  int is_dilat = eqn.probleme().is_dilatable();
-
-  double vitesse_norme,vitesse_norme_old ;
-  double pression_norme,pression_norme_old ;
-  vitesse_norme_old = 1.e10 ;
-  pression_norme_old = 1.e10 ;
-
-  // int deux_entrees = 0;
-  //if (current.nb_dim()==2) deux_entrees = 1;
-  Operateur_Grad& gradient = eqnNS.operateur_gradient();
-  Operateur_Div& divergence = eqnNS.operateur_divergence();
-
-  //int nb_comp = 1;
-  //int nb_dim = current.nb_dim();
-
-  //  if(nb_dim==2)    nb_comp = current.dimension(1);
-
-  //Construction de matrice et resu
-  //matrice = A[Un] = M/delta_t + CONV +DIFF
-  //resu =  A[Un]Un -(A[Un]Un-Ss) + Sv -BtPn
-
-  if (is_NS_IBM)
-    add_penality_term(eqnNS, resu, gradP);
-
-  gradient->calculer(pression,gradP);
-  if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
-    {
-      eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
-      if (eqnNS.discretisation().is_polymac_family())
-        matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
-    }
-  else //sinon, on passe par ajouter/contribuer
-    {
-      resu -= gradP;
-      first_special_treatment( eqn, eqnNS, current, dt, resu );
-      eqnNS.assembler_avec_inertie(matrice,current,resu);
-    }
-
-  le_solveur_->reinit();
-
-  //sometimes we need a second special treatement like for ALE for example
-  second_special_treatment( eqn, current, resu, matrice );
-
-  //Construction de matrice_en_pression_2 = BD-1Bt[Un]
-  //Assemblage reeffectue seulement pour algorithme Piso (avancement_crank_==0)
-  Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
-  SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
-
-  if (avancement_crank_==0 && !with_sources_)
-    {
-      assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
-      solveur_pression_->reinit();
-    }
-
-  //Etape predicteur
-  //Resolution du systeme A[Un]U* = -BtPn + Sv + Ss
-  //current = U*
-  le_solveur_.resoudre_systeme(matrice,resu,current);
-
-  test_imposer_cond_lim(eqn,current,"apres resolution ",0);
-  current.echange_espace_virtuel();
-  Debog::verifier("Piso::iterer_NS current apres solveur",current);
-
-  if (with_sources_)
-    {
-      matrice.get_set_coeff() = 0;
-      eqnNS.sources().contribuer_a_avec(current, matrice);
-      eqnNS.solv_masse().ajouter_masse(dt, matrice, 1);
-      assembler_matrice_pression_implicite(eqnNS,matrice,matrice_en_pression_2);
-      solveur_pression_->reinit();
-    }
-
-  //Calcul de secmem = BU* (en incompressible) BU* -drho/dt (en quasi-compressible)
-  if (is_dilat)
-    {
-      if (with_d_rho_dt_)
-        {
-          Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.milieu());
-          fluide_dil.secmembre_divU_Z(secmem);
-          secmem *= -1;
-        }
-      else   secmem = 0;
-      divergence.ajouter(current,secmem);
-    }
-  else
-    divergence.calculer(current,secmem);
-  secmem *= -1;
-
-  if (is_NS_IBM)
-    correct_incr_pressure(eqnNS, secmem);
-
-  secmem.echange_espace_virtuel();
-  Debog::verifier("Piso::iterer_NS secmem",secmem);
-
-  // GF il ne faut pas modifier le scd membre le terme en du/dt au bord a deja ete pris en compte dans la resolution precedente
-  //  eqnNS.assembleur_pression()->modifier_secmem(secmem);
-
-  //Etape de correction 1
-  Cout << "Solving mass equation :" << finl;
-  //Description du cas implicite
-  //Resolution du systeme (BD-1Bt)P' = Bu* (D-1 = M-1 pour le cas implicite)
-  //correction_en_pression = P' pour Piso et correction_en_pression = delta_t*P' pour implicite
-  eqnNS.assembleur_pression()->modifier_secmem_pour_incr_p(pression, 1. / dt, secmem);
-  //si la matrice varie, passage increments -> valeurs pour aider les solveurs iteratifs
-  if (with_sources_)
-    matrice_en_pression_2->ajouter_multvect(pression, secmem);
-  solveur_pression_.resoudre_systeme(matrice_en_pression_2.valeur(),
-                                     secmem,correction_en_pression);
-  if (with_sources_)
-    correction_en_pression -= pression;
-  correction_en_pression.echange_espace_virtuel();
-  Debog::verifier("Piso::iterer_NS apres correction_pression",correction_en_pression);
-
-  if (avancement_crank_==1)
-    {
-      //calcul de Un+1
-      //Calcul de Bt(delta_t*delta_P)
-      gradient->multvect(correction_en_pression,gradP);
-
-      if (with_sources_)
-        for (int i = 0, N = gradP.nb_dim() == 2 ? gradP.dimension(1) : 1; i < gradP.dimension_tot(0); i++)
-          for (int n  = 0; n < N; n++)
-            gradP(i, n) = matrice.get_tab1()(N * i + n + 1) > matrice.get_tab1()(N * i + n) && matrice(N * i + n, N * i + n) ? gradP(i, n) / matrice(N * i + n, N * i + n) : 0;
-      else
-        eqn.solv_masse().appliquer(gradP);
-
-      if (is_NS_IBM)
-        correct_gradP(eqnNS, gradP);
-
-      //Calcul de Un+1 = U* -delta_t*delta_P
-      current -= gradP;
-      eqn.solv_masse().corriger_solution(current, current); //pour PolyMAC_P0 : sert a corriger ve
-      current.echange_espace_virtuel();
-      divergence.calculer(current,secmem);
-
-      //Calcul de Pn+1 = Pn + (delta_t*delta_P)/delat_t
-      Debog::verifier("Piso::iterer_NS correction avant dt",correction_en_pression);
-      if (!with_sources_)
-        correction_en_pression /= dt;
-
-      if (is_NS_IBM)
-        correct_pressure(eqnNS, pression, correction_en_pression);
-      else
-        pression += correction_en_pression;
-      // </IBM>
-      eqnNS.assembleur_pression()->modifier_solution(pression);
-      pression.echange_espace_virtuel();
-      Debog::verifier("Piso::iterer_NS pression finale",pression);
-      Debog::verifier("Piso::iterer_NS current final",current);
-      if (is_dilat)
-        {
-          // on redivise par rho_np_1 avant de sortir
-          diviser_par_rho_np1_face(eqn,current);
-        }
-      return;
-    }
-
-  // calcul de la correction en vitesse premiere etape (DU' =-Bt P)
-
-  //Calcul de P* = Pn + P'
-  pression += correction_en_pression;
-  eqnNS.assembleur_pression()->modifier_solution(pression);
-  //Resolution du systeme D[Un]U' = -BtP'
-  DoubleTrav correction_en_vitesse(current);
-  calculer_correction_en_vitesse(correction_en_pression,gradP,correction_en_vitesse,matrice,gradient);
-
-  //Calcul de U** = U* + U'
-  current += correction_en_vitesse;
-  test_imposer_cond_lim(eqn,current,"apres premiere correction ",0);
-  Debog::verifier("Piso::iterer_NS arpes cor pression",pression);
-  Debog::verifier("Piso::iterer_NS arpes cor vitesse",current);
-
-  //Etape correcteur 2
-  for (int compt=0; compt<nb_corrections_max_-1; compt++)
-    {
-      correction_en_vitesse.echange_espace_virtuel();
-      //Resolution du systeme D resu = EU' + (resu2=0) pour stocker resu = D-1EU'
-      DoubleTrav resu2(resu);
-      int status = inverser_par_diagonale(matrice,resu2,correction_en_vitesse,resu);
-
-      if (status!=0) exit();
-      // calcul de P''  BD-1Bt P''= -div(D-1EU')
-
-      resu.echange_espace_virtuel();
-      //Calcul de B(D-1EU')
-      divergence.calculer(resu,secmem);
-      secmem *= -1;
-      secmem.echange_espace_virtuel();
-
-      //Resolution du systeme (BD-1Bt)P'' = (BD-1E)U'
-      //correction_en_pression = P''
-      correction_en_pression = 0;
-      solveur_pression_.resoudre_systeme(matrice_en_pression_2.valeur(),
-                                         secmem,correction_en_pression);
-
-#ifdef DEBUG
-      // Pour verifier que le calcul du gradient ne modifie pas la pression
-      DoubleTrav correction_en_pression_mod(pression);
-      correction_en_pression_mod = correction_en_pression;
-#endif
-      //Resolution du systeme D[Un]U'' = -BtP''
-      //correction_en_vitesse = U''
-      calculer_correction_en_vitesse(correction_en_pression,gradP,correction_en_vitesse,matrice,gradient);
-
-#ifdef DEBUG
-      correction_en_pression_mod -= correction_en_pression;
-      assert(max_abs(correction_en_pression_mod)==0);
-#endif
-
-      //Calcul de U'' = U'' + D-1EU'
-      correction_en_vitesse += resu;
-      // ajout des increments
-
-      vitesse_norme = mp_norme_vect(correction_en_vitesse);
-      pression_norme = mp_norme_vect(correction_en_pression);
-
-      if ( (vitesse_norme>vitesse_norme_old) || (pression_norme>pression_norme_old) )
-        {
-          Cout <<"PISO : "<< compt+1 <<" corrections to perform the projection."<< finl;
-          if (is_dilat)
-            {
-              // on redivise par rho_np_1 avant de sortir
-              diviser_par_rho_np1_face(eqn,current);
-            }
-          return ;
-        }
-
-      vitesse_norme_old = vitesse_norme;
-      pression_norme_old = pression_norme;
-      //Calcul de P** = P* + P''
-      pression += correction_en_pression;
-      eqnNS.assembleur_pression()->modifier_solution(pression);
-
-      //Calcul de U*** = U** + U''
-      current += correction_en_vitesse;
-      test_imposer_cond_lim(eqn,current,"apres correction (int)__LINE__",0);
-
-      Debog::verifier("Piso::iterer_NS apres correction pression",pression);
-      Debog::verifier("Piso::iterer_NS apres correction vitesse",current);
-    }
-  if (is_dilat)
-    {
-      diviser_par_rho_np1_face(eqn,current);
-      //ref_cast(Navier_Stokes_QC,eqn).impr_impl(eqnNS, Cout);
-    }
-  current.echange_espace_virtuel();
-  // divergence.calculer(current, secmem); Cerr<<" ici DIVU  "<<mp_max_abs_vect(secmem)<<finl;;
-  Cout <<"PISO : "<<nb_corrections_max_<<" corrections to perform the projection."<< finl;
+  assembleMomentumSystem_(eqnNS, eqn, current, pressure, gradP, resu, A, dt);
+  solvePredictor_(eqn, A, resu, current);
+  buildContinuityRhs_(eqn, current, secmem);
+  if (applyFirstCorrection_(eqnNS, eqn, current, pressure, gradP, deltaP, secmem, dt, A, correction_en_vitesse))
+    return;
+  projectionLoop_(eqnNS, eqn, current, pressure, A, gradP, resu, deltaP, correction_en_vitesse, secmem);
 }
 
 //version PolyMAC de la fonction ci-dessus
@@ -543,6 +295,240 @@ void Implicite::first_special_treatment(Equation_base& eqn, Navier_Stokes_std& e
 void Implicite::second_special_treatment(Equation_base& eqn,DoubleTab& current, DoubleTrav& resu, Matrice_Morse& matrice)
 {
   //nothing to do
+}
+
+void Piso::assembleMomentumSystem_(Navier_Stokes_std& eqnNS, Equation_base& eqn,
+                                   DoubleTab& current, DoubleTab& pressure,
+                                   DoubleTrav& gradP, DoubleTrav& resu,
+                                   Matrice_Morse& matrice, double dt)
+{
+  //Construction de matrice et resu
+  //matrice = A[Un] = M/delta_t + CONV +DIFF
+  //resu =  A[Un]Un -(A[Un]Un-Ss) + Sv -BtPn
+  const bool is_NS_IBM = sub_type(Navier_Stokes_IBM, eqnNS);
+  Operateur_Grad& gradient = eqnNS.operateur_gradient();
+  if (is_NS_IBM)
+    add_penality_term(eqnNS, resu, gradP);
+  gradient->calculer(pressure, gradP);
+  if (eqnNS.has_interface_blocs())
+    {
+      first_special_treatment(eqn, eqnNS, current, dt, resu);
+      eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
+      if (eqnNS.discretisation().is_polymac_family())
+        matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
+    }
+  else
+    {
+      resu -= gradP;
+      first_special_treatment(eqn, eqnNS, current, dt, resu);
+      eqnNS.assembler_avec_inertie(matrice, current, resu);
+    }
+  second_special_treatment(eqn, current, resu, matrice);
+}
+
+void Piso::solvePredictor_(Equation_base& eqn, Matrice_Morse& matrice,
+                           DoubleTrav& resu, DoubleTab& current)
+{
+  Parametre_implicite& p = get_and_set_parametre_implicite(eqn);
+  SolveurSys& solver = p.solveur();
+  solver->reinit();
+  solver.resoudre_systeme(matrice, resu, current);
+  test_imposer_cond_lim(eqn, current, "apres resolution ", 0);
+  current.echange_espace_virtuel();
+  Debog::verifier("Piso::iterer_NS current apres solveur", current);
+}
+
+void Piso::buildContinuityRhs_(Equation_base& eqn, DoubleTab& current,
+                               DoubleTrav& secmem)
+{
+  const bool is_NS_IBM = sub_type(Navier_Stokes_IBM, eqn);
+  Operateur_Div& divergence = ref_cast(Navier_Stokes_std, eqn).operateur_divergence();
+  const bool is_dilat = eqn.probleme().is_dilatable();
+  if (is_dilat)
+    {
+      if (with_d_rho_dt_)
+        {
+          Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base, eqn.milieu());
+          fluide_dil.secmembre_divU_Z(secmem);
+          secmem *= -1;
+        }
+      else secmem = 0;
+      divergence.ajouter(current, secmem);
+    }
+  else
+    divergence.calculer(current, secmem);
+  secmem *= -1;
+  if (is_NS_IBM)
+    correct_incr_pressure(ref_cast(Navier_Stokes_std, eqn), secmem);
+  secmem.echange_espace_virtuel();
+  Debog::verifier("Piso::iterer_NS secmem", secmem);
+}
+
+bool Piso::applyFirstCorrection_(Navier_Stokes_std& eqnNS, Equation_base& eqn,
+                                 DoubleTab& current, DoubleTab& pressure,
+                                 DoubleTrav& gradP, DoubleTrav& deltaP,
+                                 DoubleTrav& secmem, double dt,
+                                 Matrice_Morse& matrice, DoubleTrav& correction_en_vitesse)
+{
+  const bool is_NS_IBM = sub_type(Navier_Stokes_IBM, eqnNS);
+  const bool is_dilat = eqn.probleme().is_dilatable();
+  //Etape de correction 1
+  Cout << "Solving mass equation :" << finl;
+  Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
+  SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
+  if (avancement_crank_ == 0 && !with_sources_)
+    {
+      assembler_matrice_pression_implicite(eqnNS, matrice, matrice_en_pression_2);
+      solveur_pression_->reinit();
+    }
+  if (with_sources_)
+    {
+      matrice.get_set_coeff() = 0;
+      eqnNS.sources().contribuer_a_avec(current, matrice);
+      eqnNS.solv_masse().ajouter_masse(dt, matrice, 1);
+      assembler_matrice_pression_implicite(eqnNS, matrice, matrice_en_pression_2);
+      solveur_pression_->reinit();
+    }
+  eqnNS.assembleur_pression()->modifier_secmem_pour_incr_p(pressure, 1. / dt, secmem);
+  if (with_sources_)
+    matrice_en_pression_2->ajouter_multvect(pressure, secmem);
+  solveur_pression_.resoudre_systeme(matrice_en_pression_2.valeur(), secmem, deltaP);
+  if (with_sources_)
+    deltaP -= pressure;
+  deltaP.echange_espace_virtuel();
+  Debog::verifier("Piso::iterer_NS apres correction_pression", deltaP);
+  if (avancement_crank_ == 1)
+    {
+      Operateur_Grad& gradient = eqnNS.operateur_gradient();
+      gradient->multvect(deltaP, gradP);
+      if (with_sources_)
+        {
+          for (int i = 0, N = gradP.nb_dim() == 2 ? gradP.dimension(1) : 1; i < gradP.dimension_tot(0); i++)
+            for (int n = 0; n < N; n++)
+              gradP(i, n) = matrice.get_tab1()(N * i + n + 1) > matrice.get_tab1()(N * i + n) && matrice(N * i + n, N * i + n) ? gradP(i, n) / matrice(N * i + n, N * i + n) : 0;
+        }
+      else
+        eqn.solv_masse().appliquer(gradP);
+      if (is_NS_IBM)
+        correct_gradP(eqnNS, gradP);
+      current -= gradP;
+      eqn.solv_masse().corriger_solution(current, current);
+      current.echange_espace_virtuel();
+      Operateur_Div& divergence = eqnNS.operateur_divergence();
+      divergence.calculer(current, secmem);
+      Debog::verifier("Piso::iterer_NS correction avant dt", deltaP);
+      if (!with_sources_)
+        deltaP /= dt;
+      if (is_NS_IBM)
+        correct_pressure(eqnNS, pressure, deltaP);
+      else
+        pressure += deltaP;
+      eqnNS.assembleur_pression()->modifier_solution(pressure);
+      pressure.echange_espace_virtuel();
+      Debog::verifier("Piso::iterer_NS pression finale", pressure);
+      Debog::verifier("Piso::iterer_NS current final", current);
+      if (is_dilat)
+        diviser_par_rho_np1_face(eqn, current);
+      return true;
+    }
+  pressure += deltaP;
+  eqnNS.assembleur_pression()->modifier_solution(pressure);
+  Operateur_Grad& gradient = eqnNS.operateur_gradient();
+  calculer_correction_en_vitesse(deltaP, gradP, correction_en_vitesse, matrice, gradient);
+  current += correction_en_vitesse;
+  test_imposer_cond_lim(eqn, current, "apres premiere correction ", 0);
+  Debog::verifier("Piso::iterer_NS arpes cor pression", pressure);
+  Debog::verifier("Piso::iterer_NS arpes cor vitesse", current);
+  return false;
+}
+
+void Piso::projectionLoop_(Navier_Stokes_std& eqnNS, Equation_base& eqn,
+                           DoubleTab& current, DoubleTab& pressure,
+                           Matrice_Morse& matrice, DoubleTrav& gradP,
+                           DoubleTrav& resu, DoubleTrav& deltaP, DoubleTrav& correction_en_vitesse, DoubleTrav& secmem)
+{
+  const bool is_dilat = eqn.probleme().is_dilatable();
+  Operateur_Div& divergence = eqnNS.operateur_divergence();
+  Operateur_Grad& gradient = eqnNS.operateur_gradient();
+  double vitesse_norme, vitesse_norme_old = 1.e10;
+  double pression_norme, pression_norme_old = 1.e10;
+  Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
+  SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
+  for (int compt=0; compt<nb_corrections_max_-1; compt++)
+    {
+      correction_en_vitesse.echange_espace_virtuel();
+      //Resolution du systeme D resu = EU' + (resu2=0) pour stocker resu = D-1EU'
+      DoubleTrav resu2(resu);
+      int status = inverser_par_diagonale(matrice,resu2,correction_en_vitesse,resu);
+
+      if (status!=0) exit();
+      // calcul de P''  BD-1Bt P''= -div(D-1EU')
+
+      resu.echange_espace_virtuel();
+      //Calcul de B(D-1EU')
+      divergence.calculer(resu,secmem);
+      secmem *= -1;
+      secmem.echange_espace_virtuel();
+
+      //Resolution du systeme (BD-1Bt)P'' = (BD-1E)U'
+      //correction_en_pression = P''
+      deltaP = 0;
+      solveur_pression_.resoudre_systeme(matrice_en_pression_2.valeur(),
+                                         secmem,deltaP);
+
+#ifdef DEBUG
+      // Pour verifier que le calcul du gradient ne modifie pas la pression
+      DoubleTrav correction_en_pression_mod(pression);
+      correction_en_pression_mod = deltaP;
+#endif
+      //Resolution du systeme D[Un]U'' = -BtP''
+      //correction_en_vitesse = U''
+      calculer_correction_en_vitesse(deltaP,gradP,correction_en_vitesse,matrice,gradient);
+
+#ifdef DEBUG
+      correction_en_pression_mod -= correction_en_pression;
+      assert(max_abs(correction_en_pression_mod)==0);
+#endif
+
+      //Calcul de U'' = U'' + D-1EU'
+      correction_en_vitesse += resu;
+      // ajout des increments
+
+      vitesse_norme = mp_norme_vect(correction_en_vitesse);
+      pression_norme = mp_norme_vect(deltaP);
+
+      if ( (vitesse_norme>vitesse_norme_old) || (pression_norme>pression_norme_old) )
+        {
+          Cout <<"PISO : "<< compt+1 <<" corrections to perform the projection."<< finl;
+          if (is_dilat)
+            {
+              // on redivise par rho_np_1 avant de sortir
+              diviser_par_rho_np1_face(eqn,current);
+            }
+          return ;
+        }
+
+      vitesse_norme_old = vitesse_norme;
+      pression_norme_old = pression_norme;
+      //Calcul de P** = P* + P''
+      pressure += deltaP;
+      eqnNS.assembleur_pression()->modifier_solution(pressure);
+
+      //Calcul de U*** = U** + U''
+      current += correction_en_vitesse;
+      test_imposer_cond_lim(eqn,current,"apres correction (int)__LINE__",0);
+
+      Debog::verifier("Piso::iterer_NS apres correction pression",pressure);
+      Debog::verifier("Piso::iterer_NS apres correction vitesse",current);
+    }
+  if (is_dilat)
+    {
+      diviser_par_rho_np1_face(eqn,current);
+      //ref_cast(Navier_Stokes_QC,eqn).impr_impl(eqnNS, Cout);
+    }
+  current.echange_espace_virtuel();
+  // divergence.calculer(current, secmem); Cerr<<" ici DIVU  "<<mp_max_abs_vect(secmem)<<finl;;
+  Cout <<"PISO : "<<nb_corrections_max_<<" corrections to perform the projection."<< finl;
 }
 
 

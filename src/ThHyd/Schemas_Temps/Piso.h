@@ -100,6 +100,12 @@ private:
   void correct_incr_pressure(Navier_Stokes_std& , DoubleTrav& secmem);
   void correct_gradP(Navier_Stokes_std& , DoubleTrav& gradP);
   void correct_pressure(Navier_Stokes_std& , DoubleTab& , DoubleTab& );
+
+  void assembleMomentumSystem_(Navier_Stokes_std& eqnNS, Equation_base& eqn, DoubleTab& current, DoubleTab& pressure, DoubleTrav& gradP, DoubleTrav& rhs, Matrice_Morse& A, double dt);
+  void solvePredictor_(Equation_base& eqn, Matrice_Morse& A, DoubleTrav& rhs, DoubleTab& current);
+  void buildContinuityRhs_(Equation_base& eqn, DoubleTab& current, DoubleTrav& rhs);
+  bool applyFirstCorrection_(Navier_Stokes_std& eqnNS, Equation_base& eqn, DoubleTab& current, DoubleTab& pressure, DoubleTrav& gradP, DoubleTrav& deltaP, DoubleTrav& rhs, double dt, Matrice_Morse& A, DoubleTrav& correction_en_vitesse);
+  void projectionLoop_(Navier_Stokes_std& eqnNS, Equation_base& eqn, DoubleTab& current, DoubleTab& pressure, Matrice_Morse& A, DoubleTrav& gradP, DoubleTrav& resu, DoubleTrav& deltaP, DoubleTrav& correction_en_vitesse, DoubleTrav& secmem);
 };
 
 //Description
