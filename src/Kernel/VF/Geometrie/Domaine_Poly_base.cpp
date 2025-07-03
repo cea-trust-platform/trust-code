@@ -282,12 +282,8 @@ void Domaine_Poly_base::verifier_type_elem() const
     }
 }
 
-void Domaine_Poly_base::discretiser()
+void Domaine_Poly_base::corriger_face_voisins_sur_les_faces_virtuelles()
 {
-  typer_elem(domaine());
-  verifier_type_elem();
-  Domaine_VF::discretiser();
-
   // Correction du tableau facevoisins:
   //  A l'issue de Domaine_VF::discretiser(), les elements voisins 0 et 1 d'une
   //  face sont les memes sur tous les processeurs qui possedent la face.
@@ -305,6 +301,15 @@ void Domaine_Poly_base::discretiser()
         face_vois(i, 0) = face_vois(i, 1);
         face_vois(i, 1) = -1;
       }
+}
+
+void Domaine_Poly_base::discretiser()
+{
+  typer_elem(domaine());
+  verifier_type_elem();
+  Domaine_VF::discretiser();
+
+  corriger_face_voisins_sur_les_faces_virtuelles();
 
   face_normales_.resize(0, dimension);
   creer_tableau_faces(face_normales_);
@@ -340,31 +345,31 @@ void Domaine_Poly_base::fill_normales()
   const IntTab& face_som = face_sommets();
   IntTab& face_vois = face_voisins();
   const IntTab& elem_face = elem_faces();
-  const int nf = nb_faces();
-  for (int f = 0; f < nf; f++)
+  const int nf_tot = nb_faces_tot();
+  for (int f = 0; f < nf_tot; f++)
     type_elem_->normale(f, face_normales_, face_som, face_vois, elem_face, domaine());
 
+  DoubleTab old(face_normales_);
   face_normales_.echange_espace_virtuel();
-  //   DoubleTab old(face_normales_);
-  // for (int f = 0; f < nf_tot; f++)
-  //   {
-  //     int id=1;
-  //     for (int d = 0; d < dimension; d++)
-  //       if (!est_egal(old(f,d),face_normales_(f,d)))
-  //         {
-  //           id=0;
-  //           if (!est_egal(old(f, d), -face_normales_(f, d)))
-  //             {
-  //               Cerr << "pb in faces_normales" << finl;
-  //               Process::exit();
-  //             }
-  //         }
-  //     if (id == 0)
-  //       {
-  //         // on a change le sens de la normale, on inverse elem1 elem2
-  //         std::swap(face_vois(f, 0), face_vois(f, 1));
-  //       }
-  //   }
+  for (int f = 0; f < nf_tot; f++)
+    {
+      int id=1;
+      for (int d = 0; d < dimension; d++)
+        if (!est_egal(old(f,d),face_normales_(f,d)))
+          {
+            id=0;
+            if (!est_egal(old(f, d), -face_normales_(f, d)))
+              {
+                Cerr << "pb in faces_normales" << finl;
+                Process::exit();
+              }
+          }
+      if (id == 0)
+        {
+          // on a change le sens de la normale, on inverse elem1 elem2
+          std::swap(face_vois(f, 0), face_vois(f, 1));
+        }
+    }
 }
 
 void Domaine_Poly_base::modifier_pour_Cl(const Conds_lim& conds_lim)

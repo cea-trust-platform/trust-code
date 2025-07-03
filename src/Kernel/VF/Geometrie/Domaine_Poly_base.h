@@ -141,6 +141,7 @@ public :
 
 protected:
   void verifier_type_elem() const;
+  void corriger_face_voisins_sur_les_faces_virtuelles();
 
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
