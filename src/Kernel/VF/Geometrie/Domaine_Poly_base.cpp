@@ -227,39 +227,9 @@ void Domaine_Poly_base::typer_elem(Domaine& domaine_geom)
   Cerr << "Elem_poly => type retenu : " << type_elem_->que_suis_je() << finl;
 }
 
-void Domaine_Poly_base::discretiser()
+void Domaine_Poly_base::verifier_type_elem() const
 {
-
-  Domaine& domaine_geom=domaine();
-  typer_elem(domaine_geom);
-  Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  Domaine_VF::discretiser();
-
-  // Correction du tableau facevoisins:
-  //  A l'issue de Domaine_VF::discretiser(), les elements voisins 0 et 1 d'une
-  //  face sont les memes sur tous les processeurs qui possedent la face.
-  //  Si la face est virtuelle et qu'un des deux elements voisins n'est
-  //  pas connu (il n'est pas dans l'epaisseur du joint), l'element voisin
-  //  vaut -1. Cela peut etre un voisin 0 ou un voisin 1.
-  //  On corrige les faces virtuelles pour que, si un element voisin n'est
-  //  pas connu, alors il est voisin1. Le voisin0 est donc toujours valide.
-  {
-    IntTab& face_vois = face_voisins();
-    const int debut = nb_faces();
-    const int fin   = nb_faces_tot();
-    for (int i = debut; i < fin; i++)
-      {
-        if (face_voisins(i, 0) == -1)
-          {
-            face_vois(i, 0) = face_vois(i, 1);
-            face_vois(i, 1) = -1;
-          }
-      }
-  }
-
-  // Verification de la coherence entre l'element geometrique et
-  //l'elemnt de discretisation
-
+  const Elem_geom_base& elem_geom = domaine().type_elem().valeur();
 
   if (sub_type(Segment_poly,type_elem_.valeur()))
     {
@@ -310,86 +280,37 @@ void Domaine_Poly_base::discretiser()
           Process::exit();
         }
     }
+}
 
-  int num_face;
+void Domaine_Poly_base::discretiser()
+{
+  typer_elem(domaine());
+  verifier_type_elem();
+  Domaine_VF::discretiser();
 
-
-  // On remplit le tableau face_normales_;
-  //  Attention : le tableau face_voisins n'est pas exactement un
-  //  tableau distribue. Une face n'a pas ses deux voisins dans le
-  //  meme ordre sur tous les processeurs qui possedent la face.
-  //  Donc la normale a la face peut changer de direction d'un
-  //  processeur a l'autre, y compris pour les faces de joint.
-  {
-    const int n = nb_faces();
-    face_normales_.resize(n, dimension);
-    // const Domaine & dom = domaine();
-    //    Scatter::creer_tableau_distribue(dom, JOINT_ITEM::FACE, face_normales_);
-    creer_tableau_faces(face_normales_);
-    const IntTab& face_som = face_sommets();
-    IntTab& face_vois = face_voisins();
-    const IntTab& elem_face = elem_faces();
-    const int n_tot = nb_faces_tot();
-    for (num_face = 0; num_face < n_tot; num_face++)
+  // Correction du tableau facevoisins:
+  //  A l'issue de Domaine_VF::discretiser(), les elements voisins 0 et 1 d'une
+  //  face sont les memes sur tous les processeurs qui possedent la face.
+  //  Si la face est virtuelle et qu'un des deux elements voisins n'est
+  //  pas connu (il n'est pas dans l'epaisseur du joint), l'element voisin
+  //  vaut -1. Cela peut etre un voisin 0 ou un voisin 1.
+  //  On corrige les faces virtuelles pour que, si un element voisin n'est
+  //  pas connu, alors il est voisin1. Le voisin0 est donc toujours valide.
+  IntTab& face_vois = face_voisins();
+  const int debut = nb_faces();
+  const int fin = nb_faces_tot();
+  for (int i = debut; i < fin; i++)
+    if (face_voisins(i, 0) == -1)
       {
-        type_elem_->normale(num_face,
-                            face_normales_,
-                            face_som, face_vois, elem_face, domaine_geom);
+        face_vois(i, 0) = face_vois(i, 1);
+        face_vois(i, 1) = -1;
       }
 
-    DoubleTab old(face_normales_);
-    face_normales_.echange_espace_virtuel();
-    for (num_face = 0; num_face < n_tot; num_face++)
-      {
-        int id=1;
-        for (int d=0; d<dimension; d++)
-          if (!est_egal(old(num_face,d),face_normales_(num_face,d)))
-            {
-              id=0;
-              if (!est_egal(old(num_face,d),-face_normales_(num_face,d)))
-                {
-                  Cerr<<"pb in faces_normales" <<finl;
-                  Process::exit();
-                }
-            }
-        if (id==0)
-          {
-            // on a change le sens de la normale, on inverse elem1 elem2
-            std::swap(face_vois(num_face,0),face_vois(num_face,1));
-          }
-      }
-  }
+  face_normales_.resize(0, dimension);
+  creer_tableau_faces(face_normales_);
+  fill_normales();
 
-  /* recalcul de xv pour avoir les vrais CG des faces */
-  const DoubleTab& coords = domaine().coord_sommets();
-  for (int face = 0; dimension == 3 && face < nb_faces(); face++)
-    {
-      double xs[3] = { 0, }, S = 0;
-      for (int k = 0; k < face_sommets_.dimension(1); k++)
-        if (face_sommets_(face, k) >= 0)
-          {
-            int s0 = face_sommets_(face, 0), s1 = face_sommets_(face, k),
-                s2 = k + 1 < face_sommets_.dimension(1) && face_sommets_(face, k + 1) >= 0 ? face_sommets_(face, k +1) : s0;
-            double s = 0;
-            for (int r = 0; r < 3; r++)
-              for (int i = 0; i < 2; i++)
-                s += (i ? -1 : 1) * face_normales_(face, r) * (coords(s2, (r + 1 +  i) % 3) - coords(s0, (r + 1 +  i) % 3))
-                     * (coords(s1, (r + 1 + !i) % 3) - coords(s0, (r + 1 + !i) % 3));
-            for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
-            S += s;
-          }
-      if (S == 0 && sub_type(Hexa_poly,type_elem_.valeur()))
-        {
-          Cerr << "===============================" << finl;
-          Cerr << "Error in your mesh for " << que_suis_je() << "!" << finl;
-          Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
-          Cerr << "Polyedriser " << domaine().le_nom() << finl;
-          Process::exit();
-        }
-      for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
-    }
-  xv_.echange_espace_virtuel();
-
+  recalculer_xv();
   detecter_faces_non_planes();
 
   creer_tableau_faces(volumes_entrelaces_);
@@ -404,10 +325,47 @@ void Domaine_Poly_base::discretiser()
         xv_fsa[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
       for (auto &&c_f : xv_fsa) elem_faces_(e, j) = c_f.second, j++;
     }
-
   //calculer_h_carre();
 }
 
+void Domaine_Poly_base::fill_normales()
+{
+  // On remplit le tableau face_normales_;
+  //  Attention : le tableau face_voisins n'est pas exactement un
+  //  tableau distribue. Une face n'a pas ses deux voisins dans le
+  //  meme ordre sur tous les processeurs qui possedent la face.
+  //  Donc la normale a la face peut changer de direction d'un
+  //  processeur a l'autre, y compris pour les faces de joint.
+
+  const IntTab& face_som = face_sommets();
+  IntTab& face_vois = face_voisins();
+  const IntTab& elem_face = elem_faces();
+  const int nf = nb_faces();
+  for (int f = 0; f < nf; f++)
+    type_elem_->normale(f, face_normales_, face_som, face_vois, elem_face, domaine());
+
+  face_normales_.echange_espace_virtuel();
+  //   DoubleTab old(face_normales_);
+  // for (int f = 0; f < nf_tot; f++)
+  //   {
+  //     int id=1;
+  //     for (int d = 0; d < dimension; d++)
+  //       if (!est_egal(old(f,d),face_normales_(f,d)))
+  //         {
+  //           id=0;
+  //           if (!est_egal(old(f, d), -face_normales_(f, d)))
+  //             {
+  //               Cerr << "pb in faces_normales" << finl;
+  //               Process::exit();
+  //             }
+  //         }
+  //     if (id == 0)
+  //       {
+  //         // on a change le sens de la normale, on inverse elem1 elem2
+  //         std::swap(face_vois(f, 0), face_vois(f, 1));
+  //       }
+  //   }
+}
 
 void Domaine_Poly_base::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
@@ -529,37 +487,10 @@ void Domaine_Poly_base::discretiser_aretes()
       domaine().creer_aretes();
       md_vector_aretes_ = domaine().aretes_som().get_md_vector();
 
-      /* ordre canonique dans aretes_som */
-      IntTab& a_s = domaine().set_aretes_som(), &e_a = domaine().set_elem_aretes();
-      const DoubleTab& xs = domaine().coord_sommets();
-      std::map<std::array<double, 3>, int> xv_fsa;
-      for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
-        {
-          for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
-          for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
-        }
-
-      //remplissage de som_aretes
-      som_arete.resize(domaine().nb_som_tot());
-      for (int i = 0; i < a_s.dimension_tot(0); i++)
-        for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
-
       //remplissage de xa (CGs des aretes), de ta_ (vecteur tangent aux aretes) et de longueur_arete_ (longueurs des aretes)
       xa_.resize(0, 3), ta_.resize(0, 3);
       creer_tableau_aretes(xa_), creer_tableau_aretes(ta_), creer_tableau_aretes(longueur_aretes_);
-      for (int i = 0, k; i < domaine().nb_aretes_tot(); i++)
-        {
-          int s1 = a_s(i, 0), s2 = a_s(i, 1);
-          longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
-          for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
-        }
-
-      /* ordre canonique dans elem_aretes_ */
-      for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
-        {
-          for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
-          for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
-        }
+      calculer_infos_aretes();
     }
 
   //MD_vector pour Champ_Elem_PolyMAC_P0P1NC (elems + faces)
@@ -851,4 +782,72 @@ const DoubleTab& Domaine_Poly_base::pvol_som(const DoubleVect& porosite_elem) co
       pvol_som_(e_s(e, i)) += porosite_elem(e) * v_es(j);
   pvol_som_.echange_espace_virtuel();
   return pvol_som_;
+}
+
+void Domaine_Poly_base::calculer_infos_aretes()
+{
+  if (dimension < 3) return;
+  /* ordre canonique dans aretes_som */
+  IntTab& a_s = domaine().set_aretes_som(), &e_a = domaine().set_elem_aretes();
+  const DoubleTab& xs = domaine().coord_sommets();
+  std::map<std::array<double, 3>, int> xv_fsa;
+  for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
+    {
+      for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
+      for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
+    }
+
+  //remplissage de som_aretes
+  som_arete.resize(domaine().nb_som_tot());
+  for (int i = 0; i < a_s.dimension_tot(0); i++)
+    for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
+
+  for (int i = 0, k; i < domaine().nb_aretes_tot(); i++)
+    {
+      int s1 = a_s(i, 0), s2 = a_s(i, 1);
+      longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
+      for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
+    }
+
+  /* ordre canonique dans elem_aretes_ */
+  for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
+    {
+      for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
+      for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
+    }
+}
+
+void Domaine_Poly_base::recalculer_xv()
+{
+  if (dimension < 3) return;
+  /* recalcul de xv pour avoir les vrais CG des faces */
+  const DoubleTab& coords = domaine().coord_sommets();
+  for (int face = 0; face < nb_faces(); face++)
+    {
+      double xs[3] = { 0, }, S = 0;
+      for (int k = 0; k < face_sommets_.dimension(1); k++)
+        if (face_sommets_(face, k) >= 0)
+          {
+            int s0 = face_sommets_(face, 0), s1 = face_sommets_(face, k),
+                s2 = k + 1 < face_sommets_.dimension(1) && face_sommets_(face, k + 1) >= 0 ? face_sommets_(face, k +1) : s0;
+            double s = 0;
+            for (int r = 0; r < 3; r++)
+              for (int i = 0; i < 2; i++)
+                s += (i ? -1 : 1) * face_normales_(face, r) * (coords(s2, (r + 1 +  i) % 3) - coords(s0, (r + 1 +  i) % 3))
+                     * (coords(s1, (r + 1 + !i) % 3) - coords(s0, (r + 1 + !i) % 3));
+            for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
+            S += s;
+          }
+      if (S == 0 && sub_type(Hexa_poly,type_elem_.valeur()))
+        {
+          Cerr << "===============================" << finl;
+          Cerr << "Error in your mesh for " << que_suis_je() << "!" << finl;
+          Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
+          Cerr << "Polyedriser " << domaine().le_nom() << finl;
+          Process::exit();
+        }
+      for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
+    }
+  xv_.echange_espace_virtuel();
+
 }

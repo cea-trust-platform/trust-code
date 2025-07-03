@@ -135,7 +135,13 @@ public :
   //MD_Vectors pour Champ_Elem_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
+  void calculer_infos_aretes();
+  void fill_normales();
+  void recalculer_xv();
+
 protected:
+  void verifier_type_elem() const;
+
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   OWN_PTR(Elem_poly_base) type_elem_;                  // type de l'element de discretisation
