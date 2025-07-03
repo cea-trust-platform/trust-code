@@ -42,6 +42,7 @@ public :
   void set_incompressible(const int flag) override { } //always compressible
 
 protected :
+  void ajouter_blocs_gen(matrices_t matrices, DoubleTab& secmem, const DoubleTab& vit, const tabs_t& semi_impl = {}) const;
   double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
   IntTab e_fa_d, e_fa_f; //paires de faces reliees par un sommet (2D) / arete (3D) dans chaque element : e_fa_f([e_fa_d(e, 0), e_fa_d(e, 0) + 1[, 0/1)
   DoubleTab e_fa_c;      //coefficients du flux a la facette en fonction des flux aux faces de l'element, stockes a partir de e_fa_d(e, 1)
