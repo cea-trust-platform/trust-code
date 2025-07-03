@@ -78,8 +78,8 @@ define_soumission_batch()
    if [ "$gpu" = 1 ]
    then
       [ "$TRUST_CUDA_CC" = 90 ] && queue=gpuq_h100 && gpus_per_node=`echo $NB_PROCS | awk '{print $1<4?$1:4}'` && noeuds=`echo "1+($NB_PROCS-1)/4" | bc` # 4GPUs/node
-      [ "$TRUST_CUDA_CC" = 80 ] && queue=gpuq_a100 && gpus="" && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
-      [ "$TRUST_CUDA_CC" = 70 ] && queue=gpuq_v100 && gpus="" && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
+      [ "$TRUST_CUDA_CC" = 80 ] && queue=gpuq_a100 && gpus_per_node=`echo $NB_PROCS | awk '{print $1<2?$1:2}'` && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
+      [ "$TRUST_CUDA_CC" = 70 ] && queue=gpuq_v100 && gpus_per_node=`echo $NB_PROCS | awk '{print $1<2?$1:2}'` && noeuds=`echo "1+($NB_PROCS-1)/2" | bc` # 2GPUs/node
    fi
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max
