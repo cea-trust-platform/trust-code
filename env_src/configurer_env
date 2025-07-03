@@ -997,6 +997,7 @@ echo "export PYTHONPATH=\$TRUST_ROOT/Validation/Outils:\$PYTHONPATH" >> $env
 
 if [ "$TRUST_DISABLE_JUPYTER" != 1 ]
 then
+   PYTHON_realpath=$(realpath $TRUST_ROOT)/exec/python/bin/python
    PYTHON_VERSION=`$TRUST_ROOT/exec/python/bin/python -c "import sys; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"`
    # Disable autosave in jupyter
    jupyter_config_js=$TRUST_ROOT/exec/python/lib/python$PYTHON_VERSION/site-packages/notebook/static/custom/custom.js
@@ -1021,7 +1022,7 @@ then
     sys.exit(main())
 "
       $TRUST_Awk -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe > jupyter-notebook_tmp
-      cat jupyter-notebook_tmp | sed "s@$TRUST_ROOT/exec/python/bin/python@/usr/bin/env python@" > $jupyter_nb_exe
+      cat jupyter-notebook_tmp | sed "s@$PYTHON_realpath@/usr/bin/env python@" > $jupyter_nb_exe
       rm -f jupyter-notebook_tmp
    fi
 
@@ -1036,14 +1037,14 @@ then
    jy_nbconvert=$TRUST_ROOT/exec/python/bin/jupyter-nbconvert
    if [ "`grep "/usr/bin/env" $jy_nbconvert 2>/dev/null`" = "" ]
    then
-      sed -i "s@$TRUST_ROOT/exec/python/bin/python@/usr/bin/env python@" $jy_nbconvert
+      sed -i "s@$PYTHON_realpath@/usr/bin/env python@" $jy_nbconvert
    fi
 
    # Allow to move install
    jy_kernel=$TRUST_ROOT/exec/python/share/jupyter/kernels/python3/kernel.json
    if [ "`grep "/usr/bin/env" $jy_kernel 2>/dev/null`" = "" ]
    then
-      sed -i "s@$TRUST_ROOT/exec/python/bin/python@/usr/bin/env\",\n  \"python@" $jy_kernel
+      sed -i "s@$PYTHON_realpath@/usr/bin/env\",\n  \"python@" $jy_kernel
    fi
 fi
 
