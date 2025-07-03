@@ -40,6 +40,7 @@ Read sch
     dt_max  0.1
     # NB_PAS_DT_MAX 20 #
     seuil_statio 1e-6
+    tmax 30
     dt_impr 1e-10
     solveur implicite { solveur petsc cholesky { } }
 }
