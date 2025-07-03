@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2025, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,10 @@
 #include <Multiplicateur_diphasique_base.h>
 #include <Perte_Charge_PolyMAC_P0P1NC.h>
 #include <Fluide_Incompressible.h>
+#include <Champ_Face_PolyVEF_P0.h>
+#include <Domaine_PolyVEF_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC_P0.h>
-#include <Champ_Face_PolyMAC.h>
+#include <Domaine_PolyVEF_P0.h>
 #include <Schema_Temps_base.h>
 #include <Milieu_composite.h>
 #include <Champ_Uniforme.h>
