@@ -116,6 +116,14 @@ then
       echo $ECHO_OPTS "Extracting test case ($jeu) ...\c"
       # jeux=`cat $TMP_BUILD/command 2>&1 | grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"`
       jeux=`( cd $FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr . -dest $TMP_BUILD)`
+      if [ ! $? -eq 0 ]; then
+         echo ""
+         echo ""
+         echo "ERROR: Could not get the list of NR test cases from the validation form: $FICHE_ROOT" 
+         echo "Check that the syntax in the form is correct, and that the form runs properly!"
+         echo ""
+         exit -1 
+      fi 
       echo "End."
    else
       jeux=""

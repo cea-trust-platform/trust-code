@@ -1187,7 +1187,7 @@ then
           else
              [ ! -d $rep_tests ] && mkdir $rep_tests
              \cd $rep_tests
-             copie_cas_test $REP $ref
+             copie_cas_test $REP $ref || exit -1
              STATUS_PREPARE=$?
              effacer=1
              \cd $rep_tests/$REP;
