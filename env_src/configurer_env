@@ -356,7 +356,7 @@ print_OS()
 ########################################################
 print_GNU_VERSION()
 {
-  if $TRUST_CC_BASE --version 2>&1 | grep -qi "gcc"; then
+  if $TRUST_CC_BASE --version 2>&1 | grep -Eqi "gcc|g\+\+"; then
     $TRUST_CC_BASE -dumpfullversion 2>/dev/null || $TRUST_CC_BASE -dumpversion
   else
     return 0
